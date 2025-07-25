@@ -1,7 +1,8 @@
-import { useSignUp } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
+import { supabase } from "@/lib/supabase";
+import { Link } from "expo-router";
 import * as React from "react";
 import {
+  Alert,
   Button,
   KeyboardAvoidingView,
   Platform,
@@ -12,92 +13,30 @@ import {
 } from "react-native";
 
 export default function SignUpScreen() {
-  const { isLoaded, signUp, setActive } = useSignUp();
-  const router = useRouter();
-
-  const [emailAddress, setEmailAddress] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [username, setUsername] = React.useState("");
 
   const [password, setPassword] = React.useState("");
-  const [pendingVerification, setPendingVerification] = React.useState(false);
-  const [code, setCode] = React.useState("");
+
   const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  // Handle submission of sign-up form
-  const onSignUpPress = async () => {
-    if (!isLoaded) return;
-
-    // Start sign-up process using email and password provided
-    try {
-      await signUp.create({
-        emailAddress,
-        username,
-        password,
-      });
-      setError("");
-      router.replace("/(app)/(tabs)");
-
-      // Send user an email with verification code
-      // await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
-      // Set 'pendingVerification' to true to display second form
-      // and capture OTP code
-      // setPendingVerification(true);
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
-      setError(
-        (err as any)?.errors?.[0]?.longMessage || "Something went wrong"
+  async function onSignUpPress() {
+    setLoading(true);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+    if (error) Alert.alert(error.message);
+    if (!session)
+      Alert.alert(
+        "Please verify the new account from the user's email address."
       );
-    }
-  };
 
-  // Handle submission of verification form
-  const onVerifyPress = async () => {
-    if (!isLoaded) return;
-
-    try {
-      // Use the code the user provided to attempt verification
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-
-      // If verification was completed, set the session to active
-      // and redirect the user
-      if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/");
-      } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2));
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
-    }
-  };
-
-  if (pendingVerification) {
-    return (
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <Text style={styles.title}>Verify Your Email</Text>
-        <TextInput
-          style={styles.input}
-          value={code}
-          placeholder="Enter your verification code"
-          placeholderTextColor="#aaa"
-          onChangeText={setCode}
-        />
-        <Button title="Verify" onPress={onVerifyPress} />
-        {error && <Text className="text-red-500">{error}</Text>}
-      </KeyboardAvoidingView>
-    );
+    setLoading(false);
   }
 
   return (
@@ -109,10 +48,10 @@ export default function SignUpScreen() {
       <TextInput
         style={styles.input}
         autoCapitalize="none"
-        value={emailAddress}
+        value={email}
         placeholder="Enter email"
         placeholderTextColor="#aaa"
-        onChangeText={setEmailAddress}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}

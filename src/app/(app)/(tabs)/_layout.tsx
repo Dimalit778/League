@@ -1,10 +1,10 @@
-import LeagueIcon from "../../../../assets/icons/league.svg";
-import MatchIcon from "../../../../assets/icons/matches.svg";
-import RankIcon from "../../../../assets/icons/stats.svg";
-import TrophyIcon from "../../../../assets/icons/trophy.svg";
+import LeagueIcon from "../../../../assets/icons/LeagueIcon";
+import MatchesIcon from "../../../../assets/icons/MatchesIcon";
+import RankIcon from "../../../../assets/icons/RankIcon";
+import TrophyIcon from "../../../../assets/icons/TrophyIcon";
 
 import { Tabs } from "expo-router";
-import { Platform, Text } from "react-native";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -12,10 +12,18 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: true,
 
+        tabBarActiveTintColor: "#f9c04a",
+        tabBarInactiveTintColor: "gray",
+
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
-            backgroundColor: "gray",
+            backgroundColor: "#1A1A1A",
+            borderTopWidth: 0,
+          },
+          android: {
+            backgroundColor: "#1A1A1A",
+            borderTopWidth: 0,
           },
           default: {},
         }),
@@ -25,14 +33,6 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "My Leagues",
-          tabBarLabel: ({ focused, color }) => (
-            <Text
-              className={`${focused ? "black" : ""} text-sm font-bold`}
-              style={{ fontSize: 12 }}
-            >
-              My Leagues
-            </Text>
-          ),
           tabBarIcon: ({ color, size }) => (
             <TrophyIcon width={size} height={size} color={color} />
           ),
@@ -42,17 +42,9 @@ export default function TabLayout() {
         name="League"
         options={{
           title: "League",
-          tabBarLabel: ({ focused, color }) => (
-            <Text
-              className={`${focused ? "black" : "gray-500"} text-sm font-bold`}
-              style={{ fontSize: 12 }}
-            >
-              League
-            </Text>
-          ),
 
           tabBarIcon: ({ color, size }) => (
-            <LeagueIcon width={size} height={size} />
+            <LeagueIcon width={size} height={size} color={color} />
           ),
         }}
       />
@@ -60,17 +52,9 @@ export default function TabLayout() {
         name="Matches"
         options={{
           title: "Matches",
-          tabBarLabel: ({ focused, color }) => (
-            <Text
-              className={`${focused ? "black" : ""} `}
-              style={{ fontSize: 12 }}
-            >
-              Matches
-            </Text>
-          ),
 
           tabBarIcon: ({ color, size }) => (
-            <MatchIcon width={size} height={size} />
+            <MatchesIcon width={size} height={size} color={color} />
           ),
         }}
       />
@@ -78,14 +62,7 @@ export default function TabLayout() {
         name="Rank"
         options={{
           title: "Rank",
-          tabBarLabel: ({ focused, color }) => (
-            <Text
-              className={`${focused ? "black" : "gray-500"} text-sm font-bold`}
-              style={{ fontSize: 12 }}
-            >
-              Rank
-            </Text>
-          ),
+
           tabBarIcon: ({ color, size }) => (
             <RankIcon width={size} height={size} color={color} />
           ),

@@ -1,4 +1,6 @@
 // // App-specific types
+import { League } from "./database.types";
+
 // export type FootballLeague =
 //   | "premier_league"
 //   | "la_liga"
@@ -20,11 +22,11 @@
 //   loading: boolean;
 // }
 
-// export interface AppState {
-//   selectedLeague: League | null;
-//   userLeagues: League[];
-//   loading: boolean;
-// }
+export interface AppState {
+  selectedLeague: League | null;
+  userLeagues: League[] | null;
+  loading: boolean;
+}
 
 // export interface CreateLeagueForm {
 //   name: string;

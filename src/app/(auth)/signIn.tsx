@@ -1,7 +1,9 @@
-import { useSignIn } from "@clerk/clerk-expo";
+import { supabase } from "@/lib/supabase";
 import { Link, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
+  Alert,
+  AppState,
   Button,
   KeyboardAvoidingView,
   Platform,
@@ -11,40 +13,33 @@ import {
   View,
 } from "react-native";
 
-export default function LoginScreen() {
-  const { signIn, setActive, isLoaded } = useSignIn();
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
+
+export default function SignIn() {
   const router = useRouter();
-
-  const [emailAddress, setEmailAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle the submission of the sign-in form
-  const signInFn = useCallback(async () => {
-    if (!isLoaded) return;
-
-    // Start the sign-in process using the email and password provided
-    try {
-      const signInAttempt = await signIn.create({
-        identifier: emailAddress,
-        password,
-      });
-
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
-      if (signInAttempt.status === "complete") {
-        await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/");
-      } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
-        console.error(JSON.stringify(signInAttempt, null, 2));
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+  async function signInWithEmail() {
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      router.push("/");
     }
-  }, [isLoaded, emailAddress, password]);
+    setLoading(false);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -55,10 +50,10 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         autoCapitalize="none"
-        value={emailAddress}
+        value={email}
         placeholder="Enter email"
         placeholderTextColor="#aaa"
-        onChangeText={setEmailAddress}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
@@ -68,7 +63,11 @@ export default function LoginScreen() {
         secureTextEntry
         onChangeText={setPassword}
       />
-      <Button title="Sign In" onPress={signInFn} />
+      <Button
+        title="Sign In"
+        disabled={!email || !password || loading}
+        onPress={() => signInWithEmail()}
+      />
       <View style={styles.signUpContainer}>
         <Text style={styles.text}>Don't have an account?</Text>
         <Link href="/(auth)/signUp">
