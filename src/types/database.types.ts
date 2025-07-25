@@ -1,4 +1,9 @@
-import { FootballLeague } from "./index";
+type FootballLeague =
+  | "premier_league"
+  | "la_liga"
+  | "bundesliga"
+  | "serie_a"
+  | "ligue_1";
 
 export interface User {
   id: string;
