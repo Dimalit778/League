@@ -1,8 +1,9 @@
+import "../../global.css";
+
 import { tokenCache } from "@/lib/cache";
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Slot } from "expo-router";
-import "../../global.css";
 
 const queryClient = new QueryClient();
 

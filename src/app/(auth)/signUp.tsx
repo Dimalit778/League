@@ -1,13 +1,5 @@
-import ButtonC from "@/components/ui/ButtonC";
-import TextInputC from "@/components/ui/TextInputC";
-import React, { useState } from "react";
-import {
-  ImageBackground,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 const SignUpScreen = () => {
   const [email, setEmail] = useState("");
@@ -19,43 +11,46 @@ const SignUpScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../../../assets/images/backGround.jpg")}
-        style={styles.imageBackground}
-      >
-        {/* <Image source={require("../assets/food/food.png")} style={styles.foodImage} /> */}
-
-        <Text style={styles.title}>Fatmore</Text>
-
-        <View style={styles.inputsContainer}>
-          {/* value, onChangeText */}
-          <TextInputC
-            value={email}
-            onChangeText={(text: string) => setEmail(text)}
-            placeholder="Enter E-mail or User Name"
-          />
-          <TextInputC
-            value={password}
-            onChangeText={(text: string) => setPassword(text)}
-            placeholder="Password"
-            secureTextEntry
-          />
-          <TextInputC
-            value={confirmPassword}
-            onChangeText={(text: string) => setConfirmPassword(text)}
-            placeholder="Confirm Password"
-            secureTextEntry
-          />
-
-          <ButtonC onPress={signUpTestFn} title={"Sign Up"} />
-
-          <Text style={styles.orText}>OR</Text>
-
-          {/* <SocialMedia /> */}
-        </View>
-      </ImageBackground>
+    <View className="flex-1 items-center justify-center bg-red-500">
+      <Text className="text-white">Sign Up</Text>
     </View>
+    // <View style={styles.container}>
+    //   <ImageBackground
+    //     source={require("../../../assets/images/backGround.jpg")}
+    //     style={styles.imageBackground}
+    //   >
+    //     {/* <Image source={require("../assets/food/food.png")} style={styles.foodImage} /> */}
+
+    //     <Text style={styles.title}>Fatmore</Text>
+
+    //     <View style={styles.inputsContainer}>
+    //       {/* value, onChangeText */}
+    //       <TextInputC
+    //         value={email}
+    //         onChangeText={(text: string) => setEmail(text)}
+    //         placeholder="Enter E-mail or User Name"
+    //       />
+    //       <TextInputC
+    //         value={password}
+    //         onChangeText={(text: string) => setPassword(text)}
+    //         placeholder="Password"
+    //         secureTextEntry
+    //       />
+    //       <TextInputC
+    //         value={confirmPassword}
+    //         onChangeText={(text: string) => setConfirmPassword(text)}
+    //         placeholder="Confirm Password"
+    //         secureTextEntry
+    //       />
+
+    //       <ButtonC onPress={signUpTestFn} title={"Sign Up"} />
+
+    //       <Text style={styles.orText}>OR</Text>
+
+    //       {/* <SocialMedia /> */}
+    //     </View>
+    //   </ImageBackground>
+    // </View>
   );
 };
 
