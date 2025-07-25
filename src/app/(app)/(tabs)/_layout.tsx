@@ -21,6 +21,24 @@ export default function TabLayout() {
           title: "Home",
         }}
       />
+      <Tabs.Screen
+        name="League"
+        options={{
+          title: "League",
+        }}
+      />
+      <Tabs.Screen
+        name="Matches"
+        options={{
+          title: "Matches",
+        }}
+      />
+      <Tabs.Screen
+        name="Rank"
+        options={{
+          title: "Rank",
+        }}
+      />
     </Tabs>
   );
 }

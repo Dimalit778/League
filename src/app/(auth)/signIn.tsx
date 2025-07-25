@@ -1,17 +1,6 @@
-import ButtonC from "@/components/ui/ButtonC";
-import TextInputC from "@/components/ui/TextInputC";
-import { Feather, Fontisto } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -27,77 +16,29 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <View style={styles.inputContainer}>
-            <Fontisto
-              name="email"
-              size={20}
-              color="#A0A0A0"
-              style={styles.icon}
-            />
-            <TextInputC
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email or Username"
-              placeholderTextColor="#A0A0A0"
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Feather
-              name="lock"
-              size={20}
-              color="#A0A0A0"
-              style={styles.icon}
-            />
-            <TextInputC
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              placeholderTextColor="#A0A0A0"
-              secureTextEntry={!showPassword}
-              style={styles.input}
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.eyeIcon}
-            >
-              <Feather
-                name={showPassword ? "eye" : "eye-off"}
-                size={20}
-                color="#A0A0A0"
-              />
-            </TouchableOpacity>
-          </View>
-          {errMsg ? <Text style={styles.errorText}>{errMsg}</Text> : null}
-          <ButtonC
-            onPress={signIn}
-            title="Login"
-            loading={loading}
-            style={styles.button}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              /* Add forgot password functionality */
-            }}
-          >
-            <Text style={styles.forgotPassword}>Forgot Password?</Text>
-          </TouchableOpacity>
+    <View className="flex-1 justify-center items-center bg-background p-4">
+      <View className="bg-surface p-6 rounded-lg w-full max-w-sm">
+        <Text className="text-textPrimary text-2xl font-bold text-center mb-4">
+          Welcome Back
+        </Text>
+        <Text className="text-textSecondary text-base text-center mb-6">
+          Testing Tailwind Classes
+        </Text>
+
+        {/* Test various Tailwind classes */}
+        <View className="bg-primary p-3 rounded mb-3">
+          <Text className="text-white text-center">Primary Color Test</Text>
         </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don&apos;t have an account? </Text>
-          <TouchableOpacity onPress={() => router.push("/signUp")}>
-            <Text style={styles.signUpLink}>Sign Up</Text>
-          </TouchableOpacity>
+
+        <View className="bg-secondary p-3 rounded mb-3">
+          <Text className="text-black text-center">Secondary Color Test</Text>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        <View className="border border-border p-3 rounded">
+          <Text className="text-textPrimary text-center">Border Test</Text>
+        </View>
+      </View>
+    </View>
   );
 }
 
