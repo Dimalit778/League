@@ -1,12 +1,10 @@
 import ButtonC from "@/components/ui/ButtonC";
 import { LEAGUE_OPTIONS } from "@/constants/leagues";
 import { useAuthStore } from "@/hooks/useAuthStore";
-import { createLeague } from "@/services/leagueService";
+import { supabase } from "@/lib/supabase";
 import { FootballLeague } from "@/types/database.types";
-import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -19,46 +17,42 @@ import {
 
 export default function CreateLeague() {
   const { user } = useAuthStore();
+
   const [leagueName, setLeagueName] = useState("");
   const [selectedLeague, setSelectedLeague] = useState<FootballLeague | null>(
     null
   );
   const [maxMembers, setMaxMembers] = useState("10");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const newCompetition = {
+    api_id: "123",
+    name: "dima",
+    code: "PD",
+    type: "league",
+    emblem_url:
+      "https://upload.wikimedia.org/wikipedia/en/thumb/5/53/La_Liga_logo_%282017%29.svg/1200px-La_Liga_logo_%282017%29.svg.png",
+    start_date: "2025-01-01",
+    end_date: "2025-01-01",
+    current_matchday: 3,
+  };
 
   const handleCreateLeague = async () => {
-    setLoading(true);
-
-    try {
-      const leagueData = {
-        name: "dima",
-        selected_league: "SPAIN",
-        admin_id: user?.id || "",
-      };
-
-      const { data, error } = await createLeague(leagueData);
-
-      if (error) {
-        Alert.alert("Error", error.message || "Failed to create league");
-        return;
-      }
-
-      Alert.alert(
-        "Success!",
-        `League "${leagueName}" created successfully!\nInvite code: ${data?.join_code || "Check your leagues page"}`,
-        [
-          {
-            text: "OK",
-            onPress: () => router.back(),
-          },
-        ]
-      );
-    } catch (error) {
-      Alert.alert("Error", "An unexpected error occurred");
-      console.error("Create league error:", error);
-    } finally {
-      setLoading(false);
-    }
+    const { data, error } = await supabase
+      .from("competitions")
+      .insert(newCompetition)
+      .select()
+      .single();
+    console.log("data ---", JSON.stringify(data, null, 2));
+    console.log("error ---", JSON.stringify(error, null, 2));
+  };
+  const getCompetitions = async () => {
+    const { data, error } = await supabase
+      .from("competitions")
+      .select("*")
+      .limit(10);
+    console.log("data ---", JSON.stringify(data, null, 2));
+    console.log("error ---", JSON.stringify(error, null, 2));
   };
 
   const selectedLeagueOption = LEAGUE_OPTIONS.find(
@@ -74,6 +68,13 @@ export default function CreateLeague() {
         <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Create New League
         </Text>
+
+        {/* Error message */}
+        {error && (
+          <View className="mb-4 p-3 bg-red-100 rounded-lg">
+            <Text className="text-red-700">{error}</Text>
+          </View>
+        )}
 
         {/* League Name Input */}
         <View className="mb-6">
