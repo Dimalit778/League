@@ -1,5 +1,6 @@
 import LeagueIcon from "../../../../assets/icons/LeagueIcon";
 import MatchesIcon from "../../../../assets/icons/MatchesIcon";
+import ProfileIcon from "../../../../assets/icons/ProfileIcon";
 import RankIcon from "../../../../assets/icons/RankIcon";
 import TrophyIcon from "../../../../assets/icons/TrophyIcon";
 
@@ -65,6 +66,15 @@ export default function TabLayout() {
 
           tabBarIcon: ({ color, size }) => (
             <RankIcon width={size} height={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <ProfileIcon width={size} height={size} color={color} />
           ),
         }}
       />

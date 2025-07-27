@@ -14,7 +14,8 @@ import {
 
 export default function SignUpScreen() {
   const [email, setEmail] = React.useState("");
-  const [username, setUsername] = React.useState("");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
 
   const [password, setPassword] = React.useState("");
 
@@ -29,6 +30,12 @@ export default function SignUpScreen() {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
     });
     if (error) Alert.alert(error.message);
     if (!session)
@@ -56,10 +63,18 @@ export default function SignUpScreen() {
       <TextInput
         style={styles.input}
         autoCapitalize="none"
-        value={username}
-        placeholder="Username"
+        value={firstName}
+        placeholder="First Name"
         placeholderTextColor="#aaa"
-        onChangeText={setUsername}
+        onChangeText={setFirstName}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="none"
+        value={lastName}
+        placeholder="Last Name"
+        placeholderTextColor="#aaa"
+        onChangeText={setLastName}
       />
       <TextInput
         style={styles.input}

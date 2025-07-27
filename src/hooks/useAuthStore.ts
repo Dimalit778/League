@@ -1,141 +1,276 @@
-// import { create } from "zustand";
-// import { User, AuthState } from "../types";
-// import {
-//   supabase,
-//   createUser,
-//   signIn,
-//   signOut,
-//   getUserProfile,
-// } from "../services/supabase";
+import { supabase } from "@/lib/supabase";
+import { AuthState } from "@/types/authTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
 
-// interface AuthStore extends AuthState {
-//   // Actions
-//   signUp: (
-//     email: string,
-//     password: string,
-//     displayName: string
-//   ) => Promise<{ success: boolean; error?: string }>;
-//   signIn: (
-//     email: string,
-//     password: string
-//   ) => Promise<{ success: boolean; error?: string }>;
-//   signOut: () => Promise<void>;
-//   loadUser: () => Promise<void>;
-//   updateProfile: (
-//     updates: Partial<User>
-//   ) => Promise<{ success: boolean; error?: string }>;
-// }
+export interface UserProfile {
+  id: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  subscription_tier: "free" | "premium";
+}
 
-// export const useAuthStore = create<AuthStore>((set, get) => ({
-//   user: null,
-//   session: null,
-//   loading: true,
+export const useAuthStore = create<AuthState>((set, get) => ({
+  userSupabase: null,
+  user: null,
+  session: null,
+  loading: true,
+  error: null,
 
-//   signUp: async (email: string, password: string, displayName: string) => {
-//     try {
-//       set({ loading: true });
-//       const { data, error } = await createUser(email, password, displayName);
+  // Actions
+  signUp: async (
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string
+  ) => {
+    try {
+      set({ loading: true, error: null });
 
-//       if (error) {
-//         return { success: false, error: error.message };
-//       }
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
+      });
 
-//       return { success: true };
-//     } catch (error) {
-//       return { success: false, error: "An unexpected error occurred" };
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
 
-//   signIn: async (email: string, password: string) => {
-//     try {
-//       set({ loading: true });
-//       const { data, error } = await signIn(email, password);
+      if (data.user) {
+        set({
+          userSupabase: data.user,
+          user: {
+            id: data.user.id,
+            email: data.user.email || "",
+            first_name: data.user.user_metadata.first_name || "",
+            last_name: data.user.user_metadata.last_name || "",
+            avatar_url: data.user.user_metadata.avatar_url || "",
+            subscription_tier: "free",
+          },
+        });
+      }
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
 
-//       if (error) {
-//         return { success: false, error: error.message };
-//       }
+  signIn: async (email: string, password: string) => {
+    try {
+      set({ loading: true, error: null });
 
-//       if (data.user) {
-//         const { data: profile } = await getUserProfile(data.user.id);
-//         set({
-//           user: profile,
-//           session: data.session,
-//         });
-//       }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-//       return { success: true };
-//     } catch (error) {
-//       return { success: false, error: "An unexpected error occurred" };
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
 
-//   signOut: async () => {
-//     try {
-//       set({ loading: true });
-//       await signOut();
-//       set({ user: null, session: null });
-//     } catch (error) {
-//       console.error("Sign out error:", error);
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
+      if (data.user) {
+        set({
+          userSupabase: data.user,
+          user: {
+            id: data.user.id,
+            email: data.user.email || "",
+            first_name: data.user.user_metadata.first_name || "",
+            last_name: data.user.user_metadata.last_name || "",
+            avatar_url: data.user.user_metadata.avatar_url || "",
+            subscription_tier: "free",
+          },
+          session: data.session,
+        });
+      }
 
-//   loadUser: async () => {
-//     try {
-//       set({ loading: true });
-//       const {
-//         data: { session },
-//       } = await supabase.auth.getSession();
+      set({ loading: false });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
 
-//       if (session?.user) {
-//         const { data: profile } = await getUserProfile(session.user.id);
-//         set({
-//           user: profile,
-//           session,
-//         });
-//       }
-//     } catch (error) {
-//       console.error("Load user error:", error);
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
+  signOut: async () => {
+    try {
+      set({ loading: true, error: null });
 
-//   updateProfile: async (updates: Partial<User>) => {
-//     try {
-//       const { user } = get();
-//       if (!user) {
-//         return { success: false, error: "No user logged in" };
-//       }
+      const { error } = await supabase.auth.signOut();
 
-//       const { error } = await supabase
-//         .from("users")
-//         .update(updates)
-//         .eq("id", user.id);
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
 
-//       if (error) {
-//         return { success: false, error: error.message };
-//       }
+      // Clear all state
+      set({
+        userSupabase: null,
+        user: null,
+        session: null,
+        loading: false,
+        error: null,
+      });
 
-//       set({ user: { ...user, ...updates } });
-//       return { success: true };
-//     } catch (error) {
-//       return { success: false, error: "An unexpected error occurred" };
-//     }
-//   },
-// }));
+      // Clear any cached data
+      await AsyncStorage.clear();
 
-// // Auth state listener
-// supabase.auth.onAuthStateChange((event, session) => {
-//   const { loadUser } = useAuthStore.getState();
-//   if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-//     loadUser();
-//   } else if (event === "SIGNED_OUT") {
-//     useAuthStore.setState({ user: null, session: null, loading: false });
-//   }
-// });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  resetPassword: async (email: string) => {
+    try {
+      set({ loading: true, error: null });
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: "your-app://reset-password", // Update with your app's deep link
+      });
+
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
+
+      set({ loading: false });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  updatePassword: async (newPassword: string) => {
+    try {
+      set({ loading: true, error: null });
+
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
+
+      set({ loading: false });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  refreshSession: async () => {
+    try {
+      set({ loading: true, error: null });
+
+      const { data, error } = await supabase.auth.refreshSession();
+
+      if (error) {
+        set({ error: error.message, loading: false });
+        return { success: false, error: error.message };
+      }
+
+      if (data.session) {
+        set({
+          session: data.session,
+          userSupabase: data.session.user,
+        });
+      }
+
+      set({ loading: false });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  clearError: () => set({ error: null }),
+}));
+
+supabase.auth.onAuthStateChange(async (event, session) => {
+  const store = useAuthStore.getState();
+
+  switch (event) {
+    case "SIGNED_IN":
+    case "TOKEN_REFRESHED":
+      if (session?.user) {
+        useAuthStore.setState({
+          userSupabase: session.user,
+          session,
+          loading: false,
+        });
+      }
+      break;
+
+    case "SIGNED_OUT":
+      useAuthStore.setState({
+        user: null,
+        userSupabase: null,
+        session: null,
+        loading: false,
+        error: null,
+      });
+      break;
+
+    case "PASSWORD_RECOVERY":
+      // Handle password recovery
+      useAuthStore.setState({ loading: false });
+      break;
+
+    case "USER_UPDATED":
+      if (session?.user) {
+        useAuthStore.setState({
+          userSupabase: session.user,
+        });
+      }
+      break;
+
+    default:
+      useAuthStore.setState({ loading: false });
+  }
+});
+
+// Initialize auth state
+supabase.auth.getSession().then(({ data: { session } }) => {
+  useAuthStore.setState({
+    userSupabase: session?.user || null,
+    user: {
+      id: session?.user?.id || "",
+      email: session?.user?.email || "",
+      first_name: session?.user?.user_metadata.first_name || "",
+      last_name: session?.user?.user_metadata.last_name || "",
+      avatar_url: session?.user?.user_metadata.avatar_url || "",
+      subscription_tier: session?.user?.user_metadata.subscription_tier || "",
+    },
+    session,
+    loading: false,
+  });
+});

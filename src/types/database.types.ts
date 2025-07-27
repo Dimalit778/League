@@ -1,4 +1,4 @@
-type FootballLeague =
+export type FootballLeague =
   | "premier_league"
   | "la_liga"
   | "bundesliga"
