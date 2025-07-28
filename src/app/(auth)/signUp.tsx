@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import useAuthStore from "@/store/AuthStore";
 import { Link } from "expo-router";
 import * as React from "react";
 import {
@@ -13,38 +13,19 @@ import {
 } from "react-native";
 
 export default function SignUpScreen() {
+  const { register, loading, error } = useAuthStore();
   const [email, setEmail] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
 
   const [password, setPassword] = React.useState("");
 
-  const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-
-  async function onSignUpPress() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-        },
-      },
-    });
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert(
-        "Please verify the new account from the user's email address."
-      );
-
-    setLoading(false);
-  }
+  const onSignUpPress = async () => {
+    const result = await register(email, password, firstName, lastName);
+    if (!result) {
+      Alert.alert("Error", "Invalid email or password");
+    }
+  };
 
   return (
     <KeyboardAvoidingView

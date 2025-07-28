@@ -1,14 +1,44 @@
 import "../../global.css";
 
 import { SplashScreen } from "@/components/SplashScreen";
-import { useAuthStore } from "@/hooks/useAuthStore";
+import { supabase } from "@/lib/supabase";
+import useAuthStore from "@/store/AuthStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-
-const queryClient = new QueryClient();
+import { useEffect, useState } from "react";
 
 export default function RootLayout() {
-  const { session, loading } = useAuthStore();
+  const { session, loading, initializeSession } = useAuthStore();
+
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: true,
+            refetchOnReconnect: true,
+            retry: 1,
+          },
+          mutations: {
+            retry: 1,
+          },
+        },
+      })
+  );
+
+  useEffect(() => {
+    initializeSession();
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        initializeSession();
+      }
+    );
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   if (loading) {
     return <SplashScreen />;

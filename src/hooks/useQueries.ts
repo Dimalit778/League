@@ -1,111 +1,224 @@
-// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import {
-//   getLeagueMatches,
-//   getLeaderboard,
-//   getUserPredictions,
-//   createPrediction,
-//   createLeague,
-//   joinLeague,
-// } from "../services/supabase";
-// import {
-//   syncMatchesToDatabase,
-//   updatePredictionPoints,
-// } from "../services/footballApi";
-// import { FootballLeague, CreateLeagueForm, PredictionForm } from "../types";
+import { supabase } from "@/lib/supabase";
+import {
+  createLeague,
+  getLeagueMatches,
+  joinLeague
+} from "@/services/leagueService";
+import {
+  createPrediction,
+  getLeaderboard,
+  getUserLeagues,
+  getUserPredictions,
+  getUserProfile
+} from "@/services/usersService";
+import {
+  Prediction
+} from "@/types/database.types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// // Match queries
-// export const useMatches = (league: FootballLeague) => {
-//   return useQuery({
-//     queryKey: ["matches", league],
-//     queryFn: () => getLeagueMatches(league),
-//     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-//     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
-//   });
-// };
+// Query keys for better organization and type safety
+export const queryKeys = {
+  userProfile: (userId: string) => ["user", userId] as const,
+  userLeagues: (userId: string) => ["userLeagues", userId] as const,
+  leagueMatches: (league: string) => ["matches", league] as const,
+  userPredictions: (userId: string, leagueId: string) => ["predictions", userId, leagueId] as const,
+  leaderboard: (leagueId: string) => ["leaderboard", leagueId] as const,
+  allLeagues: ["leagues"] as const,
+};
 
-// // Leaderboard queries
-// export const useLeaderboard = (leagueId: string) => {
-//   return useQuery({
-//     queryKey: ["leaderboard", leagueId],
-//     queryFn: () => getLeaderboard(leagueId),
-//     refetchInterval: 30 * 1000, // Refetch every 30 seconds for real-time updates
-//   });
-// };
+// User profile query
+export const useUserProfile = (userId: string) => {
+  return useQuery({
+    queryKey: queryKeys.userProfile(userId),
+    queryFn: () => getUserProfile(userId, supabase),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
 
-// // User predictions queries
-// export const useUserPredictions = (userId: string, leagueId: string) => {
-//   return useQuery({
-//     queryKey: ["predictions", userId, leagueId],
-//     queryFn: () => getUserPredictions(userId, leagueId),
-//     enabled: !!userId && !!leagueId,
-//   });
-// };
+// User leagues query
+export const useUserLeagues = (userId: string) => {
+  return useQuery({
+    queryKey: queryKeys.userLeagues(userId),
+    queryFn: () => getUserLeagues(userId, supabase),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: true,
+  });
+};
 
-// // Mutations
-// export const useCreatePrediction = () => {
-//   const queryClient = useQueryClient();
+// League matches query
+export const useLeagueMatches = (league: string) => {
+  return useQuery({
+    queryKey: queryKeys.leagueMatches(league),
+    queryFn: () => getLeagueMatches(league, supabase),
+    enabled: !!league,
+    staleTime: 30 * 1000, // 30 seconds for live match updates
+    refetchInterval: 60 * 1000, // Refetch every minute for live scores
+  });
+};
 
-//   return useMutation({
-//     mutationFn: createPrediction,
-//     onSuccess: () => {
-//       // Invalidate relevant queries
-//       queryClient.invalidateQueries({ queryKey: ["predictions"] });
-//       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-//     },
-//   });
-// };
+// User predictions query
+export const useUserPredictions = (userId: string, leagueId: string) => {
+  return useQuery({
+    queryKey: queryKeys.userPredictions(userId, leagueId),
+    queryFn: () => getUserPredictions(userId, leagueId, supabase),
+    enabled: !!userId && !!leagueId,
+    staleTime: 60 * 1000, // 1 minute
+  });
+};
 
-// export const useCreateLeague = () => {
-//   const queryClient = useQueryClient();
+// Leaderboard query
+export const useLeaderboard = (leagueId: string) => {
+  return useQuery({
+    queryKey: queryKeys.leaderboard(leagueId),
+    queryFn: () => getLeaderboard(leagueId, supabase),
+    enabled: !!leagueId,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes for updates
+  });
+};
 
-//   return useMutation({
-//     mutationFn: (
-//       data: CreateLeagueForm & { adminId: string; inviteCode: string }
-//     ) => createLeague(data),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["userLeagues"] });
-//     },
-//   });
-// };
+// Create prediction mutation
+export const useCreatePrediction = () => {
+  const queryClient = useQueryClient();
 
-// export const useJoinLeague = () => {
-//   const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (predictionData: {
+      league_id: string;
+      user_id: string;
+      match_id: number;
+      home_score: number;
+      away_score: number;
+    }) => createPrediction(predictionData, supabase),
+    onSuccess: (_, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userPredictions(variables.user_id, variables.league_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.leaderboard(variables.league_id),
+      });
+    },
+    onError: (error) => {
+      console.error("Error creating prediction:", error);
+    },
+  });
+};
 
-//   return useMutation({
-//     mutationFn: ({
-//       leagueId,
-//       userId,
-//       nickname,
-//     }: {
-//       leagueId: string;
-//       userId: string;
-//       nickname: string;
-//     }) => joinLeague(leagueId, userId, nickname),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["userLeagues"] });
-//     },
-//   });
-// };
+// Create league mutation
+export const useCreateLeague = () => {
+  const queryClient = useQueryClient();
 
-// export const useSyncMatches = () => {
-//   const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (leagueData: {
+      name: string;
+      selected_league: string;
+      admin_id: string;
+    }) => createLeague(leagueData),
+    onSuccess: (_, variables) => {
+      // Invalidate user leagues query
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userLeagues(variables.admin_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.allLeagues,
+      });
+    },
+    onError: (error) => {
+      console.error("Error creating league:", error);
+    },
+  });
+};
 
-//   return useMutation({
-//     mutationFn: syncMatchesToDatabase,
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["matches"] });
-//     },
-//   });
-// };
+// Join league mutation
+export const useJoinLeague = () => {
+  const queryClient = useQueryClient();
 
-// export const useUpdatePredictionPoints = () => {
-//   const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      leagueId,
+      userId,
+      nickname,
+    }: {
+      leagueId: string;
+      userId: string;
+      nickname: string;
+    }) => joinLeague(leagueId, userId, nickname, supabase),
+    onSuccess: (_, variables) => {
+      // Invalidate user leagues query
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userLeagues(variables.userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.leaderboard(variables.leagueId),
+      });
+    },
+    onError: (error) => {
+      console.error("Error joining league:", error);
+    },
+  });
+};
 
-//   return useMutation({
-//     mutationFn: updatePredictionPoints,
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["predictions"] });
-//       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-//     },
-//   });
-// };
+// Optimistic update helper for predictions
+export const useOptimisticPrediction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (predictionData: {
+      league_id: string;
+      user_id: string;
+      match_id: number;
+      home_score: number;
+      away_score: number;
+    }) => createPrediction(predictionData, supabase),
+    onMutate: async (newPrediction) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
+      });
+
+      // Snapshot the previous value
+      const previousPredictions = queryClient.getQueryData<{ data: Prediction[], error: any }>(
+        queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id)
+      );
+
+      // Optimistically update to the new value
+      if (previousPredictions?.data) {
+        queryClient.setQueryData(
+          queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
+          {
+            data: [
+              {
+                id: `temp-${Date.now()}`,
+                ...newPrediction,
+                points: 0,
+                created_at: new Date().toISOString(),
+              },
+              ...previousPredictions.data,
+            ],
+            error: null,
+          }
+        );
+      }
+
+      return { previousPredictions };
+    },
+    onError: (err, newPrediction, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousPredictions) {
+        queryClient.setQueryData(
+          queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
+          context.previousPredictions
+        );
+      }
+    },
+    onSettled: (_, __, variables) => {
+      // Always refetch after error or success to make sure our local data is correct
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userPredictions(variables.user_id, variables.league_id),
+      });
+    },
+  });
+};

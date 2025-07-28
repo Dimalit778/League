@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/hooks/useAuthStore";
+import useAuthStore from "@/store/AuthStore";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 export default function SignIn() {
-  const { signIn, loading, error, clearError } = useAuthStore();
+  const { login, loading, error } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +22,6 @@ export default function SignIn() {
 
   const handleSignIn = async () => {
     // Clear any previous errors
-    clearError();
     setLocalError("");
 
     // Basic validation
@@ -35,10 +34,10 @@ export default function SignIn() {
       return;
     }
 
-    const result = await signIn(email.trim(), password);
+    const result = await login(email.trim(), password);
 
-    if (!result.success && result.error) {
-      setLocalError(result.error);
+    if (!result) {
+      setLocalError("Invalid email or password");
     }
   };
 

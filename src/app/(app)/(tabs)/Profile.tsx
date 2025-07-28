@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/hooks/useAuthStore";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,7 +12,21 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { user, signOut, loading } = useAuthStore();
+  const user = {
+    first_name: "John",
+    last_name: "Doe",
+    email: "john.doe@example.com",
+    subscription_tier: "premium",
+  };
+  const signOut = async () => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ]);
+  };
+  const loading = false;
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState(user?.first_name || "");
   const [lastName, setLastName] = useState(user?.last_name || "");
@@ -29,9 +42,9 @@ export default function Profile() {
         style: "destructive",
         onPress: async () => {
           const result = await signOut();
-          if (!result.success) {
-            Alert.alert("Error", result.error || "Failed to sign out");
-          }
+          // if (!result.success) {
+          //   Alert.alert("Error", result.error || "Failed to sign out");
+          // }
         },
       },
     ]);

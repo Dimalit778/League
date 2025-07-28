@@ -1,5 +1,3 @@
-import { useAuthStore } from "@/hooks/useAuthStore";
-
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -17,7 +15,16 @@ import {
 
 export default function ForgotPassword() {
   const router = useRouter();
-  const { resetPassword, loading, error, clearError } = useAuthStore();
+
+  const resetPassword = async () => {
+    console.log("resetPassword");
+    return { success: true };
+  };
+  const loading = false;
+  const error = null;
+  const clearError = () => {
+    console.log("clearError");
+  };
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -27,12 +34,12 @@ export default function ForgotPassword() {
     clearError();
 
     try {
-      const result = await resetPassword(email.trim());
+      const result = await resetPassword();
 
-      if (result.success) {
+      if (result && result.success) {
         setIsSubmitted(true);
       } else {
-        Alert.alert("Error", result.error || "An unexpected error occurred");
+        Alert.alert("Error", "An unexpected error occurred");
       }
     } catch (error) {
       Alert.alert("Error", "An unexpected error occurred. Please try again.");

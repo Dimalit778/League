@@ -1,14 +1,9 @@
-export type FootballLeague =
-  | "premier_league"
-  | "la_liga"
-  | "bundesliga"
-  | "serie_a"
-  | "ligue_1";
 
 export interface User {
   id: string;
   email: string;
-  display_name: string;
+  name: string;
+  image_url: string;
   subscription_tier: "free" | "premium";
   created_at: string;
 }
@@ -16,7 +11,7 @@ export interface User {
 export interface League {
   id: string;
   name: string;
-  selected_league: FootballLeague;
+  selected_league: string;
   admin_id: string;
   invite_code: string;
   max_members: number;
@@ -37,7 +32,7 @@ export interface Match {
   id: number;
   home_team: string;
   away_team: string;
-  league: FootballLeague;
+  league: string;
   kickoff: string;
   status: "scheduled" | "live" | "finished";
   home_score?: number;

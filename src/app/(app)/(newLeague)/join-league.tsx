@@ -1,8 +1,8 @@
 import LeagueCard from "@/components/LeagueCard";
 import ButtonC from "@/components/ui/ButtonC";
-import { useAuthStore } from "@/hooks/useAuthStore";
+
+import { useJoinLeague } from "@/hooks/useQueries";
 import { supabase } from "@/lib/supabase";
-import { joinLeague } from "@/services/leagueService";
 import { League } from "@/types/database.types";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -17,12 +17,20 @@ import {
 } from "react-native";
 
 export default function JoinLeague() {
-  const { user } = useAuthStore();
+  const user = {
+    id: "123",
+    nickname: "John Doe",
+    total_predictions: 10,
+    total_points: 100,
+    exact_scores: 5,
+  };
   const [inviteCode, setInviteCode] = useState("");
   const [nickname, setNickname] = useState("");
-  const [loading, setLoading] = useState(false);
   const [searchingLeague, setSearchingLeague] = useState(false);
   const [foundLeague, setFoundLeague] = useState<League | null>(null);
+
+  // Use the React Query mutation hook
+  const joinLeagueMutation = useJoinLeague();
 
   const searchLeagueByInviteCode = async (code: string) => {
     if (!code.trim() || code.length < 6) {
@@ -84,21 +92,19 @@ export default function JoinLeague() {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const { data, error } = await joinLeague(
-        foundLeague.id,
-        user.id,
-        nickname.trim(),
-        supabase
-      );
+      // Use the mutation hook to join the league
+      const result = await joinLeagueMutation.mutateAsync({
+        leagueId: foundLeague.id,
+        userId: user.id,
+        nickname: nickname.trim(),
+      });
 
-      if (error) {
-        if (error.message?.includes("duplicate")) {
+      if (result.error) {
+        if (result.error.message?.includes("duplicate")) {
           Alert.alert("Error", "You are already a member of this league");
         } else {
-          Alert.alert("Error", error.message || "Failed to join league");
+          Alert.alert("Error", result.error.message || "Failed to join league");
         }
         return;
       }
@@ -109,15 +115,13 @@ export default function JoinLeague() {
         [
           {
             text: "OK",
-            onPress: () => router.back(),
+            onPress: () => router.replace("/(app)/(tabs)"),
           },
         ]
       );
     } catch (error) {
       Alert.alert("Error", "An unexpected error occurred");
       console.error("Join league error:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -202,7 +206,7 @@ export default function JoinLeague() {
           <ButtonC
             title="Join League"
             onPress={handleJoinLeague}
-            loading={loading}
+            loading={joinLeagueMutation.isPending}
             style={{
               opacity: !foundLeague || !nickname.trim() ? 0.5 : 1,
             }}

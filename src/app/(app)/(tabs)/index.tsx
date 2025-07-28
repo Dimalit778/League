@@ -1,8 +1,11 @@
-import { useAuthStore } from "@/hooks/useAuthStore";
+import { useAppStore } from "@/hooks/useAppStore";
+
+import { useUserLeagues } from "@/hooks/useQueries";
+import useAuthStore from "@/store/AuthStore";
 import { League } from "@/types/database.types";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
+  ActivityIndicator,
   Button,
   FlatList,
   RefreshControl,
@@ -48,49 +51,91 @@ const LeagueCard = ({ league, isSelected, onSelect }: LeagueCardProps) => {
 };
 
 export default function MyLeagues() {
-  const { user } = useAuthStore();
   const router = useRouter();
-  const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuthStore();
 
-  // const renderLeague = ({ item }: { item: League }) => (
-  //   <LeagueCard
-  //     league={item}
-  //     isSelected={selectedLeague?.id === item.id}
-  //     onSelect={() => handleLeagueSelect(item)}
-  //   />
-  // );
+  const { selectedLeague, setSelectedLeague } = useAppStore();
+
+  // Use our React Query hook to fetch user leagues
+  const {
+    data: userLeaguesData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useUserLeagues(user?.id || "");
+
+  const handleLeagueSelect = (league: League) => {
+    setSelectedLeague(league);
+  };
+
+  const renderLeague = ({ item }: { item: League }) => (
+    <LeagueCard
+      league={item}
+      isSelected={selectedLeague?.id === item.id}
+      onSelect={() => handleLeagueSelect(item)}
+    />
+  );
+
+  // Extract leagues from the response
+  const userLeagues =
+    userLeaguesData?.data?.map((member) => member.league) || [];
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Button
-          title="Create "
-          onPress={() => router.push("/(app)/(newLeague)/create-league")}
-        />
-        <Button
-          title="Join League"
-          onPress={() => router.push("/(app)/(newLeague)/join-league")}
-        />
+        <Text style={styles.headerTitle}>My Leagues</Text>
+        <View style={styles.headerButtons}>
+          <Button
+            title="Create"
+            onPress={() => router.push("/(app)/(newLeague)/create-league")}
+          />
+          <Button
+            title="Join"
+            onPress={() => router.push("/(app)/(newLeague)/join-league")}
+          />
+        </View>
       </View>
 
-      <FlatList
-        data={[1, 2, 3, 4, 5]}
-        renderItem={() => <Text>League</Text>}
-        keyExtractor={(item) => item.toString()}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => {}} />
-        }
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>No Leagues Yet</Text>
-            <Text style={styles.emptyText}>
-              Create your first league or join an existing one to get started!
-            </Text>
-          </View>
-        }
-      />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading your leagues...</Text>
+        </View>
+      ) : isError ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Error Loading Leagues</Text>
+          <Text style={styles.errorText}>
+            {(error as Error)?.message || "Unknown error"}
+          </Text>
+          <Button title="Try Again" onPress={() => refetch()} />
+        </View>
+      ) : (
+        <FlatList
+          data={userLeagues}
+          renderItem={renderLeague}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={() => refetch()}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[
+            styles.listContainer,
+            userLeagues.length === 0 && styles.emptyListContainer,
+          ]}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyTitle}>No Leagues Yet</Text>
+              <Text style={styles.emptyText}>
+                Create your first league or join an existing one to get started!
+              </Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 }
@@ -104,13 +149,53 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     flexDirection: "row",
-    gap: 12,
+    justifyContent: "space-between",
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#C7C7CC",
   },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1C1C1E",
+  },
+  headerButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
   listContainer: {
     paddingVertical: 16,
+  },
+  emptyListContainer: {
     flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: "#8E8E93",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FF3B30",
+    marginBottom: 8,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#8E8E93",
+    textAlign: "center",
+    marginBottom: 16,
   },
   leagueCard: {
     backgroundColor: "#fff",

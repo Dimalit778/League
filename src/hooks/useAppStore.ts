@@ -1,64 +1,46 @@
-// import { create } from "zustand";
-// import { getUserLeagues } from "../services/usersService";
-// import { AppState } from "../types";
-// import { League } from "../types/database.types";
+import { create } from "zustand";
+import { AppState } from "../types";
+import { League } from "../types/database.types";
 
-// interface AppStore extends AppState {
-//   // Actions
-//   setSelectedLeague: (league: League | null) => void;
-//   loadUserLeagues: (userId: string) => Promise<void>;
-//   addLeague: (league: League) => void;
-//   removeLeague: (leagueId: string) => void;
-//   updateLeague: (leagueId: string, updates: Partial<League>) => void;
-// }
+interface AppStore extends AppState {
+  // Actions
+  setSelectedLeague: (league: League | null) => void;
+  addLeague: (league: League) => void;
+  removeLeague: (leagueId: string) => void;
+  updateLeague: (leagueId: string, updates: Partial<League>) => void;
+}
 
-// export const useAppStore = create<AppStore>((set, get) => ({
-//   selectedLeague: null,
-//   userLeagues: [],
-//   loading: false,
+export const useAppStore = create<AppStore>((set, get) => ({
+  selectedLeague: null,
+  userLeagues: null,
+  loading: false,
 
-//   setSelectedLeague: (league: League | null) => {
-//     set({ selectedLeague: league });
-//   },
+  setSelectedLeague: (league: League | null) => {
+    set({ selectedLeague: league });
+  },
 
-//   loadUserLeagues: async (userId: string) => {
-//     try {
-//       set({ loading: true });
-//       const { data, error } = await getUserLeagues(userId, supabase);
+  addLeague: (league: League) => {
+    const { userLeagues } = get();
+    set({ userLeagues: userLeagues ? [...userLeagues, league] : [league] });
+  },
 
-//       if (error) {
-//         console.error("Error loading user leagues:", error);
-//         return;
-//       }
+  removeLeague: (leagueId: string) => {
+    const { userLeagues } = get();
+    if (!userLeagues) return;
+    
+    set({
+      userLeagues: userLeagues.filter((league) => league.id !== leagueId),
+    });
+  },
 
-//       const leagues =
-//         data?.map((member) => member.league).filter(Boolean) || [];
-//       set({ userLeagues: leagues as League[] });
-//     } catch (error) {
-//       console.error("Error loading user leagues:", error);
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
-
-//   addLeague: (league: League) => {
-//     const { userLeagues } = get();
-//     set({ userLeagues: [...userLeagues, league] });
-//   },
-
-//   removeLeague: (leagueId: string) => {
-//     const { userLeagues } = get();
-//     set({
-//       userLeagues: userLeagues.filter((league) => league.id !== leagueId),
-//     });
-//   },
-
-//   updateLeague: (leagueId: string, updates: Partial<League>) => {
-//     const { userLeagues } = get();
-//     set({
-//       userLeagues: userLeagues.map((league) =>
-//         league.id === leagueId ? { ...league, ...updates } : league
-//       ),
-//     });
-//   },
-// }));
+  updateLeague: (leagueId: string, updates: Partial<League>) => {
+    const { userLeagues } = get();
+    if (!userLeagues) return;
+    
+    set({
+      userLeagues: userLeagues.map((league) =>
+        league.id === leagueId ? { ...league, ...updates } : league
+      ),
+    });
+  },
+}));
