@@ -1,7 +1,9 @@
-import ButtonC from "@/components/ui/ButtonC";
+import { Button } from "@/components/Button";
 import ImageC from "@/components/ui/ImageC";
-import { useCreateLeague } from "@/hooks/useQueries";
 import { supabase } from "@/lib/supabase";
+import useAuthStore from "@/services/store/AuthStore";
+import { TCompetition } from "@/types/database.types";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -12,18 +14,23 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-interface Competition {
-  id: number;
-  name: string;
-  country: string;
-  flag: string;
-  logo: string;
-}
+
+const generateRandomCode = (length: number): string => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 export default function CreateLeague() {
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const { user } = useAuthStore();
+
+  const [competitions, setCompetitions] = useState<TCompetition[]>([]);
   const [leagueName, setLeagueName] = useState("");
   const [selectedCompetition, setSelectedCompetition] =
-    useState<Competition | null>(null);
+    useState<TCompetition | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const getCompetitions = async () => {
@@ -31,7 +38,6 @@ export default function CreateLeague() {
     if (error) {
       console.error(error);
     } else {
-      console.log("data", JSON.stringify(data, null, 2));
       setCompetitions(data || []);
     }
   };
@@ -40,10 +46,39 @@ export default function CreateLeague() {
     getCompetitions();
   }, []);
 
-  // Use the React Query mutation hook
-  const createLeagueMutation = useCreateLeague();
+  const handleCreateLeague = async () => {
+    if (!leagueName || !selectedCompetition) {
+      setError("Please fill in all fields");
+      return;
+    }
 
-  const handleCreateLeague = async () => {};
+    console.log("leagueName", leagueName);
+    console.log("league_id", selectedCompetition.id);
+    console.log("owner_id", user?.id);
+
+    if (!user?.id) {
+      setError("You must be logged in to create a league");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("leagues")
+      .insert({
+        name: leagueName,
+        join_code: generateRandomCode(6),
+        owner_id: user.id,
+        league_id: selectedCompetition.id,
+      })
+      .select()
+      .single();
+    if (error) {
+      console.log("error", error);
+      setError(error.message);
+    } else {
+      console.log("data created", data);
+      router.push("/(app)/(tabs)");
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -104,7 +139,7 @@ export default function CreateLeague() {
                   <Text className="text-lg text-center font-bold text-gray-900">
                     {comp.name}
                   </Text>
-                  <Text className="text-sm text-gray-600">{comp.country}</Text>
+                  <Text className="text-sm text-gray-600">{comp.name}</Text>
                 </View>
 
                 <ImageC
@@ -145,13 +180,13 @@ export default function CreateLeague() {
         )}
 
         {/* Create Button */}
-        <View className="mb-8">
-          <ButtonC
-            title="Create League"
-            onPress={handleCreateLeague}
-            loading={createLeagueMutation.isPending}
-          />
-        </View>
+        <Button
+          title="Create League"
+          onPress={handleCreateLeague}
+          variant="primary"
+          size="large"
+          loading={false}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

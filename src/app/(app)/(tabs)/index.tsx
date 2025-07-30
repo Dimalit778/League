@@ -1,260 +1,167 @@
-import { useAppStore } from "@/hooks/useAppStore";
-
-import { useUserLeagues } from "@/hooks/useQueries";
-import useAuthStore from "@/store/AuthStore";
-import { League } from "@/types/database.types";
-import { useRouter } from "expo-router";
-import {
-  ActivityIndicator,
-  Button,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Button } from "@/components/Button";
+import ImageC from "@/components/ui/ImageC";
+import { supabase } from "@/lib/supabase";
+import useAuthStore from "@/services/store/AuthStore";
+import { TCompetition, TLeague } from "@/types/database.types";
+import { router, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 interface LeagueCardProps {
-  league: League;
+  league: TLeague;
   isSelected: boolean;
   onSelect: () => void;
+  isPrimary: boolean;
 }
 
-const LeagueCard = ({ league, isSelected, onSelect }: LeagueCardProps) => {
-  const getLeagueDisplayName = (league: string) => {
-    const names = {
-      premier_league: "Premier League",
-      la_liga: "La Liga",
-      bundesliga: "Bundesliga",
-      serie_a: "Serie A",
-      ligue_1: "Ligue 1",
-    };
-    return names[league as keyof typeof names] || league;
-  };
-
+const LeagueCard = ({
+  item,
+  isPrimary = false,
+}: {
+  item: TLeague & { competition: TCompetition };
+  isPrimary?: boolean;
+}) => {
   return (
     <TouchableOpacity
-      style={[styles.leagueCard, isSelected && styles.selectedCard]}
-      onPress={onSelect}
+      className="p-4 rounded-lg bg-white mb-3 shadow-sm border border-gray-100"
+      onPress={() => {}}
     >
-      <View style={styles.cardHeader}>
-        <Text style={styles.leagueName}>{league.name}</Text>
-        {isSelected && <Text style={styles.selectedIndicator}>Selected</Text>}
+      {/* Header with logo and name */}
+      <View className="flex-row justify-between items-center mb-3">
+        <View className="flex-row items-center space-x-3">
+          <ImageC
+            source={{ uri: item.competition.logo }}
+            className="w-10 h-10 rounded-full"
+            width={40}
+            height={40}
+            resizeMode="contain"
+          />
+          <View>
+            <Text className="text-lg font-bold text-gray-800">{item.name}</Text>
+            <Text className="text-sm text-gray-500">
+              {item.competition.name}
+            </Text>
+          </View>
+        </View>
+
+        {/* Primary badge - only show if isPrimary is true */}
+        {isPrimary && (
+          <View className="bg-green-100 px-3 py-1 rounded-full">
+            <Text className="text-sm font-medium text-green-700">Primary</Text>
+          </View>
+        )}
       </View>
-      <Text style={styles.leagueType}>
-        {getLeagueDisplayName(league.selected_league)}
-      </Text>
-      <Text style={styles.inviteCode}>Code: {league.invite_code}</Text>
+
+      {/* League info */}
+      <View className="flex-row justify-between items-center pt-2 border-t border-gray-100">
+        <View>
+          <Text className="text-xs text-gray-500">Join Code</Text>
+          <Text className="text-sm font-mono font-medium">
+            {item.join_code}
+          </Text>
+        </View>
+
+        <View>
+          <Text className="text-xs text-gray-500">Created</Text>
+          <Text className="text-sm">
+            {new Date(item.created_at).toLocaleDateString()}
+          </Text>
+        </View>
+
+        <View className="bg-blue-500 px-3 py-1 rounded-full">
+          <Text className="text-white text-sm font-medium">Join</Text>
+        </View>
+      </View>
     </TouchableOpacity>
+  );
+};
+const Header = () => {
+  return (
+    <View className="flex-row justify-between items-center px-4 pt-6 pb-4">
+      <Button
+        title="Create League"
+        variant="primary"
+        size="small"
+        onPress={() => router.push("/(app)/(newLeague)/create-league")}
+      />
+      <Button
+        title="Join League"
+        variant="secondary"
+        size="small"
+        onPress={() => router.push("/(app)/(newLeague)/join-league")}
+      />
+    </View>
   );
 };
 
 export default function MyLeagues() {
+  const [leagues, setLeagues] = useState<
+    (TLeague & { competition: TCompetition })[]
+  >([]);
+  const getLeagues = async () => {
+    const { data, error } = await supabase
+      .from("leagues")
+      .select(
+        `
+        *,
+        competition:competitions(*)
+      `
+      )
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error(error);
+    } else {
+      console.log("data", data);
+      setLeagues(data as (TLeague & { competition: TCompetition })[]);
+    }
+  };
+
+  useEffect(() => {
+    getLeagues();
+  }, []);
+
   const router = useRouter();
   const { user } = useAuthStore();
 
-  const { selectedLeague, setSelectedLeague } = useAppStore();
-
-  // Use our React Query hook to fetch user leagues
-  const {
-    data: userLeaguesData,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useUserLeagues(user?.id || "");
-
-  const handleLeagueSelect = (league: League) => {
-    setSelectedLeague(league);
-  };
-
-  const renderLeague = ({ item }: { item: League }) => (
-    <LeagueCard
-      league={item}
-      isSelected={selectedLeague?.id === item.id}
-      onSelect={() => handleLeagueSelect(item)}
-    />
-  );
-
-  // Extract leagues from the response
-  const userLeagues =
-    userLeaguesData?.data?.map((member) => member.league) || [];
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Leagues</Text>
-        <View style={styles.headerButtons}>
-          <Button
-            title="Create"
-            onPress={() => router.push("/(app)/(newLeague)/create-league")}
-          />
-          <Button
-            title="Join"
-            onPress={() => router.push("/(app)/(newLeague)/join-league")}
-          />
-        </View>
+    <View className="flex-1 bg-gray-50">
+      <Header />
+      <View className="px-4 pt-6 pb-4">
+        <Text className="text-2xl font-bold text-gray-900 mb-2">
+          My Leagues
+        </Text>
+        <Text className="text-gray-600">
+          Manage your football prediction leagues
+        </Text>
       </View>
-
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Loading your leagues...</Text>
-        </View>
-      ) : isError ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Error Loading Leagues</Text>
-          <Text style={styles.errorText}>
-            {(error as Error)?.message || "Unknown error"}
-          </Text>
-          <Button title="Try Again" onPress={() => refetch()} />
-        </View>
-      ) : (
+      <View className="flex-1 px-4">
         <FlatList
-          data={userLeagues}
-          renderItem={renderLeague}
-          keyExtractor={(item) => item.id}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={() => refetch()}
-            />
-          }
+          data={leagues}
+          contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.listContainer,
-            userLeagues.length === 0 && styles.emptyListContainer,
-          ]}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyTitle}>No Leagues Yet</Text>
-              <Text style={styles.emptyText}>
-                Create your first league or join an existing one to get started!
+          ListEmptyComponent={() => (
+            <View className="flex-1 items-center justify-center py-10">
+              <Text className="text-gray-500 text-lg mb-4">
+                No leagues found
               </Text>
+              <Text className="text-gray-400 text-center mb-6">
+                Create your first league or join an existing one to get started
+              </Text>
+              <Button
+                title="Create League"
+                variant="primary"
+                onPress={() => router.push("/(app)/(newLeague)/create-league")}
+              />
             </View>
-          }
+          )}
+          renderItem={({ item, index }) => (
+            <LeagueCard
+              item={item}
+              isPrimary={index === 0} // Just for demo, first league is primary
+            />
+          )}
         />
-      )}
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  header: {
-    backgroundColor: "#fff",
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#C7C7CC",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#1C1C1E",
-  },
-  headerButtons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  listContainer: {
-    paddingVertical: 16,
-  },
-  emptyListContainer: {
-    flexGrow: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: "#8E8E93",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FF3B30",
-    marginBottom: 8,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#8E8E93",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  leagueCard: {
-    backgroundColor: "#fff",
-    margin: 16,
-    marginVertical: 8,
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  selectedCard: {
-    borderWidth: 2,
-    borderColor: "#007AFF",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  leagueName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1C1C1E",
-  },
-  selectedIndicator: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "600",
-  },
-  leagueType: {
-    fontSize: 16,
-    color: "#8E8E93",
-    marginBottom: 4,
-  },
-  inviteCode: {
-    fontSize: 14,
-    color: "#8E8E93",
-    fontFamily: "monospace",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  emptyTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1C1C1E",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#8E8E93",
-    textAlign: "center",
-  },
-});

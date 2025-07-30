@@ -1,4 +1,4 @@
-import useAuthStore from "@/store/AuthStore";
+import useAuthStore from "@/services/store/AuthStore";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,23 +21,11 @@ export default function SignIn() {
   const [localError, setLocalError] = useState("");
 
   const handleSignIn = async () => {
-    // Clear any previous errors
-    setLocalError("");
-
-    // Basic validation
-    if (!email.trim()) {
-      setLocalError("Email is required");
-      return;
-    }
-    if (!password) {
-      setLocalError("Password is required");
-      return;
-    }
-
-    const result = await login(email.trim(), password);
-
-    if (!result) {
-      setLocalError("Invalid email or password");
+    console.log("handleSignIn----------");
+    const { data, error } = await login(email.trim(), password);
+    console.log("data----------", JSON.stringify(data, null, 2));
+    if (error) {
+      setLocalError(error.message);
     }
   };
 

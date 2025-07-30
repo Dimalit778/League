@@ -1,66 +1,95 @@
-
-export interface User {
-  id: string;
+export interface TUser {
+  id: any;
+  name: string;
+  avatar_url: string;
   email: string;
-  name: string;
-  image_url: string;
-  subscription_tier: "free" | "premium";
-  created_at: string;
+  subscription: boolean;
+  primary_league_id: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface League {
+export interface TLeague {
   id: string;
   name: string;
-  selected_league: string;
-  admin_id: string;
-  invite_code: string;
-  max_members: number;
-  created_at: string;
-  admin?: User;
-}
-
-export interface LeagueMember {
+  owner_id: string;
+  join_code: string;
   league_id: string;
-  user_id: string;
-  nickname: string;
-  joined_at: string;
-  user?: User;
-  league?: League;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface Match {
-  id: number;
-  home_team: string;
-  away_team: string;
-  league: string;
-  kickoff: string;
-  status: "scheduled" | "live" | "finished";
-  home_score?: number;
-  away_score?: number;
-  updated_at: string;
+export interface TLeagueMember {
+  league_id: any;
+  user_id: any;
+  joined_at: Date;
 }
 
-export interface Prediction {
+
+export interface TCompetition {
   id: string;
-  league_id: string;
-  user_id: string;
-  match_id: number;
-  home_score: number;
-  away_score: number;
-  points: number;
-  created_at: string;
-  match?: Match;
-  user?: User;
+  name: string;
+  code: string;
+  type: string;
+  logo: string;
+  area: string;
+  flag: string;
+  start_date: string;
+  end_date: string;
+  created_at: Date;
+  updated_at: Date;
+}
+export interface TMatch {
+  id: string;
+  competition_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  matchday: number;
+  utc_date: Date;
+  status: string;
+  stage: string;
+  group_name: string;
+  last_updated: Date;
+  full_time_home_score: number;
+  full_time_away_score: number;
+  half_time_home_score: number;
+  half_time_away_score: number;
+  winner: string;
+  duration: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface LeaderboardEntry {
-  league_id: string;
-  user_id: string;
-  display_name: string;
-  nickname: string;
-  total_points: number;
-  total_predictions: number;
-  exact_scores: number;
-  average_points: number;
-  position?: number;
+export interface TTeam {
+  id: string;
+  name: string;
+  short_name: string;
+  tla: string;
+  crest_url: string;
+  created_at: Date;
+  updated_at: Date;
 }
+// export interface TPrediction {
+//   id: string;
+//   league_id: string;
+//   user_id: string;
+//   match_id: number;
+//   home_score: number;
+//   away_score: number;
+//   points: number;
+//   created_at: string;
+//   match?: TMatch;
+//   user?: TUser;
+// }
+
+// export interface TLeaderboardEntry {
+//   league_id: string;
+//   user_id: string;
+//   display_name: string;
+//   nickname: string;
+//   total_points: number;
+//   total_predictions: number;
+//   exact_scores: number;
+//   average_points: number;
+//   position?: number;
+// }

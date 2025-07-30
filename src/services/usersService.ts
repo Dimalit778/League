@@ -29,6 +29,37 @@ export const getUserLeagues = async (
 
   return { data, error };
 };
+
+// Get user's primary league
+export const getUserPrimaryLeague = async (
+  userId: string,
+  supabase: SupabaseClient
+) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("primary_league_id, leagues(*)")
+    .eq("id", userId)
+    .single();
+
+  return { data, error };
+};
+
+// Set user's primary league
+export const setPrimaryLeague = async (
+  userId: string,
+  leagueId: string,
+  supabase: SupabaseClient
+) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ primary_league_id: leagueId })
+    .eq("id", userId)
+    .select("primary_league_id")
+    .single();
+
+  return { data, error };
+};
+
 export const createPrediction = async (
   predictionData: any,
   supabase: SupabaseClient

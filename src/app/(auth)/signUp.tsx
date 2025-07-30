@@ -1,4 +1,4 @@
-import useAuthStore from "@/store/AuthStore";
+import useAuthStore from "@/services/store/AuthStore";
 import { Link } from "expo-router";
 import * as React from "react";
 import {

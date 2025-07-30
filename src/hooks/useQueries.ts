@@ -11,9 +11,7 @@ import {
   getUserPredictions,
   getUserProfile
 } from "@/services/usersService";
-import {
-  Prediction
-} from "@/types/database.types";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Query keys for better organization and type safety
@@ -112,15 +110,15 @@ export const useCreateLeague = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (leagueData: {
+    mutationFn: (leagueData: { 
       name: string;
       selected_league: string;
-      admin_id: string;
+      owner_id: string;
     }) => createLeague(leagueData),
     onSuccess: (_, variables) => {
       // Invalidate user leagues query
       queryClient.invalidateQueries({
-        queryKey: queryKeys.userLeagues(variables.admin_id),
+          queryKey: queryKeys.userLeagues(variables.owner_id),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.allLeagues,

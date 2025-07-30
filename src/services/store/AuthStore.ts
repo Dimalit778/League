@@ -1,16 +1,16 @@
 import { supabase } from "@/lib/supabase";
-import { User } from "@/types/database.types";
+import { TUser } from "@/types/database.types";
 import { AuthError, Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { create } from "zustand";
 
 interface AuthState {
-  user: User | null;
+  user: TUser | null;
   session: Session | null;
-  loading: boolean; 
+  loading: boolean;   
   error: string | null;
   initializeSession: () => Promise<void>;
   setSession: (session: Session | null) => void;
-  login: (email: string, password: string) => Promise<SupabaseUser | AuthError | null>;
+  login: (email: string, password: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>; 
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<SupabaseUser | AuthError | null>;
   logout: () => Promise<void>;
 }
@@ -38,13 +38,13 @@ const useAuthStore = create<AuthState>((set) => ({
 
          });
         const { data: userData, error: userError } = await supabase
-          .from("users")
+          .from("profiles")
           .select("*")
-          .eq("user_id", data.claims.sub)
+          .eq("id", data.claims.sub)
           .single();
 
         if (userError) return Promise.reject(userError);
-        set({ user: userData as unknown as User });
+        set({ user: userData as unknown as TUser });
       } else {  
         set({ session: null, user: null });
       }
@@ -58,7 +58,7 @@ const useAuthStore = create<AuthState>((set) => ({
   },
 
 
-  login: async (email, password) => {
+  login: async (email: string, password: string) => {
     set({ loading: true, error: null });
     try {
       if (!email) return Promise.reject("Email is required");
@@ -68,15 +68,15 @@ const useAuthStore = create<AuthState>((set) => ({
       email,
       password,
     });
-      if (error) return Promise.reject(error);
+      if (error) return { data: null, error };
 
       set({ session: data.session});
-      return Promise.resolve(data.user);
+      return { data: data.user, error: null };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
       set({ error: errorMessage, loading: false });
-      return Promise.reject(errorMessage);
+      return { data: null, error: error as AuthError };
     } finally {
       set({ loading: false });
     }

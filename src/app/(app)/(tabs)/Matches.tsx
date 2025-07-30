@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import FixtureList from "@/components/FixtureList";
+import MatchesList from "@/components/MatchesList";
+import { supabase } from "@/lib/supabase";
+import { TMatch } from "@/types/database.types";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
 
 const fixtures = [
   { fixtureNumber: "F21", date: "14/02" },
@@ -41,75 +45,43 @@ const matchesData = {
 };
 
 export default function MatchesPage() {
-  const [selectedFixture, setSelectedFixture] = useState("F24");
+  const [allMatches, setAllMatches] = useState<TMatch[]>([]);
 
-  const handleFixturePress = (fixtureNumber: string) => {
-    setSelectedFixture(fixtureNumber);
+  const getMatches = async () => {
+    const { data, error } = await supabase
+      .from("matches")
+      .select(
+        `
+        *,
+        home_team:teams!matches_home_team_id_fkey(*),
+        away_team:teams!matches_away_team_id_fkey(*)
+      `
+      )
+      .eq("competition_id", "2014")
+      .eq("matchday", 6)
+      .order("utc_date", { ascending: true });
+    if (error) {
+      console.log("error", JSON.stringify(error, null, 2));
+      console.error(error);
+    } else {
+      console.log("data", JSON.stringify(data, null, 2));
+      setAllMatches(data);
+    }
   };
 
-  const matches =
-    matchesData[selectedFixture as keyof typeof matchesData] || [];
+  useEffect(() => {
+    getMatches();
+  }, []);
 
   return (
     <View className="flex-1 bg-black p-4">
-      {/* Fixture Selector */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: "center" }}
-      >
-        {fixtures.map((fixture) => (
-          <TouchableOpacity
-            key={fixture.fixtureNumber}
-            onPress={() => handleFixturePress(fixture.fixtureNumber)}
-            className={`mx-2 px-4 py-2 rounded-full ${
-              selectedFixture === fixture.fixtureNumber
-                ? "bg-green-500"
-                : "bg-gray-800"
-            }`}
-            style={{
-              borderRadius: 25,
-              width: 50,
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text className="text-white font-semibold">
-              {fixture.fixtureNumber}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
+      <FixtureList
+        fixtures={fixtures}
+        selectedFixture={""}
+        handleFixturePress={() => {}}
+      />
       {/* Matches Table */}
-      <View className="mt-4">
-        {matches.length === 0 ? (
-          <Text className="text-white text-center mt-4">
-            No matches for this fixture
-          </Text>
-        ) : (
-          matches.map(
-            (
-              match: { homeTeam: string; score: string; awayTeam: string },
-              index: number
-            ) => (
-              <View
-                key={index}
-                className="flex-row justify-center items-center bg-gray-800 rounded px-4 py-3 mb-2 mx-2"
-              >
-                <Text className="flex-1 text-white text-center">
-                  {match.homeTeam}
-                </Text>
-                <Text className="text-white mx-2">{match.score}</Text>
-                <Text className="flex-1 text-white text-center">
-                  {match.awayTeam}
-                </Text>
-              </View>
-            )
-          )
-        )}
-      </View>
+      <MatchesList allMatches={allMatches} />
     </View>
   );
 }
