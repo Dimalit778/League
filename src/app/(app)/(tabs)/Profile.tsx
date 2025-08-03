@@ -1,3 +1,4 @@
+import useAuthStore from "@/services/store/AuthStore";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -12,24 +13,11 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const user = {
-    first_name: "John",
-    last_name: "Doe",
-    email: "john.doe@example.com",
-    subscription_tier: "premium",
-  };
-  const signOut = async () => {
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-    ]);
-  };
+  const { user, logout } = useAuthStore();
+
   const loading = false;
   const [isEditing, setIsEditing] = useState(false);
-  const [firstName, setFirstName] = useState(user?.first_name || "");
-  const [lastName, setLastName] = useState(user?.last_name || "");
+  const [fullName, setFullName] = useState(user?.name || "");
 
   const handleSignOut = async () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -41,7 +29,7 @@ export default function Profile() {
         text: "Sign Out",
         style: "destructive",
         onPress: async () => {
-          const result = await signOut();
+          const result = await logout();
           // if (!result.success) {
           //   Alert.alert("Error", result.error || "Failed to sign out");
           // }
@@ -52,8 +40,7 @@ export default function Profile() {
 
   // --- Cancel edit ---
   const handleCancelEdit = () => {
-    setFirstName(user?.first_name || "");
-    setLastName(user?.last_name || "");
+    setFullName(user?.name || "");
     setIsEditing(false);
   };
 
@@ -74,10 +61,10 @@ export default function Profile() {
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
             <Text style={styles.avatarText}>
-              {(user?.first_name || user?.email || "U").charAt(0).toUpperCase()}
+              {(user?.name || user?.email || "U").charAt(0).toUpperCase()}
             </Text>
           </View>
-          <Text style={styles.name}>{user?.first_name || "User"}</Text>
+
           <Text style={styles.email}>{user?.email}</Text>
         </View>
 
@@ -102,13 +89,13 @@ export default function Profile() {
                 {isEditing ? (
                   <TextInput
                     style={styles.input}
-                    value={firstName}
-                    onChangeText={setFirstName}
+                    value={fullName}
+                    onChangeText={setFullName}
                     placeholder="Enter first name"
                   />
                 ) : (
                   <Text style={styles.infoValue}>
-                    {user?.first_name || "Not set"}
+                    {user?.name || "Not set"}
                   </Text>
                 )}
               </View>
@@ -116,9 +103,7 @@ export default function Profile() {
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Last Name</Text>
 
-                <Text style={styles.infoValue}>
-                  {user?.last_name || "Not set"}
-                </Text>
+                <Text style={styles.infoValue}>{user?.name || "Not set"}</Text>
               </View>
 
               <View style={styles.infoRow}>
@@ -130,7 +115,8 @@ export default function Profile() {
                 <Text style={styles.infoLabel}>Subscription</Text>
                 <View style={styles.subscriptionBadge}>
                   <Text style={styles.subscriptionText}>
-                    {user?.subscription_tier === "premium" ? "Premium" : "Free"}
+                    {user?.subscription ? "Premium" : "Free"}{" "}
+                    {user?.subscription}
                   </Text>
                 </View>
               </View>
@@ -266,13 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.05)",
     elevation: 1,
   },
   sectionHeader: {

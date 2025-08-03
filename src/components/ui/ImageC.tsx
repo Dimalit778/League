@@ -10,13 +10,13 @@ interface ImageCProps {
   height?: number;
 }
 
-export default function ImageC({
+const ImageC = ({
   source,
   className,
   resizeMode = "cover",
   width,
   height,
-}: ImageCProps) {
+}: ImageCProps) => {
   // Convert resizeMode to contentFit for ExpoImage
   const getContentFit = (): ImageContentFit => {
     switch (resizeMode) {
@@ -63,4 +63,6 @@ export default function ImageC({
       style={{ width, height }}
     />
   );
-}
+};
+
+export default ImageC;

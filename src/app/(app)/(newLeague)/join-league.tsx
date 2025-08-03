@@ -1,9 +1,6 @@
-import LeagueCard from "@/components/LeagueCard";
-import ButtonC from "@/components/ui/ButtonC";
-
-import { useJoinLeague } from "@/hooks/useQueries";
-import { supabase } from "@/lib/supabase";
-import { League } from "@/types/database.types";
+import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
+import { Button } from "@/components/ui";
+import { useLeagueService } from "@/services/leagueService";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -17,112 +14,37 @@ import {
 } from "react-native";
 
 export default function JoinLeague() {
-  const user = {
-    id: "123",
-    nickname: "John Doe",
-    total_predictions: 10,
-    total_points: 100,
-    exact_scores: 5,
-  };
+  const { findLeagueByJoinCode, joinLeague } = useLeagueService();
   const [inviteCode, setInviteCode] = useState("");
-  const [nickname, setNickname] = useState("");
   const [searchingLeague, setSearchingLeague] = useState(false);
-  const [foundLeague, setFoundLeague] = useState<League | null>(null);
+  const [foundLeague, setFoundLeague] = useState<any | null>(null);
 
-  // Use the React Query mutation hook
-  const joinLeagueMutation = useJoinLeague();
-
-  const searchLeagueByInviteCode = async (code: string) => {
-    if (!code.trim() || code.length < 6) {
-      setFoundLeague(null);
-      return;
-    }
-
-    setSearchingLeague(true);
-    try {
-      const { data, error } = await supabase
-        .from("leagues")
-        .select("*")
-        .eq("invite_code", code.toUpperCase())
-        .single();
-
-      if (error || !data) {
-        setFoundLeague(null);
-        return;
-      }
-
-      setFoundLeague(data);
-    } catch (error) {
-      console.error("Error searching league:", error);
-      setFoundLeague(null);
-    } finally {
-      setSearchingLeague(false);
-    }
-  };
-
-  const handleInviteCodeChange = (code: string) => {
+  const handleInviteCodeChange = async (code: string) => {
     const formattedCode = code.toUpperCase().replace(/[^A-Z0-9]/g, "");
     setInviteCode(formattedCode);
-
     if (formattedCode.length === 6) {
-      searchLeagueByInviteCode(formattedCode);
+      const { data, error } = await findLeagueByJoinCode(formattedCode);
+      if (error) {
+        Alert.alert("Error", "League not found with this invite code");
+        return;
+      }
+      setFoundLeague(data);
     } else {
       setFoundLeague(null);
     }
   };
-
-  const handleJoinLeague = async () => {
-    if (!inviteCode.trim()) {
-      Alert.alert("Error", "Please enter an invite code");
-      return;
-    }
-
-    if (!nickname.trim()) {
-      Alert.alert("Error", "Please enter a nickname");
-      return;
-    }
-
-    if (!user?.id) {
-      Alert.alert("Error", "You must be logged in to join a league");
-      return;
-    }
-
+  const onClickJoinLeague = async () => {
     if (!foundLeague) {
       Alert.alert("Error", "League not found with this invite code");
       return;
     }
-
-    try {
-      // Use the mutation hook to join the league
-      const result = await joinLeagueMutation.mutateAsync({
-        leagueId: foundLeague.id,
-        userId: user.id,
-        nickname: nickname.trim(),
-      });
-
-      if (result.error) {
-        if (result.error.message?.includes("duplicate")) {
-          Alert.alert("Error", "You are already a member of this league");
-        } else {
-          Alert.alert("Error", result.error.message || "Failed to join league");
-        }
-        return;
-      }
-
-      Alert.alert(
-        "Success!",
-        `You have successfully joined "${foundLeague.name}"!`,
-        [
-          {
-            text: "OK",
-            onPress: () => router.replace("/(app)/(tabs)"),
-          },
-        ]
-      );
-    } catch (error) {
-      Alert.alert("Error", "An unexpected error occurred");
-      console.error("Join league error:", error);
+    const { data, error } = await joinLeague(foundLeague?.id as string);
+    if (error) {
+      Alert.alert("Error", "Failed to join league");
+      return;
     }
+    Alert.alert("Success", "You have successfully joined the league");
+    router.replace("/(app)/(tabs)");
   };
 
   return (
@@ -134,7 +56,6 @@ export default function JoinLeague() {
         <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Join League
         </Text>
-
         {/* Invite Code Input */}
         <View className="mb-6">
           <Text className="text-lg font-semibold text-gray-700 mb-2">
@@ -144,7 +65,7 @@ export default function JoinLeague() {
             value={inviteCode}
             onChangeText={handleInviteCodeChange}
             placeholder="Enter 6-digit invite code"
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base text-center text-lg tracking-widest font-mono"
+            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3  text-center text-lg tracking-widest font-mono"
             maxLength={6}
             autoCapitalize="characters"
             autoCorrect={false}
@@ -166,13 +87,14 @@ export default function JoinLeague() {
             <Text className="text-lg font-semibold text-gray-700 mb-3">
               League Found
             </Text>
-            <LeagueCard
-              leagueId={foundLeague.selected_league}
+            <PreviewLeagueCard
               leagueName={foundLeague.name}
-              maxMembers={foundLeague.max_members}
-              showDetails={false}
-              className="border-green-200 bg-green-50"
+              competitionName={foundLeague.competitions.name}
+              competitionFlag={foundLeague.competitions.flag}
+              competitionLogo={foundLeague.competitions.logo}
+              competitionCountry={foundLeague.competitions.country}
             />
+            <Button title="Join League" onPress={() => onClickJoinLeague()} />
           </View>
         )}
 
@@ -183,35 +105,6 @@ export default function JoinLeague() {
             </Text>
           </View>
         )}
-
-        {/* Nickname Input */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-700 mb-2">
-            Your Nickname
-          </Text>
-          <TextInput
-            value={nickname}
-            onChangeText={setNickname}
-            placeholder="Enter your nickname for this league"
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base"
-            maxLength={20}
-          />
-          <Text className="text-sm text-gray-500 mt-1">
-            This is how other members will see you in the league
-          </Text>
-        </View>
-
-        {/* Join Button */}
-        <View className="mb-8">
-          <ButtonC
-            title="Join League"
-            onPress={handleJoinLeague}
-            loading={joinLeagueMutation.isPending}
-            style={{
-              opacity: !foundLeague || !nickname.trim() ? 0.5 : 1,
-            }}
-          />
-        </View>
 
         {/* How it Works */}
         <View className="mb-6 p-4 bg-blue-50 rounded-xl">

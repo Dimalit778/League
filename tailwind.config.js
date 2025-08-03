@@ -10,7 +10,7 @@ module.exports = {
         dark: "#1A1A1A",
         surface: "#242424",
         textPrimary: "#F7F7F7",
-        textSecondary: "#A0A0A0",
+        textSecondary: "#F7F7F7",
         border: "#333333",
       },
     },

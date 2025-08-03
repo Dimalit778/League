@@ -1,53 +1,45 @@
 import { supabase } from "@/lib/supabase";
 import { SupabaseClient } from "@supabase/supabase-js";
+import useAuthStore from "./store/AuthStore";
 
-const FOOTBALL_API_KEY = process.env.EXPO_PUBLIC_FOOTBALL_API_KEY;
+// F6HIC-R
+const useLeagueService = () => {
+  const {user} = useAuthStore()
 
+  
 
-const generateRandomCode = (length: number): string => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-};
-
-export const createLeague = async (leagueInput: {
+// Done - Create League
+const createLeague = async (newLeague: {
   name: string;
-  selected_league: string;
-  owner_id: string;
+  join_code: string;
+  competition_id: number;
 }) => {
   try {
-    // Generate join code
-    const join_code = generateRandomCode(6);
-    console.log("join_code", join_code);
-    console.log("leagueInput", leagueInput);
-    
-    const { data: newLeague, error: newLeagueError } = await supabase
-      .from("leagues")
-      .insert({
-        name: leagueInput.name,
-        owner_id: leagueInput.owner_id,
-        join_code: join_code,
-        league_id: leagueInput.selected_league,
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('create_league', {
+      p_league_name: newLeague.name,
+      p_join_code: newLeague.join_code,
+      p_competition_id: newLeague.competition_id,
+      p_owner_id: user?.id as string
+    });
 
-    if (newLeagueError) {
-      console.error("League creation error:", newLeagueError);
-      return { data: null, error: newLeagueError };
+    if (error) {
+      console.error("League creation error:", error);
+      return { data: null, error };
+    }
+
+    if (!data.success) {
+      console.error("League creation failed:", data.error);
+      return { data: null, error: { message: data.error } };
     }
 
     return {
       data: {
-        success: true,
-        league_id: newLeague.id,
-        join_code: newLeague.join_code,
+        league: { id: data.league_id },
+        success: true
       },
       error: null,
     };
+
   } catch (error) {
     console.error("Create league error:", error);
     return {
@@ -56,29 +48,103 @@ export const createLeague = async (leagueInput: {
     };
   }
 };
+const setPrimaryLeague = async (leagueId: string) => {
+  const { data, error } = await supabase.rpc('update_user_primary_league', {
+    p_league_id: leagueId,
+    p_user_id: user?.id as string
+  });
+  return { data, error };
+};
+// Done - Get My Leagues
+const getMyLeagues = async () => {
+  try {
+         const { data, error } = await supabase
+      .from('league_members')
+      .select(`
+        joined_at,
+        primary_league,
+        league:leagues!inner (
+          id,
+          name,
+          join_code,
+          owner_id, 
+          max_members,
+          createdAt,
+          competitions!inner (
+            id,
+            name,
+            logo,
+            flag
+          )
+        )
+      `)
+      .eq('user_id', user?.id as string)
+      .order('primary_league', { ascending: false });
 
+    if (error ) {
+      return { data: null, error };
+    }
+    type LeagueData = {
+      joined_at: string;
+      primary_league: boolean;
+      league: {
+        name: string;
+        join_code: string;
+        owner_id: string;
+        max_members: number;
+        competitions: {
+          name: string;
+          logo: string;
+          flag: string;
+        };
+      };
+    };
+    
+    const transformedData = (data as unknown as LeagueData[]).map(item => ({
+      name: item.league?.name,
+      join_code: item.league?.join_code,
+      owner_id: item.league?.owner_id,
+      max_members: item.league?.max_members,
+      joined_at: item.joined_at,
+      primary_league: item.primary_league,
+      competition_flag: item.league?.competitions?.flag,
+      competition_name: item.league.competitions.name,
+      competition_logo: item.league.competitions.logo,
+    }));
+    return { data: transformedData, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+};
+//Done - Find League by Join Code
+const findLeagueByJoinCode = async (joinCode: string) => {
+  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country)").eq("join_code", joinCode).maybeSingle();
+return { data, error };
 
-
-export const joinLeague = async (
-  leagueId: string,
-  userId: string,
-  nickname: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("league_members")
-    .insert({
-      league_id: leagueId,
-      user_id: userId,
-      nickname,
-    })
-    .select()
-    .single();
-
+}; 
+// Done - Join League
+const joinLeague = async (leagueId: string) => {
+const { data, error } = await supabase.from("league_members").insert({ league_id: leagueId, user_id: user?.id as string }).select().single();
+return { data, error };
+};
+//Done - Get Competitions
+ const getCompetitions = async () => {
+  const { data, error } = await supabase.from("competitions").select("*");
+  if (error) {
+    console.error("Competitions error:", error);
+    return { data: null, error };
+  }
+  return { data, error: null };
+};
+const getLeagueLeaderboard = async () => {
+  const { data, error } = await supabase.from("league_leaderboard").select("*");
+  
   return { data, error };
 };
 
-export const getLeagueMatches = async (
+
+
+ const getLeagueMatches = async (
   league: string,
   supabase: SupabaseClient
 ) => {
@@ -91,10 +157,18 @@ export const getLeagueMatches = async (
 
   return { data, error };
 };
-export const getMyLeagues = async (userId: string, supabase: SupabaseClient) => {
-  const { data, error } = await supabase
-    .from("league_members")
-    .select("*")
-    .eq("user_id", userId);
-  return { data, error };
+
+
+  return {
+    createLeague,
+    getCompetitions,
+    getLeagueMatches,
+    getMyLeagues,
+    joinLeague,
+    getLeagueLeaderboard,
+    findLeagueByJoinCode,
+    setPrimaryLeague
+  };
 };
+
+export { useLeagueService };

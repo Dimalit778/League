@@ -11,7 +11,7 @@ interface AuthState {
   initializeSession: () => Promise<void>;
   setSession: (session: Session | null) => void;
   login: (email: string, password: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>; 
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<SupabaseUser | AuthError | null>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>;
   logout: () => Promise<void>;
 }
 
@@ -27,6 +27,7 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const { data, error } = await supabase.auth.getClaims();
+     
  
       if (error) {
         console.error("Error getting session:", error.message);
@@ -92,14 +93,16 @@ const useAuthStore = create<AuthState>((set) => ({
       password,
       options: {
         data: {
-          name: `${firstName} ${lastName}`,
+         first_name : firstName,
+         last_name : lastName,
         },
       },
     });
+   
     if (error) return Promise.reject(error);
 
       set({ session: data.session });
-    return Promise.resolve(data.user);
+    return Promise.resolve({data: data.user, error: null});
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";

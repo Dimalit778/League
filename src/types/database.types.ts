@@ -14,7 +14,8 @@ export interface TLeague {
   name: string;
   owner_id: string;
   join_code: string;
-  league_id: string;
+  competition_id: number;
+  max_members: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -32,10 +33,10 @@ export interface TCompetition {
   code: string;
   type: string;
   logo: string;
-  area: string;
+  country: string;
   flag: string;
-  start_date: string;
-  end_date: string;
+  season: number;
+  round: string;
   created_at: Date;
   updated_at: Date;
 }

@@ -1,4 +1,3 @@
-import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/context/useColorSchema";
 import { Stack } from "expo-router";
 
@@ -11,38 +10,24 @@ export default function AuthLayout() {
       <Stack.Screen
         name="signUp"
         options={{
-          presentation: "modal",
           headerShown: true,
           headerTitle: "Sign Up",
           headerStyle: {
-            backgroundColor:
-              colorScheme === "dark"
-                ? colors.dark.background
-                : colors.light.background,
+            backgroundColor: colorScheme === "dark" ? "#242424" : "#fff",
           },
-          headerTintColor:
-            colorScheme === "dark"
-              ? colors.dark.foreground
-              : colors.light.foreground,
+          headerTintColor: colorScheme === "dark" ? "#fff" : "#000",
           gestureEnabled: true,
         }}
       />
       <Stack.Screen
         name="signIn"
         options={{
-          presentation: "modal",
           headerShown: true,
           headerTitle: "Sign In",
           headerStyle: {
-            backgroundColor:
-              colorScheme === "dark"
-                ? colors.dark.background
-                : colors.light.background,
+            backgroundColor: colorScheme === "dark" ? "#242424" : "#fff",
           },
-          headerTintColor:
-            colorScheme === "dark"
-              ? colors.dark.foreground
-              : colors.light.foreground,
+          headerTintColor: colorScheme === "dark" ? "#fff" : "#000",
           gestureEnabled: true,
         }}
       />

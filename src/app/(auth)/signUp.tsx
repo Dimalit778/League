@@ -1,105 +1,114 @@
+import { ButtonC, InputField, TextC } from "@/components/ui";
+
+import { useColorScheme } from "@/context/useColorSchema";
 import useAuthStore from "@/services/store/AuthStore";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
-import * as React from "react";
-import {
-  Alert,
-  Button,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+import * as yup from "yup";
+
+const schema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Minimum 6 characters")
+    .required("Password is required"),
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
+});
 
 export default function SignUpScreen() {
+  const { colorScheme } = useColorScheme();
   const { register, loading, error } = useAuthStore();
-  const [email, setEmail] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+  });
 
-  const [password, setPassword] = React.useState("");
-
-  const onSignUpPress = async () => {
-    const result = await register(email, password, firstName, lastName);
-    if (!result) {
-      Alert.alert("Error", "Invalid email or password");
+  const onSubmit = async (data: any) => {
+    const { error } = await register(
+      data.email.trim(),
+      data.password,
+      data.firstName.trim(),
+      data.lastName.trim()
+    );
+    if (error) {
+      console.log(error);
     }
   };
+  const handleGoogleSignIn = async () => {};
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 justify-center px-5"
+      style={{
+        backgroundColor: colorScheme === "dark" ? "#1A1A1A" : "#f5f5f5",
+      }}
     >
-      <Text style={styles.title}>Sign Up</Text>
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        value={email}
-        placeholder="Enter email"
-        placeholderTextColor="#aaa"
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        value={firstName}
+      <TextC className="text-3xl font-bold text-center mb-5">
+        Create an account
+      </TextC>
+      <TextC className="text-center font-semibold mb-5">
+        Sign up to get started
+      </TextC>
+      <InputField
+        control={control}
+        name="firstName"
         placeholder="First Name"
-        placeholderTextColor="#aaa"
-        onChangeText={setFirstName}
+        error={errors.firstName}
       />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        value={lastName}
-        placeholder="Last Name"
-        placeholderTextColor="#aaa"
-        onChangeText={setLastName}
-      />
-      <TextInput
-        style={styles.input}
-        value={password}
-        placeholder="Enter password"
-        placeholderTextColor="#aaa"
-        secureTextEntry
-        onChangeText={setPassword}
-      />
-      {error && <Text className="text-red-500">{error}</Text>}
 
-      <Button title="Continue" onPress={onSignUpPress} />
-      <View className="flex-row items-center gap-2 mt-4">
-        <Text>Already have an account? </Text>
-        <Link href="/(auth)/signIn">
-          <Text className="text-primary">Sign in</Text>
-        </Link>
+      <InputField
+        control={control}
+        name="lastName"
+        placeholder="Last Name"
+        error={errors.lastName}
+      />
+      <InputField
+        control={control}
+        name="email"
+        placeholder="Email"
+        error={errors.email}
+      />
+      <InputField
+        control={control}
+        name="password"
+        placeholder="Password"
+        secureTextEntry={false}
+        error={errors.password}
+      />
+      <ButtonC
+        title="Sign Up"
+        onPress={handleSubmit(onSubmit)}
+        loading={loading}
+        disabled={!isValid || loading}
+        variant="gray"
+        size="lg"
+      />
+      <View className="flex-row items-center my-4">
+        <View className="flex-1 h-px bg-gray-600" />
+        <Text className="text-gray-400 mx-2">OR</Text>
+        <View className="flex-1 h-px bg-gray-600" />
       </View>
+      <ButtonC
+        title="Continue with Google"
+        onPress={() => {}}
+        loading={loading}
+        variant="primary"
+        size="md"
+      />
+      <Text className="text-white text-center mt-5 ">
+        Already have an account?{" "}
+        <Link href="/signIn">
+          <Text className="text-blue-500 font-bold">Sign In</Text>
+        </Link>
+      </Text>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#f8f9fa",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "black",
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "lightgrey",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor: "white",
-  },
-});

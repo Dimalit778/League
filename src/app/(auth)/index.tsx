@@ -1,100 +1,62 @@
+import { ButtonC } from "@/components/ui";
+import { useColorScheme } from "@/context/useColorSchema";
 import { router } from "expo-router";
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 export default function Welcome() {
+  const { colorScheme } = useColorScheme();
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          {/* Logo/Hero Section */}
-          <View style={styles.heroSection}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>⚽</Text>
-            </View>
-            <Text style={styles.title}>Welcome to League</Text>
-            <Text style={styles.subtitle}>
-              Your ultimate football companion. Track leagues, follow matches,
-              and stay connected with the beautiful game.
+    <SafeAreaView className="flex-1 bg-dark">
+      <View className="flex-1 px-5 py-5">
+        <View style={styles.heroSection}>
+          <View style={styles.logoContainer}>
+            <Text className="text-2xl font-bold">⚽</Text>
+          </View>
+          <Text style={styles.title}>Welcome to League</Text>
+          <Text style={styles.subtitle}>
+            Your ultimate football companion. Track leagues, follow matches, and
+            stay connected with the beautiful game.
+          </Text>
+        </View>
+
+        {/* Features Section */}
+        <View style={styles.featuresSection}>
+          <View style={styles.feature}>
+            <Text style={styles.featureIcon}>🏆</Text>
+            <Text style={styles.featureTitle}>Live Standings</Text>
+            <Text style={styles.featureDescription}>
+              Real-time league tables and team rankings
             </Text>
           </View>
 
-          {/* Features Section */}
-          <View style={styles.featuresSection}>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🏆</Text>
-              <Text style={styles.featureTitle}>Live Standings</Text>
-              <Text style={styles.featureDescription}>
-                Real-time league tables and team rankings
-              </Text>
-            </View>
-
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>⚽</Text>
-              <Text style={styles.featureTitle}>Match Updates</Text>
-              <Text style={styles.featureDescription}>
-                Live scores and match notifications
-              </Text>
-            </View>
-
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>📊</Text>
-              <Text style={styles.featureTitle}>Statistics</Text>
-              <Text style={styles.featureDescription}>
-                Detailed player and team analytics
-              </Text>
-            </View>
+          <View style={styles.feature}>
+            <Text style={styles.featureIcon}>⚽</Text>
+            <Text style={styles.featureTitle}>Match Updates</Text>
+            <Text style={styles.featureDescription}>
+              Live scores and match notifications
+            </Text>
           </View>
 
-          {/* CTA Buttons */}
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={() => router.push("/signUp")}
-              accessibilityLabel="Create account"
-              accessibilityHint="Sign up for a new account"
-            >
-              <Text style={styles.primaryButtonText}>Get Started</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => router.push("/signIn")}
-              accessibilityLabel="Sign in"
-              accessibilityHint="Sign in to existing account"
-            >
-              <Text style={styles.secondaryButtonText}>
-                I already have an account
-              </Text>
-            </TouchableOpacity>
+          <View style={styles.feature}>
+            <Text style={styles.featureIcon}>📊</Text>
+            <Text style={styles.featureTitle}>Statistics</Text>
+            <Text style={styles.featureDescription}>
+              Detailed player and team analytics
+            </Text>
           </View>
         </View>
-      </ScrollView>
+        <ButtonC
+          title="Get Started"
+          onPress={() => router.push("/signUp")}
+          variant="primary"
+          size="lg"
+        />
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
   heroSection: {
     alignItems: "center",
     marginBottom: 48,
@@ -107,13 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
-    shadowColor: "#6366F1",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    boxShadow: "0px 4px 8px rgba(99, 102, 241, 0.3)",
     elevation: 8,
   },
   logoText: {
@@ -123,7 +79,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#1F2937",
+    color: "#fff",
     textAlign: "center",
     marginBottom: 12,
   },
@@ -149,7 +105,7 @@ const styles = StyleSheet.create({
   featureTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#F7F7F7",
     marginBottom: 8,
   },
   featureDescription: {
@@ -169,13 +125,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
-    shadowColor: "#6366F1",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    boxShadow: "0px 2px 4px rgba(99, 102, 241, 0.2)",
     elevation: 4,
   },
   primaryButtonText: {
