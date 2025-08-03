@@ -1,52 +1,37 @@
-import LeagueCard from "@/components/LeagueCard";
-import { Button } from "@/components/ui/ButtonC";
-import { useLeagueService } from "@/services/leagueService";
-
+import LeagueCard from "@/components/cards/LeagueCard";
+import { Loading } from "@/components/Loading";
+import { ButtonC } from "@/components/ui";
+import { useMyLeagues, useSetPrimaryLeague } from "@/hooks/useQueries";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 
 export default function MyLeagues() {
-  const { getMyLeagues, setPrimaryLeague } = useLeagueService();
-  const [leagues, setLeagues] = useState<any[]>([]);
+  const { data: leagues, isLoading, error } = useMyLeagues();
+  const setPrimaryLeagueMutation = useSetPrimaryLeague();
 
-  const getLeagues = async () => {
-    const { data, error } = await getMyLeagues();
-    if (error) {
-      console.error("Error getting leagues:", error);
-    } else {
-      setLeagues(data as any);
-    }
-  };
-  console.log("leagues", JSON.stringify(leagues, null, 2));
-  const handleSetPrimary = async (leagueId: string, userId: string) => {
-    const { data, error } = await setPrimaryLeague(leagueId);
-    if (error) {
-      console.error("Error setting primary league:", error);
-      console.log("error", JSON.stringify(error, null, 2));
-    } else {
-      setLeagues(data as any);
-      console.log("data", JSON.stringify(data, null, 2));
-    }
+  const handleSetPrimary = (leagueId: string) => {
+    setPrimaryLeagueMutation.mutate(leagueId);
   };
 
-  useEffect(() => {
-    getLeagues();
-  }, []);
+  if (isLoading) return <Loading />;
+
+  if (error) {
+    console.error("Error getting leagues:", error);
+  }
 
   const Header = () => {
     return (
       <View className="flex-row justify-between items-center px-4 pt-6 pb-4">
-        <Button
+        <ButtonC
           title="Create League"
           variant="primary"
-          size="small"
+          size="md"
           onPress={() => router.push("/(app)/(newLeague)/create-league")}
         />
-        <Button
+        <ButtonC
           title="Join League"
           variant="secondary"
-          size="small"
+          size="md"
           onPress={() => router.push("/(app)/(newLeague)/join-league")}
         />
       </View>
@@ -58,7 +43,7 @@ export default function MyLeagues() {
       <Header />
       <View className="flex-grow  px-4 ">
         <FlatList
-          data={leagues || []}
+          data={leagues?.data || []}
           contentContainerStyle={{ flexGrow: 1, gap: 15, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={

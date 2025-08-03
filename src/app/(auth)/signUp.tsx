@@ -1,9 +1,10 @@
 import { ButtonC, InputField, TextC } from "@/components/ui";
 
-import { useColorScheme } from "@/context/useColorSchema";
+import { useColorScheme } from "@/hooks/useColorSchema";
 import useAuthStore from "@/services/store/AuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import * as yup from "yup";
@@ -21,6 +22,7 @@ const schema = yup.object().shape({
 export default function SignUpScreen() {
   const { colorScheme } = useColorScheme();
   const { register, loading, error } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     control,
     handleSubmit,
@@ -80,8 +82,14 @@ export default function SignUpScreen() {
         control={control}
         name="password"
         placeholder="Password"
-        secureTextEntry={false}
+        secureTextEntry={!showPassword}
         error={errors.password}
+      />
+      <ButtonC
+        title={showPassword ? "Hide Password" : "Show Password"}
+        onPress={() => setShowPassword(!showPassword)}
+        variant="gray"
+        size="md"
       />
       <ButtonC
         title="Sign Up"

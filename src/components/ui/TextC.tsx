@@ -1,12 +1,12 @@
-import { useColorScheme } from "@/context/useColorSchema";
+import { useColorScheme } from "@/hooks/useColorSchema";
 import { Text as RNText, TextProps } from "react-native";
 
 const TextC = ({ children, className, ...props }: TextProps) => {
-  const { colorScheme } = useColorScheme();
+  const { colorScheme, isDarkColorScheme } = useColorScheme();
 
   return (
     <RNText
-      className={`${colorScheme === "dark" ? "text-white" : "text-black"} ${className}`}
+      className={`${isDarkColorScheme ? "text-white" : "text-black"} ${className}`}
       {...props}
     >
       {children}

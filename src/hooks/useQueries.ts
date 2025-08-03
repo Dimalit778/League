@@ -1,124 +1,56 @@
-import { supabase } from "@/lib/supabase";
-import {
-  createLeague,
-  getLeagueMatches,
-  joinLeague
-} from "@/services/leagueService";
-import {
-  createPrediction,
-  getLeaderboard,
-  getUserLeagues,
-  getUserPredictions,
-  getUserProfile
-} from "@/services/usersService";
-
+import { useLeagueService } from "@/services/leagueService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Query keys for better organization and type safety
 export const queryKeys = {
   userProfile: (userId: string) => ["user", userId] as const,
   userLeagues: (userId: string) => ["userLeagues", userId] as const,
+  myLeagues: ["myLeagues"] as const,
   leagueMatches: (league: string) => ["matches", league] as const,
   userPredictions: (userId: string, leagueId: string) => ["predictions", userId, leagueId] as const,
-  leaderboard: (leagueId: string) => ["leaderboard", leagueId] as const,
+  leaderboard: () => ["leaderboard"] as const,
+  competitions: ["competitions"] as const,
   allLeagues: ["leagues"] as const,
 };
 
-// User profile query
-export const useUserProfile = (userId: string) => {
+// Get competitions query
+export const useCompetitions = () => {
+  const { getCompetitions } = useLeagueService();
+  
   return useQuery({
-    queryKey: queryKeys.userProfile(userId),
-    queryFn: () => getUserProfile(userId, supabase),
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    queryKey: queryKeys.competitions,
+    queryFn: () => getCompetitions(),
+    staleTime: 24 * 60 * 60 * 1000, 
   });
 };
 
-// User leagues query
-export const useUserLeagues = (userId: string) => {
+// Get user leagues query
+export const useMyLeagues = () => {
+  const { getMyLeagues } = useLeagueService();
+  
   return useQuery({
-    queryKey: queryKeys.userLeagues(userId),
-    queryFn: () => getUserLeagues(userId, supabase),
-    enabled: !!userId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchOnWindowFocus: true,
-  });
-};
-
-// League matches query
-export const useLeagueMatches = (league: string) => {
-  return useQuery({
-    queryKey: queryKeys.leagueMatches(league),
-    queryFn: () => getLeagueMatches(league, supabase),
-    enabled: !!league,
-    staleTime: 30 * 1000, // 30 seconds for live match updates
-    refetchInterval: 60 * 1000, // Refetch every minute for live scores
-  });
-};
-
-// User predictions query
-export const useUserPredictions = (userId: string, leagueId: string) => {
-  return useQuery({
-    queryKey: queryKeys.userPredictions(userId, leagueId),
-    queryFn: () => getUserPredictions(userId, leagueId, supabase),
-    enabled: !!userId && !!leagueId,
-    staleTime: 60 * 1000, // 1 minute
-  });
-};
-
-// Leaderboard query
-export const useLeaderboard = (leagueId: string) => {
-  return useQuery({
-    queryKey: queryKeys.leaderboard(leagueId),
-    queryFn: () => getLeaderboard(leagueId, supabase),
-    enabled: !!leagueId,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes for updates
-  });
-};
-
-// Create prediction mutation
-export const useCreatePrediction = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (predictionData: {
-      league_id: string;
-      user_id: string;
-      match_id: number;
-      home_score: number;
-      away_score: number;
-    }) => createPrediction(predictionData, supabase),
-    onSuccess: (_, variables) => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.userPredictions(variables.user_id, variables.league_id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.leaderboard(variables.league_id),
-      });
-    },
-    onError: (error) => {
-      console.error("Error creating prediction:", error);
-    },
+    queryKey: queryKeys.myLeagues,
+    queryFn: () => getMyLeagues(),
+    staleTime: 30 * 60 * 1000, 
   });
 };
 
 // Create league mutation
 export const useCreateLeague = () => {
   const queryClient = useQueryClient();
+  const { createLeague } = useLeagueService();
 
   return useMutation({
     mutationFn: (leagueData: { 
       name: string;
-      selected_league: string;
-      owner_id: string;
+      join_code: string;
+      competition_id: number;
     }) => createLeague(leagueData),
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // Invalidate user leagues query
       queryClient.invalidateQueries({
-          queryKey: queryKeys.userLeagues(variables.owner_id),
+        queryKey: queryKeys.myLeagues,
+
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.allLeagues,
@@ -133,24 +65,14 @@ export const useCreateLeague = () => {
 // Join league mutation
 export const useJoinLeague = () => {
   const queryClient = useQueryClient();
+  const { joinLeague } = useLeagueService();
 
   return useMutation({
-    mutationFn: ({
-      leagueId,
-      userId,
-      nickname,
-    }: {
-      leagueId: string;
-      userId: string;
-      nickname: string;
-    }) => joinLeague(leagueId, userId, nickname, supabase),
-    onSuccess: (_, variables) => {
+    mutationFn: (leagueId: string) => joinLeague(leagueId),
+    onSuccess: () => {
       // Invalidate user leagues query
       queryClient.invalidateQueries({
-        queryKey: queryKeys.userLeagues(variables.userId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.leaderboard(variables.leagueId),
+        queryKey: queryKeys.myLeagues,
       });
     },
     onError: (error) => {
@@ -159,64 +81,36 @@ export const useJoinLeague = () => {
   });
 };
 
-// Optimistic update helper for predictions
-export const useOptimisticPrediction = () => {
+// Set primary league mutation
+export const useSetPrimaryLeague = () => {
   const queryClient = useQueryClient();
+  const { setPrimaryLeague } = useLeagueService();
 
   return useMutation({
-    mutationFn: (predictionData: {
-      league_id: string;
-      user_id: string;
-      match_id: number;
-      home_score: number;
-      away_score: number;
-    }) => createPrediction(predictionData, supabase),
-    onMutate: async (newPrediction) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({
-        queryKey: queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
-      });
-
-      // Snapshot the previous value
-      const previousPredictions = queryClient.getQueryData<{ data: Prediction[], error: any }>(
-        queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id)
-      );
-
-      // Optimistically update to the new value
-      if (previousPredictions?.data) {
-        queryClient.setQueryData(
-          queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
-          {
-            data: [
-              {
-                id: `temp-${Date.now()}`,
-                ...newPrediction,
-                points: 0,
-                created_at: new Date().toISOString(),
-              },
-              ...previousPredictions.data,
-            ],
-            error: null,
-          }
-        );
-      }
-
-      return { previousPredictions };
-    },
-    onError: (err, newPrediction, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
-      if (context?.previousPredictions) {
-        queryClient.setQueryData(
-          queryKeys.userPredictions(newPrediction.user_id, newPrediction.league_id),
-          context.previousPredictions
-        );
-      }
-    },
-    onSettled: (_, __, variables) => {
-      // Always refetch after error or success to make sure our local data is correct
+    mutationFn: (leagueId: string) => setPrimaryLeague(leagueId),
+    onSuccess: () => {
+      // Invalidate user leagues query
       queryClient.invalidateQueries({
-        queryKey: queryKeys.userPredictions(variables.user_id, variables.league_id),
+        queryKey: queryKeys.myLeagues,
       });
     },
+    onError: (error) => {
+      console.error("Error setting primary league:", error);
+    },
+  });
+};
+export  const useGetPrimaryLeague = () => {
+  const { getMyLeagues } = useLeagueService();
+  return useQuery({
+    queryKey: queryKeys.myLeagues,
+    queryFn: () => getMyLeagues(),
+    select: (data) => data?.data?.find((league) => league.primary_league),
+  });
+};
+export const useGetLeagueLeaderboard = () => {
+  const { getLeagueLeaderboard } = useLeagueService();
+  return useQuery({
+    queryKey: queryKeys.leaderboard(),
+    queryFn: () => getLeagueLeaderboard(),
   });
 };

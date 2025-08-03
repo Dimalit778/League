@@ -1,5 +1,5 @@
 import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
-import { Button } from "@/components/ui";
+import { ButtonC } from "@/components/ui";
 import { useLeagueService } from "@/services/leagueService";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -94,7 +94,7 @@ export default function JoinLeague() {
               competitionLogo={foundLeague.competitions.logo}
               competitionCountry={foundLeague.competitions.country}
             />
-            <Button title="Join League" onPress={() => onClickJoinLeague()} />
+            <ButtonC title="Join League" onPress={() => onClickJoinLeague()} />
           </View>
         )}
 

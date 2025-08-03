@@ -1,5 +1,5 @@
 import { ButtonC, InputField, TextC } from "@/components/ui";
-import { useColorScheme } from "@/context/useColorSchema";
+import { useColorScheme } from "@/hooks/useColorSchema";
 import useAuthStore from "@/services/store/AuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";

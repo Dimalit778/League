@@ -1,10 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { TUser } from "@/types/database.types";
+
 import { AuthError, Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { create } from "zustand";
 
 interface AuthState {
-  user: TUser | null;
   session: Session | null;
   loading: boolean;   
   error: string | null;
@@ -21,34 +20,19 @@ const useAuthStore = create<AuthState>((set) => ({
   loading: false,
   error: null,
   setSession: (session) => set({ session }),
+
   
 
   initializeSession: async () => {
     set({ loading: true, error: null });
     try {
-      const { data, error } = await supabase.auth.getClaims();
-     
- 
+      const { data, error } = await supabase.auth.getSession();
       if (error) {
         console.error("Error getting session:", error.message);
         set({ error: error.message, loading: false });
         return;
       }
-      if (data) {
-        set({ session: data.claims as unknown as Session,
-
-         });
-        const { data: userData, error: userError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", data.claims.sub)
-          .single();
-
-        if (userError) return Promise.reject(userError);
-        set({ user: userData as unknown as TUser });
-      } else {  
-        set({ session: null, user: null });
-      }
+      set({ session: data.session });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
@@ -57,6 +41,7 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ loading: false });
     }
   },
+   
 
 
   login: async (email: string, password: string) => {

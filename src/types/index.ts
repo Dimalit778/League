@@ -1,8 +1,7 @@
-import { TLeague } from "./database.types";
+import { League } from "./supabase.types";
 
-
-    export interface AppState {
-      selectedLeague: TLeague | null;
-      userLeagues: TLeague[] | null;
-      loading: boolean;
-    }
+export interface AppState {
+  selectedLeague: League | null;
+  userLeagues: League[] | null;
+  loading: boolean;
+}

@@ -1,6 +1,7 @@
 import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
-import { useLeagueService } from "@/services/leagueService";
-import { TCompetition } from "@/types/database.types";
+
+import { useCreateLeague } from "@/hooks/useQueries";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,73 +14,50 @@ import {
 } from "react-native";
 
 export default function LeaguePreview() {
-  const { createLeague } = useLeagueService();
-  const { leagueName, leagueJoinCode, competition } = useLocalSearchParams();
+  const queryClient = useQueryClient();
+  const {
+    leagueName,
+    leagueJoinCode,
+    competition: competitionParam,
+  } = useLocalSearchParams();
+  const competition =
+    typeof competitionParam === "string" ? JSON.parse(competitionParam) : null;
+
+  const compName = competition?.name || "";
+  const flag = competition?.flag || "";
+  const logo = competition?.logo || "";
+  const country = competition?.country || "";
   const [isCreating, setIsCreating] = useState(false);
 
-  const competitionData: TCompetition =
-    typeof competition === "string" ? JSON.parse(competition) : null;
+  const createLeagueMutation = useCreateLeague();
 
-  const {
-    name: compName = "",
-    logo = "",
-    flag = "",
-    country = "",
-    type = "",
-    round = "",
-  } = competitionData || {};
-
-  const handleCreateLeague = async () => {
+  const handleCreateLeague = () => {
     if (isCreating) return;
-
     setIsCreating(true);
 
-    try {
-      const newLeague = {
-        name: leagueName as string,
-        join_code: leagueJoinCode as string,
-        competition_id: competitionData.id as unknown as number,
-      };
+    const newLeague = {
+      name: leagueName as string,
+      join_code: leagueJoinCode as string,
+      competition_id: competition?.id,
+    };
 
-      const { data, error } = await createLeague(newLeague);
+    createLeagueMutation.mutate(newLeague, {
+      onSuccess: (data) => {
+        console.log(
+          "League created successfully",
+          JSON.stringify(data, null, 2)
+        );
 
-      if (error) {
+        router.replace("/(app)/(tabs)");
+      },
+      onError: (error) => {
         console.error("Error creating league:", error);
-
-        // Handle specific constraint error
-        if (
-          error.message === "23505" &&
-          error.message.includes("idx_user_primary_league")
-        ) {
-          Alert.alert(
-            "Primary League Conflict",
-            "There was an issue setting this as your primary league. The league was created but please set it as primary manually.",
-            [{ text: "OK" }]
-          );
-        } else {
-          Alert.alert("Error", "Failed to create league. Please try again.", [
-            { text: "OK" },
-          ]);
-        }
-      } else {
-        console.log("League created successfully:", data);
-        Alert.alert("Success!", "League created successfully! 🎉", [
-          {
-            text: "OK",
-            onPress: () => {
-              router.push("/(app)/(tabs)");
-            },
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      Alert.alert("Error", "Something went wrong. Please try again.", [
-        { text: "OK" },
-      ]);
-    } finally {
-      setIsCreating(false);
-    }
+        setIsCreating(false);
+      },
+      onSettled: () => {
+        setIsCreating(false);
+      },
+    });
   };
 
   // Handler to copy join code

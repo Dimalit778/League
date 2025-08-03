@@ -1,5 +1,5 @@
 import { ButtonC } from "@/components/ui";
-import { useColorScheme } from "@/context/useColorSchema";
+import { useColorScheme } from "@/hooks/useColorSchema";
 import { router } from "expo-router";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 

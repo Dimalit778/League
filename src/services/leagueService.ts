@@ -4,7 +4,9 @@ import useAuthStore from "./store/AuthStore";
 
 // F6HIC-R
 const useLeagueService = () => {
-  const {user} = useAuthStore()
+  
+  const {session} = useAuthStore()
+
 
   
 
@@ -14,44 +16,23 @@ const createLeague = async (newLeague: {
   join_code: string;
   competition_id: number;
 }) => {
-  try {
-    const { data, error } = await supabase.rpc('create_league', {
+  
+    const {data,error } = await supabase.rpc('create_league', {
       p_league_name: newLeague.name,
       p_join_code: newLeague.join_code,
       p_competition_id: newLeague.competition_id,
-      p_owner_id: user?.id as string
+      p_owner_id: session?.user?.id as string
     });
+   if(error) {
+    throw new Error(error.message)
+   }
+   return data;
+}
 
-    if (error) {
-      console.error("League creation error:", error);
-      return { data: null, error };
-    }
-
-    if (!data.success) {
-      console.error("League creation failed:", data.error);
-      return { data: null, error: { message: data.error } };
-    }
-
-    return {
-      data: {
-        league: { id: data.league_id },
-        success: true
-      },
-      error: null,
-    };
-
-  } catch (error) {
-    console.error("Create league error:", error);
-    return {
-      data: null,
-      error: { message: "An unexpected error occurred" },
-    };
-  }
-};
 const setPrimaryLeague = async (leagueId: string) => {
   const { data, error } = await supabase.rpc('update_user_primary_league', {
     p_league_id: leagueId,
-    p_user_id: user?.id as string
+    p_user_id: session?.user?.id
   });
   return { data, error };
 };
@@ -78,9 +59,8 @@ const getMyLeagues = async () => {
           )
         )
       `)
-      .eq('user_id', user?.id as string)
+      .eq('user_id', session?.user?.id as string)
       .order('primary_league', { ascending: false });
-
     if (error ) {
       return { data: null, error };
     }
@@ -124,20 +104,20 @@ return { data, error };
 }; 
 // Done - Join League
 const joinLeague = async (leagueId: string) => {
-const { data, error } = await supabase.from("league_members").insert({ league_id: leagueId, user_id: user?.id as string }).select().single();
+  const { data, error } = await supabase.from("league_members").insert({ league_id: leagueId, user_id: session?.user?.id as string    }).select().single();
 return { data, error };
 };
 //Done - Get Competitions
  const getCompetitions = async () => {
   const { data, error } = await supabase.from("competitions").select("*");
   if (error) {
-    console.error("Competitions error:", error);
-    return { data: null, error };
+    throw new Error(error.message)
   }
-  return { data, error: null };
+  return data
 };
 const getLeagueLeaderboard = async () => {
-  const { data, error } = await supabase.from("league_leaderboard").select("*");
+  const { data, error } = await supabase.from("league_members").select("*").eq('user_id', session?.user?.id as string)
+  console.log("data  ", JSON.stringify(data, null, 2) )
   
   return { data, error };
 };

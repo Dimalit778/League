@@ -1,63 +1,35 @@
 import LeaderboardCard from "@/components/cards/LeaderboardCard";
-import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
+import { Loading } from "@/components/Loading";
+
 import { useLeagueService } from "@/services/leagueService";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { FlatList, View } from "react-native";
 
 const Leaderboard = () => {
   const { getLeagueLeaderboard } = useLeagueService();
-  const [loading, setLoading] = useState(true);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [league, setLeague] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: leaderboard,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: () => getLeagueLeaderboard(),
+  });
 
-  const getLeaderboard = async () => {
-    const { data, error } = await getLeagueLeaderboard();
-
-    setLeaderboard(data as any);
-    setLoading(false);
-  };
-  useEffect(() => {
-    getLeaderboard();
-  }, []);
-
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text style={{ marginTop: 12 }}>Loading leaderboard...</Text>
-      </View>
-    );
-  }
-
+  if (isLoading) return <Loading />;
   if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: "red" }}>{error}</Text>
-      </View>
-    );
+    console.log("error  ", error);
   }
-
+  console.log("leaderboard  ", JSON.stringify(leaderboard, null, 2));
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      {/* League Card */}
-      {league && (
-        <PreviewLeagueCard
-          leagueName={league.name}
-          competitionName={league.competitions?.name}
-          competitionFlag={league.competitions?.flag}
-          competitionLogo={league.competitions?.logo}
-          competitionCountry={league.competitions?.country}
-        />
-      )}
-
+    <View className="flex-1 bg-dark px-4 pt-6">
       <FlatList
-        data={leaderboard}
+        data={leaderboard?.data}
         contentContainerStyle={{ gap: 10, marginTop: 16, padding: 16 }}
         renderItem={({ item, index }) => (
           <LeaderboardCard user={item} index={index + 1} />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.user_id || ""}
       />
     </View>
   );

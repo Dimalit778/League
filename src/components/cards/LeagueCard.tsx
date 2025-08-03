@@ -1,27 +1,27 @@
 import useAuthStore from "@/services/store/AuthStore";
 import { Text, TouchableOpacity, View } from "react-native";
-import StarIcon from "../../assets/icons/StarIcon";
-import ImageC from "./ui/ImageC";
+import StarIcon from "../../../assets/icons/StarIcon";
+import ImageC from "../ui/ImageC";
 
 interface LeagueCardProps {
   item: any;
-  handleSetPrimary: (leagueId: string, userId: string) => Promise<void>;
+  handleSetPrimary: (leagueId: string) => void;
 }
 
 export default function LeagueCard({
   item,
   handleSetPrimary,
 }: LeagueCardProps) {
-  const { user } = useAuthStore();
+  const { session } = useAuthStore();
 
   return (
     <TouchableOpacity
       onPress={() => {
-        handleSetPrimary(item.id, user?.id || "");
+        handleSetPrimary(item.id);
       }}
     >
       <View className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-        <View className="flex-row items-center">
+        <View className="flex-row items-center gap-4">
           <ImageC
             source={{ uri: item.competition_logo }}
             width={48}

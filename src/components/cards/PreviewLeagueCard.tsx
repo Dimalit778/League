@@ -12,7 +12,7 @@ export default function PreviewLeagueCard({
   competitionName: string;
   competitionFlag: string;
   competitionLogo: string;
-  competitionCountry: string;
+  competitionCountry?: string;
 }) {
   return (
     <View className="bg-gray-50 rounded-xl border border-gray-200 shadow-sm p-6 mb-6">

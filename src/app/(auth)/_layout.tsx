@@ -1,5 +1,6 @@
-import { useColorScheme } from "@/context/useColorSchema";
-import { Stack } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorSchema";
+import { router, Stack } from "expo-router";
+import { Button } from "react-native";
 
 export default function AuthLayout() {
   const { colorScheme } = useColorScheme();
@@ -12,6 +13,9 @@ export default function AuthLayout() {
         options={{
           headerShown: true,
           headerTitle: "Sign Up",
+          headerLeft: () => (
+            <Button title="Back" onPress={() => router.back()} />
+          ),
           headerStyle: {
             backgroundColor: colorScheme === "dark" ? "#242424" : "#fff",
           },

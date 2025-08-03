@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/ButtonC";
-import ImageC from "@/components/ui/ImageC";
-import { useLeagueService } from "@/services/leagueService";
-import useAuthStore from "@/services/store/AuthStore";
-import { TCompetition } from "@/types/database.types";
+import { Loading } from "@/components/Loading";
+import { ButtonC, ImageC, TextC } from "@/components/ui";
+import { useColorScheme } from "@/hooks/useColorSchema";
+
+import { useCompetitions } from "@/hooks/useQueries";
+import { Competition } from "@/types/supabase.types";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -25,72 +25,48 @@ const generateRandomCode = (length: number): string => {
 };
 
 export default function CreateLeague() {
-  const { user } = useAuthStore();
-  const { getCompetitions } = useLeagueService();
+  const { isDarkColorScheme } = useColorScheme();
   const [leagueName, setLeagueName] = useState("");
-  const [competitions, setCompetitions] = useState<TCompetition[]>([]);
-
   const [selectedCompetition, setSelectedCompetition] =
-    useState<TCompetition | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    useState<Competition | null>(null);
 
-  const fetchCompetitions = async () => {
-    const { data, error } = await getCompetitions();
-    if (error) {
-      console.error(error);
-    } else {
-      setCompetitions(data || []);
-    }
-  };
+  const { data: competitions, isLoading, error } = useCompetitions();
 
-  useEffect(() => {
-    fetchCompetitions();
-  }, []);
+  if (isLoading) return <Loading />;
 
-  const goToLeaguePreview = () => {
-    router.push({
-      pathname: "/(app)/(newLeague)/league-preview",
-      params: {
-        leagueName: leagueName,
-        competition: JSON.stringify(selectedCompetition),
-        leagueJoinCode: generateRandomCode(6),
-      },
-    });
-  };
+  if (error) {
+    console.log("error  ", error);
+  }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-white"
+      className={`flex-1 ${isDarkColorScheme ? "bg-black" : "bg-white"}`}
     >
       <ScrollView className="flex-1 px-4 pt-6">
-        {/* League Name Input */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-700 mb-2">
-            League Name
-          </Text>
-          <TextInput
-            value={leagueName}
-            onChangeText={setLeagueName}
-            placeholder="Enter your league name"
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base"
-            maxLength={50}
-          />
-        </View>
-        <View className="mb-6">
-          {competitions.map((comp) => (
+        <TextC className="text-lg font-semibold mb-2">League Name</TextC>
+        <TextInput
+          value={leagueName}
+          onChangeText={setLeagueName}
+          placeholder="Enter your league name"
+          className="bg-gray-700 rounded-lg px-4 py-3 text-base text-white"
+          maxLength={50}
+          autoCorrect={false}
+        />
+
+        <View className="mb-6 mt-6">
+          {competitions?.map((comp) => (
             <TouchableOpacity
               key={comp.id}
               onPress={() => setSelectedCompetition(comp)}
               className={`mb-3 p-4 rounded-xl border-2 ${
                 selectedCompetition?.id === comp.id
-                  ? "border-blue-500 bg-blue-50"
+                  ? "border-blue-500 bg-yellow-500"
                   : "border-gray-200 bg-white"
               }`}
             >
               <View className="flex-row items-center gap-4">
                 <ImageC
-                  source={{ uri: comp.flag }}
+                  source={{ uri: comp.flag || "" }}
                   className="border border-gray-200 "
                   resizeMode="contain"
                   width={48}
@@ -116,11 +92,20 @@ export default function CreateLeague() {
           ))}
         </View>
         {/* Create Button */}
-        <Button
+        <ButtonC
           title="Continue"
-          onPress={goToLeaguePreview}
+          onPress={() => {
+            router.push({
+              pathname: "/(app)/(newLeague)/league-preview",
+              params: {
+                leagueName: leagueName,
+                competition: JSON.stringify(selectedCompetition),
+                leagueJoinCode: generateRandomCode(6),
+              },
+            });
+          }}
           variant="primary"
-          size="large"
+          size="lg"
           loading={false}
         />
       </ScrollView>
