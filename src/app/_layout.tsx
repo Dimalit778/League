@@ -2,6 +2,7 @@ import "../../global.css";
 
 import { SplashScreen } from "@/components/SplashScreen";
 import useAuthStore from "@/services/store/AuthStore";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";

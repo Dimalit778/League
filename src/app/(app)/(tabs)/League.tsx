@@ -6,14 +6,14 @@ import { useQuery } from "@tanstack/react-query";
 import { FlatList, View } from "react-native";
 
 const Leaderboard = () => {
-  const { getLeagueLeaderboard } = useLeagueService();
+  const { getMyLeagues } = useLeagueService();
   const {
     data: leaderboard,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["leaderboard"],
-    queryFn: () => getLeagueLeaderboard(),
+    queryFn: () => getMyLeagues(),
   });
 
   if (isLoading) return <Loading />;
@@ -29,7 +29,7 @@ const Leaderboard = () => {
         renderItem={({ item, index }) => (
           <LeaderboardCard user={item} index={index + 1} />
         )}
-        keyExtractor={(item) => item.user_id || ""}
+        // keyExtractor={(item) => item.league.id || ""}
       />
     </View>
   );

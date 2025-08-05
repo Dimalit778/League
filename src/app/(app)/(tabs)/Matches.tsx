@@ -1,7 +1,7 @@
 import FixtureList from "@/components/FixtureList";
 import MatchesList from "@/components/MatchesList";
 import { supabase } from "@/lib/supabase";
-import { TMatch } from "@/types/database.types";
+import { Tables } from "@/types/database.types";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
@@ -45,7 +45,7 @@ const matchesData = {
 };
 
 export default function MatchesPage() {
-  const [allMatches, setAllMatches] = useState<TMatch[]>([]);
+  const [allMatches, setAllMatches] = useState<Tables<"matches">[]>([]);
 
   const getMatches = async () => {
     const { data, error } = await supabase

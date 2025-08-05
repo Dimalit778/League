@@ -4,7 +4,9 @@
   },
   "cSpell.words": [
     "dimalit",
-    "matchday"
+    "extratime",
+    "matchday",
+    "Postgrest"
   ],
   "deno.enablePaths": [
     "supabase/functions"

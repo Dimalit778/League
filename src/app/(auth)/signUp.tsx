@@ -15,8 +15,10 @@ const schema = yup.object().shape({
     .string()
     .min(6, "Minimum 6 characters")
     .required("Password is required"),
-  firstName: yup.string().required("First name is required"),
-  lastName: yup.string().required("Last name is required"),
+  fullname: yup
+    .string()
+    .required("Full name is required")
+    .min(3, "Full name must be at least 3 characters"),
 });
 
 export default function SignUpScreen() {
@@ -36,8 +38,7 @@ export default function SignUpScreen() {
     const { error } = await register(
       data.email.trim(),
       data.password,
-      data.firstName.trim(),
-      data.lastName.trim()
+      data.fullname
     );
     if (error) {
       console.log(error);
@@ -61,17 +62,11 @@ export default function SignUpScreen() {
       </TextC>
       <InputField
         control={control}
-        name="firstName"
-        placeholder="First Name"
-        error={errors.firstName}
+        name="fullname"
+        placeholder="Full Name"
+        error={errors.fullname}
       />
 
-      <InputField
-        control={control}
-        name="lastName"
-        placeholder="Last Name"
-        error={errors.lastName}
-      />
       <InputField
         control={control}
         name="email"
@@ -85,12 +80,7 @@ export default function SignUpScreen() {
         secureTextEntry={!showPassword}
         error={errors.password}
       />
-      <ButtonC
-        title={showPassword ? "Hide Password" : "Show Password"}
-        onPress={() => setShowPassword(!showPassword)}
-        variant="gray"
-        size="md"
-      />
+
       <ButtonC
         title="Sign Up"
         onPress={handleSubmit(onSubmit)}

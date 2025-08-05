@@ -10,7 +10,7 @@ interface AuthState {
   initializeSession: () => Promise<void>;
   setSession: (session: Session | null) => void;
   login: (email: string, password: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>; 
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>;
+  register: (email: string, password: string, fullname: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>;
   logout: () => Promise<void>;
 }
 
@@ -67,7 +67,7 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ loading: false });
     }
   },
-  register  : async (email, password, firstName, lastName) => {
+  register  : async (email, password, fullname) => {
     set({ loading: true, error: null });
     try {
       if (!email) return Promise.reject("Email is required");
@@ -78,11 +78,12 @@ const useAuthStore = create<AuthState>((set) => ({
       password,
       options: {
         data: {
-         first_name : firstName,
-         last_name : lastName,
+         full_name : fullname,
         },
       },
     });
+    console.log('error', JSON.stringify(error, null, 2))
+    console.log('data', JSON.stringify(data, null, 2))
    
     if (error) return Promise.reject(error);
 

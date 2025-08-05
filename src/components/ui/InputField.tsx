@@ -7,6 +7,8 @@ type InputFieldProps = {
   placeholder: string;
   secureTextEntry?: boolean;
   error?: FieldError;
+  maxLength?: number;
+  autoCorrect?: boolean;
 };
 
 const InputField = ({
@@ -14,6 +16,8 @@ const InputField = ({
   name,
   placeholder,
   secureTextEntry,
+  maxLength = 50,
+  autoCorrect = false,
   error,
 }: InputFieldProps) => (
   <View className="mb-4">
@@ -29,6 +33,8 @@ const InputField = ({
           onBlur={onBlur}
           onChangeText={onChange}
           value={value}
+          maxLength={maxLength}
+          autoCorrect={autoCorrect}
         />
       )}
     />

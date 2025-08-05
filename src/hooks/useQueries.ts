@@ -14,15 +14,7 @@ export const queryKeys = {
 };
 
 // Get competitions query
-export const useCompetitions = () => {
-  const { getCompetitions } = useLeagueService();
-  
-  return useQuery({
-    queryKey: queryKeys.competitions,
-    queryFn: () => getCompetitions(),
-    staleTime: 24 * 60 * 60 * 1000, 
-  });
-};
+
 
 // Get user leagues query
 export const useMyLeagues = () => {
@@ -104,7 +96,7 @@ export  const useGetPrimaryLeague = () => {
   return useQuery({
     queryKey: queryKeys.myLeagues,
     queryFn: () => getMyLeagues(),
-    select: (data) => data?.data?.find((league) => league.primary_league),
+    select: (data) => data?.data?.find((league) => league.is_primary),
   });
 };
 export const useGetLeagueLeaderboard = () => {

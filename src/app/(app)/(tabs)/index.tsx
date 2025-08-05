@@ -26,7 +26,7 @@ export default function MyLeagues() {
           title="Create League"
           variant="primary"
           size="md"
-          onPress={() => router.push("/(app)/(newLeague)/create-league")}
+          onPress={() => router.push("/(app)/(newLeague)/select-competition")}
         />
         <ButtonC
           title="Join League"
