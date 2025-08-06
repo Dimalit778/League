@@ -5,26 +5,24 @@ import { Alert, Clipboard, Text, TouchableOpacity, View } from "react-native";
 // Define the Competition type based on your Supabase tables
 import { Tables } from "@/types/database.types";
 type Competition = Tables<"competitions">;
+type League = Tables<"leagues">;
 
 export default function LeagueCreatedScreen() {
-  // Get parameters from the previous screen (EnterLeagueDetailsScreen)
-  const { name, joinCode, nickname, competition } = useLocalSearchParams();
+  const { league, nickname } = useLocalSearchParams();
 
   // Parse the competition object back from the JSON string
-  const competitionData: Competition | null = competition
-    ? JSON.parse(competition as string)
+  const leagueData: League | null = league
+    ? JSON.parse(league as string)
     : null;
-
+  console.log("leagueData", JSON.stringify(leagueData, null, 2));
+  console.log("nickname", nickname);
   // Extract necessary details from the competition data
-  const competitionName = competitionData?.name || "";
-  const competitionFlag = competitionData?.flag || "";
-  const competitionLogo = competitionData?.logo || "";
-  const competitionCountry = competitionData?.country || "";
+  const competitionName = leagueData?.name || "";
 
   // Handle copying the join code to clipboard
   const handleCopyJoinCode = () => {
-    if (typeof joinCode === "string") {
-      Clipboard.setString(joinCode);
+    if (typeof leagueData?.join_code === "string") {
+      Clipboard.setString(leagueData?.join_code);
       Alert.alert("Copied!", "Join code copied to clipboard.");
     }
   };
@@ -33,7 +31,7 @@ export default function LeagueCreatedScreen() {
     <View className="flex-1 bg-white px-6 py-10 justify-between">
       {/* League Preview Card */}
       <PreviewLeagueCard
-        leagueName={name as string}
+        leagueName={leagueData?.name as string}
         competitionName={competitionName}
         competitionFlag={competitionFlag}
         competitionLogo={competitionLogo}
@@ -53,7 +51,7 @@ export default function LeagueCreatedScreen() {
           className="bg-gray-100 px-6 py-3 rounded-lg border border-gray-200"
         >
           <Text className="text-xl font-mono font-bold text-blue-700 tracking-widest">
-            {joinCode}
+            {leagueData?.join_code}
           </Text>
         </TouchableOpacity>
         <Text className="text-xs text-gray-400 mt-1">Tap to copy</Text>

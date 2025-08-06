@@ -13,13 +13,7 @@ type LeagueParams = {
   max_members: number;
   competition_id: number;
 };
-type LeagueResponse = {
-  success: boolean;
-  league_id?: string;
-  message?: string;
-  error?: string;
-  error_code?: string;
-};
+
 type LeagueData = {
   is_primary: boolean;
   league: League & {
@@ -33,37 +27,35 @@ const useLeagueService = () => {
 
 // Done - Create League
 const createLeague = async (params: LeagueParams) => {
-console.log("params", JSON.stringify(params, null, 2)); // Should be UUID
-
-
   try {
     if (!session?.user?.id) {
       throw new Error("User not authenticated");
     }
-    console.log("session.user.id:", session.user.id, typeof session.user.id);
-
-    const { data, error } = await supabase.rpc('create_league', {
-      p_name: params.name,
-      p_nickname: params.nickname as string,
-      p_league_logo: params.league_logo as string,
-      p_join_code: params.join_code as string, 
-      p_max_members: params.max_members as number,
-      p_competition_id: params.competition_id as number,
-      p_owner_id: session.user.id ,
-    });
-
-    const response = data as LeagueResponse;
+    const { data: leagueData, error } = await supabase.from("leagues").insert({
+      name: params.name,
+      league_logo: params.league_logo,
+      join_code: params.join_code,
+      max_members: params.max_members,
+      competition_id: params.competition_id,
+      owner_id: session.user.id,
+    }).select().single();
 
     if (error) {
-      console.log('createLeague error:', JSON.stringify(error, null, 2));
+      console.log('createLeague error: ---->', JSON.stringify(error, null, 2));
       throw new Error(error.message);
     }
-
-    if (response && !response['success']) {
-      console.log('createLeague RPC error:', response['error']);
-      throw new Error(response['error'] || 'Failed to create league');
+    if(leagueData) {
+      const { data: leagueMemberData, error: leagueMemberError } = await supabase.from('league_members').insert({
+        league_id: leagueData.id,
+        user_id: session.user.id,
+        nickname: params.nickname,
+        is_primary: true,
+      }).select().single();
+      if(leagueMemberError) {
+        throw new Error(leagueMemberError.message);
+      }
+      return {leagueData, leagueMemberData};
     }
-    return response;
     
   } catch (error) {
     console.error('createLeague service error:', error);

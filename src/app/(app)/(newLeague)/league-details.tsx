@@ -82,10 +82,12 @@ export default function EnterLeagueDetailsScreen() {
       queryClient.invalidateQueries({ queryKey: ["myLeagues"] });
       console.log("onSuccess ---->", JSON.stringify(data, null, 2));
       router.push({
-        pathname: "/(app)/(newLeague)/league-details",
+        pathname: "/(app)/(newLeague)/league-created",
         params: {
-          league: JSON.stringify(data),
-          // nickname: data?.league?.nickname as string,
+          competition: JSON.stringify(selectedCompetition),
+          name: data?.leagueData?.name as string,
+          join_code: data?.leagueData?.join_code as string,
+          nickname: data?.leagueMemberData?.nickname as string,
         },
       });
     },
