@@ -1,5 +1,5 @@
 import { ButtonC, InputField, TextC } from "@/components/ui";
-
+import ThemeToggle from "@/context/ThemeToggle";
 import { useColorScheme } from "@/hooks/useColorSchema";
 import useAuthStore from "@/services/store/AuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -54,6 +54,7 @@ export default function SignUpScreen() {
         backgroundColor: colorScheme === "dark" ? "#1A1A1A" : "#f5f5f5",
       }}
     >
+      <ThemeToggle />
       <TextC className="text-3xl font-bold text-center mb-5">
         Create an account
       </TextC>
@@ -86,7 +87,7 @@ export default function SignUpScreen() {
         onPress={handleSubmit(onSubmit)}
         loading={loading}
         disabled={!isValid || loading}
-        variant="gray"
+        variant="secondary"
         size="lg"
       />
       <View className="flex-row items-center my-4">

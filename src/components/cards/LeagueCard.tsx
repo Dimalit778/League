@@ -20,7 +20,7 @@ export default function LeagueCard({
         handleSetPrimary(item.id);
       }}
     >
-      <View className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+      <View className="p-4 bg-surface rounded-xl border border-border shadow-sm">
         <View className="flex-row items-center gap-4">
           <ImageC
             source={{ uri: item.competition_logo }}
@@ -30,13 +30,13 @@ export default function LeagueCard({
           />
 
           <View className="flex-1">
-            <Text className="text-lg font-bold text-gray-900" numberOfLines={1}>
+            <Text className="text-lg font-bold text-text" numberOfLines={1}>
               {item.name}
             </Text>
-            <Text className="text-sm text-gray-600">
+            <Text className="text-sm text-textMuted">
               • {item.competition_name}
             </Text>
-            <Text className="text-sm text-gray-600">
+            <Text className="text-sm text-textMuted">
               • Members {item.max_members}
             </Text>
           </View>

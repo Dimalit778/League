@@ -5,13 +5,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#8AB4F8",
-        secondary: "#f9c04a",
-        dark: "#1A1A1A",
-        surface: "#242424",
-        textPrimary: "#F7F7F7",
-        textSecondary: "#F7F7F7",
-        border: "#333333",
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        background: "var(--color-background)",
+        surface: "var(--color-surface)",
+        border: "var(--color-border)",
+        text: "var(--color-text)",
+        textMuted: "var(--color-text-muted)",
+        error: "var(--color-error)",
       },
     },
   },

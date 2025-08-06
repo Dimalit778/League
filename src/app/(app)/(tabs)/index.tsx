@@ -1,6 +1,7 @@
 import LeagueCard from "@/components/cards/LeagueCard";
 import { Loading } from "@/components/Loading";
 import { ButtonC } from "@/components/ui";
+import ThemeToggle from "@/context/ThemeToggle";
 import { useMyLeagues, useSetPrimaryLeague } from "@/hooks/useQueries";
 import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
@@ -39,8 +40,9 @@ export default function MyLeagues() {
   };
 
   return (
-    <View className="flex-1 bg-gray-600">
+    <View className="flex-1 bg-background">
       <Header />
+      <ThemeToggle />
       <View className="flex-grow  px-4 ">
         <FlatList
           data={leagues?.data || []}
@@ -48,7 +50,7 @@ export default function MyLeagues() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View className="flex-grow justify-center items-center">
-              <Text className="text-black text-2xl font-bold">
+              <Text className="text-text text-2xl font-bold">
                 Create or Join a League
               </Text>
             </View>

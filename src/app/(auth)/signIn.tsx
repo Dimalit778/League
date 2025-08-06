@@ -48,6 +48,7 @@ export default function SignIn() {
       <TextC className="text-3xl font-bold text-center mb-5">
         Welcome Back
       </TextC>
+
       <TextC className="text-center font-semibold mb-5">
         Sign in to your account
       </TextC>
@@ -72,7 +73,7 @@ export default function SignIn() {
         onPress={handleSubmit(onSubmit)}
         loading={loading}
         disabled={!isValid || loading}
-        variant="gray"
+        variant="secondary"
         size="lg"
       />
       <View className="flex-row items-center my-4">

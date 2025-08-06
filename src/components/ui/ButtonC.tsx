@@ -9,7 +9,8 @@ import {
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "danger" | "gray";
+  variant?: "primary" | "secondary";
+
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   disabled?: boolean;
@@ -19,6 +20,7 @@ const ButtonC: React.FC<ButtonProps> = ({
   title,
   onPress,
   variant = "primary",
+
   size = "md",
   loading = false,
   disabled = false,
@@ -31,9 +33,11 @@ const ButtonC: React.FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
+      className={`px-4 py-2 bg-${variant} rounded-md ${
+        disabled || loading ? "opacity-50" : ""
+      }`}
       style={[
         styles.button,
-        styles[variant],
         styles[size],
         (disabled || loading) && styles.disabled,
       ]}
@@ -43,7 +47,7 @@ const ButtonC: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text style={[styles.text, styles[`${variant}Text`]]}>{title}</Text>
+        <Text className="text-text text-base font-bold">{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -57,18 +61,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   primary: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "var(--color-primary)",
   },
   secondary: {
-    backgroundColor: "#F2F2F7",
+    backgroundColor: "var(--color-secondary)",
     borderWidth: 1,
     borderColor: "#C7C7CC",
-  },
-  gray: {
-    backgroundColor: "#888",
-  },
-  danger: {
-    backgroundColor: "#FF3B30",
   },
   sm: {
     paddingHorizontal: 12,
@@ -87,22 +85,6 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.8,
-  },
-  text: {
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  primaryText: {
-    color: "#fff",
-  },
-  secondaryText: {
-    color: "#007AFF",
-  },
-  dangerText: {
-    color: "#fff",
-  },
-  grayText: {
-    color: "#fff",
   },
 });
 

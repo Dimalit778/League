@@ -1,4 +1,6 @@
+import ThemeToggle from "@/context/ThemeToggle";
 import useAuthStore from "@/services/store/AuthStore";
+import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,11 +15,12 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { user, logout } = useAuthStore();
+  const { session, logout } = useAuthStore();
+  const user = session?.user as User;
 
   const loading = false;
   const [isEditing, setIsEditing] = useState(false);
-  const [fullName, setFullName] = useState(user?.name || "");
+  const [fullName, setFullName] = useState(user?.user_metadata.fullname || "");
 
   const handleSignOut = async () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -40,7 +43,7 @@ export default function Profile() {
 
   // --- Cancel edit ---
   const handleCancelEdit = () => {
-    setFullName(user?.name || "");
+    setFullName(user?.user_metadata.fullname || "");
     setIsEditing(false);
   };
 
@@ -56,74 +59,85 @@ export default function Profile() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>
-              {(user?.name || user?.email || "U").charAt(0).toUpperCase()}
+    <SafeAreaView className="flex-1 bg-background">
+      <ThemeToggle />
+      <ScrollView className="flex-grow  px-4">
+        <View className="bg-surface  rounded-xl border border-border shadow-sm p-4 mb-4 items-center gap-2">
+          <View className="bg-primary rounded-full w-20 h-20 justify-center items-center">
+            <Text className="text-text text-2xl font-bold">
+              {(user?.user_metadata.fullname || user?.email || "U")
+                .charAt(0)
+                .toUpperCase()}
             </Text>
           </View>
 
-          <Text style={styles.email}>{user?.email}</Text>
+          <Text className="text-text text-base font-bold">
+            {user?.user_metadata.full_name}
+          </Text>
+          <Text className="text-textMuted text-sm">{user?.email}</Text>
         </View>
 
-        <View style={styles.content}>
+        <View className="bg-surface rounded-xl border border-border shadow-sm p-4 mb-4">
           {/* Profile Information */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Profile Information</Text>
+          <View className="bg-surface rounded-xl border border-border shadow-sm p-4 mb-4">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-text text-base font-bold">
+                Profile Information
+              </Text>
               {!isEditing ? (
                 <TouchableOpacity
                   onPress={() => setIsEditing(true)}
-                  style={styles.editButton}
+                  className="bg-primary rounded-xl border border-border shadow-sm p-4 mb-4 justify-center items-center"
                 >
-                  <Text style={styles.editButtonText}>Edit</Text>
+                  <Text className="text-text text-base font-bold">Edit</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
 
-            <View style={styles.profileInfo}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Display Name</Text>
+            <View className="gap-4">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-text text-base font-bold">
+                  Display Name
+                </Text>
                 {isEditing ? (
                   <TextInput
-                    style={styles.input}
+                    className="bg-surface rounded-xl border border-border shadow-sm p-4"
                     value={fullName}
                     onChangeText={setFullName}
                     placeholder="Enter first name"
                   />
                 ) : (
-                  <Text style={styles.infoValue}>
-                    {user?.name || "Not set"}
+                  <Text className="text-text text-base font-bold">
+                    {user?.user_metadata.fullname || "Not set"}
                   </Text>
                 )}
               </View>
 
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Last Name</Text>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-text text-base font-bold">Email</Text>
 
-                <Text style={styles.infoValue}>{user?.name || "Not set"}</Text>
+                <Text className="text-text text-base font-bold">
+                  {user?.email || "Not set"}
+                </Text>
               </View>
 
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Email</Text>
-                <Text style={styles.infoValue}>{user?.email}</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Subscription</Text>
-                <View style={styles.subscriptionBadge}>
-                  <Text style={styles.subscriptionText}>
-                    {user?.subscription ? "Premium" : "Free"}{" "}
-                    {user?.subscription}
+              <View className="flex-row justify-between items-center">
+                <Text className="text-text text-base font-bold">
+                  Subscription
+                </Text>
+                <View className="bg-primary rounded-full px-2 py-1">
+                  <Text className="text-text text-base font-bold">
+                    {user?.user_metadata.subscription ? "Premium" : "Free"}{" "}
+                    {user?.user_metadata.subscription}
                   </Text>
                 </View>
               </View>
 
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Member Since</Text>
-                <Text style={styles.infoValue}>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-text text-base font-bold">
+                  Member Since
+                </Text>
+                <Text className="text-text text-base font-bold">
                   create at
                   {/* {user?.created_at
                     ? new Date(user.created_at).toLocaleDateString()
@@ -134,32 +148,38 @@ export default function Profile() {
           </View>
 
           {/* Account Actions */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Account</Text>
+          <View className="bg-surface rounded-xl border border-border shadow-sm p-4 mb-4">
+            <Text className="text-text text-base font-bold">Account</Text>
 
-            <TouchableOpacity style={styles.actionItem}>
-              <Text style={styles.actionText}>Change Password</Text>
-              <Text style={styles.actionArrow}>›</Text>
+            <TouchableOpacity className="flex-row justify-between items-center">
+              <Text className="text-text text-base font-bold">
+                Change Password
+              </Text>
+              <Text className="text-text text-base font-bold">›</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionItem}>
-              <Text style={styles.actionText}>Privacy Settings</Text>
-              <Text style={styles.actionArrow}>›</Text>
+            <TouchableOpacity className="flex-row justify-between items-center">
+              <Text className="text-text text-base font-bold">
+                Privacy Settings
+              </Text>
+              <Text className="text-text text-base font-bold">›</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionItem}>
-              <Text style={styles.actionText}>Help & Support</Text>
-              <Text style={styles.actionArrow}>›</Text>
+            <TouchableOpacity className="flex-row justify-between items-center">
+              <Text className="text-text text-base font-bold">
+                Help & Support
+              </Text>
+              <Text className="text-text text-base font-bold">›</Text>
             </TouchableOpacity>
           </View>
 
           {/* Sign Out */}
           <TouchableOpacity
             onPress={handleSignOut}
-            style={styles.signOutButton}
+            className="bg-primary rounded-xl border border-border shadow-sm p-4 mb-4 justify-center items-center"
             disabled={loading}
           >
-            <Text style={styles.signOutButtonText}>Sign Out</Text>
+            <Text className="text-text text-base font-bold">Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -183,9 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#6B7280",
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
+
   header: {
     backgroundColor: "#FFFFFF",
     alignItems: "center",

@@ -1,54 +1,61 @@
 import { ButtonC } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorSchema";
 import { router } from "expo-router";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 export default function Welcome() {
-  const { colorScheme } = useColorScheme();
   return (
-    <SafeAreaView className="flex-1 bg-dark">
+    <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-5 py-5">
-        <View style={styles.heroSection}>
+        <View className="items-center mb-12">
           <View style={styles.logoContainer}>
             <Text className="text-2xl font-bold">⚽</Text>
           </View>
-          <Text style={styles.title}>Welcome to League</Text>
-          <Text style={styles.subtitle}>
+          <Text className="text-text text-2xl font-bold mb-4">
+            Welcome to League
+          </Text>
+          <Text className="text-textMuted text-base mb-4 text-center px-5">
             Your ultimate football companion. Track leagues, follow matches, and
             stay connected with the beautiful game.
           </Text>
         </View>
 
         {/* Features Section */}
-        <View style={styles.featuresSection}>
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🏆</Text>
-            <Text style={styles.featureTitle}>Live Standings</Text>
-            <Text style={styles.featureDescription}>
+        <View className="mb-12">
+          <View className="items-center mb-8">
+            <Text className="text-2xl">🏆</Text>
+            <Text className="text-text text-2xl font-bold mb-4">
+              Live Standings
+            </Text>
+            <Text className="text-textMuted text-base mb-4 text-center px-5">
               Real-time league tables and team rankings
             </Text>
           </View>
 
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>⚽</Text>
-            <Text style={styles.featureTitle}>Match Updates</Text>
-            <Text style={styles.featureDescription}>
+          <View className="items-center mb-8">
+            <Text className="text-2xl">⚽</Text>
+            <Text className="text-text text-2xl font-bold mb-4">
+              Match Updates
+            </Text>
+            <Text className="text-textMuted text-base mb-4 text-center px-5">
               Live scores and match notifications
             </Text>
           </View>
 
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>📊</Text>
-            <Text style={styles.featureTitle}>Statistics</Text>
-            <Text style={styles.featureDescription}>
+          <View className="items-center mb-8">
+            <Text className="text-2xl">📊</Text>
+            <Text className="text-text text-2xl font-bold mb-4">
+              Statistics
+            </Text>
+            <Text className="text-textMuted text-base mb-4 text-center px-5">
               Detailed player and team analytics
             </Text>
           </View>
         </View>
+
         <ButtonC
           title="Get Started"
           onPress={() => router.push("/signUp")}
-          variant="primary"
+          variant="secondary"
           size="lg"
         />
       </View>
@@ -57,10 +64,6 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  heroSection: {
-    alignItems: "center",
-    marginBottom: 48,
-  },
   logoContainer: {
     width: 80,
     height: 80,
@@ -72,24 +75,7 @@ const styles = StyleSheet.create({
     boxShadow: "0px 4px 8px rgba(99, 102, 241, 0.3)",
     elevation: 8,
   },
-  logoText: {
-    fontSize: 32,
-    color: "#FFFFFF",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
+
   featuresSection: {
     marginBottom: 48,
   },
