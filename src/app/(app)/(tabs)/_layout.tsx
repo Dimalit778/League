@@ -1,29 +1,32 @@
-import LeagueIcon from "../../../../assets/icons/LeagueIcon";
-import MatchesIcon from "../../../../assets/icons/MatchesIcon";
-import ProfileIcon from "../../../../assets/icons/ProfileIcon";
-import RankIcon from "../../../../assets/icons/RankIcon";
-import TrophyIcon from "../../../../assets/icons/TrophyIcon";
+import Header from "@/components/ui/Header";
+import {
+  LeagueIcon,
+  MatchesIcon,
+  ProfileIcon,
+  RankIcon,
+  TrophyIcon,
+} from "../../../../assets/icons";
 
+import { useTheme } from "@/context/ThemeContext";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
+  const theme = useTheme();
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
-
-        tabBarActiveTintColor: "#f9c04a",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: theme.theme === "dark" ? "#f9c04a" : "#f97316",
+        tabBarInactiveTintColor: theme.theme === "dark" ? "#94a3b8" : "#6b7280",
 
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
-            backgroundColor: "#1A1A1A",
+            backgroundColor: theme.theme === "dark" ? "#1e293b" : "#f3f4f6",
             borderTopWidth: 0,
           },
           android: {
-            backgroundColor: "#1A1A1A",
+            backgroundColor: theme.theme === "dark" ? "#1e293b" : "#f3f4f6",
             borderTopWidth: 0,
           },
           default: {},
@@ -34,6 +37,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "My Leagues",
+          header: () => <Header title="My Leagues" />,
           tabBarIcon: ({ color, size }) => (
             <TrophyIcon width={size} height={size} color={color} />
           ),
@@ -43,7 +47,7 @@ export default function TabLayout() {
         name="League"
         options={{
           title: "League",
-
+          header: () => <Header title="League" />,
           tabBarIcon: ({ color, size }) => (
             <LeagueIcon width={size} height={size} color={color} />
           ),
@@ -53,7 +57,7 @@ export default function TabLayout() {
         name="Matches"
         options={{
           title: "Matches",
-
+          header: () => <Header title="Matches" />,
           tabBarIcon: ({ color, size }) => (
             <MatchesIcon width={size} height={size} color={color} />
           ),
@@ -63,7 +67,7 @@ export default function TabLayout() {
         name="Rank"
         options={{
           title: "Rank",
-
+          header: () => <Header title="Rank" />,
           tabBarIcon: ({ color, size }) => (
             <RankIcon width={size} height={size} color={color} />
           ),
@@ -73,6 +77,7 @@ export default function TabLayout() {
         name="Profile"
         options={{
           title: "Profile",
+          header: () => <Header title="Profile" />,
           tabBarIcon: ({ color, size }) => (
             <ProfileIcon width={size} height={size} color={color} />
           ),

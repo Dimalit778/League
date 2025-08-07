@@ -5,6 +5,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 type League = Tables<"leagues">;
 type Competition = Tables<"competitions">;
+
 type LeagueParams = {
   name: string;
   nickname: string;
@@ -14,12 +15,7 @@ type LeagueParams = {
   competition_id: number;
 };
 
-type LeagueData = {
-  is_primary: boolean;
-  league: League & {
-    competitions: Competition;
-  };
-};
+
 
 // F6HIC-R
 const useLeagueService = () => {  
@@ -76,35 +72,23 @@ const setPrimaryLeague = async (leagueId: number) => {
   return { data, error };
 };
 // Done - Get My Leagues
-const getMyLeagues = async (): Promise<{ data: LeagueData[] | null, error: Error | null }>   => {
+const getMyLeagues = async () => {
   try {
-         const { data, error } = await supabase
+       const { data, error } = await supabase
       .from('league_members')
       .select(`
         is_primary,
-        league:leagues!inner (
-          id,
-          name,
-          join_code,
-          owner_id, 
-          max_members,
-          createdAt,
-          competitions!inner (
-            id,
-            name,
-            logo,
-            flag
-          )
-        )
+        nickname,
+        league:leagues(*)
       `)
       .eq('user_id', session?.user?.id as string)
       .order('is_primary', { ascending: false });
     if (error ) {
-      return { data: null, error };
+     throw new Error(error.message)
     }
-    return { data: data as LeagueData[], error };
+    return data;
   } catch (error) {
-    return { data: null, error: error as Error };
+    throw new Error(error as string);
   }
 };
 //Done - Find League by Join Code

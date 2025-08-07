@@ -1,6 +1,5 @@
-import { ButtonC, InputField, TextC } from "@/components/ui";
-import ThemeToggle from "@/context/ThemeToggle";
-import { useColorScheme } from "@/hooks/useColorSchema";
+import { ButtonC, InputField } from "@/components/ui";
+import { useTheme } from "@/context/ThemeContext";
 import useAuthStore from "@/services/store/AuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
@@ -8,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import * as yup from "yup";
+import { EmailIcon, LockIcon, UserIcon } from "../../../assets/icons";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -22,7 +22,7 @@ const schema = yup.object().shape({
 });
 
 export default function SignUpScreen() {
-  const { colorScheme } = useColorScheme();
+  const { theme } = useTheme();
   const { register, loading, error } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -49,65 +49,88 @@ export default function SignUpScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 justify-center px-5"
-      style={{
-        backgroundColor: colorScheme === "dark" ? "#1A1A1A" : "#f5f5f5",
-      }}
+      className="flex-1 bg-background  px-5"
     >
-      <ThemeToggle />
-      <TextC className="text-3xl font-bold text-center mb-5">
-        Create an account
-      </TextC>
-      <TextC className="text-center font-semibold mb-5">
-        Sign up to get started
-      </TextC>
-      <InputField
-        control={control}
-        name="fullname"
-        placeholder="Full Name"
-        error={errors.fullname}
-      />
-
-      <InputField
-        control={control}
-        name="email"
-        placeholder="Email"
-        error={errors.email}
-      />
-      <InputField
-        control={control}
-        name="password"
-        placeholder="Password"
-        secureTextEntry={!showPassword}
-        error={errors.password}
-      />
-
-      <ButtonC
-        title="Sign Up"
-        onPress={handleSubmit(onSubmit)}
-        loading={loading}
-        disabled={!isValid || loading}
-        variant="secondary"
-        size="lg"
-      />
-      <View className="flex-row items-center my-4">
-        <View className="flex-1 h-px bg-gray-600" />
-        <Text className="text-gray-400 mx-2">OR</Text>
-        <View className="flex-1 h-px bg-gray-600" />
+      <View className="py-10">
+        <Text className="text-4xl text-primary font-bold text-center mb-5">
+          Create an account
+        </Text>
+        <Text className="text-center text-textMuted font-semibold mb-5">
+          Sign up to get started
+        </Text>
       </View>
-      <ButtonC
-        title="Continue with Google"
-        onPress={() => {}}
-        loading={loading}
-        variant="primary"
-        size="md"
-      />
-      <Text className="text-white text-center mt-5 ">
-        Already have an account?{" "}
-        <Link href="/signIn">
-          <Text className="text-blue-500 font-bold">Sign In</Text>
-        </Link>
-      </Text>
+      <View className="flex-1 mt-10">
+        <InputField
+          control={control}
+          name="fullname"
+          placeholder="Full Name"
+          icon={
+            <UserIcon
+              width={24}
+              height={24}
+              color={theme === "dark" ? "#fff" : "#000"}
+            />
+          }
+          error={errors.fullname}
+        />
+
+        <InputField
+          control={control}
+          name="email"
+          placeholder="Email"
+          icon={
+            <EmailIcon
+              width={24}
+              height={24}
+              color={theme === "dark" ? "#fff" : "#000"}
+            />
+          }
+          error={errors.email}
+        />
+        <InputField
+          control={control}
+          name="password"
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          icon={
+            <LockIcon
+              width={24}
+              height={24}
+              color={theme === "dark" ? "#fff" : "#000"}
+            />
+          }
+          error={errors.password}
+        />
+
+        <ButtonC
+          title="Sign Up"
+          onPress={handleSubmit(onSubmit)}
+          loading={loading}
+          disabled={!isValid || loading}
+          variant="secondary"
+          size="lg"
+        />
+        <View className="flex-row items-center my-4">
+          <View className="flex-1 h-px bg-gray-600" />
+          <Text className="text-gray-400 mx-2">OR</Text>
+          <View className="flex-1 h-px bg-gray-600" />
+        </View>
+        <ButtonC
+          title="Continue with Google"
+          onPress={() => {}}
+          loading={loading}
+          variant="primary"
+          size="md"
+        />
+        <View className="flex-row items-center justify-center mt-5 gap-2 ">
+          <Text className="text-textMuted text-center  ">
+            Already have an account?
+          </Text>
+          <Link href="/signIn" replace>
+            <Text className=" text-secondary font-bold">Sign In</Text>
+          </Link>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }

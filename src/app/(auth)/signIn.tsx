@@ -1,5 +1,5 @@
-import { ButtonC, InputField, TextC } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorSchema";
+import { ButtonC, InputField } from "@/components/ui";
+import { useTheme } from "@/context/ThemeContext";
 import useAuthStore from "@/services/store/AuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import * as yup from "yup";
+import { EmailIcon, LockIcon } from "../../../assets/icons";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -17,7 +18,7 @@ const schema = yup.object().shape({
 });
 
 export default function SignIn() {
-  const { colorScheme } = useColorScheme();
+  const { theme } = useTheme();
   const { login, loading } = useAuthStore();
   const {
     control,
@@ -40,61 +41,76 @@ export default function SignIn() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 justify-center px-5"
-      style={{
-        backgroundColor: colorScheme === "dark" ? "#242424" : "#fff",
-      }}
+      className="flex-1 bg-background  px-5"
     >
-      <TextC className="text-3xl font-bold text-center mb-5">
-        Welcome Back
-      </TextC>
+      <View className="py-10">
+        <Text className="text-4xl text-primary font-bold text-center mb-5">
+          Welcome Back
+        </Text>
 
-      <TextC className="text-center font-semibold mb-5">
-        Sign in to your account
-      </TextC>
-      <InputField
-        control={control}
-        name="email"
-        placeholder="Email"
-        secureTextEntry={false}
-        error={errors.email}
-      />
-
-      <InputField
-        control={control}
-        name="password"
-        placeholder="Password"
-        secureTextEntry
-        error={errors.password}
-      />
-
-      <ButtonC
-        title="Log In"
-        onPress={handleSubmit(onSubmit)}
-        loading={loading}
-        disabled={!isValid || loading}
-        variant="secondary"
-        size="lg"
-      />
-      <View className="flex-row items-center my-4">
-        <View className="flex-1 h-px bg-gray-600" />
-        <Text className="text-gray-400 mx-2">OR</Text>
-        <View className="flex-1 h-px bg-gray-600" />
+        <Text className="text-center text-textMuted font-semibold mb-5">
+          Sign in to your account
+        </Text>
       </View>
-      <ButtonC
-        title="Continue with Google"
-        onPress={() => {}}
-        loading={loading}
-        variant="primary"
-        size="md"
-      />
+      <View className="flex-1 mt-10">
+        <InputField
+          control={control}
+          name="email"
+          placeholder="Email"
+          secureTextEntry={false}
+          error={errors.email}
+          icon={
+            <EmailIcon
+              width={24}
+              height={24}
+              color={theme === "dark" ? "#fff" : "#000"}
+            />
+          }
+        />
 
-      <Text className="text-white text-center mt-5 ">
-        Don't have an account?{" "}
-        <Link href="/signUp">
-          <Text className="text-blue-500 font-bold">Sign Up</Text>
-        </Link>
-      </Text>
+        <InputField
+          control={control}
+          name="password"
+          placeholder="Password"
+          secureTextEntry
+          icon={
+            <LockIcon
+              width={24}
+              height={24}
+              color={theme === "dark" ? "#fff" : "#000"}
+            />
+          }
+          error={errors.password}
+        />
+
+        <ButtonC
+          title="Log In"
+          onPress={handleSubmit(onSubmit)}
+          loading={loading}
+          disabled={!isValid || loading}
+          variant="secondary"
+          size="lg"
+        />
+        <View className="flex-row items-center my-4">
+          <View className="flex-1 h-px bg-gray-600" />
+          <Text className="text-gray-400 mx-2">OR</Text>
+          <View className="flex-1 h-px bg-gray-600" />
+        </View>
+        <ButtonC
+          title="Continue with Google"
+          onPress={() => {}}
+          loading={loading}
+          variant="primary"
+          size="md"
+        />
+
+        <Text className="text-textMuted text-center mt-5 ">
+          Don't have an account?{" "}
+          <Link href="/signUp" replace>
+            <Text className="text-secondary font-bold">Sign Up</Text>
+          </Link>
+        </Text>
+      </View>
     </KeyboardAvoidingView>
   );
 }

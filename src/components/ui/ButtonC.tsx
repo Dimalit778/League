@@ -20,7 +20,6 @@ const ButtonC: React.FC<ButtonProps> = ({
   title,
   onPress,
   variant = "primary",
-
   size = "md",
   loading = false,
   disabled = false,
@@ -47,7 +46,7 @@ const ButtonC: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text className="text-text text-base font-bold">{title}</Text>
+        <Text className="text-background text-base font-bold">{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -59,14 +58,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-  },
-  primary: {
-    backgroundColor: "var(--color-primary)",
-  },
-  secondary: {
-    backgroundColor: "var(--color-secondary)",
-    borderWidth: 1,
-    borderColor: "#C7C7CC",
   },
   sm: {
     paddingHorizontal: 12,

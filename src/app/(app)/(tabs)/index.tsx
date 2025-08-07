@@ -1,24 +1,28 @@
 import LeagueCard from "@/components/cards/LeagueCard";
 import { Loading } from "@/components/Loading";
 import { ButtonC } from "@/components/ui";
-import ThemeToggle from "@/context/ThemeToggle";
-import { useMyLeagues, useSetPrimaryLeague } from "@/hooks/useQueries";
+
+import { useLeagueService } from "@/services/leagueService";
+import { useAppStore } from "@/services/store/AppStore";
+import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
 
 export default function MyLeagues() {
-  const { data: leagues, isLoading, error } = useMyLeagues();
-  const setPrimaryLeagueMutation = useSetPrimaryLeague();
+  const { getMyLeagues } = useLeagueService();
+  const { setPrimaryLeague } = useAppStore();
 
-  const handleSetPrimary = (leagueId: string) => {
-    setPrimaryLeagueMutation.mutate(leagueId);
-  };
+  const {
+    data: leagues,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["leagues"],
+    queryFn: () => getMyLeagues(),
+  });
 
   if (isLoading) return <Loading />;
-
-  if (error) {
-    console.error("Error getting leagues:", error);
-  }
+  if (error) return <Text>Error: {error.message}</Text>;
 
   const Header = () => {
     return (
@@ -42,10 +46,9 @@ export default function MyLeagues() {
   return (
     <View className="flex-1 bg-background">
       <Header />
-      <ThemeToggle />
       <View className="flex-grow  px-4 ">
         <FlatList
-          data={leagues?.data || []}
+          data={leagues || []}
           contentContainerStyle={{ flexGrow: 1, gap: 15, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
@@ -56,7 +59,7 @@ export default function MyLeagues() {
             </View>
           }
           renderItem={({ item }) => (
-            <LeagueCard handleSetPrimary={handleSetPrimary} item={item} />
+            <LeagueCard handleSetPrimary={() => {}} item={item} />
           )}
         />
       </View>

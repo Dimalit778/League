@@ -33,6 +33,7 @@ const useAuthStore = create<AuthState>((set) => ({
         return;
       }
       set({ session: data.session });
+      
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";

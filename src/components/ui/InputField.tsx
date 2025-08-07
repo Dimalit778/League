@@ -1,5 +1,5 @@
 import { Control, Controller, FieldError } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 type InputFieldProps = {
   control: Control<any>;
@@ -9,6 +9,7 @@ type InputFieldProps = {
   error?: FieldError;
   maxLength?: number;
   autoCorrect?: boolean;
+  icon?: React.ReactNode;
 };
 
 const InputField = ({
@@ -19,39 +20,33 @@ const InputField = ({
   maxLength = 50,
   autoCorrect = false,
   error,
+  icon,
 }: InputFieldProps) => (
-  <View className="mb-4">
-    <Controller
-      control={control}
-      name={name}
-      render={({ field: { onChange, onBlur, value } }) => (
-        <TextInput
-          placeholder={placeholder}
-          placeholderTextColor="#aaa"
-          secureTextEntry={secureTextEntry}
-          style={styles.input}
-          onBlur={onBlur}
-          onChangeText={onChange}
-          value={value}
-          maxLength={maxLength}
-          autoCorrect={autoCorrect}
-        />
-      )}
-    />
+  <View>
+    <View className="bg-surface mt-2 flex-row items-center border border-text rounded-lg px-2 mb-2 py-4">
+      <View className="mr-2">{icon}</View>
+      <Controller
+        control={control}
+        name={name}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder={placeholder}
+            placeholderTextColor="#aaa"
+            secureTextEntry={secureTextEntry}
+            className="flex-1 text-text"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            maxLength={maxLength}
+            autoCorrect={autoCorrect}
+          />
+        )}
+      />
+    </View>
     {error && (
       <Text className="text-red-500 mt-1 text-sm">{error.message}</Text>
     )}
   </View>
 );
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: "#242424",
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#888",
-    color: "#fff",
-  },
-});
 
 export default InputField;

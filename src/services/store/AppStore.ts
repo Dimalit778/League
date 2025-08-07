@@ -1,50 +1,78 @@
 
 import { supabase } from "@/lib/supabase";
 import { Tables } from "@/types/database.types";
-import { User } from "@supabase/supabase-js";
+
 import { create } from "zustand";
 
+
+type User = {
+  id: string;
+  fullname: string;
+  email: string;
+  avatar: string;
+}
 interface AppState {
   user: User | null;
   primaryLeague: Tables<"leagues"> | null;
-  userLeagues:  Tables<"league_members">[];  // Changed from League[]
-  selectedLeague: Tables<"leagues"> | null;
-  loading?: boolean;
+  loading: boolean;
+  
+  // Actions
   setPrimaryLeague: (primaryLeague: Tables<"leagues">) => void;
-  setUserLeagues: (userId: string) => Promise<void>;
-  setSelectedLeague: (league: Tables<"leagues">) => void;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
+  initializeUserAndLeagues: () => Promise<void>;
+  clearStore: () => void;
 }
-
 export const useAppStore = create<AppState>((set, get) => ({
   user: null,
   primaryLeague: null,
-  userLeagues: <Tables<"league_members">[]>[],
   loading: false,
-  selectedLeague: null,
-    setPrimaryLeague: (primaryLeague: Tables<"leagues">) => set({ primaryLeague }),
-  setSelectedLeague: (league) => set({ selectedLeague: league }),
+  setPrimaryLeague: (primaryLeague: Tables<"leagues">) => set({ primaryLeague }),
+  setUser: (user: User | null) => set({ user }),
+  clearStore: () => set({
+    user: null,
+    primaryLeague: null,
+    loading: false,
+  }), 
 
-  setUserLeagues: async (userId: string) => {
-    const { data, error } = await supabase
-      .from('league_members')
-      .select('*, leagues(*)')
-      .eq('user_id', userId);
-      console.log('setUserLeagues error', JSON.stringify(error, null, 2))
-    console.log('setUserLeagues data', JSON.stringify(data, null, 2))
-      if (error) {
-      console.error("Error getting user leagues:", error.message);
-      return;
+  initializeUserAndLeagues: async () => {
+    set({ loading: true });
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error(sessionError.message);
+      }
+      if (!sessionData.session?.user?.id) {
+        set({ loading: false, user: null });
+        return;
+      }
+
+      set({ user:{
+        id: sessionData.session?.user?.id,
+        fullname: sessionData.session?.user?.user_metadata?.fullname,
+        email: sessionData.session?.user?.email || '',
+        avatar: sessionData.session?.user?.user_metadata?.avatar,
+      }  });
+      
+      // Get user's leagues
+      const { data: userLeagues, error: leaguesError } = await supabase
+        .from('league_members')
+        .select(`
+          *,
+          league:leagues(*)
+        `)
+        .eq('user_id', sessionData.session?.user?.id);
+
+      if (leaguesError) {
+        throw new Error(leaguesError.message);
+      }
+      
+      set({ loading: false });
+    } catch (error) {
+      console.error("Error initializing user and leagues:", error);
+      set({ loading: false, user: null });
     }
-    
-    const leagueMembersWithLeague = data?.map(member => ({
-      ...member,
-      leagues: member.leagues
-    })) as Tables<"league_members">[] || [];
-    
-    set({ userLeagues: leagueMembersWithLeague });
   },
-  setUser : (user: User) => set({ user: user }),
+
 
 
 }));

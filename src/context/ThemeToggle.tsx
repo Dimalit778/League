@@ -11,10 +11,10 @@ import Animated, {
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
-  const translateX = useSharedValue(isDark ? 46 : 3.5);
+  const translateX = useSharedValue(isDark ? 38 : 3.3);
 
   useEffect(() => {
-    translateX.value = withSpring(isDark ? 46 : 3.5, {
+    translateX.value = withSpring(isDark ? 38 : 3.3, {
       damping: 15,
       stiffness: 150,
     });
@@ -29,13 +29,13 @@ const ThemeToggle = () => {
   return (
     <Pressable
       onPress={toggleTheme}
-      className="w-24 h-12 p-1 bg-secondary relative flex-row rounded-full items-center justify-between"
+      className=" bg-secondary relative flex-row rounded-full items-center justify-between"
     >
       <Icon icon="sun" />
       <Icon icon="moon" />
       <Animated.View
         style={[animatedStyle]}
-        className="w-10 h-10 bg-background rounded-full items-center justify-center flex flex-row absolute"
+        className="w-8 h-8 bg-background rounded-full items-center justify-center flex flex-row absolute"
       />
     </Pressable>
   );

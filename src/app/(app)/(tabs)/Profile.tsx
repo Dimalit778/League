@@ -1,4 +1,3 @@
-import ThemeToggle from "@/context/ThemeToggle";
 import useAuthStore from "@/services/store/AuthStore";
 import { User } from "@supabase/supabase-js";
 import { useState } from "react";
@@ -60,7 +59,6 @@ export default function Profile() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <ThemeToggle />
       <ScrollView className="flex-grow  px-4">
         <View className="bg-surface  rounded-xl border border-border shadow-sm p-4 mb-4 items-center gap-2">
           <View className="bg-primary rounded-full w-20 h-20 justify-center items-center">
