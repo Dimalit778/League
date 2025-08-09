@@ -1,73 +1,124 @@
-import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
+import { ImageC } from "@/components/ui";
+import { Feather } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
-import { Alert, Clipboard, Text, TouchableOpacity, View } from "react-native";
-
-// Define the Competition type based on your Supabase tables
-import { Tables } from "@/types/database.types";
-type Competition = Tables<"competitions">;
-type League = Tables<"leagues">;
+import {
+  Alert,
+  Clipboard,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function LeagueCreatedScreen() {
-  const { league, nickname } = useLocalSearchParams();
+  const { leagueData } = useLocalSearchParams();
 
-  // Parse the competition object back from the JSON string
-  const leagueData: League | null = league
-    ? JSON.parse(league as string)
-    : null;
-  console.log("leagueData", JSON.stringify(leagueData, null, 2));
-  console.log("nickname", nickname);
-  // Extract necessary details from the competition data
-  const competitionName = leagueData?.name || "";
+  const parsedLeagueData = JSON.parse(leagueData as string);
 
-  // Handle copying the join code to clipboard
   const handleCopyJoinCode = () => {
-    if (typeof leagueData?.join_code === "string") {
-      Clipboard.setString(leagueData?.join_code);
+    if (typeof parsedLeagueData?.join_code === "string") {
+      Clipboard.setString(parsedLeagueData?.join_code || "");
       Alert.alert("Copied!", "Join code copied to clipboard.");
     }
   };
 
+  const handleShareJoinCode = async () => {
+    try {
+      const shareMessage = `🏆 Join my ${parsedLeagueData?.competitions?.name || "Football"} league "${parsedLeagueData?.name}"!\n\nUse code: ${parsedLeagueData?.join_code}\n\nDownload the app to join!`;
+
+      await Share.share({
+        message: shareMessage,
+        title: `Join ${parsedLeagueData?.name} League`,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   return (
-    <View className="flex-1 bg-white px-6 py-10 justify-between">
-      {/* League Preview Card */}
-      <PreviewLeagueCard
-        leagueName={leagueData?.name as string}
-        competitionName={competitionName}
-        competitionFlag={competitionFlag}
-        competitionLogo={competitionLogo}
-        competitionCountry={competitionCountry}
-      />
-
-      {/* Nickname and Join Code Section */}
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-2xl font-semibold text-center mb-4">
-          Your League Nickname:{" "}
-          <Text className="font-bold text-blue-700">{nickname}</Text>
+    <View className="flex-1 bg-background px-6 py-10">
+      {/* Success Header */}
+      <View className="items-center mb-8">
+        <Text className="text-2xl font-bold text-center mb-2 text-text">
+          League Created Successfully! 🎉
         </Text>
+        <Text className="text-base text-textMuted text-center">
+          Your {parsedLeagueData?.competitions?.name || "Football"} league is
+          ready
+        </Text>
+      </View>
 
-        <Text className="text-base text-gray-700 mb-2">League Join Code</Text>
+      {/* League Info Card */}
+      <View className="bg-card rounded-2xl p-6 mb-8 border border-border shadow-sm">
+        {/* Centered League Header */}
+        <View className="items-center mb-6">
+          <ImageC
+            source={{
+              uri:
+                parsedLeagueData?.league_logo ||
+                parsedLeagueData?.competitions?.logo,
+            }}
+            className="rounded-2xl mb-4 shadow-sm"
+            width={80}
+            height={80}
+            resizeMode="contain"
+          />
+          <Text className="text-2xl font-bold text-center text-text mb-2 mt-4">
+            {parsedLeagueData?.name}
+          </Text>
+          <Text className="text-base text-textMuted text-center">
+            {parsedLeagueData?.competitions?.country} •{" "}
+            {parsedLeagueData?.competitions?.name}
+          </Text>
+        </View>
+
+        <View className="bg-background/50 rounded-xl p-4 mb-4 border border-border/50">
+          <Text className="text-sm font-medium text-textMuted mb-1 text-center">
+            Your Nickname
+          </Text>
+          <Text className="text-lg font-bold text-text text-center">
+            {parsedLeagueData?.nickname}
+          </Text>
+        </View>
+
+        <View className="bg-background/50 rounded-xl p-4">
+          <Text className="text-sm font-medium text-textMuted mb-3 text-center">
+            League Join Code
+          </Text>
+          <TouchableOpacity
+            onPress={handleCopyJoinCode}
+            className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-3"
+          >
+            <Text className="text-2xl font-mono font-bold text-primary text-center tracking-[8px]">
+              {parsedLeagueData?.join_code}
+            </Text>
+          </TouchableOpacity>
+          <Text className="text-xs text-textMuted text-center">
+            Tap to copy code
+          </Text>
+        </View>
+      </View>
+
+      {/* Action Buttons */}
+      <View className="space-y-3 mb-8">
         <TouchableOpacity
-          onPress={handleCopyJoinCode}
-          className="bg-gray-100 px-6 py-3 rounded-lg border border-gray-200"
+          onPress={handleShareJoinCode}
+          className="bg-primary rounded-xl p-4 flex-row items-center justify-center"
         >
-          <Text className="text-xl font-mono font-bold text-blue-700 tracking-widest">
-            {leagueData?.join_code}
+          <Feather name="share" size={20} color="#374151" />
+          <Text className="text-primaryForeground font-semibold ml-2 text-base">
+            Share Join Code
           </Text>
         </TouchableOpacity>
-        <Text className="text-xs text-gray-400 mt-1">Tap to copy</Text>
-
-        <Text className="text-base font-semibold mt-8 text-center px-4">
-          Share this code with your friends to invite them to your league!
-        </Text>
       </View>
 
       {/* Start League Button */}
       <Link href="/(app)/(tabs)" asChild>
         <TouchableOpacity
-          className="bg-blue-600 rounded-lg items-center py-4 px-4 w-full"
+          className="bg-primary rounded-xl items-center py-4 px-4"
           activeOpacity={0.8}
         >
-          <Text className="text-white text-2xl font-bold tracking-widest">
+          <Text className="text-primaryForeground text-lg font-bold">
             Start League
           </Text>
         </TouchableOpacity>

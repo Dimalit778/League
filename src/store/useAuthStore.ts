@@ -1,9 +1,13 @@
 import { supabase } from "@/lib/supabase";
 
+import { Tables } from "@/types/database.types";
 import { AuthError, Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { create } from "zustand";
 
+type User = Tables<"users">;
+
 interface AuthState {
+  user: User | null;
   session: Session | null;
   loading: boolean;   
   error: string | null;
@@ -32,7 +36,14 @@ const useAuthStore = create<AuthState>((set) => ({
         set({ error: error.message, loading: false });
         return;
       }
-      set({ session: data.session });
+    
+      const { data: userData, error: userError } = await supabase.from("users").select("*").eq("id", data.session?.user?.id!).single();
+      if (userError) {
+        console.error("Error getting user:", userError.message);
+        set({ error: userError.message, loading: false });
+        return;
+      }
+      set({  user: userData, session: data.session });
       
     } catch (error) {
       const errorMessage =

@@ -8,6 +8,7 @@ type InputFieldProps = {
   secureTextEntry?: boolean;
   error?: FieldError;
   maxLength?: number;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoCorrect?: boolean;
   icon?: React.ReactNode;
 };
@@ -18,6 +19,7 @@ const InputField = ({
   placeholder,
   secureTextEntry,
   maxLength = 50,
+  autoCapitalize = "none",
   autoCorrect = false,
   error,
   icon,
@@ -39,6 +41,7 @@ const InputField = ({
             value={value}
             maxLength={maxLength}
             autoCorrect={autoCorrect}
+            autoCapitalize={autoCapitalize}
           />
         )}
       />

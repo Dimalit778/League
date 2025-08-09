@@ -1,4 +1,4 @@
-import Header from "@/components/ui/Header";
+import Header from "@/components/ui/TopBar";
 import {
   LeagueIcon,
   MatchesIcon,

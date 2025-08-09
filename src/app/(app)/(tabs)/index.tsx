@@ -2,24 +2,12 @@ import LeagueCard from "@/components/cards/LeagueCard";
 import { Loading } from "@/components/Loading";
 import { ButtonC } from "@/components/ui";
 
-import { useLeagueService } from "@/services/leagueService";
-import { useAppStore } from "@/services/store/AppStore";
-import { useQuery } from "@tanstack/react-query";
+import { useMyLeagues } from "@/hooks/useLeagues";
 import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
 
 export default function MyLeagues() {
-  const { getMyLeagues } = useLeagueService();
-  const { setPrimaryLeague } = useAppStore();
-
-  const {
-    data: leagues,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["leagues"],
-    queryFn: () => getMyLeagues(),
-  });
+  const { data: leagues, isLoading, error } = useMyLeagues();
 
   if (isLoading) return <Loading />;
   if (error) return <Text>Error: {error.message}</Text>;

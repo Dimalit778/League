@@ -1,6 +1,6 @@
 import { ButtonC, InputField } from "@/components/ui";
 import { useTheme } from "@/context/ThemeContext";
-import useAuthStore from "@/services/store/AuthStore";
+import useAuthStore from "@/store/useAuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
 import { useState } from "react";

@@ -1,107 +1,162 @@
 import { supabase } from "@/lib/supabase";
-import useAuthStore from "@/services/store/AuthStore";
-import { Tables } from "@/types/database.types";
+import useLeagueStore from "@/store/useLeagueStore";
+import { TablesInsert } from "@/types/database.types";
 import { SupabaseClient } from "@supabase/supabase-js";
-
-type League = Tables<"leagues">;
-type Competition = Tables<"competitions">;
-
-type LeagueParams = {
-  name: string;
-  nickname: string;
-  league_logo: string;
-  join_code: string;
-  max_members: number;
-  competition_id: number;
-};
+type League = TablesInsert<"leagues">;
+type LeagueMember = TablesInsert<"league_members">;
 
 
 
-// F6HIC-R
 const useLeagueService = () => {  
-  const {session} = useAuthStore()
-
-// Done - Create League
-const createLeague = async (params: LeagueParams) => {
+  const { setPrimaryLeague } = useLeagueStore();
+// Done - Get My Leagues
+const getMyLeagues = async (userId: string) => {
   try {
-    if (!session?.user?.id) {
-      throw new Error("User not authenticated");
+    const { data, error } = await supabase
+      .from('league_members')
+      .select(`
+        is_primary,
+        nickname,
+        league:leagues(*),
+        league_id
+      `)
+      .eq('user_id', userId)
+      .order('is_primary', { ascending: false });
+    
+    if (error) {
+      throw new Error(error.message)
     }
-    const { data: leagueData, error } = await supabase.from("leagues").insert({
+
+    // Get member counts for each league
+    if (data) {
+      const leagueIds = data.map(item => item.league_id);
+      
+      const { data: memberCounts, error: memberCountError } = await supabase
+        .from('league_members')
+        .select('league_id')
+        .in('league_id', leagueIds);
+
+      if (memberCountError) {
+        console.error('Error fetching member counts:', memberCountError);
+      }
+
+      // Add member count to each league
+      const dataWithCounts = data.map(item => {
+        const memberCount = memberCounts?.filter(mc => mc.league_id === item.league_id).length || 0;
+        return {
+          ...item,
+          league: {
+            ...item.league,
+            current_members: memberCount
+          }
+        };
+      });
+
+      // Set primary league if found, then return dataWithCounts
+      const primaryLeague = dataWithCounts.find((item: any) => item.is_primary);
+      if (primaryLeague) {
+        setPrimaryLeague(primaryLeague.league);
+      }
+      return dataWithCounts;
+    }
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+const getLeagueById = async (leagueId: number) => {
+    const { data, error } = await supabase.from("leagues").select( "id,name,join_code,league_logo,max_members ,competitions!inner (name,country,flag)").eq("id", leagueId).single();
+  if (error) {
+    throw new Error(error.message);
+  }
+  console.log("getLeagueById call---", JSON.stringify(data, null, 2));
+  return data;
+};
+// Done - Create League
+const createLeague = async (userId: string ,nickname: string, params: League) => {
+
+    const { data: leagueData, error } = await supabase.from("leagues").insert<League>({
       name: params.name,
       league_logo: params.league_logo,
       join_code: params.join_code,
       max_members: params.max_members,
       competition_id: params.competition_id,
-      owner_id: session.user.id,
-    }).select().single();
+      owner_id: userId,
+    }).select(`
+      *,
+      competitions!inner (
+        id,
+        name,
+        country,
+        logo,
+        flag
+      )
+    `).single();
 
-    if (error) {
-      console.log('createLeague error: ---->', JSON.stringify(error, null, 2));
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
+  
     if(leagueData) {
-      const { data: leagueMemberData, error: leagueMemberError } = await supabase.from('league_members').insert({
+      const { error: resetPrimaryError } = await supabase
+        .from('league_members')
+        .update({ is_primary: false })
+        .eq('user_id', userId);
+
+      if (resetPrimaryError) throw new Error(resetPrimaryError.message);
+    
+
+      const { data: leagueMemberData, error: leagueMemberError } = await supabase.from('league_members').insert<LeagueMember>({
         league_id: leagueData.id,
-        user_id: session.user.id,
-        nickname: params.nickname,
+        user_id: userId,
+        nickname: nickname,
         is_primary: true,
+        
       }).select().single();
-      if(leagueMemberError) {
-        throw new Error(leagueMemberError.message);
+      if(leagueMemberError) throw new Error(leagueMemberError.message);
+
+
+      const newLeagueData = {
+        ...leagueData,
+        nickname: nickname,
+        member_count: 1,
       }
-      return {leagueData, leagueMemberData};
+      setPrimaryLeague(leagueData);
+      return newLeagueData;
     }
     
-  } catch (error) {
-    console.error('createLeague service error:', error);
-    throw error;
+    
+};
+// Done - Join League
+const joinLeague = async (userId: string, leagueId: number, nickname: string) => {
+  // Set all existing memberships for this user to non-primary
+  const { error: resetPrimaryError } = await supabase
+    .from('league_members')
+    .update({ is_primary: false })
+    .eq('user_id', userId);
+
+  if (resetPrimaryError) {
+    return { data: null, error: resetPrimaryError };
   }
+
+  const { data, error } = await supabase
+    .from("league_members")
+    .insert({ league_id: leagueId, user_id: userId, nickname: nickname ,is_primary: true})
+    .select()
+    .single();
+return { data, error };
 };
 
 
-const setPrimaryLeague = async (leagueId: number) => {
-  if (!session?.user?.id) {
-    return { data: null, error: new Error('User not authenticated') };
-  }
-  
-  const { data, error } = await supabase.rpc('update_user_primary_league', {
-    p_league_id: leagueId,
-    p_user_id: session.user.id
-  });
-  return { data, error };
-};
-// Done - Get My Leagues
-const getMyLeagues = async () => {
-  try {
-       const { data, error } = await supabase
-      .from('league_members')
-      .select(`
-        is_primary,
-        nickname,
-        league:leagues(*)
-      `)
-      .eq('user_id', session?.user?.id as string)
-      .order('is_primary', { ascending: false });
-    if (error ) {
-     throw new Error(error.message)
-    }
-    return data;
-  } catch (error) {
-    throw new Error(error as string);
-  }
-};
 //Done - Find League by Join Code
 const findLeagueByJoinCode = async (joinCode: string) => {
   const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country)").eq("join_code", joinCode).maybeSingle();
 return { data, error };
-
-}; 
-// Done - Join League
-const joinLeague = async (leagueId: number, nickname: string) => {
-  const { data, error } = await supabase.from("league_members").insert({ league_id: leagueId, user_id: session?.user?.id as string, nickname: nickname    }).select().single();
-return { data, error };
 };
+
+const getLeaderboard = async (leagueId: number) => {
+  const { data, error } = await supabase.from("league_members").select("id,nickname,points").eq("league_id", leagueId).order("points", { ascending: false });
+  if(error) throw new Error(error.message);
+  return data;
+};
+
 //Done - Get Competitions
  const getCompetitions = async () => {
   const { data, error } = await supabase.from("competitions").select("*");
@@ -110,10 +165,6 @@ return { data, error };
   }
   return data
 };
-
-
-
-
 
  const getLeagueMatches = async (
   league: string,
@@ -134,10 +185,10 @@ return { data, error };
     getCompetitions,
     getLeagueMatches,
     getMyLeagues,
-    joinLeague,
- 
+    joinLeague, 
     findLeagueByJoinCode,
-    setPrimaryLeague
+    getLeagueById,
+    getLeaderboard
   };
 };
 

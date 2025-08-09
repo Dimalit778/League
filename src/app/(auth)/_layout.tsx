@@ -1,5 +1,5 @@
-import { Header } from "@/components/ui";
-import ThemeToggle from "@/context/ThemeToggle";
+import ThemeToggle from "@/components/ThemeToggle";
+import { TopBar } from "@/components/ui";
 import { Stack } from "expo-router";
 
 export default function AuthLayout() {
@@ -11,7 +11,7 @@ export default function AuthLayout() {
         name="signUp"
         options={{
           header: () => (
-            <Header
+            <TopBar
               title="Sign Up"
               showBackButton
               rightElement={<ThemeToggle />}
@@ -23,7 +23,7 @@ export default function AuthLayout() {
         name="signIn"
         options={{
           header: () => (
-            <Header
+            <TopBar
               title="Sign In"
               showBackButton
               rightElement={<ThemeToggle />}

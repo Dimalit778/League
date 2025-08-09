@@ -33,11 +33,12 @@ export default function LeagueCard({
             </Text>
 
             <Text className="text-sm text-textMuted">
-              • Members {item.league?.max_members}
+              {item.league?.current_members || 0}/{item.league?.max_members} members
             </Text>
           </View>
-          <View className="flex-row ">
+          <View className="justify-end items-end">
             {item.is_primary && <StarIcon width={36} height={36} />}
+            <Text className="text-lg text-textMuted">{item.nickname}</Text>
           </View>
         </View>
       </View>

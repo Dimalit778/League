@@ -1,14 +1,31 @@
+import { useGetLeagueById } from "@/hooks/useLeagues";
+import { useEffect } from "react";
 import { Text, View } from "react-native";
 const API_KEY = process.env.EXPO_PUBLIC_API_FOOTBALL_KEY;
 
 export default function Rank() {
+  const { data: leagueData, isLoading: leagueLoading } = useGetLeagueById(48);
+  if (leagueData) {
+    console.log(
+      "leagueData in rank by id",
+      JSON.stringify(leagueData, null, 2)
+    );
+  }
+  useEffect(() => {
+    if (leagueData) {
+      console.log(
+        "leagueData  useEffect by id",
+        JSON.stringify(leagueData, null, 2)
+      );
+    }
+  }, [leagueData]);
   return (
     <View className="flex-1 bg-gray-100">
       <View className="bg-blue-600 p-4">
         <Text className="text-2xl font-bold text-white text-center">
           Leaderboard
         </Text>
-        <div
+        {/* <div
           id="wg-api-football-games"
           data-host="v3.football.api-sports.io"
           data-key={API_KEY}
@@ -27,7 +44,7 @@ export default function Rank() {
         <script
           type="module"
           src="https://widgets.api-sports.io/2.0.3/widgets.js"
-        ></script>
+        ></script> */}
       </View>
     </View>
   );

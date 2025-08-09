@@ -1,105 +1,116 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+import { TablesInsert, TablesUpdate } from "@/types/database.types";
 
-export const getUserProfile = async (
-  userId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
+type UserInsert = TablesInsert<"users">;
+type UserUpdate = TablesUpdate<"users">;
 
-  return { data, error };
-};
+export const userService = {
+  async getUserProfile(userId: string) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
-export const getUserLeagues = async (
-  userId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("league_members")
-    .select(
-      `
+    if (error) throw error;
+    return data;
+  },
+
+  async updateUserProfile(userId: string, updates: UserUpdate) {
+    const { data, error } = await supabase
+      .from("users")
+      .update(updates)
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async createUserProfile(user: UserInsert) {
+    const { data, error } = await supabase
+      .from("users")
+      .insert(user)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getUserLeagues(userId: string) {
+    const { data, error } = await supabase
+      .from("league_members")
+      .select(`
+        *,
+        league:leagues(
           *,
-          league:leagues(*)
-        `
-    )
-    .eq("user_id", userId);
+          competition:competitions(*)
+        )
+      `)
+      .eq("user_id", userId)
+      .order("is_primary", { ascending: false });
 
-  return { data, error };
-};
+    if (error) throw error;
+    return data;
+  },
 
-// Get user's primary league
-export const getUserPrimaryLeague = async (
-  userId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("primary_league_id, leagues(*)")
-    .eq("id", userId)
-    .single();
-
-  return { data, error };
-};
-
-// Set user's primary league
-export const setPrimaryLeague = async (
-  userId: string,
-  leagueId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("profiles")
-    .update({ primary_league_id: leagueId })
-    .eq("id", userId)
-    .select("primary_league_id")
-    .single();
-
-  return { data, error };
-};
-
-export const createPrediction = async (
-  predictionData: any,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("predictions")
-    .upsert(predictionData)
-    .select()
-    .single();
-
-  return { data, error };
-};
-export const getUserPredictions = async (
-  userId: string,
-  leagueId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("predictions")
-    .select(
-      `
+  async getUserPrimaryLeague(userId: string) {
+    const { data, error } = await supabase
+      .from("league_members")
+      .select(`
+        *,
+        league:leagues(
           *,
-          match:matches(*)
-        `
-    )
-    .eq("user_id", userId)
-    .eq("league_id", leagueId)
-    .order("created_at", { ascending: false });
+          competition:competitions(*)
+        )
+      `)
+      .eq("user_id", userId)
+      .eq("is_primary", true)
+      .maybeSingle();
 
-  return { data, error };
-};
-export const getLeaderboard = async (
-  leagueId: string,
-  supabase: SupabaseClient
-) => {
-  const { data, error } = await supabase
-    .from("leaderboards")
-    .select("*")
-    .eq("league_id", leagueId)
-    .order("total_points", { ascending: false });
+    if (error) throw error;
+    return data;
+  },
 
-  return { data, error };
+  async getLeagueMembers(leagueId: number) {
+    const { data, error } = await supabase
+      .from("league_members")
+      .select(`
+        *,
+        user:users(*)
+      `)
+      .eq("league_id", leagueId)
+      .order("points", { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getUserStats(userId: string) {
+    let query = supabase
+      .from("user_predictions")
+      .select(`
+        *,
+        fixtures!inner(*)
+      `)
+      .eq("user_id", userId);
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    const totalPredictions = data.length;
+    const totalPoints = data.reduce((sum, prediction) => sum + prediction.points, 0);
+    const correctPredictions = data.filter(p => p.points > 0).length;
+    const accuracy = totalPredictions > 0 ? (correctPredictions / totalPredictions) * 100 : 0;
+
+    return {
+      totalPredictions,
+      totalPoints,
+      correctPredictions,
+      accuracy: Math.round(accuracy * 100) / 100
+    };
+  }
 };

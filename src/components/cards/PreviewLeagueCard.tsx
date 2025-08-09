@@ -1,104 +1,51 @@
-// import { Text, View } from "react-native";
-// import ImageC from "../ui/ImageC";
-
-// export default function PreviewLeagueCard({
-//   leagueName,
-//   competitionName,
-//   competitionFlag,
-//   competitionLogo,
-//   competitionCountry,
-// }: {
-//   leagueName: string;
-//   competitionName: string;
-//   competitionFlag: string;
-//   competitionLogo: string;
-//   competitionCountry: string;
-// }) {
-//   return (
-//     <View className="bg-gray-50 rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
-//       <View className="flex-row items-center">
-//         <View className="flex-1 gap-1">
-//           <Text className="text-4xl font-bold text-gray-900 mb-6">
-//             {leagueName}
-//           </Text>
-
-//           <Text className="text-md font-bold text-gray-900" numberOfLines={1}>
-//             {competitionName}
-//           </Text>
-//           <View className="flex-row items-center gap-3">
-//             <ImageC
-//               source={{ uri: competitionFlag }}
-//               resizeMode="contain"
-//               width={25}
-//               height={25}
-//             />
-//             <Text className="text-md text-gray-900" numberOfLines={1}>
-//               {competitionCountry}
-//             </Text>
-//           </View>
-//         </View>
-//         <ImageC
-//           source={{ uri: competitionLogo }}
-//           resizeMode="contain"
-//           width={70}
-//           height={70}
-//         />
-//       </View>
-//     </View>
-//   );
-// }
-import { ImageC } from "@/components/ui"; // Assuming this path is correct
 import { Text, View } from "react-native";
+import { ImageC } from "../ui";
 
-export default function PreviewLeagueCard({
-  leagueName,
-  competitionName,
-  competitionFlag,
-  competitionLogo,
-  competitionCountry,
-}: {
-  leagueName: string;
-  competitionName: string;
-  competitionFlag: string;
-  competitionLogo: string;
-  competitionCountry: string;
-}) {
+export default function PreviewLeagueCard({ data }: { data: any }) {
+  const { name, league_logo, competitions, max_members, member_count } = data;
+
   return (
-    <View className="bg-gray-50 rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+    <View className="bg-card rounded-xl border border-border shadow-sm p-6 mb-6">
       <View className="flex-row items-center">
         <View className="flex-1 gap-1">
-          <Text className="text-4xl font-bold text-gray-900 mb-6">
-            {leagueName}
+          <Text className="text-2xl font-bold mb-2" numberOfLines={2}>
+            {name}
           </Text>
 
-          <Text className="text-md font-bold text-gray-900" numberOfLines={1}>
-            {competitionName}
+          <Text
+            className="text-base font-semibold text-textSecondary"
+            numberOfLines={1}
+          >
+            {competitions?.name}
           </Text>
-          <View className="flex-row items-center gap-3">
+
+          <View className="flex-row items-center gap-3 mt-1">
             <ImageC
               source={{
-                uri:
-                  competitionFlag ||
-                  "https://placehold.co/25x25/cccccc/000000?text=NF",
+                uri: competitions?.flag,
               }}
               resizeMode="contain"
-              width={25}
-              height={25}
+              width={20}
+              height={20}
             />
-            <Text className="text-md text-gray-900" numberOfLines={1}>
-              {competitionCountry}
+            <Text className="text-sm text-textMuted" numberOfLines={1}>
+              {competitions?.country}
             </Text>
           </View>
+
+          <Text className="text-sm text-textMuted mt-2">
+            {member_count || 1}/{max_members} members
+          </Text>
         </View>
+
         <ImageC
           source={{
-            uri:
-              competitionLogo ||
-              "https://placehold.co/70x70/cccccc/000000?text=NL",
+            uri: league_logo || competitions?.logo,
           }}
           resizeMode="contain"
-          width={70}
-          height={70}
+          width={60}
+          height={60}
+          className="rounded-lg"
         />
       </View>
     </View>

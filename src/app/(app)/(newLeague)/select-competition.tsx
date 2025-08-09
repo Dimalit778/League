@@ -1,5 +1,5 @@
 import { Loading } from "@/components/Loading";
-import { ButtonC, ImageC, TextC } from "@/components/ui";
+import { ButtonC, ImageC } from "@/components/ui";
 import { useColorScheme } from "@/hooks/useColorSchema";
 import { useLeagueService } from "@/services/leagueService";
 import { Tables } from "@/types/database.types";
@@ -44,13 +44,14 @@ export default function SelectCompetitionScreen() {
 
   const handleContinue = () => {
     if (!validateSelection()) return;
-
-    const competition = JSON.stringify(selectedCompetition);
+    const competitionId = selectedCompetition?.id;
+    const leagueLogo = selectedCompetition?.logo;
 
     router.push({
       pathname: "/(app)/(newLeague)/league-details",
       params: {
-        competition: competition,
+        competitionId: competitionId,
+        leagueLogo: leagueLogo,
       },
     });
   };
@@ -77,9 +78,9 @@ export default function SelectCompetitionScreen() {
       behavior="padding"
     >
       <ScrollView className="flex-1 px-4 pt-6">
-        <TextC className="text-2xl font-bold mb-6 text-center">
+        <Text className="text-2xl font-bold mb-6 text-center text-text  ">
           Select a Competition
-        </TextC>
+        </Text>
 
         <View className="mb-6">
           {competitions?.map((comp) => (

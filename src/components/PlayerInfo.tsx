@@ -1,4 +1,4 @@
-import { useAppStore } from "@/services/store/AppStore";
+import { useAppStore } from "@/store/AppStore";
 import { Image, View } from "react-native";
 import TextC from "./ui/TextC";
 

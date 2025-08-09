@@ -1,7 +1,7 @@
 import "../../global.css";
 
 import { SplashScreen } from "@/components/SplashScreen";
-import useAuthStore from "@/services/store/AuthStore";
+import useAuthStore from "@/store/useAuthStore";
 
 import { ThemeProvider } from "@/context/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

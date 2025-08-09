@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { colorScheme } from "nativewind";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { themes } from "./color-themes";
 
 interface ThemeProviderProps {
@@ -21,10 +22,33 @@ export const ThemeContext = createContext<ThemeContextType>({
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
-  const toggleTheme = () => {
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem("theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          setCurrentTheme(savedTheme);
+          colorScheme.set(savedTheme);
+        }
+      } catch (error) {
+        console.error("Failed to load theme from storage:", error);
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  const toggleTheme = async () => {
     const newTheme = currentTheme === "light" ? "dark" : "light";
-    setCurrentTheme(newTheme);
-    colorScheme.set(newTheme);
+    try {
+      await AsyncStorage.setItem("theme", newTheme);
+      setCurrentTheme(newTheme);
+      colorScheme.set(newTheme);
+    } catch (error) {
+      console.error("Failed to save theme to storage:", error);
+      setCurrentTheme(newTheme);
+      colorScheme.set(newTheme);
+    }
   };
 
   return (

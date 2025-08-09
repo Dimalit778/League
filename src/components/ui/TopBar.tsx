@@ -1,13 +1,13 @@
+import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "@/context/ThemeContext";
-import ThemeToggle from "@/context/ThemeToggle";
 import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "../../../assets/icons";
 
-type HeaderProps = {
-  title: string;
+type TopBarProps = {
+  title?: string;
   showBackButton?: boolean;
   rightElement?: React.ReactNode;
   backgroundColor?: string;
@@ -15,7 +15,7 @@ type HeaderProps = {
   onBackPress?: () => void;
 };
 
-const Header: React.FC<HeaderProps> = ({
+const TopBar: React.FC<TopBarProps> = ({
   title,
   showBackButton = false,
   rightElement,
@@ -61,4 +61,4 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export default Header;
+export default TopBar;

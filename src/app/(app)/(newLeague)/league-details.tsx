@@ -1,14 +1,11 @@
 import LoadingOverlay from "@/components/LoadingOverlay";
-import { ButtonC, InputField, TextC } from "@/components/ui";
-import { useLeagueService } from "@/services/leagueService";
-import { Tables, TablesInsert } from "@/types/database.types";
+import { ButtonC, InputField } from "@/components/ui";
+import { useCreateLeague } from "@/hooks/useLeagues";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Alert,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -16,10 +13,6 @@ import {
   View,
 } from "react-native";
 import * as yup from "yup";
-
-type Competition = Tables<"competitions">;
-type League = TablesInsert<"leagues">;
-type LeagueAndMember = TablesInsert<"leagues"> & TablesInsert<"league_members">;
 
 const generateRandomCode = (length: number): string => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -41,13 +34,8 @@ const schema = yup.object().shape({
 });
 
 export default function EnterLeagueDetailsScreen() {
-  const queryClient = useQueryClient();
-  const { createLeague } = useLeagueService();
-  const { competition } = useLocalSearchParams();
-
-  const selectedCompetition: Competition | null = competition
-    ? JSON.parse(competition as string)
-    : null;
+  const { competitionId, leagueLogo } = useLocalSearchParams();
+  const createLeagueMutation = useCreateLeague();
 
   const {
     control,
@@ -67,68 +55,38 @@ export default function EnterLeagueDetailsScreen() {
 
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
-  const { mutate: createLeagueMutation, isPending } = useMutation({
-    mutationFn: (data: { leagueName: string; nickname: string }) => {
-      return createLeague({
-        name: data.leagueName.trim(),
-        nickname: data.nickname.trim(),
-        league_logo: selectedCompetition!.logo as string,
+  const onSubmit = async (data: { leagueName: string; nickname: string }) => {
+    try {
+      const leagueData = await createLeagueMutation.mutateAsync({
+        name: data.leagueName,
+        competition_id: Number(competitionId),
+        max_members: membersCount || 6,
+        nickname: data.nickname,
+        league_logo: leagueLogo as string,
         join_code: generateRandomCode(6),
-        competition_id: selectedCompetition!.id as number,
-        max_members: membersCount! as number,
       });
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["myLeagues"] });
-      console.log("onSuccess ---->", JSON.stringify(data, null, 2));
-      router.push({
-        pathname: "/(app)/(newLeague)/league-created",
-        params: {
-          competition: JSON.stringify(selectedCompetition),
-          name: data?.leagueData?.name as string,
-          join_code: data?.leagueData?.join_code as string,
-          nickname: data?.leagueMemberData?.nickname as string,
-        },
-      });
-    },
-    onError: (error: any) => {
-      console.log("onError ---->", JSON.stringify(error, null, 2));
-      console.error("Error creating league:", error);
-      const errorMessage =
-        error?.message || "Failed to create league. Please try again.";
-      Alert.alert("Error", errorMessage);
-    },
-  });
-
-  const onSubmit = (data: { leagueName: string; nickname: string }) => {
-    if (isPending) return;
-
-    // Additional validation for non-form fields
-    if (!membersCount) {
-      Alert.alert("Error", "Please select the number of members.");
-      return;
+      if (leagueData) {
+        router.push({
+          pathname: "/(app)/(newLeague)/league-created",
+          params: { leagueData: JSON.stringify(leagueData) },
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
-
-    if (!selectedCompetition) {
-      Alert.alert(
-        "Error",
-        "Competition data is missing. Please go back and select it again."
-      );
-      return;
-    }
-
-    createLeagueMutation(data);
   };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-dark" behavior="padding">
+    <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
       <ScrollView className="flex-1 px-4 pt-6">
-        {isPending && <LoadingOverlay />}
-        <TextC className="text-2xl font-bold mb-6 text-center">
+        {createLeagueMutation.isPending && <LoadingOverlay />}
+        <Text className="text-2xl font-bold mb-6 text-center text-text">
           Enter League Details
-        </TextC>
+        </Text>
         {/* League Name Input */}
-        <TextC className="text-lg font-semibold mb-2">League Name</TextC>
+        <Text className="text-lg font-semibold mb-2 text-text">
+          League Name
+        </Text>
         <InputField
           control={control}
           name="leagueName"
@@ -138,7 +96,9 @@ export default function EnterLeagueDetailsScreen() {
           error={errors.leagueName}
         />
         {/* Nickname Input */}
-        <TextC className="text-lg font-semibold mt-6 mb-2">Your Nickname</TextC>
+        <Text className="text-lg font-semibold mt-6 mb-2 text-text">
+          Your Nickname
+        </Text>
         <InputField
           control={control}
           name="nickname"
@@ -147,9 +107,9 @@ export default function EnterLeagueDetailsScreen() {
           error={errors.nickname}
         />
         {/* Members Number Selection */}
-        <TextC className="text-lg font-semibold mt-6 mb-2">
+        <Text className="text-lg font-semibold mt-6 mb-2 text-text">
           Number of Members
-        </TextC>
+        </Text>
         <View className="flex-row justify-around mb-6">
           <TouchableOpacity
             onPress={() => setMembersCount(6)}
@@ -185,7 +145,7 @@ export default function EnterLeagueDetailsScreen() {
           onPress={handleSubmit(onSubmit)}
           variant="primary"
           size="lg"
-          loading={isPending}
+          loading={createLeagueMutation.isPending}
           disabled={!isValid}
         />
       </ScrollView>

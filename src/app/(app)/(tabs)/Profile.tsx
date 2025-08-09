@@ -1,4 +1,4 @@
-import useAuthStore from "@/services/store/AuthStore";
+import useAuthStore from "@/store/useAuthStore";
 import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import {
