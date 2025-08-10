@@ -12,13 +12,13 @@ const QUERY_KEYS = {
 };
 
 export const useMyLeagues = () => {
-  const { user } = useAuthStore();
+  const { session } = useAuthStore();
   const leagueService = useLeagueService();
 
   return useQuery({
-    queryKey: QUERY_KEYS.myLeagues(user?.id!),
-    queryFn: () => leagueService.getMyLeagues(user?.id!),
-    enabled: !!user?.id,
+    queryKey: QUERY_KEYS.myLeagues(session?.user?.id!),
+    queryFn: () => leagueService.getMyLeagues(session?.user?.id!),
+    enabled: !!session?.user?.id,
     staleTime: 60 * 1000 * 60, 
     retry: 2,
   });
@@ -26,7 +26,7 @@ export const useMyLeagues = () => {
 
 export const useCreateLeague = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { session } = useAuthStore();
   const leagueService = useLeagueService();
 
   return useMutation({
@@ -37,11 +37,11 @@ export const useCreateLeague = () => {
       join_code: string;
       max_members: number;
       competition_id: number;
-    }) => leagueService.createLeague(user?.id!, params.nickname, params as any  ),
+    }) => leagueService.createLeague(session?.user?.id!, params.nickname, params as any  ),
     onSuccess: (data) => {
       // Invalidate and refetch leagues
       queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.myLeagues(user?.id!) 
+        queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
       });
     },
     onError: (error) => {
@@ -52,19 +52,19 @@ export const useCreateLeague = () => {
 //Work
 export const useJoinLeague = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { session } = useAuthStore();
   const leagueService = useLeagueService();
 
   return useMutation({
     mutationFn: ({ leagueId, nickname }: { leagueId: number; nickname: string }) => 
-      leagueService.joinLeague(user?.id!, leagueId, nickname),
+      leagueService.joinLeague(session?.user?.id!, leagueId, nickname),
     onSuccess: (result, variables) => {
       if (result.error) {
         throw new Error(result.error.message);
       }
       
       queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.myLeagues(user?.id!) 
+        queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
       });
       
       queryClient.invalidateQueries({ 

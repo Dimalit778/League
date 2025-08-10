@@ -5,10 +5,10 @@ import { SupabaseClient } from "@supabase/supabase-js";
 type League = TablesInsert<"leagues">;
 type LeagueMember = TablesInsert<"league_members">;
 
-
+// * Supabase Queries *  
 
 const useLeagueService = () => {  
-  const { setPrimaryLeague } = useLeagueStore();
+const { setLeague } = useLeagueStore();
 // Done - Get My Leagues
 const getMyLeagues = async (userId: string) => {
   try {
@@ -55,7 +55,7 @@ const getMyLeagues = async (userId: string) => {
       // Set primary league if found, then return dataWithCounts
       const primaryLeague = dataWithCounts.find((item: any) => item.is_primary);
       if (primaryLeague) {
-        setPrimaryLeague(primaryLeague.league);
+        setLeague(primaryLeague.league);
       }
       return dataWithCounts;
     }
@@ -64,11 +64,11 @@ const getMyLeagues = async (userId: string) => {
   }
 };
 const getLeagueById = async (leagueId: number) => {
-    const { data, error } = await supabase.from("leagues").select( "id,name,join_code,league_logo,max_members ,competitions!inner (name,country,flag)").eq("id", leagueId).single();
+    const { data, error } = await supabase.from("leagues").select( "id,name,join_code,league_logo,max_members ,competitions!inner (name,country,flag,current_round,rounds_data,season)").eq("id", leagueId).single();
   if (error) {
     throw new Error(error.message);
   }
-  console.log("getLeagueById call---", JSON.stringify(data, null, 2));
+
   return data;
 };
 // Done - Create League
@@ -88,7 +88,10 @@ const createLeague = async (userId: string ,nickname: string, params: League) =>
         name,
         country,
         logo,
-        flag
+        flag,
+        rounds_data,
+        current_round,
+        season
       )
     `).single();
 
@@ -118,7 +121,7 @@ const createLeague = async (userId: string ,nickname: string, params: League) =>
         nickname: nickname,
         member_count: 1,
       }
-      setPrimaryLeague(leagueData);
+      setLeague(leagueData);
       return newLeagueData;
     }
     
@@ -143,7 +146,41 @@ const joinLeague = async (userId: string, leagueId: number, nickname: string) =>
     .single();
 return { data, error };
 };
+const setPrimaryLeague = async (userId: string, leagueId: number) => {
+  try {
+    // Step 1: Set all user's league memberships to is_primary = false
+    const { error: resetPrimaryError } = await supabase
+      .from('league_members')
+      .update({ is_primary: false })
+      .eq('user_id', userId);
+    
+    if (resetPrimaryError) {
+      throw new Error(`Failed to reset primary leagues: ${resetPrimaryError.message}`);
+    }
 
+    // Step 2: Set the specific league to is_primary = true
+    const { data, error } = await supabase
+      .from('league_members')
+      .update({ is_primary: true })
+      .eq('user_id', userId)
+      .eq('league_id', leagueId)
+      .select()
+      .single();
+    
+    if (error) {
+      throw new Error(`Failed to set primary league: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('User is not a member of this league');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error setting primary league:', error);
+    throw error;
+  }
+};
 
 //Done - Find League by Join Code
 const findLeagueByJoinCode = async (joinCode: string) => {
@@ -188,7 +225,8 @@ const getLeaderboard = async (leagueId: number) => {
     joinLeague, 
     findLeagueByJoinCode,
     getLeagueById,
-    getLeaderboard
+    getLeaderboard,
+    setPrimaryLeague
   };
 };
 

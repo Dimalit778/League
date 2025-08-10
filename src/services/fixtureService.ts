@@ -1,9 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { Tables } from "@/types/database.types";
+import { FixtureWithTeams } from "@/types/fixturesTypes";
 
-type Fixture = Tables<"fixtures">;
-type Team = Tables<"teams">;
-type Competition = Tables<"competitions">;
+
 
 export const fixtureService = {
   async getFixtures(competitionId?: number, season?: number) {
@@ -36,8 +34,7 @@ export const fixtureService = {
       .select(`
         *,
         home_team:teams!fixtures_home_team_id_fkey(*),
-        away_team:teams!fixtures_away_team_id_fkey(*),
-        competition:competitions!fixtures_league_id_fkey(*)
+        away_team:teams!fixtures_away_team_id_fkey(*)
       `)
       .eq("id", id)
       .single();
@@ -69,26 +66,28 @@ export const fixtureService = {
     return data;
   },
 
-  async getFixturesByRound(competitionId: number, round: string, season?: number) {
+  async getFixturesByRound(
+    competitionId: number,
+    round: string,
+    season?: number
+  ): Promise<FixtureWithTeams[]> {
     let query = supabase
       .from("fixtures")
       .select(`
         *,
         home_team:teams!fixtures_home_team_id_fkey(*),
-        away_team:teams!fixtures_away_team_id_fkey(*),
-        competition:competitions!fixtures_league_id_fkey(*)
+        away_team:teams!fixtures_away_team_id_fkey(*)
       `)
       .eq("league_id", competitionId)
-      .eq("round", round);
-
+      .eq("round", round)
+      .order("date", { ascending: true });
+  
     if (season) {
       query = query.eq("season", season);
     }
-
-    const { data, error } = await query.order("date", { ascending: true });
-
+    const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return (data || []) as FixtureWithTeams[];
   },
 
   async getCompletedFixtures(competitionId?: number, limit = 10) {

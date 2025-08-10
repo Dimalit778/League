@@ -1,24 +1,10 @@
 import { useGetLeagueById } from "@/hooks/useLeagues";
-import { useEffect } from "react";
 import { Text, View } from "react-native";
 const API_KEY = process.env.EXPO_PUBLIC_API_FOOTBALL_KEY;
 
 export default function Rank() {
   const { data: leagueData, isLoading: leagueLoading } = useGetLeagueById(48);
-  if (leagueData) {
-    console.log(
-      "leagueData in rank by id",
-      JSON.stringify(leagueData, null, 2)
-    );
-  }
-  useEffect(() => {
-    if (leagueData) {
-      console.log(
-        "leagueData  useEffect by id",
-        JSON.stringify(leagueData, null, 2)
-      );
-    }
-  }, [leagueData]);
+
   return (
     <View className="flex-1 bg-gray-100">
       <View className="bg-blue-600 p-4">

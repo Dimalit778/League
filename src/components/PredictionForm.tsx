@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import useAuthStore from "@/services/store/AuthStore";
+import useAuthStore from "@/store/useAuthStore";
 import { useState } from "react";
 
 interface PredictionFormProps {
@@ -40,21 +40,7 @@ const PredictionForm: React.FC<PredictionFormProps> = ({ fixture }) => {
       return;
     }
 
-    const { error } = await supabase.rpc("create_or_update_prediction", {
-      user_id: user.id,
-      fixture_id: fixture.fixture_id,
-      predicted_home: parseInt(homeScore, 10),
-      predicted_away: parseInt(awayScore, 10),
-    });
-
-    if (error) {
-      setMessage("Failed to save prediction.");
-    } else {
-      setMessage("Prediction saved!");
-    }
-    setLoading(false);
-  };
-
+ 
   return (
     <form onSubmit={handleSubmit}>
       <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>

@@ -12,8 +12,8 @@ export default function MyLeagues() {
   if (isLoading) return <Loading />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const Header = () => {
-    return (
+  return (
+    <View className="flex-1 bg-background">
       <View className="flex-row justify-between items-center px-4 pt-6 pb-4">
         <ButtonC
           title="Create League"
@@ -28,12 +28,6 @@ export default function MyLeagues() {
           onPress={() => router.push("/(app)/(newLeague)/join-league")}
         />
       </View>
-    );
-  };
-
-  return (
-    <View className="flex-1 bg-background">
-      <Header />
       <View className="flex-grow  px-4 ">
         <FlatList
           data={leagues || []}

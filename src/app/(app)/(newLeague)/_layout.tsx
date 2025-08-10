@@ -22,10 +22,7 @@ export default function NewLeagueLayout() {
         name="league-details"
         options={{ headerShown: true, title: "League Details" }}
       />
-      <Stack.Screen
-        name="league-created"
-        options={{ headerShown: true, title: "League Created" }}
-      />
+      <Stack.Screen name="league-created" options={{ headerShown: false }} />
     </Stack>
   );
 }

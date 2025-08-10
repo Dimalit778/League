@@ -5,16 +5,16 @@ type League = Tables<"leagues">;
 
 interface LeagueStore {
     primaryLeague: League
-    setPrimaryLeague: (league: League) => void
-    hasLoadedLeagues: boolean
-    setHasLoadedLeagues: (loaded: boolean) => void
+    setLeague: (league: League) => void
+   
 }
 
 const useLeagueStore = create<LeagueStore>((set) => ({  
     primaryLeague: {} as League,
-    setPrimaryLeague: (league) => set({ primaryLeague: league }),
-    hasLoadedLeagues: false,
-    setHasLoadedLeagues: (loaded) => set({ hasLoadedLeagues: loaded })
+    setLeague: (league) => set({ primaryLeague: league }),
+   
+
+    
 }))
 
 export default useLeagueStore

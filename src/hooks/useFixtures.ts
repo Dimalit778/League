@@ -1,25 +1,25 @@
-import { supabase } from "@/lib/supabase"
-import useAuthStore from "@/services/store/AuthStore"
-import { useEffect, useState } from "react"
+import { fixtureService } from "@/services/fixtureService"
+import useAuthStore from "@/store/useAuthStore"
+import useLeagueStore from "@/store/useLeagueStore"
+import { useQuery } from "@tanstack/react-query"
 
-export const useFixtures = (leagueId: string) => {
-    const { user } = useAuthStore()
-    const [fixtures, setFixtures] = useState([])
-    const [loading, setLoading] = useState(true)
-    
-    useEffect(() => {
-      const fetchFixtures = async () => {
-        const { data } = await supabase.rpc('get_league_fixtures_with_predictions', {
-          user_id: user?.id,
-          league_id: leagueId,
-          limit_count: 20
-        })
-        setFixtures(data || [])
-        setLoading(false)
-      }
-      
-      fetchFixtures()
-    }, [leagueId])
-    
-    return { fixtures, loading }
-  }
+export const useGetFixturesByRound = (round: string) => {
+  const {user} = useAuthStore()
+  const {primaryLeague} = useLeagueStore()
+  const {data, isLoading, error} = useQuery({
+    queryKey: ["fixtures", "round", primaryLeague?.competition_id, round],
+    queryFn: () => fixtureService.getFixturesByRound(primaryLeague.competition_id, round),
+    enabled: !!primaryLeague?.competition_id && !!round,
+  })
+
+  return {data, isLoading, error}
+}
+export const useGetFixtureById = (id: number) => {
+  const {primaryLeague} = useLeagueStore()
+  const {data, isLoading, error} = useQuery({
+    queryKey: ["fixture", id],
+    queryFn: () => fixtureService.getFixtureById(id),
+    enabled: !!id,
+  })
+  return {data, isLoading, error}
+}

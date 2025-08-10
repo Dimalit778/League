@@ -78,8 +78,8 @@ export default function EnterLeagueDetailsScreen() {
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
+      {createLeagueMutation.isPending && <LoadingOverlay />}
       <ScrollView className="flex-1 px-4 pt-6">
-        {createLeagueMutation.isPending && <LoadingOverlay />}
         <Text className="text-2xl font-bold mb-6 text-center text-text">
           Enter League Details
         </Text>
@@ -93,6 +93,7 @@ export default function EnterLeagueDetailsScreen() {
           placeholder="Enter your league name"
           maxLength={50}
           autoCorrect={false}
+          autoCapitalize="words"
           error={errors.leagueName}
         />
         {/* Nickname Input */}
@@ -104,6 +105,7 @@ export default function EnterLeagueDetailsScreen() {
           name="nickname"
           placeholder="Enter your nickname for the league"
           autoCorrect={false}
+          autoCapitalize="words"
           error={errors.nickname}
         />
         {/* Members Number Selection */}
@@ -115,26 +117,26 @@ export default function EnterLeagueDetailsScreen() {
             onPress={() => setMembersCount(6)}
             className={`flex-1 p-4 rounded-lg border-2 mx-2 items-center ${
               membersCount === 6
-                ? "border-blue-500 bg-blue-100"
-                : "border-gray-200 bg-white"
+                ? "border-secondary bg-surface border-2"
+                : "border-border border-2"
             }`}
           >
             <Text
-              className={`text-lg font-bold ${membersCount === 6 ? "text-blue-700" : "text-gray-800"}`}
+              className={`text-lg font-bold ${membersCount === 6 ? "text-secondary" : "text-text"}`}
             >
               6 Members
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setMembersCount(10)}
-            className={`flex-1 p-4 rounded-lg border-2 mx-2 items-center ${
+            className={`flex-1 p-4 rounded-lg  mx-2 items-center ${
               membersCount === 10
-                ? "border-blue-500 bg-blue-100"
-                : "border-gray-200 bg-white"
+                ? "border-secondary bg-surface border-2"
+                : "border-border border-2"
             }`}
           >
             <Text
-              className={`text-lg font-bold ${membersCount === 10 ? "text-blue-700" : "text-gray-800"}`}
+              className={`text-lg font-bold ${membersCount === 10 ? "text-secondary" : "text-text"}`}
             >
               10 Members
             </Text>

@@ -94,9 +94,7 @@ const useAuthStore = create<AuthState>((set) => ({
         },
       },
     });
-    console.log('error', JSON.stringify(error, null, 2))
-    console.log('data', JSON.stringify(data, null, 2))
-   
+
     if (error) return Promise.reject(error);
 
       set({ session: data.session });

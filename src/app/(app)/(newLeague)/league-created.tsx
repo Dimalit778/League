@@ -4,6 +4,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import {
   Alert,
   Clipboard,
+  SafeAreaView,
   Share,
   Text,
   TouchableOpacity,
@@ -36,7 +37,7 @@ export default function LeagueCreatedScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background px-6 py-10">
+    <SafeAreaView className="flex-1 bg-background px-6 py-10">
       {/* Success Header */}
       <View className="items-center mb-8">
         <Text className="text-2xl font-bold text-center mb-2 text-text">
@@ -123,6 +124,6 @@ export default function LeagueCreatedScreen() {
           </Text>
         </TouchableOpacity>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }

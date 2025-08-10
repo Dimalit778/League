@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -7,8 +8,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
@@ -18,30 +17,49 @@ export type Database = {
         Row: {
           country: string
           createdAt: string
+          current_round: string | null
           flag: string
           id: number
           logo: string
           name: string
+          rounds_data: {
+            rounds: string[];
+            total_rounds: number;
+            synced_at: string | null;
+          } | null;
+          season: number | null
           type: string
           updatedAt: string
         }
         Insert: {
           country: string
           createdAt?: string
+          current_round?: string | null
           flag: string
           id: number
           logo: string
-          name: string
+          rounds_data?: {
+            rounds: string[];
+            total_rounds: number;
+            synced_at: string | null;
+          } | null;
+          season?: number | null
           type?: string
           updatedAt?: string
         }
         Update: {
           country?: string
           createdAt?: string
+          current_round?: string | null
           flag?: string
           id?: number
           logo?: string
-          name?: string
+          rounds_data?: {
+            rounds: string[];
+            total_rounds: number;
+            synced_at: string | null;
+          } | null;
+          season?: number | null
           type?: string
           updatedAt?: string
         }
@@ -214,6 +232,7 @@ export type Database = {
           max_members: number
           name: string | null
           owner_id: string
+          rounds: number
           updateAt: string
         }
         Insert: {
@@ -225,6 +244,7 @@ export type Database = {
           max_members?: number
           name?: string | null
           owner_id: string
+          rounds?: number
           updateAt?: string
         }
         Update: {
@@ -236,6 +256,7 @@ export type Database = {
           max_members?: number
           name?: string | null
           owner_id?: string
+          rounds?: number
           updateAt?: string
         }
         Relationships: [
