@@ -6,10 +6,8 @@ const formatTime = (dateString: string) => {
   };
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString([], {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
       day: "numeric",
+      month: "numeric",
     });
   };
 const getMatchStatusColor = (status: string) => {

@@ -11,7 +11,7 @@ import RankIcon from "./RankIcon";
 import TrophyIcon from "./TrophyIcon";
 
 // Other Icons
-import ArrowLeftIcon from "./ArrowLeftIcons";
+import ArrowLeftIcon from "./ArrowLeftIcon";
 import StarIcon from "./StarIcon";
 
 export {

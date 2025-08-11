@@ -10,7 +10,6 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: "primary" | "secondary";
-
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   disabled?: boolean;
