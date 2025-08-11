@@ -25,4 +25,37 @@ const getMatchStatusColor = (status: string) => {
     }
   };
 
+  const ScheduledStatus = ["Time To Be Defined", "Not Started"];
+  const InPlayStatus = ["First Half","Kick Off","HalfTime","Second Half","2nd Half Started","Break Time","Penalty In Progress","Match Suspended","Match Interrupted"];
+  const FinishedStatus = ["Match Finished", "Match Postponed", "Match Cancelled", "Match Abandoned"];
+  const CancelledStatus = ["Match Cancelled", "Match Abandoned"];
+
+
+
+export const isMatchScheduled = (statusShort: string): boolean => {
+  const isScheduled = ScheduledStatus.includes(statusShort);
+  return isScheduled;
+};
+
+export const isMatchInPlay = (statusShort: string): boolean => {
+  const isInPlay = InPlayStatus.includes(statusShort);
+  return isInPlay;
+};
+
+export const isMatchFinished = (statusShort: string): boolean => {
+  const isFinished = FinishedStatus.includes(statusShort);
+  return isFinished;
+};
+
+
+export const isMatchCancelled = (statusShort: string): boolean => {
+  const isCancelled = CancelledStatus.includes(statusShort);
+  return isCancelled;
+};
+
+export const canMakePredictions = (statusShort: string): boolean => {
+  return isMatchScheduled(statusShort);
+};
+
+
   export { formatDate, formatTime, getMatchStatusColor };

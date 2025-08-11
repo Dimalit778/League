@@ -1,6 +1,11 @@
-import { MatchFinished } from "./MatchFinished";
-import { MatchLive } from "./MatchLive";
-import { MatchNotStarted } from "./MatchNotStarted";
+import {
+  isMatchFinished,
+  isMatchInPlay,
+  isMatchScheduled,
+} from "@/utils/match-utils";
+import { MatchFinished } from "./matchStatus/MatchFinished";
+import { MatchLive } from "./matchStatus/MatchLive";
+import { MatchNotStarted } from "./matchStatus/MatchNotStarted";
 import { PredictionActions, PredictionState } from "./PredictionManager";
 
 interface MatchStatusRendererProps {
@@ -8,14 +13,17 @@ interface MatchStatusRendererProps {
   prediction: PredictionState & PredictionActions;
 }
 
-export const MatchStatusRenderer = ({
+export const MatchInfoContent = ({
   match,
   prediction,
 }: MatchStatusRendererProps) => {
-  const isNotStarted = match.status_long === "Not Started";
-  const isLive =
-    match.status_long?.includes("Half") || match.status_long === "Halftime";
-  const isFinished = match.status_long === "Match Finished";
+  console.log(
+    "matchMatchInfoContent prediction --",
+    JSON.stringify(prediction, null, 2)
+  );
+  const isScheduled = isMatchScheduled(match.status_long);
+  const isLive = isMatchInPlay(match.status_long);
+  const isFinished = isMatchFinished(match.status_long);
 
   const getEventIcon = (type: string) => {
     switch (type) {
@@ -32,7 +40,7 @@ export const MatchStatusRenderer = ({
     }
   };
 
-  if (isNotStarted) {
+  if (isScheduled) {
     return (
       <MatchNotStarted
         homeScorePrediction={prediction.homeScorePrediction}
@@ -40,8 +48,9 @@ export const MatchStatusRenderer = ({
         awayScorePrediction={prediction.awayScorePrediction}
         setAwayScorePrediction={prediction.setAwayScorePrediction}
         predictionSaved={prediction.predictionSaved}
-        savePrediction={() => {}}
         handleSavePrediction={prediction.handleSavePrediction}
+        canPredict={prediction.canPredict}
+        isSaving={prediction.isSaving}
       />
     );
   }
@@ -51,7 +60,7 @@ export const MatchStatusRenderer = ({
   }
 
   if (isFinished) {
-    return <MatchFinished match={match} userPrediction={""} />;
+    return <MatchFinished match={match} />;
   }
 
   return null;

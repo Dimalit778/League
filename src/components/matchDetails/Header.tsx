@@ -1,4 +1,10 @@
-import { formatDate, formatTime } from "@/utils/match-utils";
+import {
+  formatDate,
+  formatTime,
+  isMatchFinished,
+  isMatchInPlay,
+  isMatchScheduled,
+} from "@/utils/match-utils";
 import footballField from "../../../assets/images/footballField.png";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -13,11 +19,10 @@ import {
 } from "react-native";
 import { ArrowLeftIcon } from "../../../assets/icons";
 
-export const MatchInfoCard = ({ match }: { match: any }) => {
-  const isNotStarted = match.status_long === "Not Started";
-  const isLive =
-    match.status_long?.includes("Half") || match.status_long === "Halftime";
-  const isFinished = match.status_long === "Match Finished";
+export const MatchInfoHeader = ({ match }: { match: any }) => {
+  const isScheduled = isMatchScheduled(match.status_long);
+  const isLive = isMatchInPlay(match.status_long);
+  const isFinished = isMatchFinished(match.status_long);
 
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
@@ -73,7 +78,7 @@ export const MatchInfoCard = ({ match }: { match: any }) => {
 
           {/* Score */}
           <View className="mx-6">
-            {isNotStarted ? (
+            {isScheduled ? (
               <View className=" rounded-2xl p-4 items-center min-w-[100px]">
                 <Ionicons name="time-outline" size={24} color="#fff" />
                 <Text className="text-white text-sm mt-2 text-center">
