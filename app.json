@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "league",
-    "slug": "league",
+    "slug": "leaguechampion",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon.png",
@@ -40,6 +40,13 @@
     "experiments": {
       "typedRoutes": true,
       "tsconfigPaths": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0730f614-1c6a-437b-b74b-508698797f3e"
+      }
+    },
+    "owner": "dimalit778"
   }
 }

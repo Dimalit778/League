@@ -1,4 +1,4 @@
-import { ButtonC } from "@/components/ui";
+import { Button } from "@/shared/components/ui";
 import { router } from "expo-router";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
@@ -52,7 +52,7 @@ export default function Welcome() {
           </View>
         </View>
 
-        <ButtonC
+        <Button
           title="Get Started"
           onPress={() => router.push("/signUp")}
           variant="secondary"

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/supabase";
 
 import { Tables } from "@/types/database.types";
 import { AuthError, Session, User as SupabaseUser } from "@supabase/supabase-js";
@@ -13,6 +13,7 @@ interface AuthState {
   error: string | null;
   initializeSession: () => Promise<void>;
   setSession: (session: Session | null) => void;
+  setUser: (user: User | null) => void; 
   login: (email: string, password: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>; 
   register: (email: string, password: string, fullname: string) => Promise<{data: SupabaseUser | null, error: AuthError | null}>;
   logout: () => Promise<void>;
@@ -23,7 +24,10 @@ const useAuthStore = create<AuthState>((set) => ({
   session: null,
   loading: false,
   error: null,
+  isInitialized: false,
   setSession: (session) => set({ session }),
+  setUser: (user) => set({ user }),
+  clearError: () => set({ error: null }),
 
   
 
@@ -31,9 +35,14 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const { data, error } = await supabase.auth.getSession();
+    
       if (error) {
         console.error("Error getting session:", error.message);
         set({ error: error.message, loading: false });
+        return;
+      }
+      if (!data.session) {
+        set({ error: "No session found", loading: false });
         return;
       }
     

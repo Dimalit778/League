@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/supabase";
 
 const COMPETITION_CODE = "PD";
 const FOOTBALL_API_URL = `https://api.football-data.org/v4/competitions/${COMPETITION_CODE}/matches`;

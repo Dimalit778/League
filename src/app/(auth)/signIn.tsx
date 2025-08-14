@@ -1,5 +1,5 @@
-import { ButtonC, InputField } from "@/components/ui";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/providers/ThemeProvider";
+import { Button, InputField } from "@/shared/components/ui";
 import useAuthStore from "@/store/useAuthStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
@@ -83,7 +83,7 @@ export default function SignIn() {
           error={errors.password}
         />
 
-        <ButtonC
+        <Button
           title="Log In"
           onPress={handleSubmit(onSubmit)}
           loading={loading}
@@ -96,7 +96,7 @@ export default function SignIn() {
           <Text className="text-gray-400 mx-2">OR</Text>
           <View className="flex-1 h-px bg-gray-600" />
         </View>
-        <ButtonC
+        <Button
           title="Continue with Google"
           onPress={() => {}}
           loading={loading}

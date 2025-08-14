@@ -1,5 +1,5 @@
-import ThemeToggle from "@/components/ThemeToggle";
-import { TopBar } from "@/components/ui";
+import { TopBar } from "@/shared/components/layout";
+import ThemeToggle from "@/shared/components/ui/ThemeToggle";
 import { Stack } from "expo-router";
 
 export default function AuthLayout() {

@@ -1,9 +1,8 @@
 import "../../global.css";
 
-import { SplashScreen } from "@/components/SplashScreen";
+import { ThemeProvider } from "@/providers/ThemeProvider";
+import SplashScreen from "@/shared/components/layout/SplashScreen";
 import useAuthStore from "@/store/useAuthStore";
-
-import { ThemeProvider } from "@/context/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";

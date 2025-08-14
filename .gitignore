@@ -18,6 +18,9 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+# Ignore iOS and Android folders for EAS ---
+/ios
+/android
 
 # Metro
 .metro-health-check*

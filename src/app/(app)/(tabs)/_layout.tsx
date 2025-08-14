@@ -1,13 +1,12 @@
-import Header from "@/components/ui/TopBar";
 import {
   LeagueIcon,
   MatchesIcon,
   ProfileIcon,
   RankIcon,
-  TrophyIcon,
 } from "../../../../assets/icons";
 
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/providers/ThemeProvider";
+import { TopBar } from "@/shared/components/layout";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 
@@ -34,50 +33,37 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="league"
         options={{
-          title: "My Leagues",
-          header: () => <Header title="My Leagues" />,
-          tabBarIcon: ({ color, size }) => (
-            <TrophyIcon width={size} height={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="League"
-        options={{
-          title: "League",
-          header: () => <Header title="League" />,
+          headerShown: true,
+          header: () => <TopBar title="Leagues" />,
           tabBarIcon: ({ color, size }) => (
             <LeagueIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Matches"
+        name="matches"
         options={{
-          title: "Matches",
-          header: () => <Header title="Matches" />,
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MatchesIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Rank"
+        name="predictions"
         options={{
-          title: "Rank",
-          header: () => <Header title="Rank" />,
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <RankIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Profile"
+        name="profile"
         options={{
-          title: "Profile",
-          header: () => <Header title="Profile" />,
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <ProfileIcon width={size} height={size} color={color} />
           ),

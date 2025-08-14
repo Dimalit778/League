@@ -1,19 +1,21 @@
-import React from "react";
-import { Path, Svg } from "react-native-svg";
+import { View } from "react-native";
+import { Path, Svg, SvgProps } from "react-native-svg";
 
-interface ProfileIconProps {
-  width?: number;
-  height?: number;
-  color?: string;
-}
-
-const ProfileIcon: React.FC<ProfileIconProps> = ({
+const ProfileIcon = ({
   width = 24,
   height = 24,
-  color = "#000",
-}) => {
-  return (
-    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+  className,
+  color,
+  ...props
+}: SvgProps & { color: string }) => (
+  <View className={className}>
+    <Svg
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}
+    >
       <Path
         d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
         fill={color}
@@ -23,7 +25,7 @@ const ProfileIcon: React.FC<ProfileIconProps> = ({
         fill={color}
       />
     </Svg>
-  );
-};
+  </View>
+);
 
 export default ProfileIcon;
