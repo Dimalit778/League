@@ -1,50 +1,101 @@
-import { GCompetition, GLeague, GUser } from '@/types/global.types';
+import { supabase } from '@/lib/supabase/supabase';
+import { Tables } from '@/types/database.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+type User = Tables<"users">;
+type League = Tables<"leagues">;
+
 
 interface AppState {    
-  user: GUser | null;
-  primaryLeague: GLeague | null;
-  selectedLeague: GLeague | null;
-  currentCompetition: GCompetition | null;
-  currentSeason: number | null;
+  user: User | null;
+  session: Session | null;
+  primaryLeague: League | null;
+  initializeSession: () => Promise<{ success: boolean; error?: string | null }>;
+  loading: boolean;
+  error: string | null;
   
   // Actions
-  setUser: (user: GUser | null) => void;
-  setPrimaryLeague: (league: GLeague | null) => void;
-  setSelectedLeague: (league: GLeague | null) => void;
-  setCurrentCompetition: (competition: GCompetition | null) => void;
-  setCurrentSeason: (season: number | null) => void;
-  logout: () => void;
+  setUser: (user: User | null) => void;
+  setSession: (session: Session | null) => void;
+  setPrimaryLeague: (league: League | null) => void;
+  logout: () => Promise<{ success: boolean; error?: string | null }>;
 }
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      session: null,
       primaryLeague: null,
-      selectedLeague: null,
-      currentCompetition: null,
-      currentSeason: null,
-
+      loading: false,
+      error: null,
+      
       setUser: (user) => set({ user }),
-      setPrimaryLeague: (league) => set({ primaryLeague: league, selectedLeague: league }),
-      setSelectedLeague: (league) => set({ selectedLeague: league }),
-      setCurrentCompetition: (competition) => set({ currentCompetition: competition }),
-      setCurrentSeason: (season) => set({ currentSeason: season }),
-      logout: () => set({
-        user: null,
-        primaryLeague: null,
-        selectedLeague: null,
-        currentCompetition: null,
-        currentSeason: null,
-      }),
+      setSession: (session) => set({ session }),
+      setPrimaryLeague: (league) => set({ primaryLeague: league}),
+  
+      initializeSession: async () => {
+        set({ loading: true, error: null });
+        try {
+          const { data, error: sessionError } = await supabase.auth.getSession();
+          
+          if (sessionError || !data.session) {
+            set({ loading: false, error: sessionError?.message || "No session found" });
+            return { success: false, error: sessionError?.message || "No session found" };
+          }
+          
+          set({ session: data.session });
+          
+          const { data: userData, error: userError } = await supabase.from("users").select("*").eq("id", data.session.user.id).single();
+          
+          if (userError || !userData) {
+            set({ loading: false, error: userError?.message || "User not found" });
+            return { success: false, error: userError?.message || "User not found" };
+          }
+          
+          set({ user: userData, loading: false });
+          
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+          set({ loading: false, error: errorMessage });
+          return { success: false, error: errorMessage };
+        }
+      },
+      
+      logout: async () => {
+        set({ loading: true, error: null });
+        try {
+          const { error: logoutError } = await supabase.auth.signOut();
+          if (logoutError) {
+            set({ loading: false, error: logoutError.message });
+            return { success: false, error: logoutError.message };
+          }
+          set({
+            session: null,
+            user: null,
+            primaryLeague: null,
+            loading: false
+          });
+          
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+          set({ loading: false, error: errorMessage });
+          return { success: false, error: errorMessage };
+        }
+      },
     }),
     {
       name: 'football-app-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        user: state.user,
+        primaryLeague: state.primaryLeague
+      }),
     }
   )
 );

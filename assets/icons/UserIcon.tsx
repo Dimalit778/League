@@ -4,9 +4,9 @@ const UserIcon = ({
   width,
   height,
   ...props
-}: SvgProps & { color: "dark" | "light" }) => (
+}: SvgProps & { color: string }) => (
   <Svg fill="none" viewBox="0 0 24 24" width={width} height={height} {...props}>
-    <G stroke={color === "dark" ? "#fb923c" : "#f97316"} strokeWidth={1.5}>
+    <G stroke={color} strokeWidth={1.5}>
       <Circle cx={9} cy={9} r={2} />
       <Path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2 1.79-2 4-2 4 .895 4 2Z" />
       <Path

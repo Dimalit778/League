@@ -1,4 +1,4 @@
-import useAuthStore from "@/store/useAuthStore";
+import { useAppStore } from "@/store/useAppStore";
 import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import {
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { session, logout } = useAuthStore();
+  const { session, logout } = useAppStore();
   const user = session?.user as User;
 
   const loading = false;

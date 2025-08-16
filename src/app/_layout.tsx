@@ -2,13 +2,14 @@ import "../../global.css";
 
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import SplashScreen from "@/shared/components/layout/SplashScreen";
-import useAuthStore from "@/store/useAuthStore";
+import { useAppStore } from "@/store/useAppStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function RootLayout() {
-  const { session, initializeSession, loading } = useAuthStore();
+  const { session, loading, initializeSession } = useAppStore();
+  const initRef = useRef(false);
 
   const [queryClient] = useState(
     () =>
@@ -29,7 +30,10 @@ export default function RootLayout() {
   );
 
   useEffect(() => {
-    initializeSession();
+    if (!initRef.current) {
+      initRef.current = true;
+      initializeSession();
+    }
   }, []);
 
   if (loading) {
@@ -46,6 +50,7 @@ export default function RootLayout() {
           </Stack.Protected>
 
           <Stack.Protected guard={!isLoggedIn}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           </Stack.Protected>
         </Stack>
