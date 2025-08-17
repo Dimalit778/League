@@ -1,5 +1,5 @@
-import LeagueCard from "@/components/cards/LeagueCard";
 import { Loading } from "@/components/layout";
+import LeagueCard from "@/components/myLeagues/LeagueCard";
 import { Button } from "@/components/ui";
 
 import { useMyLeagues } from "@/hooks/useLeagues";

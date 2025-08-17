@@ -1,5 +1,5 @@
-import LeaderboardCard from "@/components/cards/LeaderboardCard";
 import LoadingOverlay from "@/components/layout/LoadingOverlay";
+import LeaderboardCard from "@/components/league/LeaderboardCard";
 
 import { useGetLeaderboard } from "@/hooks/useLeagues";
 import { FlatList, View } from "react-native";

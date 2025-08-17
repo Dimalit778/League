@@ -1,6 +1,6 @@
 import LoadingOverlay from "@/components/layout/LoadingOverlay";
-import { MatchCard } from "@/components/MatchCard";
-import RoundsList from "@/components/RoundsList";
+import { MatchCard } from "@/components/matches/MatchCard";
+import RoundsList from "@/components/matches/RoundsList";
 import { useCompetitionRounds } from "@/hooks/useCompetitions";
 import { useGetFixturesByRound } from "@/hooks/useFixtures";
 import { useAppStore } from "@/store/useAppStore";

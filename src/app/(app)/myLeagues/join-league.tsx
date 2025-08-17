@@ -1,4 +1,4 @@
-import PreviewLeagueCard from "@/components/cards/PreviewLeagueCard";
+import PreviewLeagueCard from "@/components/myLeagues/PreviewLeagueCard";
 import { Button, InputField } from "@/components/ui";
 import { useFindLeagueByJoinCode, useJoinLeague } from "@/hooks/useLeagues";
 import { yupResolver } from "@hookform/resolvers/yup";
