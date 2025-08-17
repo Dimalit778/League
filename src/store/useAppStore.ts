@@ -1,7 +1,7 @@
-import { supabase } from '@/lib/supabase/supabase';
+import { supabase } from '@/lib/supabase';
 import { Tables } from '@/types/database.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Session } from '@supabase/supabase-js';
+import { AuthError, Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -21,6 +21,8 @@ interface AppState {
   setUser: (user: User | null) => void;
   setSession: (session: Session | null) => void;
   setPrimaryLeague: (league: League | null) => void;
+  login: (email: string, password: string) => Promise<{ data: User | null; error: AuthError | null }>;
+  signUp: (email: string, password: string, fullname: string) => Promise<{ data: User | null; error: AuthError | null }>;
   logout: () => Promise<{ success: boolean; error?: string | null }>;
 }
 
@@ -32,7 +34,7 @@ export const useAppStore = create<AppState>()(
       primaryLeague: null,
       loading: false,
       error: null,
-      
+    
       setUser: (user) => set({ user }),
       setSession: (session) => set({ session }),
       setPrimaryLeague: (league) => set({ primaryLeague: league}),
@@ -63,6 +65,57 @@ export const useAppStore = create<AppState>()(
           const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
           set({ loading: false, error: errorMessage });
           return { success: false, error: errorMessage };
+        }
+      },
+      login: async (email: string, password: string): Promise<{ data: User | null; error: AuthError | null }> => {
+        set({ loading: true, error: null });
+        try {
+          if (!email) return Promise.reject("Email is required");
+          if (!password) return Promise.reject("Password is required");
+    
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+          if (error) return { data: null, error };
+    
+          set({ session: data.session});
+      return { data: data.user as unknown as User, error: null };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "An unexpected error occurred";
+          set({ error: errorMessage, loading: false });
+          return { data: null, error: error as AuthError };
+        } finally {
+          set({ loading: false });
+        }
+      },
+      signUp  : async (email: string, password: string, fullname: string): Promise<{ data: User | null; error: AuthError | null }> => {
+        set({ loading: true, error: null });
+        try {
+          if (!email) return Promise.reject("Email is required");
+          if (!password) return Promise.reject("Password is required");
+    
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+             full_name : fullname,
+            },
+          },
+        });
+    
+        if (error) return Promise.reject(error);
+          set({ session: data.session });
+        return Promise.resolve({data: data.user as unknown as User  , error: null});
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "An unexpected error occurred";
+          set({ error: errorMessage, loading: false });
+          return Promise.reject(errorMessage);
+        } finally {
+          set({ loading: false });
         }
       },
       

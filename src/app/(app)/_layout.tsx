@@ -1,10 +1,12 @@
-import { Stack } from "expo-router";
+import { useAppStore } from "@/store/useAppStore";
+import { Redirect, Stack } from "expo-router";
 
 export default function AppLayout() {
-  // const { data: leagues, isLoading } = useMyLeagues();
-  // console.log(leagues);
-  // if (isLoading) return <Loading />;
-  // if (leagues?.length === 0) return <Redirect href="/myLeagues" />;
+  const { primaryLeague } = useAppStore();
+
+  if (!primaryLeague) {
+    return <Redirect href="/myLeagues" />;
+  }
 
   return (
     <Stack>

@@ -1,4 +1,4 @@
-import { Button } from "@/shared/components/ui";
+import { Button } from "@/components/ui";
 import { router } from "expo-router";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 

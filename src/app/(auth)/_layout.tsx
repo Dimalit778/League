@@ -1,4 +1,4 @@
-import { TopBar } from "@/shared/components/layout";
+import TopBar from "@/components/layout/TopBar";
 import { Stack } from "expo-router";
 
 export default function AuthLayout() {

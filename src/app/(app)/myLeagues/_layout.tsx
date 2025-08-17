@@ -1,51 +1,28 @@
-import { TopBar } from "@/shared/components/layout";
+import TopBar from "@/components/layout/TopBar";
 import { Stack } from "expo-router";
 
-export default function LeaguesLayout() {
+export default function NewLeagueLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Leagues",
-          header: () => <TopBar title="Leagues" />,
-        }}
-      />
-      <Stack.Screen
-        name="[id]"
-        options={{
-          presentation: "pageSheet",
-          headerShown: false,
-        }}
-      />
+    <Stack
+      screenOptions={{
+        header: () => <TopBar showBackButton />,
+      }}
+    >
       <Stack.Screen
         name="join-league"
         options={{
-          title: "Join League",
           header: () => <TopBar title="Join League" showBackButton />,
         }}
       />
       <Stack.Screen
-        name="createLeague/newLeague-competitions"
-        options={{
-          title: "Create League",
-          header: () => <TopBar title="Create League" showBackButton />,
-        }}
+        name="select-competition"
+        options={{ headerShown: true, title: "Select Competition" }}
       />
       <Stack.Screen
-        name="createLeague/newLeague-details"
-        options={{
-          title: "League Details",
-          header: () => <TopBar title="League Details" showBackButton />,
-        }}
+        name="league-details"
+        options={{ headerShown: true, title: "League Details" }}
       />
-      <Stack.Screen
-        name="createLeague/newLeague-preview"
-        options={{
-          title: "League Created",
-          header: () => <TopBar title="League Created" />,
-        }}
-      />
+      <Stack.Screen name="league-created" options={{ headerShown: false }} />
     </Stack>
   );
 }

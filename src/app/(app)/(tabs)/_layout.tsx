@@ -1,3 +1,4 @@
+import TopBar from "@/components/layout/TopBar";
 import {
   LeagueIcon,
   MatchesIcon,
@@ -5,8 +6,7 @@ import {
   RankIcon,
 } from "../../../../assets/icons";
 
-import { useTheme } from "@/providers/ThemeProvider";
-import { TopBar } from "@/shared/components/layout";
+import { useTheme } from "@/context/ThemeContext";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 
@@ -33,37 +33,40 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="league"
+        name="League"
         options={{
-          headerShown: true,
-          header: () => <TopBar title="Leagues" />,
+          title: "League",
+          header: () => <TopBar title="League" />,
           tabBarIcon: ({ color, size }) => (
             <LeagueIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="matches"
+        name="Matches"
         options={{
-          headerShown: false,
+          title: "Matches",
+          header: () => <TopBar title="Matches" />,
           tabBarIcon: ({ color, size }) => (
             <MatchesIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="predictions"
+        name="Rank"
         options={{
-          headerShown: false,
+          title: "Rank",
+          header: () => <TopBar title="Rank" />,
           tabBarIcon: ({ color, size }) => (
             <RankIcon width={size} height={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="Profile"
         options={{
-          headerShown: false,
+          title: "Profile",
+          header: () => <TopBar title="Profile" />,
           tabBarIcon: ({ color, size }) => (
             <ProfileIcon width={size} height={size} color={color} />
           ),
