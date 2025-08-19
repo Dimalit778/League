@@ -1,6 +1,6 @@
-import { useLeaguePredictions } from "@/hooks/usePredictions";
-import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { useLeaguePredictions } from '@/hooks/usePredictions';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 interface MatchPredictionsProps {
   fixtureId: number;
@@ -75,7 +75,7 @@ export const MatchPredictions = ({ fixtureId }: MatchPredictionsProps) => {
       <FlatList
         data={predictions}
         renderItem={renderPrediction}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
       />

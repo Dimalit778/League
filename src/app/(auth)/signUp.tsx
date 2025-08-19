@@ -1,5 +1,5 @@
 import { Button, InputField } from "@/components/ui";
-import { useTheme } from "@/context/ThemeContext";
+
 import { useAppStore } from "@/store/useAppStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
@@ -22,8 +22,7 @@ const schema = yup.object().shape({
 });
 
 export default function SignUpScreen() {
-  const { theme } = useTheme();
-  const { signUp, loading, error } = useAppStore();
+  const { signUp, loading, error, theme } = useAppStore();
   const [showPassword, setShowPassword] = useState(false);
   const {
     control,

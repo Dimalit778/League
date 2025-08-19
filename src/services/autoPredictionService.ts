@@ -1,6 +1,5 @@
-import { predictionService } from "./predictionService";
-import { fixtureService } from "./fixtureService";
 import { supabase } from "@/lib/supabase";
+import { predictionService } from "./predictionService";
 
 export const autoPredictionService = {
   async processRoundForAutoPredictions(competitionId: number, round: string) {

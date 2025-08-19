@@ -1,4 +1,4 @@
-import { useLeagueService } from '@/services/leagueService';
+import { leagueService } from '@/services/leagueService';
 import { useAppStore } from '@/store/useAppStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -12,8 +12,6 @@ const QUERY_KEYS = {
 
 export const useMyLeagues = () => {
   const { session } = useAppStore();
-  const leagueService = useLeagueService();
-
   return useQuery({
     queryKey: QUERY_KEYS.myLeagues(session?.user?.id!),
     queryFn: () => leagueService.getMyLeagues(session?.user?.id!),
@@ -22,11 +20,9 @@ export const useMyLeagues = () => {
     retry: 2,
   });
 };
-
 export const useCreateLeague = () => {
   const queryClient = useQueryClient();
   const { session } = useAppStore();
-  const leagueService = useLeagueService();
 
   return useMutation({
     mutationFn: (params: {
@@ -36,9 +32,8 @@ export const useCreateLeague = () => {
       join_code: string;
       max_members: number;
       competition_id: number;
-    }) => leagueService.createLeague(session?.user?.id!, params.nickname, params as any  ),
+    }) => leagueService.createLeague(session?.user?.id!, params.nickname, params as any, params.league_logo ),
     onSuccess: (data) => {
-      // Invalidate and refetch leagues
       queryClient.invalidateQueries({ 
         queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
       });
@@ -48,26 +43,19 @@ export const useCreateLeague = () => {
     },
   });
 };
-//Work
 export const useJoinLeague = () => {
   const queryClient = useQueryClient();
   const { session } = useAppStore();
-  const leagueService = useLeagueService();
 
   return useMutation({
-    mutationFn: ({ leagueId, nickname }: { leagueId: number; nickname: string }) => 
-      leagueService.joinLeague(session?.user?.id!, leagueId, nickname),
-    onSuccess: (result, variables) => {
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
-      
+    mutationFn: ({ join_code, nickname, avatar_url }: { join_code: string; nickname: string, avatar_url?: string }) => 
+      leagueService.joinLeague(session?.user?.id!, join_code, nickname,avatar_url?? ''),
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ 
         queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
       });
-      
       queryClient.invalidateQueries({ 
-        queryKey: ['leagues', variables.leagueId, 'members'] 
+        queryKey: ['leagues', variables.join_code, 'members'] 
       });
     },
     onError: (error) => {
@@ -75,46 +63,20 @@ export const useJoinLeague = () => {
     },
   });
 };
-export const useGetLeagueById = (leagueId: number) => {
-  const leagueService = useLeagueService();
+export const useGetLeagueById = (leagueId: string) => {
   return useQuery({
     queryKey: ['leagues'],
     queryFn: () => leagueService.getLeagueById(leagueId),
     enabled: !!leagueId,
   });
 };
-export const useCompetitions = () => {
-  const leagueService = useLeagueService();
-  return useQuery({
-    queryKey: QUERY_KEYS.competitions,
-    queryFn: () => leagueService.getCompetitions(),
-    staleTime: 10 * 60 * 1000, // 10 minutes - competitions don't change often
-    retry: 2,
-  });
-};
-//Work
+
 export const useFindLeagueByJoinCode = (joinCode: string) => {
-  const leagueService = useLeagueService();
   return useQuery({
     queryKey: QUERY_KEYS.leagueByJoinCode(joinCode),
-    queryFn: async () => {
-      const { data, error } = await leagueService.findLeagueByJoinCode(joinCode);
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => leagueService.findLeagueByJoinCode(joinCode),
     enabled: joinCode?.length === 6,
     retry: 1,
-  });
-};
-export const useGetLeaderboard = () => {
-  const leagueService = useLeagueService();
-  const { primaryLeague } = useAppStore();
-  return useQuery({
-    queryKey: ['leagues', primaryLeague?.id, 'leaderboard'],
-    queryFn: () => leagueService.getLeaderboard(primaryLeague?.id!),
-    enabled: !!primaryLeague?.id,
-    staleTime: 60 * 1000 * 60, 
-    retry: 2,
   });
 };
 

@@ -1,20 +1,22 @@
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native';
 
-type Member = {
-  id: string;
+type LeaderboardMember = {
+  user_id: string;
   nickname: string;
   avatar_url?: string | null;
+  points: number;
 };
+
 interface TopThreeProps {
-  topThree: (Member | null)[];
+  topThree: LeaderboardMember[];
 }
 
 const TopThree = ({ topThree }: TopThreeProps) => {
   const getInitials = (nickname: string) => {
     return nickname
-      .split(" ")
+      .split(' ')
       .map((name) => name.charAt(0))
-      .join("")
+      .join('')
       .toUpperCase()
       .slice(0, 2);
   };
@@ -22,17 +24,17 @@ const TopThree = ({ topThree }: TopThreeProps) => {
   const getPositionStyle = (position: number) => {
     switch (position) {
       case 1:
-        return "w-24 h-24 bg-yellow-500 border-4 border-yellow-400";
+        return 'w-24 h-24 bg-yellow-500 border-4 border-yellow-400';
       case 2:
-        return "w-20 h-20 bg-teal-500 border-4 border-teal-400";
+        return 'w-20 h-20 bg-teal-500 border-4 border-teal-400';
       case 3:
-        return "w-20 h-20 bg-blue-500 border-4 border-blue-400";
+        return 'w-20 h-20 bg-blue-500 border-4 border-blue-400';
       default:
-        return "w-20 h-20 bg-gray-500 border-4 border-gray-400";
+        return 'w-20 h-20 bg-gray-500 border-4 border-gray-400';
     }
   };
 
-  const renderPlayer = (member: Member | null, position: number) => (
+  const renderPlayer = (member: LeaderboardMember | null, position: number) => (
     <View className="items-center " key={position}>
       <View className="relative ">
         {position === 1 && member && (
@@ -44,7 +46,7 @@ const TopThree = ({ topThree }: TopThreeProps) => {
           <Text className="text-text text-xs font-bold">{position}</Text>
         </View>
         <View
-          className={`rounded-full items-center justify-center ${getPositionStyle(position)} ${!member ? "opacity-30" : ""}`}
+          className={`rounded-full items-center justify-center ${getPositionStyle(position)} ${!member ? 'opacity-30' : ''}`}
         >
           {member ? (
             <Text className="text-text font-bold text-lg">
@@ -56,7 +58,7 @@ const TopThree = ({ topThree }: TopThreeProps) => {
         </View>
       </View>
       <Text className="text-text font-medium mt-2 text-center max-w-24">
-        {member ? member.nickname : "---"}
+        {member ? member.nickname : '---'}
       </Text>
     </View>
   );
@@ -64,7 +66,7 @@ const TopThree = ({ topThree }: TopThreeProps) => {
   if (!topThree || topThree.length === 0) return null;
 
   return (
-    <View className="flex-row justify-center gap-5">
+    <View className="flex-row justify-center gap-5 mb-4">
       <View className="items-center">{renderPlayer(topThree[1], 2)}</View>
       <View className="items-center -mt-8">{renderPlayer(topThree[0], 1)}</View>
       <View className="items-center">{renderPlayer(topThree[2], 3)}</View>

@@ -1,3 +1,4 @@
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAppStore } from "@/store/useAppStore";
 import { useState } from "react";
 import {
@@ -72,6 +73,11 @@ export default function Profile() {
         </View>
 
         <View className="bg-surface rounded-xl border border-border shadow-sm p-4 mb-4">
+          {/* --Theme Toggle-- */}
+          <View className="flex-row justify-end items-center mb-4">
+            <ThemeToggle />
+          </View>
+
           {/* Profile Information */}
           <View className="bg-surface rounded-xl border border-border shadow-sm p-4 mb-4">
             <View className="flex-row justify-between items-center mb-4">

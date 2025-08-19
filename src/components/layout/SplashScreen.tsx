@@ -1,44 +1,23 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import logo from "../../../assets/app-icon.png";
 export function SplashScreen() {
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>⚽</Text>
-      </View>
-      <Text style={styles.title}>League</Text>
+      <Image source={logo} style={styles.logo} />
       <ActivityIndicator size="large" color="#6366F1" style={styles.loader} />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#0f172a",
     justifyContent: "center",
     alignItems: "center",
   },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#6366F1",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 24,
-    boxShadow: "0px 4px 8px rgba(99, 102, 241, 0.3)",
-    elevation: 8,
-  },
-  logoText: {
-    fontSize: 32,
-    color: "#FFFFFF",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1F2937",
-    marginBottom: 32,
+  logo: {
+    width: 150,
+    height: 150,
   },
   loader: {
     marginTop: 20,

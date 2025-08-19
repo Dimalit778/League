@@ -1,10 +1,10 @@
-import { Loading } from "@/components/layout";
-import LeagueCard from "@/components/myLeagues/LeagueCard";
-import { Button } from "@/components/ui";
+import { Loading } from '@/components/layout';
+import LeagueCard from '@/components/myLeagues/LeagueCard';
+import { Button } from '@/components/ui';
 
-import { useMyLeagues } from "@/hooks/useLeagues";
-import { router } from "expo-router";
-import { FlatList, Text, View } from "react-native";
+import { useMyLeagues } from '@/hooks/useLeagues';
+import { router } from 'expo-router';
+import { FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
   const { data: leagues, isLoading, error } = useMyLeagues();
@@ -19,13 +19,13 @@ export default function MyLeagues() {
           title="Create League"
           variant="primary"
           size="md"
-          onPress={() => router.push("/myLeagues/select-competition")}
+          onPress={() => router.push('/myLeagues/select-competition')}
         />
         <Button
           title="Join League"
           variant="secondary"
           size="md"
-          onPress={() => router.push("/myLeagues/join-league")}
+          onPress={() => router.push('/myLeagues/join-league')}
         />
       </View>
       <View className="flex-grow  px-4 ">

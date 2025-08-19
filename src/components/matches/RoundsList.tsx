@@ -1,7 +1,7 @@
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { ScrollView, Text, TouchableOpacity } from 'react-native';
 
 type RoundsListProps = {
-  rounds: string[] | null;
+  rounds: string[];
   selectedRound: string;
   handleRoundPress: (round: string) => void;
 };
@@ -22,7 +22,7 @@ export default function RoundsList({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ alignItems: "center" }}
+      contentContainerStyle={{ alignItems: 'center' }}
     >
       {rounds.map((round, index) => {
         const getRoundNumber = (roundName: string): string => {
@@ -35,14 +35,14 @@ export default function RoundsList({
             key={round}
             onPress={() => handleRoundPress(round)}
             className={`mx-2 px-4 py-2 rounded-full ${
-              selectedRound === round ? "bg-primary" : "bg-surface"
+              selectedRound === round ? 'bg-primary' : 'bg-surface'
             }`}
             style={{
               borderRadius: 25,
               width: 50,
               height: 50,
-              justifyContent: "center",
-              alignItems: "center",
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <Text className="text-text font-semibold">

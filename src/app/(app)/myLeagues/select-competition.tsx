@@ -1,11 +1,10 @@
-import { Loading } from "@/components/layout";
-import { Button, Image } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorSchema";
-import { useLeagueService } from "@/services/leagueService";
-import { Tables } from "@/types/database.types";
-import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { useState } from "react";
+import { Loading } from '@/components/layout';
+import { Button, Image } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorSchema';
+import { useGetCompetitions } from '@/hooks/useCompetitions';
+import { Tables } from '@/types/database.types';
+import { router } from 'expo-router';
+import { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -13,30 +12,20 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 
-type Competition = Tables<"competitions">;
+type Competition = Tables<'competitions'>;
 
 export default function SelectCompetitionScreen() {
   const { isDarkColorScheme } = useColorScheme();
   const [selectedCompetition, setSelectedCompetition] =
     useState<Competition | null>(null);
 
-  const { getCompetitions } = useLeagueService();
-
-  const {
-    data: competitions,
-    isLoading,
-    error,
-  } = useQuery<Competition[]>({
-    queryKey: ["competitions"],
-    queryFn: () => getCompetitions(),
-    staleTime: 24 * 60 * 60 * 1000,
-  });
+  const { data: competitions, isLoading, error } = useGetCompetitions();
 
   const validateSelection = (): boolean => {
     if (!selectedCompetition) {
-      Alert.alert("Error", "Please select a competition to continue.");
+      Alert.alert('Error', 'Please select a competition to continue.');
       return false;
     }
     return true;
@@ -48,7 +37,7 @@ export default function SelectCompetitionScreen() {
     const leagueLogo = selectedCompetition?.logo;
 
     router.push({
-      pathname: "/(app)/myLeagues/league-details",
+      pathname: '/(app)/myLeagues/league-details',
       params: {
         competitionId: competitionId,
         leagueLogo: leagueLogo,
@@ -58,25 +47,10 @@ export default function SelectCompetitionScreen() {
 
   if (isLoading) return <Loading />;
 
-  if (error) {
-    console.error(
-      "SelectCompetitionScreen error: ",
-      JSON.stringify(error, null, 2)
-    );
-    return (
-      <View className="flex-1 justify-center items-center bg-white dark:bg-black">
-        <Text className="text-red-500 text-lg">
-          Failed to load competitions.
-        </Text>
-      </View>
-    );
-  }
+  if (error) console.log(error);
 
   return (
-    <KeyboardAvoidingView
-      className={`flex-1 ${isDarkColorScheme ? "bg-black" : "bg-white"}`}
-      behavior="padding"
-    >
+    <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
       <ScrollView className="flex-1 px-4 pt-6">
         <Text className="text-2xl font-bold mb-6 text-center text-text  ">
           Select a Competition
@@ -89,8 +63,8 @@ export default function SelectCompetitionScreen() {
               onPress={() => setSelectedCompetition(comp)}
               className={`mb-3 p-4 rounded-xl border-2 ${
                 selectedCompetition?.id === comp.id
-                  ? "border-blue-500 bg-yellow-100"
-                  : "border-gray-200 bg-white"
+                  ? 'border-blue-500 bg-yellow-100'
+                  : 'border-gray-200 bg-white'
               }`}
             >
               <View className="flex-row items-center gap-4">
@@ -98,7 +72,7 @@ export default function SelectCompetitionScreen() {
                   source={{
                     uri:
                       comp.flag ||
-                      "https://placehold.co/48x48/cccccc/000000?text=NoFlag",
+                      'https://placehold.co/48x48/cccccc/000000?text=NoFlag',
                   }}
                   className="border border-gray-200 rounded-full"
                   resizeMode="contain"
@@ -119,7 +93,7 @@ export default function SelectCompetitionScreen() {
                   source={{
                     uri:
                       comp.logo ||
-                      "https://placehold.co/52x52/cccccc/000000?text=NoLogo",
+                      'https://placehold.co/52x52/cccccc/000000?text=NoLogo',
                   }}
                   resizeMode="contain"
                   width={52}

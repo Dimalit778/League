@@ -1,10 +1,7 @@
-import { useGetLeagueById } from "@/hooks/useLeagues";
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native';
 const API_KEY = process.env.EXPO_PUBLIC_API_FOOTBALL_KEY;
 
 export default function Rank() {
-  const { data: leagueData, isLoading: leagueLoading } = useGetLeagueById(48);
-
   return (
     <View className="flex-1 bg-gray-100">
       <View className="bg-blue-600 p-4">

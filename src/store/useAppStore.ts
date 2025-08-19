@@ -2,17 +2,20 @@ import { supabase } from '@/lib/supabase';
 import { Tables } from '@/types/database.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthError, Session } from '@supabase/supabase-js';
+import { colorScheme } from 'nativewind';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 type User = Tables<"users">;
 type League = Tables<"leagues">;
-
-
+type UserWithLeague = User & {
+  leagues: League;
+};
 interface AppState {    
   user: User | null;
   session: Session | null;
   primaryLeague: League | null;
+  theme: 'light' | 'dark';
   initializeSession: () => Promise<{ success: boolean; error?: string | null }>;
   loading: boolean;
   error: string | null;
@@ -21,6 +24,7 @@ interface AppState {
   setUser: (user: User | null) => void;
   setSession: (session: Session | null) => void;
   setPrimaryLeague: (league: League | null) => void;
+  toggleTheme: () => void;
   login: (email: string, password: string) => Promise<{ data: User | null; error: AuthError | null }>;
   signUp: (email: string, password: string, fullname: string) => Promise<{ data: User | null; error: AuthError | null }>;
   logout: () => Promise<{ success: boolean; error?: string | null }>;
@@ -32,34 +36,56 @@ export const useAppStore = create<AppState>()(
       user: null,
       session: null,
       primaryLeague: null,
+      theme: 'light',
       loading: false,
       error: null,
     
       setUser: (user) => set({ user }),
       setSession: (session) => set({ session }),
       setPrimaryLeague: (league) => set({ primaryLeague: league}),
+      
+      toggleTheme: () => {
+        const currentTheme = get().theme;
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        AsyncStorage.setItem('theme', newTheme).catch(error => {
+          console.error('Failed to save theme to storage:', error);
+        });
+        
+        colorScheme.set(newTheme);
+        set({ theme: newTheme });
+      },
   
       initializeSession: async () => {
         set({ loading: true, error: null });
+        
+        try {
+          const savedTheme = await AsyncStorage.getItem('theme');
+          if (savedTheme === 'light' || savedTheme === 'dark') {
+            set({ theme: savedTheme as 'light' | 'dark' });
+            colorScheme.set(savedTheme);
+          }
+        } catch (error) {
+          console.error('Failed to load theme from storage:', error);
+        }
         try {
           const { data, error: sessionError } = await supabase.auth.getSession();
-          
           if (sessionError || !data.session) {
             set({ loading: false, error: sessionError?.message || "No session found" });
             return { success: false, error: sessionError?.message || "No session found" };
           }
-          
           set({ session: data.session });
           
-          const { data: userData, error: userError } = await supabase.from("users").select("*").eq("id", data.session.user.id).single();
-          
+          const { data: userData, error: userError } = await supabase.from("users").select('* ,leagues!users_primary_league_id_fkey(*)').eq("id", data.session.user.id).single() as { data: UserWithLeague, error: null } | { data: null, error: any };
           if (userError || !userData) {
             set({ loading: false, error: userError?.message || "User not found" });
             return { success: false, error: userError?.message || "User not found" };
           }
-          
-          set({ user: userData, loading: false });
-          
+  
+          const { leagues, ...user } = userData;
+ 
+          set({ loading: false, user: user , primaryLeague: leagues });
+       
           return { success: true };
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
@@ -127,6 +153,7 @@ export const useAppStore = create<AppState>()(
             set({ loading: false, error: logoutError.message });
             return { success: false, error: logoutError.message };
           }
+           await AsyncStorage.clear(); 
           set({
             session: null,
             user: null,
@@ -147,7 +174,8 @@ export const useAppStore = create<AppState>()(
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         user: state.user,
-        primaryLeague: state.primaryLeague
+        primaryLeague: state.primaryLeague,
+        theme: state.theme
       }),
     }
   )

@@ -1,10 +1,10 @@
-import PreviewLeagueCard from "@/components/myLeagues/PreviewLeagueCard";
-import { Button, InputField } from "@/components/ui";
-import { useFindLeagueByJoinCode, useJoinLeague } from "@/hooks/useLeagues";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import PreviewLeagueCard from '@/components/myLeagues/PreviewLeagueCard';
+import { Button, InputField } from '@/components/ui';
+import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,12 +12,12 @@ import {
   ScrollView,
   Text,
   View,
-} from "react-native";
-import * as Yup from "yup";
+} from 'react-native';
+import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
-  inviteCode: Yup.string().min(6).max(6).required("Invite code is required"),
-  nickname: Yup.string().min(3).max(20).required("Nickname is required"),
+  inviteCode: Yup.string().min(6).max(6).required('Invite code is required'),
+  nickname: Yup.string().min(3).max(20).required('Nickname is required'),
 });
 
 export default function JoinLeague() {
@@ -29,9 +29,9 @@ export default function JoinLeague() {
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: 'onChange',
   });
-  const inviteCodeValue = watch("inviteCode");
+  const inviteCodeValue = watch('inviteCode');
   const [searchingLeague, setSearchingLeague] = useState(false);
   const [foundLeague, setFoundLeague] = useState<any | null>(null);
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
@@ -54,14 +54,14 @@ export default function JoinLeague() {
     try {
       setSearchingLeague(true);
       await joinLeagueMutation.mutateAsync({
-        leagueId: foundLeague.id,
+        join_code: foundLeague.join_code,
         nickname: formData.nickname,
       });
 
-      Alert.alert("Success", "You have successfully joined the league");
-      router.replace("/(app)/myLeagues");
+      Alert.alert('Success', 'You have successfully joined the league');
+      router.replace('/(app)/myLeagues');
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to join league");
+      Alert.alert('Error', error.message || 'Failed to join league');
     } finally {
       setSearchingLeague(false);
     }
@@ -69,7 +69,7 @@ export default function JoinLeague() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
       <ScrollView className="flex-1 px-4 pt-6">
@@ -135,9 +135,9 @@ export default function JoinLeague() {
             How to Join a League
           </Text>
           <Text className="text-textMuted text-md leading-5 ">
-            1. Get the 6-digit invite code from the league admin{"\n"}
-            2. Enter the code above to find the league{"\n"}
-            3. Choose your nickname for the league{"\n"}
+            1. Get the 6-digit invite code from the league admin{'\n'}
+            2. Enter the code above to find the league{'\n'}
+            3. Choose your nickname for the league{'\n'}
             4. Tap "Join League" to become a member
           </Text>
         </View>

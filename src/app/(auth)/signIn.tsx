@@ -1,5 +1,5 @@
 import { Button, InputField } from "@/components/ui";
-import { useTheme } from "@/context/ThemeContext";
+
 import { useAppStore } from "@/store/useAppStore";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "expo-router";
@@ -18,8 +18,7 @@ const schema = yup.object().shape({
 });
 
 export default function SignIn() {
-  const { theme } = useTheme();
-  const { login, loading } = useAppStore();
+  const { login, loading, theme } = useAppStore();
   const {
     control,
     handleSubmit,

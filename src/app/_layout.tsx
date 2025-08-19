@@ -1,33 +1,19 @@
-import "../../global.css";
+import '../../global.css';
 
-import { SplashScreen } from "@/components/layout/SplashScreen";
-import { useAppStore } from "@/store/useAppStore";
+import { SplashScreen } from '@/components/layout/SplashScreen';
+import { useAppStore } from '@/store/useAppStore';
 
-import { ThemeProvider } from "@/context/ThemeContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { themes } from '@/styles/color-themes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { View } from 'react-native';
 
 export default function RootLayout() {
-  const { session, initializeSession, loading } = useAppStore();
+  const { session, initializeSession, loading, theme } = useAppStore();
 
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            gcTime: 5 * 60 * 1000,
-            refetchOnWindowFocus: true,
-            refetchOnReconnect: true,
-            retry: 1,
-          },
-          mutations: {
-            retry: 1,
-          },
-        },
-      })
-  );
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     initializeSession();
@@ -36,21 +22,24 @@ export default function RootLayout() {
   if (loading) {
     return <SplashScreen />;
   }
+
   const isLoggedIn = !!session;
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      <View style={themes[theme]} className="flex-1">
         <Stack>
           <Stack.Protected guard={isLoggedIn}>
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
           </Stack.Protected>
 
           <Stack.Protected guard={!isLoggedIn}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           </Stack.Protected>
         </Stack>
-      </ThemeProvider>
+      </View>
     </QueryClientProvider>
   );
 }

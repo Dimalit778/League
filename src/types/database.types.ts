@@ -387,7 +387,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_users_primary_league"
+            foreignKeyName: "users_primary_league_id_fkey"
             columns: ["primary_league_id"]
             isOneToOne: false
             referencedRelation: "leagues"
@@ -400,6 +400,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_league: {
+        Args: { league_id: string }
+        Returns: boolean
+      }
       can_predict_round: {
         Args: { comp_id: number; round_name: string; season_year: number }
         Returns: boolean
@@ -423,6 +427,15 @@ export type Database = {
       generate_join_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_league_leaderboard: {
+        Args: { p_league_id: string }
+        Returns: {
+          avatar_url: string
+          nickname: string
+          total_points: number
+          user_id: string
+        }[]
       }
       get_user_leagues: {
         Args: { user_uuid: string }

@@ -1,32 +1,24 @@
-import LoadingOverlay from "@/components/layout/LoadingOverlay";
-import { MatchCard } from "@/components/matches/MatchCard";
-import RoundsList from "@/components/matches/RoundsList";
-import { useCompetitionRounds } from "@/hooks/useCompetitions";
-import { useGetFixturesByRound } from "@/hooks/useFixtures";
-import { useAppStore } from "@/store/useAppStore";
-import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import LoadingOverlay from '@/components/layout/LoadingOverlay';
+import MatchList from '@/components/matches/MatchList';
+import RoundsList from '@/components/matches/RoundsList';
+import { useCompetitionRounds } from '@/hooks/useCompetitions';
+import { useAppStore } from '@/store/useAppStore';
+import { useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 export default function MatchesPage() {
-  const [selectedRound, setSelectedRound] = useState<string>("");
   const { primaryLeague } = useAppStore();
+  const [selectedRound, setSelectedRound] = useState<string>('');
 
   const {
     data: competition,
     isLoading,
     error,
   } = useCompetitionRounds(primaryLeague?.competition_id!);
-  const {
-    data: fixtures,
-    isLoading: fixturesLoading,
-    error: fixturesError,
-  } = useGetFixturesByRound(selectedRound);
 
   useEffect(() => {
-    if (competition && !selectedRound) {
-      const defaultRound =
-        competition.currentRound || competition.rounds[0] || "";
-      setSelectedRound(defaultRound);
+    if (competition?.current_round && !selectedRound) {
+      setSelectedRound(competition?.current_round);
     }
   }, [competition, selectedRound]);
 
@@ -34,12 +26,10 @@ export default function MatchesPage() {
     setSelectedRound(round);
   };
 
-  if (error || fixturesError) console.log("error", error);
-
+  if (error) console.log('error', error);
   return (
     <View className="flex-1 bg-background pt-4 pb-25">
-      {isLoading || (fixturesLoading && <LoadingOverlay />)}
-
+      {isLoading && <LoadingOverlay />}
       <View>
         <RoundsList
           rounds={competition?.rounds || []}
@@ -48,19 +38,7 @@ export default function MatchesPage() {
           handleRoundPress={handleRoundPress}
         />
       </View>
-      <View className="flex-1 px-2 mt-4 ">
-        <FlatList
-          data={fixtures}
-          renderItem={({ item }) => <MatchCard match={item} />}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-textMuted">No matches found</Text>
-            </View>
-          }
-          keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
+      {selectedRound && <MatchList selectedRound={selectedRound} />}
     </View>
   );
 }

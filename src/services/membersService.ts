@@ -1,10 +1,8 @@
 import { supabase } from "@/lib/supabase";
 
-const useLeagueMembers = () => {
-    const getLeaderboard = async (leagueId: string) => {
+export const membersService = {
+    async getLeaderboard(leagueId: string) {
       
-      
-      // Get league members
       const { data: members, error: membersError } = await supabase
         .from("league_members")
         .select("id, nickname, avatar_url, user_id")
@@ -36,12 +34,9 @@ const useLeagueMembers = () => {
       
   
       return membersWithPoints;
-    };
-  
-    return {
-      getLeaderboard,
-    };
+    },
+   
   };
   
-  export { useLeagueMembers };
+  
   

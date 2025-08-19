@@ -1,4 +1,4 @@
-import { useTheme } from "@/context/ThemeContext";
+import { useAppStore } from "@/store/useAppStore";
 import Feather from "@expo/vector-icons/Feather";
 import { useEffect } from "react";
 import { Pressable, View } from "react-native";
@@ -9,7 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 const ThemeToggle = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useAppStore();
   const isDark = theme === "dark";
   const translateX = useSharedValue(isDark ? 38 : 3.3);
 
@@ -42,7 +42,7 @@ const ThemeToggle = () => {
 };
 
 const Icon = (props: any) => {
-  const { theme } = useTheme();
+  const { theme } = useAppStore();
   const isDark = theme === "dark";
 
   return (

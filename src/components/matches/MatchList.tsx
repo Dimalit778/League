@@ -1,15 +1,37 @@
-import { FixtureWithTeams } from "@/types/fixturesTypes";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useGetFixturesByRound } from '@/hooks/useFixtures';
+import { FixtureWithTeams } from '@/types/fixturesTypes';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import LoadingOverlay from '../layout/LoadingOverlay';
+export type MatchStatus = 'Not Started' | 'In Play' | 'Finished';
 
-export type MatchStatus = "Not Started" | "In Play" | "Finished";
+const MatchList = ({ selectedRound }: { selectedRound: string }) => {
+  const {
+    data: fixtures,
+    isLoading,
+    error,
+  } = useGetFixturesByRound(selectedRound);
 
-interface MatchCardProps {
-  match: FixtureWithTeams;
-}
-
-export const MatchCard = ({ match }: MatchCardProps) => {
+  if (error) console.log('error', error);
+  if (isLoading) return <LoadingOverlay />;
+  return (
+    <View className="flex-1 px-2 mt-4 ">
+      <FlatList
+        data={fixtures}
+        renderItem={({ item }) => <Card match={item} />}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-textMuted">No matches found</Text>
+          </View>
+        }
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </View>
+  );
+};
+const Card = ({ match }: { match: FixtureWithTeams }) => {
   // Extract team names for clarity and potential fallback
   const homeTeamName = match.home_team.name;
   const awayTeamName = match.away_team?.name;
@@ -18,9 +40,9 @@ export const MatchCard = ({ match }: MatchCardProps) => {
   const awayCrestUrl = match.away_team.logo;
   const router = useRouter();
   const handlePress = (id: number) => {
-    console.log("id", id);
+    console.log('id', id);
     router.push({
-      pathname: "/(app)/match/[id]",
+      pathname: '/(app)/match/[id]',
       params: { id },
     });
   };
@@ -47,7 +69,7 @@ export const MatchCard = ({ match }: MatchCardProps) => {
         <View className="flex-none items-center justify-center mx-2 relative">
           {/* <StatusIndicator match={match} /> Uncomment if needed and ensure TMatch is properly typed */}
           <View className="bg-border rounded-md px-3 py-2 min-w-[60px] items-center justify-center">
-            {match.status_long === "Not Started" ? (
+            {match.status_long === 'Not Started' ? (
               <View className="items-center gap-1">
                 <Ionicons
                   name="time-outline"
@@ -63,18 +85,18 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               <View className="flex-row items-center justify-center">
                 {/* Ensure no raw text or unnecessary whitespace between these Text components */}
                 <Text className="text-lg font-bold text-text">
-                  {match.goals_home ?? 0}
+                  {match.home_score ?? 0}
                 </Text>
                 <Text className="text-lg font-bold text-text mx-1">-</Text>
                 <Text className="text-lg font-bold text-text">
-                  {match.goals_away ?? 0}
+                  {match.away_score ?? 0}
                 </Text>
               </View>
             )}
-            {match.status_long === "In Play" && (
+            {match.status_long === 'In Play' && (
               <Text className="text-sm text-secondary font-semibold">LIVE</Text>
             )}
-            {match.status_long === "Finished" && (
+            {match.status_long === 'Finished' && (
               <Text className="text-sm text-textMuted">FT</Text>
             )}
           </View>
@@ -95,3 +117,4 @@ export const MatchCard = ({ match }: MatchCardProps) => {
     </TouchableOpacity>
   );
 };
+export default MatchList;
