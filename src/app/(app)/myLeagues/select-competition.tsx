@@ -1,6 +1,5 @@
-import { Loading } from '@/components/layout';
+import { LoadingOverlay } from '@/components/layout';
 import { Button, Image } from '@/components/ui';
-import { useColorScheme } from '@/hooks/useColorSchema';
 import { useGetCompetitions } from '@/hooks/useCompetitions';
 import { Tables } from '@/types/database.types';
 import { router } from 'expo-router';
@@ -17,7 +16,6 @@ import {
 type Competition = Tables<'competitions'>;
 
 export default function SelectCompetitionScreen() {
-  const { isDarkColorScheme } = useColorScheme();
   const [selectedCompetition, setSelectedCompetition] =
     useState<Competition | null>(null);
 
@@ -45,12 +43,11 @@ export default function SelectCompetitionScreen() {
     });
   };
 
-  if (isLoading) return <Loading />;
-
   if (error) console.log(error);
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
+      {isLoading && <LoadingOverlay />}
       <ScrollView className="flex-1 px-4 pt-6">
         <Text className="text-2xl font-bold mb-6 text-center text-text  ">
           Select a Competition

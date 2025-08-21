@@ -1,41 +1,35 @@
-import LoadingOverlay from "@/components/layout/LoadingOverlay";
-import { Button, InputField } from "@/components/ui";
-import { useCreateLeague } from "@/hooks/useLeagues";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import LoadingOverlay from '@/components/layout/LoadingOverlay';
+import { Button, InputField } from '@/components/ui';
+import { useCreateLeague } from '@/hooks/useLeagues';
+import { useAuthStore } from '@/store/AuthStore';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import * as yup from "yup";
+} from 'react-native';
+import * as yup from 'yup';
 
-const generateRandomCode = (length: number): string => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-};
 const schema = yup.object().shape({
   leagueName: yup
     .string()
-    .required("League name is required")
-    .min(2, "League name must be at least 3 characters long"),
+    .required('League name is required')
+    .min(2, 'League name must be at least 3 characters long'),
   nickname: yup
     .string()
-    .required("Nickname is required")
-    .min(2, "Nickname must be at least 2 characters long"),
+    .required('Nickname is required')
+    .min(2, 'Nickname must be at least 2 characters long'),
 });
 
 export default function EnterLeagueDetailsScreen() {
   const { competitionId, leagueLogo } = useLocalSearchParams();
-  const createLeagueMutation = useCreateLeague();
+  const { user } = useAuthStore();
+  const createLeagueMutation = useCreateLeague(user?.id!);
 
   const {
     control,
@@ -46,10 +40,10 @@ export default function EnterLeagueDetailsScreen() {
     nickname: string;
   }>({
     defaultValues: {
-      leagueName: "",
-      nickname: "",
+      leagueName: '',
+      nickname: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
     resolver: yupResolver(schema),
   });
 
@@ -62,12 +56,12 @@ export default function EnterLeagueDetailsScreen() {
         competition_id: Number(competitionId),
         max_members: membersCount || 6,
         nickname: data.nickname,
-        league_logo: leagueLogo as string,
-        join_code: generateRandomCode(6),
+        logo: leagueLogo as string,
+        owner_id: user?.id!,
       });
       if (leagueData) {
         router.push({
-          pathname: "/(app)/myLeagues/league-created",
+          pathname: '/(app)/myLeagues/league-created',
           params: { leagueData: JSON.stringify(leagueData) },
         });
       }
@@ -117,12 +111,12 @@ export default function EnterLeagueDetailsScreen() {
             onPress={() => setMembersCount(6)}
             className={`flex-1 p-4 rounded-lg border-2 mx-2 items-center ${
               membersCount === 6
-                ? "border-secondary bg-surface border-2"
-                : "border-border border-2"
+                ? 'border-secondary bg-surface border-2'
+                : 'border-border border-2'
             }`}
           >
             <Text
-              className={`text-lg font-bold ${membersCount === 6 ? "text-secondary" : "text-text"}`}
+              className={`text-lg font-bold ${membersCount === 6 ? 'text-secondary' : 'text-text'}`}
             >
               6 Members
             </Text>
@@ -131,12 +125,12 @@ export default function EnterLeagueDetailsScreen() {
             onPress={() => setMembersCount(10)}
             className={`flex-1 p-4 rounded-lg  mx-2 items-center ${
               membersCount === 10
-                ? "border-secondary bg-surface border-2"
-                : "border-border border-2"
+                ? 'border-secondary bg-surface border-2'
+                : 'border-border border-2'
             }`}
           >
             <Text
-              className={`text-lg font-bold ${membersCount === 10 ? "text-secondary" : "text-text"}`}
+              className={`text-lg font-bold ${membersCount === 10 ? 'text-secondary' : 'text-text'}`}
             >
               10 Members
             </Text>

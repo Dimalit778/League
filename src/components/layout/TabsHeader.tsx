@@ -1,9 +1,9 @@
-import { useAppStore } from '@/store/useAppStore';
+import { useLeagueStore } from '@/store/LeagueStore';
 import { Link } from 'expo-router';
 import { Pressable, SafeAreaView, Text, View } from 'react-native';
 import { TrophyIcon } from '../../../assets/icons';
 const TabsHeader = () => {
-  const { primaryLeague } = useAppStore();
+  const { primaryLeague } = useLeagueStore();
 
   return (
     <SafeAreaView className="bg-background">
@@ -14,7 +14,7 @@ const TabsHeader = () => {
         <View className="flex-row items-center">
           <Link href="/myLeagues" asChild>
             <Pressable>
-              <TrophyIcon width={30} height={30} color={'#f97316'} />
+              <TrophyIcon size={30} color={'#f97316'} />
             </Pressable>
           </Link>
         </View>

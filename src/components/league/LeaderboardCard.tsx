@@ -1,11 +1,13 @@
+import { LeagueLeaderboardType } from '@/types';
 import { Text, View } from 'react-native';
-type User = {
-  user_id: string;
-  nickname: string;
-  points: number;
-  avatar_url?: string | null;
-};
-const LeaderboardCard = ({ user, index }: { user: User; index: number }) => {
+
+const LeaderboardCard = ({
+  user,
+  index,
+}: {
+  user: LeagueLeaderboardType;
+  index: number;
+}) => {
   return (
     <View className="flex-row items-center justify-between bg-surface rounded-lg p-3 shadow-md border border-border gap-4 h-16">
       <View className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center border border-border">
@@ -18,7 +20,9 @@ const LeaderboardCard = ({ user, index }: { user: User; index: number }) => {
         <Text className="text-lg text-text font-bold">{user.nickname}</Text>
       </View>
       <View className="flex-1 items-end">
-        <Text className="text-lg text-text font-bold">{user.points ?? 0}</Text>
+        <Text className="text-lg text-text font-bold">
+          {user.total_points ?? 0}
+        </Text>
         <Text className="text-sm text-textMuted">pts</Text>
       </View>
     </View>

@@ -1,31 +1,33 @@
-import { Button, InputField } from "@/components/ui";
+import { Button, InputField } from '@/components/ui';
 
-import { useAppStore } from "@/store/useAppStore";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "expo-router";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
-import * as yup from "yup";
-import { EmailIcon, LockIcon } from "../../../assets/icons";
+import { useAuthStore } from '@/store/AuthStore';
+import { useThemeStore } from '@/store/ThemeStore';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import * as yup from 'yup';
+import { EmailIcon, LockIcon } from '../../../assets/icons';
 
 const schema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required"),
+  email: yup.string().email('Invalid email').required('Email is required'),
   password: yup
     .string()
-    .min(6, "Minimum 6 characters")
-    .required("Password is required"),
+    .min(6, 'Minimum 6 characters')
+    .required('Password is required'),
 });
 
 export default function SignIn() {
-  const { login, loading, theme } = useAppStore();
+  const { login, loading } = useAuthStore();
+  const { theme } = useThemeStore();
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const onSubmit = async (data: any) => {
@@ -39,7 +41,7 @@ export default function SignIn() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background  px-5"
     >
       <View className="py-10">
@@ -62,7 +64,7 @@ export default function SignIn() {
             <EmailIcon
               width={24}
               height={24}
-              color={theme === "dark" ? "#fff" : "#000"}
+              color={theme === 'dark' ? '#fff' : '#000'}
             />
           }
         />
@@ -76,7 +78,7 @@ export default function SignIn() {
             <LockIcon
               width={24}
               height={24}
-              color={theme === "dark" ? "#fff" : "#000"}
+              color={theme === 'dark' ? '#fff' : '#000'}
             />
           }
           error={errors.password}
@@ -104,7 +106,7 @@ export default function SignIn() {
         />
 
         <Text className="text-textMuted text-center mt-5 ">
-          Don't have an account?{" "}
+          Don't have an account?{' '}
           <Link href="/signUp" replace>
             <Text className="text-secondary font-bold">Sign Up</Text>
           </Link>

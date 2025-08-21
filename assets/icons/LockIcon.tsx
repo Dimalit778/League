@@ -1,6 +1,7 @@
-import Svg, { G, Path, SvgProps } from "react-native-svg";
-const LockIcon = ({ color, ...props }: SvgProps) => (
-  <Svg fill="none" viewBox="0 0 24 24" width={24} height={24} {...props}>
+import { IconProps } from '@/types';
+import Svg, { G, Path } from 'react-native-svg';
+const LockIcon = ({ size, color }: IconProps) => (
+  <Svg viewBox="0 0 24 24" width={size} height={size} fill={color}>
     <G stroke={color} strokeWidth={1.5}>
       <Path
         stroke={color}

@@ -1,17 +1,13 @@
+import LoadingOverlay from '@/components/layout/LoadingOverlay';
+import { useTopLeagueMembers } from '@/hooks/useLeaderboard';
+import { LeagueLeaderboardType } from '@/types';
 import { Text, View } from 'react-native';
 
-type LeaderboardMember = {
-  user_id: string;
-  nickname: string;
-  avatar_url?: string | null;
-  points: number;
-};
+export default function TopThree() {
+  const { data: topMembers, isLoading } = useTopLeagueMembers(3);
 
-interface TopThreeProps {
-  topThree: LeaderboardMember[];
-}
+  if (isLoading) return <LoadingOverlay />;
 
-const TopThree = ({ topThree }: TopThreeProps) => {
   const getInitials = (nickname: string) => {
     return nickname
       .split(' ')
@@ -34,8 +30,11 @@ const TopThree = ({ topThree }: TopThreeProps) => {
     }
   };
 
-  const renderPlayer = (member: LeaderboardMember | null, position: number) => (
-    <View className="items-center " key={position}>
+  const renderPlayer = (
+    member: LeagueLeaderboardType | null,
+    position: number
+  ) => (
+    <View className="items-center" key={position}>
       <View className="relative ">
         {position === 1 && member && (
           <View className="absolute -top-6 left-1/2 transform -translate-x-1/2">
@@ -63,15 +62,15 @@ const TopThree = ({ topThree }: TopThreeProps) => {
     </View>
   );
 
-  if (!topThree || topThree.length === 0) return null;
+  if (!topMembers || topMembers.length === 0) return null;
 
   return (
-    <View className="flex-row justify-center gap-5 mb-4">
-      <View className="items-center">{renderPlayer(topThree[1], 2)}</View>
-      <View className="items-center -mt-8">{renderPlayer(topThree[0], 1)}</View>
-      <View className="items-center">{renderPlayer(topThree[2], 3)}</View>
+    <View className="flex-row justify-center gap-5 mt-4 mb-6">
+      <View className="items-center">{renderPlayer(topMembers[1], 2)}</View>
+      <View className="items-center -mt-8">
+        {renderPlayer(topMembers[0], 1)}
+      </View>
+      <View className="items-center">{renderPlayer(topMembers[2], 3)}</View>
     </View>
   );
-};
-
-export default TopThree;
+}

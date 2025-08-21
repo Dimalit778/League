@@ -2,12 +2,12 @@ import LoadingOverlay from '@/components/layout/LoadingOverlay';
 import MatchList from '@/components/matches/MatchList';
 import RoundsList from '@/components/matches/RoundsList';
 import { useCompetitionRounds } from '@/hooks/useCompetitions';
-import { useAppStore } from '@/store/useAppStore';
+import { useLeagueStore } from '@/store/LeagueStore';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 export default function MatchesPage() {
-  const { primaryLeague } = useAppStore();
+  const { primaryLeague } = useLeagueStore();
   const [selectedRound, setSelectedRound] = useState<string>('');
 
   const {

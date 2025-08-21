@@ -1,11 +1,7 @@
-import Svg, { Circle, G, Path, SvgProps } from "react-native-svg";
-const UserIcon = ({
-  color,
-  width,
-  height,
-  ...props
-}: SvgProps & { color: string }) => (
-  <Svg fill="none" viewBox="0 0 24 24" width={width} height={height} {...props}>
+import { IconProps } from '@/types';
+import Svg, { Circle, G, Path } from 'react-native-svg';
+const UserIcon = ({ size, color }: IconProps) => (
+  <Svg viewBox="0 0 24 24" width={size} height={size} fill={color}>
     <G stroke={color} strokeWidth={1.5}>
       <Circle cx={9} cy={9} r={2} />
       <Path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2 1.79-2 4-2 4 .895 4 2Z" />

@@ -6,12 +6,12 @@ import {
 } from '../../../../assets/icons';
 
 import TabsHeader from '@/components/layout/TabsHeader';
-import { useAppStore } from '@/store/useAppStore';
+import { useThemeStore } from '@/store/ThemeStore';
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 
 export default function TabLayout() {
-  const { theme } = useAppStore();
+  const { theme } = useThemeStore();
   return (
     <>
       <TabsHeader />
@@ -41,7 +41,7 @@ export default function TabLayout() {
             headerShown: false,
 
             tabBarIcon: ({ color, size }) => (
-              <LeagueIcon width={size} height={size} color={color} />
+              <LeagueIcon size={size} color={color} />
             ),
           }}
         />
@@ -51,7 +51,7 @@ export default function TabLayout() {
             title: 'Matches',
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
-              <MatchesIcon width={size} height={size} color={color} />
+              <MatchesIcon size={size} color={color} />
             ),
           }}
         />
@@ -61,7 +61,7 @@ export default function TabLayout() {
             title: 'Rank',
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
-              <RankIcon width={size} height={size} color={color} />
+              <RankIcon size={size} color={color} />
             ),
           }}
         />
@@ -71,7 +71,7 @@ export default function TabLayout() {
             title: 'Profile',
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
-              <ProfileIcon width={size} height={size} color={color} />
+              <ProfileIcon size={size} color={color} />
             ),
           }}
         />

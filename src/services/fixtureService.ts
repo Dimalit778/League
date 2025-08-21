@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import { Tables } from "@/types/database.types";
-import { FixtureWithTeams } from "@/types/fixturesTypes";
 
 
 // Type for when teams are guaranteed to exist
@@ -43,7 +42,7 @@ export const fixtureService = {
  
   
     if (error) throw error;
-    return (data || []) as FixtureWithTeams[];
+    return data;
   },
   async getCompletedFixtures(competitionId?: number, limit = 10) {
     let query = supabase
@@ -68,6 +67,4 @@ export const fixtureService = {
     if (error) throw error;
     return data;
   },
-
- 
 };

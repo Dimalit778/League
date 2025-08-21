@@ -1,28 +1,30 @@
-import { Button, InputField } from "@/components/ui";
+import { Button, InputField } from '@/components/ui';
 
-import { useAppStore } from "@/store/useAppStore";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "expo-router";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
-import * as yup from "yup";
-import { EmailIcon, LockIcon, UserIcon } from "../../../assets/icons";
+import { useAuthStore } from '@/store/AuthStore';
+import { useThemeStore } from '@/store/ThemeStore';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import * as yup from 'yup';
+import { EmailIcon, LockIcon, UserIcon } from '../../../assets/icons';
 
 const schema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required"),
+  email: yup.string().email('Invalid email').required('Email is required'),
   password: yup
     .string()
-    .min(6, "Minimum 6 characters")
-    .required("Password is required"),
+    .min(6, 'Minimum 6 characters')
+    .required('Password is required'),
   fullname: yup
     .string()
-    .required("Full name is required")
-    .min(3, "Full name must be at least 3 characters"),
+    .required('Full name is required')
+    .min(3, 'Full name must be at least 3 characters'),
 });
 
 export default function SignUpScreen() {
-  const { signUp, loading, error, theme } = useAppStore();
+  const { signUp, loading } = useAuthStore();
+  const { theme } = useThemeStore();
   const [showPassword, setShowPassword] = useState(false);
   const {
     control,
@@ -30,7 +32,7 @@ export default function SignUpScreen() {
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const onSubmit = async (data: any) => {
@@ -47,7 +49,7 @@ export default function SignUpScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background  px-5"
     >
       <View className="py-10">
@@ -67,7 +69,7 @@ export default function SignUpScreen() {
             <UserIcon
               width={24}
               height={24}
-              color={theme === "dark" ? "#fff" : "#000"}
+              color={theme === 'dark' ? '#fff' : '#000'}
             />
           }
           error={errors.fullname}
@@ -81,7 +83,7 @@ export default function SignUpScreen() {
             <EmailIcon
               width={24}
               height={24}
-              color={theme === "dark" ? "#fff" : "#000"}
+              color={theme === 'dark' ? '#fff' : '#000'}
             />
           }
           error={errors.email}
@@ -95,7 +97,7 @@ export default function SignUpScreen() {
             <LockIcon
               width={24}
               height={24}
-              color={theme === "dark" ? "#fff" : "#000"}
+              color={theme === 'dark' ? '#fff' : '#000'}
             />
           }
           error={errors.password}

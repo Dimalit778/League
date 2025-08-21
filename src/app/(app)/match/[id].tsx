@@ -1,6 +1,7 @@
 import LoadingOverlay from '@/components/layout/LoadingOverlay';
 import { MatchInfoHeader } from '@/components/matchDetails/Header';
 import { MatchInfo } from '@/components/matchDetails/MatchInfo';
+import MatchPredictions from '@/components/matchDetails/MatchPredictions';
 
 import { useGetFixtureById } from '@/hooks/useFixtures';
 import { useLocalSearchParams } from 'expo-router';
@@ -23,6 +24,9 @@ export default function MatchDetails() {
       >
         <View className="mx-4 mt-4">
           <MatchInfo match={match} />
+        </View>
+        <View className="mx-4 mt-6">
+          <MatchPredictions fixtureId={Number(id)} />
         </View>
       </ScrollView>
     </SafeAreaView>

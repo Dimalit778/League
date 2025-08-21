@@ -1,18 +1,12 @@
-import PreviewLeagueCard from '@/components/myLeagues/PreviewLeagueCard';
-import { Button, InputField } from '@/components/ui';
+import { Button, Image, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
+import { useAuthStore } from '@/store/AuthStore';
+import { LeagueWithCompetition } from '@/types/league.types';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
@@ -21,11 +15,12 @@ const schema = Yup.object().shape({
 });
 
 export default function JoinLeague() {
+  const router = useRouter();
+  const { user } = useAuthStore();
   const {
     control,
     handleSubmit,
     watch,
-    getValues,
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
@@ -33,13 +28,18 @@ export default function JoinLeague() {
   });
   const inviteCodeValue = watch('inviteCode');
   const [searchingLeague, setSearchingLeague] = useState(false);
-  const [foundLeague, setFoundLeague] = useState<any | null>(null);
+  const [foundLeague, setFoundLeague] = useState<LeagueWithCompetition | null>(
+    null
+  );
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
-  const joinLeagueMutation = useJoinLeague();
+
+  const { mutateAsync, isPending, isSuccess, isError } = useJoinLeague(
+    user?.id!
+  );
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 6) {
-      setFoundLeague(data);
+      setFoundLeague(data as unknown as LeagueWithCompetition);
     } else {
       setFoundLeague(null);
     }
@@ -50,21 +50,11 @@ export default function JoinLeague() {
     nickname: string;
   }) => {
     if (!foundLeague) return;
-
-    try {
-      setSearchingLeague(true);
-      await joinLeagueMutation.mutateAsync({
-        join_code: foundLeague.join_code,
-        nickname: formData.nickname,
-      });
-
-      Alert.alert('Success', 'You have successfully joined the league');
-      router.replace('/(app)/myLeagues');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to join league');
-    } finally {
-      setSearchingLeague(false);
-    }
+    await mutateAsync({
+      join_code: foundLeague.join_code,
+      nickname: formData.nickname,
+    });
+    router.replace('/(app)/myLeagues');
   };
 
   return (
@@ -72,7 +62,7 @@ export default function JoinLeague() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
-      <ScrollView className="flex-1 px-4 pt-6">
+      <View className="flex-1 px-4 pt-6">
         <View className="mb-6">
           <Text className="text-lg font-semibold text-text mb-2">
             Invite Code
@@ -95,13 +85,46 @@ export default function JoinLeague() {
             </Text>
           )}
         </View>
-
+        {/* Preview League Card */}
         {foundLeague && (
           <View className="mb-6">
-            <Text className="text-lg font-semibold text-text mb-3">
-              League Found
-            </Text>
-            <PreviewLeagueCard data={foundLeague} />
+            <View className="w-1/2 self-center bg-border rounded-xl border border-primary shadow-sm p-6 mb-6 ">
+              <Text
+                className="text-3xl font-bold mb-2 text-primary "
+                numberOfLines={2}
+              >
+                {foundLeague.name}
+              </Text>
+              <View className="gap-3 mt-3">
+                <View className="flex-row  items-center gap-3">
+                  <Image
+                    source={{
+                      uri: foundLeague.competitions?.logo,
+                    }}
+                    resizeMode="contain"
+                    width={20}
+                    height={20}
+                  />
+                  <Text className="text-md text-text" numberOfLines={1}>
+                    {foundLeague.competitions?.name}
+                  </Text>
+                </View>
+
+                <View className="flex-row items-center gap-3">
+                  <Image
+                    source={{
+                      uri: foundLeague.competitions?.flag,
+                    }}
+                    resizeMode="contain"
+                    width={20}
+                    height={20}
+                  />
+                  <Text className="text-md text-text" numberOfLines={1}>
+                    {foundLeague.competitions?.country}
+                  </Text>
+                </View>
+              </View>
+            </View>
             <InputField
               control={control}
               name="nickname"
@@ -111,7 +134,7 @@ export default function JoinLeague() {
             <Button
               title="Join League"
               variant="primary"
-              loading={searchingLeague}
+              loading={isPending}
               onPress={handleSubmit(onClickJoinLeague)}
               disabled={!isValid}
             />
@@ -141,7 +164,7 @@ export default function JoinLeague() {
             4. Tap "Join League" to become a member
           </Text>
         </View>
-      </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   );
 }

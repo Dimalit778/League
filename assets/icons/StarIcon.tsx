@@ -1,6 +1,7 @@
-import Svg, { Path, SvgProps } from "react-native-svg";
-const StarIcon = ({ width = 24, height = 24, ...props }: SvgProps) => (
-  <Svg width={width} height={height} viewBox="0 0 1024 1024" {...props}>
+import { IconProps } from '@/types';
+import Svg, { Path } from 'react-native-svg';
+const StarIcon = ({ size, color }: IconProps) => (
+  <Svg viewBox="0 0 1024 1024" width={size} height={size} fill={color}>
     <Path
       fill="#B8CA43"
       d="m541.44 103.68 126.72 256 282.88 42.24-204.8 198.4 48.64 282.88-253.44-133.12L288 883.2l48.64-282.88-204.8-198.4 282.88-42.24z"

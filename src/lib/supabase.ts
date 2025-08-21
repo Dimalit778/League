@@ -10,9 +10,6 @@ if (typeof window !== 'undefined'){
   AsyncStorage = require('@react-native-async-storage/async-storage').default;
 }
 
-
-
-
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: typeof window !== 'undefined' ? AsyncStorage : undefined,

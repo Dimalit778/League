@@ -1,5 +1,5 @@
-import TopBar from "@/components/layout/TopBar";
-import { Stack } from "expo-router";
+import TopBar from '@/components/layout/TopBar';
+import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
   return (
@@ -7,13 +7,13 @@ export default function AuthLayout() {
       <Stack.Screen
         name="signUp"
         options={{
-          header: () => <TopBar title="Sign Up" showBackButton />,
+          header: () => <TopBar showTitle showBackButton />,
         }}
       />
       <Stack.Screen
         name="signIn"
         options={{
-          header: () => <TopBar title="Sign In" showBackButton />,
+          header: () => <TopBar showTitle showBackButton />,
         }}
       />
       <Stack.Screen name="forgotPassword" options={{ headerShown: true }} />

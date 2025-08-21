@@ -1,14 +1,14 @@
 import { membersService } from "@/services/membersService";
-import { useAppStore } from "@/store/useAppStore";
+import { useLeagueStore } from "@/store/LeagueStore";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetLeaderboard = () => {
-    const { user } = useAppStore();
+      const { primaryLeague } = useLeagueStore();
 
     return useQuery({
-      queryKey: ['leagues', user?.primary_league_id, 'leaderboard'],
-      queryFn: () => membersService.getLeaderboard(user?.primary_league_id!),
-      enabled: !!user?.primary_league_id,
+      queryKey: ['leagues', primaryLeague?.id, 'leaderboard'],
+      queryFn: () => membersService.getLeaderboard(primaryLeague?.id!),
+      enabled: !!primaryLeague?.id,
       staleTime: 60 * 1000 * 60, 
       retry: 2,
     });

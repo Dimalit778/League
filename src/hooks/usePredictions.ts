@@ -1,6 +1,7 @@
 import { autoPredictionService } from "@/services/autoPredictionService";
 import { predictionService } from "@/services/predictionService";
-import { useAppStore } from "@/store/useAppStore";
+import { useAuthStore } from "@/store/AuthStore";
+import { useLeagueStore } from "@/store/LeagueStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
@@ -10,7 +11,7 @@ import { AppState, AppStateStatus } from "react-native";
 // * Done
 export const useCreateOrUpdatePrediction = () => {
   const queryClient = useQueryClient();
-  const { session } = useAppStore();
+  const { user } = useAuthStore();
 
   return useMutation({
     mutationFn: ({
@@ -23,15 +24,15 @@ export const useCreateOrUpdatePrediction = () => {
       awayScore: number;
     }) =>
       predictionService.createOrUpdatePrediction(
-        session!.user.id,
+        user!.id,
         fixtureId,
         homeScore,
         awayScore
       ),
     onSuccess: (_, { fixtureId }) => {
-      queryClient.invalidateQueries({ queryKey: ["predictions", session!.user.id] });
+      queryClient.invalidateQueries({ queryKey: ["predictions", user!.id] });
       queryClient.invalidateQueries({
-        queryKey: ["prediction", session!.user.id, fixtureId],
+        queryKey: ["prediction", user!.id, fixtureId],
       });
     },
   });
@@ -46,59 +47,57 @@ export const useCanPredict = (fixtureId: number) => {
   });
 };
 
-export const usePredictions = () => {
-  const { session ,primaryLeague} = useAppStore();
-
-
+export const useUserPredictions = (userId: string) => {
   return useQuery({
-    queryKey: ["predictions", session?.user.id],
-    queryFn: () => predictionService.getUserPredictions(session!.user.id),
-    enabled: !!session?.user.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: ["predictions", userId],
+    queryFn: () => predictionService.getUserPredictions(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5, 
   });
 };
 
 export const usePredictionByFixture = (fixtureId: number) => {
-  const { session } = useAppStore();
+  const { user } = useAuthStore();
 
   return useQuery({
-    queryKey: ["prediction", session?.user.id, fixtureId],
-    queryFn: () => predictionService.getPredictionByUserAndFixture(session!.user.id, fixtureId),
-    enabled: !!session?.user.id && !!fixtureId,
+    queryKey: ["prediction", user?.id, fixtureId],
+    queryFn: () => predictionService.getPredictionByUserAndFixture(user!.id, fixtureId),
+    enabled: !!user?.id && !!fixtureId,
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };
 
 
 export const useLeaguePredictions = (fixtureId?: number) => {
-  const { primaryLeague } = useAppStore();
+  const { primaryLeague } = useLeagueStore();
 
   return useQuery({
     queryKey: ["leaguePredictions", primaryLeague?.id, fixtureId],
-    queryFn: () => predictionService.getLeaguePredictions(primaryLeague!.id, fixtureId),
+    queryFn: () => predictionService.getLeaguePredictions(Number(primaryLeague!.id), fixtureId),
     enabled: !!primaryLeague?.id,
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };
 
 export const useLeagueLeaderboard = () => {
-  const { primaryLeague } = useAppStore();
+  const { primaryLeague } = useLeagueStore();
 
   return useQuery({
     queryKey: ["leaderboard", primaryLeague?.id],
-    queryFn: () => predictionService.getLeagueLeaderboard(primaryLeague!.id),
+    queryFn: () => predictionService.getLeagueLeaderboard(Number(primaryLeague!.id)),
     enabled: !!primaryLeague?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 export const useAutoPredictions = () => {
-  const { session ,primaryLeague} = useAppStore();
+  const { user } = useAuthStore();
+  const { primaryLeague } = useLeagueStore();
  
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    if (!session?.user.id || !primaryLeague) return;
+    if (!user?.id || !primaryLeague) return;
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
@@ -133,5 +132,5 @@ export const useAutoPredictions = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [session?.user.id, primaryLeague]);
+    }, [user?.id, primaryLeague]);
 };

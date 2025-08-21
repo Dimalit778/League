@@ -1,7 +1,14 @@
-import { useAppStore } from '@/store/useAppStore';
+import { useLeagueStore } from '@/store/LeagueStore';
+import { useThemeStore } from '@/store/ThemeStore';
 import { Link, router } from 'expo-router';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Pressable,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
 import { ArrowLeftIcon, TrophyIcon } from '../../../assets/icons';
 
 type TopBarProps = {
@@ -18,19 +25,19 @@ const TopBar = ({
   showLeaguesIcon = false,
   showBackButton = false,
 }: TopBarProps) => {
-  const { primaryLeague } = useAppStore();
+  const { primaryLeague } = useLeagueStore();
+  const { theme } = useThemeStore();
 
-  const { theme } = useAppStore();
   return (
     <SafeAreaView className="bg-background">
-      <View className="flex-row justify-between items-center ">
+      <View className="flex-row justify-between items-center px-5 py-2">
         <View className="flex-1 justify-center items-start">
           {showBackButton ? (
             <TouchableOpacity
               className="flex-row items-center"
               onPress={() => router.back()}
             >
-              <ArrowLeftIcon width={30} height={30} color={theme} />
+              <ArrowLeftIcon size={24} color={theme} />
             </TouchableOpacity>
           ) : (
             <View className="flex-1" />
@@ -54,11 +61,7 @@ const TopBar = ({
           {showLeaguesIcon && (
             <Link href="/myLeagues" asChild>
               <Pressable>
-                <TrophyIcon
-                  width={25}
-                  height={25}
-                  color={theme === 'dark' ? '#fff' : '#000'}
-                />
+                <TrophyIcon size={24} color={theme} />
               </Pressable>
             </Link>
           )}

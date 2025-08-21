@@ -1,32 +1,13 @@
-import Svg, { Circle, Defs, G, Path, SvgProps } from "react-native-svg";
+import { IconProps } from '@/types';
+import { Path, Svg } from 'react-native-svg';
 
-const ArrowLeftIcon = ({
-  color,
-  width,
-  height,
-  ...props
-}: SvgProps & { color: "dark" | "light" }) => (
-  <Svg viewBox="0 0 512 512" width={width} height={height} {...props}>
-    <G id="SVGRepo_iconCarrier">
-      <Defs></Defs>
-      <G id="Layer_2" data-name="Layer 2">
-        <G
-          id="E421_Back_buttons_multimedia_play_stop"
-          data-name="E421, Back, buttons, multimedia, play, stop"
-        >
-          <Circle cx={256} cy={256} r={246} fill="#A9A9A9" />
-          <Path
-            d="M352.26 256H170.43M223.91 202.52 170.44 256l53.47 53.48"
-            stroke={"#000"}
-            strokeWidth={30}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </G>
-      </G>
-    </G>
+const ArrowLeftIcon = ({ size, color }: IconProps) => (
+  <Svg viewBox="0 0 32 32" width={size} height={size} fill={color}>
+    <Path
+      fill={color}
+      fillRule="evenodd"
+      d="M22 15H11.414l4.121-4.121a.999.999 0 1 0-1.414-1.414l-5.656 5.656a.981.981 0 0 0-.26.879.981.981 0 0 0 .26.879l5.656 5.661a1 1 0 0 0 1.414 0c.391-.39.391-1.03 0-1.42L11.414 17H22a1 1 0 1 0 0-2Zm8 13c0 1.1-.896 2-2 2H4c-1.104 0-2-.9-2-2V4a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v24ZM28 0H4a4 4 0 0 0-4 4v24a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4Z"
+    />
   </Svg>
 );
-
 export default ArrowLeftIcon;

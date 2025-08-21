@@ -4,20 +4,20 @@ import {
   isMatchFinished,
   isMatchInPlay,
   isMatchScheduled,
-} from "@/utils/match-utils";
-import footballField from "../../../assets/images/footballField.png";
+} from '@/utils/match-utils';
+import footballField from '../../../assets/images/footballField.png';
 
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import {
   Image,
   ImageBackground,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { ArrowLeftIcon } from "../../../assets/icons";
+} from 'react-native';
+import { ArrowLeftIcon } from '../../../assets/icons';
 
 export const MatchInfoHeader = ({ match }: { match: any }) => {
   const isScheduled = isMatchScheduled(match.status_long);
@@ -30,7 +30,7 @@ export const MatchInfoHeader = ({ match }: { match: any }) => {
         className="absolute top-4 left-4"
         onPress={() => router.back()}
       >
-        <ArrowLeftIcon width={30} height={30} color={"light"} />
+        <ArrowLeftIcon size={30} color={'light'} />
       </TouchableOpacity>
 
       <View className="p-4">
@@ -87,7 +87,7 @@ export const MatchInfoHeader = ({ match }: { match: any }) => {
               </View>
             ) : (
               <LinearGradient
-                colors={["#6366F1", "#8B5CF6"]}
+                colors={['#6366F1', '#8B5CF6']}
                 className="rounded-2xl p-4 items-center min-w-[100px]"
               >
                 <View className="flex-row items-center">

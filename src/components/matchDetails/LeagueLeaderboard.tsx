@@ -1,11 +1,11 @@
-import { useLeagueLeaderboard } from "@/hooks/usePredictions";
-import { useAppStore } from "@/store/useAppStore";
-import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { useLeagueLeaderboard } from '@/hooks/usePredictions';
+import { useAuthStore } from '@/store/AuthStore';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 export const LeagueLeaderboard = () => {
   const { data: leaderboard, isLoading, error } = useLeagueLeaderboard();
-  const { user } = useAppStore();
+  const { user } = useAuthStore();
 
   if (isLoading) {
     return (
@@ -55,8 +55,8 @@ export const LeagueLeaderboard = () => {
       <View
         className={`flex-row items-center justify-between p-4 rounded-xl mb-2 ${
           isCurrentUser
-            ? "bg-primary/20 border border-primary/30"
-            : "bg-white/5"
+            ? 'bg-primary/20 border border-primary/30'
+            : 'bg-white/5'
         }`}
       >
         <View className="flex-row items-center flex-1">
@@ -74,7 +74,7 @@ export const LeagueLeaderboard = () => {
 
           <View className="flex-1">
             <Text
-              className={`font-semibold ${isCurrentUser ? "text-primary" : "text-text"}`}
+              className={`font-semibold ${isCurrentUser ? 'text-primary' : 'text-text'}`}
               numberOfLines={1}
             >
               {item.nickname}
@@ -87,7 +87,7 @@ export const LeagueLeaderboard = () => {
 
         <View className="items-center">
           <Text
-            className={`font-bold text-xl ${isCurrentUser ? "text-primary" : "text-text"}`}
+            className={`font-bold text-xl ${isCurrentUser ? 'text-primary' : 'text-text'}`}
           >
             {item.points || 0}
           </Text>

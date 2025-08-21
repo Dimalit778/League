@@ -1,6 +1,6 @@
-import { ImageC } from "@/components/ui";
-import { Feather } from "@expo/vector-icons";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Image } from '@/components/ui';
+import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Alert,
   Clipboard,
@@ -9,30 +9,31 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 
 export default function LeagueCreatedScreen() {
   const { leagueData } = useLocalSearchParams();
+  const router = useRouter();
 
   const parsedLeagueData = JSON.parse(leagueData as string);
 
   const handleCopyJoinCode = () => {
-    if (typeof parsedLeagueData?.join_code === "string") {
-      Clipboard.setString(parsedLeagueData?.join_code || "");
-      Alert.alert("Copied!", "Join code copied to clipboard.");
+    if (typeof parsedLeagueData?.join_code === 'string') {
+      Clipboard.setString(parsedLeagueData?.join_code || '');
+      Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
 
   const handleShareJoinCode = async () => {
     try {
-      const shareMessage = `🏆 Join my ${parsedLeagueData?.competitions?.name || "Football"} league "${parsedLeagueData?.name}"!\n\nUse code: ${parsedLeagueData?.join_code}\n\nDownload the app to join!`;
+      const shareMessage = `🏆 Join my ${parsedLeagueData?.competitions?.name || 'Football'} league "${parsedLeagueData?.name}"!\n\nUse code: ${parsedLeagueData?.join_code}\n\nDownload the app to join!`;
 
       await Share.share({
         message: shareMessage,
         title: `Join ${parsedLeagueData?.name} League`,
       });
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error('Error sharing:', error);
     }
   };
 
@@ -44,7 +45,7 @@ export default function LeagueCreatedScreen() {
           League Created Successfully! 🎉
         </Text>
         <Text className="text-base text-textMuted text-center">
-          Your {parsedLeagueData?.competitions?.name || "Football"} league is
+          Your {parsedLeagueData?.competitions?.name || 'Football'} league is
           ready
         </Text>
       </View>
@@ -53,11 +54,10 @@ export default function LeagueCreatedScreen() {
       <View className="bg-card rounded-2xl p-6 mb-8 border border-border shadow-sm">
         {/* Centered League Header */}
         <View className="items-center mb-6">
-          <ImageC
+          <Image
             source={{
               uri:
-                parsedLeagueData?.league_logo ||
-                parsedLeagueData?.competitions?.logo,
+                parsedLeagueData?.logo || parsedLeagueData?.competitions?.logo,
             }}
             className="rounded-2xl mb-4 shadow-sm"
             width={80}
@@ -68,7 +68,7 @@ export default function LeagueCreatedScreen() {
             {parsedLeagueData?.name}
           </Text>
           <Text className="text-base text-textMuted text-center">
-            {parsedLeagueData?.competitions?.country} •{" "}
+            {parsedLeagueData?.competitions?.country} •{' '}
             {parsedLeagueData?.competitions?.name}
           </Text>
         </View>
@@ -113,17 +113,15 @@ export default function LeagueCreatedScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Start League Button */}
-      <Link href="/(app)/(tabs)" asChild>
-        <TouchableOpacity
-          className="bg-primary rounded-xl items-center py-4 px-4"
-          activeOpacity={0.8}
-        >
-          <Text className="text-primaryForeground text-lg font-bold">
-            Start League
-          </Text>
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity
+        className="bg-primary rounded-xl items-center py-4 px-4"
+        activeOpacity={0.8}
+        onPress={() => router.replace('/(app)/(tabs)/League')}
+      >
+        <Text className="text-primaryForeground text-lg font-bold">
+          Start League
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

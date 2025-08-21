@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/database.types";
 
-type UserPrediction = Tables<"user_predictions">;
-type UserPredictionInsert = TablesInsert<"user_predictions">;
-type UserPredictionUpdate = TablesUpdate<"user_predictions">;
+type UserPrediction = Tables<"predictions">;
+type UserPredictionInsert = TablesInsert<"predictions">;
+type UserPredictionUpdate = TablesUpdate<"predictions">;
 type Fixture = Tables<"fixtures">;
 
 export const predictionService = {
@@ -40,7 +40,8 @@ export const predictionService = {
     userId: string,
     fixtureId: number,
     homeScore: number,
-    awayScore: number
+      awayScore: number,
+    leagueId: string
   ) {
     const canPredict = await this.canUserPredict(fixtureId);
     if (!canPredict) {
@@ -51,24 +52,25 @@ export const predictionService = {
     
     if (existingPrediction) {
       return this.updatePrediction(existingPrediction.id, {
-        predicted_home_score: homeScore,
-        predicted_away_score: awayScore,
-        updatedAt: new Date().toISOString()
+        home_score: homeScore,
+        away_score: awayScore,
+        updated_at: new Date().toISOString()
       });
     } else {
       return this.createPrediction({
         user_id: userId,
         fixture_id: fixtureId,
-        predicted_home_score: homeScore,
-        predicted_away_score: awayScore,
-        points: 0
+        home_score: homeScore,
+        away_score: awayScore,
+        points: 0,
+        league_id: leagueId
       });
     }
   },
   // Create 
   async createPrediction(prediction: UserPredictionInsert) {
     const { data, error } = await supabase
-      .from("user_predictions")
+      .from("predictions")
       .insert(prediction)
       .select()
       .single();
@@ -91,7 +93,7 @@ export const predictionService = {
   // Get User Predictions
   async getUserPredictions(userId: string, fixtureIds?: number[]) {
     let query = supabase
-      .from("user_predictions")
+      .from("predictions")
       .select(`
         *,
         fixtures!inner(
@@ -111,10 +113,19 @@ export const predictionService = {
     if (error) throw error;
     return data;
   },
+   // Delete Prediction
+   async deletePrediction(id: string) {
+    const { error } = await supabase
+      .from("predictions")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+  },
   // Get Prediction By User And Fixture
   async getPredictionByUserAndFixture(userId: string, fixtureId: number) {
     const { data, error } = await supabase
-      .from("user_predictions")
+      .from("predictions")
       .select("*")
       .eq("user_id", userId)
       .eq("fixture_id", fixtureId)
@@ -123,19 +134,11 @@ export const predictionService = {
     if (error) throw error;
     return data;
   },
-  // Delete Prediction
-  async deletePrediction(id: string) {
-    const { error } = await supabase
-      .from("user_predictions")
-      .delete()
-      .eq("id", id);
-
-    if (error) throw error;
-  },
+ 
   // Get League Predictions
   async getLeaguePredictions(_leagueId: number, fixtureId?: number) {
     let query = supabase
-      .from("user_predictions")
+      .from("predictions")
       .select(`
         *,
         users!inner(full_name, avatar_url),
@@ -189,13 +192,13 @@ export const predictionService = {
   },
   // Calculate Points
   async calculatePoints(prediction: UserPrediction, fixture: Fixture): Promise<number> {
-    if (!fixture.goals_home && fixture.goals_home !== 0) return 0;
-    if (!fixture.goals_away && fixture.goals_away !== 0) return 0;
+    if (!fixture.home_score && fixture.home_score !== 0) return 0;
+    if (!fixture.away_score && fixture.away_score !== 0) return 0;
 
-    const actualHomeScore = fixture.goals_home;
-    const actualAwayScore = fixture.goals_away;
-    const predictedHomeScore = prediction.predicted_home_score;
-    const predictedAwayScore = prediction.predicted_away_score;
+    const actualHomeScore = fixture.home_score;
+    const actualAwayScore = fixture.away_score;
+    const predictedHomeScore = prediction.home_score || 0;
+    const predictedAwayScore = prediction.away_score || 0;
 
     let points = 0;
 
@@ -245,22 +248,7 @@ export const predictionService = {
       }
     }
   },
-  // Get League Leaderboard
-  async getLeagueLeaderboard(leagueId: number) {
-    const { data, error } = await supabase
-      .from("league_members")
-      .select(`
-        user_id,
-        nickname,
-        points,
-        users!inner(full_name, avatar_url)
-      `)
-      .eq("league_id", leagueId)
-      .order("points", { ascending: false });
-
-    if (error) throw error;
-    return data;
-  },
+ 
   // Process Round For Auto Predictions
   async processRoundForAutoPredictions(competitionId: number, round: string) {
     try {

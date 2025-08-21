@@ -1,5 +1,5 @@
 import { userService } from '@/services/usersService';
-import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/AuthStore';
 import { TablesInsert, TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -23,19 +23,19 @@ export const useUser = (userId?: string) => {
 };
 
 export const useCurrentUser = () => {
-  const { session } = useAppStore();
-  return useUser(session?.user?.id);
+  const { user } = useAuthStore();
+  return useUser(user?.id);
 };
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  const { session } = useAppStore();
+  const { user } = useAuthStore();
 
   return useMutation({
     mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) =>
-      userService.updateUserProfile(session?.user?.id!, updates),
+      userService.updateUserProfile(user?.id!, updates),
     onSuccess: (data) => {
-      queryClient.setQueryData(QUERY_KEYS.user(session?.user?.id!), data);
+      queryClient.setQueryData(QUERY_KEYS.user(user?.id!), data);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users });
     },
     onError: (error) => {
@@ -70,8 +70,8 @@ export const useUserLeagues = (userId?: string) => {
 };
 
 export const useCurrentUserLeagues = () => {
-  const { session } = useAppStore();
-  return useUserLeagues(session?.user?.id);
+  const { user } = useAuthStore();
+  return useUserLeagues(user?.id);
 };
 
 export const useUserPrimaryLeague = (userId?: string) => {
@@ -85,8 +85,8 @@ export const useUserPrimaryLeague = (userId?: string) => {
 };
 
 export const useCurrentUserPrimaryLeague = () => {
-  const { session } = useAppStore();
-  return useUserPrimaryLeague(session?.user?.id);
+  const { user } = useAuthStore();
+  return useUserPrimaryLeague(user?.id);
 };
 
 export const useLeagueMembers = (leagueId: number) => {
@@ -110,6 +110,6 @@ export const useUserStats = (userId?: string) => {
 };
 
 export const useCurrentUserStats = () => {
-  const { session } = useAppStore();
-  return useUserStats(session?.user?.id);
+    const { user } = useAuthStore();
+  return useUserStats(user?.id);
 };

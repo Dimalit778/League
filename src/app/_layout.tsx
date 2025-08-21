@@ -1,8 +1,9 @@
 import '../../global.css';
 
-import { SplashScreen } from '@/components/layout/SplashScreen';
-import { useAppStore } from '@/store/useAppStore';
-
+import { SplashScreen } from '@/components/layout';
+import { useAuthStore } from '@/store/AuthStore';
+import { useLeagueStore } from '@/store/LeagueStore';
+import { useThemeStore } from '@/store/ThemeStore';
 import { themes } from '@/styles/color-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
@@ -11,19 +12,28 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 
 export default function RootLayout() {
-  const { session, initializeSession, loading, theme } = useAppStore();
-
+  const { user, initializeAuth, loading } = useAuthStore();
+  const { theme, initializeTheme } = useThemeStore();
+  const { initializeLeagues } = useLeagueStore();
   const queryClient = new QueryClient();
 
   useEffect(() => {
-    initializeSession();
+    initializeAuth();
+    initializeTheme();
   }, []);
+
+  // Initialize leagues whenever user changes
+  useEffect(() => {
+    if (user) {
+      initializeLeagues(user.id);
+    }
+  }, [user?.id]);
 
   if (loading) {
     return <SplashScreen />;
   }
 
-  const isLoggedIn = !!session;
+  const isLoggedIn = !!user;
 
   return (
     <QueryClientProvider client={queryClient}>

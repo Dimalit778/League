@@ -2,7 +2,14 @@
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "cSpell.words": ["dimalit", "extratime", "fkey", "matchday", "Postgrest"],
+  "cSpell.words": [
+    "dimalit",
+    "extratime",
+    "fkey",
+    "matchday",
+    "partialize",
+    "Postgrest"
+  ],
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": [

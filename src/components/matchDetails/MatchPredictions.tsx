@@ -1,84 +1,66 @@
-import { useLeaguePredictions } from '@/hooks/usePredictions';
-import { Ionicons } from '@expo/vector-icons';
+import { useLeagueMembersFixturePoints } from '@/hooks/useLeaderboard';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
-interface MatchPredictionsProps {
+type MatchPredictionsProps = {
   fixtureId: number;
-}
+};
 
 export const MatchPredictions = ({ fixtureId }: MatchPredictionsProps) => {
-  const {
-    data: predictions,
-    isLoading,
-    error,
-  } = useLeaguePredictions(fixtureId);
+  const { data: predictions, isLoading } =
+    useLeagueMembersFixturePoints(fixtureId);
 
   if (isLoading) {
     return (
-      <View className="p-4 items-center">
-        <ActivityIndicator size="small" color="#6366F1" />
-        <Text className="text-text/60 mt-2">Loading predictions...</Text>
+      <View className="flex-1 items-center justify-center py-4">
+        <ActivityIndicator size="small" />
       </View>
     );
   }
 
-  if (error || !predictions || predictions.length === 0) {
+  if (!predictions || predictions.length === 0) {
     return (
-      <View className="p-4 items-center">
-        <Ionicons name="people-outline" size={32} color="#6B7280" />
-        <Text className="text-text/60 mt-2">No predictions yet</Text>
+      <View className="flex-1 items-center justify-center py-4">
+        <Text className="text-gray-500">No predictions for this match yet</Text>
       </View>
     );
   }
-
-  const renderPrediction = ({ item }: { item: any }) => (
-    <View className="flex-row items-center justify-between p-4 bg-white/5 rounded-xl mb-2">
-      <View className="flex-row items-center flex-1">
-        {item.users.avatar_url ? (
-          <View className="w-10 h-10 rounded-full bg-gray-300 mr-3" />
-        ) : (
-          <View className="w-10 h-10 rounded-full bg-gray-500 mr-3 items-center justify-center">
-            <Text className="text-white font-bold text-sm">
-              {item.users.full_name.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-        <Text className="text-text font-semibold flex-1" numberOfLines={1}>
-          {item.users.full_name}
-        </Text>
-      </View>
-
-      <View className="flex-row items-center">
-        <View className="bg-white/10 rounded-lg px-3 py-2 mr-3">
-          <Text className="text-text font-bold text-lg">
-            {item.predicted_home_score} - {item.predicted_away_score}
-          </Text>
-        </View>
-
-        {item.points > 0 && (
-          <View className="bg-green-500/20 rounded-full px-2 py-1">
-            <Text className="text-green-400 font-bold text-sm">
-              {item.points}pts
-            </Text>
-          </View>
-        )}
-      </View>
-    </View>
-  );
 
   return (
-    <View className="p-4">
-      <Text className="text-text text-xl font-bold mb-4">
-        League Predictions ({predictions.length})
-      </Text>
+    <View className="flex-1 py-2">
+      <Text className="text-lg font-bold mb-3">League Predictions</Text>
 
       <FlatList
         data={predictions}
-        renderItem={renderPrediction}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
+        keyExtractor={(item) => item.user_id}
+        renderItem={({ item }) => (
+          <View className="flex-row items-center p-3 mb-2 bg-gray-100 rounded-lg">
+            <View className="flex-1">
+              <Text className="font-semibold">{item.nickname}</Text>
+            </View>
+
+            {item.home_score !== null && item.away_score !== null ? (
+              <View className="flex-row items-center">
+                <View className="bg-gray-200 px-3 py-1 rounded-lg">
+                  <Text className="font-bold">
+                    {item.home_score} - {item.away_score}
+                  </Text>
+                </View>
+                {item.points !== null && (
+                  <View className="ml-3 bg-green-100 px-2 py-1 rounded-lg">
+                    <Text className="font-bold text-green-800">
+                      +{item.points}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <Text className="text-gray-500">No prediction</Text>
+            )}
+          </View>
+        )}
       />
     </View>
   );
 };
+
+export default MatchPredictions;

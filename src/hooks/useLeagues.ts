@@ -1,41 +1,25 @@
+import { QUERY_KEYS } from '@/lib/queryKeys';
 import { leagueService } from '@/services/leagueService';
-import { useAppStore } from '@/store/useAppStore';
+import { CreateLeagueParams } from '@/types/league.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const QUERY_KEYS = {
-  leagues: ['leagues'] as const,
-  league: (id: number) => ['leagues', id] as const,
-  myLeagues: (userId: string) => ['users', userId, 'leagues'] as const,
-  competitions: ['competitions'] as const,
-  leagueByJoinCode: (joinCode: string) => ['leagues', 'joinCode', joinCode] as const,
-};
-
-export const useMyLeagues = () => {
-  const { session } = useAppStore();
+export const useMyLeagues = (userId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.myLeagues(session?.user?.id!),
-    queryFn: () => leagueService.getMyLeagues(session?.user?.id!),
-    enabled: !!session?.user?.id,
+    queryKey: QUERY_KEYS.myLeagues(userId),
+    queryFn: () => leagueService.getMyLeagues(userId),
+    enabled: !!userId,
     staleTime: 60 * 1000 * 60, 
     retry: 2,
   });
 };
-export const useCreateLeague = () => {
+export const useCreateLeague = (userId: string) => {
   const queryClient = useQueryClient();
-  const { session } = useAppStore();
-
+ 
   return useMutation({
-    mutationFn: (params: {
-      name: string;
-      nickname: string;
-      league_logo: string;
-      join_code: string;
-      max_members: number;
-      competition_id: number;
-    }) => leagueService.createLeague(session?.user?.id!, params.nickname, params as any, params.league_logo ),
+    mutationFn: (params: CreateLeagueParams) => leagueService.createLeagueAndMember(params),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
+        queryKey: QUERY_KEYS.myLeagues(userId) 
       });
     },
     onError: (error) => {
@@ -43,16 +27,15 @@ export const useCreateLeague = () => {
     },
   });
 };
-export const useJoinLeague = () => {
+export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
-  const { session } = useAppStore();
 
   return useMutation({
-    mutationFn: ({ join_code, nickname, avatar_url }: { join_code: string; nickname: string, avatar_url?: string }) => 
-      leagueService.joinLeague(session?.user?.id!, join_code, nickname,avatar_url?? ''),
-    onSuccess: (_, variables) => {
+    mutationFn: ({ join_code, nickname}: { join_code: string; nickname: string }) => 
+      leagueService.joinLeague(userId, join_code, nickname),
+      onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.myLeagues(session?.user?.id!) 
+        queryKey: QUERY_KEYS.myLeagues(userId) 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['leagues', variables.join_code, 'members'] 
@@ -79,4 +62,25 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
     retry: 1,
   });
 };
+  export const useUpdatePrimaryLeague = (userId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (leagueId: string) => leagueService.updatePrimaryLeague(userId, leagueId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: QUERY_KEYS.leagues 
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to update primary league:', error);
+    },
+  });
+};
 
+export const useGetLeagueLeaderboard = (leagueId: string) => {
+  return useQuery({
+    queryKey: ['leaderboard', leagueId],
+    queryFn: () => leagueService.getLeagueLeaderboard(leagueId),
+    enabled: !!leagueId,
+  });
+};

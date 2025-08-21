@@ -3,9 +3,9 @@ import {
   useCanPredict,
   useCreateOrUpdatePrediction,
   usePredictionByFixture,
-} from "@/hooks/usePredictions";
-import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+} from '@/hooks/usePredictions';
+import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 
 export interface PredictionState {
   homeScorePrediction: string;
@@ -30,8 +30,8 @@ export interface UsePredictionManagerProps {
 export const usePredictionManager = ({
   fixtureId,
 }: UsePredictionManagerProps): PredictionState & PredictionActions => {
-  const [homeScorePrediction, setHomeScorePrediction] = useState("");
-  const [awayScorePrediction, setAwayScorePrediction] = useState("");
+  const [homeScorePrediction, setHomeScorePrediction] = useState('');
+  const [awayScorePrediction, setAwayScorePrediction] = useState('');
   const [predictionSaved, setPredictionSaved] = useState(false);
 
   const { data: existingPrediction, isLoading: predictionLoading } =
@@ -60,17 +60,17 @@ export const usePredictionManager = ({
     const awayScore = parseInt(awayScorePrediction);
 
     if (isNaN(homeScore) || isNaN(awayScore)) {
-      Alert.alert("Error", "Please enter valid scores");
+      Alert.alert('Error', 'Please enter valid scores');
       return;
     }
 
     if (homeScore < 0 || awayScore < 0) {
-      Alert.alert("Error", "Scores cannot be negative");
+      Alert.alert('Error', 'Scores cannot be negative');
       return;
     }
 
     if (!canPredict) {
-      Alert.alert("Error", "Prediction time has expired for this match");
+      Alert.alert('Error', 'Prediction time has expired for this match');
       return;
     }
 
@@ -81,9 +81,9 @@ export const usePredictionManager = ({
         awayScore,
       });
       setPredictionSaved(true);
-      Alert.alert("Success", "Your prediction has been saved!");
+      Alert.alert('Success', 'Your prediction has been saved!');
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to save prediction");
+      Alert.alert('Error', error.message || 'Failed to save prediction');
     }
   };
 

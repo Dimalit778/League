@@ -134,7 +134,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           id: string
-          joined_at: string | null
+          is_primary: boolean
           league_id: string
           nickname: string
           update_at: string | null
@@ -144,7 +144,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           id?: string
-          joined_at?: string | null
+          is_primary?: boolean
           league_id: string
           nickname: string
           update_at?: string | null
@@ -154,7 +154,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           id?: string
-          joined_at?: string | null
+          is_primary?: boolean
           league_id?: string
           nickname?: string
           update_at?: string | null
@@ -183,7 +183,7 @@ export type Database = {
           created_at: string | null
           id: string
           join_code: string
-          max_members: number | null
+          max_members: number
           name: string
           owner_id: string
           updated_at: string | null
@@ -193,7 +193,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           join_code: string
-          max_members?: number | null
+          max_members?: number
           name: string
           owner_id: string
           updated_at?: string | null
@@ -203,7 +203,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           join_code?: string
-          max_members?: number | null
+          max_members?: number
           name?: string
           owner_id?: string
           updated_at?: string | null
@@ -227,46 +227,43 @@ export type Database = {
       }
       predictions: {
         Row: {
+          away_score: number
           created_at: string | null
           fixture_id: number
+          home_score: number
           id: string
           is_processed: boolean | null
           league_id: string
-          points_earned: number | null
-          predicted_away_score: number
-          predicted_home_score: number
-          predicted_winner: string | null
-          prediction_type: string | null
+          points: number | null
           updated_at: string | null
           user_id: string
+          winner: string | null
         }
         Insert: {
+          away_score: number
           created_at?: string | null
           fixture_id: number
+          home_score: number
           id?: string
           is_processed?: boolean | null
           league_id: string
-          points_earned?: number | null
-          predicted_away_score: number
-          predicted_home_score: number
-          predicted_winner?: string | null
-          prediction_type?: string | null
+          points?: number | null
           updated_at?: string | null
           user_id: string
+          winner?: string | null
         }
         Update: {
+          away_score?: number
           created_at?: string | null
           fixture_id?: number
+          home_score?: number
           id?: string
           is_processed?: boolean | null
           league_id?: string
-          points_earned?: number | null
-          predicted_away_score?: number
-          predicted_home_score?: number
-          predicted_winner?: string | null
-          prediction_type?: string | null
+          points?: number | null
           updated_at?: string | null
           user_id?: string
+          winner?: string | null
         }
         Relationships: [
           {
@@ -366,7 +363,6 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
-          primary_league_id: string | null
           updated_at: string
         }
         Insert: {
@@ -374,7 +370,6 @@ export type Database = {
           email?: string | null
           full_name: string
           id: string
-          primary_league_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -382,22 +377,38 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
-          primary_league_id?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      league_leaderboard_view: {
+        Row: {
+          avatar_url: string | null
+          league_id: string | null
+          nickname: string | null
+          predictions_count: number | null
+          total_points: number | null
+          user_id: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "users_primary_league_id_fkey"
-            columns: ["primary_league_id"]
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "leagues"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "league_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
-    }
-    Views: {
-      [_ in never]: never
     }
     Functions: {
       can_access_league: {
@@ -428,13 +439,43 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      get_league_leaderboard: {
+      get_league_members_with_points: {
         Args: { p_league_id: string }
         Returns: {
           avatar_url: string
           nickname: string
+          predictions_count: number
           total_points: number
           user_id: string
+        }[]
+      }
+      get_member_predictions: {
+        Args: { p_league_id: string }
+        Returns: {
+          avatar_url: string
+          away_score: number
+          created_at: string
+          fixture_id: number
+          home_score: number
+          is_processed: boolean
+          nickname: string
+          points: number
+          prediction_id: string
+          user_id: string
+          winner: string
+        }[]
+      }
+      get_members_fixture_points: {
+        Args: { p_fixture_id: number; p_league_id: string }
+        Returns: {
+          avatar_url: string
+          away_score: number
+          home_score: number
+          is_processed: boolean
+          nickname: string
+          points: number
+          user_id: string
+          winner: string
         }[]
       }
       get_user_leagues: {
