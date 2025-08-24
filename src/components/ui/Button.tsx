@@ -8,7 +8,7 @@ import {
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'error';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;

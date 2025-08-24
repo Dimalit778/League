@@ -16,16 +16,25 @@ export const useCreateLeague = (userId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (params: CreateLeagueParams) => leagueService.createLeagueAndMember(params),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.myLeagues(userId) 
-      });
-    },
-    onError: (error) => {
-      console.error('Failed to create league:', error);
-    },
-  });
-};
+    onSuccess: () => {
+        queryClient.invalidateQueries({ 
+          queryKey: QUERY_KEYS.myLeagues(userId) 
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: QUERY_KEYS.leagues 
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) => 
+            query.queryKey[0] === 'leaderboard' || 
+            (Array.isArray(query.queryKey) && query.queryKey.includes('leaderboard'))
+        });
+        queryClient.invalidateQueries();
+      },
+      onError: (error) => {
+        console.error('Failed to create league:', error);
+      },
+    });
+  };
 export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
 
@@ -77,5 +86,12 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
     },
   });
 };
+export const useGetFullLeagueAndMembersById = (leagueId: string) => {
+  return useQuery({
+    queryKey: ['league', leagueId],
+    queryFn: () => leagueService.getFullLeagueAndMembersById(leagueId),
+    enabled: !!leagueId,
+  });
+};  
 
 

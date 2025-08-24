@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui";
-import { router } from "expo-router";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Button } from '@/components/ui';
+import { router } from 'expo-router';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 export default function Welcome() {
   return (
@@ -54,7 +54,7 @@ export default function Welcome() {
 
         <Button
           title="Get Started"
-          onPress={() => router.push("/signUp")}
+          onPress={() => router.push('/signIn')}
           variant="secondary"
           size="lg"
         />
@@ -68,11 +68,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#6366F1",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#6366F1',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 24,
-    boxShadow: "0px 4px 8px rgba(99, 102, 241, 0.3)",
+    boxShadow: '0px 4px 8px rgba(99, 102, 241, 0.3)',
     elevation: 8,
   },
 
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   feature: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 32,
     paddingHorizontal: 20,
   },
@@ -90,47 +90,47 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#F7F7F7",
+    fontWeight: '600',
+    color: '#F7F7F7',
     marginBottom: 8,
   },
   featureDescription: {
     fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
+    color: '#6B7280',
+    textAlign: 'center',
     lineHeight: 20,
   },
   buttonsContainer: {
-    marginTop: "auto",
+    marginTop: 'auto',
     paddingTop: 24,
   },
   primaryButton: {
     height: 52,
-    backgroundColor: "#6366F1",
+    backgroundColor: '#6366F1',
     borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
-    boxShadow: "0px 2px 4px rgba(99, 102, 241, 0.2)",
+    boxShadow: '0px 2px 4px rgba(99, 102, 241, 0.2)',
     elevation: 4,
   },
   primaryButtonText: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   secondaryButton: {
     height: 52,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: '#D1D5DB',
     borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   secondaryButtonText: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#6B7280",
+    fontWeight: '500',
+    color: '#6B7280',
   },
 });

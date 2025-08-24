@@ -7,7 +7,7 @@ export default function NewLeagueLayout() {
     <SafeAreaWrapper>
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
           header: () => <BackButton />,
         }}
       >
@@ -18,7 +18,7 @@ export default function NewLeagueLayout() {
         <Stack.Screen name="join-league" />
         <Stack.Screen name="select-competition" />
         <Stack.Screen name="league-details" />
-        <Stack.Screen name="league-created" />
+        <Stack.Screen name="league-created" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaWrapper>
   );

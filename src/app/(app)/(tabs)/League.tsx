@@ -13,14 +13,14 @@ type LeaderboardType = {
 };
 
 const League = () => {
-  const { data: leaderboard, isLoading } = useGetLeagueLeaderboard();
+  const { data: leaderboard, isLoading, error } = useGetLeagueLeaderboard();
 
-  if (isLoading) return <LoadingOverlay />;
-
+  if (error) console.log('error', error);
   const topThree = leaderboard?.slice(0, 3);
 
   return (
     <View className="flex-1 bg-background pt-10 px-4">
+      {isLoading && <LoadingOverlay />}
       <TopThree topMembers={topThree as LeaderboardType[]} />
       <FlatList
         data={leaderboard}

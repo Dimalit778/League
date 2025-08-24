@@ -1,7 +1,7 @@
 import {
   useCreatePrediction,
-  useGetPredictionByUserAndFixture,
   useUpdatePrediction,
+  useUserPredictionByFixture,
 } from '@/hooks/usePredictions';
 import { FixturesWithTeams } from '@/types';
 import { useEffect, useState } from 'react';
@@ -14,9 +14,7 @@ interface ScheduledContentProps {
 }
 
 const ScheduledContent = ({ match }: ScheduledContentProps) => {
-  const { data: prediction, isLoading } = useGetPredictionByUserAndFixture(
-    match.id
-  );
+  const { data: prediction, isLoading } = useUserPredictionByFixture(match.id);
 
   // State management
   const [homeScore, setHomeScore] = useState('');
@@ -38,7 +36,7 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
     isPending: isUpdating,
     isSuccess: updateSuccess,
     isError: updateError,
-  } = useUpdatePrediction(match.id);
+  } = useUpdatePrediction();
 
   // Initialize state when prediction data loads
   useEffect(() => {
@@ -76,7 +74,7 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
     const awayScoreNum = Number(awayScore) || 0;
 
     updatePrediction({
-      prediction_id: prediction!.id,
+      id: prediction!.id,
       home_score: homeScoreNum,
       away_score: awayScoreNum,
     });
@@ -197,7 +195,7 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
               <Button
                 title="Cancel"
                 onPress={handleCancel}
-                variant="error"
+                variant="secondary"
                 size="md"
               />
             </View>

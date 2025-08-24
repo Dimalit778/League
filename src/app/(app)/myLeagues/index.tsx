@@ -10,11 +10,11 @@ export default function MyLeagues() {
   const { user } = useAuthStore();
   const { data: leagues, isLoading, error } = useMyLeagues(user?.id!);
 
-  if (isLoading) return <LoadingOverlay />;
   if (error) console.log('error---', error);
 
   return (
     <View className="flex-1 bg-background">
+      {isLoading && <LoadingOverlay />}
       <View className="flex-row justify-between items-center px-4 pt-6 pb-4">
         <Button
           title="Create League"

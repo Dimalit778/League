@@ -43,20 +43,32 @@ export const useCreatePrediction = (fixtureId: number ) => {
 };
 // * Done
 // Update Prediction
-export const useUpdatePrediction = (fixtureId: number) => {
+export const useUpdatePrediction = () => {
+ ;
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   return useMutation({
     mutationFn: (prediction: {
-      prediction_id: string;
+      id: string;
       home_score: number;
       away_score: number;
-    }) => predictionService.updatePrediction(prediction),
+    }) => predictionService.updatePrediction(
+      {
+        id: prediction.id,
+        home_score: prediction.home_score,
+        away_score: prediction.away_score,
+        user_id: user!.id,
+      }
+    ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["predictions", user!.id] });
       queryClient.invalidateQueries({
-        queryKey: ["prediction", user!.id, fixtureId],
+        queryKey: ["prediction", user!.id],
       });
+
+    },
+    onError: (error) => {
+      console.error("Error updating prediction:", error);
     },
   });
 };

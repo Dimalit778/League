@@ -21,6 +21,12 @@ type PredictionLeaderboardType = {
 };
 
 const FinishContent = ({ match }: { match: FixturesWithTeams }) => {
+  console.log('FinishContent');
+  const date = new Date();
+  console.log('date', date.toISOString());
+  console.log('match', match.kickoff_time);
+  console.log(date.toISOString() > match.kickoff_time);
+  console.log(date.toISOString() < match.kickoff_time);
   const { user } = useAuthStore();
   const {
     data: leaguePredictions,

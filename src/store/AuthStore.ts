@@ -68,39 +68,48 @@ type User = Tables<"users">;
         }
       },
  
-       login: async (email: string, password: string): Promise<AuthResult> => {
-         set({ loading: true, error: null });
- 
-         if (!email?.trim()) {
-           set({ loading: false, error: "Email is required" });
-           return { success: false, error: "Email is required" };
-         }
- 
-         if (!password?.trim()) {
-           set({ loading: false, error: "Password is required" });
-           return { success: false, error: "Password is required" };
-         }
- 
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-      
+        login: async (email: string, password: string): Promise<AuthResult> => {
+        set({ loading: true, error: null });
 
-        if (authError) {
-          set({ loading: false, error: authError.message });
-          return { success: false, error: authError.message };
+        if (!email?.trim()) {
+          set({ loading: false, error: "Email is required" });
+          return { success: false, error: "Email is required" };
         }
-        if (!authData.user || !authData.session) {
-          set({ loading: false, error: "Login failed" });
-          return { success: false, error: "Login failed" };
-        }
-        const user = await userService.getUserProfile(authData.user.id);
-        if(!user) throw new Error('User not found');
 
-        set({ user: user as User, loading: false });  
-      
-        return { success: true };
+        if (!password?.trim()) {
+          set({ loading: false, error: "Password is required" });
+          return { success: false, error: "Password is required" };
+        }
+
+        try {
+          const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+        
+          if (authError) {
+            set({ loading: false, error: authError.message });
+            return { success: false, error: authError.message };
+          }
+          
+          if (!authData.user || !authData.session) {
+            set({ loading: false, error: "Login failed" });
+            return { success: false, error: "Login failed" };
+          }
+          
+          const user = await userService.getUserProfile(authData.user.id);
+          if (!user) {
+            set({ loading: false, error: "User not found" });
+            return { success: false, error: "User not found" };
+          }
+
+          set({ user: user as User, loading: false });  
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Login failed';
+          set({ loading: false, error: errorMessage, user: null });
+          return { success: false, error: errorMessage };
+        }
       },
  
        signUp: async (email: string, password: string, fullname: string): Promise<AuthResult> => {

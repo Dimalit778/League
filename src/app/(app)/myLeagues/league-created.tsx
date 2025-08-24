@@ -1,4 +1,8 @@
+import { LoadingOverlay } from '@/components/layout';
 import { Image } from '@/components/ui';
+import { useGetFullLeagueAndMembersById } from '@/hooks/useLeagues';
+import { useAuthStore } from '@/store/AuthStore';
+import { useLeagueStore } from '@/store/LeagueStore';
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
@@ -12,25 +16,32 @@ import {
 } from 'react-native';
 
 export default function LeagueCreatedScreen() {
-  const { leagueData } = useLocalSearchParams();
+  const { leagueId } = useLocalSearchParams();
+  const { data: leagueData } = useGetFullLeagueAndMembersById(
+    leagueId as string
+  );
   const router = useRouter();
+  const { user } = useAuthStore();
+  const { initializeLeagues } = useLeagueStore();
 
-  const parsedLeagueData = JSON.parse(leagueData as string);
+  if (!leagueData) {
+    return <LoadingOverlay />;
+  }
 
   const handleCopyJoinCode = () => {
-    if (typeof parsedLeagueData?.join_code === 'string') {
-      Clipboard.setString(parsedLeagueData?.join_code || '');
+    if (typeof leagueData?.join_code === 'string') {
+      Clipboard.setString(leagueData?.join_code || '');
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
 
   const handleShareJoinCode = async () => {
     try {
-      const shareMessage = `🏆 Join my ${parsedLeagueData?.competitions?.name || 'Football'} league "${parsedLeagueData?.name}"!\n\nUse code: ${parsedLeagueData?.join_code}\n\nDownload the app to join!`;
+      const shareMessage = `🏆 Join my ${leagueData?.competitions?.name || 'Football'} league "${leagueData?.name}"!\n\nUse code: ${leagueData?.join_code}\n\nDownload the app to join!`;
 
       await Share.share({
         message: shareMessage,
-        title: `Join ${parsedLeagueData?.name} League`,
+        title: `Join ${leagueData?.name} League`,
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -45,8 +56,7 @@ export default function LeagueCreatedScreen() {
           League Created Successfully! 🎉
         </Text>
         <Text className="text-base text-textMuted text-center">
-          Your {parsedLeagueData?.competitions?.name || 'Football'} league is
-          ready
+          Your {leagueData?.competitions?.name || 'Football'} league is ready
         </Text>
       </View>
 
@@ -56,8 +66,7 @@ export default function LeagueCreatedScreen() {
         <View className="items-center mb-6">
           <Image
             source={{
-              uri:
-                parsedLeagueData?.logo || parsedLeagueData?.competitions?.logo,
+              uri: leagueData?.competitions?.logo,
             }}
             className="rounded-2xl mb-4 shadow-sm"
             width={80}
@@ -65,11 +74,11 @@ export default function LeagueCreatedScreen() {
             resizeMode="contain"
           />
           <Text className="text-2xl font-bold text-center text-text mb-2 mt-4">
-            {parsedLeagueData?.name}
+            {leagueData?.name}
           </Text>
           <Text className="text-base text-textMuted text-center">
-            {parsedLeagueData?.competitions?.country} •{' '}
-            {parsedLeagueData?.competitions?.name}
+            {leagueData?.competitions?.country} •{' '}
+            {leagueData?.competitions?.name}
           </Text>
         </View>
 
@@ -78,7 +87,7 @@ export default function LeagueCreatedScreen() {
             Your Nickname
           </Text>
           <Text className="text-lg font-bold text-text text-center">
-            {parsedLeagueData?.nickname}
+            {leagueData?.league_members[0]?.nickname}
           </Text>
         </View>
 
@@ -91,7 +100,7 @@ export default function LeagueCreatedScreen() {
             className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-3"
           >
             <Text className="text-2xl font-mono font-bold text-primary text-center tracking-[8px]">
-              {parsedLeagueData?.join_code}
+              {leagueData?.join_code}
             </Text>
           </TouchableOpacity>
           <Text className="text-xs text-textMuted text-center">
@@ -116,7 +125,12 @@ export default function LeagueCreatedScreen() {
       <TouchableOpacity
         className="bg-primary rounded-xl items-center py-4 px-4"
         activeOpacity={0.8}
-        onPress={() => router.replace('/(app)/(tabs)/League')}
+        onPress={async () => {
+          if (user?.id) {
+            await initializeLeagues(user.id);
+          }
+          router.replace('/(app)/(tabs)/League');
+        }}
       >
         <Text className="text-primaryForeground text-lg font-bold">
           Start League

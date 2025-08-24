@@ -12,12 +12,13 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 
 export default function RootLayout() {
-  const { user, initializeAuth, loading } = useAuthStore();
+  const { user, initializeAuth, loading, error } = useAuthStore();
   const { theme, initializeTheme } = useThemeStore();
   const { initializeLeagues } = useLeagueStore();
   const queryClient = new QueryClient();
 
   useEffect(() => {
+    console.log('initializeAuth');
     initializeAuth();
     initializeTheme();
   }, []);

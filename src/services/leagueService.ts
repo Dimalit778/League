@@ -64,7 +64,6 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
       name: params. name,
       owner_id: params.owner_id,
       join_code: joinCode,
-      logo: params.logo,
       competition_id: params.competition_id,
       max_members: params.max_members
     })
@@ -78,7 +77,6 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
    const { error: updateError } = await supabase
   .from('league_members')
   .update({ is_primary: false })
-  .eq('league_id', league.id)
   .eq('user_id', params.owner_id);
 
   if(updateError) throw new Error(updateError.message);
@@ -90,12 +88,12 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
       league_id: league.id,
       user_id: params.owner_id,
       nickname: params.nickname,
-      avatar_url: params.logo,
+      avatar_url: '',
       is_primary: true
     });
 
   if (memberError) throw memberError;
-
+ 
 return league as Tables<"leagues">;
 
 },    
@@ -136,6 +134,11 @@ async updatePrimaryLeague(userId: string, leagueId: string) {
   if(primaryLeagueError) throw new Error(primaryLeagueError.message);
   
   return primaryLeague;
+},
+async getFullLeagueAndMembersById(leagueId: string) {
+  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members,competitions!inner(id,name,logo,country,flag) ,league_members(user_id,nickname,avatar_url)").eq("id", leagueId).single();
+  if(error) throw new Error(error.message);
+  return data;
 },
 
 }

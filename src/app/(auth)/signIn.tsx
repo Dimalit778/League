@@ -21,6 +21,7 @@ const schema = yup.object().shape({
 export default function SignIn() {
   const { login, loading } = useAuthStore();
   const { theme } = useThemeStore();
+  const [loginError, setLoginError] = useState<string | null>(null);
   const {
     control,
     handleSubmit,
@@ -31,9 +32,12 @@ export default function SignIn() {
   });
 
   const onSubmit = async (data: any) => {
-    const { error } = await login(data.email.trim(), data.password);
+    const { error, success } = await login(data.email.trim(), data.password);
     if (error) {
-      console.log(error);
+      setLoginError(error);
+    }
+    if (success) {
+      console.log('success');
     }
   };
 
@@ -73,6 +77,12 @@ export default function SignIn() {
           icon={<LockIcon size={24} color={theme} />}
           error={errors.password}
         />
+
+        {loginError && (
+          <View className="bg-red-100 border border-red-400 rounded-md p-3 mb-4">
+            <Text className="text-red-700">{loginError}</Text>
+          </View>
+        )}
 
         <Button
           title="Log In"

@@ -30,6 +30,7 @@ export const predictionService = {
   },
   // Update Prediction
   async updatePrediction( updates: UserPredictionUpdate) {
+  
     const { data, error } = await supabase
       .from("predictions")
       .update({
@@ -37,12 +38,13 @@ export const predictionService = {
         away_score: updates.away_score,
         updated_at: new Date().toISOString()
       })
-      .eq("fixture_id", updates.fixture_id!)
+      .eq("id", updates.id ?? '')
       .eq("user_id", updates.user_id!)
       .select()
       .single();
 
     if (error) throw error;
+  
     return data;
   },
   // Get User Predictions

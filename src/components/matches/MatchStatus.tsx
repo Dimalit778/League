@@ -16,10 +16,10 @@ export const MatchStatus = ({
     <View className="min-w-[70px] h-[40px] items-center justify-center">
       {status === 'scheduled' && (
         <View className="flex-col items-center justify-center rounded-md border border-border px-2 py-1">
-          <Text className="text-sm font-bold text-text">
+          <Text className="text-xs text-textMuted">
             {dateFormat(kickOffTime)}
           </Text>
-          <Text className="text-xs font-bold text-textMuted">
+          <Text className="text-base  text-text">
             {timeFormat(kickOffTime)}
           </Text>
         </View>

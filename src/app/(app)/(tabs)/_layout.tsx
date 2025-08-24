@@ -9,7 +9,7 @@ export default function TabLayout() {
   const { theme } = useThemeStore();
   return (
     <>
-      <TopBar />
+      <TopBar showLeagueName={true} />
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: theme === 'dark' ? '#f9c04a' : '#f97316',
