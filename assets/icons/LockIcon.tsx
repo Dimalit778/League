@@ -1,10 +1,10 @@
 import { IconProps } from '@/types';
 import Svg, { G, Path } from 'react-native-svg';
 const LockIcon = ({ size, color }: IconProps) => (
-  <Svg viewBox="0 0 24 24" width={size} height={size} fill={color}>
+  <Svg viewBox="0 0 24 24" width={size} height={size} fill="none">
     <G stroke={color} strokeWidth={1.5}>
       <Path
-        stroke={color}
+        stroke={color === 'dark' ? '#fff' : '#000'}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={1.5}

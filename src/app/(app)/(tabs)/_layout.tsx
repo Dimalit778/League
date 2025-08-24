@@ -1,11 +1,6 @@
-import {
-  LeagueIcon,
-  MatchesIcon,
-  ProfileIcon,
-  RankIcon,
-} from '../../../../assets/icons';
+import { LeagueIcon, MatchesIcon, RankIcon } from '../../../../assets/icons';
 
-import TabsHeader from '@/components/layout/TabsHeader';
+import TopBar from '@/components/layout/TopBar';
 import { useThemeStore } from '@/store/ThemeStore';
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
@@ -14,7 +9,7 @@ export default function TabLayout() {
   const { theme } = useThemeStore();
   return (
     <>
-      <TabsHeader />
+      <TopBar />
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: theme === 'dark' ? '#f9c04a' : '#f97316',
@@ -62,16 +57,6 @@ export default function TabLayout() {
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <RankIcon size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="Profile"
-          options={{
-            title: 'Profile',
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <ProfileIcon size={size} color={color} />
             ),
           }}
         />

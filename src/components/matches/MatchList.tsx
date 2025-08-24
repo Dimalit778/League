@@ -1,10 +1,10 @@
 import { useGetFixturesByRound } from '@/hooks/useFixtures';
-import { FixtureWithTeams } from '@/types/fixturesTypes';
-import { Ionicons } from '@expo/vector-icons';
+
+import { FixturesWithTeams } from '@/types';
 import { useRouter } from 'expo-router';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import LoadingOverlay from '../layout/LoadingOverlay';
-export type MatchStatus = 'Not Started' | 'In Play' | 'Finished';
+import { MatchStatus } from './MatchStatus';
 
 const MatchList = ({ selectedRound }: { selectedRound: string }) => {
   const {
@@ -31,8 +31,8 @@ const MatchList = ({ selectedRound }: { selectedRound: string }) => {
     </View>
   );
 };
-const Card = ({ match }: { match: FixtureWithTeams }) => {
-  // Extract team names for clarity and potential fallback
+//* Card Component
+const Card = ({ match }: { match: FixturesWithTeams }) => {
   const homeTeamName = match.home_team.name;
   const awayTeamName = match.away_team?.name;
 
@@ -40,7 +40,6 @@ const Card = ({ match }: { match: FixtureWithTeams }) => {
   const awayCrestUrl = match.away_team.logo;
   const router = useRouter();
   const handlePress = (id: number) => {
-    console.log('id', id);
     router.push({
       pathname: '/(app)/match/[id]',
       params: { id },
@@ -65,42 +64,12 @@ const Card = ({ match }: { match: FixtureWithTeams }) => {
           </Text>
         </View>
 
-        {/* Score/Time Section */}
-        <View className="flex-none items-center justify-center mx-2 relative">
-          {/* <StatusIndicator match={match} /> Uncomment if needed and ensure TMatch is properly typed */}
-          <View className="bg-border rounded-md px-3 py-2 min-w-[60px] items-center justify-center">
-            {match.status_long === 'Not Started' ? (
-              <View className="items-center gap-1">
-                <Ionicons
-                  name="time-outline"
-                  size={14}
-                  color="#888"
-                  style={{ marginRight: 4 }}
-                />
-                <Text className="text-xs font-medium text-textMuted">
-                  {new Date(match.date).toLocaleDateString()}
-                </Text>
-              </View>
-            ) : (
-              <View className="flex-row items-center justify-center">
-                {/* Ensure no raw text or unnecessary whitespace between these Text components */}
-                <Text className="text-lg font-bold text-text">
-                  {match.home_score ?? 0}
-                </Text>
-                <Text className="text-lg font-bold text-text mx-1">-</Text>
-                <Text className="text-lg font-bold text-text">
-                  {match.away_score ?? 0}
-                </Text>
-              </View>
-            )}
-            {match.status_long === 'In Play' && (
-              <Text className="text-sm text-secondary font-semibold">LIVE</Text>
-            )}
-            {match.status_long === 'Finished' && (
-              <Text className="text-sm text-textMuted">FT</Text>
-            )}
-          </View>
-        </View>
+        <MatchStatus
+          status={match.status}
+          homeScore={match.home_score ?? 0}
+          awayScore={match.away_score ?? 0}
+          kickOffTime={match.kickoff_time}
+        />
 
         {/* Away Team */}
         <View className="flex-1 flex-row items-center justify-end">

@@ -22,6 +22,7 @@ export const fixtureService = {
       .single();
 
     if (error) throw error;
+   
     return data;
   },
   async getFixturesByRound(
@@ -38,7 +39,7 @@ export const fixtureService = {
       `)
       .eq("competition_id", competitionId!)
       .eq("round", round)
-      .order("date", { ascending: true });
+      .order("kickoff_time", { ascending: true });
  
   
     if (error) throw error;

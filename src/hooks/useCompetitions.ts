@@ -1,14 +1,11 @@
+import { QUERY_KEYS } from '@/lib/queryKeys';
 import { competitionService } from '@/services/competitionService';
 import { useQuery } from '@tanstack/react-query';
 
-const QUERY_KEYS = {
-  rounds: (competitionId: number) => ['rounds', competitionId],
-  competitions: ['competitions'],
-}
 
 export const useCompetitionRounds = (competitionId: number) => {
   return useQuery({
-    queryKey: QUERY_KEYS.rounds(competitionId),
+    queryKey: QUERY_KEYS.leagues,
     queryFn: () => competitionService.getCompetitionRounds(competitionId),
     staleTime: 10 * 60 * 60 * 1000, 
     retry: 2,

@@ -1,13 +1,15 @@
-import LoadingOverlay from '@/components/layout/LoadingOverlay';
-import { useTopLeagueMembers } from '@/hooks/useLeaderboard';
-import { LeagueLeaderboardType } from '@/types';
 import { Text, View } from 'react-native';
 
-export default function TopThree() {
-  const { data: topMembers, isLoading } = useTopLeagueMembers(3);
-
-  if (isLoading) return <LoadingOverlay />;
-
+export default function TopThree({
+  topMembers,
+}: {
+  topMembers: {
+    nickname: string;
+    avatar_url: string;
+    total_points: number;
+    index: number;
+  }[];
+}) {
   const getInitials = (nickname: string) => {
     return nickname
       .split(' ')
@@ -31,7 +33,12 @@ export default function TopThree() {
   };
 
   const renderPlayer = (
-    member: LeagueLeaderboardType | null,
+    member: {
+      nickname: string;
+      avatar_url: string;
+      total_points: number;
+      index: number;
+    } | null,
     position: number
   ) => (
     <View className="items-center" key={position}>

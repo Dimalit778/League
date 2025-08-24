@@ -1,7 +1,8 @@
 import { Button, Image, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
 import { useAuthStore } from '@/store/AuthStore';
-import { LeagueWithCompetition } from '@/types/league.types';
+import { LeagueWithCompetition } from '@/types';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -27,7 +28,6 @@ export default function JoinLeague() {
     mode: 'onChange',
   });
   const inviteCodeValue = watch('inviteCode');
-  const [searchingLeague, setSearchingLeague] = useState(false);
   const [foundLeague, setFoundLeague] = useState<LeagueWithCompetition | null>(
     null
   );

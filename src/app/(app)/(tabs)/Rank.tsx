@@ -1,8 +1,8 @@
-import { useLeagueMembersWithPoints } from '@/hooks/useLeaderboard';
+import { useGetLeaderboard } from '@/hooks/useLeaderboard';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 export default function Rank() {
-  const { data: leaderboard, isLoading } = useLeagueMembersWithPoints();
+  const { data: leaderboard, isLoading } = useGetLeaderboard();
 
   if (isLoading) {
     return (

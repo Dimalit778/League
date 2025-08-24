@@ -1,34 +1,26 @@
-import LoadingOverlay from '@/components/layout/LoadingOverlay';
-import { MatchInfoHeader } from '@/components/matchDetails/Header';
-import { MatchInfo } from '@/components/matchDetails/MatchInfo';
-import MatchPredictions from '@/components/matchDetails/MatchPredictions';
-
+import { MatchHeader } from '@/components/matchDetails/MatchHeader';
+import MatchSkeleton from '@/components/matchDetails/MatchSkeleton';
 import { useGetFixtureById } from '@/hooks/useFixtures';
+import { useMatchContent } from '@/hooks/useMatchContent';
+import { FixturesWithTeams } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function MatchDetails() {
   const { id } = useLocalSearchParams();
 
   const { data: match, isLoading, error } = useGetFixtureById(Number(id));
 
+  if (isLoading) return <MatchSkeleton />;
   if (error) console.log('error', error);
 
+  const Content = useMatchContent(match as FixturesWithTeams);
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      {isLoading && <LoadingOverlay />}
-      <MatchInfoHeader match={match} />
-      <ScrollView
-        className="flex-1 bg-background"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="mx-4 mt-4">
-          <MatchInfo match={match} />
-        </View>
-        <View className="mx-4 mt-6">
-          <MatchPredictions fixtureId={Number(id)} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View className="flex-1 bg-background">
+      <MatchHeader match={match as FixturesWithTeams} />
+
+      {Content}
+    </View>
   );
 }

@@ -11,6 +11,7 @@ export default function AppLayout() {
         <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
+      <Stack.Screen name="profile" options={{ headerShown: false }} />
     </Stack>
   );
 }

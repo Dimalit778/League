@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from '@/lib/queryKeys';
 import { leagueService } from '@/services/leagueService';
-import { CreateLeagueParams } from '@/types/league.types';
+import { CreateLeagueParams } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useMyLeagues = (userId: string) => {
@@ -14,7 +14,6 @@ export const useMyLeagues = (userId: string) => {
 };
 export const useCreateLeague = (userId: string) => {
   const queryClient = useQueryClient();
- 
   return useMutation({
     mutationFn: (params: CreateLeagueParams) => leagueService.createLeagueAndMember(params),
     onSuccess: (data) => {
@@ -46,13 +45,6 @@ export const useJoinLeague = (userId: string) => {
     },
   });
 };
-export const useGetLeagueById = (leagueId: string) => {
-  return useQuery({
-    queryKey: ['leagues'],
-    queryFn: () => leagueService.getLeagueById(leagueId),
-    enabled: !!leagueId,
-  });
-};
 
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   return useQuery({
@@ -68,8 +60,17 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
     mutationFn: (leagueId: string) => leagueService.updatePrimaryLeague(userId, leagueId),
     onSuccess: () => {
       queryClient.invalidateQueries({ 
+        queryKey: QUERY_KEYS.myLeagues(userId) 
+      });
+      queryClient.invalidateQueries({ 
         queryKey: QUERY_KEYS.leagues 
       });
+      queryClient.invalidateQueries({
+        predicate: (query) => 
+          query.queryKey[0] === 'leaderboard' || 
+          (Array.isArray(query.queryKey) && query.queryKey.includes('leaderboard'))
+      });
+      queryClient.invalidateQueries();
     },
     onError: (error) => {
       console.error('Failed to update primary league:', error);
@@ -77,10 +78,4 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
   });
 };
 
-export const useGetLeagueLeaderboard = (leagueId: string) => {
-  return useQuery({
-    queryKey: ['leaderboard', leagueId],
-    queryFn: () => leagueService.getLeagueLeaderboard(leagueId),
-    enabled: !!leagueId,
-  });
-};
+

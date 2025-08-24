@@ -3,13 +3,13 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-} from "react-native";
+} from 'react-native';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary";
-  size?: "sm" | "md" | "lg";
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
 }
@@ -17,8 +17,8 @@ interface ButtonProps {
 const Button = ({
   title,
   onPress,
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   loading = false,
   disabled = false,
 }: ButtonProps) => {
@@ -31,7 +31,7 @@ const Button = ({
   return (
     <TouchableOpacity
       className={`px-4 py-2 bg-${variant} rounded-md ${
-        disabled || loading ? "opacity-50" : ""
+        disabled || loading ? 'opacity-50' : ''
       }`}
       style={[
         styles.button,
@@ -53,9 +53,9 @@ const Button = ({
 const styles = StyleSheet.create({
   button: {
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   sm: {
     paddingHorizontal: 12,

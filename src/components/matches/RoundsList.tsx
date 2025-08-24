@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type RoundsListProps = {
   rounds: string[];
@@ -12,9 +12,9 @@ export default function RoundsList({
 }: RoundsListProps) {
   if (!rounds || rounds.length === 0) {
     return (
-      <ScrollView horizontal>
+      <View className="flex-row justify-center items-center">
         <Text className="text-gray-400 p-4">No rounds available</Text>
-      </ScrollView>
+      </View>
     );
   }
 

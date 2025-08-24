@@ -8,42 +8,56 @@ import { AppState, AppStateStatus } from "react-native";
 
 
 
+
+
+
 // * Done
-export const useCreateOrUpdatePrediction = () => {
+// Create Prediction
+export const useCreatePrediction = (fixtureId: number ) => {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const { primaryLeague } = useLeagueStore();
 
   return useMutation({
-    mutationFn: ({
-      fixtureId,
-      homeScore,
-      awayScore,
-    }: {
-      fixtureId: number;
-      homeScore: number;
-      awayScore: number;
-    }) =>
-      predictionService.createOrUpdatePrediction(
-        user!.id,
-        fixtureId,
-        homeScore,
-        awayScore
-      ),
-    onSuccess: (_, { fixtureId }) => {
+    mutationFn: (prediction: {
+      fixture_id: number;
+      home_score: number;
+      away_score: number;
+    }) => predictionService.createPrediction({
+      user_id: user!.id,
+      fixture_id: prediction.fixture_id,
+      home_score: prediction.home_score,
+      away_score: prediction.away_score,
+      league_id: primaryLeague!.id,
+    }),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["predictions", user!.id] });
       queryClient.invalidateQueries({
         queryKey: ["prediction", user!.id, fixtureId],
       });
     },
+    onError: (error) => {
+      console.error("Error creating prediction:", error);
+    },
   });
 };
 // * Done
-export const useCanPredict = (fixtureId: number) => {
-  return useQuery({
-    queryKey: ["canPredict", fixtureId],
-    queryFn: () => predictionService.canUserPredict(fixtureId),
-    enabled: !!fixtureId,
-    staleTime: 1000 * 60, // 1 minute
+// Update Prediction
+export const useUpdatePrediction = (fixtureId: number) => {
+  const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  return useMutation({
+    mutationFn: (prediction: {
+      prediction_id: string;
+      home_score: number;
+      away_score: number;
+    }) => predictionService.updatePrediction(prediction),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["predictions", user!.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["prediction", user!.id, fixtureId],
+      });
+    },
   });
 };
 
@@ -55,40 +69,32 @@ export const useUserPredictions = (userId: string) => {
     staleTime: 1000 * 60 * 5, 
   });
 };
-
-export const usePredictionByFixture = (fixtureId: number) => {
+// Get User Prediction By Fixture
+export const useUserPredictionByFixture = (fixtureId: number) => {
   const { user } = useAuthStore();
 
   return useQuery({
     queryKey: ["prediction", user?.id, fixtureId],
-    queryFn: () => predictionService.getPredictionByUserAndFixture(user!.id, fixtureId),
+    queryFn: () => predictionService.getUserPredictionByFixture(user!.id, fixtureId),
     enabled: !!user?.id && !!fixtureId,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2, 
   });
 };
-
-
-export const useLeaguePredictions = (fixtureId?: number) => {
+// Get League Predictions By Fixture
+export const useGetLeaguePredictionsByFixture = ( fixtureId: number) => {
+  const { user } = useAuthStore();
   const { primaryLeague } = useLeagueStore();
-
   return useQuery({
-    queryKey: ["leaguePredictions", primaryLeague?.id, fixtureId],
-    queryFn: () => predictionService.getLeaguePredictions(Number(primaryLeague!.id), fixtureId),
-    enabled: !!primaryLeague?.id,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    queryKey: ["prediction", user?.id, fixtureId, primaryLeague?.id],
+    queryFn: () => predictionService.getLeaguePredictionsByFixture(fixtureId, primaryLeague!.id),
+    enabled: !!user?.id && !!fixtureId && !!primaryLeague?.id,
+    staleTime: 1000 * 60 * 2, 
   });
 };
 
-export const useLeagueLeaderboard = () => {
-  const { primaryLeague } = useLeagueStore();
 
-  return useQuery({
-    queryKey: ["leaderboard", primaryLeague?.id],
-    queryFn: () => predictionService.getLeagueLeaderboard(Number(primaryLeague!.id)),
-    enabled: !!primaryLeague?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
+
+
 export const useAutoPredictions = () => {
   const { user } = useAuthStore();
   const { primaryLeague } = useLeagueStore();

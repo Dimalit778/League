@@ -42,8 +42,9 @@ export default function SignIn() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-background  px-5"
+      className="flex-1 bg-background"
     >
+      {/* Header */}
       <View className="py-10">
         <Text className="text-4xl text-primary font-bold text-center mb-5">
           Welcome Back
@@ -53,20 +54,15 @@ export default function SignIn() {
           Sign in to your account
         </Text>
       </View>
-      <View className="flex-1 mt-10">
+      {/* Form */}
+      <View className="flex-1 mt-10 px-5">
         <InputField
           control={control}
           name="email"
           placeholder="Email"
           secureTextEntry={false}
           error={errors.email}
-          icon={
-            <EmailIcon
-              width={24}
-              height={24}
-              color={theme === 'dark' ? '#fff' : '#000'}
-            />
-          }
+          icon={<EmailIcon size={24} color={theme} />}
         />
 
         <InputField
@@ -74,13 +70,7 @@ export default function SignIn() {
           name="password"
           placeholder="Password"
           secureTextEntry
-          icon={
-            <LockIcon
-              width={24}
-              height={24}
-              color={theme === 'dark' ? '#fff' : '#000'}
-            />
-          }
+          icon={<LockIcon size={24} color={theme} />}
           error={errors.password}
         />
 

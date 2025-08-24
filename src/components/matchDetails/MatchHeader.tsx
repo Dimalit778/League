@@ -1,0 +1,118 @@
+import { formatTime } from '@/utils/match-utils';
+import footballField from '../../../assets/images/footballField.png';
+
+import { FixturesWithTeams } from '@/types';
+import { dateFormat } from '@/utils/formats';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import {
+  Image,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeftIcon } from '../../../assets/icons';
+
+export const MatchHeader = ({ match }: { match: FixturesWithTeams }) => {
+  const insets = useSafeAreaInsets();
+  return (
+    <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
+      <View style={{ paddingTop: insets.top }}>
+        <View className="p-4">
+          <TouchableOpacity
+            className="absolute top-2 left-4"
+            onPress={() => router.back()}
+          >
+            <ArrowLeftIcon size={30} color={'dark'} />
+          </TouchableOpacity>
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="calendar-outline" size={16} color="#fff" />
+            <Text className="text-white ml-1 text-sm font-medium">
+              {dateFormat(match.kickoff_time)}
+            </Text>
+          </View>
+
+          {match.venue_name && (
+            <View className="flex-row items-center mt-2 justify-center">
+              <Ionicons name="location-outline" size={16} color="#fff" />
+              <Text className="text-white ml-1 text-sm font-bold">
+                {match.venue_name}
+              </Text>
+              {match.venue_city && (
+                <Text className="text-text text-sm">, {match.venue_city}</Text>
+              )}
+            </View>
+          )}
+        </View>
+
+        <View className="p-6">
+          <View className="flex-row items-center ">
+            {/* Home Team */}
+            <TeamCard team={match.home_team} />
+
+            {/* Score */}
+            <View className="mx-6">
+              {match.status === 'scheduled' && (
+                <View className=" rounded-2xl p-4 items-center min-w-[100px]">
+                  <Ionicons name="time-outline" size={24} color="#fff" />
+                  <Text className="text-white text-sm mt-2 text-center">
+                    {formatTime(match.kickoff_time)}
+                  </Text>
+                </View>
+              )}
+              {match.status === 'live' && (
+                <View className="flex-row items-center">
+                  <Text className="text-white text-2xl font-black">
+                    {match.home_score}
+                  </Text>
+                  <Text className="text-white/70 text-2xl mx-2">:</Text>
+                  <Text className="text-white text-2xl font-black">
+                    {match.away_score}
+                  </Text>
+                </View>
+              )}
+              {match.status === 'finished' && (
+                <View className="flex-row items-center border-2 border-gray-500 rounded-lg p-2">
+                  <Text className="text-white text-2xl font-black">
+                    {match.home_score}
+                  </Text>
+                  <Text className="text-white text-2xl mx-2 font-bold">:</Text>
+                  <Text className="text-white text-2xl font-black">
+                    {match.away_score}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            {/* Away Team */}
+            <TeamCard team={match.away_team} />
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
+  );
+};
+const TeamCard = ({
+  team,
+}: {
+  team: FixturesWithTeams['home_team'] | FixturesWithTeams['away_team'];
+}) => {
+  return (
+    <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
+      <View className="relative">
+        <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
+          <Image
+            source={{ uri: team.logo }}
+            className="w-16 h-16"
+            resizeMode="contain"
+          />
+        </View>
+      </View>
+      <Text className="text-white text-base font-bold text-center">
+        {team.name}
+      </Text>
+    </View>
+  );
+};

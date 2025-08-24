@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { generateJoinCode } from "@/services/helpers";
+import { CreateLeagueParams } from "@/types";
 import { Tables } from "@/types/database.types";
-import { CreateLeagueParams } from "@/types/league.types";
 
 
 
@@ -41,17 +41,66 @@ async getMyLeagues(userId: string) {
     logo: item.leagues.competitions.logo
   }));
   
-  console.log('leagues---', JSON.stringify(leagues, null, 2));
   return leagues;
 },
 
-// GET league by id
- async getLeagueById(leagueId: string) {
-      const { data, error } = await supabase.from("leagues").select("*").eq("id", leagueId).single();
-      if (error) throw error;
-      return data;
- },
-// JOIN league
+// CREATE league and member
+async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues">> {
+  
+  const { count, error: countError } = await supabase
+    .from('league_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', params.owner_id);
+
+  if (countError) throw new Error(countError.message);
+  if (count && count >= 3) throw new Error('You can only create/join 3 leagues maximum');
+
+  const joinCode = generateJoinCode();
+
+  // Create league
+  const { data: league, error: leagueError } = await supabase
+    .from('leagues')
+    .insert({
+      name: params. name,
+      owner_id: params.owner_id,
+      join_code: joinCode,
+      logo: params.logo,
+      competition_id: params.competition_id,
+      max_members: params.max_members
+    })
+    .select('id')
+    .single();
+
+  if (leagueError || !league) throw leagueError;
+
+ // Update user leagues to false
+ if(count && count >= 1) {
+   const { error: updateError } = await supabase
+  .from('league_members')
+  .update({ is_primary: false })
+  .eq('league_id', league.id)
+  .eq('user_id', params.owner_id);
+
+  if(updateError) throw new Error(updateError.message);
+}
+
+  const { error: memberError } = await supabase
+    .from('league_members')
+    .insert({
+      league_id: league.id,
+      user_id: params.owner_id,
+      nickname: params.nickname,
+      avatar_url: params.logo,
+      is_primary: true
+    });
+
+  if (memberError) throw memberError;
+
+return league as Tables<"leagues">;
+
+},    
+
+// JOIN league - Edge function
 async joinLeague(userId: string, joinCode: string, nickname: string) {
   const { data, error } = await supabase.rpc('join_league', {
     joining_user_id: userId,  
@@ -63,83 +112,30 @@ async joinLeague(userId: string, joinCode: string, nickname: string) {
   if (error) throw new Error(error.message);
   return data;
 },
-// GET leaderboard
-async getLeagueLeaderboard(leagueId: string) {
-    const { data, error } = await supabase.from("league_members").select("*, predictions('*')")
-    .eq("league_id", leagueId)
 
-
-    console.log('data---', JSON.stringify(data, null, 2));
-  if(error) throw new Error(error.message);
-  return data;
-},
 // FIND league by join code
 async findLeagueByJoinCode(joinCode: string) {
   const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country)").eq("join_code", joinCode).maybeSingle()
   if(error) throw new Error(error.message);
 return data
 },
+
 // UPDATE primary league
 async updatePrimaryLeague(userId: string, leagueId: string) {
-  const { data, error } = await supabase.from("league_members").update({
+  const { error } = await supabase.from("league_members").update({
+    is_primary: false
+  }).eq("user_id", userId);
+  
+  if(error) throw new Error(error.message);
+  
+  // Then set the selected league as primary
+  const { data: primaryLeague, error: primaryLeagueError } = await supabase.from("league_members").update({
     is_primary: true
   }).eq("league_id", leagueId).eq("user_id", userId).single();
-  if(error) throw new Error(error.message);
-  return data;
+
+  if(primaryLeagueError) throw new Error(primaryLeagueError.message);
+  
+  return primaryLeague;
 },
-// CREATE league and member
-async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues">> {
-  
-    const { count, error: countError } = await supabase
-      .from('league_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', params.owner_id);
 
-    if (countError) throw new Error(countError.message);
-    if (count && count >= 3) throw new Error('You can only create/join 3 leagues maximum');
-
-    const joinCode = generateJoinCode();
-
-    // Create league
-    const { data: league, error: leagueError } = await supabase
-      .from('leagues')
-      .insert({
-        name: params. name,
-        owner_id: params.owner_id,
-        join_code: joinCode,
-        logo: params.logo,
-        competition_id: params.competition_id,
-        max_members: params.max_members
-      })
-      .select('id')
-      .single();
-
-    if (leagueError || !league) throw leagueError;
-
-   // Update user leagues to false
-   if(count && count >= 1) {
-     const { error: updateError } = await supabase
-    .from('league_members')
-    .update({ is_primary: false })
-    .eq('league_id', league.id)
-    .eq('user_id', params.owner_id);
-
-    if(updateError) throw new Error(updateError.message);
-}
-
-    const { error: memberError } = await supabase
-      .from('league_members')
-      .insert({
-        league_id: league.id,
-        user_id: params.owner_id,
-        nickname: params.nickname,
-        avatar_url: params.logo,
-        is_primary: true
-      });
-
-    if (memberError) throw memberError;
-
-  return league as Tables<"leagues">;
-  
-},    
 }

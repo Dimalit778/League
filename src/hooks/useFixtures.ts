@@ -1,6 +1,6 @@
 import { fixtureService } from "@/services/fixtureService";
 import { useLeagueStore } from "@/store/LeagueStore";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetFixturesByRound = (round: string) => { 
   const {primaryLeague} = useLeagueStore()
@@ -11,10 +11,11 @@ export const useGetFixturesByRound = (round: string) => {
  
 }
 export const useGetFixtureById = (id: number) => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["fixture", id],
     queryFn: () => fixtureService.getFixtureById(id),
-   
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
  
 }

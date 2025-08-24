@@ -1,11 +1,36 @@
+import { Tables } from "./database.types";
 export type IconProps = {
   color?: string;
   size?: number 
 };
 
-export type LeagueLeaderboardType = {
-  id: string;
+
+
+export type CreateLeagueParams = {
+  name: string;
   nickname: string;
-  avatar_url: string;
-  total_points: number;
+  logo: string;
+  owner_id: string;
+  competition_id: number;
+  max_members: number;
+};
+
+export type LeagueWithCompetition = Tables<'leagues'> & {
+  competitions: Tables<'competitions'>;
+};
+export type MyLeagueType = {
+  is_primary: boolean;
+  id: string;
+  name: string;
+  join_code: string;
+  logo: string;
+  max_members: number;
+  league_members: number;
+  competition_id : number;
+  
+}
+
+export type FixturesWithTeams = Tables<'fixtures'> & {
+  home_team: Tables<'teams'>;
+  away_team: Tables<'teams'>;
 };

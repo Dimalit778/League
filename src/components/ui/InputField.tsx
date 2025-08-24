@@ -1,5 +1,5 @@
-import { Control, Controller, FieldError } from "react-hook-form";
-import { Text, TextInput, View } from "react-native";
+import { Control, Controller, FieldError } from 'react-hook-form';
+import { Text, TextInput, View } from 'react-native';
 
 type InputFieldProps = {
   control: Control<any>;
@@ -8,7 +8,7 @@ type InputFieldProps = {
   secureTextEntry?: boolean;
   error?: FieldError;
   maxLength?: number;
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoCorrect?: boolean;
   icon?: React.ReactNode;
 };
@@ -19,13 +19,13 @@ const InputField = ({
   placeholder,
   secureTextEntry,
   maxLength = 50,
-  autoCapitalize = "none",
+  autoCapitalize = 'none',
   autoCorrect = false,
   error,
   icon,
 }: InputFieldProps) => (
   <View>
-    <View className="bg-surface mt-2 flex-row items-center border border-text rounded-lg px-2 mb-2 py-4">
+    <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 my-2 ">
       <View className="mr-2">{icon}</View>
       <Controller
         control={control}
@@ -35,7 +35,7 @@ const InputField = ({
             placeholder={placeholder}
             placeholderTextColor="#aaa"
             secureTextEntry={secureTextEntry}
-            className="flex-1 text-text"
+            className="flex-1 text-text px-2 py-4"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}

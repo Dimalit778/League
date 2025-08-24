@@ -65,13 +65,7 @@ export default function SignUpScreen() {
           control={control}
           name="fullname"
           placeholder="Full Name"
-          icon={
-            <UserIcon
-              width={24}
-              height={24}
-              color={theme === 'dark' ? '#fff' : '#000'}
-            />
-          }
+          icon={<UserIcon size={24} color={theme} />}
           error={errors.fullname}
         />
 
@@ -79,13 +73,7 @@ export default function SignUpScreen() {
           control={control}
           name="email"
           placeholder="Email"
-          icon={
-            <EmailIcon
-              width={24}
-              height={24}
-              color={theme === 'dark' ? '#fff' : '#000'}
-            />
-          }
+          icon={<EmailIcon size={24} color={theme} />}
           error={errors.email}
         />
         <InputField
@@ -93,13 +81,7 @@ export default function SignUpScreen() {
           name="password"
           placeholder="Password"
           secureTextEntry={!showPassword}
-          icon={
-            <LockIcon
-              width={24}
-              height={24}
-              color={theme === 'dark' ? '#fff' : '#000'}
-            />
-          }
+          icon={<LockIcon size={24} color={theme} />}
           error={errors.password}
         />
 

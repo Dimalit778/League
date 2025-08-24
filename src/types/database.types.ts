@@ -62,13 +62,13 @@ export type Database = {
           away_team_id: number
           competition_id: number
           created_at: string
-          date: string
           home_score: number | null
           home_team_id: number
           id: number
+          kickoff_time: string
           round: string
           season: number
-          status_long: string | null
+          status: string
           updated_at: string
           venue_city: string | null
           venue_name: string | null
@@ -78,13 +78,13 @@ export type Database = {
           away_team_id: number
           competition_id: number
           created_at?: string
-          date: string
           home_score?: number | null
           home_team_id: number
           id: number
+          kickoff_time: string
           round: string
           season: number
-          status_long?: string | null
+          status: string
           updated_at?: string
           venue_city?: string | null
           venue_name?: string | null
@@ -94,13 +94,13 @@ export type Database = {
           away_team_id?: number
           competition_id?: number
           created_at?: string
-          date?: string
           home_score?: number | null
           home_team_id?: number
           id?: number
+          kickoff_time?: string
           round?: string
           season?: number
-          status_long?: string | null
+          status?: string
           updated_at?: string
           venue_city?: string | null
           venue_name?: string | null
@@ -234,10 +234,10 @@ export type Database = {
           id: string
           is_processed: boolean | null
           league_id: string
+          league_member_id: string | null
           points: number | null
           updated_at: string | null
           user_id: string
-          winner: string | null
         }
         Insert: {
           away_score: number
@@ -247,10 +247,10 @@ export type Database = {
           id?: string
           is_processed?: boolean | null
           league_id: string
+          league_member_id?: string | null
           points?: number | null
           updated_at?: string | null
           user_id: string
-          winner?: string | null
         }
         Update: {
           away_score?: number
@@ -260,10 +260,10 @@ export type Database = {
           id?: string
           is_processed?: boolean | null
           league_id?: string
+          league_member_id?: string | null
           points?: number | null
           updated_at?: string | null
           user_id?: string
-          winner?: string | null
         }
         Relationships: [
           {
@@ -278,6 +278,13 @@ export type Database = {
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "league_members"
             referencedColumns: ["id"]
           },
           {
@@ -511,10 +518,6 @@ export type Database = {
           message: string
           success: boolean
         }[]
-      }
-      update_user_primary_league: {
-        Args: { p_league_id: number; p_user_id: string }
-        Returns: undefined
       }
     }
     Enums: {

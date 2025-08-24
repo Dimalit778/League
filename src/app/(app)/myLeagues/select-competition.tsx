@@ -60,8 +60,8 @@ export default function SelectCompetitionScreen() {
               onPress={() => setSelectedCompetition(comp)}
               className={`mb-3 p-4 rounded-xl border-2 ${
                 selectedCompetition?.id === comp.id
-                  ? 'border-blue-500 bg-yellow-100'
-                  : 'border-gray-200 bg-white'
+                  ? 'bg-secondary'
+                  : 'border-border bg-surface'
               }`}
             >
               <View className="flex-row items-center gap-4">
@@ -71,17 +71,29 @@ export default function SelectCompetitionScreen() {
                       comp.flag ||
                       'https://placehold.co/48x48/cccccc/000000?text=NoFlag',
                   }}
-                  className="border border-gray-200 rounded-full"
+                  className="border border-border rounded-full"
                   resizeMode="contain"
                   width={48}
                   height={48}
                 />
                 <View className="flex-1 items-center">
-                  <Text className="text-sm font-bold text-gray-600">
+                  <Text
+                    className={`text-sm font-bold mb-1 ${
+                      selectedCompetition?.id === comp.id
+                        ? 'text-background'
+                        : 'text-textMuted'
+                    }`}
+                  >
                     {comp.country}
                   </Text>
 
-                  <Text className="text-lg text-center font-bold text-gray-900">
+                  <Text
+                    className={`text-xl text-center font-bold ${
+                      selectedCompetition?.id === comp.id
+                        ? 'text-background'
+                        : 'text-textMuted'
+                    }`}
+                  >
                     {comp.name}
                   </Text>
                 </View>
@@ -106,6 +118,7 @@ export default function SelectCompetitionScreen() {
           title="Continue"
           onPress={handleContinue}
           variant="primary"
+          disabled={!selectedCompetition}
           size="lg"
           loading={isLoading}
         />

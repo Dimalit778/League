@@ -1,5 +1,5 @@
 import { leagueService } from "@/services/leagueService";
-import { MyLeagueType } from "@/types/league.types";
+import { MyLeagueType } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
