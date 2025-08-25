@@ -4,7 +4,9 @@ import { TablesUpdate } from "@/types/database.types";
 type UserUpdate = TablesUpdate<"users">;
 
 export const userService = {
-  async getUserProfile(userId: string) {
+  
+
+  async getUser(userId: string) {
     const { data, error } = await supabase
       .from("users")
       .select("*")

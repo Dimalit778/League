@@ -1,12 +1,20 @@
-import { useLeagueStore } from '@/store/LeagueStore';
+import { LoadingOverlay } from '@/components/layout';
+import { useMemberStore } from '@/store/MemberStore';
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
 
 export default function AppLayout() {
-  const { primaryLeague } = useLeagueStore();
+  const { initializeMembers, loading, member } = useMemberStore();
+
+  useEffect(() => {
+    initializeMembers();
+  }, []);
+
+  if (loading) return <LoadingOverlay />;
 
   return (
     <Stack>
-      <Stack.Protected guard={!!primaryLeague}>
+      <Stack.Protected guard={!!member}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
       </Stack.Protected>

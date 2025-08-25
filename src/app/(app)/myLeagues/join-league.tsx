@@ -1,6 +1,6 @@
 import { Button, Image, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
-import { useAuthStore } from '@/store/AuthStore';
+
 import { LeagueWithCompetition } from '@/types';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,7 +17,7 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
-  const { user } = useAuthStore();
+
   const {
     control,
     handleSubmit,
@@ -33,9 +33,7 @@ export default function JoinLeague() {
   );
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
 
-  const { mutateAsync, isPending, isSuccess, isError } = useJoinLeague(
-    user?.id!
-  );
+  const { mutateAsync, isPending, isSuccess, isError } = useJoinLeague();
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 6) {

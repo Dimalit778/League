@@ -11,6 +11,7 @@ type InputFieldProps = {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoCorrect?: boolean;
   icon?: React.ReactNode;
+  clearError?: () => void;
 };
 
 const InputField = ({
@@ -23,6 +24,7 @@ const InputField = ({
   autoCorrect = false,
   error,
   icon,
+  clearError,
 }: InputFieldProps) => (
   <View>
     <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 my-2 ">
@@ -37,7 +39,13 @@ const InputField = ({
             secureTextEntry={secureTextEntry}
             className="flex-1 text-text px-2 py-4"
             onBlur={onBlur}
-            onChangeText={onChange}
+            onChangeText={(text) => {
+              onChange(text);
+              // Clear auth error when user starts typing
+              if (name === 'email' || name === 'password') {
+                clearError?.(); // Optional chaining in case clearError isn't passed
+              }
+            }}
             value={value}
             maxLength={maxLength}
             autoCorrect={autoCorrect}

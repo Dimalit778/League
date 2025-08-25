@@ -1,44 +1,54 @@
 import '../../global.css';
 
 import { SplashScreen } from '@/components/layout';
-import { useAuthStore } from '@/store/AuthStore';
-import { useLeagueStore } from '@/store/LeagueStore';
+import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 import { themes } from '@/styles/color-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 2,
+    },
+  },
+});
+
 export default function RootLayout() {
-  const { user, initializeAuth, loading, error } = useAuthStore();
   const { theme, initializeTheme } = useThemeStore();
-  const { initializeLeagues } = useLeagueStore();
-  const queryClient = new QueryClient();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('initializeAuth');
-    initializeAuth();
     initializeTheme();
-  }, []);
 
-  // Initialize leagues whenever user changes
-  useEffect(() => {
-    if (user) {
-      initializeLeagues(user.id);
-    }
-  }, [user?.id]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session?.user);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   if (loading) {
     return <SplashScreen />;
   }
 
-  const isLoggedIn = !!user;
-
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
       <View style={themes[theme]} className="flex-1">
         <Stack>
           <Stack.Protected guard={isLoggedIn}>

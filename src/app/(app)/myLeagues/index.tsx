@@ -1,16 +1,15 @@
-import { LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
+
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { Button } from '@/components/ui';
 import { useMyLeagues } from '@/hooks/useLeagues';
-import { useAuthStore } from '@/store/AuthStore';
 import { router } from 'expo-router';
 import { FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
-  const { user } = useAuthStore();
-  const { data: leagues, isLoading, error } = useMyLeagues(user?.id!);
+  const { data: leagues, isLoading, error } = useMyLeagues();
 
-  if (error) console.log('error---', error);
+  if (error) return <Error error={error} />;
 
   return (
     <View className="flex-1 bg-background">

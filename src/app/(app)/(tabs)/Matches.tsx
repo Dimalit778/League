@@ -1,20 +1,14 @@
-import LoadingOverlay from '@/components/layout/LoadingOverlay';
+import { Error, LoadingOverlay } from '@/components/layout';
 import MatchList from '@/components/matches/MatchList';
 import RoundsList from '@/components/matches/RoundsList';
 import { useCompetitionRounds } from '@/hooks/useCompetitions';
-import { useLeagueStore } from '@/store/LeagueStore';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 export default function MatchesPage() {
-  const { primaryLeague } = useLeagueStore();
   const [selectedRound, setSelectedRound] = useState<string>('');
 
-  const {
-    data: competition,
-    isLoading,
-    error,
-  } = useCompetitionRounds(primaryLeague?.competition_id!);
+  const { data: competition, isLoading, error } = useCompetitionRounds();
 
   useEffect(() => {
     if (competition?.current_round && !selectedRound) {
@@ -26,7 +20,8 @@ export default function MatchesPage() {
     setSelectedRound(round);
   };
 
-  if (error) console.log('error', error);
+  if (error) return <Error error={error} />;
+
   return (
     <View className="flex-1 bg-background pt-4 pb-25">
       {isLoading && <LoadingOverlay />}
@@ -38,7 +33,12 @@ export default function MatchesPage() {
           handleRoundPress={handleRoundPress}
         />
       </View>
-      {selectedRound && <MatchList selectedRound={selectedRound} />}
+      {selectedRound && (
+        <MatchList
+          selectedRound={selectedRound}
+          competitionId={competition?.id ?? 0}
+        />
+      )}
     </View>
   );
 }

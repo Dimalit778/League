@@ -1,0 +1,920 @@
+// Expo Router + Supabase + Zustand + TanStack Query Development Rules
+// You are an expert developer proficient in TypeScript, React Native, Expo Router, Supabase, Zustand, TanStack Query (React Query), NativeWind, and mobile UI development.
+// Tech Stack Overview
+
+// Framework: React Native with Expo (latest SDK)
+// Routing: Expo Router with file-based routing
+// Styling: NativeWind (Tailwind CSS for React Native)
+// Backend: Supabase (Auth, Database, Storage)
+// State Management: Zustand for global state
+// Data Fetching: TanStack Query for server state
+// Validation: Zod for schema validation
+// Navigation: Expo Router with protected routes
+
+// Code Style and Structure
+
+// Write concise, technical TypeScript code with accurate examples
+// Use functional and declarative programming patterns; avoid classes
+// Prefer iteration and modularization over code duplication
+// Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+// Structure files: exported component, subcomponents, helpers, static content, types
+// Use lowercase with dashes for directories (e.g., components/auth-wizard)
+// Favor named exports for components and functions
+
+// TypeScript and Zod Usage
+
+// Use TypeScript for all code; prefer interfaces over types for object shapes
+// Utilize Zod for schema validation and type inference
+// Avoid enums; use literal types or const objects instead
+// Use functional components with TypeScript interfaces for props
+// Use strict mode in TypeScript for better type safety
+
+// Expo Router Auth Flow with Stack.Protected
+// Modern Expo Router App Structure
+// app/
+// ├── \_layout.tsx # Root layout with providers
+// ├── (auth)/ # Public auth routes
+// │ ├── \_layout.tsx
+// │ ├── login.tsx
+// │ ├── register.tsx
+// │ └── forgot-password.tsx
+// ├── (protected)/ # Protected routes group
+// │ ├── \_layout.tsx # Uses Stack.Protected
+// │ ├── (tabs)/
+// │ │ ├── \_layout.tsx
+// │ │ ├── index.tsx
+// │ │ ├── profile.tsx
+// │ │ └── settings.tsx
+// │ └── [id].tsx
+// └── +not-found.tsx
+// Stack.Protected Implementation Pattern
+// Always use Expo Router's built-in Stack.Protected component for auth guards:
+// typescript// app/\_layout.tsx - Root layout with providers
+// import { Stack } from 'expo-router'
+// import { AuthProvider } from '@/providers/auth-provider'
+// import { QueryProvider } from '@/providers/query-provider'
+
+// export default function RootLayout() {
+// return (
+// <AuthProvider>
+// <QueryProvider>
+// <Stack screenOptions={{ headerShown: false }} />
+// </QueryProvider>
+// </AuthProvider>
+// )
+// }
+
+// // app/(protected)/\_layout.tsx - Protected routes with Stack.Protected
+// import { Stack } from 'expo-router'
+// import { useAuthStore } from '@/stores/auth-store'
+
+// export default function ProtectedLayout() {
+// const { user, isInitialized } = useAuthStore()
+
+// return (
+// <Stack.Protected
+// fallback="/login"
+// condition={() => isInitialized && !!user}
+// screenOptions={{ headerShown: false }}
+// />
+// )
+// }
+// Auth Store with Zustand + Supabase Session Management
+// Create a centralized auth store that manages Supabase sessions:
+// typescript// stores/auth-store.ts
+// import { create } from 'zustand'
+// import { subscribeWithSelector } from 'zustand/middleware'
+// import type { User, Session } from '@supabase/supabase-js'
+// import { supabase } from '@/lib/supabase'
+// import { router } from 'expo-router'
+
+// interface AuthState {
+// user: User | null
+// session: Session | null
+// isInitialized: boolean
+// isLoading: boolean
+// }
+
+// interface AuthActions {
+// signIn: (email: string, password: string) => Promise<{ error?: string }>
+// signUp: (email: string, password: string) => Promise<{ error?: string }>
+// signOut: () => Promise<void>
+// initialize: () => Promise<void>
+// setSession: (session: Session | null) => void
+// clearAuth: () => void
+// }
+
+// export const useAuthStore = create<AuthState & AuthActions>()(
+// subscribeWithSelector((set, get) => ({
+// // State
+// user: null,
+// session: null,
+// isInitialized: false,
+// isLoading: false,
+
+//     // Actions
+//     signIn: async (email: string, password: string) => {
+//       set({ isLoading: true })
+//       try {
+//         const { data, error } = await supabase.auth.signInWithPassword({
+//           email,
+//           password,
+//         })
+
+//         if (error) {
+//           return { error: error.message }
+//         }
+
+//         // Session will be handled by the auth listener
+//         router.replace('/(protected)')
+//         return {}
+//       } finally {
+//         set({ isLoading: false })
+//       }
+//     },
+
+//     signUp: async (email: string, password: string) => {
+//       set({ isLoading: true })
+//       try {
+//         const { data, error } = await supabase.auth.signUp({
+//           email,
+//           password,
+//         })
+
+//         if (error) {
+//           return { error: error.message }
+//         }
+
+//         return {}
+//       } finally {
+//         set({ isLoading: false })
+//       }
+//     },
+
+//     signOut: async () => {
+//       set({ isLoading: true })
+//       try {
+//         await supabase.auth.signOut()
+//         router.replace('/login')
+//       } finally {
+//         set({ isLoading: false })
+//       }
+//     },
+
+//     setSession: (session: Session | null) => {
+//       set({
+//         session,
+//         user: session?.user ?? null,
+//         isInitialized: true,
+//       })
+//     },
+
+//     clearAuth: () => {
+//       set({
+//         user: null,
+//         session: null,
+//         isInitialized: true,
+//       })
+//     },
+
+//     initialize: async () => {
+//       try {
+//         const { data: { session } } = await supabase.auth.getSession()
+//         get().setSession(session)
+//       } catch (error) {
+//         console.error('Auth initialization error:', error)
+//         get().clearAuth()
+//       }
+//     },
+
+// }))
+// )
+// Auth Provider with Supabase Session Listener
+// Create a provider that initializes auth and listens for session changes:
+// typescript// providers/auth-provider.tsx
+// import { useEffect } from 'react'
+// import { useAuthStore } from '@/stores/auth-store'
+// import { supabase } from '@/lib/supabase'
+
+// interface AuthProviderProps {
+// children: React.ReactNode
+// }
+
+// export function AuthProvider({ children }: AuthProviderProps) {
+// const { initialize, setSession, clearAuth } = useAuthStore()
+
+// useEffect(() => {
+// // Initialize auth state
+// initialize()
+
+//     // Listen for auth state changes
+//     const { data: { subscription } } = supabase.auth.onAuthStateChange(
+//       (event, session) => {
+//         console.log('Auth event:', event, session?.user?.id)
+
+//         switch (event) {
+//           case 'SIGNED_IN':
+//           case 'TOKEN_REFRESHED':
+//             setSession(session)
+//             break
+//           case 'SIGNED_OUT':
+//             clearAuth()
+//             break
+//           case 'PASSWORD_RECOVERY':
+//             // Handle password recovery
+//             break
+//         }
+//       }
+//     )
+
+//     return () => {
+//       subscription.unsubscribe()
+//     }
+
+// }, [])
+
+// return <>{children}</>
+// }
+// Auth Hook for Components
+// Provide a clean interface for components to access auth state:
+// typescript// hooks/use-auth.ts
+// import { useAuthStore } from '@/stores/auth-store'
+
+// export function useAuth() {
+// return useAuthStore((state) => ({
+// user: state.user,
+// session: state.session,
+// isInitialized: state.isInitialized,
+// isLoading: state.isLoading,
+// signIn: state.signIn,
+// signUp: state.signUp,
+// signOut: state.signOut,
+// isAuthenticated: !!state.user,
+// }))
+// }
+
+// // For components that only need user data
+// export function useUser() {
+// return useAuthStore((state) => state.user)
+// }
+
+// // For components that only need auth status
+// export function useAuthStatus() {
+// return useAuthStore((state) => ({
+// isAuthenticated: !!state.user,
+// isInitialized: state.isInitialized,
+// isLoading: state.isLoading,
+// }))
+// }
+// Supabase Configuration
+// Configure Supabase client with proper auth persistence:
+// typescript// lib/supabase.ts
+// import 'react-native-url-polyfill/auto'
+// import AsyncStorage from '@react-native-async-storage/async-storage'
+// import { createClient } from '@supabase/supabase-js'
+// import type { Database } from '@/types/database'
+
+// const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!
+// const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
+
+// export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+// auth: {
+// storage: AsyncStorage,
+// autoRefreshToken: true,
+// persistSession: true,
+// detectSessionInUrl: false,
+// },
+// })
+
+// // Helper functions for auth operations
+// export const authHelpers = {
+// getCurrentUser: () => supabase.auth.getUser(),
+// getCurrentSession: () => supabase.auth.getSession(),
+// refreshSession: () => supabase.auth.refreshSession(),
+// }
+// Theme Provider Integration
+// typescript// providers/theme-provider.tsx
+// import { useEffect } from 'react'
+// import { useThemeStore } from '@/stores/theme-store'
+
+// interface ThemeProviderProps {
+// children: React.ReactNode
+// }
+
+// export function ThemeProvider({ children }: ThemeProviderProps) {
+// const { initializeTheme } = useThemeStore()
+
+// useEffect(() => {
+// // Initialize theme on app start
+// initializeTheme()
+// }, [])
+
+// return <>{children}</>
+// }
+
+// // App root setup
+// // app/\_layout.tsx
+// import { ThemeProvider } from '@/providers/theme-provider'
+// import { AuthProvider } from '@/providers/auth-provider'
+// import '@/styles/global.css'
+
+// export default function RootLayout() {
+// return (
+// <ThemeProvider>
+// <AuthProvider>
+// <QueryProvider>
+// <Stack screenOptions={{ headerShown: false }} />
+// </QueryProvider>
+// </AuthProvider>
+// </ThemeProvider>
+// )
+// }
+// Theme Toggle Component
+// typescript// components/ui/theme-toggle.tsx
+// import { TouchableOpacity } from 'react-native'
+// import { useThemeStore } from '@/stores/theme-store'
+// import { MoonIcon, SunIcon } from 'lucide-react-native'
+
+// export function ThemeToggle() {
+// const { theme, toggleTheme } = useThemeStore()
+
+// return (
+// <TouchableOpacity
+//       onPress={toggleTheme}
+//       className="p-2 rounded-lg bg-surface border border-border"
+//     >
+// {theme === 'dark' ? (
+// <SunIcon size={20} className="text-text" />
+// ) : (
+// <MoonIcon size={20} className="text-text" />
+// )}
+// </TouchableOpacity>
+// )
+// }
+// Updated Auth Components with Proper Theming
+// typescript// components/auth/login-form.tsx
+// import { useState } from 'react'
+// import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from 'react-native'
+// import { Link } from 'expo-router'
+// import { useAuth } from '@/hooks/use-auth'
+
+// export function LoginForm() {
+// const [email, setEmail] = useState('')
+// const [password, setPassword] = useState('')
+// const { signIn, isLoading } = useAuth()
+
+// const handleSignIn = async () => {
+// if (!email || !password) {
+// Alert.alert('Error', 'Please fill in all fields')
+// return
+// }
+
+//     const { error } = await signIn(email, password)
+
+//     if (error) {
+//       Alert.alert('Sign In Error', error)
+//     }
+
+// }
+
+// return (
+// <SafeAreaView className="flex-1 bg-background">
+// <View className="flex-1 justify-center px-6">
+// <Text className="text-2xl font-bold text-center mb-8 text-text">
+// Welcome Back
+// </Text>
+
+//         <TextInput
+//           className="border border-border rounded-lg px-4 py-3 mb-4 text-text bg-surface"
+//           placeholder="Email"
+//           placeholderTextColor="var(--color-text-muted)"
+//           value={email}
+//           onChangeText={setEmail}
+//           autoCapitalize="none"
+//           keyboardType="email-address"
+//         />
+
+//         <TextInput
+//           className="border border-border rounded-lg px-4 py-3 mb-6 text-text bg-surface"
+//           placeholder="Password"
+//           placeholderTextColor="var(--color-text-muted)"
+//           value={password}
+//           onChangeText={setPassword}
+//           secureTextEntry
+//         />
+
+//         <TouchableOpacity
+//           className={`bg-primary rounded-lg py-3 items-center ${
+//             isLoading ? 'opacity-50' : 'active:opacity-80'
+//           }`}
+//           onPress={handleSignIn}
+//           disabled={isLoading}
+//         >
+//           <Text className="text-white font-semibold text-lg">
+//             {isLoading ? 'Signing In...' : 'Sign In'}
+//           </Text>
+//         </TouchableOpacity>
+
+//         <Link
+//           href="/register"
+//           className="text-primary text-center mt-4 underline"
+//         >
+//           Don't have an account? Sign up
+//         </Link>
+//       </View>
+//     </SafeAreaView>
+
+// )
+// }
+// Auth Route Pages
+// Implement auth pages that use the components:
+// typescript// app/(auth)/login.tsx
+// import { LoginForm } from '@/components/auth/login-form'
+
+// export default function LoginScreen() {
+// return <LoginForm />
+// }
+
+// // app/(auth)/register.tsx
+// import { RegisterForm } from '@/components/auth/register-form'
+
+// export default function RegisterScreen() {
+// return <RegisterForm />
+// }
+
+// // app/(auth)/\_layout.tsx
+// import { Stack } from 'expo-router'
+// import { useAuth } from '@/hooks/use-auth'
+// import { Redirect } from 'expo-router'
+
+// export default function AuthLayout() {
+// const { isAuthenticated, isInitialized } = useAuth()
+
+// // Redirect to protected routes if already authenticated
+// if (isInitialized && isAuthenticated) {
+// return <Redirect href="/(protected)" />
+// }
+
+// return (
+// <Stack
+// screenOptions={{
+//         headerShown: false,
+//       }}
+// />
+// )
+// }
+// Protected Route Usage
+// Example of using auth in protected routes:
+// typescript// app/(protected)/(tabs)/profile.tsx
+// import { View, Text, TouchableOpacity } from 'react-native'
+// import { useAuth } from '@/hooks/use-auth'
+
+// export default function ProfileScreen() {
+// const { user, signOut } = useAuth()
+
+// return (
+// <View className="flex-1 p-6">
+// <Text className="text-xl font-bold mb-4">Profile</Text>
+// <Text className="mb-2">Email: {user?.email}</Text>
+// <Text className="mb-6">ID: {user?.id}</Text>
+
+//       <TouchableOpacity
+//         className="bg-red-600 rounded-lg py-3 items-center"
+//         onPress={signOut}
+//       >
+//         <Text className="text-white font-semibold">Sign Out</Text>
+//       </TouchableOpacity>
+//     </View>
+
+// )
+// }
+
+// // app/(protected)/(tabs)/\_layout.tsx
+// import { Tabs } from 'expo-router'
+// import { useUser } from '@/hooks/use-auth'
+
+// export default function TabsLayout() {
+// const user = useUser()
+
+// return (
+// <Tabs
+// screenOptions={{
+//         headerShown: true,
+//         headerTitle: user?.email || 'User',
+//       }} >
+// <Tabs.Screen
+// name="index"
+// options={{
+//           title: 'Home',
+//           tabBarIcon: ({ color }) => <HomeIcon color={color} />,
+//         }}
+// />
+// <Tabs.Screen
+// name="profile"
+// options={{
+//           title: 'Profile',
+//           tabBarIcon: ({ color }) => <UserIcon color={color} />,
+//         }}
+// />
+// </Tabs>
+// )
+// }
+// Auth Flow Key Principles
+
+// 1. Session Management Priority
+
+// Zustand auth store manages the current session state
+// Supabase handles session persistence and refresh automatically
+// AuthProvider listens to Supabase auth changes and updates store
+// Stack.Protected uses store state for route protection
+
+// 2. Navigation Flow
+
+// Unauthenticated: (auth) routes → login/register
+// Authenticated: (protected) routes → app content
+// Auto-redirect: Auth state changes trigger automatic navigation
+// Deep links: Protected routes redirect to login, then back after auth
+
+// 3. Error Handling
+
+// Network errors during auth operations
+// Session expiry and refresh failures
+// Invalid credentials and validation errors
+// Offline auth state management
+
+// 4. State Synchronization
+
+// Supabase session ↔ Zustand store ↔ UI components
+// TanStack Query cache invalidation on auth changes
+// AsyncStorage persistence for offline capability
+// Real-time session monitoring
+
+// State Management with Zustand
+// Auth store is the single source of truth for authentication state. Other stores handle domain-specific state:
+// typescript// stores/user-preferences-store.ts
+// interface UserPreferencesState {
+// theme: 'light' | 'dark' | 'system'
+// notifications: boolean
+// language: string
+// setTheme: (theme: 'light' | 'dark' | 'system') => void
+// toggleNotifications: () => void
+// setLanguage: (language: string) => void
+// }
+
+// export const useUserPreferences = create<UserPreferencesState>((set) => ({
+// theme: 'system',
+// notifications: true,
+// language: 'en',
+// setTheme: (theme) => set({ theme }),
+// toggleNotifications: () => set((state) => ({ notifications: !state.notifications })),
+// setLanguage: (language) => set({ language }),
+// }))
+// Data Fetching with TanStack Query
+
+// Use TanStack Query for all server state management
+// Implement proper query keys with factories
+// Use mutations for data modifications with optimistic updates
+// Handle loading, error, and success states consistently
+// Implement proper cache invalidation strategies
+// Use useInfiniteQuery for paginated data
+
+// typescript// hooks/queries/use-posts.ts
+// export const postQueryKeys = {
+// all: ['posts'] as const,
+// lists: () => [...postQueryKeys.all, 'list'] as const,
+// list: (filters: PostFilters) => [...postQueryKeys.lists(), { filters }] as const,
+// details: () => [...postQueryKeys.all, 'detail'] as const,
+// detail: (id: string) => [...postQueryKeys.details(), id] as const,
+// }
+
+// export function usePosts(filters: PostFilters) {
+// return useQuery({
+// queryKey: postQueryKeys.list(filters),
+// queryFn: () => fetchPosts(filters),
+// })
+// }
+// UI and Styling with NativeWind + CSS Variables Theme System
+// Tailwind Configuration with CSS Variables
+// javascript// tailwind.config.js
+// /** @type {import('tailwindcss').Config} \*/
+// module.exports = {
+// content: ["./src/**/\*.{js,ts,tsx}"],
+// presets: [require("nativewind/preset")],
+// theme: {
+// extend: {
+// colors: {
+// primary: "var(--color-primary)",
+// secondary: "var(--color-secondary)",
+// background: "var(--color-background)",
+// surface: "var(--color-surface)",
+// border: "var(--color-border)",
+// text: "var(--color-text)",
+// textMuted: "var(--color-text-muted)",
+// error: "var(--color-error)",
+// },
+// },
+// },
+// plugins: [],
+// };
+// Theme Variables Definition
+// typescript// styles/themes.ts
+// import { vars } from "nativewind";
+
+// export const themes = {
+// light: vars({
+// "--color-primary": "#f97316",
+// "--color-secondary": "#3b82f6",
+// "--color-background": "#ffffff",
+// "--color-surface": "#f3f4f6",
+// "--color-border": "#e5e7eb",
+// "--color-text": "#111827",
+// "--color-text-muted": "#6b7280",
+// "--color-error": "#ef4444",
+// }),
+// dark: vars({
+// "--color-primary": "#fb923c",
+// "--color-secondary": "#60a5fa",
+// "--color-background": "#0f172a",
+// "--color-surface": "#1e293b",
+// "--color-border": "#334155",
+// "--color-text": "#f1f5f9",
+// "--color-text-muted": "#94a3b8",
+// "--color-error": "#f87171",
+// }),
+// };
+// Global CSS Setup
+// css/_ global.css _/
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+// Theme Store with NativeWind Integration
+// typescript// stores/theme-store.ts
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { colorScheme } from 'nativewind';
+// import { create } from "zustand";
+// import { createJSONStorage, persist } from "zustand/middleware";
+
+// interface ThemeState {
+// theme: 'light' | 'dark';
+// isDark: boolean;
+// setTheme: (theme: 'light' | 'dark') => void;
+// toggleTheme: () => void;
+// initializeTheme: () => Promise<void>;
+// }
+
+// export const useThemeStore = create<ThemeState>()(
+// persist(
+// (set, get) => ({
+// theme: 'dark',
+
+//       // Computed property for convenience
+//       get isDark() {
+//         return get().theme === 'dark';
+//       },
+
+//       setTheme: (theme: 'light' | 'dark') => {
+//         // Update NativeWind immediately
+//         colorScheme.set(theme);
+
+//         // Update store
+//         set({ theme });
+//       },
+
+//       toggleTheme: () => {
+//         const currentTheme = get().theme;
+//         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+//         get().setTheme(newTheme);
+//       },
+
+//       initializeTheme: async () => {
+//         try {
+//           // Get saved theme from persistence
+//           const savedData = await AsyncStorage.getItem('theme-storage');
+
+//           let themeToUse: 'light' | 'dark' = 'dark';
+
+//           if (savedData) {
+//             const parsed = JSON.parse(savedData);
+//             themeToUse = parsed.state?.theme || 'dark';
+//           }
+
+//           // Apply theme to NativeWind
+//           colorScheme.set(themeToUse);
+
+//           // Update store
+//           set({ theme: themeToUse });
+
+//         } catch (error) {
+//           console.error('Failed to initialize theme:', error);
+//           colorScheme.set('dark');
+//           set({ theme: 'dark' });
+//         }
+//       },
+//     }),
+//     {
+//       name: 'theme-storage',
+//       storage: createJSONStorage(() => AsyncStorage),
+//     }
+
+// )
+// );
+// NativeWind Styling Patterns
+// Always use semantic color classes that automatically adapt to theme:
+// typescript// ✅ CORRECT: Use semantic colors that adapt to theme
+// <SafeAreaView className="flex-1 bg-background">
+// <View className="p-4 bg-surface border-b border-border">
+// <Text className="text-text text-lg font-semibold">
+// Title
+// </Text>
+// <Text className="text-textMuted text-sm">
+// Description
+// </Text>
+// </View>
+
+//   <TouchableOpacity className="bg-primary px-4 py-3 rounded-lg mx-4 mt-4">
+//     <Text className="text-white text-center font-medium">
+//       Primary Button
+//     </Text>
+//   </TouchableOpacity>
+  
+//   <TouchableOpacity className="bg-surface border border-border px-4 py-3 rounded-lg mx-4 mt-2">
+//     <Text className="text-text text-center font-medium">
+//       Secondary Button
+//     </Text>
+//   </TouchableOpacity>
+// </SafeAreaView>
+
+// // ❌ AVOID: Hard-coded colors that don't adapt
+// <View className="bg-white dark:bg-gray-900"> // Don't use this pattern
+// Component Examples with Theme Integration
+// typescript// components/ui/button.tsx
+// import { TouchableOpacity, Text, type TouchableOpacityProps } from 'react-native'
+// import { cn } from '@/lib/utils'
+
+// interface ButtonProps extends TouchableOpacityProps {
+// variant?: 'primary' | 'secondary' | 'outline'
+// size?: 'sm' | 'md' | 'lg'
+// children: React.ReactNode
+// }
+
+// export function Button({ variant = 'primary', size = 'md', className, children, ...props }: ButtonProps) {
+// return (
+// <TouchableOpacity
+// className={cn(
+// 'items-center justify-center rounded-lg',
+// {
+// 'bg-primary active:opacity-80': variant === 'primary',
+// 'bg-surface active:opacity-80': variant === 'secondary',
+// 'border border-border bg-transparent active:bg-surface': variant === 'outline',
+// },
+// {
+// 'px-3 py-2': size === 'sm',
+// 'px-4 py-3': size === 'md',
+// 'px-6 py-4': size === 'lg',
+// },
+// className
+// )}
+// {...props} >
+// <Text
+// className={cn(
+// 'font-medium',
+// {
+// 'text-white': variant === 'primary',
+// 'text-text': variant === 'secondary' || variant === 'outline',
+// },
+// {
+// 'text-sm': size === 'sm',
+// 'text-base': size === 'md',
+// 'text-lg': size === 'lg',
+// }
+// )} >
+// {children}
+// </Text>
+// </TouchableOpacity>
+// )
+// }
+
+// // components/ui/card.tsx
+// interface CardProps {
+// children: React.ReactNode
+// className?: string
+// }
+
+// export function Card({ children, className }: CardProps) {
+// return (
+// <View className={cn('bg-surface border border-border rounded-lg p-4', className)}>
+// {children}
+// </View>
+// )
+// }
+// NativeWind Styling Rules
+
+// Always use semantic color variables: bg-background, text-text, border-border
+// Never use dark: variants: The CSS variables handle theme switching automatically
+// Use consistent spacing: Follow 4px grid (p-1, p-2, p-4, p-6, etc.)
+// Safe area handling: Use SafeAreaView with className="flex-1 bg-background"
+// Interactive states: Use active:opacity-80 for touch feedback
+// Border consistency: Use border-border for all borders
+
+// Error Handling and Validation
+
+// Use Zod schemas for API response validation
+// Implement proper error boundaries with react-error-boundary
+// Handle async operations with proper try/catch blocks
+// Use early returns for error conditions
+// Implement user-friendly error messages
+// Log errors appropriately for debugging
+
+// typescript// schemas/post-schema.ts
+// export const PostSchema = z.object({
+// id: z.string().uuid(),
+// title: z.string().min(1),
+// content: z.string(),
+// author_id: z.string().uuid(),
+// created_at: z.string().datetime(),
+// updated_at: z.string().datetime(),
+// })
+
+// export type Post = z.infer<typeof PostSchema>
+// Performance Optimization
+
+// Use React.memo for expensive components
+// Implement proper useMemo and useCallback for optimization
+// Use react-native-fast-image for optimized image loading
+// Implement lazy loading with React.Suspense
+// Profile with Flipper and React DevTools
+// Use getItemLayout for FlatList performance
+// Minimize bundle size with proper tree shaking
+
+// Security Best Practices
+
+// Never store sensitive data in AsyncStorage
+// Use Expo SecureStore for sensitive information
+// Implement proper input sanitization
+// Use HTTPS for all API calls
+// Implement proper authentication checks
+// Follow Supabase security best practices with RLS
+
+// File Structure Convention
+// app/
+// ├── (auth)/
+// │ ├── \_layout.tsx
+// │ ├── login.tsx
+// │ └── register.tsx
+// ├── (protected)/
+// │ ├── \_layout.tsx
+// │ ├── (tabs)/
+// │ │ ├── \_layout.tsx
+// │ │ ├── index.tsx
+// │ │ └── profile.tsx
+// │ └── settings.tsx
+// ├── \_layout.tsx
+// └── +not-found.tsx
+
+// components/
+// ├── ui/
+// │ ├── button.tsx
+// │ ├── input.tsx
+// │ └── loading.tsx
+// └── features/
+// ├── auth/
+// └── posts/
+
+// hooks/
+// ├── queries/
+// │ ├── use-posts.ts
+// │ └── use-profile.ts
+// └── use-auth.ts
+
+// lib/
+// ├── supabase.ts
+// ├── query-client.ts
+// └── utils.ts
+
+// stores/
+// ├── user-preferences.ts
+// └── app-state.ts
+
+// types/
+// ├── database.ts
+// └── global.ts
+// Key Conventions
+
+// Use Expo Router's latest file-based routing conventions
+// Implement proper loading and error states for all async operations
+// Use TypeScript strict mode and proper type inference
+// Follow React Query best practices for cache management
+// Implement proper offline support where applicable
+// Use proper safe area handling for different devices
+// Test on both iOS and Android platforms
+// Follow Expo's best practices for app store deployment
+
+// Testing Guidelines
+
+// Use Jest and React Native Testing Library for unit tests
+// Test custom hooks with @testing-library/react-hooks
+// Mock Supabase and TanStack Query in tests
+// Write integration tests for critical user flows
+// Use Expo's testing tools for E2E testing
+
+// Remember to always follow the latest Expo documentation and best practices, and ensure your code is production-ready with proper error handling and performance optimization.

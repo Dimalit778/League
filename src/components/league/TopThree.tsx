@@ -1,15 +1,6 @@
 import { Text, View } from 'react-native';
 
-export default function TopThree({
-  topMembers,
-}: {
-  topMembers: {
-    nickname: string;
-    avatar_url: string;
-    total_points: number;
-    index: number;
-  }[];
-}) {
+export default function TopThree({ topMembers }: { topMembers: any }) {
   const getInitials = (nickname: string) => {
     return nickname
       .split(' ')

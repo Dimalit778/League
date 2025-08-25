@@ -1,8 +1,6 @@
 import LoadingOverlay from '@/components/layout/LoadingOverlay';
 import { Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/hooks/useLeagues';
-import { useAuthStore } from '@/store/AuthStore';
-import { useLeagueStore } from '@/store/LeagueStore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -29,9 +27,7 @@ const schema = yup.object().shape({
 
 export default function EnterLeagueDetailsScreen() {
   const { competitionId, leagueLogo } = useLocalSearchParams();
-  const { user } = useAuthStore();
-  const createLeagueMutation = useCreateLeague(user?.id!);
-  const { initializeLeagues } = useLeagueStore();
+  const createLeagueMutation = useCreateLeague();
 
   const {
     control,
@@ -58,11 +54,8 @@ export default function EnterLeagueDetailsScreen() {
         competition_id: Number(competitionId),
         max_members: membersCount || 6,
         nickname: data.nickname,
-        logo: leagueLogo as string,
-        owner_id: user?.id!,
       });
       if (leagueData) {
-        await initializeLeagues(user?.id!);
         router.push({
           pathname: '/(app)/myLeagues/league-created',
           params: { leagueId: leagueData.id },

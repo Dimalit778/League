@@ -1,5 +1,7 @@
 import ThemeToggle from '@/components/ThemeToggle';
-import { useAuthStore } from '@/store/AuthStore';
+
+import { useGetUser } from '@/hooks/useUsers';
+import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
 import { useState } from 'react';
 import {
@@ -15,11 +17,11 @@ import {
 } from 'react-native';
 
 export default function Profile() {
-  const { user, logout } = useAuthStore();
+  const { data: user, isLoading } = useGetUser();
 
   const { theme } = useThemeStore();
 
-  const loading = false;
+  const { signOut, isLoading: isLoadingAuth, isError } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState(user?.full_name || '');
 
@@ -33,10 +35,11 @@ export default function Profile() {
         text: 'Sign Out',
         style: 'destructive',
         onPress: async () => {
-          const result = await logout();
-          // if (!result.success) {
-          //   Alert.alert("Error", result.error || "Failed to sign out");
-          // }
+          const result = await signOut();
+
+          if (isError) {
+            Alert.alert('Error', 'Failed to sign out');
+          }
         },
       },
     ]);
@@ -50,7 +53,7 @@ export default function Profile() {
 
   // --- Save profile ---
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6366F1" />
@@ -181,7 +184,7 @@ export default function Profile() {
           <TouchableOpacity
             onPress={handleSignOut}
             className="bg-primary rounded-xl border border-border shadow-sm p-4 mb-4 justify-center items-center"
-            disabled={loading}
+            disabled={isLoadingAuth}
           >
             <Text className="text-text text-base font-bold">Sign Out</Text>
           </TouchableOpacity>

@@ -1,12 +1,18 @@
 import { Button, InputField } from '@/components/ui';
 
-import { useAuthStore } from '@/store/AuthStore';
+import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import { EmailIcon, LockIcon, UserIcon } from '../../../assets/icons';
 
@@ -23,7 +29,7 @@ const schema = yup.object().shape({
 });
 
 export default function SignUpScreen() {
-  const { signUp, loading } = useAuthStore();
+  const { signUp, isLoading, errorMessage } = useAuth();
   const { theme } = useThemeStore();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -36,13 +42,18 @@ export default function SignUpScreen() {
   });
 
   const onSubmit = async (data: any) => {
-    const { error } = await signUp(
-      data.email.trim(),
-      data.password,
-      data.fullname
-    );
-    if (error) {
-      console.log(error);
+    try {
+      const result = await signUp(
+        data.email.trim(),
+        data.password,
+        data.fullname
+      );
+
+      if (!result.success) {
+        Alert.alert('Error', result.error || 'Failed to sign up');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', errorMessage || 'An unexpected error occurred');
     }
   };
   const handleGoogleSignIn = async () => {};
@@ -88,8 +99,8 @@ export default function SignUpScreen() {
         <Button
           title="Sign Up"
           onPress={handleSubmit(onSubmit)}
-          loading={loading}
-          disabled={!isValid || loading}
+          loading={isLoading}
+          disabled={!isValid || isLoading}
           variant="secondary"
           size="lg"
         />
@@ -101,7 +112,7 @@ export default function SignUpScreen() {
         <Button
           title="Continue with Google"
           onPress={() => {}}
-          loading={loading}
+          loading={isLoading}
           variant="primary"
           size="md"
         />

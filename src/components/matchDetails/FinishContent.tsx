@@ -3,8 +3,6 @@ import { FixturesWithTeams } from '@/types';
 import { FlatList, Text, View } from 'react-native';
 import { LoadingOverlay } from '../layout';
 
-import { useAuthStore } from '@/store/AuthStore';
-
 type PredictionLeaderboardType = {
   id: string;
   user_id: string;
@@ -21,13 +19,8 @@ type PredictionLeaderboardType = {
 };
 
 const FinishContent = ({ match }: { match: FixturesWithTeams }) => {
-  console.log('FinishContent');
   const date = new Date();
-  console.log('date', date.toISOString());
-  console.log('match', match.kickoff_time);
-  console.log(date.toISOString() > match.kickoff_time);
-  console.log(date.toISOString() < match.kickoff_time);
-  const { user } = useAuthStore();
+
   const {
     data: leaguePredictions,
     isLoading: leaguePredictionsLoading,
@@ -62,7 +55,7 @@ const FinishContent = ({ match }: { match: FixturesWithTeams }) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ gap: 10 }}
         renderItem={({ item, index }) => (
-          <Card item={item} index={index + 1} userId={user?.id!} />
+          <Card item={item} index={index + 1} userId={item.user_id} />
         )}
       />
     </View>

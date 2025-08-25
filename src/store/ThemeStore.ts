@@ -16,16 +16,12 @@ export const useThemeStore = create<ThemeState>()(
     (set, get) => ({
       theme: 'dark',
       
-      // Computed property for convenience
       get isDark() {
         return get().theme === 'dark';
       },
 
       setTheme: (theme: 'light' | 'dark') => {
-        // Update NativeWind immediately
         colorScheme.set(theme);
-        
-        // Update store
         set({ theme });
       },
 
@@ -37,20 +33,15 @@ export const useThemeStore = create<ThemeState>()(
 
       initializeTheme: async () => {
         try {
-          // Get saved theme from persistence
           const savedData = await AsyncStorage.getItem('theme-storage');
           
           let themeToUse: 'light' | 'dark' = 'dark';
-          
           if (savedData) {
             const parsed = JSON.parse(savedData);
             themeToUse = parsed.state?.theme || 'dark';
           }
-          
-          // Apply theme to NativeWind
           colorScheme.set(themeToUse);
-          
-          // Update store
+
           set({ theme: themeToUse });
           
         } catch (error) {

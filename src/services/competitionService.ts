@@ -6,26 +6,25 @@ interface RoundsData {
     total_rounds: number
   }
 export const competitionService = {
+  
     async getCompetitions() {
         const { data, error } = await supabase.from("competitions").select("*");
         if (error)  throw new Error(error.message)
         return data
     },
-    async getCompetitionRounds(competitionId: number) {
-        const { data, error } = await supabase
-        .from("competitions")
-        .select("id, name, current_round ,rounds_data")
-        .eq("id", competitionId)
-        .single();
-        
+
+    async getCompetitionRounds(leagueId: string) {
+
+        const { data, error } = await supabase.from("leagues").select("competition:competitions(id, name, current_round ,rounds_data)").eq("id", leagueId).single();
         if (error) throw error;
+     
         
-        const roundsData = data.rounds_data as unknown as RoundsData;
+        const roundsData = data.competition.rounds_data as unknown as RoundsData;
         
         return {
-          id: data.id,
-          name: data.name,
-          current_round: data.current_round,
+          id: data.competition.id,
+          name: data.competition.name,
+          current_round: data.competition.current_round,
           rounds: roundsData.rounds || [],
           total_rounds: roundsData.total_rounds || 0,
           synced_at: roundsData.synced_at

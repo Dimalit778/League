@@ -1,6 +1,6 @@
 import { Button, InputField } from '@/components/ui';
 
-import { useAuthStore } from '@/store/AuthStore';
+import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
@@ -19,9 +19,9 @@ const schema = yup.object().shape({
 });
 
 export default function SignIn() {
-  const { login, loading } = useAuthStore();
   const { theme } = useThemeStore();
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const { signIn, isLoading, errorMessage, clearError } = useAuth();
+
   const {
     control,
     handleSubmit,
@@ -32,12 +32,10 @@ export default function SignIn() {
   });
 
   const onSubmit = async (data: any) => {
-    const { error, success } = await login(data.email.trim(), data.password);
-    if (error) {
-      setLoginError(error);
-    }
-    if (success) {
-      console.log('success');
+    try {
+      await signIn(data.email, data.password);
+    } catch (error: any) {
+      console.error(error);
     }
   };
 
@@ -67,6 +65,7 @@ export default function SignIn() {
           secureTextEntry={false}
           error={errors.email}
           icon={<EmailIcon size={24} color={theme} />}
+          clearError={clearError}
         />
 
         <InputField
@@ -76,19 +75,20 @@ export default function SignIn() {
           secureTextEntry
           icon={<LockIcon size={24} color={theme} />}
           error={errors.password}
+          clearError={clearError}
         />
 
-        {loginError && (
-          <View className="bg-red-100 border border-red-400 rounded-md p-3 mb-4">
-            <Text className="text-red-700">{loginError}</Text>
+        {errorMessage && (
+          <View className="p-3 mb-4">
+            <Text className="text-error text-center">{errorMessage}</Text>
           </View>
         )}
 
         <Button
           title="Log In"
           onPress={handleSubmit(onSubmit)}
-          loading={loading}
-          disabled={!isValid || loading}
+          loading={isLoading}
+          disabled={!isValid || isLoading}
           variant="secondary"
           size="lg"
         />
@@ -100,7 +100,7 @@ export default function SignIn() {
         <Button
           title="Continue with Google"
           onPress={() => {}}
-          loading={loading}
+          loading={false}
           variant="primary"
           size="md"
         />

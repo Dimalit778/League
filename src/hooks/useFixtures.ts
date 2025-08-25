@@ -1,12 +1,11 @@
 import { fixtureService } from "@/services/fixtureService";
-import { useLeagueStore } from "@/store/LeagueStore";
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetFixturesByRound = (round: string) => { 
-  const {primaryLeague} = useLeagueStore()
+export const useGetFixturesByRound = (round: string, competitionId: number) => { 
  return useQuery({
-    queryKey: ['fixtures', 'round', primaryLeague?.competition_id, round],
-    queryFn: () => fixtureService.getFixturesByRound(round, primaryLeague?.competition_id),
+    queryKey: ['fixtures', 'round', competitionId, round],
+    queryFn: () => fixtureService.getFixturesByRound(round, competitionId),
+    enabled: !!round && !!competitionId,
   })
  
 }

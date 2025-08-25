@@ -1,7 +1,7 @@
 import { LoadingOverlay } from '@/components/layout';
 import { Image } from '@/components/ui';
 import { useGetFullLeagueAndMembersById } from '@/hooks/useLeagues';
-import { useAuthStore } from '@/store/AuthStore';
+
 import { useLeagueStore } from '@/store/LeagueStore';
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -21,7 +21,7 @@ export default function LeagueCreatedScreen() {
     leagueId as string
   );
   const router = useRouter();
-  const { user } = useAuthStore();
+
   const { initializeLeagues } = useLeagueStore();
 
   if (!leagueData) {
@@ -125,10 +125,7 @@ export default function LeagueCreatedScreen() {
       <TouchableOpacity
         className="bg-primary rounded-xl items-center py-4 px-4"
         activeOpacity={0.8}
-        onPress={async () => {
-          if (user?.id) {
-            await initializeLeagues(user.id);
-          }
+        onPress={() => {
           router.replace('/(app)/(tabs)/League');
         }}
       >

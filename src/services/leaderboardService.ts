@@ -1,17 +1,18 @@
 import { supabase } from "@/lib/supabase";
-import { LeagueLeaderboardType } from "@/types";
 
+
+export const getLeagueLeaderboard = async (leagueId: string) => {
+    const { data, error } = await supabase
+      .from('league_leaderboard_view')
+      .select('*')
+      .eq('league_id', leagueId);
+    
+    if (error) throw error;
+    return data;
+}
 
 export const leaderboardService = {
-    async getLeagueLeaderboard(leagueId: string): Promise<LeagueLeaderboardType[]> {
-        const { data, error } = await supabase
-          .from('league_leaderboard_view')
-          .select('*')
-          .eq('league_id', leagueId);
-        
-        if (error) throw error;
-        return data as LeagueLeaderboardType[];
-    },
+   
   /**
    * Get all predictions for members of a specific league
    * @param leagueId - The UUID of the league

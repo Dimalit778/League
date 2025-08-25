@@ -45,27 +45,5 @@ export const fixtureService = {
     if (error) throw error;
     return data;
   },
-  async getCompletedFixtures(competitionId?: number, limit = 10) {
-    let query = supabase
-      .from("fixtures")
-      .select(`
-        *,
-        home_team:teams!fixtures_home_team_id_fkey(*),
-        away_team:teams!fixtures_away_team_id_fkey(*),
-        competition:competitions!fixtures_league_id_fkey(*)
-      `)
-      .not("goals_home", "is", null)
-      .not("goals_away", "is", null)
-      .order("date", { ascending: false })
-      .limit(limit);
 
-    if (competitionId) {
-      query = query.eq("league_id", competitionId);
-    }
-
-    const { data, error } = await query;
-
-    if (error) throw error;
-    return data;
-  },
 };

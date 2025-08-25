@@ -1,9 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import { generateJoinCode } from "@/services/helpers";
-import { CreateLeagueParams } from "@/types";
 import { Tables } from "@/types/database.types";
 
-
+type CreateLeagueParams = {
+  name: string;
+  competition_id: number;
+  max_members: number;
+  nickname: string;
+}
 
 
 export const leagueService = {
@@ -45,12 +49,12 @@ async getMyLeagues(userId: string) {
 },
 
 // CREATE league and member
-async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues">> {
-  
+async createLeagueAndMember(params: CreateLeagueParams, owner_id: string): Promise<Tables<"leagues">> {
+
   const { count, error: countError } = await supabase
     .from('league_members')
     .select('*', { count: 'exact', head: true })
-    .eq('user_id', params.owner_id);
+    .eq('user_id', owner_id); 
 
   if (countError) throw new Error(countError.message);
   if (count && count >= 3) throw new Error('You can only create/join 3 leagues maximum');
@@ -61,8 +65,8 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
   const { data: league, error: leagueError } = await supabase
     .from('leagues')
     .insert({
-      name: params. name,
-      owner_id: params.owner_id,
+      name: params.name,
+      owner_id: owner_id,
       join_code: joinCode,
       competition_id: params.competition_id,
       max_members: params.max_members
@@ -77,7 +81,7 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
    const { error: updateError } = await supabase
   .from('league_members')
   .update({ is_primary: false })
-  .eq('user_id', params.owner_id);
+  .eq('user_id', owner_id);
 
   if(updateError) throw new Error(updateError.message);
 }
@@ -86,7 +90,7 @@ async createLeagueAndMember(params: CreateLeagueParams): Promise<Tables<"leagues
     .from('league_members')
     .insert({
       league_id: league.id,
-      user_id: params.owner_id,
+      user_id: owner_id,
       nickname: params.nickname,
       avatar_url: '',
       is_primary: true
@@ -132,6 +136,7 @@ async updatePrimaryLeague(userId: string, leagueId: string) {
   }).eq("league_id", leagueId).eq("user_id", userId).single();
 
   if(primaryLeagueError) throw new Error(primaryLeagueError.message);
+  
   
   return primaryLeague;
 },

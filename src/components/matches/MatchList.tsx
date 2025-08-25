@@ -3,18 +3,25 @@ import { useGetFixturesByRound } from '@/hooks/useFixtures';
 import { FixturesWithTeams } from '@/types';
 import { useRouter } from 'expo-router';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
-import LoadingOverlay from '../layout/LoadingOverlay';
+import { Error, LoadingOverlay } from '../layout';
 import { MatchStatus } from './MatchStatus';
 
-const MatchList = ({ selectedRound }: { selectedRound: string }) => {
+const MatchList = ({
+  selectedRound,
+  competitionId,
+}: {
+  selectedRound: string;
+  competitionId: number;
+}) => {
   const {
     data: fixtures,
     isLoading,
     error,
-  } = useGetFixturesByRound(selectedRound);
+  } = useGetFixturesByRound(selectedRound, competitionId);
 
-  if (error) console.log('error', error);
   if (isLoading) return <LoadingOverlay />;
+  if (error) return <Error error={error} />;
+
   return (
     <View className="flex-1 px-2 mt-4 ">
       <FlatList
