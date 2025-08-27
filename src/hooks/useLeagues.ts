@@ -2,6 +2,7 @@ import { QUERY_KEYS } from '@/lib/queryKeys';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 
 type CreateLeagueParams = {
   name: string;
@@ -10,12 +11,18 @@ type CreateLeagueParams = {
   nickname: string;
 }
 
-export const useMyLeagues = ( ) => {
+export const useMyLeagues = () => {
   const { member } = useMemberStore();
-  if(!member) throw new Error('Member not found');
+ 
   return useQuery({
-    queryKey: QUERY_KEYS.myLeagues(member.user_id),
-    queryFn: () => leagueService.getMyLeagues(member.user_id),
+    queryKey: QUERY_KEYS.myLeagues(member?.user_id || 'no-member'),
+    queryFn: () => {
+      if (!member) {
+        console.log('No member available for fetching leagues');
+        return Promise.resolve([]);
+      }
+      return leagueService.getMyLeagues(member.user_id);
+    },
     enabled: !!member,
     staleTime: 60 * 1000 * 60, 
     retry: 2,
@@ -69,7 +76,7 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
     retry: 1,
   });
 };
-  export const useUpdatePrimaryLeague = () => {
+export const useUpdatePrimaryLeague = () => {
   const { member } = useMemberStore();
   if(!member) throw new Error('Member not found');
 
@@ -77,8 +84,10 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
 
   return useMutation({
     mutationFn: (leagueId: string) => leagueService.updatePrimaryLeague(member.user_id, leagueId),
-    onSuccess: () => {
-      useMemberStore.getState().initializeMembers();
+    onSuccess: async () => {
+      const { initializeMembers } = useMemberStore.getState();
+      await initializeMembers();
+      router.push('/(app)/(tabs)/League');  
       queryClient.invalidateQueries();
     },
     onError: (error) => {
@@ -87,7 +96,6 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
   });
 };
 export const useGetFullLeagueAndMembersById = (leagueId: string) => {
-
   return useQuery({
     queryKey: ['league', leagueId],
     queryFn: () => leagueService.getFullLeagueAndMembersById(leagueId),

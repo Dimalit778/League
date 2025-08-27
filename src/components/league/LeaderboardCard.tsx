@@ -1,41 +1,66 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { Image } from '../ui';
+import { Card, Image } from '../ui';
 
-import avatar from '../../../assets/images/avatar.jpg';
+interface LeaderboardCardProps {
+  nickname: string;
+  avatar_url: string;
+  total_points: number;
+  index: number;
+  isCurrentUser?: boolean;
+}
 
 const LeaderboardCard = ({
   nickname,
   avatar_url,
   total_points,
   index,
-}: {
-  nickname: string;
-  avatar_url: string;
-  total_points: number;
-  index: number;
-}) => {
+  isCurrentUser = false,
+}: LeaderboardCardProps) => {
   return (
-    <View className="flex-row items-center justify-between bg-surface rounded-lg p-3 shadow-md border border-border gap-4 h-16">
-      <View className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center border border-border">
-        <Text className="text-sm text-black font-bold">{index}</Text>
-      </View>
+    <Card
+      className={`${isCurrentUser ? 'border-primary bg-primary/5' : ''} p-2 mx-3 my-1`}
+    >
+      <View className="flex-row items-center gap-3">
+        {/* Position Badge */}
+        <View className="w-8 h-8 rounded-full items-center justify-center">
+          <Text className="text-text font-semibold text-sm">{index}</Text>
+        </View>
 
-      <View className="">
-        <Image
-          source={{ uri: avatar_url ? avatar_url : avatar }}
-          className="w-full h-full rounded-full"
-          width={40}
-          height={40}
-        />
+        {/* User Avatar */}
+
+        {avatar_url ? (
+          <View className="w-10 h-10 rounded-full overflow-hidden border-2 border-border">
+            <Image
+              source={{
+                uri: avatar_url,
+              }}
+              className="w-full h-full"
+              width={40}
+              height={40}
+            />
+          </View>
+        ) : (
+          <FontAwesome name="user-circle-o" size={40} color="grey" />
+        )}
+
+        {/* User Info */}
+        <View className="flex-1">
+          <Text className="text-text font-bold" numberOfLines={1}>
+            {nickname}
+          </Text>
+        </View>
+
+        {/* Points Section */}
+        <View className="items-center pr-2">
+          <Text className="text-text font-bold text-xl">
+            {total_points?.toLocaleString() ?? 0}
+          </Text>
+          <Text className="text-muted text-sm">pts</Text>
+        </View>
       </View>
-      <View className="flex-1">
-        <Text className="text-lg text-text font-bold">{nickname}</Text>
-      </View>
-      <View className="flex-1 items-end">
-        <Text className="text-lg text-text font-bold">{total_points ?? 0}</Text>
-        <Text className="text-sm text-textMuted">pts</Text>
-      </View>
-    </View>
+    </Card>
   );
 };
+
 export default LeaderboardCard;

@@ -13,42 +13,34 @@ export const MatchStatus = ({
   kickOffTime: string;
 }) => {
   return (
-    <View className="min-w-[70px] h-[40px] items-center justify-center">
+    <View className="w-full">
       {status === 'scheduled' && (
-        <View className="flex-col items-center justify-center rounded-md border border-border px-2 py-1">
-          <Text className="text-xs text-textMuted">
+        <View className="items-center justify-center rounded-md border border-border  py-1">
+          <Text className="text-xs font-thin text-muted">
             {dateFormat(kickOffTime)}
           </Text>
-          <Text className="text-base  text-text">
-            {timeFormat(kickOffTime)}
-          </Text>
+          <Text className="text-text">{timeFormat(kickOffTime)}</Text>
         </View>
       )}
 
       {status === 'live' && (
         <View className="flex-col items-center justify-center">
-          <Text className="text-xs font-bold text-green-500 mb-1">LIVE</Text>
+          <Text className="text-green-500">LIVE</Text>
           <View className="flex-row items-center justify-center">
-            <Text className="text-xs font-bold text-text">
-              {homeScore ?? 0}
-            </Text>
-            <Text className="text-xs font-bold text-text"> - </Text>
-            <Text className="text-sm font-bold text-text">
-              {awayScore ?? 0}
-            </Text>
+            <Text className="text-text">{homeScore ?? 0}</Text>
+            <Text className="text-text">-</Text>
+            <Text className="text-text">{awayScore ?? 0}</Text>
           </View>
         </View>
       )}
 
       {status === 'finished' && (
-        <View className="flex-row items-center justify-center bg-border rounded-md px-2 py-1">
-          <Text className="text-lg font-bold text-textMuted ">
+        <View className="flex-row justify-center bg-border rounded-md py-2">
+          <Text className="text-xl font-bold text-muted ">
             {homeScore ?? 0}
           </Text>
-          <Text className="text-lg font-bold text-textMuted mx-1">-</Text>
-          <Text className="text-lg font-bold text-textMuted">
-            {awayScore ?? 0}
-          </Text>
+          <Text className="text-xl font-bold text-muted mx-1">-</Text>
+          <Text className="text-xl font-bold text-muted">{awayScore ?? 0}</Text>
         </View>
       )}
     </View>

@@ -1,18 +1,17 @@
 import { supabase } from "@/lib/supabase";
 
 
-export const getLeagueLeaderboard = async (leagueId: string) => {
-    const { data, error } = await supabase
-      .from('league_leaderboard_view')
-      .select('*')
-      .eq('league_id', leagueId);
-    
-    if (error) throw error;
-    return data;
-}
 
 export const leaderboardService = {
-   
+    async getLeagueLeaderboard(leagueId: string)  {
+        const { data, error } = await supabase
+          .from('league_leaderboard_view')
+          .select('*')
+          .eq('league_id', leagueId);
+        
+        if (error) throw error;
+        return data;
+    },
   /**
    * Get all predictions for members of a specific league
    * @param leagueId - The UUID of the league
@@ -56,20 +55,7 @@ export const leaderboardService = {
   //   return data;
   // },
   
-  /**
-   * Get top performers in a league (limited by count)
-   * @param leagueId - The UUID of the league
-   * @param limit - Maximum number of members to return
-   * @returns Array of top league members sorted by points
-   */
-  // async getTopLeagueMembers(leagueId: string, limit: number = 3): Promise<LeagueMemberWithPoints[]> {
-  //   const { data, error } = await supabase
-  //     .rpc('get_league_members_with_points', { p_league_id: leagueId });
-    
-  //   if (error) throw error;
-  //   return data.slice(0, limit); // Already sorted by points in the SQL function
-  // },
-
+ 
   /**
    * Get member predictions for a specific user in a league
    * @param leagueId - The UUID of the league

@@ -8,7 +8,7 @@ import {
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'error';
+  variant?: 'primary' | 'secondary' | 'error' | 'border';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
@@ -44,7 +44,7 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text className="text-background text-base font-bold">{title}</Text>
+        <Text className="text-background text-sm font-semibold">{title}</Text>
       )}
     </TouchableOpacity>
   );

@@ -8,7 +8,8 @@
     "fkey",
     "matchday",
     "partialize",
-    "Postgrest"
+    "Postgrest",
+    "Teko"
   ],
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,

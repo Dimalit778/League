@@ -1,9 +1,9 @@
-import { Error, LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay, TopBar } from '@/components/layout';
+import Screen from '@/components/layout/Screen';
 import MatchList from '@/components/matches/MatchList';
 import RoundsList from '@/components/matches/RoundsList';
 import { useCompetitionRounds } from '@/hooks/useCompetitions';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
 
 export default function MatchesPage() {
   const [selectedRound, setSelectedRound] = useState<string>('');
@@ -23,22 +23,23 @@ export default function MatchesPage() {
   if (error) return <Error error={error} />;
 
   return (
-    <View className="flex-1 bg-background pt-4 pb-25">
+    <Screen>
+      <TopBar showLeagueName={true} />
       {isLoading && <LoadingOverlay />}
-      <View>
-        <RoundsList
-          rounds={competition?.rounds || []}
-          selectedRound={selectedRound}
-          key={selectedRound}
-          handleRoundPress={handleRoundPress}
-        />
-      </View>
+
+      <RoundsList
+        rounds={competition?.rounds || []}
+        selectedRound={selectedRound}
+        key={selectedRound}
+        handleRoundPress={handleRoundPress}
+      />
+
       {selectedRound && (
         <MatchList
           selectedRound={selectedRound}
           competitionId={competition?.id ?? 0}
         />
       )}
-    </View>
+    </Screen>
   );
 }

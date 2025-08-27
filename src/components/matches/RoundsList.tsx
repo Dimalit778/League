@@ -19,38 +19,43 @@ export default function RoundsList({
   }
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ alignItems: 'center' }}
-    >
-      {rounds.map((round, index) => {
-        const getRoundNumber = (roundName: string): string => {
-          const match = roundName.match(/(\d+)$/);
-          return match ? match[1] : (index + 1).toString();
-        };
+    <View className="my-3 mx-1">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ alignItems: 'center' }}
+      >
+        {rounds.map((round, index) => {
+          const getRoundNumber = (roundName: string): string => {
+            const match = roundName.match(/(\d+)$/);
+            return match ? match[1] : (index + 1).toString();
+          };
 
-        return (
-          <TouchableOpacity
-            key={round}
-            onPress={() => handleRoundPress(round)}
-            className={`mx-2 px-4 py-2 rounded-full ${
-              selectedRound === round ? 'bg-primary' : 'bg-surface'
-            }`}
-            style={{
-              borderRadius: 25,
-              width: 50,
-              height: 50,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Text className="text-text font-semibold">
-              {getRoundNumber(round)}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
+          return (
+            <TouchableOpacity
+              key={round}
+              onPress={() => handleRoundPress(round)}
+              className={`mx-1 rounded-full border-1 border-border ${
+                selectedRound === round ? 'bg-primary' : 'bg-surface'
+              }`}
+              style={{
+                height: 55,
+                width: 55,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                className={`text-text font-semibold ${
+                  selectedRound === round ? 'text-background' : 'text-text'
+                }`}
+              >
+                {getRoundNumber(round)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

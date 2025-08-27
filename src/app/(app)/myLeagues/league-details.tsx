@@ -1,5 +1,5 @@
-import LoadingOverlay from '@/components/layout/LoadingOverlay';
-import { Button, InputField } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/hooks/useLeagues';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -67,9 +66,14 @@ export default function EnterLeagueDetailsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
-      {createLeagueMutation.isPending && <LoadingOverlay />}
-      <ScrollView className="flex-1 px-4 pt-6">
+    <Screen>
+      <BackButton />
+      <KeyboardAvoidingView
+        className="flex-1 bg-background px-3 "
+        behavior="padding"
+      >
+        {createLeagueMutation.isPending && <LoadingOverlay />}
+
         <Text className="text-2xl font-bold mb-6 text-center text-text">
           Enter League Details
         </Text>
@@ -140,7 +144,7 @@ export default function EnterLeagueDetailsScreen() {
           loading={createLeagueMutation.isPending}
           disabled={!isValid}
         />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Screen>
   );
 }

@@ -6,8 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 
 export  const useGetLeagueLeaderboard = ()=> {
   const { member } = useMemberStore();
-  if(!member) throw new Error('Member not found');
 
+  if(!member) throw new Error('Member not found');
   return useQuery({
     queryKey: QUERY_KEYS.leaderboard(member.league_id),
     queryFn: () => leaderboardService.getLeagueLeaderboard(member.league_id),

@@ -54,7 +54,7 @@ export default function TopThree({ topMembers }: { topMembers: any }) {
           )}
         </View>
       </View>
-      <Text className="text-text font-medium mt-2 text-center max-w-24">
+      <Text className="mt-2 text-text font-bold">
         {member ? member.nickname : '---'}
       </Text>
     </View>

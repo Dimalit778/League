@@ -1,13 +1,15 @@
+import { Screen } from '@/components/layout';
 import ThemeToggle from '@/components/ThemeToggle';
-
+import { BackButton } from '@/components/ui';
+import { useCurrentSession } from '@/hooks/useCurrentSeasson';
 import { useGetUser } from '@/hooks/useUsers';
 import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,6 +20,8 @@ import {
 
 export default function Profile() {
   const { data: user, isLoading } = useGetUser();
+  const { session } = useCurrentSession();
+  console.log('session', session);
 
   const { theme } = useThemeStore();
 
@@ -37,8 +41,10 @@ export default function Profile() {
         onPress: async () => {
           const result = await signOut();
 
-          if (isError) {
-            Alert.alert('Error', 'Failed to sign out');
+          if (result.success) {
+            router.replace('/');
+          } else {
+            Alert.alert('Error', result.error || 'Failed to sign out');
           }
         },
       },
@@ -63,8 +69,9 @@ export default function Profile() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-grow  px-4">
+    <Screen>
+      <BackButton />
+      <ScrollView className="flex-grow ">
         <View className="bg-surface  rounded-xl border border-border shadow-sm p-4 mb-4 items-center gap-2">
           <View className="bg-primary rounded-full w-20 h-20 justify-center items-center">
             <Text className="text-text text-2xl font-bold">
@@ -190,7 +197,7 @@ export default function Profile() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 

@@ -1,25 +1,20 @@
-import { SafeAreaWrapper, TopBar } from '@/components/layout';
-import { BackButton } from '@/components/ui/BackButton';
+import { Screen } from '@/components/layout';
 import { Stack } from 'expo-router';
 
 export default function NewLeagueLayout() {
   return (
-    <SafeAreaWrapper>
+    <Screen>
       <Stack
         screenOptions={{
-          headerShown: true,
-          header: () => <BackButton />,
+          headerShown: false,
         }}
       >
-        <Stack.Screen
-          name="index"
-          options={{ headerShown: true, header: () => <TopBar /> }}
-        />
+        <Stack.Screen name="index" />
         <Stack.Screen name="join-league" />
         <Stack.Screen name="select-competition" />
         <Stack.Screen name="league-details" />
-        <Stack.Screen name="league-created" options={{ headerShown: false }} />
+        <Stack.Screen name="league-created" />
       </Stack>
-    </SafeAreaWrapper>
+    </Screen>
   );
 }

@@ -67,6 +67,17 @@ export const predictionService = {
     if (error) throw error;
     return data;
   },
+  // Get User Predictions By Round
+  async getUserPredictionsByRound(userId: string, round: string) {
+    const { data, error } = await supabase
+      .from("predictions")
+      .select("*")
+      .eq("user_id", userId)
+      // .eq("round", round);
+
+    if (error) throw error;
+    return data;
+  },
    // Delete Prediction
    async deletePrediction(id: string) {
     const { error } = await supabase

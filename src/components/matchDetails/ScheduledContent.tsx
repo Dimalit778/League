@@ -15,6 +15,7 @@ interface ScheduledContentProps {
 
 const ScheduledContent = ({ match }: ScheduledContentProps) => {
   const { data: prediction, isLoading } = useUserPredictionByFixture(match.id);
+  console.log('prediction', JSON.stringify(prediction, null, 2));
 
   // State management
   const [homeScore, setHomeScore] = useState('');

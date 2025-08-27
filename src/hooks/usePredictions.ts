@@ -13,7 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const useCreatePrediction = (fixtureId: number ) => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
-  const { primaryLeague } = useLeagueStore();
+
 
   return useMutation({
     mutationFn: (prediction: {
@@ -25,7 +25,8 @@ export const useCreatePrediction = (fixtureId: number ) => {
       fixture_id: prediction.fixture_id,
       home_score: prediction.home_score,
       away_score: prediction.away_score,
-      league_id: primaryLeague!.id,
+      league_member_id: member!.id,
+      league_id: member!.league_id,
     }),
     onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["predictions", member!.user_id] });
@@ -69,6 +70,14 @@ export const useUpdatePrediction = () => {
     },
   });
 };
+export const useUserPredictionsByRound = (round: string) => {
+  const { member } = useMemberStore();
+  return useQuery({
+    queryKey: ["predictions", member?.user_id, round],
+    queryFn: () => predictionService.getUserPredictionsByRound(member!.user_id, round),
+    enabled: !!member?.user_id && !!round,
+  });
+};
 
 export const useUserPredictions = (userId: string) => {
   return useQuery({
@@ -86,7 +95,7 @@ export const useUserPredictionByFixture = (fixtureId: number) => {
     queryKey: ["prediction", member?.user_id, fixtureId],
     queryFn: () => predictionService.getUserPredictionByFixture(member!.user_id, fixtureId),
     enabled: !!member?.user_id && !!fixtureId,
-    staleTime: 1000 * 60 * 2, 
+  
   });
 };
 // Get League Predictions By Fixture
@@ -94,10 +103,10 @@ export const useGetLeaguePredictionsByFixture = ( fixtureId: number) => {
   const { member } = useMemberStore();
   const { primaryLeague } = useLeagueStore();
   return useQuery({
-    queryKey: ["prediction", member?.user_id, fixtureId, primaryLeague?.id],
+    queryKey: ["prediction",fixtureId, primaryLeague?.id],
     queryFn: () => predictionService.getLeaguePredictionsByFixture(fixtureId, primaryLeague!.id),
     enabled: !!member?.user_id && !!fixtureId && !!primaryLeague?.id,
-    staleTime: 1000 * 60 * 2, 
+
   });
 };
 

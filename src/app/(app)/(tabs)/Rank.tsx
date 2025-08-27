@@ -1,22 +1,16 @@
-import { useGetLeaderboard } from '@/hooks/useLeaderboard';
-import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import { Screen, TopBar } from '@/components/layout';
+// import { useGetLeaderboard } from '@/hooks/useLeaderboard';
+import { Text } from 'react-native';
 
 export default function Rank() {
-  const { data: leaderboard, isLoading } = useGetLeaderboard();
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // const { data: leaderboard, isLoading } = useGetLeaderboard();
 
   return (
-    <View className="flex-1 p-4">
+    <Screen>
+      <TopBar showLeagueName={true} />
       <Text className="text-xl font-bold mb-4">Leaderboard</Text>
 
-      <FlatList
+      {/* <FlatList
         data={leaderboard}
         keyExtractor={(item) => item.user_id}
         renderItem={({ item, index }) => (
@@ -35,7 +29,7 @@ export default function Rank() {
             </View>
           </View>
         )}
-      />
-    </View>
+      /> */}
+    </Screen>
   );
 }

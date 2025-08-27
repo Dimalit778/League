@@ -1,9 +1,16 @@
 import { Tables } from "./database.types";
+
 export type IconProps = {
   color?: string;
   size?: number 
 };
-
+export type LeagueLeaderboardType = {
+  nickname: string | null;
+  avatar_url?: string | null;
+  total_points: number | null;
+  predictions_count: number | null;
+  user_id: string | null;
+}
 
 
 export type CreateLeagueParams = {

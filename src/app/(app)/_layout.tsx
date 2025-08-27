@@ -1,16 +1,8 @@
-import { LoadingOverlay } from '@/components/layout';
 import { useMemberStore } from '@/store/MemberStore';
 import { Stack } from 'expo-router';
-import { useEffect } from 'react';
 
 export default function AppLayout() {
-  const { initializeMembers, loading, member } = useMemberStore();
-
-  useEffect(() => {
-    initializeMembers();
-  }, []);
-
-  if (loading) return <LoadingOverlay />;
+  const { member } = useMemberStore();
 
   return (
     <Stack>

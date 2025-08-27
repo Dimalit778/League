@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay, Screen, TopBar } from '@/components/layout';
 
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { Button } from '@/components/ui';
@@ -12,12 +12,14 @@ export default function MyLeagues() {
   if (error) return <Error error={error} />;
 
   return (
-    <View className="flex-1 bg-background">
+    <Screen>
+      <TopBar showLeagueName={false} />
       {isLoading && <LoadingOverlay />}
-      <View className="flex-row justify-between items-center px-4 pt-6 pb-4">
+
+      <View className="flex-row justify-between my-4 px-3">
         <Button
           title="Create League"
-          variant="primary"
+          variant="secondary"
           size="md"
           onPress={() => router.push('/myLeagues/select-competition')}
         />
@@ -28,21 +30,19 @@ export default function MyLeagues() {
           onPress={() => router.push('/myLeagues/join-league')}
         />
       </View>
-      <View className="flex-grow  px-4 ">
-        <FlatList
-          data={leagues}
-          contentContainerStyle={{ flexGrow: 1, gap: 15, paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View className="flex-grow justify-center items-center">
-              <Text className="text-text text-2xl font-bold">
-                Create or Join a League
-              </Text>
-            </View>
-          }
-          renderItem={({ item }) => <LeagueCard item={item} />}
-        />
-      </View>
-    </View>
+
+      <FlatList
+        data={leagues}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View className="flex-grow justify-center items-center">
+            <Text className="text-text text-2xl font-bold">
+              Create or Join a League
+            </Text>
+          </View>
+        }
+        renderItem={({ item }) => <LeagueCard item={item} />}
+      />
+    </Screen>
   );
 }

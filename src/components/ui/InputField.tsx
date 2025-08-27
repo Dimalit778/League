@@ -27,7 +27,7 @@ const InputField = ({
   clearError,
 }: InputFieldProps) => (
   <View>
-    <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 my-2 ">
+    <View className="bg-surface flex-row items-center border border-text rounded-lg px-3 my-2 ">
       <View className="mr-2">{icon}</View>
       <Controller
         control={control}
