@@ -1,6 +1,5 @@
-import { useGetFixturesByRound } from '@/hooks/useFixtures';
+import { useGetFixturesWithPredictions } from '@/hooks/useFixtures';
 
-import { useUserPredictionsByRound } from '@/hooks/usePredictions';
 import { FlatList, View } from 'react-native';
 import { Error, LoadingOverlay } from '../layout';
 import MatchCard from './MatchCard';
@@ -8,17 +7,17 @@ import MatchCard from './MatchCard';
 const MatchList = ({
   selectedRound,
   competitionId,
+  userId,
 }: {
   selectedRound: string;
   competitionId: number;
+  userId: string;
 }) => {
   const {
     data: fixtures,
     isLoading,
     error,
-  } = useGetFixturesByRound(selectedRound, competitionId);
-  const { data: predictions } = useUserPredictionsByRound(selectedRound);
-  console.log('predictions', JSON.stringify(predictions, null, 2));
+  } = useGetFixturesWithPredictions(selectedRound, competitionId, userId);
 
   if (isLoading) return <LoadingOverlay />;
   if (error) return <Error error={error} />;

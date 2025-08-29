@@ -3,19 +3,16 @@ import {
   useUpdatePrediction,
   useUserPredictionByFixture,
 } from '@/hooks/usePredictions';
-import { FixturesWithTeams } from '@/types';
+import { FixturesWithTeamsType } from '@/types';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { LoadingOverlay } from '../layout';
 import { Button } from '../ui';
 
-interface ScheduledContentProps {
-  match: FixturesWithTeams;
-}
-
-const ScheduledContent = ({ match }: ScheduledContentProps) => {
+const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
+  const router = useRouter();
   const { data: prediction, isLoading } = useUserPredictionByFixture(match.id);
-  console.log('prediction', JSON.stringify(prediction, null, 2));
 
   // State management
   const [homeScore, setHomeScore] = useState('');
@@ -25,20 +22,16 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
   const [originalAwayScore, setOriginalAwayScore] = useState('');
 
   // Mutations
-  const {
-    mutate: createPrediction,
-    isPending: isCreating,
-    isSuccess: createSuccess,
-    isError: createError,
-  } = useCreatePrediction(match.id);
-
-  const {
-    mutate: updatePrediction,
-    isPending: isUpdating,
-    isSuccess: updateSuccess,
-    isError: updateError,
-  } = useUpdatePrediction();
-
+  const createPrediction = useCreatePrediction(
+    match.id,
+    match.round,
+    match.competition_id
+  );
+  const updatePrediction = useUpdatePrediction(
+    match.id,
+    match.round,
+    match.competition_id
+  );
   // Initialize state when prediction data loads
   useEffect(() => {
     if (prediction) {
@@ -59,28 +52,45 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
   }, [prediction]);
 
   // Handlers
-  const handleSave = () => {
+  const handleSave = async () => {
     const homeScoreNum = Number(homeScore) || 0;
     const awayScoreNum = Number(awayScore) || 0;
 
-    createPrediction({
-      fixture_id: match.id,
-      home_score: homeScoreNum,
-      away_score: awayScoreNum,
-    });
+    try {
+      await createPrediction.mutateAsync({
+        fixture_id: match.id,
+        home_score: homeScoreNum,
+        away_score: awayScoreNum,
+      });
+
+      // Navigate immediately on success
+      router.back();
+    } catch (error) {
+      // Error is handled by the mutation's onError callback
+      console.log('Failed to create prediction');
+      // Optionally show an error toast/alert here
+    }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     const homeScoreNum = Number(homeScore) || 0;
     const awayScoreNum = Number(awayScore) || 0;
 
-    updatePrediction({
-      id: prediction!.id,
-      home_score: homeScoreNum,
-      away_score: awayScoreNum,
-    });
-  };
+    try {
+      await updatePrediction.mutateAsync({
+        id: prediction!.id,
+        home_score: homeScoreNum,
+        away_score: awayScoreNum,
+      });
 
+      // Navigate immediately on success
+      router.back();
+    } catch (error) {
+      // Error is handled by the mutation's onError callback
+      console.log('Failed to update prediction');
+      // Optionally show an error toast/alert here
+    }
+  };
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -92,24 +102,11 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
     setIsEditing(false);
   };
 
-  // Reset editing state after successful operations
-  useEffect(() => {
-    if (createSuccess || updateSuccess) {
-      setIsEditing(false);
-      // Update original scores after successful update
-      if (updateSuccess) {
-        setOriginalHomeScore(homeScore);
-        setOriginalAwayScore(awayScore);
-      }
-    }
-  }, [createSuccess, updateSuccess, homeScore, awayScore]);
-
-  // Loading state
   if (isLoading) return <LoadingOverlay />;
 
-  const hasError = createError || updateError;
-  const isProcessing = isCreating || isUpdating;
-  const showSuccess = createSuccess || updateSuccess;
+  // Check for processing state and errors
+  const isProcessing = createPrediction.isPending || updatePrediction.isPending;
+  const hasError = createPrediction.isError || updatePrediction.isError;
 
   return (
     <View className="bg-background p-4 rounded-lg shadow-md">
@@ -162,8 +159,8 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
           <Button
             title="Save Prediction"
             onPress={handleSave}
-            loading={isCreating}
-            disabled={isCreating || !homeScore || !awayScore}
+            loading={createPrediction.isPending}
+            disabled={createPrediction.isPending || !homeScore || !awayScore}
             variant="primary"
             size="md"
           />
@@ -186,8 +183,8 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
               <Button
                 title="Update"
                 onPress={handleUpdate}
-                loading={isUpdating}
-                disabled={isUpdating}
+                loading={updatePrediction.isPending}
+                disabled={updatePrediction.isPending}
                 variant="primary"
                 size="md"
               />
@@ -205,15 +202,18 @@ const ScheduledContent = ({ match }: ScheduledContentProps) => {
       </View>
 
       {/* Status Messages */}
-      {showSuccess && (
-        <Text className="mt-3 text-center text-green-500 font-medium">
-          {createSuccess ? 'Prediction saved!' : 'Prediction updated!'}
-        </Text>
-      )}
+      {createPrediction.isSuccess ||
+        (updatePrediction.isSuccess && (
+          <Text className="mt-3 text-center text-green-500 font-medium">
+            {createPrediction.isSuccess
+              ? 'Prediction saved!'
+              : 'Prediction updated!'}
+          </Text>
+        ))}
 
       {hasError && (
         <Text className="mt-3 text-center text-red-500 font-medium">
-          {createError
+          {createPrediction.isError
             ? 'Error saving prediction'
             : 'Error updating prediction'}
         </Text>

@@ -37,7 +37,10 @@ export type MyLeagueType = {
   
 }
 
-export type FixturesWithTeams = Tables<'fixtures'> & {
+export type FixturesWithTeamsType = Tables<'fixtures'> & {
   home_team: Tables<'teams'>;
   away_team: Tables<'teams'>;
+};
+export type FixturesWithTeamsAndPredictionsType = FixturesWithTeamsType & {
+  predictions: Tables<'predictions'>[] | null;
 };

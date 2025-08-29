@@ -13,7 +13,6 @@ interface MemberState {
   member: Members| null;
   loading: boolean;
   error: string | null;
-
   setMember: (member: Members | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;

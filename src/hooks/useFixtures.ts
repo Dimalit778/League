@@ -1,3 +1,4 @@
+import { QUERY_KEYS } from "@/lib/queryKeys";
 import { fixtureService } from "@/services/fixtureService";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,8 +15,18 @@ export const useGetFixtureById = (id: number) => {
     queryKey: ["fixture", id],
     queryFn: () => fixtureService.getFixtureById(id),
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+  
   })
  
+
+}
+export const useGetFixturesWithPredictions = (round: string, competitionId: number, userId: string) => {
+  return useQuery({
+     queryKey: [QUERY_KEYS.allFixtures(userId, round, competitionId)],
+     
+    queryFn: () => fixtureService.getFixturesWithPredictions(round, competitionId, userId),
+    enabled: !!round && !!competitionId && !!userId,
+    
+  })
 }
 

@@ -17,7 +17,8 @@ export const predictionService = {
         fixture_id: prediction.fixture_id,
         home_score: prediction.home_score,
         away_score: prediction.away_score,
-        league_id: prediction.league_id
+        league_id: prediction.league_id,
+        league_member_id: prediction.league_member_id
       })
       .select()
       .single();
@@ -33,7 +34,8 @@ export const predictionService = {
       .update({
         home_score: updates.home_score,
         away_score: updates.away_score,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        
       })
       .eq("id", updates.id ?? '')
       .eq("user_id", updates.user_id!)

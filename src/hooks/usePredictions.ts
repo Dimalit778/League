@@ -1,6 +1,8 @@
+  import { QUERY_KEYS } from "@/lib/queryKeys";
 import { predictionService } from "@/services/predictionService";
 import { useLeagueStore } from "@/store/LeagueStore";
 import { useMemberStore } from "@/store/MemberStore";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
@@ -10,10 +12,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // * Done
 // Create Prediction
-export const useCreatePrediction = (fixtureId: number ) => {
+export const useCreatePrediction = (fixtureId: number, round: string, competitionId: number) => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
-
 
   return useMutation({
     mutationFn: (prediction: {
@@ -28,52 +29,129 @@ export const useCreatePrediction = (fixtureId: number ) => {
       league_member_id: member!.id,
       league_id: member!.league_id,
     }),
-    onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["predictions", member!.user_id] });
-      queryClient.invalidateQueries({
-        queryKey: ["prediction", member!.user_id, fixtureId],
+
+    // Optimistic update
+    onMutate: async (newPrediction) => {
+      const queryKey = QUERY_KEYS.allFixtures(member!.user_id, round, competitionId);
+      
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const previousFixtures = queryClient.getQueryData(queryKey);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(queryKey, (old: any[]) => {
+        if (!old) return old;
+        
+        return old.map(fixture => {
+          if (fixture.id === newPrediction.fixture_id) {
+            return {
+              ...fixture,
+              predictions: [{
+                ...newPrediction,
+                user_id: member!.user_id,
+                league_member_id: member!.id,
+                league_id: member!.league_id,
+                id: 'temp-' + Date.now(), // Temporary ID
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                points: 0,
+                is_processed: false,
+              }]
+            };
+          }
+          return fixture;
+        });
       });
+
+      // Return a context object with the snapshotted value
+      return { previousFixtures, queryKey };
     },
-    onError: (error) => {
-      console.error("Error creating prediction:", error);
+
+    // If the mutation fails, use the context to roll back
+    onError: (err, newPrediction, context) => {
+      if (context?.previousFixtures) {
+        queryClient.setQueryData(context.queryKey, context.previousFixtures);
+      }
+    },
+
+    // Always refetch after error or success
+    onSettled: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: QUERY_KEYS.allFixtures(member!.user_id, round, competitionId) 
+      });
     },
   });
 };
 // * Done
 // Update Prediction
-export const useUpdatePrediction = () => {
- ;
+export const useUpdatePrediction = (fixtureId: number, round: string, competitionId: number) => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
+
   return useMutation({
     mutationFn: (prediction: {
-      id: string;
+      id: string; // prediction ID for update
       home_score: number;
       away_score: number;
-    }) => predictionService.updatePrediction(
-      {
-        id: prediction.id,
-        home_score: prediction.home_score,
-        away_score: prediction.away_score,
-        user_id: member!.user_id,
-      }
-    ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["predictions", member!.user_id] });
-      queryClient.invalidateQueries({
-        queryKey: ["prediction", member!.user_id],
+    }) => predictionService.updatePrediction({
+      id: prediction.id,
+      home_score: prediction.home_score,
+      away_score: prediction.away_score,
+      user_id: member!.user_id,
+    }),
+
+    onMutate: async (updatedPrediction) => {
+      const queryKey = QUERY_KEYS.allFixtures(member!.user_id, round, competitionId);
+      
+      await queryClient.cancelQueries({ queryKey });
+      const previousFixtures = queryClient.getQueryData(queryKey);
+
+      // Optimistically update
+      queryClient.setQueryData(queryKey, (old: any[]) => {
+        if (!old) return old;
+        
+        return old.map(fixture => {
+          if (fixture.id === fixtureId) {
+            return {
+              ...fixture,
+              predictions: fixture.predictions.map((pred: any) => 
+                pred.id === updatedPrediction.id 
+                  ? { 
+                      ...pred, 
+                      home_score: updatedPrediction.home_score,
+                      away_score: updatedPrediction.away_score,
+                      updated_at: new Date().toISOString()
+                    }
+                  : pred
+              )
+            };
+          }
+          return fixture;
+        });
       });
 
+      return { previousFixtures, queryKey };
     },
-    onError: (error) => {
-      console.error("Error updating prediction:", error);
+
+    onError: (err, updatedPrediction, context) => {
+      if (context?.previousFixtures) {
+        queryClient.setQueryData(context.queryKey, context.previousFixtures);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: QUERY_KEYS.allFixtures(member!.user_id, round, competitionId) 
+      });
     },
   });
 };
 export const useUserPredictionsByRound = (round: string) => {
   const { member } = useMemberStore();
   return useQuery({
-    queryKey: ["predictions", member?.user_id, round],
+    queryKey: ["fixture", "predictions", member?.user_id, round],
     queryFn: () => predictionService.getUserPredictionsByRound(member!.user_id, round),
     enabled: !!member?.user_id && !!round,
   });

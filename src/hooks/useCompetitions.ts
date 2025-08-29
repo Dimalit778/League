@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useCompetitionRounds = () => {
   const { member } = useMemberStore();
-  console.log('member', JSON.stringify(member, null, 2));
+
   if(!member) throw new Error('Member not found');
   return useQuery({
     queryKey: QUERY_KEYS.leagues,
