@@ -1,4 +1,4 @@
-import { dateFormat, timeFormat } from '@/utils/formats';
+import { dateFormat, timeFormatTimezone } from '@/utils/formats';
 import { Text, View } from 'react-native';
 
 export const MatchStatus = ({
@@ -17,7 +17,7 @@ export const MatchStatus = ({
       {status === 'scheduled' && (
         <View className="flex-col items-center justify-center rounded-md border border-border  py-1">
           <Text className="text-muted text-xs">{dateFormat(kickOffTime)}</Text>
-          <Text className="text-text">{timeFormat(kickOffTime)}</Text>
+          <Text className="text-text">{timeFormatTimezone(kickOffTime)}</Text>
         </View>
       )}
 

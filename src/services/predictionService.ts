@@ -28,6 +28,9 @@ export const predictionService = {
   },
   // Update Prediction
   async updatePrediction( updates: UserPredictionUpdate) {
+    const { id, user_id, ...rest } = updates
+    if (!id) throw new Error('Prediction ID is required');
+    if (!user_id) throw new Error('User ID is required');
   
     const { data, error } = await supabase
       .from("predictions")
@@ -37,8 +40,8 @@ export const predictionService = {
         updated_at: new Date().toISOString(),
         
       })
-      .eq("id", updates.id ?? '')
-      .eq("user_id", updates.user_id!)
+      .eq("id", id)
+      .eq("user_id", user_id)
       .select()
       .single();
 

@@ -35,7 +35,7 @@ export const useCreateLeague = () => {
   return useMutation({
     mutationFn: (params: CreateLeagueParams) => leagueService.createLeagueAndMember(params, member.user_id),
     onSuccess: () => {
-        queryClient.invalidateQueries();
+        queryClient.invalidateQueries({ queryKey: ['leagues', 'myLeagues'] });
       },
       onError: (error) => {
         console.error('Failed to create league:', error);

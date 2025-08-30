@@ -1,7 +1,7 @@
 import { formatTime } from '@/utils/match-utils';
 import footballField from '../../../assets/images/footballField.png';
 
-import { FixturesWithTeams } from '@/types';
+import { FixturesWithTeamsType } from '@/types';
 import { dateFormat } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from '../../../assets/icons';
 
-export const MatchHeader = ({ match }: { match: FixturesWithTeams }) => {
+export const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
   const insets = useSafeAreaInsets();
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
@@ -63,13 +63,10 @@ export const MatchHeader = ({ match }: { match: FixturesWithTeams }) => {
                 </View>
               )}
               {match.status === 'live' && (
-                <View className="flex-row items-center">
-                  <Text className="text-white text-2xl font-black">
-                    {match.home_score}
-                  </Text>
-                  <Text className="text-white/70 text-2xl mx-2">:</Text>
-                  <Text className="text-white text-2xl font-black">
-                    {match.away_score}
+                <View className="items-center justify-center gap-2">
+                  <Text className="text-green-500 text-lg">LIVE</Text>
+                  <Text className="text-text text-3xl font-black">
+                    {match.home_score} : {match.away_score}
                   </Text>
                 </View>
               )}
@@ -97,7 +94,7 @@ export const MatchHeader = ({ match }: { match: FixturesWithTeams }) => {
 const TeamCard = ({
   team,
 }: {
-  team: FixturesWithTeams['home_team'] | FixturesWithTeams['away_team'];
+  team: FixturesWithTeamsType['home_team'] | FixturesWithTeamsType['away_team'];
 }) => {
   return (
     <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">

@@ -14,7 +14,7 @@ const Card = ({ children, className }: CardProps) => {
         bg-surface 
         border border-border 
         rounded-lg
-      
+        
         ${className || ''}
       `}
     >

@@ -18,9 +18,7 @@ const LeaderboardCard = ({
   isCurrentUser = false,
 }: LeaderboardCardProps) => {
   return (
-    <Card
-      className={`${isCurrentUser ? 'border-primary bg-primary/5' : ''} p-2 mx-3 my-1`}
-    >
+    <Card className={`${isCurrentUser ? 'border-primary' : ''} p-2 mx-3 my-1`}>
       <View className="flex-row items-center gap-3">
         {/* Position Badge */}
         <View className="w-8 h-8 rounded-full items-center justify-center">

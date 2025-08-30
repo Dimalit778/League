@@ -232,7 +232,7 @@ export type Database = {
           fixture_id: number
           home_score: number
           id: string
-          is_processed: boolean | null
+          is_finished: boolean | null
           league_id: string
           league_member_id: string | null
           points: number | null
@@ -245,7 +245,7 @@ export type Database = {
           fixture_id: number
           home_score: number
           id?: string
-          is_processed?: boolean | null
+          is_finished?: boolean | null
           league_id: string
           league_member_id?: string | null
           points?: number | null
@@ -258,7 +258,7 @@ export type Database = {
           fixture_id?: number
           home_score?: number
           id?: string
-          is_processed?: boolean | null
+          is_finished?: boolean | null
           league_id?: string
           league_member_id?: string | null
           points?: number | null

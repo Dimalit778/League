@@ -9,9 +9,9 @@ export const useMatchContent = (match: FixturesWithTeamsType) => {
         return <ScheduledContent match={match} />;
       }
     case 'live':
-      return <FinishContent match={match} />;
+      return <FinishContent match_id={match.id} />;
 
     case 'finished':
-      return <FinishContent match={match} />;
+      return <FinishContent match_id={match.id} />;
   }
 };

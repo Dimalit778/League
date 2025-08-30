@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from "@/lib/queryKeys";
+
 import { leaderboardService } from "@/services/leaderboardService";
 import { useMemberStore } from "@/store/MemberStore";
 import { useQuery } from "@tanstack/react-query";
@@ -9,10 +9,10 @@ export  const useGetLeagueLeaderboard = ()=> {
 
   if(!member) throw new Error('Member not found');
   return useQuery({
-    queryKey: QUERY_KEYS.leaderboard(member.league_id),
+    queryKey: ['leaderboard', member.league_id],
     queryFn: () => leaderboardService.getLeagueLeaderboard(member.league_id),
     enabled: !!member.league_id,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 // export const useLeagueMemberPredictions = (): UseQueryResult<LeagueMemberPrediction[], Error> => {

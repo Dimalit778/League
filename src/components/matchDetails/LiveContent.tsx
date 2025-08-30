@@ -1,8 +1,8 @@
-import { FixturesWithTeams } from '@/types';
+import { FixturesWithTeamsType } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
-const LiveContent = ({ match }: { match: FixturesWithTeams }) => {
+const LiveContent = ({ match }: { match: FixturesWithTeamsType }) => {
   const events = [
     {
       id: 1,

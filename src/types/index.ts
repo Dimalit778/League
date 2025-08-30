@@ -1,4 +1,4 @@
-import { Tables } from "./database.types";
+import { Tables } from './database.types';
 
 export type IconProps = {
   color?: string;
@@ -43,4 +43,8 @@ export type FixturesWithTeamsType = Tables<'fixtures'> & {
 };
 export type FixturesWithTeamsAndPredictionsType = FixturesWithTeamsType & {
   predictions: Tables<'predictions'>[] | null;
+};
+
+export type PredictionLeaderboardType = Tables<'predictions'> & {
+  member: Tables<'league_members'>;
 };

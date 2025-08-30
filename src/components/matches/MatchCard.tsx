@@ -20,17 +20,17 @@ const MatchCard = ({
   const prediction = match.predictions?.[0] ?? null;
 
   const router = useRouter();
-  const handlePress = (id: number) => {
+  const handlePress = (match: FixturesWithTeamsAndPredictionsType) => {
     router.push({
       pathname: '/(app)/match/[id]',
-      params: { id },
+      params: {
+        id: match.id,
+        match: JSON.stringify(match),
+      },
     });
   };
   return (
-    <TouchableOpacity
-      activeOpacity={0.85}
-      onPress={() => handlePress(match.id)}
-    >
+    <TouchableOpacity activeOpacity={0.85} onPress={() => handlePress(match)}>
       <Card className="p-2 my-1">
         <PredictionStatus
           prediction={prediction}
@@ -41,17 +41,25 @@ const MatchCard = ({
           }}
         />
 
-        <View className="flex-row ">
+        <View className="flex-row items-center">
           {/* Home Team */}
-          <View className="flex-1 flex-row items-center justify-start">
+          <View className="flex-1 flex-row items-center justify-start max-w-[40%]">
             <Image
               source={{ uri: homeCrestUrl }}
-              className="w-8 h-8 rounded-full mr-2"
+              className="w-8 h-8 rounded-full mr-2 flex-shrink-0"
               resizeMode="contain"
             />
-            <Text className="text-text">{homeTeamName}</Text>
+            <Text
+              className="text-text flex-1"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {homeTeamName}
+            </Text>
           </View>
-          <View className="items-center min-w-[70px]">
+
+          {/* Score Section */}
+          <View className="items-center min-w-[70px] mx-2">
             <MatchStatus
               status={match.status}
               homeScore={match.home_score ?? 0}
@@ -59,12 +67,19 @@ const MatchCard = ({
               kickOffTime={match.kickoff_time}
             />
           </View>
+
           {/* Away Team */}
-          <View className="flex-1 flex-row items-center justify-end">
-            <Text className="text-text">{awayTeamName}</Text>
+          <View className="flex-1 flex-row items-center justify-end max-w-[40%]">
+            <Text
+              className="text-text flex-1 text-right"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {awayTeamName}
+            </Text>
             <Image
               source={{ uri: awayCrestUrl }}
-              className="w-8 h-8 rounded-full ml-2"
+              className="w-8 h-8 rounded-full ml-2 flex-shrink-0"
               resizeMode="contain"
             />
           </View>

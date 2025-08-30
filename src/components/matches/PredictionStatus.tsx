@@ -1,4 +1,5 @@
 import { Tables } from '@/types/database.types';
+
 import { predictionAccuracy } from '@/utils/match-utils';
 import { Text, View } from 'react-native';
 
@@ -17,7 +18,7 @@ const PredictionStatus = ({ prediction, match }: PredictionStatusProps) => {
   }
 
   let accuracy = null;
-  if (prediction?.is_processed) {
+  if (prediction?.is_finished) {
     accuracy = predictionAccuracy(
       prediction.home_score,
       prediction.away_score,
@@ -27,7 +28,7 @@ const PredictionStatus = ({ prediction, match }: PredictionStatusProps) => {
   }
 
   return (
-    <View className="flex-row mb-1 border-b border-border py-1">
+    <View className="flex-row border-b-2 border-border pb-2 mb-2">
       <View className="flex-1 items-start">
         {accuracy && (
           <Text className="text-sm" style={{ color: accuracy.color }}>

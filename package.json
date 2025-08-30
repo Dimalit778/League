@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "sync-types": "npx supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.14.11",
@@ -52,6 +53,7 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
+    "supabase": "^2.39.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.17",
     "yup": "^1.7.0",

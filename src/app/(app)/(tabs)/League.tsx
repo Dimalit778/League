@@ -7,7 +7,12 @@ import { FlatList, View } from 'react-native';
 
 const League = () => {
   const { member } = useMemberStore();
-  const { data: leaderboard, isLoading, error } = useGetLeagueLeaderboard();
+  const {
+    data: leaderboard,
+    isLoading,
+    error,
+    refetch,
+  } = useGetLeagueLeaderboard();
 
   if (error) console.log('error', error);
 
@@ -23,6 +28,7 @@ const League = () => {
       <FlatList
         data={leaderboard}
         showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.user_id ?? ''}
         renderItem={({ item, index }) => (
           <LeaderboardCard
             nickname={item.nickname ?? ''}
@@ -32,7 +38,10 @@ const League = () => {
             isCurrentUser={item.user_id === member?.user_id}
           />
         )}
-        keyExtractor={(item) => item.user_id ?? ''}
+        refreshing={isLoading}
+        onRefresh={() => {
+          refetch();
+        }}
       />
     </Screen>
   );

@@ -25,6 +25,7 @@ export const fixtureService = {
     return data;
   },
   async getFixturesWithPredictions(round: string, competitionId: number, userId: string): Promise<FixturesWithTeamsAndPredictionsType[]> {
+    console.log('fetching fixtures with predictions ----');
     const { data, error } = await supabase
       .from("fixtures")
       .select(`
