@@ -1,13 +1,13 @@
 import { supabase } from "@/lib/supabase";
-import { generateJoinCode } from "@/services/helpers";
-import { Tables } from "@/types/database.types";
+import { createLeagueParams, createLeagueResponse } from "@/types";
 
-type CreateLeagueParams = {
-  name: string;
-  competition_id: number;
-  max_members: number;
-  nickname: string;
-}
+
+
+
+
+
+
+
 
 
 export const leagueService = {
@@ -47,79 +47,71 @@ async getMyLeagues(userId: string) {
   
   return leagues;
 },
+// edge function
+// DELETE league membership
+async leaveLeague(leagueId: string) {
+    const { data, error } = await supabase.rpc('leave_league', {
+    p_league_id: leagueId
+  });
+  if (error) throw new Error(error.message);
+  
+  return data
+},
 
-// CREATE league and member
-async createLeagueAndMember(params: CreateLeagueParams, owner_id: string): Promise<Tables<"leagues">> {
 
-  const { count, error: countError } = await supabase
-    .from('league_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', owner_id); 
 
-  if (countError) throw new Error(countError.message);
-  if (count && count >= 3) throw new Error('You can only create/join 3 leagues maximum');
+async createLeague(params: createLeagueParams) {
+  const { data: leagueData, error } = await supabase.rpc(
+    'create_new_league',
+    {
+      league_name: params.leagueName,
+      max_members: params.max_members,
+        competition_id: params.competition_id,
+        nickname: params.nickname,
+        avatar_url: ''
+      }
+    );
 
-  const joinCode = generateJoinCode();
+    console.log('League data:', JSON.stringify(leagueData, null, 2));
 
-  // Create league
-  const { data: league, error: leagueError } = await supabase
-    .from('leagues')
-    .insert({
-      name: params.name,
-      owner_id: owner_id,
-      join_code: joinCode,
-      competition_id: params.competition_id,
-      max_members: params.max_members
-    })
-    .select('id')
-    .single();
+    if (error) throw new Error(error.message);
 
-  if (leagueError || !league) throw leagueError;
-
- // Update user leagues to false
- if(count && count >= 1) {
-   const { error: updateError } = await supabase
-  .from('league_members')
-  .update({ is_primary: false })
-  .eq('user_id', owner_id);
-
-  if(updateError) throw new Error(updateError.message);
-}
-
-  const { error: memberError } = await supabase
-    .from('league_members')
-    .insert({
-      league_id: league.id,
-      user_id: owner_id,
-      nickname: params.nickname,
-      avatar_url: '',
-      is_primary: true
-    });
-
-  if (memberError) throw memberError;
- 
-return league as Tables<"leagues">;
-
-},    
-
-// JOIN league - Edge function
-async joinLeague(userId: string, joinCode: string, nickname: string) {
+    
+    return leagueData as createLeagueResponse;
+  },
+// edge function
+// JOIN league 
+async joinLeague( joinCode: string, nickname: string) {
   const { data, error } = await supabase.rpc('join_league', {
-    joining_user_id: userId,  
     league_join_code: joinCode,
     user_nickname: nickname,
     user_avatar_url: ''
   });
-
   if (error) throw new Error(error.message);
-  return data;
+ 
+  
+  return data;  
+
 },
 
 // FIND league by join code
 async findLeagueByJoinCode(joinCode: string) {
-  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country)").eq("join_code", joinCode).maybeSingle()
+  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country) ,league_members(count)").eq("join_code", joinCode).maybeSingle()
   if(error) throw new Error(error.message);
-return data
+  if(!data) throw new Error('League not found');
+  const league = {
+    id: data.id,
+    name: data.name,
+    join_code: data.join_code,
+    max_members: data.max_members,
+    league_members: data.league_members[0].count, 
+    competition_id: data.competitions.id,
+    logo: data.competitions.logo,
+    country: data.competitions.country,
+    flag: data.competitions.flag
+  };
+
+return league
 },
 
 // UPDATE primary league

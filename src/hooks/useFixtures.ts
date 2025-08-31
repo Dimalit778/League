@@ -24,7 +24,7 @@ export const useGetFixtureById = (id: number) => {
 export const useGetFixturesWithPredictions = (round: string, competitionId: number, userId: string) => {
  
   return useQuery({
-     queryKey: ['fixtures', 'predictions'],
+     queryKey: ['fixtures', 'predictions',round],
     queryFn: () => fixtureService.getFixturesWithPredictions(round, competitionId, userId),
     enabled: !!round && !!competitionId && !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes

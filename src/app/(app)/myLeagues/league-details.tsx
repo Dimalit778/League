@@ -1,8 +1,9 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/hooks/useLeagues';
+import { useMemberStore } from '@/store/MemberStore';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -25,9 +26,8 @@ const schema = yup.object().shape({
 });
 
 export default function EnterLeagueDetailsScreen() {
-  const { competitionId, leagueLogo } = useLocalSearchParams();
-  const createLeagueMutation = useCreateLeague();
-
+  const { competitionId } = useLocalSearchParams();
+  const { member } = useMemberStore();
   const {
     control,
     handleSubmit,
@@ -43,27 +43,18 @@ export default function EnterLeagueDetailsScreen() {
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
-
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
-  const onSubmit = async (data: { leagueName: string; nickname: string }) => {
-    try {
-      const leagueData = await createLeagueMutation.mutateAsync({
-        name: data.leagueName,
-        competition_id: Number(competitionId),
-        max_members: membersCount || 6,
-        nickname: data.nickname,
-      });
-      if (leagueData) {
-        router.push({
-          pathname: '/(app)/myLeagues/league-created',
-          params: { leagueId: leagueData.id },
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const createLeague = useCreateLeague();
+
+  const onSubmit = handleSubmit((data) =>
+    createLeague.mutate({
+      ...data,
+      competition_id: Number(competitionId),
+      max_members: membersCount || 6,
+      user_id: member?.id as string,
+    })
+  );
 
   return (
     <Screen>
@@ -72,7 +63,7 @@ export default function EnterLeagueDetailsScreen() {
         className="flex-1 bg-background px-3 "
         behavior="padding"
       >
-        {createLeagueMutation.isPending && <LoadingOverlay />}
+        {createLeague.isPending && <LoadingOverlay />}
 
         <Text className="text-2xl font-bold mb-6 text-center text-text">
           Enter League Details
@@ -138,10 +129,10 @@ export default function EnterLeagueDetailsScreen() {
         </View>
         <Button
           title="Create League"
-          onPress={handleSubmit(onSubmit)}
+          onPress={onSubmit}
           variant="primary"
           size="lg"
-          loading={createLeagueMutation.isPending}
+          loading={createLeague.isPending}
           disabled={!isValid}
         />
       </KeyboardAvoidingView>

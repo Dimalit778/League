@@ -1,8 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { Tables } from "@/types/database.types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
  type Members = Tables<"league_members"> & {
   league: Tables<"leagues">;
 }
@@ -23,7 +21,7 @@ interface MemberState {
   }
 
 export const useMemberStore = create<MemberState>()(
-  persist(
+  
     (set) => ({
       member: null,
       loading: false,
@@ -76,14 +74,4 @@ export const useMemberStore = create<MemberState>()(
     
 
     }),
-
-    {
-      name: 'member-storage',
-      storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({
-        member: state.member,
- 
-      }),
-    }
   )
-)

@@ -4,6 +4,31 @@ export type IconProps = {
   color?: string;
   size?: number 
 };
+// League Types
+export type createLeagueParams = {
+  leagueName: string;
+  nickname: string;
+  user_id: string;
+  competition_id: number;
+  max_members: number;
+};
+export type createLeagueResponse = {
+  status: string;
+  message: string;
+  league_id: string;
+};
+
+export type foundLeagueType = {
+  id: string;
+  name: string;
+  join_code: string;
+  max_members: number;
+  league_members: number;
+  competition_id: number;
+  logo: string;
+  country: string;
+  flag: string;
+};
 export type LeagueLeaderboardType = {
   nickname: string | null;
   avatar_url?: string | null;
@@ -13,28 +38,11 @@ export type LeagueLeaderboardType = {
 }
 
 
-export type CreateLeagueParams = {
-  name: string;
-  nickname: string;
-  logo: string;
-  owner_id: string;
-  competition_id: number;
-  max_members: number;
-};
 
-export type LeagueWithCompetition = Tables<'leagues'> & {
-  competitions: Tables<'competitions'>;
-};
-export type MyLeagueType = {
-  is_primary: boolean;
-  id: string;
-  name: string;
-  join_code: string;
-  logo: string;
-  max_members: number;
-  league_members: number;
-  competition_id : number;
-  
+export type MyLeaguesType = Tables<'league_members'> & {
+  leagues: Tables<'leagues'> & {
+    competitions: Tables<'competitions'>;
+  };
 }
 
 export type FixturesWithTeamsType = Tables<'fixtures'> & {
@@ -47,4 +55,13 @@ export type FixturesWithTeamsAndPredictionsType = FixturesWithTeamsType & {
 
 export type PredictionLeaderboardType = Tables<'predictions'> & {
   member: Tables<'league_members'>;
+};
+
+export type MemberStatsType = {
+  totalPredictions: number;
+  bingoHits: number;
+  regularHits: number;
+  missedHits: number;
+  accuracy: number;
+  totalPoints: number;
 };

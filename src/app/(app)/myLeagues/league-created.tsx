@@ -1,14 +1,11 @@
-import { LoadingOverlay } from '@/components/layout';
-import { Image } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { Button, Image } from '@/components/ui';
 import { useGetFullLeagueAndMembersById } from '@/hooks/useLeagues';
 
-import { useLeagueStore } from '@/store/LeagueStore';
-import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Alert,
   Clipboard,
-  SafeAreaView,
   Share,
   Text,
   TouchableOpacity,
@@ -16,13 +13,10 @@ import {
 } from 'react-native';
 
 export default function LeagueCreatedScreen() {
-  const { leagueId } = useLocalSearchParams();
-  const { data: leagueData } = useGetFullLeagueAndMembersById(
-    leagueId as string
-  );
+  const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
+  console.log('useLocalSearchParams', leagueId);
+  const { data: leagueData } = useGetFullLeagueAndMembersById(leagueId);
   const router = useRouter();
-
-  const { initializeLeagues } = useLeagueStore();
 
   if (!leagueData) {
     return <LoadingOverlay />;
@@ -49,19 +43,19 @@ export default function LeagueCreatedScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background px-6 py-10">
+    <Screen>
       {/* Success Header */}
-      <View className="items-center mb-8">
+      <View className="items-center my-8">
         <Text className="text-2xl font-bold text-center mb-2 text-text">
           League Created Successfully! 🎉
         </Text>
-        <Text className="text-base text-textMuted text-center">
+        <Text className="text-base text-muted text-center">
           Your {leagueData?.competitions?.name || 'Football'} league is ready
         </Text>
       </View>
 
       {/* League Info Card */}
-      <View className="bg-card rounded-2xl p-6 mb-8 border border-border shadow-sm">
+      <View className=" p-6  mx-3 border border-border rounded-2xl">
         {/* Centered League Header */}
         <View className="items-center mb-6">
           <Image
@@ -76,14 +70,14 @@ export default function LeagueCreatedScreen() {
           <Text className="text-2xl font-bold text-center text-text mb-2 mt-4">
             {leagueData?.name}
           </Text>
-          <Text className="text-base text-textMuted text-center">
+          <Text className="text-base text-muted text-center">
             {leagueData?.competitions?.country} •{' '}
             {leagueData?.competitions?.name}
           </Text>
         </View>
 
-        <View className="bg-background/50 rounded-xl p-4 mb-4 border border-border/50">
-          <Text className="text-sm font-medium text-textMuted mb-1 text-center">
+        <View className="rounded-xl p-4 mb-4 border border-border">
+          <Text className="text-sm font-medium text-muted mb-1 text-center">
             Your Nickname
           </Text>
           <Text className="text-lg font-bold text-text text-center">
@@ -91,48 +85,42 @@ export default function LeagueCreatedScreen() {
           </Text>
         </View>
 
-        <View className="bg-background/50 rounded-xl p-4">
-          <Text className="text-sm font-medium text-textMuted mb-3 text-center">
+        <View className="p-4">
+          <Text className="text-sm font-medium text-muted mb-3 text-center">
             League Join Code
           </Text>
           <TouchableOpacity
             onPress={handleCopyJoinCode}
-            className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-3"
+            className=" border border-border rounded-lg p-4 mb-3"
           >
             <Text className="text-2xl font-mono font-bold text-primary text-center tracking-[8px]">
               {leagueData?.join_code}
             </Text>
           </TouchableOpacity>
-          <Text className="text-xs text-textMuted text-center">
+          <Text className="text-xs text-muted text-center">
             Tap to copy code
           </Text>
         </View>
       </View>
 
       {/* Action Buttons */}
-      <View className="space-y-3 mb-8">
-        <TouchableOpacity
+      <View className="gap-5 p-5">
+        <Button
           onPress={handleShareJoinCode}
-          className="bg-primary rounded-xl p-4 flex-row items-center justify-center"
-        >
-          <Feather name="share" size={20} color="#374151" />
-          <Text className="text-primaryForeground font-semibold ml-2 text-base">
-            Share Join Code
-          </Text>
-        </TouchableOpacity>
-      </View>
+          title="Share Join Code"
+          variant="secondary"
+          size="md"
+        />
 
-      <TouchableOpacity
-        className="bg-primary rounded-xl items-center py-4 px-4"
-        activeOpacity={0.8}
-        onPress={() => {
-          router.replace('/(app)/(tabs)/League');
-        }}
-      >
-        <Text className="text-primaryForeground text-lg font-bold">
-          Start League
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <Button
+          onPress={() => {
+            router.replace('/(app)/(tabs)/League');
+          }}
+          title="Start League"
+          variant="primary"
+          size="lg"
+        />
+      </View>
+    </Screen>
   );
 }

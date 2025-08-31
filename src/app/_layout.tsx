@@ -10,6 +10,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,16 +97,18 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack.Protected>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack>
+          <Stack.Protected guard={isLoggedIn}>
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          </Stack.Protected>
 
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack.Protected>
-      </Stack>
+          <Stack.Protected guard={!isLoggedIn}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          </Stack.Protected>
+        </Stack>
+      </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }

@@ -48,9 +48,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Rank"
+        name="Stats"
         options={{
-          title: 'Rank',
+          title: 'Stats',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <RankIcon size={size} color={color} />

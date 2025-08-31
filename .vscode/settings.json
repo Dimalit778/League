@@ -9,6 +9,7 @@
     "matchday",
     "partialize",
     "Postgrest",
+    "swipeable",
     "Teko"
   ],
   "deno.enablePaths": ["supabase/functions"],

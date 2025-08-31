@@ -1,8 +1,7 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, Image, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
-
-import { LeagueWithCompetition } from '@/types';
+import { foundLeagueType } from '@/types';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
@@ -18,7 +17,6 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
-
   const {
     control,
     handleSubmit,
@@ -29,16 +27,14 @@ export default function JoinLeague() {
     mode: 'onChange',
   });
   const inviteCodeValue = watch('inviteCode');
-  const [foundLeague, setFoundLeague] = useState<LeagueWithCompetition | null>(
-    null
-  );
+  const [foundLeague, setFoundLeague] = useState<foundLeagueType | null>(null);
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
 
   const { mutateAsync, isPending, isSuccess, isError } = useJoinLeague();
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 6) {
-      setFoundLeague(data as unknown as LeagueWithCompetition);
+      setFoundLeague(data as foundLeagueType);
     } else {
       setFoundLeague(null);
     }
@@ -55,6 +51,7 @@ export default function JoinLeague() {
     });
     router.replace('/(app)/myLeagues');
   };
+  console.log('foundLeague', JSON.stringify(foundLeague, null, 2));
 
   return (
     <Screen>
@@ -77,11 +74,11 @@ export default function JoinLeague() {
               autoCapitalize="characters"
               error={errors.inviteCode}
             />
-            <Text className="text-sm text-textMuted mt-1 text-center">
+            <Text className="text-sm text-muted mt-1 text-center">
               Ask the league admin for the invite code
             </Text>
             {isLoading && (
-              <Text className="text-sm text-textMuted mt-2 text-center">
+              <Text className="text-sm text-muted mt-2 text-center">
                 Searching for league...
               </Text>
             )}
@@ -89,56 +86,89 @@ export default function JoinLeague() {
           {/* Preview League Card */}
           {foundLeague && (
             <View className="mb-6">
-              <View className="w-1/2 self-center bg-border rounded-xl border border-primary shadow-sm p-6 mb-6 ">
-                <Text
-                  className="text-3xl font-bold mb-2 text-primary "
-                  numberOfLines={2}
-                >
-                  {foundLeague.name}
-                </Text>
-                <View className="gap-3 mt-3">
-                  <View className="flex-row  items-center gap-3">
+              {/* League Info Card */}
+              <View className="bg-border rounded-xl border border-primary p-4 my-4 gap-4">
+                {/* League Name Section */}
+                <View className=" flex-row justify-between">
+                  <Text className="text-base font-medium text-muted mb-2">
+                    League Name :
+                  </Text>
+                  <Text
+                    className="text-2xl font-bold text-primary"
+                    numberOfLines={2}
+                  >
+                    {foundLeague.name}
+                  </Text>
+                </View>
+
+                {/* Competition Section */}
+                <View className="flex-row justify-between">
+                  <Text className="text-base font-medium text-muted ">
+                    Competition :
+                  </Text>
+                  <View className="flex-row gap-4 items-center">
                     <Image
                       source={{
-                        uri: foundLeague.competitions?.logo,
+                        uri: foundLeague.logo,
                       }}
                       resizeMode="contain"
-                      width={20}
-                      height={20}
+                      width={24}
+                      height={24}
                     />
-                    <Text className="text-md text-text" numberOfLines={1}>
-                      {foundLeague.competitions?.name}
+                    <Text className="text-lg text-text " numberOfLines={1}>
+                      {foundLeague.name}
                     </Text>
                   </View>
+                </View>
 
-                  <View className="flex-row items-center gap-3">
+                {/* Country Section */}
+                <View className="flex-row justify-between">
+                  <Text className="text-base font-medium text-muted ">
+                    Country :
+                  </Text>
+                  <View className="flex-row gap-4 items-center">
                     <Image
                       source={{
-                        uri: foundLeague.competitions?.flag,
+                        uri: foundLeague.flag,
                       }}
                       resizeMode="contain"
-                      width={20}
-                      height={20}
+                      width={24}
+                      height={24}
                     />
-                    <Text className="text-md text-text" numberOfLines={1}>
-                      {foundLeague.competitions?.country}
+                    <Text className="text-lg text-text " numberOfLines={1}>
+                      {foundLeague.country}
+                    </Text>
+                  </View>
+                </View>
+                {/* Member Count */}
+                <View className="flex-row justify-between">
+                  <Text className="text-base font-medium text-muted ">
+                    Members :
+                  </Text>
+                  <View className="flex-row gap-4 items-center">
+                    <Text className="text-lg text-text " numberOfLines={1}>
+                      {foundLeague.league_members} /{foundLeague.max_members}
                     </Text>
                   </View>
                 </View>
               </View>
-              <InputField
-                control={control}
-                name="nickname"
-                placeholder="Enter your nickname"
-                error={errors.nickname}
-              />
-              <Button
-                title="Join League"
-                variant="primary"
-                loading={isPending}
-                onPress={handleSubmit(onClickJoinLeague)}
-                disabled={!isValid}
-              />
+
+              {/* Input and Button */}
+              <View className="mx-4 space-y-4">
+                <InputField
+                  control={control}
+                  name="nickname"
+                  placeholder="Enter your nickname"
+                  error={errors.nickname}
+                />
+                <Button
+                  title="Join League"
+                  variant="primary"
+                  loading={isPending}
+                  onPress={handleSubmit(onClickJoinLeague)}
+                  disabled={!isValid}
+                />
+              </View>
             </View>
           )}
 
@@ -158,7 +188,7 @@ export default function JoinLeague() {
             <Text className="text-lg font-semibold text-text mb-2 text-center">
               How to Join a League
             </Text>
-            <Text className="text-textMuted text-md leading-5 ">
+            <Text className="text-muted text-md leading-5 ">
               1. Get the 6-digit invite code from the league admin{'\n'}
               2. Enter the code above to find the league{'\n'}
               3. Choose your nickname for the league{'\n'}

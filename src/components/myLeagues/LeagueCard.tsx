@@ -1,59 +1,76 @@
 // import { MyLeagueType } from '@/types/league.types';
-import { useUpdatePrimaryLeague } from '@/hooks/useLeagues';
-import { MyLeagueType } from '@/types';
-import { useRouter } from 'expo-router';
+
 import { Text, TouchableOpacity, View } from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { TrashIcon } from '../../../assets/icons';
 import StarIcon from '../../../assets/icons/StarIcon';
-import LoadingOverlay from '../layout/LoadingOverlay';
-import { Card, Image } from '../ui';
+import { Image } from '../ui';
 
-const LeagueCard = ({ item }: { item: MyLeagueType }) => {
-  const router = useRouter();
-  const { mutate: updatePrimaryLeague, isPending } = useUpdatePrimaryLeague();
+interface LeagueCardProps {
+  item: any;
+  onSetPrimary: () => void;
+  onLeaveLeague: () => void;
+  swipeableRef: (ref: any) => void;
+}
 
-  const handleSetPrimary = async (leagueId: string) => {
-    if (item.is_primary) {
-      router.push('/(app)/(tabs)/League');
-      return;
-    } else {
-      updatePrimaryLeague(leagueId);
-    }
-  };
-  return (
-    <Card className="mx-3 my-1 p-4">
-      {isPending && <LoadingOverlay />}
+const LeagueCard = ({
+  item,
+  onSetPrimary,
+  onLeaveLeague,
+  swipeableRef,
+}: LeagueCardProps) => {
+  const renderRightActions = () => (
+    <View className="h-full justify-center items-center w-20 bg-red-500">
       <TouchableOpacity
-        onPress={() => {
-          handleSetPrimary(item.id);
-        }}
+        className="justify-center items-center p-3 w-full h-full"
+        onPress={onLeaveLeague}
+        activeOpacity={0.7}
       >
-        <View className="flex-row items-center ">
-          <Image
-            source={{ uri: item.logo }}
-            width={48}
-            height={48}
-            resizeMode="contain"
-            className="rounded-lg mr-3"
-          />
-
-          <View className="flex-1 ms-4">
-            <Text
-              className="text-2xl font-headBold text-text"
-              numberOfLines={1}
-            >
-              {item.name}
-            </Text>
-
-            <Text className="text-base text-muted">
-              {item.league_members || 0}/{item.max_members} members
-            </Text>
-          </View>
-          <View className="justify-end items-end">
-            {item.is_primary && <StarIcon size={36} />}
-          </View>
-        </View>
+        <TrashIcon size={28} color="#fff" />
       </TouchableOpacity>
-    </Card>
+    </View>
+  );
+
+  return (
+    <View className="my-2 px-3">
+      <ReanimatedSwipeable
+        ref={swipeableRef}
+        friction={2}
+        rightThreshold={60}
+        renderRightActions={renderRightActions}
+        containerStyle={{ borderRadius: 12, overflow: 'hidden' }}
+      >
+        <View className="bg-surface p-4">
+          <TouchableOpacity onPress={onSetPrimary} activeOpacity={0.8}>
+            <View className="flex-row items-center">
+              <Image
+                source={{ uri: item.logo }}
+                width={48}
+                height={48}
+                resizeMode="contain"
+                className="rounded-lg mr-3"
+              />
+
+              <View className="flex-1 ps-2">
+                <Text
+                  className="text-2xl font-headBold text-text"
+                  numberOfLines={1}
+                >
+                  {item.name}
+                </Text>
+                <Text className="text-base text-muted">
+                  {item.league_members || 0}/{item.max_members} members
+                </Text>
+              </View>
+
+              <View className="justify-end items-end">
+                {item.is_primary && <StarIcon size={36} />}
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ReanimatedSwipeable>
+    </View>
   );
 };
 

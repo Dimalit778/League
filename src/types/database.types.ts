@@ -426,21 +426,15 @@ export type Database = {
         Args: { comp_id: number; round_name: string; season_year: number }
         Returns: boolean
       }
-      create_league_with_member: {
+      create_new_league: {
         Args: {
+          avatar_url: string
           competition_id: number
-          creator_avatar_url?: string
-          creator_nickname: string
-          creator_user_id: string
           league_name: string
-          max_members?: number
+          max_members: number
+          nickname: string
         }
-        Returns: {
-          join_code: string
-          league_id: string
-          message: string
-          success: boolean
-        }[]
+        Returns: Json
       }
       generate_join_code: {
         Args: Record<PropertyKey, never>
@@ -507,7 +501,6 @@ export type Database = {
       }
       join_league: {
         Args: {
-          joining_user_id: string
           league_join_code: string
           user_avatar_url?: string
           user_nickname: string
@@ -518,6 +511,10 @@ export type Database = {
           message: string
           success: boolean
         }[]
+      }
+      leave_league: {
+        Args: { p_league_id: string }
+        Returns: Json
       }
     }
     Enums: {

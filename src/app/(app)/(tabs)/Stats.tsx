@@ -1,0 +1,100 @@
+import { Error, LoadingOverlay, Screen, TopBar } from '@/components/layout';
+import MemberHeader from '@/components/stats/MemberHeader';
+import PredictionChart from '@/components/stats/PredictionChart';
+import StatsCard from '@/components/stats/StatsCard';
+import { useMemberStats } from '@/hooks/useMemberStats';
+import { useMemberStore } from '@/store/MemberStore';
+import { useCallback } from 'react';
+import { RefreshControl, ScrollView, View } from 'react-native';
+
+const Stats = () => {
+  const { member } = useMemberStore();
+
+  const { data: stats, isLoading, error, refetch } = useMemberStats();
+  console.log('stats', JSON.stringify(stats, null, 2));
+
+  const onRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  if (error) return <Error error={error} />;
+
+  return (
+    <Screen>
+      <TopBar showLeagueName={true} />
+      {isLoading && <LoadingOverlay />}
+      <ScrollView
+        className="flex-1 p-4"
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+        }
+      >
+        <MemberHeader member={member} />
+
+        {stats && (
+          <>
+            <View className="flex-row mb-4">
+              <StatsCard
+                title="Total Predictions"
+                value={stats.totalPredictions}
+                className="flex-1 mr-2"
+              />
+              <StatsCard
+                title="Total Points"
+                value={stats.totalPoints}
+                className="flex-1 ml-2"
+              />
+            </View>
+
+            <View className="flex-row mb-4">
+              <StatsCard
+                title="Accuracy"
+                value={`${stats.accuracy}%`}
+                subtitle="Correct predictions"
+                className="flex-1 mr-2"
+              />
+              <StatsCard
+                title="Avg. Points"
+                value={
+                  stats.totalPredictions > 0
+                    ? (stats.totalPoints / stats.totalPredictions).toFixed(1)
+                    : '0'
+                }
+                subtitle="Per prediction"
+                className="flex-1 ml-2"
+              />
+            </View>
+
+            <PredictionChart {...stats} />
+
+            <View className="mb-4">
+              <StatsCard
+                title="Bingo Hits"
+                value={stats.bingoHits}
+                subtitle="Exact score predictions (3 points)"
+              />
+            </View>
+
+            <View className="mb-4">
+              <StatsCard
+                title="Regular Hits"
+                value={stats.regularHits}
+                subtitle="Correct outcome but not exact score (1 point)"
+              />
+            </View>
+
+            <View className="mb-4">
+              <StatsCard
+                title="Missed"
+                value={stats.missedHits}
+                subtitle="Incorrect predictions (0 points)"
+              />
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </Screen>
+  );
+};
+
+export default Stats;

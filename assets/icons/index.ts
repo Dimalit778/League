@@ -14,6 +14,7 @@ import TrophyIcon from "./TrophyIcon";
 import ArrowLeftIcon from "./ArrowLeftIcon";
 import SettingsIcon from "./SettingsIcon";
 import StarIcon from "./StarIcon";
+import TrashIcon from "./TrashIcon";
 
 export {
     ArrowLeftIcon,
@@ -22,6 +23,6 @@ export {
     LockIcon,
     MatchesIcon,
     ProfileIcon,
-    RankIcon, SettingsIcon, StarIcon, TrophyIcon, UserIcon
+    RankIcon, SettingsIcon, StarIcon, TrashIcon, TrophyIcon, UserIcon
 };
 

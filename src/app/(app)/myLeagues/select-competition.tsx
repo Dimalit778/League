@@ -62,7 +62,7 @@ export default function SelectCompetitionScreen() {
                 onPress={() => setSelectedCompetition(comp)}
                 className={`mb-3 p-4 rounded-xl border-2 ${
                   selectedCompetition?.id === comp.id
-                    ? 'bg-secondary'
+                    ? 'border-primary '
                     : 'border-border bg-surface'
                 }`}
               >
@@ -79,23 +79,11 @@ export default function SelectCompetitionScreen() {
                     height={48}
                   />
                   <View className="flex-1 items-center">
-                    <Text
-                      className={`text-sm font-bold mb-1 ${
-                        selectedCompetition?.id === comp.id
-                          ? 'text-background'
-                          : 'text-textMuted'
-                      }`}
-                    >
+                    <Text className="text-sm font-bold mb-1 text-muted">
                       {comp.country}
                     </Text>
 
-                    <Text
-                      className={`text-xl text-center font-bold ${
-                        selectedCompetition?.id === comp.id
-                          ? 'text-background'
-                          : 'text-textMuted'
-                      }`}
-                    >
+                    <Text className="text-xl text-center font-bold text-text">
                       {comp.name}
                     </Text>
                   </View>
