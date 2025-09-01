@@ -18,15 +18,18 @@ const League = () => {
 
   const topThree = leaderboard?.slice(0, 3);
 
+  // Use a separate state for pull-to-refresh loading
+  const isRefreshing = false;
+
   return (
     <Screen>
       <TopBar showLeagueName={true} />
-      {isLoading && <LoadingOverlay />}
+      {isLoading && !leaderboard && <LoadingOverlay />}
       <View className="mt-12">
         <TopThree topMembers={topThree} />
       </View>
       <FlatList
-        data={leaderboard}
+        data={leaderboard || []}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.user_id ?? ''}
         renderItem={({ item, index }) => (
@@ -38,8 +41,9 @@ const League = () => {
             isCurrentUser={item.user_id === member?.user_id}
           />
         )}
-        refreshing={isLoading}
+        refreshing={isRefreshing}
         onRefresh={() => {
+          console.log('refreshing');
           refetch();
         }}
       />

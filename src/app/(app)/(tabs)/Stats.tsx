@@ -4,6 +4,7 @@ import PredictionChart from '@/components/stats/PredictionChart';
 import StatsCard from '@/components/stats/StatsCard';
 import { useMemberStats } from '@/hooks/useMemberStats';
 import { useMemberStore } from '@/store/MemberStore';
+import { MemberStatsType } from '@/types';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
@@ -31,67 +32,65 @@ const Stats = () => {
       >
         <MemberHeader member={member} />
 
-        {stats && (
-          <>
-            <View className="flex-row mb-4">
-              <StatsCard
-                title="Total Predictions"
-                value={stats.totalPredictions}
-                className="flex-1 mr-2"
-              />
-              <StatsCard
-                title="Total Points"
-                value={stats.totalPoints}
-                className="flex-1 ml-2"
-              />
-            </View>
+        <View className="flex-row mb-4">
+          <StatsCard
+            title="Total Predictions"
+            value={stats?.totalPredictions ?? 0}
+            className="flex-1 mr-2"
+          />
+          <StatsCard
+            title="Total Points"
+            value={stats?.totalPoints ?? 0}
+            className="flex-1 ml-2"
+          />
+        </View>
 
-            <View className="flex-row mb-4">
-              <StatsCard
-                title="Accuracy"
-                value={`${stats.accuracy}%`}
-                subtitle="Correct predictions"
-                className="flex-1 mr-2"
-              />
-              <StatsCard
-                title="Avg. Points"
-                value={
-                  stats.totalPredictions > 0
-                    ? (stats.totalPoints / stats.totalPredictions).toFixed(1)
-                    : '0'
-                }
-                subtitle="Per prediction"
-                className="flex-1 ml-2"
-              />
-            </View>
+        <View className="flex-row mb-4">
+          <StatsCard
+            title="Accuracy"
+            value={`${stats?.accuracy}%`}
+            subtitle="Correct predictions"
+            className="flex-1 mr-2"
+          />
+          <StatsCard
+            title="Avg. Points"
+            value={
+              stats?.totalPredictions &&
+              stats?.totalPoints &&
+              stats?.totalPredictions > 0
+                ? (stats?.totalPoints / stats?.totalPredictions).toFixed(1)
+                : '0'
+            }
+            subtitle="Per prediction"
+            className="flex-1 ml-2"
+          />
+        </View>
 
-            <PredictionChart {...stats} />
+        <PredictionChart {...(stats ?? ({} as MemberStatsType))} />
 
-            <View className="mb-4">
-              <StatsCard
-                title="Bingo Hits"
-                value={stats.bingoHits}
-                subtitle="Exact score predictions (3 points)"
-              />
-            </View>
+        <View className="mb-4">
+          <StatsCard
+            title="Bingo Hits"
+            value={stats?.bingoHits ?? 0}
+            subtitle="Exact score predictions (3 points)"
+          />
+        </View>
 
-            <View className="mb-4">
-              <StatsCard
-                title="Regular Hits"
-                value={stats.regularHits}
-                subtitle="Correct outcome but not exact score (1 point)"
-              />
-            </View>
+        <View className="mb-4">
+          <StatsCard
+            title="Regular Hits"
+            value={stats?.regularHits ?? 0}
+            subtitle="Correct outcome but not exact score (1 point)"
+          />
+        </View>
 
-            <View className="mb-4">
-              <StatsCard
-                title="Missed"
-                value={stats.missedHits}
-                subtitle="Incorrect predictions (0 points)"
-              />
-            </View>
-          </>
-        )}
+        <View className="mb-4">
+          <StatsCard
+            title="Missed"
+            value={stats?.missedHits ?? 0}
+            subtitle="Incorrect predictions (0 points)"
+          />
+        </View>
       </ScrollView>
     </Screen>
   );

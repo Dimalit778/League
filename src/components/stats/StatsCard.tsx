@@ -8,7 +8,12 @@ interface StatsCardProps {
   className?: string;
 }
 
-const StatsCard = ({ title, value, subtitle, className }: StatsCardProps) => {
+const StatsCard = ({
+  title,
+  value = 0,
+  subtitle,
+  className,
+}: StatsCardProps) => {
   return (
     <Card className={`p-4 ${className || ''}`}>
       <Text className="text-text text-sm">{title}</Text>
