@@ -132,32 +132,32 @@ export type Database = {
       league_members: {
         Row: {
           avatar_url: string | null
-          created_at: string | null
+          created_at: string
           id: string
           is_primary: boolean
           league_id: string
           nickname: string
-          update_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           is_primary?: boolean
           league_id: string
           nickname: string
-          update_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           is_primary?: boolean
           league_id?: string
           nickname?: string
-          update_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -180,33 +180,33 @@ export type Database = {
       leagues: {
         Row: {
           competition_id: number
-          created_at: string | null
+          created_at: string
           id: string
           join_code: string
           max_members: number
           name: string
           owner_id: string
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           competition_id: number
-          created_at?: string | null
+          created_at?: string
           id?: string
           join_code: string
           max_members?: number
           name: string
           owner_id: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           competition_id?: number
-          created_at?: string | null
+          created_at?: string
           id?: string
           join_code?: string
           max_members?: number
           name?: string
           owner_id?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -228,41 +228,41 @@ export type Database = {
       predictions: {
         Row: {
           away_score: number
-          created_at: string | null
+          created_at: string
           fixture_id: number
           home_score: number
           id: string
-          is_finished: boolean | null
+          is_finished: boolean
           league_id: string
-          league_member_id: string | null
-          points: number | null
-          updated_at: string | null
+          league_member_id: string
+          points: number
+          updated_at: string
           user_id: string
         }
         Insert: {
           away_score: number
-          created_at?: string | null
+          created_at?: string
           fixture_id: number
           home_score: number
           id?: string
-          is_finished?: boolean | null
+          is_finished?: boolean
           league_id: string
-          league_member_id?: string | null
-          points?: number | null
-          updated_at?: string | null
+          league_member_id: string
+          points?: number
+          updated_at?: string
           user_id: string
         }
         Update: {
           away_score?: number
-          created_at?: string | null
+          created_at?: string
           fixture_id?: number
           home_score?: number
           id?: string
-          is_finished?: boolean | null
+          is_finished?: boolean
           league_id?: string
-          league_member_id?: string | null
-          points?: number | null
-          updated_at?: string | null
+          league_member_id?: string
+          points?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -367,21 +367,21 @@ export type Database = {
       users: {
         Row: {
           created_at: string
-          email: string | null
+          email: string
           full_name: string
           id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          email?: string | null
+          email: string
           full_name: string
           id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
-          email?: string | null
+          email?: string
           full_name?: string
           id?: string
           updated_at?: string

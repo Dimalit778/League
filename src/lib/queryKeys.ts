@@ -6,6 +6,7 @@ export const QUERY_KEYS = {
   allCompetitions: ['competitions'] as const,
   allLeaderboard: ['leaderboard'] as const,
   allPredictions: ['predictions'] as const,
+  allSubscriptions: ['subscriptions'] as const,
   
   user: (userId: string) => ['users', userId] as const,
   member: (userId: string) => ['members', userId] as const,
@@ -20,4 +21,8 @@ export const QUERY_KEYS = {
   leaderboard: (leagueId: string) => ['leaderboard', leagueId] as const,
   competitions: ['competitions'] as const,
   leagueByJoinCode: (joinCode: string) => ['leagues', 'joinCode', joinCode] as const,
+  
+  // Subscription related keys
+  subscription: (userId: string) => ['subscriptions', userId] as const,
+  canCreateLeague: (userId: string) => ['subscriptions', userId, 'canCreateLeague'] as const,
 };

@@ -1,8 +1,6 @@
 import { supabase } from "@/lib/supabase";
+import { subscriptionService } from "@/services/subscriptionService";
 import { createLeagueParams, createLeagueResponse } from "@/types";
-
-
-
 
 
 
@@ -61,42 +59,62 @@ async leaveLeague(leagueId: string) {
 
 
 async createLeague(params: createLeagueParams) {
+  // Check subscription limits before creating league
+  const { canCreate, reason } = await subscriptionService.canCreateLeague(params.user_id);
+  
+  if (!canCreate) {
+    throw new Error(reason || "You've reached your league limit. Please upgrade your subscription.");
+  }
+  
+  // Get subscription to determine max members allowed
+  const subscription = await subscriptionService.getCurrentSubscription(params.user_id);
+  const limits = subscriptionService.getSubscriptionLimits(subscription?.subscription_type || "FREE");
+  
+  // Ensure max_members doesn't exceed subscription limit
+  const maxMembers = Math.min(params.max_members, limits.maxMembersPerLeague);
+  
   const { data: leagueData, error } = await supabase.rpc(
     'create_new_league',
     {
       league_name: params.leagueName,
-      max_members: params.max_members,
-        competition_id: params.competition_id,
-        nickname: params.nickname,
-        avatar_url: ''
-      }
-    );
+      max_members: maxMembers,
+      competition_id: params.competition_id,
+      nickname: params.nickname,
+      avatar_url: ''
+    }
+  );
 
-    console.log('League data:', JSON.stringify(leagueData, null, 2));
+  console.log('League data:', JSON.stringify(leagueData, null, 2));
 
-    if (error) throw new Error(error.message);
-
-    
-    return leagueData as createLeagueResponse;
-  },
+  if (error) throw new Error(error.message);
+  
+  return leagueData as createLeagueResponse;
+},
 // edge function
 // JOIN league 
-async joinLeague( joinCode: string, nickname: string) {
+async joinLeague(joinCode: string, nickname: string, userId: string) {
+  // First check if the league exists and get its details
+  const league = await this.findLeagueByJoinCode(joinCode);
+  
+  // Check if the league is full
+  if (league.league_members >= league.max_members) {
+    throw new Error("This league is full and cannot accept new members.");
+  }
+  
   const { data, error } = await supabase.rpc('join_league', {
     league_join_code: joinCode,
     user_nickname: nickname,
     user_avatar_url: ''
   });
-  if (error) throw new Error(error.message);
- 
   
-  return data;  
-
+  if (error) throw new Error(error.message);
+  
+  return data;
 },
 
 // FIND league by join code
 async findLeagueByJoinCode(joinCode: string) {
-  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members ,competitions!inner (id,name,logo,flag,country) ,league_members(count)").eq("join_code", joinCode).maybeSingle()
+  const { data, error } = await supabase.from("leagues").select("id,name,join_code,max_members,owner_id,competitions!inner (id,name,logo,flag,country) ,league_members(count)").eq("join_code", joinCode).maybeSingle()
   if(error) throw new Error(error.message);
   if(!data) throw new Error('League not found');
   const league = {
@@ -108,7 +126,8 @@ async findLeagueByJoinCode(joinCode: string) {
     competition_id: data.competitions.id,
     logo: data.competitions.logo,
     country: data.competitions.country,
-    flag: data.competitions.flag
+    flag: data.competitions.flag,
+    owner_id: data.owner_id
   };
 
 return league

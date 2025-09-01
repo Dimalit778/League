@@ -6,11 +6,10 @@ type UserUpdate = TablesUpdate<"users">;
 export const userService = {
   
 
-  async getUser(userId: string) {
+  async getUser() {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("id", userId)
       .single();
 
     if (error) throw error;

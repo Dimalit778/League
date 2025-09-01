@@ -12,6 +12,7 @@ export default function AppLayout() {
       </Stack.Protected>
       <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
+      <Stack.Screen name="subscription" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -39,24 +39,22 @@ export const useCreateLeague = () => {
     });
   };
 export const useJoinLeague = () => {
-
   const queryClient = useQueryClient();
+  const { member } = useMemberStore();
 
   return useMutation({
     mutationFn: ({ join_code, nickname}: { join_code: string; nickname: string; }) => 
-      leagueService.joinLeague(  join_code, nickname),
-      onSuccess: async () => {
-        const { initializeMembers } = useMemberStore.getState();
-        await initializeMembers();
-      },
-      onSettled: async () => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues }); 
-    
+      leagueService.joinLeague(join_code, nickname, member?.user_id as string),
+    onSuccess: async () => {
+      const { initializeMembers } = useMemberStore.getState();
+      await initializeMembers();
+    },
+    onSettled: async () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues }); 
     },
     onError: (error) => {
       console.error('Failed to join league:', error);
     },
-   
   });
 };
 

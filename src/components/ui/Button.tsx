@@ -8,17 +8,21 @@ import {
 interface ButtonProps {
   title: string;
   onPress: () => void;
+  color?: string;
   variant?: 'primary' | 'secondary' | 'error' | 'border';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 const Button = ({
   title,
   onPress,
   variant = 'primary',
+  color = '',
   size = 'md',
+  className = '',
   loading = false,
   disabled = false,
 }: ButtonProps) => {
@@ -30,13 +34,19 @@ const Button = ({
 
   return (
     <TouchableOpacity
-      className={`px-4 py-2 bg-${variant} rounded-md ${
-        disabled || loading ? 'opacity-50' : ''
+      className={`${className} ${
+        color
+          ? ''
+          : `px-4 py-2 bg-${variant} rounded-md ${
+              disabled || loading ? 'opacity-50' : ''
+            }`
+      }
       }`}
       style={[
         styles.button,
         styles[size],
         (disabled || loading) && styles.disabled,
+        color ? { backgroundColor: color, borderRadius: 8 } : null,
       ]}
       onPress={handlePress}
       activeOpacity={0.8}

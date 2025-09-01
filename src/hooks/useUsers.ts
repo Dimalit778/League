@@ -7,13 +7,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 
 export const useGetUser = () => {
-  const { member } = useMemberStore();
+
   return useQuery({
-    queryKey: QUERY_KEYS.user(member?.user_id!),
-    queryFn: () => userService.getUser(member?.user_id!),
-    enabled: !!member?.user_id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: ['user'],
+    queryFn: () => userService.getUser(),
     retry: 2,
+    staleTime: 60 * 1000, // 1 minute
   });
 };
 

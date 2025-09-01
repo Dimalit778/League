@@ -28,6 +28,7 @@ export type foundLeagueType = {
   logo: string;
   country: string;
   flag: string;
+  owner_id: string;
 };
 export type LeagueLeaderboardType = {
   nickname: string | null;
