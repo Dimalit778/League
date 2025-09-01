@@ -17,6 +17,7 @@ const MatchList = ({
     data: fixtures,
     isLoading,
     error,
+    refetch,
   } = useGetFixturesWithPredictions(selectedRound, competitionId, userId);
 
   if (isLoading) return <LoadingOverlay />;
@@ -29,6 +30,10 @@ const MatchList = ({
         renderItem={({ item }) => <MatchCard match={item} />}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id.toString()}
+        refreshing={isLoading}
+        onRefresh={() => {
+          refetch();
+        }}
       />
     </View>
   );
