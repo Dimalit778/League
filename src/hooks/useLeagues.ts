@@ -1,125 +1,119 @@
-import { QUERY_KEYS } from '@/lib/queryKeys';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { createLeagueParams } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { useCurrentSession } from './useCurrentSession';
 
-
-export const useMyLeagues = () => {
-  const { member } = useMemberStore();
+export const useGetLeagues = () => {
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   return useQuery({
-    queryKey: QUERY_KEYS.allLeagues,
-    queryFn: () =>  leagueService.getMyLeagues(member?.user_id as string),
-    enabled: !!member?.user_id,
-    staleTime: 60 * 1000 * 60, 
-    retry: 2,
+    queryKey: QUERY_KEYS.users.leagues(userId),
+    queryFn: () => leagueService.getLeagues(userId),
   });
 };
+// ********************************************************
 export const useCreateLeague = () => {
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
+  const { createLeague } = useMemberStore();
+
   return useMutation({
-    mutationFn: ( params: createLeagueParams ) =>  leagueService.createLeague( params ),
+    mutationFn: (params: createLeagueParams) =>
+      createLeague(queryClient, userId, params),
     onSuccess: async (leagueId) => {
-      const { initializeMembers } = useMemberStore.getState();
-      await initializeMembers();
-      router.push({ 
+      router.push({
         pathname: '/(app)/myLeagues/league-created',
-        params: { leagueId: leagueId.league_id  },
+        params: { leagueId: leagueId.league_id },
       });
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues });
+    },
+    onError: (error) => {
+      console.error('Failed to create league:', error);
+    },
+  });
+};
 
-      },
-      onError: (error) => {
-        console.error('Failed to create league:', error);
-      },
-      onSettled: async () => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues });
-      },
-    });
-  };
+// ********************************************************
 export const useJoinLeague = () => {
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { joinLeague } = useMemberStore();
 
   return useMutation({
-    mutationFn: ({ join_code, nickname}: { join_code: string; nickname: string; }) => 
-      leagueService.joinLeague(join_code, nickname, member?.user_id as string),
-    onSuccess: async () => {
-      const { initializeMembers } = useMemberStore.getState();
-      await initializeMembers();
-    },
-    onSettled: async () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues }); 
-    },
+    mutationFn: ({
+      join_code,
+      nickname,
+    }: {
+      join_code: string;
+      nickname: string;
+    }) => joinLeague(queryClient, userId, join_code, nickname),
+
     onError: (error) => {
       console.error('Failed to join league:', error);
     },
   });
 };
 
+// ********************************************************
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.leagueByJoinCode(joinCode),
+    queryKey: QUERY_KEYS.leagues.byJoinCode(joinCode),
     queryFn: () => leagueService.findLeagueByJoinCode(joinCode),
     enabled: joinCode?.length === 6,
     retry: 1,
   });
 };
+// ********************************************************
 export const useUpdatePrimaryLeague = () => {
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
+  const { updatePrimaryLeague } = useMemberStore();
 
   return useMutation({
-    mutationFn: ({ leagueId, userId }: { leagueId: string; userId: string }) => leagueService.updatePrimaryLeague(userId, leagueId),
-    onSuccess: async ( _, {  userId }) => {
-      const { initializeMembers } = useMemberStore.getState();
-      await initializeMembers();
-      router.push('/(app)/(tabs)/League');  
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues });
+    mutationFn: ({ leagueId }: { leagueId: string }) =>
+      updatePrimaryLeague(queryClient, userId, leagueId),
+
+    onError: (_, context) => {
+      console.error('Failed to update primary league:', context);
     },
-    onError: (error) => {
-      console.error('Failed to update primary league:', error);
-    },
-    onSettled: ( _, __, {  userId }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLeagues });
+    onSuccess: async () => {
+      router.push('/(app)/(tabs)/League');
+      // Wait for any pending query invalidations to complete
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.users.leagues(userId),
+        refetchType: 'active',
+      });
     },
   });
 };
+
+// ********************************************************
 export const useGetFullLeagueAndMembersById = (leagueId: string) => {
   return useQuery({
-    queryKey: ['league', leagueId],
+    queryKey: QUERY_KEYS.leagues.fullLeagueAndMembers(leagueId),
     queryFn: () => leagueService.getFullLeagueAndMembersById(leagueId),
     enabled: !!leagueId,
   });
 };
 
+// ********************************************************
 export const useLeaveLeague = () => {
-  
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
-  
+  const { leaveLeague } = useMemberStore();
+
   return useMutation({
-    mutationFn: (leagueId: string) => leagueService.leaveLeague(leagueId),
-    onMutate: async (leagueId) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.allLeagues });
-    },
-    onSuccess: async (_, leagueId) => {
-      const { initializeMembers } = useMemberStore.getState();
-      await initializeMembers();
-      queryClient.invalidateQueries({ 
-        queryKey: QUERY_KEYS.allLeagues
-      });
-    },
-    onError: (error) => { 
+    mutationFn: (leagueId: string) =>
+      leaveLeague(queryClient, userId, leagueId),
+
+    onError: (error) => {
       console.error('Failed to leave league:', error);
     },
-    onSettled: (_, __, leagueId) => {
-        // This runs whether success or error
-        queryClient.invalidateQueries({ 
-          queryKey: QUERY_KEYS.allLeagues
-        });
-      },
-    });
-  
+  });
 };
-
-

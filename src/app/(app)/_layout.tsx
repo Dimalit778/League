@@ -1,8 +1,51 @@
+import { supabase } from '@/lib/supabase';
 import { useMemberStore } from '@/store/MemberStore';
+
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { AppState } from 'react-native';
 
 export default function AppLayout() {
-  const { member } = useMemberStore();
+  const { member, initializeMemberLeagues, isLoading } = useMemberStore();
+
+  useEffect(() => {
+    // Only initialize if we have a valid session
+    const initializeIfAuthenticated = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.user) {
+        await initializeMemberLeagues();
+      }
+    };
+
+    initializeIfAuthenticated();
+
+    // Monitor app state for re-sync when app comes to foreground
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Re-sync MemberStore when app comes to foreground
+          await initializeMemberLeagues();
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+
+  if (isLoading) return null;
+  console.log('AppLayout member', JSON.stringify(member, null, 2));
 
   return (
     <Stack>

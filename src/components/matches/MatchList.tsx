@@ -1,8 +1,9 @@
 import { useGetFixturesWithPredictions } from '@/hooks/useFixtures';
 
 import { FlatList, View } from 'react-native';
-import { Error, LoadingOverlay } from '../layout';
+import { Error } from '../layout';
 import MatchCard from './MatchCard';
+import MatchesSkeleton from './SkeletonMatches';
 
 const MatchList = ({
   selectedRound,
@@ -20,7 +21,7 @@ const MatchList = ({
     refetch,
   } = useGetFixturesWithPredictions(selectedRound, competitionId, userId);
 
-  if (isLoading) return <LoadingOverlay />;
+  if (isLoading) return <MatchesSkeleton />;
   if (error) return <Error error={error} />;
 
   return (

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colorScheme } from 'nativewind';
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface ThemeState {
   theme: 'light' | 'dark';
@@ -15,7 +15,7 @@ export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
       theme: 'dark',
-      
+
       get isDark() {
         return get().theme === 'dark';
       },
@@ -34,7 +34,7 @@ export const useThemeStore = create<ThemeState>()(
       initializeTheme: async () => {
         try {
           const savedData = await AsyncStorage.getItem('theme-storage');
-          
+
           let themeToUse: 'light' | 'dark' = 'dark';
           if (savedData) {
             const parsed = JSON.parse(savedData);
@@ -43,7 +43,6 @@ export const useThemeStore = create<ThemeState>()(
           colorScheme.set(themeToUse);
 
           set({ theme: themeToUse });
-          
         } catch (error) {
           console.error('Failed to initialize theme:', error);
           colorScheme.set('dark');

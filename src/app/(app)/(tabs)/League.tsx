@@ -7,6 +7,7 @@ import { FlatList, View } from 'react-native';
 
 const League = () => {
   const { member } = useMemberStore();
+
   const {
     data: leaderboard,
     isLoading,

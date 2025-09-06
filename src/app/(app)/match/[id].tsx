@@ -1,5 +1,5 @@
-import { MatchHeader } from '@/components/matchDetails/MatchHeader';
-import MatchSkeleton from '@/components/matchDetails/MatchSkeleton';
+import MatchHeader from '@/components/matchDetails/MatchHeader';
+import SkeletonMatchDetails from '@/components/matchDetails/SkeletonMatchDetails';
 import { useMatchContent } from '@/hooks/useMatchContent';
 import { useThemeStore } from '@/store/ThemeStore';
 import { themes } from '@/styles/themes';
@@ -21,7 +21,7 @@ export default function MatchDetails() {
     console.log('Error parsing match from params:', e);
   }
 
-  if (!match) return <MatchSkeleton />;
+  if (!match) return <SkeletonMatchDetails />;
 
   // Check if match is valid before using it
   const isValidMatch = match && !('error' in match);

@@ -1,13 +1,11 @@
-// import { MyLeagueType } from '@/types/league.types';
-
+import { MemberQueryType } from '@/services/leagueService';
 import { Text, TouchableOpacity, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { TrashIcon } from '../../../assets/icons';
 import StarIcon from '../../../assets/icons/StarIcon';
 import { Image } from '../ui';
-
 interface LeagueCardProps {
-  item: any;
+  item: MemberQueryType[number];
   onSetPrimary: () => void;
   onLeaveLeague: () => void;
   swipeableRef: (ref: any) => void;
@@ -44,7 +42,7 @@ const LeagueCard = ({
           <TouchableOpacity onPress={onSetPrimary} activeOpacity={0.8}>
             <View className="flex-row items-center">
               <Image
-                source={{ uri: item.logo }}
+                source={{ uri: item.leagues.logo }}
                 width={48}
                 height={48}
                 resizeMode="contain"
@@ -56,10 +54,11 @@ const LeagueCard = ({
                   className="text-2xl font-headBold text-text"
                   numberOfLines={1}
                 >
-                  {item.name}
+                  {item.leagues.name}
                 </Text>
                 <Text className="text-base text-muted">
-                  {item.league_members || 0}/{item.max_members} members
+                  {item.leagues.league_members[0].count || 0}/
+                  {item.leagues.max_members} members
                 </Text>
               </View>
 

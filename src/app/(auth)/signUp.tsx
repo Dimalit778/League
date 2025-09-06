@@ -10,9 +10,16 @@ import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
 import * as yup from 'yup';
 import { EmailIcon, LockIcon, UserIcon } from '../../../assets/icons';
+const validateEmail = (email: string) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
 
 const schema = yup.object().shape({
-  email: yup.string().email('Invalid email').required('Email is required'),
+  email: yup
+    .string()
+    .test('email', 'Invalid email', (value) => validateEmail(value || ''))
+    .required('Email is required'),
   password: yup
     .string()
     .min(6, 'Minimum 6 characters')
@@ -99,7 +106,7 @@ const SignUp = () => {
           <Button
             title="Continue with Google"
             onPress={() => {}}
-            loading={isLoading}
+            // loading={isLoading}
             variant="primary"
             size="md"
           />

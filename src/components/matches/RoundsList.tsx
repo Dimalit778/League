@@ -1,4 +1,5 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 type RoundsListProps = {
   rounds: string[];
@@ -10,31 +11,46 @@ export default function RoundsList({
   selectedRound,
   handleRoundPress,
 }: RoundsListProps) {
-  if (!rounds || rounds.length === 0) {
-    return (
-      <View className="flex-row justify-center items-center">
-        <Text className="text-gray-400 p-4">No rounds available</Text>
-      </View>
-    );
-  }
+  const ref = useRef<FlatList<string>>(null);
+  const refIndex = useRef<number>(0);
+
+  const selectedIndex = rounds.findIndex((round) => round === selectedRound);
+  useEffect(() => {
+    refIndex.current = selectedIndex;
+    ref.current?.scrollToIndex({
+      index: selectedIndex,
+      viewPosition: 0.5,
+      animated: true,
+    });
+  }, [selectedIndex]);
+
+  const handlePress = (round: string, index: number) => {
+    handleRoundPress(round);
+    ref.current?.scrollToIndex({
+      index,
+      viewPosition: 0.5,
+      animated: true,
+    });
+  };
 
   return (
     <View className="my-3 mx-1">
-      <ScrollView
+      <FlatList
+        ref={ref}
+        // initialScrollIndex={selectedIndex}
+        data={rounds}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ alignItems: 'center' }}
-      >
-        {rounds.map((round, index) => {
-          const getRoundNumber = (roundName: string): string => {
-            const match = roundName.match(/(\d+)$/);
-            return match ? match[1] : (index + 1).toString();
-          };
-
+        getItemLayout={(_, index) => ({
+          length: 55,
+          offset: 55 * index,
+          index,
+        })}
+        renderItem={({ item: round, index }) => {
           return (
             <TouchableOpacity
-              key={round}
-              onPress={() => handleRoundPress(round)}
+              onPress={() => handlePress(round, index)}
               className={`mx-1 rounded-full border-1 border-border ${
                 selectedRound === round ? 'bg-primary' : 'bg-surface'
               }`}
@@ -50,12 +66,12 @@ export default function RoundsList({
                   selectedRound === round ? 'text-background' : 'text-text'
                 }`}
               >
-                {getRoundNumber(round)}
+                {round.match(/(\d+)$/)?.[1] ?? ''}
               </Text>
             </TouchableOpacity>
           );
-        })}
-      </ScrollView>
+        }}
+      />
     </View>
   );
 }

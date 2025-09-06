@@ -1,6 +1,7 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, Image, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
+import { useMemberStore } from '@/store/MemberStore';
 import { foundLeagueType } from '@/types';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,6 +18,7 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
+  const { member } = useMemberStore();
   const {
     control,
     handleSubmit,

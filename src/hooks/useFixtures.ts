@@ -1,34 +1,33 @@
-import { fixtureService } from "@/services/fixtureService";
-import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { fixtureService } from '@/services/fixtureService';
+import { useQuery } from '@tanstack/react-query';
 
-export const useGetFixturesByRound = (round: string, competitionId: number) => { 
- return useQuery({
-    queryKey: ['fixtures', 'round', competitionId, round],
+export const useGetFixturesByRound = (round: string, competitionId: number) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.fixtures.byRound(competitionId, round),
     queryFn: () => fixtureService.getFixturesByRound(round, competitionId),
     enabled: !!round && !!competitionId,
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
- 
-}
+  });
+};
 export const useGetFixtureById = (id: number) => {
   return useQuery({
-    queryKey: ["fixture", id],
+    queryKey: QUERY_KEYS.fixtures.byId(id),
     queryFn: () => fixtureService.getFixtureById(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
-  
-  })
- 
-
-}
-export const useGetFixturesWithPredictions = (round: string, competitionId: number, userId: string) => {
- 
+  });
+};
+export const useGetFixturesWithPredictions = (
+  round: string,
+  competitionId: number,
+  userId: string
+) => {
   return useQuery({
-     queryKey: ['fixtures', 'predictions',round],
-    queryFn: () => fixtureService.getFixturesWithPredictions(round, competitionId, userId),
+    queryKey: QUERY_KEYS.fixtures.withPredictions(competitionId, round, userId),
+    queryFn: () =>
+      fixtureService.getFixturesWithPredictions(round, competitionId, userId),
     enabled: !!round && !!competitionId && !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    
-  })
-}
-
+  });
+};

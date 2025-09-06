@@ -1,15 +1,14 @@
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { leaderboardService } from '@/services/leaderboardService';
+import { useMemberStore } from '@/store/MemberStore';
+import { useQuery } from '@tanstack/react-query';
 
-import { leaderboardService } from "@/services/leaderboardService";
-import { useMemberStore } from "@/store/MemberStore";
-import { useQuery } from "@tanstack/react-query";
-
-
-export  const useGetLeagueLeaderboard = ()=> {
+export const useGetLeagueLeaderboard = () => {
   const { member } = useMemberStore();
 
-  if(!member) throw new Error('Member not found');
+  if (!member) throw new Error('Member not found');
   return useQuery({
-    queryKey: ['leaderboard', member.league_id],
+    queryKey: QUERY_KEYS.leaderboard.byLeague(member.league_id),
     queryFn: () => leaderboardService.getLeagueLeaderboard(member.league_id),
     enabled: !!member.league_id,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -22,7 +21,7 @@ export  const useGetLeagueLeaderboard = ()=> {
 //     queryKey: ["leagueMemberPredictions", primaryLeague?.id],
 //     queryFn: () => leaderboardService.getMemberPredictions(primaryLeague!.id),
 //     enabled: !!primaryLeague?.id,
-//     staleTime: 1000 * 60 * 5, 
+//     staleTime: 1000 * 60 * 5,
 //   });
 // };
 
@@ -67,7 +66,7 @@ export  const useGetLeagueLeaderboard = ()=> {
 //     queryKey: ["topLeagueMembers", primaryLeague?.id, limit],
 //     queryFn: () => leaderboardService.getTopLeagueMembers(primaryLeague!.id, limit),
 //     enabled: !!primaryLeague?.id,
-//     staleTime: 1000 * 60 * 5, 
+//     staleTime: 1000 * 60 * 5,
 //   });
 // };
 

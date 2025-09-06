@@ -1,16 +1,16 @@
-  import { predictionService } from "@/services/predictionService";
-import { useMemberStore } from "@/store/MemberStore";
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { predictionService } from '@/services/predictionService';
+import { useMemberStore } from '@/store/MemberStore';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-
-
-
-
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // * Done
 // Create Prediction
-export const useCreatePrediction = (fixtureId: number, round: string, competitionId: number) => {
+export const useCreatePrediction = (
+  fixtureId: number,
+  round: string,
+  competitionId: number
+) => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
 
@@ -19,29 +19,34 @@ export const useCreatePrediction = (fixtureId: number, round: string, competitio
       fixture_id: number;
       home_score: number;
       away_score: number;
-    }) => predictionService.createPrediction({
-      user_id: member!.user_id,
-      fixture_id: prediction.fixture_id,
-      home_score: prediction.home_score,
-      away_score: prediction.away_score,
-      league_member_id: member!.id,
-      league_id: member!.league_id,
-    }),
+    }) =>
+      predictionService.createPrediction({
+        user_id: member!.user_id,
+        fixture_id: prediction.fixture_id,
+        home_score: prediction.home_score,
+        away_score: prediction.away_score,
+        league_member_id: member!.id,
+        league_id: member!.league_id,
+      }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures', 'predictions'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
     },
     onError: (error) => {
       console.error('Failed to create prediction:', error);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures', 'predictions'] });
-    } 
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
+    },
   });
 };
 // * Done
 // Update Prediction
-export const useUpdatePrediction = (fixtureId: number, round: string, competitionId: number) => {
+export const useUpdatePrediction = (
+  fixtureId: number,
+  round: string,
+  competitionId: number
+) => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
 
@@ -50,38 +55,41 @@ export const useUpdatePrediction = (fixtureId: number, round: string, competitio
       id: string;
       home_score: number;
       away_score: number;
-    }) => predictionService.updatePrediction({
-      id: prediction.id,
-      home_score: prediction.home_score,
-      away_score: prediction.away_score,
-      user_id: member?.user_id,
-    }),
+    }) =>
+      predictionService.updatePrediction({
+        id: prediction.id,
+        home_score: prediction.home_score,
+        away_score: prediction.away_score,
+        user_id: member?.user_id,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures', 'predictions'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
     },
-    onError: (error) => { 
+    onError: (error) => {
       console.error('Failed to update prediction:', error);
     },
-    onSettled: () => {
-      
-    } 
+    onSettled: () => {},
   });
 };
 export const useUserPredictionsByRound = (round: string) => {
   const { member } = useMemberStore();
   return useQuery({
-    queryKey: ["fixture", "predictions", member?.user_id, round],
-    queryFn: () => predictionService.getUserPredictionsByRound(member!.user_id, round),
+    queryKey: QUERY_KEYS.predictions.byUserAndRound(
+      member?.user_id || '',
+      round
+    ),
+    queryFn: () =>
+      predictionService.getUserPredictionsByRound(member!.user_id, round),
     enabled: !!member?.user_id && !!round,
   });
 };
 
 export const useUserPredictions = (userId: string) => {
   return useQuery({
-    queryKey: ["predictions", userId],
+    queryKey: QUERY_KEYS.predictions.byUser(userId),
     queryFn: () => predictionService.getUserPredictions(userId),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   });
 };
 // Get User Prediction By Fixture
@@ -89,30 +97,34 @@ export const useUserPredictionByFixture = (fixtureId: number) => {
   const { member } = useMemberStore();
 
   return useQuery({
-    queryKey: ["prediction", member?.user_id, fixtureId],
-    queryFn: () => predictionService.getUserPredictionByFixture(member!.user_id, fixtureId),
+    queryKey: QUERY_KEYS.predictions.byFixture(fixtureId),
+    queryFn: () =>
+      predictionService.getUserPredictionByFixture(member!.user_id, fixtureId),
     enabled: !!member?.user_id && !!fixtureId,
-  
   });
 };
 // Get League Predictions By Fixture
-export const useGetLeaguePredictionsByFixture = ( fixtureId: number) => {
+export const useGetLeaguePredictionsByFixture = (fixtureId: number) => {
   const { member } = useMemberStore();
   return useQuery({
-    queryKey: ["prediction",fixtureId, member?.league_id],
-    queryFn: () => predictionService.getLeaguePredictionsByFixture(fixtureId, member!.league_id),
+    queryKey: QUERY_KEYS.predictions.leagueByFixture(
+      fixtureId,
+      member?.league_id || ''
+    ),
+    queryFn: () =>
+      predictionService.getLeaguePredictionsByFixture(
+        fixtureId,
+        member!.league_id
+      ),
     enabled: !!member?.user_id && !!fixtureId && !!member?.league_id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-
-
-
 // export const useAutoPredictions = () => {
 //   const { member } = useMemberStore();
 //   const { primaryLeague } = useLeagueStore();
- 
+
 //   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 //   const appState = useRef(AppState.currentState);
 

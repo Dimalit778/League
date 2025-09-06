@@ -2,7 +2,7 @@ import { Tables } from './database.types';
 
 export type IconProps = {
   color?: string;
-  size?: number 
+  size?: number;
 };
 // League Types
 export type createLeagueParams = {
@@ -11,12 +11,31 @@ export type createLeagueParams = {
   user_id: string;
   competition_id: number;
   max_members: number;
+  league_logo: string;
 };
 export type createLeagueResponse = {
   status: string;
   message: string;
   league_id: string;
 };
+
+// Join League Response Type
+export type joinLeagueResponse = {
+  league_id: string;
+  league_name: string;
+  message: string;
+  success: boolean;
+}[];
+// Member League Type
+export type MemberLeague = Tables<'league_members'> & {
+  leagues: Tables<'leagues'> & {
+    league_members: { count: number }[];
+  };
+};
+export type MemberLeagueArray = MemberLeague[];
+
+// Leave League Response Type
+export type leaveLeagueResponse = any; // Returns Json from database
 
 export type foundLeagueType = {
   id: string;
@@ -36,15 +55,13 @@ export type LeagueLeaderboardType = {
   total_points: number | null;
   predictions_count: number | null;
   user_id: string | null;
-}
+};
 
-
-
-export type MyLeaguesType = Tables<'league_members'> & {
-  leagues: Tables<'leagues'> & {
-    competitions: Tables<'competitions'>;
-  };
-}
+// export type MyLeaguesType = Tables<'league_members'> & {
+//   leagues: Tables<'leagues'> & {
+//     competitions: Tables<'competitions'>;
+//   };
+// };
 
 export type FixturesWithTeamsType = Tables<'fixtures'> & {
   home_team: Tables<'teams'>;

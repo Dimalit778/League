@@ -23,11 +23,11 @@ export default function MatchesPage() {
   };
 
   if (error) return <Error error={error} />;
+  if (isLoading) return <LoadingOverlay />;
 
   return (
     <Screen>
       <TopBar showLeagueName={true} />
-      {isLoading && <LoadingOverlay />}
 
       <RoundsList
         rounds={competition?.rounds || []}

@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from '../../../assets/icons';
 
-export const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
+const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
   const insets = useSafeAreaInsets();
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
@@ -113,3 +113,5 @@ const TeamCard = ({
     </View>
   );
 };
+
+export default MatchHeader;

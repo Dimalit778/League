@@ -1,5 +1,8 @@
-import { QUERY_KEYS } from '@/lib/queryKeys';
-import { subscriptionService, SubscriptionType } from '@/services/subscriptionService';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import {
+  subscriptionService,
+  SubscriptionType,
+} from '@/services/subscriptionService';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -8,7 +11,7 @@ export const useSubscription = () => {
   const userId = member?.user_id;
 
   return useQuery({
-    queryKey: QUERY_KEYS.subscription(userId as string),
+    queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
     queryFn: () => subscriptionService.getCurrentSubscription(userId as string),
     enabled: !!userId,
     staleTime: 60 * 1000 * 5, // 5 minutes
@@ -21,13 +24,13 @@ export const useCreateSubscription = () => {
   const userId = member?.user_id;
 
   return useMutation({
-    mutationFn: ({ 
-      subscriptionType, 
-      startDate, 
-      endDate 
-    }: { 
-      subscriptionType: SubscriptionType; 
-      startDate?: Date; 
+    mutationFn: ({
+      subscriptionType,
+      startDate,
+      endDate,
+    }: {
+      subscriptionType: SubscriptionType;
+      startDate?: Date;
       endDate?: Date;
     }) => {
       if (!userId) throw new Error('User not authenticated');
@@ -39,7 +42,9 @@ export const useCreateSubscription = () => {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscription(userId as string) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
+      });
     },
   });
 };
@@ -54,7 +59,9 @@ export const useCancelSubscription = () => {
       return subscriptionService.cancelSubscription(subscriptionId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscription(userId as string) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
+      });
     },
   });
 };
@@ -64,7 +71,7 @@ export const useCanCreateLeague = () => {
   const userId = member?.user_id;
 
   return useQuery({
-    queryKey: QUERY_KEYS.canCreateLeague(userId as string),
+    queryKey: QUERY_KEYS.subscriptions.canCreateLeague(userId as string),
     queryFn: () => subscriptionService.canCreateLeague(userId as string),
     enabled: !!userId,
     staleTime: 60 * 1000 * 5, // 5 minutes

@@ -1,15 +1,14 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, InputField } from '@/components/ui';
+import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useCreateLeague } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
 import { subscriptionService } from '@/services/subscriptionService';
-import { useMemberStore } from '@/store/MemberStore';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Alert,
   KeyboardAvoidingView,
   Text,
   TouchableOpacity,
@@ -29,8 +28,8 @@ const schema = yup.object().shape({
 });
 
 export default function EnterLeagueDetailsScreen() {
-  const { competitionId } = useLocalSearchParams();
-  const { member } = useMemberStore();
+  const { competitionId, leagueLogo } = useLocalSearchParams();
+  const { session } = useCurrentSession();
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
 
@@ -57,48 +56,13 @@ export default function EnterLeagueDetailsScreen() {
   const subscriptionType = subscription?.subscription_type || 'FREE';
   const limits = subscriptionService.getSubscriptionLimits(subscriptionType);
 
-  // Check if user can create more leagues
-  useEffect(() => {
-    const checkCanCreateLeague = async () => {
-      if (!member?.user_id) return;
-
-      try {
-        const { canCreate, reason } = await subscriptionService.canCreateLeague(
-          member.user_id
-        );
-
-        if (!canCreate) {
-          Alert.alert(
-            'Subscription Limit Reached',
-            reason ||
-              "You've reached your league limit. Please upgrade your subscription to create more leagues.",
-            [
-              {
-                text: 'Upgrade Subscription',
-                onPress: () => router.push('/(app)/subscription'),
-              },
-              {
-                text: 'Cancel',
-                onPress: () => router.back(),
-                style: 'cancel',
-              },
-            ]
-          );
-        }
-      } catch (error) {
-        console.error('Error checking if user can create league:', error);
-      }
-    };
-
-    checkCanCreateLeague();
-  }, [member?.user_id]);
-
   const onSubmit = handleSubmit((data) =>
     createLeague.mutate({
       ...data,
       competition_id: Number(competitionId),
       max_members: membersCount || 6,
-      user_id: member?.id as string,
+      user_id: session?.user?.id as string,
+      league_logo: leagueLogo as string,
     })
   );
 

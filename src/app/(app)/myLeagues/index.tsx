@@ -1,89 +1,86 @@
 import { Error, LoadingOverlay, Screen, TopBar } from '@/components/layout';
-
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { SubscriptionStatus } from '@/components/subscription';
 import { Button } from '@/components/ui';
 import {
+  useGetLeagues,
   useLeaveLeague,
-  useMyLeagues,
   useUpdatePrimaryLeague,
 } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
 import { subscriptionService } from '@/services/subscriptionService';
-import { useMemberStore } from '@/store/MemberStore';
+import { MemberLeague } from '@/types';
 import { router } from 'expo-router';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { Alert, FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
-  const { member } = useMemberStore();
-  const { data: leagues, isLoading, error, refetch } = useMyLeagues();
-  const { data: subscription } = useSubscription();
-  const swipeableRefs = useRef<Map<string, any>>(new Map());
+  const { data: memberLeagues, isLoading, error } = useGetLeagues();
 
   const updatePrimaryLeague = useUpdatePrimaryLeague();
   const leaveLeague = useLeaveLeague();
 
-  // Get subscription limits
+  const { data: subscription } = useSubscription();
+
   const subscriptionType = subscription?.subscription_type || 'FREE';
+  const expiresAt = subscription?.end_date;
   const limits = subscriptionService.getSubscriptionLimits(subscriptionType);
 
-  const handleSetPrimary = (leagueId: string, isPrimary: boolean) => {
-    if (isPrimary) {
-      router.push('/(app)/(tabs)/League');
-      return;
-    }
-    updatePrimaryLeague.mutate({ leagueId, userId: member?.user_id as string });
-  };
+  const swipeableRefs = useRef<Map<string, any>>(new Map());
 
-  const handleLeaveLeague = (leagueId: string, leagueName: string) => {
-    Alert.alert(
-      'Leave League',
-      `Are you sure you want to leave "${leagueName}"? This will delete all your predictions.`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => swipeableRefs.current.get(leagueId)?.close(),
-          style: 'cancel',
-        },
-        {
-          text: 'Leave',
-          onPress: () => {
-            leaveLeague.mutate(leagueId);
-            swipeableRefs.current.get(leagueId)?.close();
+  const handleSetPrimary = useCallback(
+    (league: MemberLeague) => {
+      if (league.is_primary) {
+        router.push('/(app)/(tabs)/League');
+        return;
+      }
+      updatePrimaryLeague.mutate({
+        leagueId: league.league_id,
+      });
+    },
+    [updatePrimaryLeague]
+  );
+
+  const handleLeaveLeague = useCallback(
+    (leagueId: string, leagueName: string) => {
+      Alert.alert(
+        'Leave League',
+        `Are you sure you want to leave "${leagueName}"? This will delete all your predictions.`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => swipeableRefs.current.get(leagueId)?.close(),
+            style: 'cancel',
           },
-          style: 'destructive',
-        },
-      ]
-    );
-  };
+          {
+            text: 'Leave',
+            onPress: () => {
+              leaveLeague.mutate(leagueId);
+              swipeableRefs.current.get(leagueId)?.close();
+            },
+            style: 'destructive',
+          },
+        ]
+      );
+    },
+    [leaveLeague, swipeableRefs]
+  );
 
   if (error) return <Error error={error} />;
+
+  const loading =
+    updatePrimaryLeague.isPending || leaveLeague.isPending || isLoading;
 
   return (
     <Screen>
       <TopBar showLeagueName={false} />
-      {isLoading ||
-        ((updatePrimaryLeague.isPending || leaveLeague.isPending) && (
-          <LoadingOverlay />
-        ))}
+      {loading && <LoadingOverlay />}
 
       <View className="px-3 mt-2 mb-4">
         <SubscriptionStatus
           subscriptionType={subscriptionType}
-          expiresAt={subscription?.end_date}
+          expiresAt={expiresAt}
         />
-
-        <Text className="text-textMuted text-sm mb-2">
-          {`Your current plan allows you to join up to ${limits.maxLeagues} leagues`}
-        </Text>
-
-        {leagues && leagues.length >= limits.maxLeagues && (
-          <Text className="text-error text-sm mb-2">
-            You've reached your league limit. Upgrade your subscription to join
-            or create more leagues.
-          </Text>
-        )}
       </View>
 
       <View className="flex-row justify-between mb-4 px-3">
@@ -92,25 +89,33 @@ export default function MyLeagues() {
           variant="secondary"
           size="md"
           onPress={() => router.push('/myLeagues/select-competition')}
-          disabled={leagues && leagues.length >= limits.maxLeagues}
         />
         <Button
           title="Join League"
           variant="secondary"
           size="md"
           onPress={() => router.push('/myLeagues/join-league')}
-          disabled={leagues && leagues.length >= limits.maxLeagues}
         />
       </View>
-
       <FlatList
-        data={leagues}
+        data={memberLeagues}
         showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        scrollEnabled={memberLeagues && memberLeagues.length > 0}
+        ListEmptyComponent={() => (
+          <View className="my-10 mx-3">
+            <Text className="text-center text-muted text-2xl">
+              No leagues found
+            </Text>
+          </View>
+        )}
         renderItem={({ item }) => (
           <LeagueCard
             item={item}
-            onSetPrimary={() => handleSetPrimary(item.id, item.is_primary)}
-            onLeaveLeague={() => handleLeaveLeague(item.id, item.name)}
+            onSetPrimary={() => handleSetPrimary(item)}
+            onLeaveLeague={() =>
+              handleLeaveLeague(item.league_id, item.leagues.name)
+            }
             swipeableRef={(ref: any) => swipeableRefs.current.set(item.id, ref)}
           />
         )}

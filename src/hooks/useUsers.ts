@@ -1,22 +1,17 @@
-import { QUERY_KEYS } from '@/lib/queryKeys';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { userService } from '@/services/usersService';
 import { useMemberStore } from '@/store/MemberStore';
 import { TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-
-
 export const useGetUser = () => {
-
   return useQuery({
-    queryKey: ['user'],
+    queryKey: QUERY_KEYS.users.all,
     queryFn: () => userService.getUser(),
     retry: 2,
     staleTime: 60 * 1000, // 1 minute
   });
 };
-
-
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
@@ -26,16 +21,16 @@ export const useUpdateUser = () => {
     mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) =>
       userService.updateUserProfile(member?.user_id!, updates),
     onSuccess: (data) => {
-      queryClient.setQueryData(QUERY_KEYS.user(member?.user_id!), data);
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.user(member?.user_id!) });
+      queryClient.setQueryData(QUERY_KEYS.users.byId(member?.user_id!), data);
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.users.byId(member?.user_id!),
+      });
     },
     onError: (error) => {
       console.error('Failed to update user:', error);
     },
   });
 };
-
-
 
 //   return useQuery({
 //     queryKey: QUERY_KEYS.userLeagues(userId!),

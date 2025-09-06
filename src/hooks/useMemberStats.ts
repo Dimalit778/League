@@ -1,10 +1,8 @@
-  
-import { QUERY_KEYS } from '@/lib/queryKeys';
 import { supabase } from '@/lib/supabase';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
 import { useQuery } from '@tanstack/react-query';
-
 
 export const useMemberStats = () => {
   const { member } = useMemberStore();
@@ -18,25 +16,26 @@ export const useMemberStats = () => {
       .from('predictions')
       .select('points, is_finished')
       .eq('league_member_id', member.id)
-      .eq('is_finished', true)
-
+      .eq('is_finished', true);
 
     if (error) throw error;
 
     const totalPredictions = data.length;
-    const totalPoints = data.reduce((sum, prediction) => sum + (prediction.points || 0), 0);
-    
+    const totalPoints = data.reduce(
+      (sum, prediction) => sum + (prediction.points || 0),
+      0
+    );
 
-    const bingoHits = data.filter(p => p.points === 3).length;
+    const bingoHits = data.filter((p) => p.points === 3).length;
 
-    const regularHits = data.filter(p => p.points === 1).length;
-    
-  
-    const missedHits = data.filter(p => p.points === 0).length;
-    
-    const accuracy = totalPredictions > 0 
-      ? ((bingoHits + regularHits) / totalPredictions) * 100 
-      : 0;
+    const regularHits = data.filter((p) => p.points === 1).length;
+
+    const missedHits = data.filter((p) => p.points === 0).length;
+
+    const accuracy =
+      totalPredictions > 0
+        ? ((bingoHits + regularHits) / totalPredictions) * 100
+        : 0;
 
     return {
       totalPredictions,
@@ -44,12 +43,12 @@ export const useMemberStats = () => {
       regularHits,
       missedHits,
       totalPoints,
-      accuracy: Math.round(accuracy * 100) / 100
+      accuracy: Math.round(accuracy * 100) / 100,
     };
   };
 
   return useQuery({
-    queryKey: QUERY_KEYS.memberStats(member?.id || ''),
+    queryKey: QUERY_KEYS.members.stats(member?.id || ''),
     queryFn: fetchMemberStats,
     enabled: !!member?.id,
     staleTime: 5 * 60 * 1000,

@@ -183,6 +183,7 @@ export type Database = {
           created_at: string
           id: string
           join_code: string
+          logo: string
           max_members: number
           name: string
           owner_id: string
@@ -193,6 +194,7 @@ export type Database = {
           created_at?: string
           id?: string
           join_code: string
+          logo: string
           max_members?: number
           name: string
           owner_id: string
@@ -203,6 +205,7 @@ export type Database = {
           created_at?: string
           id?: string
           join_code?: string
+          logo?: string
           max_members?: number
           name?: string
           owner_id?: string
@@ -427,13 +430,22 @@ export type Database = {
         Returns: boolean
       }
       create_new_league: {
-        Args: {
-          avatar_url: string
-          competition_id: number
-          league_name: string
-          max_members: number
-          nickname: string
-        }
+        Args:
+          | {
+              avatar_url: string
+              competition_id: number
+              league_name: string
+              logo: string
+              max_members: number
+              nickname: string
+            }
+          | {
+              avatar_url: string
+              competition_id: number
+              league_name: string
+              max_members: number
+              nickname: string
+            }
         Returns: Json
       }
       generate_join_code: {

@@ -2,7 +2,6 @@ import '../../global.css';
 
 import { SplashScreen } from '@/components/layout';
 import { supabase } from '@/lib/supabase';
-import { useMemberStore } from '@/store/MemberStore';
 import { useThemeStore } from '@/store/ThemeStore';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,18 +11,10 @@ import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 2,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { initializeTheme } = useThemeStore();
-  const { initializeMembers } = useMemberStore();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -56,12 +47,9 @@ export default function RootLayout() {
       const isLoggedIn = !!session?.user;
       setIsLoggedIn(isLoggedIn);
       if (isLoggedIn) {
-        console.log('User is logged in, initializing member data');
-        initializeMembers();
         // Ensure auto refresh is started
         supabase.auth.startAutoRefresh();
       }
-
       setLoading(false);
     });
 
@@ -69,24 +57,20 @@ export default function RootLayout() {
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(`Auth state changed: ${event}`, session?.user?.id);
-      const isLoggedIn = !!session?.user;
-      setIsLoggedIn(isLoggedIn);
+      console.log('Auth state change:', {
+        event,
+        session: !!session,
+        user: !!session?.user,
+      });
 
-      if (
-        isLoggedIn &&
-        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')
-      ) {
-        initializeMembers();
-      }
+      const isLoggedIn = !!session?.user;
+      console.log('Setting isLoggedIn to:', isLoggedIn);
+      setIsLoggedIn(isLoggedIn);
     });
 
     return () => {
-      // Clean up subscriptions
       authSubscription.unsubscribe();
       subscription.remove();
-
-      // Stop auto refresh when component unmounts
       supabase.auth.stopAutoRefresh();
     };
   }, []);

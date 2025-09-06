@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase";
-import { useMemberStore } from "@/store/MemberStore";
-import { useState } from "react";
+import { supabase } from '@/lib/supabase';
+import { useMemberStore } from '@/store/MemberStore';
+import { useState } from 'react';
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,15 +10,18 @@ export const useAuth = () => {
   async function signOut() {
     setIsLoading(true);
     try {
-      // First check if we have a session
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log('Session before sign out:', sessionData.session ? 'Found' : 'Not found');
-      
-      // Even if there's an error with session, we should still clear local state
+      console.log(
+        'Session before sign out:',
+        sessionData.session ? 'Found' : 'Not found'
+      );
+
       try {
         const { error } = await supabase.auth.signOut();
-        console.log('Sign out result:', error ? `Error: ${error.message}` : 'Success');
-        
+        console.log(
+          'Sign out result:',
+          error ? `Error: ${error.message}` : 'Success'
+        );
         if (error && error.message !== 'Auth session missing!') {
           throw error;
         }
@@ -26,20 +29,21 @@ export const useAuth = () => {
         console.warn('Error during sign out:', signOutError);
         // Continue with cleanup even if sign out fails
       }
-      
+
       // Reset stores using their clearAll methods regardless of Supabase signOut result
       useMemberStore.getState().clearAll();
-      
+
       // Force clear any session data from AsyncStorage directly as a fallback
       try {
         const keys = ['supabase.auth.token', 'supabase-auth-token'];
-        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        const AsyncStorage =
+          require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.multiRemove(keys);
         console.log('Manually cleared auth storage keys');
       } catch (storageError) {
         console.warn('Failed to manually clear auth storage:', storageError);
       }
-      
+
       return { success: true };
     } catch (error: any) {
       setIsError(true);
@@ -53,8 +57,14 @@ export const useAuth = () => {
   async function signUp(email: string, password: string, fullname: string) {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({ email, password, options: { data: { fullname } } });
-      if(error) throw new Error(error.message);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullname } },
+      });
+
+      if (error) throw new Error(error.message);
+
       return { success: true };
     } catch (error: any) {
       setIsError(true);
@@ -71,8 +81,12 @@ export const useAuth = () => {
         email: email.trim(),
         password: password.trim(),
       });
-      
+
       if (error) throw new Error(error.message);
+
+      // Sync MemberStore after successful sign in
+      await useMemberStore.getState().initializeMemberLeagues();
+
       return { success: true };
     } catch (error: any) {
       setIsError(true);
@@ -83,13 +97,13 @@ export const useAuth = () => {
     }
   }
 
-  return { 
-    signOut, 
-    signUp, 
+  return {
+    signOut,
+    signUp,
     signIn,
-    isLoading, 
+    isLoading,
     isError,
     errorMessage,
-    clearError: () => setErrorMessage(null)
+    clearError: () => setErrorMessage(null),
   };
 };
