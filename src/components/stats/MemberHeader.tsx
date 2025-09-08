@@ -7,7 +7,6 @@ interface MemberHeaderProps {
 }
 
 const MemberHeader = ({ member }: MemberHeaderProps) => {
-  console.log('member', JSON.stringify(member, null, 2));
   return (
     <Card className="p-4 mb-4">
       <View className="flex-row items-center">

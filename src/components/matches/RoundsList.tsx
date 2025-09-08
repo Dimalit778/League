@@ -1,65 +1,63 @@
 import { useEffect, useRef } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 type RoundsListProps = {
   rounds: string[];
   selectedRound: string;
   handleRoundPress: (round: string) => void;
 };
+
 export default function RoundsList({
   rounds,
   selectedRound,
   handleRoundPress,
 }: RoundsListProps) {
-  const ref = useRef<FlatList<string>>(null);
-  const refIndex = useRef<number>(0);
+  console.log('selectedRound:', selectedRound);
 
-  const selectedIndex = rounds.findIndex((round) => round === selectedRound);
-  useEffect(() => {
-    refIndex.current = selectedIndex;
-    ref.current?.scrollToIndex({
-      index: selectedIndex,
-      viewPosition: 0.5,
-      animated: true,
-    });
-  }, [selectedIndex]);
+  const flatListRef = useRef<FlatList<string>>(null);
 
   const handlePress = (round: string, index: number) => {
     handleRoundPress(round);
-    ref.current?.scrollToIndex({
+    flatListRef.current?.scrollToIndex({
       index,
-      viewPosition: 0.5,
       animated: true,
+      viewPosition: 0.5,
     });
   };
+  // 👉 Center the initial selected item when the component mounts
+  useEffect(() => {
+    const index = rounds.findIndex((round) => round === selectedRound);
+    if (index !== -1) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({
+          index,
+          animated: false,
+          viewPosition: 0.5,
+        });
+      }, 0);
+    }
+  }, []);
 
   return (
     <View className="my-3 mx-1">
       <FlatList
-        ref={ref}
-        // initialScrollIndex={selectedIndex}
+        ref={flatListRef}
         data={rounds}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: 'center' }}
-        getItemLayout={(_, index) => ({
-          length: 55,
-          offset: 55 * index,
-          index,
-        })}
+        keyExtractor={(item) => item}
         renderItem={({ item: round, index }) => {
           return (
             <TouchableOpacity
               onPress={() => handlePress(round, index)}
-              className={`mx-1 rounded-full border-1 border-border ${
-                selectedRound === round ? 'bg-primary' : 'bg-surface'
-              }`}
-              style={{
-                height: 55,
-                width: 55,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+              className={selectedRound === round ? 'bg-primary' : 'bg-surface'}
+              style={styles.item}
             >
               <Text
                 className={`text-text font-semibold ${
@@ -71,7 +69,22 @@ export default function RoundsList({
             </TouchableOpacity>
           );
         }}
+        getItemLayout={(_, index) => ({
+          length: 60,
+          offset: 60 * index,
+          index,
+        })}
       />
     </View>
   );
 }
+const styles = StyleSheet.create({
+  item: {
+    height: 50,
+    width: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+});

@@ -114,7 +114,7 @@ export default function MyLeagues() {
             item={item}
             onSetPrimary={() => handleSetPrimary(item)}
             onLeaveLeague={() =>
-              handleLeaveLeague(item.league_id, item.leagues.name)
+              handleLeaveLeague(item.league_id, item.league.name)
             }
             swipeableRef={(ref: any) => swipeableRefs.current.set(item.id, ref)}
           />

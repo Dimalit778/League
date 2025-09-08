@@ -76,15 +76,17 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, leagues!league_id(*)')
+      .select('*, league:leagues!league_id(*)')
       .eq('user_id', user?.id as string)
-      .order('is_primary', { ascending: false });
+      .eq('is_primary', true)
+      .maybeSingle();
+
     if (error) throw new Error(error.message);
-    if (!data || data.length === 0) {
+    if (!data) {
       set({ member: null, isLoading: false });
       return;
     }
-    set({ member: data[0] as MemberLeague, isLoading: false });
+    set({ member: data as MemberLeague, isLoading: false });
   },
 
   // League operations - all centralized in store
@@ -135,10 +137,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
   ) => {
     // Use the service function for database operations
     const result = await leagueService.updatePrimaryLeague(userId, leagueId);
-
-    // Update the store with the new primary member
-    set({ member: result as MemberLeague });
-
+    await get().refreshMemberData(queryClient, userId);
     // Invalidate all related queries
     get().invalidateLeagueQueries(queryClient, userId, leagueId);
   },

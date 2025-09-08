@@ -13,7 +13,6 @@ export default function Profile() {
   const { data: user, isLoading } = useGetUser();
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
-  console.log('subscription', JSON.stringify(subscription, null, 2));
 
   const { signOut, isLoading: isLoadingAuth, isError } = useAuth();
 
@@ -46,10 +45,11 @@ export default function Profile() {
       {isLoading || (isLoadingSubscription && <LoadingOverlay />)}
       <BackButton />
       <View className="flex-1">
-        <ProfileHeader fullName={user?.full_name} email={user?.email} />
+        <ProfileHeader fullName={user?.full_name} />
         <ProfileContent
           created_at={user?.created_at}
           subscription={subscription as Tables<'subscription'> | undefined}
+          email={user?.email}
         />
       </View>
       <View className="pb-10">

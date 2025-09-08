@@ -2,7 +2,6 @@ import { FixturesWithTeamsAndPredictionsType } from '@/types';
 
 import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { Card } from '../ui';
 import { MatchStatus } from './MatchStatus';
 import PredictionStatus from './PredictionStatus';
 
@@ -29,9 +28,10 @@ const MatchCard = ({
       },
     });
   };
+
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={() => handlePress(match)}>
-      <Card className="p-2 my-1">
+      <View className="p-2 my-1 bg-surface border-b border-t border-border   ">
         <PredictionStatus
           prediction={prediction}
           match={{
@@ -84,7 +84,7 @@ const MatchCard = ({
             />
           </View>
         </View>
-      </Card>
+      </View>
     </TouchableOpacity>
   );
 };

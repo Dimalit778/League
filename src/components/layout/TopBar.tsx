@@ -4,10 +4,11 @@ import { Pressable, Text, View } from 'react-native';
 import { SettingsIcon, TrophyIcon } from '../../../assets/icons';
 const TopBar = ({ showLeagueName = false }: { showLeagueName?: boolean }) => {
   const { member } = useMemberStore();
+  console.log('--------------', JSON.stringify(member, null, 2));
 
   return (
     <View className="flex-row justify-between items-center py-2 px-4">
-      <Link href="/profile" asChild>
+      <Link href="/settings" asChild>
         <Pressable>
           <SettingsIcon size={30} color={'#f97316'} />
         </Pressable>

@@ -28,7 +28,7 @@ export type joinLeagueResponse = {
 }[];
 // Member League Type
 export type MemberLeague = Tables<'league_members'> & {
-  leagues: Tables<'leagues'> & {
+  league: Tables<'leagues'> & {
     league_members: { count: number }[];
   };
 };
@@ -56,12 +56,6 @@ export type LeagueLeaderboardType = {
   predictions_count: number | null;
   user_id: string | null;
 };
-
-// export type MyLeaguesType = Tables<'league_members'> & {
-//   leagues: Tables<'leagues'> & {
-//     competitions: Tables<'competitions'>;
-//   };
-// };
 
 export type FixturesWithTeamsType = Tables<'fixtures'> & {
   home_team: Tables<'teams'>;

@@ -7,10 +7,9 @@ import { useMemberStore } from '@/store/MemberStore';
 import { useEffect, useState } from 'react';
 
 export default function MatchesPage() {
-  const [selectedRound, setSelectedRound] = useState<string>('');
-
   const { data: competition, isLoading, error } = useCompetitionRounds();
   const { member } = useMemberStore();
+  const [selectedRound, setSelectedRound] = useState<string | null>(null);
 
   useEffect(() => {
     if (competition?.current_round && !selectedRound) {
@@ -23,18 +22,18 @@ export default function MatchesPage() {
   };
 
   if (error) return <Error error={error} />;
-  if (isLoading) return <LoadingOverlay />;
 
   return (
     <Screen>
       <TopBar showLeagueName={true} />
-
-      <RoundsList
-        rounds={competition?.rounds || []}
-        selectedRound={selectedRound}
-        key={selectedRound}
-        handleRoundPress={handleRoundPress}
-      />
+      {isLoading && !selectedRound && <LoadingOverlay />}
+      {selectedRound && (
+        <RoundsList
+          rounds={competition?.rounds || []}
+          selectedRound={selectedRound}
+          handleRoundPress={handleRoundPress}
+        />
+      )}
 
       {selectedRound && (
         <MatchList

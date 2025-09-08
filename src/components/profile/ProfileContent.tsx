@@ -7,9 +7,11 @@ import { Text, TouchableWithoutFeedback, View } from 'react-native';
 const ProfileContent = ({
   created_at = 'N/A',
   subscription,
+  email,
 }: {
   created_at?: string;
   subscription: Tables<'subscription'> | undefined;
+  email?: string;
 }) => {
   const { theme } = useThemeStore();
   const router = useRouter();
@@ -41,14 +43,20 @@ const ProfileContent = ({
     <View className="py-4">
       {/* Profile Information */}
       <View className="bg-surface  p-4 mb-4">
-        <View className="gap-4">
-          <View className="flex-row justify-between items-center">
+        <View className="gap-4 ">
+          {/* Subscription */}
+          <View className="flex-row justify-between items-center border-b border-border pb-4">
             <Text className="text-text text-base">Subscription</Text>
             <View className="bg-secondary rounded-md px-2 py-1">
               <Text className="text-black text-sm ">{subscriptionType}</Text>
             </View>
           </View>
-
+          {/* Email */}
+          <View className="flex-row justify-between items-center border-b border-border pb-4">
+            <Text className="text-text text-base ">Email</Text>
+            <Text className="text-text text-base">{email}</Text>
+          </View>
+          {/* Joined On */}
           <View className="flex-row justify-between items-center">
             <Text className="text-text text-base ">Joined On</Text>
             <Text className="text-text text-base">{createdAtDateString}</Text>
@@ -59,7 +67,7 @@ const ProfileContent = ({
         {/* Account Actions */}
         {renderAccountActions(
           'Account',
-          '/(app)/profile' as RelativePathString
+          '/settings/account' as RelativePathString
         )}
 
         {renderAccountActions(
@@ -67,9 +75,15 @@ const ProfileContent = ({
           '/(app)/subscription' as RelativePathString
         )}
 
-        {/* {renderAccountActions('Privacy Settings', '/(app)/(tabs)/Profile')}
+        {renderAccountActions(
+          'Privacy Settings',
+          '/settings/privacy' as RelativePathString
+        )}
 
-        {renderAccountActions('Help & Support', '/(app)/(tabs)/Help')} */}
+        {renderAccountActions(
+          'Help & Support',
+          '/settings/help' as RelativePathString
+        )}
       </View>
     </View>
   );

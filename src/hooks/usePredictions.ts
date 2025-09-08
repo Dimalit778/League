@@ -30,13 +30,13 @@ export const useCreatePrediction = (
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
     },
     onError: (error) => {
       console.error('Failed to create prediction:', error);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
     },
   });
 };
@@ -63,7 +63,7 @@ export const useUpdatePrediction = (
         user_id: member?.user_id,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.predictions.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
     },
     onError: (error) => {
       console.error('Failed to update prediction:', error);
