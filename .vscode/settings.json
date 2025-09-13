@@ -34,5 +34,6 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "chatgpt.openOnStartup": true
 }

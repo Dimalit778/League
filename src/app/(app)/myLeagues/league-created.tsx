@@ -1,37 +1,31 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { Button, Image } from '@/components/ui';
-import { useGetFullLeagueAndMembersById } from '@/hooks/useLeagues';
+import { useGetFullLeagueData } from '@/hooks/useLeagues';
 
+import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  Alert,
-  Clipboard,
-  Share,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LeagueCreatedScreen() {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
   console.log('useLocalSearchParams', leagueId);
-  const { data: leagueData } = useGetFullLeagueAndMembersById(leagueId);
+  const { data: leagueData } = useGetFullLeagueData(leagueId);
   const router = useRouter();
 
   if (!leagueData) {
     return <LoadingOverlay />;
   }
 
-  const handleCopyJoinCode = () => {
+  const handleCopyJoinCode = async () => {
     if (typeof leagueData?.join_code === 'string') {
-      Clipboard.setString(leagueData?.join_code || '');
+      await Clipboard.setStringAsync(leagueData?.join_code || '');
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
 
   const handleShareJoinCode = async () => {
     try {
-      const shareMessage = `🏆 Join my ${leagueData?.competitions?.name || 'Football'} league "${leagueData?.name}"!\n\nUse code: ${leagueData?.join_code}\n\nDownload the app to join!`;
+      const shareMessage = `🏆 Join my ${leagueData?.competition?.name || 'Football'} league "${leagueData?.name}"!\n\nUse code: ${leagueData?.join_code}\n\nDownload the app to join!`;
 
       await Share.share({
         message: shareMessage,
@@ -50,7 +44,7 @@ export default function LeagueCreatedScreen() {
           League Created Successfully! 🎉
         </Text>
         <Text className="text-base text-muted text-center">
-          Your {leagueData?.competitions?.name || 'Football'} league is ready
+          Your {leagueData?.competition?.name || 'Football'} league is ready
         </Text>
       </View>
 
@@ -60,7 +54,7 @@ export default function LeagueCreatedScreen() {
         <View className="items-center mb-6">
           <Image
             source={{
-              uri: leagueData?.competitions?.logo,
+              uri: leagueData?.competition?.logo,
             }}
             className="rounded-2xl mb-4 shadow-sm"
             width={80}
@@ -71,8 +65,7 @@ export default function LeagueCreatedScreen() {
             {leagueData?.name}
           </Text>
           <Text className="text-base text-muted text-center">
-            {leagueData?.competitions?.country} •{' '}
-            {leagueData?.competitions?.name}
+            {leagueData?.competition?.country} • {leagueData?.competition?.name}
           </Text>
         </View>
 
@@ -81,7 +74,7 @@ export default function LeagueCreatedScreen() {
             Your Nickname
           </Text>
           <Text className="text-lg font-bold text-text text-center">
-            {leagueData?.league_members[0]?.nickname}
+            {leagueData?.owner?.nickname}
           </Text>
         </View>
 

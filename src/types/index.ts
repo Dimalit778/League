@@ -4,28 +4,7 @@ export type IconProps = {
   color?: string;
   size?: number;
 };
-// League Types
-export type createLeagueParams = {
-  leagueName: string;
-  nickname: string;
-  user_id: string;
-  competition_id: number;
-  max_members: number;
-  league_logo: string;
-};
-export type createLeagueResponse = {
-  status: string;
-  message: string;
-  league_id: string;
-};
 
-// Join League Response Type
-export type joinLeagueResponse = {
-  league_id: string;
-  league_name: string;
-  message: string;
-  success: boolean;
-}[];
 // Member League Type
 export type MemberLeague = Tables<'league_members'> & {
   league: Tables<'leagues'> & {
@@ -34,21 +13,6 @@ export type MemberLeague = Tables<'league_members'> & {
 };
 export type MemberLeagueArray = MemberLeague[];
 
-// Leave League Response Type
-export type leaveLeagueResponse = any; // Returns Json from database
-
-export type foundLeagueType = {
-  id: string;
-  name: string;
-  join_code: string;
-  max_members: number;
-  league_members: number;
-  competition_id: number;
-  logo: string;
-  country: string;
-  flag: string;
-  owner_id: string;
-};
 export type LeagueLeaderboardType = {
   nickname: string | null;
   avatar_url?: string | null;

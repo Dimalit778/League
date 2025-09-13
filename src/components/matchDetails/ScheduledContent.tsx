@@ -22,16 +22,8 @@ const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
   const [originalAwayScore, setOriginalAwayScore] = useState('');
 
   // Mutations
-  const createPrediction = useCreatePrediction(
-    match.id,
-    match.round,
-    match.competition_id
-  );
-  const updatePrediction = useUpdatePrediction(
-    match.id,
-    match.round,
-    match.competition_id
-  );
+  const createPrediction = useCreatePrediction();
+  const updatePrediction = useUpdatePrediction();
   // Initialize state when prediction data loads
   useEffect(() => {
     if (prediction) {

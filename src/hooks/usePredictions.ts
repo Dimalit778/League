@@ -6,11 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // * Done
 // Create Prediction
-export const useCreatePrediction = (
-  fixtureId: number,
-  round: string,
-  competitionId: number
-) => {
+export const useCreatePrediction = () => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
 
@@ -42,11 +38,7 @@ export const useCreatePrediction = (
 };
 // * Done
 // Update Prediction
-export const useUpdatePrediction = (
-  fixtureId: number,
-  round: string,
-  competitionId: number
-) => {
+export const useUpdatePrediction = () => {
   const queryClient = useQueryClient();
   const { member } = useMemberStore();
 

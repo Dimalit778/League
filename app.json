@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dimalit778.league"
+      "bundleIdentifier": "com.dimalit778.league",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +30,16 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera for your avatar.",
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": ["audio", "photo"]
+        }
+      ],
       [
         "expo-camera",
         {

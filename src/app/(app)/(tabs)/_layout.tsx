@@ -1,4 +1,9 @@
-import { LeagueIcon, MatchesIcon, RankIcon } from '../../../../assets/icons';
+import {
+  LeagueIcon,
+  MatchesIcon,
+  ProfileIcon,
+  RankIcon,
+} from '../../../../assets/icons';
 
 import { useThemeStore } from '@/store/ThemeStore';
 import { Tabs } from 'expo-router';
@@ -54,6 +59,16 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <RankIcon size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
+        options={{
+          title: 'Profile',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <ProfileIcon size={size} color={color} />
           ),
         }}
       />

@@ -32,7 +32,7 @@ export const QUERY_KEYS = {
     byJoinCode: (joinCode: string) =>
       ['leagues', 'joinCode', joinCode] as const,
     myLeagues: (userId: string) => ['users', userId, 'leagues'] as const,
-    fullLeagueAndMembers: (leagueId: string) =>
+    leagueAndMembers: (leagueId: string) =>
       ['leagues', leagueId, 'full'] as const,
   },
 
