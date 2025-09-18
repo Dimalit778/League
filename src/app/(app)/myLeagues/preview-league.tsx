@@ -6,9 +6,9 @@ import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';
 
-export default function LeagueCreatedScreen() {
+const PreviewLeague = () => {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
-  console.log('useLocalSearchParams', leagueId);
+
   const { data: leagueData } = useGetFullLeagueData(leagueId);
   const router = useRouter();
 
@@ -116,4 +116,6 @@ export default function LeagueCreatedScreen() {
       </View>
     </Screen>
   );
-}
+};
+
+export default PreviewLeague;

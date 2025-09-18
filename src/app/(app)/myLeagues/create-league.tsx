@@ -5,10 +5,11 @@ import { useCreateLeague } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
 import { subscriptionService } from '@/services/subscriptionService';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  Alert,
   KeyboardAvoidingView,
   Text,
   TouchableOpacity,
@@ -27,9 +28,10 @@ const schema = yup.object().shape({
     .min(2, 'Nickname must be at least 2 characters long'),
 });
 
-export default function EnterLeagueDetailsScreen() {
+const CreateLeague = () => {
   const { competitionId, leagueLogo } = useLocalSearchParams();
   const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
 
@@ -50,20 +52,34 @@ export default function EnterLeagueDetailsScreen() {
   });
 
   const [membersCount, setMembersCount] = useState<number | null>(null);
-  const createLeague = useCreateLeague();
+  const createLeague = useCreateLeague(userId);
 
   // Get subscription limits
   const subscriptionType = subscription?.subscription_type || 'FREE';
   const limits = subscriptionService.getSubscriptionLimits(subscriptionType);
 
   const onSubmit = handleSubmit((data) =>
-    createLeague.mutate({
-      ...data,
-      competition_id: Number(competitionId),
-      max_members: membersCount || 6,
-      user_id: session?.user?.id as string,
-      league_logo: leagueLogo as string,
-    })
+    createLeague.mutateAsync(
+      {
+        league_name: data.leagueName,
+        nickname: data.nickname,
+        competition_id: Number(competitionId),
+        max_members: membersCount ?? 6,
+        user_id: userId,
+        league_logo: leagueLogo as string,
+      },
+      {
+        onSuccess: (data) => {
+          router.push({
+            pathname: '/(app)/myLeagues/preview-league',
+            params: { leagueId: data.league_id },
+          });
+        },
+        onError: (error) => {
+          Alert.alert('Error', error.message || 'Failed to create league');
+        },
+      }
+    )
   );
 
   return (
@@ -163,4 +179,6 @@ export default function EnterLeagueDetailsScreen() {
       </KeyboardAvoidingView>
     </Screen>
   );
-}
+};
+
+export default CreateLeague;

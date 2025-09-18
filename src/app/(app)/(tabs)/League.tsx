@@ -19,7 +19,6 @@ const League = () => {
 
   const topThree = leaderboard?.slice(0, 3);
 
-  // Use a separate state for pull-to-refresh loading
   const isRefreshing = false;
 
   return (

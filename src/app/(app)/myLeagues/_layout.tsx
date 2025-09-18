@@ -12,8 +12,8 @@ export default function NewLeagueLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="join-league" />
         <Stack.Screen name="select-competition" />
-        <Stack.Screen name="league-details" />
-        <Stack.Screen name="league-created" />
+        <Stack.Screen name="create-league" />
+        <Stack.Screen name="preview-league" />
       </Stack>
     </Screen>
   );

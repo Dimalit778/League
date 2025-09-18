@@ -1,6 +1,7 @@
 import { Button, Image } from '@/components/ui';
-import { useLeaveLeague, useUpdateLeague } from '@/hooks/useLeagues';
-import { leagueWithMembers } from '@/types/league.types';
+import { useUpdateLeague } from '@/hooks/useLeagues';
+
+import { leagueWithMembers } from '@/types';
 import * as Clipboard from 'expo-clipboard';
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
@@ -15,7 +16,6 @@ const LeagueContent = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(league.name);
-  const leaveLeague = useLeaveLeague();
   const updateLeague = useUpdateLeague();
 
   useEffect(() => {
@@ -33,21 +33,6 @@ const LeagueContent = ({
       await Clipboard.setStringAsync(league.join_code || '');
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
-  };
-
-  const confirmLeaveLeague = () => {
-    Alert.alert(
-      'Leave League',
-      `Are you sure you want to leave "${league?.name}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Leave',
-          style: 'destructive',
-          onPress: () => leaveLeague.mutate(league.id),
-        },
-      ]
-    );
   };
 
   return (
@@ -187,15 +172,6 @@ const LeagueContent = ({
             />
           )}
         </View>
-      </View>
-      {/* Leave League Button */}
-      <View className="mt-auto mb-6">
-        <Button
-          title={leaveLeague.isPending ? 'Leaving...' : 'Leave League'}
-          variant="error"
-          onPress={confirmLeaveLeague}
-          disabled={leaveLeague.isPending}
-        />
       </View>
     </View>
   );

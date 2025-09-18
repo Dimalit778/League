@@ -45,7 +45,6 @@ export default function AppLayout() {
   }, []);
 
   if (isLoading) return null;
-  console.log('AppLayout member', JSON.stringify(member, null, 2));
 
   return (
     <Stack>

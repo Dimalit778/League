@@ -27,7 +27,7 @@ const InputField = ({
   clearError,
 }: InputFieldProps) => (
   <View>
-    <View className="bg-surface flex-row items-center border border-text rounded-lg px-3 my-2 ">
+    <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 ">
       <View className="mr-2">{icon}</View>
       <Controller
         control={control}
@@ -37,7 +37,7 @@ const InputField = ({
             placeholder={placeholder}
             placeholderTextColor="#aaa"
             secureTextEntry={secureTextEntry}
-            className="flex-1 text-text px-2 py-4"
+            className="flex-1 text-text py-4 "
             onBlur={onBlur}
             onChangeText={(text) => {
               onChange(text);

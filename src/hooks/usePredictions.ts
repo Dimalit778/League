@@ -4,7 +4,6 @@ import { useMemberStore } from '@/store/MemberStore';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// * Done
 // Create Prediction
 export const useCreatePrediction = () => {
   const queryClient = useQueryClient();
@@ -36,7 +35,7 @@ export const useCreatePrediction = () => {
     },
   });
 };
-// * Done
+
 // Update Prediction
 export const useUpdatePrediction = () => {
   const queryClient = useQueryClient();
@@ -63,7 +62,7 @@ export const useUpdatePrediction = () => {
     onSettled: () => {},
   });
 };
-export const useUserPredictionsByRound = (round: string) => {
+export const useMemberPredictionsByRound = (round: string) => {
   const { member } = useMemberStore();
   return useQuery({
     queryKey: QUERY_KEYS.predictions.byUserAndRound(
@@ -71,27 +70,30 @@ export const useUserPredictionsByRound = (round: string) => {
       round
     ),
     queryFn: () =>
-      predictionService.getUserPredictionsByRound(member!.user_id, round),
+      predictionService.getMemberPredictionsByRound(member!.user_id, round),
     enabled: !!member?.user_id && !!round,
   });
 };
 
-export const useUserPredictions = (userId: string) => {
+export const useMemberPredictions = (userId: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.predictions.byUser(userId),
-    queryFn: () => predictionService.getUserPredictions(userId),
+    queryFn: () => predictionService.getMemberPredictions(userId),
     enabled: !!userId,
     staleTime: 1000 * 60 * 5,
   });
 };
 // Get User Prediction By Fixture
-export const useUserPredictionByFixture = (fixtureId: number) => {
+export const useMemberPredictionByFixture = (fixtureId: number) => {
   const { member } = useMemberStore();
 
   return useQuery({
     queryKey: QUERY_KEYS.predictions.byFixture(fixtureId),
     queryFn: () =>
-      predictionService.getUserPredictionByFixture(member!.user_id, fixtureId),
+      predictionService.getMemberPredictionByFixture(
+        member!.user_id,
+        fixtureId
+      ),
     enabled: !!member?.user_id && !!fixtureId,
   });
 };

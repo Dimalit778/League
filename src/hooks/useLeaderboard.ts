@@ -4,13 +4,12 @@ import { useMemberStore } from '@/store/MemberStore';
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetLeagueLeaderboard = () => {
-  const { member } = useMemberStore();
+  const leagueId = useMemberStore((s) => s.member?.league_id);
 
-  if (!member) throw new Error('Member not found');
   return useQuery({
-    queryKey: QUERY_KEYS.leaderboard.byLeague(member.league_id),
-    queryFn: () => leaderboardService.getLeagueLeaderboard(member.league_id),
-    enabled: !!member.league_id,
+    queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+    queryFn: () => leaderboardService.getLeagueLeaderboard(leagueId!),
+    enabled: !!leagueId,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

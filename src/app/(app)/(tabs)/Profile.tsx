@@ -1,31 +1,54 @@
 import { LoadingOverlay, Screen, TopBar } from '@/components/layout';
 import LeagueContent from '@/components/profile/LeagueContent';
-import { ProfileImage } from '@/components/ui';
-import { useGetLeagueAndMembers } from '@/hooks/useLeagues';
+import { Button, ProfileImage } from '@/components/ui';
+import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
+import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 export default function Profile() {
-  const { member, setMember } = useMemberStore();
-
-  const { data: leagueWithMembers, isLoading } = useGetLeagueAndMembers(
-    member?.league?.id as string
+  const { member } = useMemberStore();
+  const leaveLeague = useLeaveLeague(member?.user_id as string);
+  const { data: league, isLoading } = useGetLeagueAndMembers(
+    member?.league_id as string
   );
 
   const isOwner = useMemo(
     () =>
       Boolean(
         member?.user_id &&
-          leagueWithMembers?.owner?.user_id &&
-          member.user_id === leagueWithMembers.owner.user_id
+          league?.owner?.user_id &&
+          member.user_id === league.owner.user_id
       ),
-    [member?.user_id, leagueWithMembers?.owner?.user_id]
+    [member?.user_id, league?.owner?.user_id]
   );
+  const confirmLeaveLeague = () => {
+    Alert.alert(
+      'Leave League',
+      `Are you sure you want to leave "${league?.name}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Leave',
+          style: 'destructive',
+          onPress: () =>
+            leaveLeague.mutate(league?.id as string, {
+              onSuccess: () => {
+                router.push('/(app)/(tabs)/League');
+              },
+              onError: (error) => {
+                Alert.alert('Error', error.message);
+              },
+            }),
+        },
+      ]
+    );
+  };
 
   return (
     <Screen>
-      {isLoading && <LoadingOverlay />}
+      {isLoading || (leaveLeague.isPending && <LoadingOverlay />)}
       <TopBar />
       <View className="bg-surface rounded-xl border border-border p-4 mb-4">
         <View className="flex-row items-center">
@@ -42,9 +65,16 @@ export default function Profile() {
         </View>
       </View>
 
-      {leagueWithMembers && (
-        <LeagueContent league={leagueWithMembers} isOwner={isOwner} />
-      )}
+      {league && <LeagueContent league={league} isOwner={isOwner} />}
+
+      <View className="mt-auto mb-6">
+        <Button
+          title={'Leave League'}
+          variant="error"
+          onPress={confirmLeaveLeague}
+          disabled={leaveLeague.isPending}
+        />
+      </View>
     </Screen>
   );
 }

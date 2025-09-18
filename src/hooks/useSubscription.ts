@@ -11,8 +11,15 @@ export const useSubscription = () => {
   const userId = member?.user_id;
 
   return useQuery({
-    queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
-    queryFn: () => subscriptionService.getCurrentSubscription(userId as string),
+    queryKey: userId
+      ? QUERY_KEYS.subscriptions.byUser(userId)
+      : ['subscriptions', 'unknown'] as const,
+    queryFn: () => {
+      if (!userId) {
+        throw new Error('User id is required to load subscription');
+      }
+      return subscriptionService.getCurrentSubscription(userId);
+    },
     enabled: !!userId,
     staleTime: 60 * 1000 * 5, // 5 minutes
   });
@@ -42,8 +49,9 @@ export const useCreateSubscription = () => {
       );
     },
     onSuccess: () => {
+      if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
+        queryKey: QUERY_KEYS.subscriptions.byUser(userId),
       });
     },
   });
@@ -59,8 +67,9 @@ export const useCancelSubscription = () => {
       return subscriptionService.cancelSubscription(subscriptionId);
     },
     onSuccess: () => {
+      if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.subscriptions.byUser(userId as string),
+        queryKey: QUERY_KEYS.subscriptions.byUser(userId),
       });
     },
   });
@@ -71,8 +80,15 @@ export const useCanCreateLeague = () => {
   const userId = member?.user_id;
 
   return useQuery({
-    queryKey: QUERY_KEYS.subscriptions.canCreateLeague(userId as string),
-    queryFn: () => subscriptionService.canCreateLeague(userId as string),
+    queryKey: userId
+      ? QUERY_KEYS.subscriptions.canCreateLeague(userId)
+      : ['subscriptions', 'unknown', 'canCreateLeague'] as const,
+    queryFn: () => {
+      if (!userId) {
+        throw new Error('User id is required to check league creation capability');
+      }
+      return subscriptionService.canCreateLeague(userId);
+    },
     enabled: !!userId,
     staleTime: 60 * 1000 * 5, // 5 minutes
   });

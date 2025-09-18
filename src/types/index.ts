@@ -1,17 +1,44 @@
 import { Tables } from './database.types';
-
+// App Types
 export type IconProps = {
   color?: string;
   size?: number;
 };
-
-// Member League Type
+// Database Types
+// Member And League Type
 export type MemberLeague = Tables<'league_members'> & {
-  league: Tables<'leagues'> & {
-    league_members: { count: number }[];
-  };
+  league: Tables<'leagues'>;
 };
-export type MemberLeagueArray = MemberLeague[];
+export type FoundLeague = Tables<'leagues'> & {
+  competition: Pick<
+    Tables<'competitions'>,
+    'id' | 'name' | 'logo' | 'flag' | 'country'
+  >;
+  league_members: { count: number }[];
+};
+export type leagueWithMembers = Tables<'leagues'> & {
+  league_members: Tables<'league_members'>[];
+  competition: Pick<
+    Tables<'competitions'>,
+    'id' | 'name' | 'logo' | 'country' | 'flag'
+  >;
+  owner: Tables<'league_members'>;
+};
+export type createLeagueProps = {
+  league_name: string;
+  nickname: string;
+  competition_id: number;
+  max_members: number;
+  user_id: string;
+  league_logo: string;
+};
+
+export type createLeagueResponse = {
+  league_id: string;
+  league_name: string;
+  message: string;
+  success: boolean;
+};
 
 export type LeagueLeaderboardType = {
   nickname: string | null;

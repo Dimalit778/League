@@ -1,50 +1,43 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
-import { createLeagueParams } from '@/types/league.types';
+
+import { MemberLeague } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import { useCurrentSession } from './useCurrentSession';
 
-export const useGetLeagues = () => {
+export const useGetUserLeagues = () => {
   const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
+  const userId = session?.user?.id;
   return useQuery({
-    queryKey: QUERY_KEYS.users.leagues(userId),
-    queryFn: () => leagueService.getLeagues(userId),
+    queryKey: userId
+      ? QUERY_KEYS.users.leagues(userId)
+      : ['users', 'unknown', 'leagues'] as const,
+    queryFn: () => {
+      if (!userId) {
+        throw new Error('User id is required to fetch leagues');
+      }
+      return leagueService.getUserLeagues(userId);
+    },
+    enabled: !!userId,
   });
 };
-// ********************************************************
-export const useCreateLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
+
+export const useCreateLeague = (userId: string) => {
   const queryClient = useQueryClient();
   const { refreshMemberData } = useMemberStore();
-
   return useMutation({
-    mutationFn: (params: createLeagueParams) =>
-      leagueService.createLeague(params),
-    onSuccess: async (leagueId) => {
-      // Update cached queries and primary membership
+    mutationFn: leagueService.createLeague,
+    onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
       await refreshMemberData(userId);
-      router.push({
-        pathname: '/(app)/myLeagues/league-created',
-        params: { leagueId: leagueId.league_id },
-      });
-    },
-    onError: (error) => {
-      console.error('Failed to create league:', error);
     },
   });
 };
 
-// ********************************************************
-export const useJoinLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
+export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
   const { refreshMemberData } = useMemberStore();
 
@@ -55,7 +48,7 @@ export const useJoinLeague = () => {
     }: {
       join_code: string;
       nickname: string;
-    }) => leagueService.joinLeague(join_code, nickname, userId),
+    }) => leagueService.joinLeague(join_code, nickname),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
@@ -69,7 +62,6 @@ export const useJoinLeague = () => {
   });
 };
 
-// ********************************************************
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.leagues.byJoinCode(joinCode),
@@ -78,42 +70,65 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
     retry: 1,
   });
 };
-// ********************************************************
+
 export const useUpdatePrimaryLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
   const { setMember } = useMemberStore();
 
   return useMutation({
-    mutationFn: ({ leagueId }: { leagueId: string }) =>
+    mutationFn: ({ userId, leagueId }: { userId: string; leagueId: string }) =>
       leagueService.updatePrimaryLeague(userId, leagueId),
+    onSuccess: async (primaryMember, variables) => {
+      const updatedMember = primaryMember as MemberLeague;
 
-    onError: (_, context) => {
-      console.error('Failed to update primary league:', context);
-    },
-    onSuccess: async (primaryMember, { leagueId }) => {
-      // Update member store immediately
-      setMember(primaryMember as any);
-      router.push('/(app)/(tabs)/League');
-      // Invalidate related queries
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.fixtures.all,
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.predictions.all,
-      });
+      setMember(updatedMember);
+
+      queryClient.setQueryData<MemberLeague[]>(
+        QUERY_KEYS.users.leagues(variables.userId),
+        (previous) =>
+          previous?.map((member) => {
+            if (member.league_id === updatedMember.league_id) {
+              return {
+                ...member,
+                ...updatedMember,
+              };
+            }
+
+            if (member.is_primary) {
+              return {
+                ...member,
+                is_primary: false,
+              };
+            }
+
+            return member;
+          }) ?? previous
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.users.leagues(variables.userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.members.byId(updatedMember.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.members.stats(updatedMember.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leaderboard.byLeague(variables.leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.fixtures.all,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.predictions.all,
+        }),
+      ]);
     },
   });
 };
 
-// ********************************************************
 export const useGetFullLeagueData = (leagueId: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.leagues.byId(leagueId),
@@ -122,50 +137,50 @@ export const useGetFullLeagueData = (leagueId: string) => {
   });
 };
 
-// ********************************************************
-export const useLeaveLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
+export const useLeaveLeague = (userId: string) => {
   const queryClient = useQueryClient();
   const { refreshMemberData } = useMemberStore();
 
   return useMutation({
-    mutationFn: (leagueId: string) => leagueService.leaveLeague(leagueId),
+    mutationFn: leagueService.leaveLeague,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
       await refreshMemberData(userId);
     },
-
-    onError: (error) => {
-      console.error('Failed to leave league:', error);
-    },
   });
 };
 
-// ********************************************************
 export const useGetLeagueAndMembers = (leagueId?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId as string),
-    queryFn: () => leagueService.getLeagueAndMembers(leagueId as string),
+    queryKey: leagueId
+      ? QUERY_KEYS.leagues.leagueAndMembers(leagueId)
+      : ['leagues', 'unknown', 'full'] as const,
+    queryFn: () => {
+      if (!leagueId) {
+        throw new Error('League id is required to fetch members');
+      }
+      return leagueService.getLeagueAndMembers(leagueId);
+    },
     enabled: !!leagueId,
   });
 };
 
-// ********************************************************
 export const useUpdateLeague = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ leagueId, name }: { leagueId: string; name?: string }) =>
       leagueService.updateLeague(leagueId, { name }),
     onSuccess: async (updated) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.byId(updated.id),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.leagueAndMembers(updated.id),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leagues.byId(updated.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leagues.leagueAndMembers(updated.id),
+        }),
+      ]);
     },
     onError: (error) => {
       console.error('Failed to update league:', error);
@@ -173,19 +188,21 @@ export const useUpdateLeague = () => {
   });
 };
 
-// ********************************************************
 export const useRemoveMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ leagueId, userId }: { leagueId: string; userId: string }) =>
       leagueService.removeMember(leagueId, userId),
+
     onSuccess: async (_data, { leagueId }) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.byId(leagueId),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+        }),
+      ]);
     },
     onError: (error) => {
       console.error('Failed to remove member:', error);

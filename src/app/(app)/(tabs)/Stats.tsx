@@ -3,7 +3,7 @@ import MemberHeader from '@/components/stats/MemberHeader';
 import PredictionChart from '@/components/stats/PredictionChart';
 import SkeletonStats from '@/components/stats/SkeletonStats';
 import StatsCard from '@/components/stats/StatsCard';
-import { useMemberStats } from '@/hooks/useMemberStats';
+import { useMemberStats } from '@/hooks/useMembers';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
 import { useCallback } from 'react';
@@ -13,7 +13,6 @@ const Stats = () => {
   const { member } = useMemberStore();
 
   const { data: stats, isLoading, error, refetch } = useMemberStats();
-  console.log('stats', JSON.stringify(stats, null, 2));
 
   const onRefresh = useCallback(() => {
     refetch();

@@ -35,7 +35,7 @@ export default function SelectCompetitionScreen() {
     const leagueLogo = selectedCompetition?.logo;
 
     router.push({
-      pathname: '/(app)/myLeagues/league-details',
+      pathname: '/(app)/myLeagues/create-league',
       params: {
         competitionId: competitionId,
         leagueLogo: leagueLogo,

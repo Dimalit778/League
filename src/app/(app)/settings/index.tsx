@@ -38,8 +38,6 @@ export default function Profile() {
     ]);
   };
 
-  // --- Cancel edit ---
-
   return (
     <Screen>
       {isLoading || (isLoadingSubscription && <LoadingOverlay />)}

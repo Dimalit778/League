@@ -1,21 +1,17 @@
 import { supabase } from '@/lib/supabase';
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
-import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
-import { useQuery } from '@tanstack/react-query';
 
-export const useMemberStats = () => {
-  const { member } = useMemberStore();
-
-  const fetchMemberStats = async (): Promise<MemberStatsType> => {
-    if (!member?.id) {
+export const membersService = {
+  // Get Member Stats
+  async getMemberStats(memberId: string): Promise<MemberStatsType> {
+    if (!memberId) {
       throw new Error('No member ID available');
     }
 
     const { data, error } = await supabase
       .from('predictions')
       .select('points, is_finished')
-      .eq('league_member_id', member.id)
+      .eq('league_member_id', memberId)
       .eq('is_finished', true);
 
     if (error) throw error;
@@ -45,13 +41,31 @@ export const useMemberStats = () => {
       totalPoints,
       accuracy: Math.round(accuracy * 100) / 100,
     };
-  };
-
-  return useQuery({
-    queryKey: QUERY_KEYS.members.stats(member?.id || ''),
-    queryFn: fetchMemberStats,
-    enabled: !!member?.id,
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  });
+  },
+  // Upload Member Image
+  async uploadMemberImage(memberId: string, avatarUrl: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', memberId)
+      .select()
+      .single();
+  },
+  // Delete Member Image
+  async deleteMemberImage(memberId: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .update({ avatar_url: null })
+      .eq('id', memberId)
+      .select()
+      .single();
+  },
+  // Get Member Image
+  async getMemberImage(memberId: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .select('avatar_url')
+      .eq('id', memberId)
+      .single();
+  },
 };

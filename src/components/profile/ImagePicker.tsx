@@ -1,199 +1,146 @@
-import * as ImagePicker from 'expo-image-picker';
-import { useEffect, useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+import * as ExpoImagePicker from 'expo-image-picker';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
-  Text,
   TouchableOpacity,
-  View,
+  ViewStyle,
 } from 'react-native';
 
-interface ImageUploadProps {
-  onImageSelected?: (uri: string) => void;
-  onUploadComplete?: (url: string) => void;
-}
+export type PickedImage = {
+  uri: string;
+  fileName?: string | null;
+  mimeType?: string | null;
+  width?: number;
+  height?: number;
+};
 
-const ImagePickerComponent = ({
-  onImageSelected,
-  onUploadComplete,
-}: ImageUploadProps) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+type ImagePickerButtonProps = {
+  onPicked: (image: PickedImage) => void;
+  allowCamera?: boolean;
+  allowLibrary?: boolean;
+  allowsEditing?: boolean;
+  aspect?: [number, number];
+  quality?: number;
+  className?: string;
+  style?: ViewStyle;
+  disabled?: boolean;
+  loading?: boolean;
+  accessibilityLabel?: string;
+  iconSize?: number;
+  iconColor?: string;
+};
 
-  // Request permissions on component mount
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+const ImagePickerButton = ({
+  onPicked,
+  allowCamera = true,
+  allowLibrary = true,
+  allowsEditing = true,
+  aspect = [1, 1],
+  quality = 0.8,
+  className = 'bg-primary rounded-full w-8 h-8 items-center justify-center border border-border',
+  style,
+  disabled,
+  loading,
+  accessibilityLabel = 'Select image',
+  iconSize = 14,
+  iconColor = '#fff',
+}: ImagePickerButtonProps) => {
+  const [busy, setBusy] = useState(false);
 
-  const requestPermissions = async () => {
-    // Request camera permissions
-    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!cameraPermission.granted) {
-      Alert.alert(
-        'Permission needed',
-        'Camera permission is required to take photos.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Settings', onPress: () => console.log('Open settings') },
-        ]
-      );
+  const pickFromLibrary = async () => {
+    const permission =
+      await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permission needed', 'We need access to your photos.');
+      return;
     }
-
-    // Request media library permissions
-    const mediaPermission =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!mediaPermission.granted) {
-      Alert.alert(
-        'Permission needed',
-        'Media library permission is required to select photos.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Settings', onPress: () => console.log('Open settings') },
-        ]
-      );
-    }
-  };
-
-  const showImagePickerOptions = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: openCamera },
-        { text: 'Photo Library', onPress: openImageLibrary },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  const openCamera = async () => {
-    try {
-      const permissionResult =
-        await ImagePicker.requestCameraPermissionsAsync();
-
-      if (!permissionResult.granted) {
-        Alert.alert('Permission needed', 'Camera access is required!');
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
+    const result = await ExpoImagePicker.launchImageLibraryAsync({
+      mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
+      allowsEditing,
+      aspect,
+      quality,
+    });
+    if (!result.canceled && result.assets?.[0]) {
+      const a = result.assets[0];
+      onPicked({
+        uri: a.uri,
+        fileName: a.fileName ?? null,
+        mimeType: a.mimeType ?? null,
+        width: a.width,
+        height: a.height,
       });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setSelectedImage(imageUri);
-        onImageSelected?.(imageUri);
-      }
-    } catch (error) {
-      console.error('Error opening camera:', error);
-      Alert.alert('Error', 'Failed to open camera');
     }
   };
 
-  const openImageLibrary = async () => {
-    try {
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (!permissionResult.granted) {
-        Alert.alert('Permission needed', 'Photo library access is required!');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
+  const pickFromCamera = async () => {
+    const permission = await ExpoImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permission needed', 'Camera access is required.');
+      return;
+    }
+    const result = await ExpoImagePicker.launchCameraAsync({
+      mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
+      allowsEditing,
+      aspect,
+      quality,
+    });
+    if (!result.canceled && result.assets?.[0]) {
+      const a = result.assets[0];
+      onPicked({
+        uri: a.uri,
+        fileName: a.fileName ?? null,
+        mimeType: a.mimeType ?? null,
+        width: a.width,
+        height: a.height,
       });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setSelectedImage(imageUri);
-        onImageSelected?.(imageUri);
-      }
-    } catch (error) {
-      console.error('Error opening image library:', error);
-      Alert.alert('Error', 'Failed to open image library');
     }
   };
 
-  // Upload image to your server
-  const uploadImage = async (uri: string) => {
-    setUploading(true);
-
+  const handlePress = async () => {
+    if (disabled || loading || busy) return;
     try {
-      // Create FormData for multipart/form-data upload
-      const formData = new FormData();
-
-      // Get file extension
-      const uriParts = uri.split('.');
-      const fileType = uriParts[uriParts.length - 1];
-
-      formData.append('image', {
-        uri: uri,
-        name: `photo.${fileType}`,
-        type: `image/${fileType}`,
-      } as any);
-
-      // Replace with your API endpoint
-      const response = await fetch('YOUR_UPLOAD_ENDPOINT', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          // Add any auth headers if needed
-          // 'Authorization': 'Bearer your-token'
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`);
+      setBusy(true);
+      if (allowCamera && allowLibrary) {
+        Alert.alert(
+          'Select Image',
+          'Choose an option',
+          [
+            { text: 'Camera', onPress: pickFromCamera },
+            { text: 'Photo Library', onPress: pickFromLibrary },
+            { text: 'Cancel', style: 'cancel' },
+          ],
+          { cancelable: true }
+        );
+      } else if (allowCamera) {
+        await pickFromCamera();
+      } else if (allowLibrary) {
+        await pickFromLibrary();
       }
-
-      const result = await response.json();
-      onUploadComplete?.(result.url);
-      Alert.alert('Success', 'Image uploaded successfully!');
-    } catch (error) {
-      console.error('Upload error:', error);
-      Alert.alert('Error', 'Failed to upload image');
     } finally {
-      setUploading(false);
+      setBusy(false);
     }
   };
+
+  const showSpinner = loading || busy;
 
   return (
-    <View className="flex-1">
-      <TouchableOpacity
-        className="bg-primary p-2 rounded-md"
-        onPress={showImagePickerOptions}
-      >
-        <Text className="text-white">Select Image</Text>
-      </TouchableOpacity>
-
-      {selectedImage && (
-        <View className="flex-1">
-          <Image source={{ uri: selectedImage }} className="w-full h-full" />
-
-          <TouchableOpacity
-            className="bg-primary p-2 rounded-md"
-            onPress={() => uploadImage(selectedImage)}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white">Upload Image</Text>
-            )}
-          </TouchableOpacity>
-        </View>
+    <TouchableOpacity
+      onPress={handlePress}
+      disabled={disabled || showSpinner}
+      accessibilityLabel={accessibilityLabel}
+      className={`${className} ${showSpinner ? 'opacity-80' : ''}`}
+      style={[{ elevation: 4 }, style]}
+      hitSlop={{ top: 6, right: 6, bottom: 6, left: 6 }}
+    >
+      {showSpinner ? (
+        <ActivityIndicator size="small" color="#fff" />
+      ) : (
+        <FontAwesome name="plus" size={iconSize} color={iconColor} />
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
+
+export default ImagePickerButton;

@@ -2,74 +2,47 @@ import { Error, LoadingOverlay, Screen, TopBar } from '@/components/layout';
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { SubscriptionStatus } from '@/components/subscription';
 import { Button } from '@/components/ui';
-import {
-  useGetLeagues,
-  useLeaveLeague,
-  useUpdatePrimaryLeague,
-} from '@/hooks/useLeagues';
+import { useCurrentSession } from '@/hooks/useCurrentSession';
+import { useGetUserLeagues, useUpdatePrimaryLeague } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
 import { subscriptionService } from '@/services/subscriptionService';
 import { MemberLeague } from '@/types';
 import { router } from 'expo-router';
-import { useCallback, useRef } from 'react';
-import { Alert, FlatList, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
-  const { data: memberLeagues, isLoading, error } = useGetLeagues();
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
+  const { data: memberLeagues, isLoading, error } = useGetUserLeagues();
+  const { data: subscription } = useSubscription();
 
   const updatePrimaryLeague = useUpdatePrimaryLeague();
-  const leaveLeague = useLeaveLeague();
-
-  const { data: subscription } = useSubscription();
 
   const subscriptionType = subscription?.subscription_type || 'FREE';
   const expiresAt = subscription?.end_date;
   const limits = subscriptionService.getSubscriptionLimits(subscriptionType);
 
-  const swipeableRefs = useRef<Map<string, any>>(new Map());
-
   const handleSetPrimary = useCallback(
     (league: MemberLeague) => {
       if (league.is_primary) {
-        router.push('/(app)/(tabs)/League');
-        return;
+        return router.push('/(app)/(tabs)/League');
       }
-      updatePrimaryLeague.mutate({
-        leagueId: league.league_id,
-      });
-    },
-    [updatePrimaryLeague]
-  );
-
-  const handleLeaveLeague = useCallback(
-    (leagueId: string, leagueName: string) => {
-      Alert.alert(
-        'Leave League',
-        `Are you sure you want to leave "${leagueName}"? This will delete all your predictions.`,
-        [
-          {
-            text: 'Cancel',
-            onPress: () => swipeableRefs.current.get(leagueId)?.close(),
-            style: 'cancel',
+      updatePrimaryLeague.mutate(
+        { userId, leagueId: league.league_id },
+        {
+          onSuccess: () => {
+            router.push('/(app)/(tabs)/League');
           },
-          {
-            text: 'Leave',
-            onPress: () => {
-              leaveLeague.mutate(leagueId);
-              swipeableRefs.current.get(leagueId)?.close();
-            },
-            style: 'destructive',
-          },
-        ]
+        }
       );
     },
-    [leaveLeague, swipeableRefs]
+    [updatePrimaryLeague, userId]
   );
 
   if (error) return <Error error={error} />;
 
-  const loading =
-    updatePrimaryLeague.isPending || leaveLeague.isPending || isLoading;
+  const loading = updatePrimaryLeague.isPending || isLoading;
 
   return (
     <Screen>
@@ -110,14 +83,7 @@ export default function MyLeagues() {
           </View>
         )}
         renderItem={({ item }) => (
-          <LeagueCard
-            item={item}
-            onSetPrimary={() => handleSetPrimary(item)}
-            onLeaveLeague={() =>
-              handleLeaveLeague(item.league_id, item.league.name)
-            }
-            swipeableRef={(ref: any) => swipeableRefs.current.set(item.id, ref)}
-          />
+          <LeagueCard item={item} onSetPrimary={() => handleSetPrimary(item)} />
         )}
       />
     </Screen>

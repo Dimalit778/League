@@ -1,14 +1,21 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, Image, InputField } from '@/components/ui';
+import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
-import { useMemberStore } from '@/store/MemberStore';
-import { foundLeagueType } from '@/types';
+import { FoundLeague } from '@/types';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  View,
+} from 'react-native';
+
 import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
@@ -18,7 +25,8 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
-  const { member } = useMemberStore();
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
   const {
     control,
     handleSubmit,
@@ -29,14 +37,14 @@ export default function JoinLeague() {
     mode: 'onChange',
   });
   const inviteCodeValue = watch('inviteCode');
-  const [foundLeague, setFoundLeague] = useState<foundLeagueType | null>(null);
+  const [foundLeague, setFoundLeague] = useState<FoundLeague | null>(null);
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
 
-  const { mutateAsync, isPending, isSuccess, isError } = useJoinLeague();
+  const joinLeague = useJoinLeague(userId);
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 6) {
-      setFoundLeague(data as foundLeagueType);
+      setFoundLeague(data as FoundLeague);
     } else {
       setFoundLeague(null);
     }
@@ -47,13 +55,21 @@ export default function JoinLeague() {
     nickname: string;
   }) => {
     if (!foundLeague) return;
-    await mutateAsync({
-      join_code: foundLeague.join_code,
-      nickname: formData.nickname,
-    });
-    router.replace('/(app)/myLeagues');
+    joinLeague.mutate(
+      {
+        join_code: foundLeague.join_code,
+        nickname: formData.nickname,
+      },
+      {
+        onSuccess: () => {
+          router.replace('/(app)/myLeagues');
+        },
+        onError: (error: any) => {
+          Alert.alert('Error', error?.message || 'Failed to join league');
+        },
+      }
+    );
   };
-  console.log('foundLeague', JSON.stringify(foundLeague, null, 2));
 
   return (
     <Screen>
@@ -111,14 +127,14 @@ export default function JoinLeague() {
                   <View className="flex-row gap-4 items-center">
                     <Image
                       source={{
-                        uri: foundLeague.logo,
+                        uri: foundLeague.competition.logo,
                       }}
                       resizeMode="contain"
                       width={24}
                       height={24}
                     />
                     <Text className="text-lg text-text " numberOfLines={1}>
-                      {foundLeague.name}
+                      {foundLeague.competition.name}
                     </Text>
                   </View>
                 </View>
@@ -131,14 +147,14 @@ export default function JoinLeague() {
                   <View className="flex-row gap-4 items-center">
                     <Image
                       source={{
-                        uri: foundLeague.flag,
+                        uri: foundLeague.competition.flag,
                       }}
                       resizeMode="contain"
                       width={24}
                       height={24}
                     />
                     <Text className="text-lg text-text " numberOfLines={1}>
-                      {foundLeague.country}
+                      {foundLeague.competition.country}
                     </Text>
                   </View>
                 </View>
@@ -149,14 +165,15 @@ export default function JoinLeague() {
                   </Text>
                   <View className="flex-row gap-4 items-center">
                     <Text className="text-lg text-text " numberOfLines={1}>
-                      {foundLeague.league_members} /{foundLeague.max_members}
+                      {foundLeague.league_members[0].count} /
+                      {foundLeague.max_members}
                     </Text>
                   </View>
                 </View>
               </View>
 
               {/* Input and Button */}
-              <View className="mx-4 space-y-4">
+              <View className="mx-4 gap-4">
                 <InputField
                   control={control}
                   name="nickname"
@@ -166,7 +183,7 @@ export default function JoinLeague() {
                 <Button
                   title="Join League"
                   variant="primary"
-                  loading={isPending}
+                  loading={joinLeague.isPending}
                   onPress={handleSubmit(onClickJoinLeague)}
                   disabled={!isValid}
                 />

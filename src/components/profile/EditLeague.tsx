@@ -1,6 +1,7 @@
 import { useRemoveMember } from '@/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
-import { leagueWithMembers } from '@/types/league.types';
+
+import { leagueWithMembers, MemberLeague } from '@/types';
 import { useMemo } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { Button, ProfileImage } from '../ui';
@@ -18,7 +19,7 @@ const EditLeague = ({
   handleUpdateLeague,
   updating,
 }: EditLeagueProps) => {
-  const { mutate: removeMember, isPending: removing } = useRemoveMember();
+  const removeMember = useRemoveMember();
   const { member: currentMember } = useMemberStore();
 
   // Filter out the current member from the list
@@ -28,6 +29,26 @@ const EditLeague = ({
       (member) => member.user_id !== currentMember.user_id
     );
   }, [league?.league_members, currentMember?.user_id]);
+
+  const handleRemoveMember = (deletedMember: MemberLeague) => {
+    if (currentMember?.user_id !== league.owner_id) return;
+    Alert.alert(
+      'Remove Member',
+      `Remove ${deletedMember.nickname} from this league?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () =>
+            removeMember.mutate({
+              leagueId: league.id,
+              userId: deletedMember.user_id,
+            }),
+        },
+      ]
+    );
+  };
 
   return (
     <>
@@ -58,27 +79,10 @@ const EditLeague = ({
                   </Text>
                 </View>
                 <Button
-                  title={removing ? '...' : 'Remove'}
+                  title={removeMember.isPending ? '...' : 'Remove'}
                   size="sm"
                   variant="error"
-                  onPress={() =>
-                    Alert.alert(
-                      'Remove Member',
-                      `Remove ${member.nickname} from this league?`,
-                      [
-                        { text: 'Cancel', style: 'cancel' },
-                        {
-                          text: 'Remove',
-                          style: 'destructive',
-                          onPress: () =>
-                            removeMember({
-                              leagueId: league.id,
-                              userId: member.user_id,
-                            }),
-                        },
-                      ]
-                    )
-                  }
+                  onPress={() => handleRemoveMember(member as MemberLeague)}
                   disabled={member.user_id === league.id}
                 />
               </View>

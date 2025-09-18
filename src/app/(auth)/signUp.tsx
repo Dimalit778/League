@@ -65,7 +65,7 @@ const SignUp = () => {
             Sign up to get started
           </Text>
         </View>
-        <View className="flex-1 mt-10 px-5">
+        <View className="flex-1 mt-10 px-5 gap-4">
           <InputField
             control={control}
             name="fullname"

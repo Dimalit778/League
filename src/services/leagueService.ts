@@ -1,46 +1,39 @@
 import { supabase } from '@/lib/supabase';
 import { subscriptionService } from '@/services/subscriptionService';
-import { createLeagueParams, createLeagueResponse } from '@/types/league.types';
+import {
+  createLeagueProps,
+  createLeagueResponse,
+  FoundLeague,
+  MemberLeague,
+} from '@/types';
 
 export const leagueService = {
   // GET user leagues - Used by useGetLeagues hook
-  async getLeagues(userId: string) {
+  async getUserLeagues(userId: string): Promise<MemberLeague[]> {
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, leagues!league_id(*,league_members(count))')
+      .select('*, league:leagues!league_id(*)')
       .eq('user_id', userId)
       .order('is_primary', { ascending: false });
 
     if (error) throw new Error(error.message);
 
-    return data;
+    return data as MemberLeague[];
   },
 
   // FIND league by join code - Used by useFindLeagueByJoinCode hook
-  async findLeagueByJoinCode(joinCode: string) {
+  async findLeagueByJoinCode(joinCode: string): Promise<FoundLeague> {
     const { data, error } = await supabase
       .from('leagues')
       .select(
-        'id,name,join_code,max_members,owner_id,competitions!inner (id,name,logo,flag,country) ,league_members(count)'
+        'id,name,join_code,max_members,owner_id,competition:competitions!inner (id,name,logo,flag,country) ,league_members(count)'
       )
       .eq('join_code', joinCode)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) throw new Error('League not found');
-    const league = {
-      id: data.id,
-      name: data.name,
-      join_code: data.join_code,
-      max_members: data.max_members,
-      league_members: data.league_members[0].count,
-      competition_id: data.competitions.id,
-      logo: data.competitions.logo,
-      country: data.competitions.country,
-      flag: data.competitions.flag,
-      owner_id: data.owner_id,
-    };
 
-    return league;
+    return data as FoundLeague;
   },
 
   // GET full league and members by ID - Used by useGetFullLeagueData hook
@@ -110,7 +103,7 @@ export const leagueService = {
   },
 
   // CREATE league - Used internally by MemberStore
-  async createLeague(params: createLeagueParams) {
+  async createLeague(params: createLeagueProps): Promise<createLeagueResponse> {
     const { canCreate, reason } = await subscriptionService.canCreateLeague(
       params.user_id
     );
@@ -135,7 +128,7 @@ export const leagueService = {
     const { data: leagueData, error } = await supabase.rpc(
       'create_new_league',
       {
-        league_name: params.leagueName,
+        league_name: params.league_name,
         max_members: maxMembers,
         competition_id: params.competition_id,
         logo: params.league_logo,
@@ -150,12 +143,12 @@ export const leagueService = {
   },
 
   // JOIN league - Used internally by MemberStore
-  async joinLeague(joinCode: string, nickname: string, userId: string) {
+  async joinLeague(joinCode: string, nickname: string) {
     // First check if the league exists and get its details
     const league = await this.findLeagueByJoinCode(joinCode);
 
     // Check if the league is full
-    if (league.league_members >= league.max_members) {
+    if (league.league_members[0].count >= league.max_members) {
       throw new Error('This league is full and cannot accept new members.');
     }
 
@@ -199,7 +192,7 @@ export const leagueService = {
       })
       .eq('league_id', leagueId)
       .eq('user_id', userId)
-      .select('*, leagues!league_id(*)')
+      .select('*, league:leagues!league_id(*)')
       .single();
 
     if (primaryLeagueError) throw new Error(primaryLeagueError.message);
