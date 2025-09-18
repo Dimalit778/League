@@ -1,9 +1,13 @@
 import { useGetFixturesWithPredictions } from '@/hooks/useFixtures';
 
+import { FixturesWithTeamsAndPredictionsType } from '@/types';
+import { useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { Error } from '../layout';
 import MatchCard from './MatchCard';
 import MatchesSkeleton from './SkeletonMatches';
+
+type MatchItem = FixturesWithTeamsAndPredictionsType;
 
 const MatchList = ({
   selectedRound,
@@ -21,19 +25,28 @@ const MatchList = ({
     refetch,
   } = useGetFixturesWithPredictions(selectedRound, competitionId, userId);
 
+  const renderItem = useCallback(
+    ({ item }: { item: MatchItem }) => <MatchCard match={item} />,
+    []
+  );
+
+  const keyExtractor = useCallback((item: MatchItem) => item.id.toString(), []);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   if (isLoading) return <MatchesSkeleton />;
   if (error) return <Error error={error} />;
 
   return (
     <FlatList
       data={fixtures}
-      renderItem={({ item }) => <MatchCard match={item} />}
+      renderItem={renderItem}
       showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={keyExtractor}
       refreshing={isLoading}
-      onRefresh={() => {
-        refetch();
-      }}
+      onRefresh={handleRefresh}
     />
   );
 };

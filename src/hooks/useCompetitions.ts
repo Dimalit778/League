@@ -1,22 +1,19 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { competitionService } from '@/services/competitionService';
-import { useMemberStore } from '@/store/MemberStore';
 import { useQuery } from '@tanstack/react-query';
 
-export const useCompetitionRounds = () => {
-  const { member } = useMemberStore();
-
-  if (!member) throw new Error('Member not found');
+export const useCompetitionRounds = (leagueId?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.competitions.rounds(member.league_id),
-    queryFn: () => competitionService.getCompetitionRounds(member.league_id),
+    queryKey: QUERY_KEYS.competitions.roundsByLeague(leagueId),
+    queryFn: () => competitionService.getCompetitionRounds(leagueId!),
+    enabled: !!leagueId,
   });
 };
 export const useGetCompetitions = () => {
   return useQuery({
     queryKey: QUERY_KEYS.competitions.all,
     queryFn: () => competitionService.getCompetitions(),
-    staleTime: 10 * 60 * 60 * 1000, // 10 hours
+    staleTime: 10 * 60 * 60 * 1000,
     retry: 2,
   });
 };

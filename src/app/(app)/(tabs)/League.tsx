@@ -1,8 +1,9 @@
-import { LoadingOverlay, Screen, TopBar } from '@/components/layout';
+import { LoadingOverlay, Screen } from '@/components/layout';
 import LeaderboardCard from '@/components/league/LeaderboardCard';
 import TopThree from '@/components/league/TopThree';
 import { useGetLeagueLeaderboard } from '@/hooks/useLeaderboard';
 import { useMemberStore } from '@/store/MemberStore';
+import Constants from 'expo-constants';
 import { FlatList, View } from 'react-native';
 
 const League = () => {
@@ -23,9 +24,8 @@ const League = () => {
 
   return (
     <Screen>
-      <TopBar showLeagueName={true} />
       {isLoading && !leaderboard && <LoadingOverlay />}
-      <View className="mt-12">
+      <View style={{ marginTop: Constants.statusBarHeight }}>
         <TopThree topMembers={topThree} />
       </View>
       <FlatList

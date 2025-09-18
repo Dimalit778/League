@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay, Screen, TopBar } from '@/components/layout';
+import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { SubscriptionStatus } from '@/components/subscription';
 import { Button } from '@/components/ui';
@@ -46,7 +46,6 @@ export default function MyLeagues() {
 
   return (
     <Screen>
-      <TopBar showLeagueName={false} />
       {loading && <LoadingOverlay />}
 
       <View className="px-3 mt-2 mb-4">

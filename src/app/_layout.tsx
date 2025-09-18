@@ -1,6 +1,7 @@
 import '../../global.css';
 
 import { SplashScreen } from '@/components/layout';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 
@@ -15,7 +16,7 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { initializeTheme } = useThemeStore();
-
+  const { theme } = useThemeStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -82,16 +83,18 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Protected guard={isLoggedIn}>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack.Protected>
+        <ThemeProvider>
+          <Stack>
+            <Stack.Protected guard={isLoggedIn}>
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack.Protected>
 
-          <Stack.Protected guard={!isLoggedIn}>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          </Stack.Protected>
-        </Stack>
+            <Stack.Protected guard={!isLoggedIn}>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack.Protected>
+          </Stack>
+        </ThemeProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

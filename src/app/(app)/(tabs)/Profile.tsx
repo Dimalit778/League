@@ -1,4 +1,4 @@
-import { LoadingOverlay, Screen, TopBar } from '@/components/layout';
+import { LoadingOverlay, Screen } from '@/components/layout';
 import LeagueContent from '@/components/profile/LeagueContent';
 import { Button, ProfileImage } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
@@ -48,9 +48,8 @@ export default function Profile() {
 
   return (
     <Screen>
-      {isLoading || (leaveLeague.isPending && <LoadingOverlay />)}
-      <TopBar />
-      <View className="bg-surface rounded-xl border border-border p-4 mb-4">
+      {isLoading && <LoadingOverlay />}
+      <View className="bg-surface rounded-xl border border-border p-4 mb-4 mt-4">
         <View className="flex-row items-center">
           <ProfileImage
             imageUrl={member?.avatar_url || ''}

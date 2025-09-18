@@ -1,3 +1,4 @@
+import { TabsHeader } from '@/components/layout';
 import { supabase } from '@/lib/supabase';
 import { useMemberStore } from '@/store/MemberStore';
 
@@ -49,10 +50,21 @@ export default function AppLayout() {
   return (
     <Stack>
       <Stack.Protected guard={!!member}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: true,
+            header: () => <TabsHeader showLeagueName={true} />,
+          }}
+        />
         <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="myLeagues"
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="subscription" options={{ headerShown: false }} />
     </Stack>

@@ -1,9 +1,20 @@
-import { Screen } from '@/components/layout';
+import { Screen, SplashScreen } from '@/components/layout';
 import { Button } from '@/components/ui';
-import { router } from 'expo-router';
+import { useCurrentSession } from '@/hooks/useCurrentSession';
+import { Redirect, router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 export default function Welcome() {
+  const { session, loading } = useCurrentSession();
+
+  if (loading) {
+    return <SplashScreen />;
+  }
+
+  if (session?.user) {
+    return <Redirect href="/(app)/(tabs)/League" />;
+  }
+
   return (
     <Screen>
       <View className="flex-1 p-5">

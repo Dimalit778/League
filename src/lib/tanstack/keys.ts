@@ -103,8 +103,8 @@ export const QUERY_KEYS = {
   // ===== COMPETITION RELATED =====
   competitions: {
     all: ['competitions'] as const,
-    roundsByCompetition: (competitionId?: number) =>
-      ['competitions', competitionId ?? TOKENS.pending, 'rounds'] as const,
+    roundsByLeague: (leagueId?: string) =>
+      ['competitions', leagueId ?? TOKENS.pending, 'rounds'] as const,
   },
 
   // ===== SUBSCRIPTION RELATED =====

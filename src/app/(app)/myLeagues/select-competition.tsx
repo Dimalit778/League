@@ -15,7 +15,7 @@ import {
 
 type Competition = Tables<'competitions'>;
 
-export default function SelectCompetitionScreen() {
+const SelectCompetitionScreen = () => {
   const [selectedCompetition, setSelectedCompetition] =
     useState<Competition | null>(null);
 
@@ -116,4 +116,6 @@ export default function SelectCompetitionScreen() {
       </KeyboardAvoidingView>
     </Screen>
   );
-}
+};
+
+export default SelectCompetitionScreen;

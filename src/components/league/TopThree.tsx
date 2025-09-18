@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-export default function TopThree({ topMembers }: { topMembers: any }) {
+const TopThree = ({ topMembers }: { topMembers: any }) => {
   const getInitials = (nickname: string) => {
     return nickname
       .split(' ')
@@ -63,7 +63,7 @@ export default function TopThree({ topMembers }: { topMembers: any }) {
   if (!topMembers || topMembers.length === 0) return null;
 
   return (
-    <View className="flex-row justify-center gap-5 mt-4 mb-6">
+    <View className="flex-row justify-center gap-5 mb-4">
       <View className="items-center">{renderPlayer(topMembers[1], 2)}</View>
       <View className="items-center -mt-8">
         {renderPlayer(topMembers[0], 1)}
@@ -71,4 +71,6 @@ export default function TopThree({ topMembers }: { topMembers: any }) {
       <View className="items-center">{renderPlayer(topMembers[2], 3)}</View>
     </View>
   );
-}
+};
+
+export default TopThree;

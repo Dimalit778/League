@@ -1,31 +1,38 @@
-import { Error, LoadingOverlay, TopBar } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import Screen from '@/components/layout/Screen';
 import MatchList from '@/components/matches/MatchList';
 import RoundsList from '@/components/matches/RoundsList';
 import { useCompetitionRounds } from '@/hooks/useCompetitions';
 import { useMemberStore } from '@/store/MemberStore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function MatchesPage() {
-  const { data: competition, isLoading, error } = useCompetitionRounds();
   const { member } = useMemberStore();
+  const {
+    data: competition,
+    isLoading,
+    error,
+  } = useCompetitionRounds(member?.league_id);
+
   const [selectedRound, setSelectedRound] = useState<string | null>(null);
 
   useEffect(() => {
     if (competition?.current_round && !selectedRound) {
-      setSelectedRound(competition?.current_round);
+      setSelectedRound(competition.current_round);
     }
-  }, [competition, selectedRound]);
+  }, [competition?.current_round, selectedRound]);
 
-  const handleRoundPress = (round: string) => {
+  const handleRoundPress = useCallback((round: string) => {
     setSelectedRound(round);
-  };
+  }, []);
 
   if (error) return <Error error={error} />;
 
+  const userId = member?.user_id;
+  const showMatchList = !!selectedRound && !!competition && !!userId;
+
   return (
     <Screen>
-      <TopBar showLeagueName={true} />
       {isLoading && !selectedRound && <LoadingOverlay />}
       {selectedRound && (
         <RoundsList
@@ -35,11 +42,11 @@ export default function MatchesPage() {
         />
       )}
 
-      {selectedRound && (
+      {showMatchList && (
         <MatchList
           selectedRound={selectedRound}
-          competitionId={competition?.id ?? 0}
-          userId={member?.user_id ?? ''}
+          competitionId={competition.id}
+          userId={userId}
         />
       )}
     </Screen>

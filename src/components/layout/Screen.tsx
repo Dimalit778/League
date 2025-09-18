@@ -1,6 +1,4 @@
 import { useThemeStore } from '@/store/ThemeStore';
-import { themes } from '@/styles/themes';
-import Constants from 'expo-constants';
 import React from 'react';
 import { SafeAreaView, View } from 'react-native';
 
@@ -16,7 +14,7 @@ const Screen = ({
   return (
     <SafeAreaView
       className="flex-1 bg-background"
-      style={[themes[theme], { paddingTop: Constants.statusBarHeight }]}
+      // style={{ paddingTop: Constants.statusBarHeight }}
     >
       <View style={{ flex: 1 }} className={className}>
         {children}

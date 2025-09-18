@@ -1,4 +1,4 @@
-import { Screen } from '@/components/layout';
+import { Screen, TabsHeader } from '@/components/layout';
 import { Stack } from 'expo-router';
 
 export default function NewLeagueLayout() {
@@ -9,7 +9,13 @@ export default function NewLeagueLayout() {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="index" />
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: true,
+            header: () => <TabsHeader showLeagueName={false} />,
+          }}
+        />
         <Stack.Screen name="join-league" />
         <Stack.Screen name="select-competition" />
         <Stack.Screen name="create-league" />
