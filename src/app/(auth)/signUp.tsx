@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, InputField } from '@/components/ui';
+import { Button, InputField } from '@/components/ui';
 
 import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
@@ -56,7 +56,6 @@ const SignUp = () => {
   return (
     <Screen>
       <KeyboardAvoidingView className="flex-1">
-        <BackButton />
         <View className="py-10">
           <Text className="text-h1 text-secondary font-headBold text-center mb-5">
             Create an account

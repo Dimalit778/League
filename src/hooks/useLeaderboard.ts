@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { leaderboardService } from '@/services/leaderboardService';
 import { useMemberStore } from '@/store/MemberStore';
@@ -11,5 +12,45 @@ export const useGetLeagueLeaderboard = () => {
     queryFn: () => leaderboardService.getLeagueLeaderboard(leagueId!),
     enabled: !!leagueId,
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+export const useLeaderboardWithAvatars = () => {
+  const base = useGetLeagueLeaderboard(); // returns your array (with avatar_url = path)
+  const { data: rows } = base;
+
+  return useQuery({
+    queryKey: ['leaderboard-with-avatars', rows],
+    enabled: !!rows,
+    queryFn: async () => {
+      const items = rows ?? [];
+      const paths = items.map((r) => r.avatar_url).filter(Boolean) as string[];
+      if (paths.length === 0) {
+        return items.map((r) => ({ ...r, avatarUri: null as string | null }));
+      }
+
+      // BULK: create signed URLs for all paths at once
+      const options = {
+        download: false,
+        transform: { width: 80, height: 80, resize: 'cover', quality: 80 },
+      } as any;
+
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .createSignedUrls(paths, 3600, options);
+      if (error) throw error;
+
+      // Map path -> signedUrl
+      const byPath = new Map<string, string | null>();
+      data.forEach(({ path, signedUrl }) => {
+        if (path) byPath.set(path, signedUrl ?? null);
+      });
+
+      // Attach avatarUri per row (keep original avatar_url intact if you want)
+      return items.map((r) => ({
+        ...r,
+        avatarUri: r.avatar_url ? (byPath.get(r.avatar_url) ?? null) : null,
+      }));
+    },
+    staleTime: 60_000,
   });
 };

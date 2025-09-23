@@ -1,26 +1,30 @@
-import { Screen, TabsHeader } from '@/components/layout';
+import { TabsHeader } from '@/components/layout';
+import { BackButton } from '@/components/ui';
 import { Stack } from 'expo-router';
 
-export default function NewLeagueLayout() {
+export default function MyLeaguesLayout() {
   return (
-    <Screen>
-      <Stack
-        screenOptions={{
-          headerShown: false,
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: true,
+          header: () => <TabsHeader showLeagueName={false} />,
         }}
-      >
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: true,
-            header: () => <TabsHeader showLeagueName={false} />,
-          }}
-        />
-        <Stack.Screen name="join-league" />
-        <Stack.Screen name="select-competition" />
-        <Stack.Screen name="create-league" />
-        <Stack.Screen name="preview-league" />
-      </Stack>
-    </Screen>
+      />
+      <Stack.Screen
+        name="join-league"
+        options={{ headerShown: true, header: () => <BackButton /> }}
+      />
+      <Stack.Screen
+        name="select-competition"
+        options={{ headerShown: true, header: () => <BackButton /> }}
+      />
+      <Stack.Screen
+        name="create-league"
+        options={{ headerShown: true, header: () => <BackButton /> }}
+      />
+      <Stack.Screen name="preview-league" />
+    </Stack>
   );
 }

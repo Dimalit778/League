@@ -1,21 +1,14 @@
-import { useThemeStore } from '@/store/ThemeStore';
 import React from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Screen = ({
-  children,
-  className,
-}: {
+type ScreenProps = {
   children: React.ReactNode;
   className?: string;
-}) => {
-  const { theme } = useThemeStore();
-
+};
+const Screen = ({ children, className }: ScreenProps) => {
   return (
-    <SafeAreaView
-      className="flex-1 bg-background"
-      // style={{ paddingTop: Constants.statusBarHeight }}
-    >
+    <SafeAreaView className="flex-1 bg-background" edges={['left', 'right']}>
       <View style={{ flex: 1 }} className={className}>
         {children}
       </View>

@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, Image } from '@/components/ui';
+import { Button, Image } from '@/components/ui';
 import { useGetCompetitions } from '@/hooks/useCompetitions';
 import { Tables } from '@/types/database.types';
 import { router } from 'expo-router';
@@ -47,7 +47,6 @@ const SelectCompetitionScreen = () => {
 
   return (
     <Screen>
-      <BackButton />
       <KeyboardAvoidingView className="flex-1 bg-background" behavior="padding">
         {isLoading && <LoadingOverlay />}
         <ScrollView className="flex-1 px-3">

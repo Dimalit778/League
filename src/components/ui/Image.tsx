@@ -57,7 +57,7 @@ const Image = ({
 
   return (
     <ExpoImage
-      source={imageSource}
+      source={{ uri: imageSource as string }}
       className={className}
       contentFit={getContentFit()}
       style={{ width, height }}

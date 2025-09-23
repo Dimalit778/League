@@ -1,5 +1,5 @@
-import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { Link, useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,23 +11,23 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 
 export default function ForgotPassword() {
   const router = useRouter();
 
   const resetPassword = async () => {
-    console.log("resetPassword");
+    console.log('resetPassword');
     return { success: true };
   };
   const loading = false;
   const error = null;
   const clearError = () => {
-    console.log("clearError");
+    console.log('clearError');
   };
 
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleResetPassword = async () => {
@@ -39,10 +39,10 @@ export default function ForgotPassword() {
       if (result && result.success) {
         setIsSubmitted(true);
       } else {
-        Alert.alert("Error", "An unexpected error occurred");
+        Alert.alert('Error', 'An unexpected error occurred');
       }
     } catch (error) {
-      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     }
   };
 
@@ -82,7 +82,7 @@ export default function ForgotPassword() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <ScrollView
@@ -158,105 +158,105 @@ export default function ForgotPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 20,
   },
   formContainer: {
-    width: "100%",
+    width: '100%',
     maxWidth: 400,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "#1F2937",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#1F2937',
+    textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: "#6B7280",
-    textAlign: "center",
+    color: '#6B7280',
+    textAlign: 'center',
     marginBottom: 32,
   },
   description: {
     fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
+    color: '#6B7280',
+    textAlign: 'center',
     marginBottom: 32,
     lineHeight: 20,
   },
   errorContainer: {
-    backgroundColor: "#FEF2F2",
+    backgroundColor: '#FEF2F2',
     borderWidth: 1,
-    borderColor: "#FECACA",
+    borderColor: '#FECACA',
     borderRadius: 8,
     padding: 12,
     marginBottom: 20,
   },
   errorText: {
-    color: "#DC2626",
+    color: '#DC2626',
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
   },
   inputContainer: {
     marginBottom: 20,
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
+    fontWeight: '600',
+    color: '#374151',
     marginBottom: 8,
   },
   input: {
     height: 48,
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: '#D1D5DB',
     borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: "#FFFFFF",
-    color: "#1F2937",
+    backgroundColor: '#FFFFFF',
+    color: '#1F2937',
   },
   inputFilled: {
-    borderColor: "#6366F1",
+    borderColor: '#6366F1',
   },
   inputError: {
-    borderColor: "#DC2626",
+    borderColor: '#DC2626',
   },
   fieldError: {
     fontSize: 12,
-    color: "#DC2626",
+    color: '#DC2626',
     marginTop: 4,
   },
   primaryButton: {
     height: 48,
-    backgroundColor: "#6366F1",
+    backgroundColor: '#6366F1',
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
   primaryButtonDisabled: {
-    backgroundColor: "#9CA3AF",
+    backgroundColor: '#9CA3AF',
   },
   primaryButtonText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   secondaryButton: {
     height: 48,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   secondaryButtonText: {
     fontSize: 14,
-    color: "#6366F1",
-    fontWeight: "500",
+    color: '#6366F1',
+    fontWeight: '500',
   },
 });

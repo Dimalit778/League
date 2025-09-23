@@ -1,6 +1,7 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { membersService } from '@/services/membersService';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as ImagePicker from 'expo-image-picker';
 
 export const useMemberStats = (memberId?: string) => {
   return useQuery({
@@ -11,12 +12,22 @@ export const useMemberStats = (memberId?: string) => {
     enabled: !!memberId,
   });
 };
-export const useMemberImage = (memberId: string) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.members.byId(memberId),
-    queryFn: () => membersService.getMemberImage(memberId),
+export const useUpdateMember = (memberId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (nickname: string) =>
+      membersService.updateMember(memberId, nickname),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.members.byId(memberId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.members.stats(memberId),
+      });
+    },
   });
 };
+
 export const useDeleteMemberImage = (memberId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,21 +46,27 @@ export const useDeleteMemberImage = (memberId: string) => {
     },
   });
 };
-export const useUploadMemberImage = (memberId: string) => {
+export const useMemberAvatar = (path: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.members.byId(path),
+    queryFn: () => membersService.getMemberAvatar(path),
+    enabled: !!path,
+  });
+};
+export const useUploadMemberImage = (leagueId: string, memberId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (avatarUrl: string) =>
-      membersService.uploadMemberImage(memberId, avatarUrl),
+    mutationFn: (avatarUrl: ImagePicker.ImagePickerAsset) =>
+      membersService.uploadAvatarImage(leagueId, memberId, avatarUrl),
     onSuccess: () => {
+      // Invalidate both image and avatar queries
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.byId(memberId),
+        queryKey: [...QUERY_KEYS.members.byId(memberId), 'image'],
       });
-    },
-    onError: (error) => {
-      console.error('Failed to upload member image:', error);
-    },
-    mutationKey: QUERY_KEYS.members.byId(memberId),
-    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEYS.members.byId(memberId), 'avatar'],
+      });
+      // Also invalidate the general member query
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.members.byId(memberId),
       });

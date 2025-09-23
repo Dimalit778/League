@@ -63,7 +63,7 @@ const TopThree = ({ topMembers }: { topMembers: any }) => {
   if (!topMembers || topMembers.length === 0) return null;
 
   return (
-    <View className="flex-row justify-center gap-5 mb-4">
+    <View className="flex-row justify-center gap-5 my-4">
       <View className="items-center">{renderPlayer(topMembers[1], 2)}</View>
       <View className="items-center -mt-8">
         {renderPlayer(topMembers[0], 1)}

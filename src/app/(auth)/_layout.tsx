@@ -1,4 +1,5 @@
 import { SplashScreen } from '@/components/layout';
+import { BackButton } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { Redirect, Stack } from 'expo-router';
 
@@ -14,10 +15,10 @@ export default function AuthLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: true, header: () => <BackButton /> }}>
       <Stack.Screen name="signUp" />
       <Stack.Screen name="signIn" />
-      <Stack.Screen name="forgotPassword" options={{ headerShown: true }} />
+      <Stack.Screen name="forgotPassword" />
     </Stack>
   );
 }

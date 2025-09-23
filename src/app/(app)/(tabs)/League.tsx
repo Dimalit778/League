@@ -1,31 +1,36 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import LeaderboardCard from '@/components/league/LeaderboardCard';
 import TopThree from '@/components/league/TopThree';
-import { useGetLeagueLeaderboard } from '@/hooks/useLeaderboard';
+import { useLeaderboardWithAvatars } from '@/hooks/useLeaderboard';
 import { useMemberStore } from '@/store/MemberStore';
-import Constants from 'expo-constants';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { FlatList, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const League = () => {
   const { member } = useMemberStore();
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
 
+  const contentTop = Math.max(0, headerHeight - insets.top);
   const {
     data: leaderboard,
     isLoading,
     error,
     refetch,
-  } = useGetLeagueLeaderboard();
+  } = useLeaderboardWithAvatars();
 
   if (error) console.log('error', error);
 
   const topThree = leaderboard?.slice(0, 3);
 
   const isRefreshing = false;
+  console.log('leaderboard', JSON.stringify(leaderboard, null, 2));
 
   return (
     <Screen>
       {isLoading && !leaderboard && <LoadingOverlay />}
-      <View style={{ marginTop: Constants.statusBarHeight }}>
+      <View style={{ paddingTop: contentTop }}>
         <TopThree topMembers={topThree} />
       </View>
       <FlatList
@@ -35,7 +40,7 @@ const League = () => {
         renderItem={({ item, index }) => (
           <LeaderboardCard
             nickname={item.nickname ?? ''}
-            avatar_url={item.avatar_url ?? ''}
+            avatar_url={item.avatarUri ?? ''}
             total_points={item.total_points ?? 0}
             index={index + 1}
             isCurrentUser={item.user_id === member?.user_id}

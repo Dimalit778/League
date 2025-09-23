@@ -1,10 +1,21 @@
-import { Button, Image } from '@/components/ui';
+import { Image } from '@/components/ui';
 import { useUpdateLeague } from '@/hooks/useLeagues';
+import { useUpdateMember } from '@/hooks/useMembers';
 
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useMemberStore } from '@/store/MemberStore';
 import { leagueWithMembers } from '@/types';
+import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
 import * as Clipboard from 'expo-clipboard';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import EditLeague from './EditLeague';
 
 const LeagueContent = ({
@@ -14,18 +25,44 @@ const LeagueContent = ({
   league: leagueWithMembers;
   isOwner: boolean;
 }) => {
+  const { member } = useMemberStore();
+  const theme = useThemeTokens();
   const [isEditing, setIsEditing] = useState(false);
+  const [editedNickname, setEditedNickname] = useState(member?.nickname);
   const [editedName, setEditedName] = useState(league.name);
+
   const updateLeague = useUpdateLeague();
+  const updateMember = useUpdateMember(member?.id as string);
 
   useEffect(() => {
+    setEditedNickname(member?.nickname);
     setEditedName(league.name);
   }, [league.name, isEditing]);
 
-  const handleUpdateLeague = () => {
-    updateLeague.mutate({ leagueId: league.id, name: editedName });
-
-    setIsEditing(false);
+  const handleUpdateLeague = async () => {
+    updateLeague.mutateAsync(
+      { leagueId: league.id, name: editedName },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          Alert.alert('Success', 'League updated successfully');
+        },
+        onError: (error) => {
+          Alert.alert('Error', error.message);
+        },
+      }
+    );
+  };
+  const handleUpdateMember = async () => {
+    updateMember.mutateAsync(editedNickname as string, {
+      onSuccess: () => {
+        setIsEditing(false);
+        Alert.alert('Success', 'Profile updated successfully');
+      },
+      onError: (error) => {
+        Alert.alert('Error', error.message);
+      },
+    });
   };
 
   const handleCopyJoinCode = async () => {
@@ -36,24 +73,52 @@ const LeagueContent = ({
   };
 
   return (
-    <View className="flex-grow">
-      <View className="bg-surface rounded-2xl border border-border p-4">
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-text text-xl ">League</Text>
-
-          {isOwner && !isEditing && (
-            <Button
-              title="Edit"
-              variant="secondary"
-              size="sm"
-              onPress={() => setIsEditing(true)}
-            />
+    <View className="flex-1 mt-4">
+      <View className="bg-surface rounded-2xl border border-border p-3">
+        {/* Member nickname */}
+        <View className="flex-row justify-between items-center mb-3">
+          {isEditing ? (
+            <>
+              <TextInput
+                className="bg-background text-text p-2 rounded-md border border-border"
+                value={editedNickname}
+                onChangeText={setEditedNickname}
+                placeholder="Enter your nickname"
+                placeholderTextColor="#888"
+              />
+              <View className="flex-row justify-end ">
+                <TouchableOpacity
+                  onPress={() => setIsEditing(false)}
+                  className="bg-surface border border-border rounded-md px-3 py-1 mr-2"
+                >
+                  <Text className="text-text">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleUpdateMember}
+                  className="bg-primary rounded-md px-3 py-1"
+                  disabled={updateMember.isPending}
+                >
+                  <Text className="text-background">Save</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View className="flex-grow  flex-row justify-between items-center">
+              <Text className="text-text text-3xl">{member?.nickname}</Text>
+              <TouchableOpacity onPress={() => setIsEditing(true)}>
+                <FontAwesome6
+                  name="pen-to-square"
+                  size={16}
+                  color={theme.colors.secondary}
+                />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
-        {/* League header with logo */}
+        {/* League name */}
         <View className="flex-row items-center mb-4">
           <Image
-            source={{ uri: league.competition.logo }}
+            source={league.competition.logo}
             className="rounded-xl mr-3"
             width={40}
             height={40}
@@ -89,7 +154,7 @@ const LeagueContent = ({
         <View className="h-[1px] bg-border my-3" />
         {/* League details */}
         <View className="gap-3">
-          {!isEditing ? (
+          {!isEditing && (
             <>
               <View className="flex-row items-center justify-between ">
                 <Text className="text-text font-medium">Join Code</Text>
@@ -163,7 +228,8 @@ const LeagueContent = ({
                 </Text>
               </View>
             </>
-          ) : (
+          )}
+          {isOwner && isEditing && (
             <EditLeague
               league={league}
               closeEditMode={() => setIsEditing(false)}

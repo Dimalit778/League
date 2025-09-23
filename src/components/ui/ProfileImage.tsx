@@ -1,62 +1,69 @@
-import { Text, View } from 'react-native';
-import Image from './Image';
+import { downloadImage } from '@/hooks/useSupabaseImages';
+import { ComponentProps, useEffect, useState } from 'react';
+import { Image, Text, View } from 'react-native';
+import { LoadingOverlay } from '../layout';
 
-type ProfileImageSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
-const ProfileImage = ({
-  imageUrl,
-  nickname,
-  className,
-  size = 'md',
-}: {
-  imageUrl: string;
+type ProfileImageProps = {
+  path: string;
   nickname: string;
   className?: string;
-  size?: ProfileImageSize;
-}) => {
-  // Size mappings for container and text
-  const sizeClasses = {
-    xs: {
-      container: 'w-6 h-6',
-      text: 'text-xs',
-    },
-    sm: {
-      container: 'w-8 h-8',
-      text: 'text-sm',
-    },
-    md: {
-      container: 'w-10 h-10',
-      text: 'text-base',
-    },
-    lg: {
-      container: 'w-12 h-12',
-      text: 'text-lg',
-    },
-    xl: {
-      container: 'w-16 h-16',
-      text: 'text-xl',
-    },
+} & ComponentProps<typeof Image>;
+
+const ProfileImage = ({
+  path,
+  nickname,
+  className,
+  ...imageProps
+}: ProfileImageProps) => {
+  const [avatarImage, setAvatarImage] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const handleDownloadImage = async () => {
+    const image = await downloadImage(path);
+    setAvatarImage(image as string);
+    setLoading(false);
   };
 
-  const { container, text } = sizeClasses[size];
+  useEffect(() => {
+    setLoading(true);
+    if (path) {
+      handleDownloadImage();
+    } else {
+      setLoading(false);
+    }
+  }, [path]);
+
+  if (loading)
+    return (
+      <View
+        className={className}
+        style={{ borderRadius: 30, overflow: 'hidden' }}
+      >
+        <LoadingOverlay />
+      </View>
+    );
 
   return (
-    <>
-      {imageUrl ? (
-        <Image
-          source={{ uri: imageUrl }}
-          className={`${container} rounded-full border border-border ${className || ''}`}
-        />
+    <View>
+      {avatarImage ? (
+        <View className={className}>
+          <Image
+            source={{ uri: avatarImage }}
+            style={{ width: '100%', height: '100%', borderRadius: 20 }}
+            {...imageProps}
+          />
+        </View>
       ) : (
         <View
-          className={`${container} rounded-full bg-background border border-border items-center justify-center ${className || ''}`}
+          className="rounded-full bg-background border border-border items-center justify-center"
+          {...imageProps}
         >
-          <Text className={`text-primary ${text} font-bold`}>
+          <Text className="text-primary font-bold">
             {nickname?.charAt(0)?.toUpperCase() || '?'}
           </Text>
         </View>
       )}
-    </>
+    </View>
   );
 };
 

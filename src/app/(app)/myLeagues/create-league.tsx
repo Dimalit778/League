@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, InputField } from '@/components/ui';
+import { Button, InputField } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useCreateLeague } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -84,7 +84,6 @@ const CreateLeague = () => {
 
   return (
     <Screen>
-      <BackButton />
       <KeyboardAvoidingView
         className="flex-1 bg-background px-3 "
         behavior="padding"

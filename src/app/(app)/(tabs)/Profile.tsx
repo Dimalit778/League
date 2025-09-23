@@ -2,17 +2,22 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import LeagueContent from '@/components/profile/LeagueContent';
 import { Button, ProfileImage } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
+import { useUploadMemberImage } from '@/hooks/useMembers';
 import { useMemberStore } from '@/store/MemberStore';
+import { FontAwesome } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
   const { member } = useMemberStore();
-  const leaveLeague = useLeaveLeague(member?.user_id as string);
-  const { data: league, isLoading } = useGetLeagueAndMembers(
-    member?.league_id as string
-  );
+  const leagueId = member?.league_id as string;
+  const memberId = member?.id as string;
+
+  const leaveLeague = useLeaveLeague(memberId);
+  const uploadImage = useUploadMemberImage(leagueId, memberId);
+  const { data: league, isLoading } = useGetLeagueAndMembers(leagueId);
 
   const isOwner = useMemo(
     () =>
@@ -45,22 +50,43 @@ export default function Profile() {
       ]
     );
   };
+  const onSelectImage = async () => {
+    const options: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+      aspect: [1, 1],
+    };
+    let result = await ImagePicker.launchImageLibraryAsync(options);
+    if (!result.canceled && uploadImage) {
+      const img = result.assets[0];
+      uploadImage.mutateAsync(img, {
+        onSuccess: () => {
+          Alert.alert('Success', 'Profile image updated successfully');
+        },
+        onError: () => {
+          Alert.alert('Error', 'Failed to update profile image');
+        },
+      });
+    }
+  };
 
   return (
-    <Screen>
+    <Screen className="mx-2 my-1">
       {isLoading && <LoadingOverlay />}
-      <View className="bg-surface rounded-xl border border-border p-4 mb-4 mt-4">
-        <View className="flex-row items-center">
+      <View className="flex-row items-center justify-center mb-4">
+        <View className="relative">
           <ProfileImage
-            imageUrl={member?.avatar_url || ''}
-            nickname={member?.nickname || ''}
-            size="xl"
+            path={member?.avatar_url as string}
+            nickname={member?.nickname as string}
+            className="rounded-full w-36 h-36"
           />
-          <View className="ml-4 flex-1">
-            <Text className="text-text text-xl font-bold mb-2">
-              {member?.nickname}
-            </Text>
-          </View>
+          <TouchableOpacity
+            onPress={onSelectImage}
+            className="absolute -right-2 -bottom-2 bg-primary rounded-full w-7 h-7 items-center justify-center border border-border z-10 shadow-md"
+          >
+            <FontAwesome name="plus" size={16} color="#fff" />
+          </TouchableOpacity>
         </View>
       </View>
 

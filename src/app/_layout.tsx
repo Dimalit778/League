@@ -16,7 +16,7 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { initializeTheme } = useThemeStore();
-  const { theme } = useThemeStore();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +32,6 @@ export default function RootLayout() {
   useEffect(() => {
     initializeTheme();
 
-    // Monitor app state for session management
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {
         console.log('App has come to the foreground, starting auto refresh');
@@ -43,18 +42,15 @@ export default function RootLayout() {
       }
     });
 
-    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       const isLoggedIn = !!session?.user;
       setIsLoggedIn(isLoggedIn);
       if (isLoggedIn) {
-        // Ensure auto refresh is started
         supabase.auth.startAutoRefresh();
       }
       setLoading(false);
     });
 
-    // Listen for auth state changes
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -65,7 +61,7 @@ export default function RootLayout() {
       });
 
       const isLoggedIn = !!session?.user;
-      console.log('Setting isLoggedIn to:', isLoggedIn);
+
       setIsLoggedIn(isLoggedIn);
     });
 

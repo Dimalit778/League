@@ -1,4 +1,3 @@
-import { TabsHeader } from '@/components/layout';
 import { supabase } from '@/lib/supabase';
 import { useMemberStore } from '@/store/MemberStore';
 
@@ -10,7 +9,6 @@ export default function AppLayout() {
   const { member, initializeMemberLeagues, isLoading } = useMemberStore();
 
   useEffect(() => {
-    // Only initialize if we have a valid session
     const initializeIfAuthenticated = async () => {
       const {
         data: { session },
@@ -53,8 +51,7 @@ export default function AppLayout() {
         <Stack.Screen
           name="(tabs)"
           options={{
-            headerShown: true,
-            header: () => <TabsHeader showLeagueName={true} />,
+            headerShown: false,
           }}
         />
         <Stack.Screen name="match/[id]" options={{ headerShown: false }} />

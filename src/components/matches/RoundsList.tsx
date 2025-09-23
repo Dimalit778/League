@@ -18,8 +18,6 @@ export default function RoundsList({
   selectedRound,
   handleRoundPress,
 }: RoundsListProps) {
-  console.log('selectedRound:', selectedRound);
-
   const flatListRef = useRef<FlatList<string>>(null);
 
   const handlePress = (round: string, index: number) => {
@@ -30,7 +28,7 @@ export default function RoundsList({
       viewPosition: 0.5,
     });
   };
-  // 👉 Center the initial selected item when the component mounts
+
   useEffect(() => {
     const index = rounds.findIndex((round) => round === selectedRound);
     if (index !== -1) {

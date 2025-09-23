@@ -11,12 +11,17 @@ const TabsHeader = ({
   showLeagueName?: boolean;
 }) => {
   const { member } = useMemberStore();
-  const { colors } = useThemeTokens();
   const insets = useSafeAreaInsets();
+  const { colors } = useThemeTokens();
 
   return (
-    <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="flex-row items-center justify-between py-2 px-4">
+    <View
+      className="bg-background"
+      style={{
+        paddingTop: insets.top,
+      }}
+    >
+      <View className="flex-row items-center justify-between py-3 px-4">
         <Link href="/settings" asChild>
           <Pressable accessibilityRole="button">
             <SettingsIcon size={30} color={colors.primary} />

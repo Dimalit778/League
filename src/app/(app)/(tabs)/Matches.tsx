@@ -32,7 +32,7 @@ export default function MatchesPage() {
   const showMatchList = !!selectedRound && !!competition && !!userId;
 
   return (
-    <Screen>
+    <Screen className="bg-primary">
       {isLoading && !selectedRound && <LoadingOverlay />}
       {selectedRound && (
         <RoundsList

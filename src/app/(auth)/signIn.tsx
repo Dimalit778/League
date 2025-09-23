@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, InputField } from '@/components/ui';
+import { Button, InputField } from '@/components/ui';
 
 import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
@@ -46,7 +46,6 @@ const SignIn = () => {
 
   return (
     <Screen>
-      <BackButton />
       <KeyboardAvoidingView className="flex-1 bg-background">
         {/* Header */}
         <View className="items-center p-5">

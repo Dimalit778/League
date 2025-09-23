@@ -11,6 +11,7 @@ interface ThemeState {
   initializeTheme: () => Promise<void>;
 }
 
+// For mobile-only apps, we can use a simpler approach
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
@@ -33,16 +34,25 @@ export const useThemeStore = create<ThemeState>()(
 
       initializeTheme: async () => {
         try {
-          const savedData = await AsyncStorage.getItem('theme-storage');
+          // For development mode, handle potential SSR errors
+          try {
+            const savedData = await AsyncStorage.getItem('theme-storage');
 
-          let themeToUse: 'light' | 'dark' = 'dark';
-          if (savedData) {
-            const parsed = JSON.parse(savedData);
-            themeToUse = parsed.state?.theme || 'dark';
+            if (savedData) {
+              const parsed = JSON.parse(savedData);
+              const themeToUse = parsed.state?.theme || 'dark';
+              colorScheme.set(themeToUse);
+              set({ theme: themeToUse });
+            } else {
+              colorScheme.set('dark');
+              set({ theme: 'dark' });
+            }
+          } catch (storageError) {
+            // If AsyncStorage fails (e.g., during development), use default theme
+            console.log('Storage access failed, using default theme');
+            colorScheme.set('dark');
+            set({ theme: 'dark' });
           }
-          colorScheme.set(themeToUse);
-
-          set({ theme: themeToUse });
         } catch (error) {
           console.error('Failed to initialize theme:', error);
           colorScheme.set('dark');
@@ -53,6 +63,8 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: 'theme-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      // Skip hydration in environments where AsyncStorage might fail
+      skipHydration: false,
     }
   )
 );

@@ -1,10 +1,11 @@
+import ThemeToggle from '@/components/ThemeToggle';
 import { useThemeStore } from '@/store/ThemeStore';
 import { Tables } from '@/types/database.types';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { RelativePathString, useRouter } from 'expo-router';
 import { Text, TouchableWithoutFeedback, View } from 'react-native';
 
-const ProfileContent = ({
+const SettingsContent = ({
   created_at = 'N/A',
   subscription,
   email,
@@ -44,6 +45,11 @@ const ProfileContent = ({
       {/* Profile Information */}
       <View className="bg-surface  p-4 mb-4">
         <View className="gap-4 ">
+          {/* Theme Toggle */}
+          <View className="flex-row justify-between items-center border-b border-border pb-4">
+            <Text className="text-text text-base">Theme</Text>
+            <ThemeToggle />
+          </View>
           {/* Subscription */}
           <View className="flex-row justify-between items-center border-b border-border pb-4">
             <Text className="text-text text-base">Subscription</Text>
@@ -89,4 +95,4 @@ const ProfileContent = ({
   );
 };
 
-export default ProfileContent;
+export default SettingsContent;

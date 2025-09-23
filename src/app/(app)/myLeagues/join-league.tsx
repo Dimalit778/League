@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, Image, InputField } from '@/components/ui';
+import { Button, Image, InputField } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
 import { FoundLeague } from '@/types';
@@ -73,7 +73,6 @@ export default function JoinLeague() {
 
   return (
     <Screen>
-      <BackButton />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 bg-background"
