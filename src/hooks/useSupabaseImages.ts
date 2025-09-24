@@ -1,43 +1,66 @@
 import { supabase } from '@/lib/supabase';
-import { Database } from '@/types/database.types';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-export const downloadImage = async (path: string) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .download(path);
-      if (error) return reject(error);
-      const fr = new FileReader();
-      fr.readAsDataURL(data);
-      fr.onload = () => {
-        resolve(fr.result as string);
-      };
-    } catch (error) {
-      reject(error);
-    }
-  });
+type StorageTransformOptions = {
+  width?: number;
+  height?: number;
+  quality?: number;
+  resize?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
 };
 
-export const uploadImage = async (
-  localUri: string,
-  memberId: string,
-  leagueId: string,
-  supabase: SupabaseClient<Database>
-) => {
-  const fileRes = await fetch(localUri);
-  const arrayBuffer = await fileRes.arrayBuffer();
+type SignedUrlOptions = {
+  bucket?: string;
+  expiresIn?: number;
+  transform?: StorageTransformOptions;
+  cache?: boolean;
+};
 
-  const fileExt = localUri.split('.').pop()?.toLowerCase() ?? 'jpeg';
-  const path = `${leagueId}/${memberId}.${fileExt}`;
+const imageCache = new Map<string, string>();
+
+const buildCacheKey = (path: string, options?: SignedUrlOptions) => {
+  const bucket = options?.bucket ?? 'avatars';
+  const expiresIn = options?.expiresIn ?? 3600;
+  const transform = options?.transform
+    ? JSON.stringify(options.transform)
+    : 'no-transform';
+  return `${bucket}:${path}:${expiresIn}:${transform}`;
+};
+
+export const downloadImage = async (
+  path: string,
+  options?: SignedUrlOptions
+) => {
+  if (!path) return undefined;
+
+  const cacheKey = buildCacheKey(path, options);
+  const shouldUseCache = options?.cache !== false;
+
+  if (shouldUseCache && imageCache.has(cacheKey)) {
+    return imageCache.get(cacheKey);
+  }
+
+  const bucket = options?.bucket ?? 'avatars';
+  const expiresIn = options?.expiresIn ?? 3600;
+  const transform = options?.transform;
 
   const { data, error } = await supabase.storage
-    .from('avatars')
-    .upload(path, arrayBuffer);
-  if (error) {
-    throw error;
-  } else {
-    return path;
+    .from(bucket)
+    .createSignedUrl(path, expiresIn, transform ? { transform } : undefined);
+
+  if (error) throw error;
+
+  const signedUrl = data?.signedUrl;
+
+  if (shouldUseCache && signedUrl) {
+    imageCache.set(cacheKey, signedUrl);
   }
+
+  return signedUrl;
+};
+
+export const invalidateImageCache = (path: string) => {
+  [...imageCache.keys()].forEach((key) => {
+    if (key.includes(`:${path}:`)) {
+      imageCache.delete(key);
+    }
+  });
 };

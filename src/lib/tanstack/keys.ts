@@ -21,6 +21,8 @@ export const QUERY_KEYS = {
       ['members', memberId ?? TOKENS.pending] as const,
     stats: (memberId?: string) =>
       ['members', memberId ?? TOKENS.pending, 'stats'] as const,
+    avatar: (memberId?: string) =>
+      ['members', memberId ?? TOKENS.pending, 'avatar'] as const,
   },
 
   // ===== LEAGUE RELATED =====

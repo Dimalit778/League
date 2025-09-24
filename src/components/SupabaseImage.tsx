@@ -12,8 +12,8 @@ const SupabaseImage = ({ path, ...imageProps }: SupabaseImageProps) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const handleDownloadImage = async () => {
-    const image = await downloadImage(path);
-    setImage(image as string);
+    const result = await downloadImage(path);
+    setImage(result ?? undefined);
     setLoading(false);
   };
 

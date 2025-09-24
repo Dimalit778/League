@@ -58,27 +58,38 @@ export const membersService = {
     return data;
   },
 
-  // Delete Member Image
-  async deleteMemberImage(memberId: string) {
-    const { data, error } = await supabase
-      .from('league_members')
-      .update({ avatar_url: null })
-      .eq('id', memberId)
-      .select()
-      .single();
+  async getMemberAvatar(
+    path: string,
+    options?: {
+      width?: number;
+      height?: number;
+      quality?: number;
+      resize?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+      expiresIn?: number;
+    }
+  ) {
+    const {
+      width = 96,
+      height = 96,
+      quality = 80,
+      resize = 'cover',
+      expiresIn = 3600,
+    } = options ?? {};
 
-    if (error) throw error;
-    return data;
-  },
-
-  async getMemberAvatar(path: string) {
     const { data, error } = await supabase.storage
       .from('avatars')
-      .createSignedUrl(path, 3600, {
-        transform: { width: 96, height: 96, resize: 'cover', quality: 80 },
+      .createSignedUrl(path, expiresIn, {
+        transform: {
+          width,
+          height,
+          resize:
+            resize === 'inside' || resize === 'outside' ? 'cover' : resize,
+          quality,
+        },
       });
+
     if (error) throw error;
-    console.log('data', data);
+
     return data?.signedUrl;
   },
   async uploadAvatarImage(
@@ -91,12 +102,27 @@ export const membersService = {
         encoding: 'base64',
       });
 
-      const filePath = `${leagueId}/${memberId}.${avatarUrl.type === 'image' ? 'png' : 'mp4'}`;
+      const extensionFromName = avatarUrl.fileName?.split('.').pop();
+      const extensionFromUri = avatarUrl.uri.split('.').pop()?.split('?')[0];
+      const fileExtension =
+        extensionFromName ??
+        extensionFromUri ??
+        (avatarUrl.type === 'image' ? 'jpg' : 'bin');
+
+      const normalizedExtension = fileExtension.replace('jpeg', 'jpg');
+      const contentType =
+        avatarUrl.mimeType ??
+        (normalizedExtension === 'jpg'
+          ? 'image/jpeg'
+          : `image/${normalizedExtension}`);
+
+      const filePath = `${leagueId}/${memberId}.${normalizedExtension}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, decode(base64), {
-          contentType: 'image/png',
+          contentType,
+          upsert: true,
         });
       if (uploadError) throw uploadError;
 
@@ -121,15 +147,9 @@ export const membersService = {
   ) {
     try {
       if (currentPath) {
-        // Extract the filename from the URL
-        const filename = currentPath.split('/').pop();
-
-        // Format path as leagueId/memberId.extension
-        const path = `${leagueId}/${memberId}`;
-
         const { error: storageError } = await supabase.storage
           .from('avatars')
-          .remove([path]);
+          .remove([currentPath]);
         if (storageError) throw storageError;
       }
 

@@ -11,6 +11,7 @@ interface EditLeagueProps {
   closeEditMode: () => void;
   handleUpdateLeague: () => void;
   updating: boolean;
+  canSave: boolean;
 }
 
 const EditLeague = ({
@@ -18,6 +19,7 @@ const EditLeague = ({
   closeEditMode,
   handleUpdateLeague,
   updating,
+  canSave,
 }: EditLeagueProps) => {
   const removeMember = useRemoveMember();
   const { member: currentMember } = useMemberStore();
@@ -51,7 +53,7 @@ const EditLeague = ({
   };
 
   return (
-    <>
+    <View className="flex-grow">
       {/* Members management */}
       <View className="mt-2">
         <Text className="text-text font-semibold mb-2">Other Members</Text>
@@ -64,13 +66,14 @@ const EditLeague = ({
             otherMembers.map((member) => (
               <View
                 key={member.id}
-                className="flex-row items-center justify-between p-2 border border-border rounded-md"
+                className="flex-row items-center justify-between py-10 "
               >
                 <View className="flex-row items-center">
                   <View className=" mr-2">
                     <ProfileImage
+                      memberId={member.id}
+                      path={member.avatar_url}
                       size="sm"
-                      imageUrl={member.avatar_url || ''}
                       nickname={member.nickname}
                     />
                   </View>
@@ -94,11 +97,10 @@ const EditLeague = ({
       {/* Save/Cancel */}
       <View className="flex-row gap-3 mt-4">
         <Button
-          title={updating ? 'Saving...' : 'Save'}
-          onPress={() => {
-            handleUpdateLeague();
-            closeEditMode();
-          }}
+          title="Save"
+          onPress={handleUpdateLeague}
+          loading={updating}
+          disabled={!canSave || updating}
         />
         <Button
           title="Cancel"
@@ -108,7 +110,7 @@ const EditLeague = ({
           }}
         />
       </View>
-    </>
+    </View>
   );
 };
 
