@@ -1,6 +1,15 @@
 import { supabase } from '@/lib/supabase';
 import { useMemberStore } from '@/store/MemberStore';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const redirectUri = AuthSession.makeRedirectUri({
+  scheme: 'league',
+  path: 'auth/callback',
+});
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -75,6 +84,7 @@ export const useAuth = () => {
   }
   async function signIn(email: string, password: string) {
     setIsLoading(true);
+    setIsError(false);
     setErrorMessage(null);
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -97,13 +107,77 @@ export const useAuth = () => {
     }
   }
 
+  async function signInWithGoogle() {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUri,
+          skipBrowserRedirect: true,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (!data?.url) {
+        throw new Error('Failed to start Google sign in.');
+      }
+
+      const authResult = await WebBrowser.openAuthSessionAsync(
+        data.url,
+        redirectUri
+      );
+
+      if (authResult.type !== 'success' || !authResult.url) {
+        throw new Error(
+          authResult.type === 'dismiss' || authResult.type === 'cancel'
+            ? 'Google sign in was cancelled.'
+            : 'Google sign in failed.'
+        );
+      }
+
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+      if (!session?.user) {
+        throw new Error('No active session found after Google sign in.');
+      }
+
+      await useMemberStore.getState().initializeMemberLeagues();
+
+      return { success: true };
+    } catch (error: any) {
+      setIsError(true);
+      const message = error.message || 'Failed to sign in with Google';
+      setErrorMessage(message);
+      return { success: false, error: message };
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return {
     signOut,
     signUp,
     signIn,
+    signInWithGoogle,
     isLoading,
     isError,
     errorMessage,
-    clearError: () => setErrorMessage(null),
+    clearError: () => {
+      setIsError(false);
+      setErrorMessage(null);
+    },
   };
 };

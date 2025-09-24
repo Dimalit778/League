@@ -1,6 +1,7 @@
 import { Screen } from '@/components/layout';
 import { Button, InputField } from '@/components/ui';
 
+import GoogleAuth from '@/components/GoogleAuth';
 import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,7 +24,8 @@ type FormData = yup.InferType<typeof schema>;
 
 const SignIn = () => {
   const { theme } = useThemeStore();
-  const { signIn, isLoading, errorMessage, clearError } = useAuth();
+  const { signIn, signInWithGoogle, isLoading, errorMessage, clearError } =
+    useAuth();
 
   const {
     control,
@@ -43,6 +45,14 @@ const SignIn = () => {
   };
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error: any) {
+      Alert.alert('Google Sign In', error?.message || 'Sign in failed');
+    }
+  };
 
   return (
     <Screen>
@@ -98,13 +108,14 @@ const SignIn = () => {
             <Text className="text-gray-400 mx-2">OR</Text>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
-          <Button
+          {/* <Button
             title="Continue with Google"
-            onPress={() => {}}
-            loading={false}
+            onPress={handleGoogleSignIn}
+            loading={isLoading}
             variant="border"
             size="md"
-          />
+          /> */}
+          <GoogleAuth />
 
           <Text className="text-muted text-center mt-5 ">
             Don't have an account?{' '}

@@ -1,6 +1,7 @@
 import { Screen } from '@/components/layout';
 import { Button, InputField } from '@/components/ui';
 
+import GoogleAuth from '@/components/GoogleAuth';
 import { useAuth } from '@/services/useAuth';
 import { useThemeStore } from '@/store/ThemeStore';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -51,7 +52,6 @@ const SignUp = () => {
       Alert.alert('Error', errorMessage || 'An unexpected error occurred');
     }
   };
-  const handleGoogleSignIn = async () => {};
 
   return (
     <Screen>
@@ -102,15 +102,9 @@ const SignUp = () => {
             <Text className="text-gray-400 mx-2">OR</Text>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
-          <Button
-            title="Continue with Google"
-            onPress={() => {}}
-            // loading={isLoading}
-            variant="primary"
-            size="md"
-          />
+          <GoogleAuth />
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
-            <Text className="text-textMuted text-center  ">
+            <Text className="text-muted text-center  ">
               Already have an account?
             </Text>
             <Link href="/signIn" replace>
