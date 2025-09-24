@@ -87,13 +87,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.dimalit778.league'
+    namespace "com.league"
     defaultConfig {
-        applicationId 'com.dimalit778.league'
+        applicationId "com.league"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
     signingConfigs {
         debug {
