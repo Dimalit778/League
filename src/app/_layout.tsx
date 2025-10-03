@@ -1,26 +1,27 @@
 import '../../global.css';
 
 import { SplashScreen } from '@/components/layout';
-import { ThemeProvider } from '@/components/ThemeProvider';
+
 import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 
+import { themes } from '@/lib/nativewind/themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AppState } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AppState, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
 
-export default function RootLayout() {
-  const { initializeTheme } = useThemeStore();
+const InitialApp = () => {
+  const initializeTheme = useThemeStore((state) => state.initializeTheme);
+  const theme = useThemeStore((state) => state.theme);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load custom fonts
   const [fontsLoaded] = useFonts({
     'Teko-Regular': require('../../assets/fonts/Teko-Regular.ttf'),
     'Teko-Light': require('../../assets/fonts/Teko-Light.ttf'),
@@ -54,7 +55,7 @@ export default function RootLayout() {
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state change:', {
+      console.log('Layout Auth state change: -->', {
         event,
         session: !!session,
         user: !!session?.user,
@@ -77,21 +78,27 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider>
-          <Stack>
-            <Stack.Protected guard={isLoggedIn}>
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            </Stack.Protected>
+    <View className="flex-1" style={[themes[theme]]}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={isLoggedIn}>
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        </Stack.Protected>
 
-            <Stack.Protected guard={!isLoggedIn}>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            </Stack.Protected>
-          </Stack>
-        </ThemeProvider>
-      </GestureHandlerRootView>
+        <Stack.Protected guard={!isLoggedIn}>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack.Protected>
+      </Stack>
+    </View>
+  );
+};
+
+export default function RootLayout() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <InitialApp />
+      </SafeAreaProvider>
     </QueryClientProvider>
   );
 }

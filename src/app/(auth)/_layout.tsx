@@ -1,7 +1,7 @@
 import { SplashScreen } from '@/components/layout';
-import { BackButton } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { Redirect, Stack } from 'expo-router';
+import { SafeAreaView } from 'react-native';
 
 export default function AuthLayout() {
   const { session, loading } = useCurrentSession();
@@ -15,10 +15,12 @@ export default function AuthLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: true, header: () => <BackButton /> }}>
-      <Stack.Screen name="signUp" />
-      <Stack.Screen name="signIn" />
-      <Stack.Screen name="forgotPassword" />
-    </Stack>
+    <SafeAreaView className="flex-1 bg-background">
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="signIn" options={{ headerShown: false }} />
+        <Stack.Screen name="signUp" options={{ headerShown: false }} />
+        <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
+      </Stack>
+    </SafeAreaView>
   );
 }

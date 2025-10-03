@@ -1,10 +1,10 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import Screen from '@/components/layout/Screen';
 import MatchList from '@/components/matches/MatchList';
 import RoundsList from '@/components/matches/RoundsList';
 import { useCompetitionRounds } from '@/hooks/useCompetitions';
 import { useMemberStore } from '@/store/MemberStore';
 import { useCallback, useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native';
 
 export default function MatchesPage() {
   const { member } = useMemberStore();
@@ -32,7 +32,7 @@ export default function MatchesPage() {
   const showMatchList = !!selectedRound && !!competition && !!userId;
 
   return (
-    <Screen className="bg-primary">
+    <SafeAreaView className="flex-1 bg-background">
       {isLoading && !selectedRound && <LoadingOverlay />}
       {selectedRound && (
         <RoundsList
@@ -49,6 +49,6 @@ export default function MatchesPage() {
           userId={userId}
         />
       )}
-    </Screen>
+    </SafeAreaView>
   );
 }

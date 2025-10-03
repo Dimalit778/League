@@ -2,7 +2,7 @@ import { IconProps } from '@/types';
 import Svg, { Circle, G, Path } from 'react-native-svg';
 const UserIcon = ({ size, color }: IconProps) => (
   <Svg viewBox="0 0 24 24" width={size} height={size} fill="none">
-    <G stroke={color === 'dark' ? '#fff' : '#000'} strokeWidth={1.5}>
+    <G stroke={color} strokeWidth={1.5}>
       <Circle cx={9} cy={9} r={2} />
       <Path d="M13 15c0 1.105 0 2-4 2s-4-.895-4-2 1.79-2 4-2 4 .895 4 2Z" />
       <Path

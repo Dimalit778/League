@@ -1,6 +1,5 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -16,10 +15,6 @@ type Palette = {
   labelInactive: string;
   labelActive: string;
   indicator: string;
-  wrapperShadow: {
-    shadowColor: string;
-    shadowOpacity: number;
-  };
 };
 
 export function BottomTabsBar({
@@ -29,50 +24,12 @@ export function BottomTabsBar({
 }: BottomTabBarProps) {
   const { theme, colors } = useThemeTokens();
 
-  const palette: Palette = useMemo(() => {
-    if (theme === 'dark') {
-      return {
-        gradient: ['#050B1C', '#0B1C3F'],
-        iconInactiveBg: 'rgba(148, 163, 184, 0.12)',
-        iconInactiveBorder: 'rgba(148, 163, 184, 0.24)',
-        iconActiveBg: 'rgba(96, 165, 250, 0.35)',
-        iconActiveBorder: 'rgba(96, 165, 250, 0.85)',
-        iconInactiveColor: 'rgba(226, 232, 240, 0.7)',
-        iconActiveColor: '#FFFFFF',
-        labelInactive: 'rgba(226, 232, 240, 0.7)',
-        labelActive: '#FFFFFF',
-        indicator: colors.secondary,
-        wrapperShadow: {
-          shadowColor: '#010511',
-          shadowOpacity: 0.45,
-        },
-      };
-    }
-
-    return {
-      gradient: ['#E0E7FF', '#E2E8F0'],
-      iconInactiveBg: 'rgba(100, 116, 139, 0.12)',
-      iconInactiveBorder: 'rgba(100, 116, 139, 0.28)',
-      iconActiveBg: 'rgba(59, 130, 246, 0.25)',
-      iconActiveBorder: 'rgba(59, 130, 246, 0.55)',
-      iconInactiveColor: 'rgba(30, 41, 59, 0.55)',
-      iconActiveColor: colors.surface,
-      labelInactive: 'rgba(30, 41, 59, 0.6)',
-      labelActive: colors.text,
-      indicator: colors.primary,
-      wrapperShadow: {
-        shadowColor: 'rgba(15, 23, 42, 0.4)',
-        shadowOpacity: 0.25,
-      },
-    } as const;
-  }, [colors.primary, colors.secondary, colors.surface, colors.text, theme]);
-
   return (
     <View className="bg-background">
       <LinearGradient
-        colors={palette.gradient}
+        colors={[colors.background, colors.surface, colors.border]}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 1 }}
         style={[styles.tabBar]}
       >
         {state.routes.map((route, index) => {
@@ -107,10 +64,8 @@ export function BottomTabsBar({
 
           const icon = options.tabBarIcon?.({
             focused: isFocused,
-            color: isFocused
-              ? palette.iconActiveColor
-              : palette.iconInactiveColor,
-            size: isFocused ? 34 : 24,
+            color: isFocused ? colors.primary : colors.muted,
+            size: isFocused ? 32 : 24,
           });
 
           return (
@@ -131,11 +86,9 @@ export function BottomTabsBar({
                     : styles.iconWrapperInactive,
                   {
                     backgroundColor: isFocused
-                      ? palette.iconActiveBg
-                      : palette.iconInactiveBg,
-                    borderColor: isFocused
-                      ? palette.iconActiveBorder
-                      : palette.iconInactiveBorder,
+                      ? colors.background
+                      : colors.border,
+                    borderColor: isFocused ? colors.primary : colors.border,
                   },
                 ]}
               >
@@ -145,9 +98,7 @@ export function BottomTabsBar({
                 style={[
                   styles.label,
                   {
-                    color: isFocused
-                      ? palette.labelActive
-                      : palette.labelInactive,
+                    color: isFocused ? colors.text : colors.muted,
                     fontWeight: isFocused ? 'bold' : 'normal',
                   },
                 ]}
@@ -181,7 +132,7 @@ const styles = StyleSheet.create({
     width: 55,
     height: 55,
     borderRadius: 29,
-    borderWidth: 1.5,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -193,7 +144,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: 12,
     letterSpacing: 0.3,
   },
 });

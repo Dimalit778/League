@@ -1,8 +1,8 @@
-import { Screen, SplashScreen } from '@/components/layout';
+import { SplashScreen } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { Redirect, router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 
 export default function Welcome() {
   const { session, loading } = useCurrentSession();
@@ -12,11 +12,11 @@ export default function Welcome() {
   }
 
   if (session?.user) {
-    return <Redirect href="/(app)/(tabs)/League" />;
+    return <Redirect href="/(app)/myLeagues" />;
   }
 
   return (
-    <Screen className="px-5 justify-center">
+    <SafeAreaView className="flex-1 bg-background justify-center">
       <View className="justify-center items-center ">
         <Text className="text-5xl text-secondary font-headBold pt-3">
           Welcome to League
@@ -58,7 +58,7 @@ export default function Welcome() {
           </Text>
         </View>
       </View>
-      <View className="mt-10">
+      <View className="mt-10 px-5">
         <Button
           title="Get Started"
           onPress={() => router.push('/signIn')}
@@ -66,6 +66,6 @@ export default function Welcome() {
           size="lg"
         />
       </View>
-    </Screen>
+    </SafeAreaView>
   );
 }

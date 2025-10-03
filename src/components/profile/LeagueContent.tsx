@@ -1,12 +1,13 @@
-import { Image } from '@/components/ui';
+import { MyImage } from '@/components/ui';
 import { useUpdateLeague } from '@/hooks/useLeagues';
 import { useUpdateMember } from '@/hooks/useMembers';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
 import { leagueWithMembers, MemberLeague } from '@/types';
-import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
+import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -16,8 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import EditLeague from './EditLeague';
-
 const LeagueContent = ({
   league,
   isOwner,
@@ -31,6 +30,7 @@ const LeagueContent = ({
   const [isManagingLeague, setIsManagingLeague] = useState(false);
   const [editedNickname, setEditedNickname] = useState(member?.nickname ?? '');
   const [editedName, setEditedName] = useState(league.name);
+  const router = useRouter();
 
   const updateLeague = useUpdateLeague();
   const updateMember = useUpdateMember(member?.id as string);
@@ -121,59 +121,10 @@ const LeagueContent = ({
   return (
     <View className="flex-grow mt-4">
       <View className="bg-surface rounded-2xl border border-border p-3">
-        {/* Member nickname */}
-        <View className="mb-3">
-          {isEditingNickname ? (
-            <View className="gap-2">
-              <TextInput
-                className="bg-background text-text p-2 rounded-md border border-border"
-                value={editedNickname}
-                onChangeText={setEditedNickname}
-                placeholder="Enter your nickname"
-                placeholderTextColor="#888"
-                autoCapitalize="words"
-                autoCorrect
-              />
-              <View className="flex-row justify-end">
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsEditingNickname(false);
-                    setEditedNickname(member?.nickname ?? '');
-                  }}
-                  className="bg-surface border border-border rounded-md px-3 py-1 mr-2"
-                >
-                  <Text className="text-text">Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleUpdateMember}
-                  className="bg-primary rounded-md px-3 py-1"
-                  disabled={!canSaveNickname || updateMember.isPending}
-                >
-                  <Text className="text-background">
-                    {updateMember.isPending ? 'Saving...' : 'Save'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View className="flex-row justify-between items-center">
-              <Text className="text-text text-3xl" numberOfLines={1}>
-                {member?.nickname}
-              </Text>
-              <TouchableOpacity onPress={() => setIsEditingNickname(true)}>
-                <FontAwesome6
-                  name="pen-to-square"
-                  size={16}
-                  color={theme.colors.secondary}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
         {/* League name */}
         <View className="flex-row items-center mb-4">
-          <Image
-            source={league.competition.logo}
+          <MyImage
+            source={league.competition?.logo || ''}
             className="rounded-xl mr-3"
             width={40}
             height={40}
@@ -207,7 +158,9 @@ const LeagueContent = ({
                   </Text>
                 </View>
                 {isOwner && (
-                  <TouchableOpacity onPress={() => setIsManagingLeague(true)}>
+                  <TouchableOpacity
+                    onPress={() => router.push('/profile/edit-league')}
+                  >
                     <FontAwesome6
                       name="pen-to-square"
                       size={16}
@@ -263,7 +216,7 @@ const LeagueContent = ({
                   <Text className="text-text font-semibold mr-2">
                     {league.competition.name}
                   </Text>
-                  <Image
+                  <MyImage
                     source={{ uri: league.competition.logo }}
                     width={18}
                     height={18}
@@ -279,7 +232,7 @@ const LeagueContent = ({
                   <Text className="text-text font-semibold mr-2">
                     {league.competition.country}
                   </Text>
-                  <Image
+                  <MyImage
                     source={{ uri: league.competition.flag }}
                     width={18}
                     height={18}
@@ -297,18 +250,6 @@ const LeagueContent = ({
                 </Text>
               </View>
             </>
-          )}
-          {isOwner && isManagingLeague && (
-            <EditLeague
-              league={league}
-              closeEditMode={() => {
-                setIsManagingLeague(false);
-                setEditedName(league.name);
-              }}
-              handleUpdateLeague={handleUpdateLeague}
-              updating={updateLeague.isPending}
-              canSave={canSaveLeagueName}
-            />
           )}
         </View>
       </View>

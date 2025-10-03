@@ -1,8 +1,8 @@
 import MatchHeader from '@/components/matchDetails/MatchHeader';
 import SkeletonMatchDetails from '@/components/matchDetails/SkeletonMatchDetails';
 import { useMatchContent } from '@/hooks/useMatchContent';
+import { themes } from '@/lib/nativewind/themes';
 import { useThemeStore } from '@/store/ThemeStore';
-import { themes } from '@/styles/themes';
 import { FixturesWithTeamsType } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
@@ -10,7 +10,7 @@ import { View } from 'react-native';
 export default function MatchDetails() {
   const params = useLocalSearchParams();
   const { id, match: matchParam } = params;
-  const { theme } = useThemeStore();
+  const theme = useThemeStore((state) => state.theme);
 
   let match: FixturesWithTeamsType | null = null;
   try {

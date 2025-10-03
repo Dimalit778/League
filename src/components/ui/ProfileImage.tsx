@@ -1,5 +1,5 @@
 import { useMemberAvatar } from '@/hooks/useMembers';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/nativewind/utils';
 import { ComponentProps, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 

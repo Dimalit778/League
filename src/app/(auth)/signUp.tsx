@@ -1,14 +1,21 @@
-import { Screen } from '@/components/layout';
 import { Button, InputField } from '@/components/ui';
 
 import GoogleAuth from '@/components/GoogleAuth';
+import BackButton from '@/components/ui/BackButton';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
-import { useThemeStore } from '@/store/ThemeStore';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import { EmailIcon, LockIcon, UserIcon } from '../../../assets/icons';
 const validateEmail = (email: string) => {
@@ -34,7 +41,7 @@ type FormData = yup.InferType<typeof schema>;
 
 const SignUp = () => {
   const { signUp, isLoading, errorMessage } = useAuth();
-  const { theme } = useThemeStore();
+  const { colors } = useThemeTokens();
   const [showPassword, setShowPassword] = useState(false);
   const {
     control,
@@ -54,9 +61,10 @@ const SignUp = () => {
   };
 
   return (
-    <Screen>
-      <KeyboardAvoidingView className="flex-1">
-        <View className="py-10">
+    <SafeAreaView className="flex-1 bg-background">
+      <KeyboardAvoidingView className="flex-1 ">
+        <BackButton />
+        <View className="items-center p-5 ">
           <Text className="text-h1 text-secondary font-headBold text-center mb-5">
             Create an account
           </Text>
@@ -64,12 +72,12 @@ const SignUp = () => {
             Sign up to get started
           </Text>
         </View>
-        <View className="flex-1 mt-10 px-5 gap-4">
+        <View className=" mt-10 px-5 gap-4">
           <InputField
             control={control}
             name="fullname"
             placeholder="Full Name"
-            icon={<UserIcon size={24} color={theme} />}
+            icon={<UserIcon size={24} color={colors.muted} />}
             error={errors.fullname}
           />
 
@@ -77,7 +85,7 @@ const SignUp = () => {
             control={control}
             name="email"
             placeholder="Email"
-            icon={<EmailIcon size={24} color={theme} />}
+            icon={<EmailIcon size={24} color={colors.muted} />}
             error={errors.email}
           />
           <InputField
@@ -85,7 +93,7 @@ const SignUp = () => {
             name="password"
             placeholder="Password"
             secureTextEntry={!showPassword}
-            icon={<LockIcon size={24} color={theme} />}
+            icon={<LockIcon size={24} color={colors.muted} />}
             error={errors.password}
           />
 
@@ -113,7 +121,7 @@ const SignUp = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </Screen>
+    </SafeAreaView>
   );
 };
 

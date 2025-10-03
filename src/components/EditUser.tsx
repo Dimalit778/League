@@ -1,7 +1,5 @@
-import { useUploadMemberImage } from '@/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useUpdateUser } from '@/hooks/useUsers';
-import { useMemberStore } from '@/store/MemberStore';
 import { TablesUpdate } from '@/types/database.types';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useState } from 'react';
@@ -13,23 +11,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LoadingOverlay } from './layout';
 
-const EditUser = () => {
-  const { member } = useMemberStore();
+type EditUserProps = {
+  fullName: string;
+  userId: string;
+  avatarUrl: string;
+};
+
+const EditUser = ({ fullName, userId, avatarUrl }: EditUserProps) => {
   const theme = useThemeTokens();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState<string>('');
-
-  const memberId = member?.id as string;
-  const leagueId = member?.league_id as string;
-  const avatarUrl = member?.avatar_url as string;
 
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   // const { data: avatar, isLoading: isLoadingAvatar } =
   //   useMemberAvatar(avatarPath);
 
-  const uploadImage = useUploadMemberImage(leagueId, memberId);
+  // const uploadImage = useUploadMemberImage(leagueId, memberId);
 
   const handleSaveChanges = async () => {
     try {
@@ -46,7 +44,7 @@ const EditUser = () => {
     }
   };
 
-  if (uploadImage.isPending) return <LoadingOverlay />;
+  // if (uploadImage.isPending) return <LoadingOverlay />;
 
   return (
     <View className="flex-row p-4  bg-surface rounded-xl border border-border items-center">
@@ -55,7 +53,7 @@ const EditUser = () => {
           <>
             <TextInput
               className="bg-background text-text p-2 rounded-md border border-border"
-              value={member?.nickname}
+              value={fullName}
               onChangeText={setName}
               placeholder="Enter your nickname"
               placeholderTextColor="#888"
@@ -82,7 +80,7 @@ const EditUser = () => {
           </>
         ) : (
           <View className="flex-grow pl-4 flex-row justify-between items-center">
-            <Text className="text-text text-3xl">{member?.nickname}</Text>
+            <Text className="text-text text-3xl">{fullName}</Text>
             <TouchableOpacity onPress={() => setIsEditing(true)}>
               <FontAwesome6
                 name="pen-to-square"

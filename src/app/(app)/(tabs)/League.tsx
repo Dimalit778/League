@@ -1,10 +1,10 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
+import { LoadingOverlay } from '@/components/layout';
 import LeaderboardCard from '@/components/league/LeaderboardCard';
 import TopThree from '@/components/league/TopThree';
 import { useLeaderboardWithAvatars } from '@/hooks/useLeaderboard';
 import { useMemberStore } from '@/store/MemberStore';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { FlatList, View } from 'react-native';
+import { FlatList, SafeAreaView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const League = () => {
@@ -25,10 +25,9 @@ const League = () => {
   const topThree = leaderboard?.slice(0, 3);
 
   const isRefreshing = false;
-  console.log('leaderboard', JSON.stringify(leaderboard, null, 2));
 
   return (
-    <Screen>
+    <SafeAreaView className="flex-1 bg-background">
       {isLoading && !leaderboard && <LoadingOverlay />}
       <View style={{ paddingTop: contentTop }}>
         <TopThree topMembers={topThree} />
@@ -52,7 +51,7 @@ const League = () => {
           refetch();
         }}
       />
-    </Screen>
+    </SafeAreaView>
   );
 };
 

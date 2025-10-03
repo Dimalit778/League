@@ -1,27 +1,39 @@
+import { ThemeName, getThemeTokens } from '@/lib/nativewind/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colorScheme } from 'nativewind';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface ThemeState {
-  theme: 'light' | 'dark';
+  theme: ThemeName;
   isDark: boolean;
-  setTheme: (theme: 'light' | 'dark') => void;
+  tokens: ReturnType<typeof getThemeTokens>;
+  setTheme: (theme: ThemeName) => void;
   toggleTheme: () => void;
   initializeTheme: () => Promise<void>;
+  getColor: (
+    colorName: keyof ReturnType<typeof getThemeTokens>['colors']
+  ) => string;
 }
 
-// For mobile-only apps, we can use a simpler approach
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: 'dark',
+      theme: 'dark' as ThemeName,
+
+      get tokens() {
+        return getThemeTokens(get().theme);
+      },
 
       get isDark() {
         return get().theme === 'dark';
       },
 
-      setTheme: (theme: 'light' | 'dark') => {
+      getColor: (colorName) => {
+        return get().tokens.colors[colorName];
+      },
+
+      setTheme: (theme: ThemeName) => {
         colorScheme.set(theme);
         set({ theme });
       },
@@ -42,28 +54,29 @@ export const useThemeStore = create<ThemeState>()(
               const parsed = JSON.parse(savedData);
               const themeToUse = parsed.state?.theme || 'dark';
               colorScheme.set(themeToUse);
-              set({ theme: themeToUse });
+              set({ theme: themeToUse as ThemeName });
             } else {
-              colorScheme.set('dark');
-              set({ theme: 'dark' });
+              const defaultTheme: ThemeName = 'dark';
+              colorScheme.set(defaultTheme);
+              set({ theme: defaultTheme });
             }
           } catch (storageError) {
-            // If AsyncStorage fails (e.g., during development), use default theme
             console.log('Storage access failed, using default theme');
-            colorScheme.set('dark');
-            set({ theme: 'dark' });
+            const defaultTheme: ThemeName = 'dark';
+            colorScheme.set(defaultTheme);
+            set({ theme: defaultTheme });
           }
         } catch (error) {
           console.error('Failed to initialize theme:', error);
-          colorScheme.set('dark');
-          set({ theme: 'dark' });
+          const defaultTheme: ThemeName = 'dark';
+          colorScheme.set(defaultTheme);
+          set({ theme: defaultTheme });
         }
       },
     }),
     {
       name: 'theme-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      // Skip hydration in environments where AsyncStorage might fail
       skipHydration: false,
     }
   )

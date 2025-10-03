@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Button, Image, InputField } from '@/components/ui';
+import { BackButton, Button, InputField, MyImage } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/hooks/useLeagues';
 import { FoundLeague } from '@/types';
@@ -12,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   Text,
   View,
 } from 'react-native';
@@ -72,7 +72,8 @@ export default function JoinLeague() {
   };
 
   return (
-    <Screen>
+    <SafeAreaView className="flex-1 bg-background">
+      <BackButton fallback="/myLeagues" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 bg-background"
@@ -124,10 +125,8 @@ export default function JoinLeague() {
                     Competition :
                   </Text>
                   <View className="flex-row gap-4 items-center">
-                    <Image
-                      source={{
-                        uri: foundLeague.competition.logo,
-                      }}
+                    <MyImage
+                      source={foundLeague.competition.logo}
                       resizeMode="contain"
                       width={24}
                       height={24}
@@ -144,7 +143,7 @@ export default function JoinLeague() {
                     Country :
                   </Text>
                   <View className="flex-row gap-4 items-center">
-                    <Image
+                    <MyImage
                       source={{
                         uri: foundLeague.competition.flag,
                       }}
@@ -215,6 +214,6 @@ export default function JoinLeague() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </Screen>
+    </SafeAreaView>
   );
 }

@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Image } from '@/components/ui';
+import { Button, MyImage } from '@/components/ui';
 import { useGetFullLeagueData } from '@/hooks/useLeagues';
 
 import * as Clipboard from 'expo-clipboard';
@@ -52,11 +52,9 @@ const PreviewLeague = () => {
       <View className=" p-6  mx-3 border border-border rounded-2xl">
         {/* Centered League Header */}
         <View className="items-center mb-6">
-          <Image
-            source={{
-              uri: leagueData?.competition?.logo,
-            }}
-            className="rounded-2xl mb-4 shadow-sm"
+          <MyImage
+            source={leagueData?.competition?.logo}
+            className="rounded-2xl mb-4"
             width={80}
             height={80}
             resizeMode="contain"

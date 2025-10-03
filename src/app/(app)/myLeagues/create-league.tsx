@@ -1,5 +1,5 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, InputField } from '@/components/ui';
+import { LoadingOverlay } from '@/components/layout';
+import { BackButton, Button, InputField } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useCreateLeague } from '@/hooks/useLeagues';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import {
   Alert,
   KeyboardAvoidingView,
+  SafeAreaView,
   Text,
   TouchableOpacity,
   View,
@@ -83,7 +84,8 @@ const CreateLeague = () => {
   );
 
   return (
-    <Screen>
+    <SafeAreaView className="flex-1 bg-background">
+      <BackButton />
       <KeyboardAvoidingView
         className="flex-1 bg-background px-3 "
         behavior="padding"
@@ -153,7 +155,7 @@ const CreateLeague = () => {
                 membersCount === 10
                   ? 'text-secondary'
                   : limits.maxMembersPerLeague < 10
-                    ? 'text-textMuted'
+                    ? 'text-muted'
                     : 'text-text'
               }`}
             >
@@ -163,20 +165,22 @@ const CreateLeague = () => {
         </View>
 
         {limits.maxMembersPerLeague < 10 && (
-          <Text className="text-textMuted text-sm text-center mb-4">
+          <Text className="text-muted text-sm text-center mb-4">
             Upgrade to Premium to create leagues with up to 10 members
           </Text>
         )}
-        <Button
-          title="Create League"
-          onPress={onSubmit}
-          variant="primary"
-          size="lg"
-          loading={createLeague.isPending}
-          disabled={!isValid}
-        />
+        <View className="mt-6">
+          <Button
+            title="Create League"
+            onPress={onSubmit}
+            variant="primary"
+            size="lg"
+            loading={createLeague.isPending}
+            disabled={!isValid}
+          />
+        </View>
       </KeyboardAvoidingView>
-    </Screen>
+    </SafeAreaView>
   );
 };
 

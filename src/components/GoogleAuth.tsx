@@ -18,40 +18,29 @@ const GoogleAuth = () => {
     webClientId: WEB_CLIENT_ID,
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     offlineAccess: false,
-    hostedDomain: '', // specifies a hosted domain restriction
-    forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-    accountName: '', // [Android] specifies an account name on the device that should be used
-    iosClientId: IOS_CLIENT_ID, // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-    googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. "GoogleService-Info-Staging"
-    openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-    profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+    iosClientId: IOS_CLIENT_ID,
+    profileImageSize: 120,
   });
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  console.log('userInfo -->', JSON.stringify(userInfo, null, 2));
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
       await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-      console.log('response -->', JSON.stringify(response, null, 2));
+      const res = await GoogleSignin.signIn();
 
-      if (isSuccessResponse(response)) {
-        setUserInfo(response.data.idToken);
+      if (isSuccessResponse(res)) {
+        const idToken = res.data.idToken;
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'google',
-          token: response.data.idToken as string,
+          token: idToken as string,
         });
         if (error) throw new Error(error.message);
-        console.log('error', JSON.stringify(error, null, 2));
-        console.log('signed successfully', JSON.stringify(data, null, 2));
       } else {
         throw new Error('Google sign in failed');
       }
     } catch (error: any) {
-      console.log('failed', error);
       if (isErrorWithCode(error)) {
         switch (error.code) {
           case statusCodes.IN_PROGRESS:

@@ -8,10 +8,11 @@ import {
 import { SplashScreen, TabsHeader } from '@/components/layout';
 import { BottomTabsBar } from '@/components/layout/BottomTabsBar';
 import { useMemberStore } from '@/store/MemberStore';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, usePathname } from 'expo-router';
 
 export default function TabLayout() {
   const { member, isLoading } = useMemberStore();
+  const pathname = usePathname();
 
   if (isLoading) {
     return <SplashScreen />;
@@ -21,11 +22,14 @@ export default function TabLayout() {
     return <Redirect href="/myLeagues" />;
   }
 
+  // Hide tabs for edit screens
+  const shouldHideTabs =
+    pathname.includes('/edit-profile') || pathname.includes('/edit-league');
+
   return (
     <Tabs
-      tabBar={(props) => <BottomTabsBar {...props} />}
+      tabBar={(props) => (shouldHideTabs ? null : <BottomTabsBar {...props} />)}
       screenOptions={{
-        headerShown: true,
         header: () => <TabsHeader showLeagueName={true} />,
         tabBarHideOnKeyboard: true,
       }}

@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import LeagueCard from '@/components/myLeagues/LeagueCard';
 import { SubscriptionStatus } from '@/components/subscription';
 import { Button } from '@/components/ui';
@@ -13,6 +13,7 @@ import { FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
   const { session } = useCurrentSession();
+  console.log('session -->', JSON.stringify(session, null, 2));
   const userId = session?.user?.id as string;
   const { data: memberLeagues, isLoading, error } = useGetUserLeagues();
   const { data: subscription } = useSubscription();
@@ -45,7 +46,7 @@ export default function MyLeagues() {
   const loading = updatePrimaryLeague.isPending || isLoading;
 
   return (
-    <Screen>
+    <View className="flex-1 bg-background">
       {loading && <LoadingOverlay />}
 
       <View className="px-3 mt-2 mb-4">
@@ -85,6 +86,6 @@ export default function MyLeagues() {
           <LeagueCard item={item} onSetPrimary={() => handleSetPrimary(item)} />
         )}
       />
-    </Screen>
+    </View>
   );
 }

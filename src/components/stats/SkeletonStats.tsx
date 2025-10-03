@@ -6,16 +6,6 @@ export default function SkeletonStats() {
     <Screen>
       <View className="flex-1 p-4 gap-4">
         {/* HEADER CARD */}
-        <View className="bg-surface rounded-2xl p-4 ">
-          <View className="flex-row items-center">
-            {/* Avatar circle placeholder */}
-            <View className="w-16 h-16 rounded-full bg-border animate-pulse mr-4" />
-            <View>
-              <View className="h-5 w-32 bg-border animate-pulse rounded mb-2" />
-              <View className="h-4 w-20 bg-border animate-pulse rounded" />
-            </View>
-          </View>
-        </View>
 
         {/* 2x2 STATS GRID */}
         <View className="flex-row flex-wrap justify-between">

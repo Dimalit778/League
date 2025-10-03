@@ -1,7 +1,7 @@
 import { MemberLeague } from '@/types';
 import { Text, TouchableOpacity, View } from 'react-native';
 import StarIcon from '../../../assets/icons/StarIcon';
-import { Image } from '../ui';
+import { MyImage } from '../ui';
 
 const LeagueCard = ({
   item,
@@ -15,12 +15,10 @@ const LeagueCard = ({
       <View className="bg-surface p-4">
         <TouchableOpacity onPress={onSetPrimary} activeOpacity={0.8}>
           <View className="flex-row items-center">
-            <Image
+            <MyImage
               source={{ uri: item.league.logo }}
-              width={48}
-              height={48}
-              resizeMode="contain"
-              className="rounded-lg mr-3"
+              width={40}
+              height={40}
             />
 
             <View className="flex-1 ps-2">

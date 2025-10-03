@@ -12,7 +12,17 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.league",
       "infoPlist": {
-        "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile."
+        "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
+
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsLocalNetworking": true,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        }
       }
     },
     "android": {

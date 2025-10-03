@@ -1,7 +1,7 @@
 import {
   useCreatePrediction,
+  useMemberPredictionByFixture,
   useUpdatePrediction,
-  useUserPredictionByFixture,
 } from '@/hooks/usePredictions';
 import { FixturesWithTeamsType } from '@/types';
 import { useRouter } from 'expo-router';
@@ -12,7 +12,9 @@ import { Button } from '../ui';
 
 const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
   const router = useRouter();
-  const { data: prediction, isLoading } = useUserPredictionByFixture(match.id);
+  const { data: prediction, isLoading } = useMemberPredictionByFixture(
+    match.id
+  );
 
   // State management
   const [homeScore, setHomeScore] = useState('');
@@ -101,7 +103,13 @@ const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
   const hasError = createPrediction.isError || updatePrediction.isError;
 
   return (
-    <View className="bg-background p-4 rounded-lg shadow-md">
+    <View
+      className="bg-background p-4 rounded-lg"
+      style={{
+        boxShadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      }}
+    >
       {/* Title */}
       <Text className="text-center text-xl mt-2 mb-4 text-text">
         {prediction ? 'My Prediction' : 'Enter your prediction'}

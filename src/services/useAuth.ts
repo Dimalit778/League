@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
+import { useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
@@ -12,6 +14,7 @@ const redirectUri = AuthSession.makeRedirectUri({
 });
 
 export const useAuth = () => {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -41,6 +44,10 @@ export const useAuth = () => {
 
       // Reset stores using their clearAll methods regardless of Supabase signOut result
       useMemberStore.getState().clearAll();
+
+      // Invalidate all user-related queries in the cache
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.all });
+      queryClient.removeQueries({ queryKey: QUERY_KEYS.users.all });
 
       // Force clear any session data from AsyncStorage directly as a fallback
       try {

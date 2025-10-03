@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { Card, Image } from '../ui';
+import { Card, MyImage } from '../ui';
 
 interface LeaderboardCardProps {
   nickname: string;
@@ -29,10 +29,8 @@ const LeaderboardCard = ({
 
         {avatar_url ? (
           <View className="w-10 h-10 rounded-full overflow-hidden border-2 border-border">
-            <Image
-              source={{
-                uri: avatar_url,
-              }}
+            <MyImage
+              source={avatar_url}
               className="w-full h-full"
               width={40}
               height={40}

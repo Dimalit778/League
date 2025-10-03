@@ -41,40 +41,36 @@ const SettingsContent = ({
     );
   };
   return (
-    <View className="py-4">
+    <>
       {/* Profile Information */}
-      <View className="bg-surface  p-4 mb-4">
-        <View className="gap-4 ">
-          {/* Theme Toggle */}
-          <View className="flex-row justify-between items-center border-b border-border pb-4">
-            <Text className="text-text text-base">Theme</Text>
-            <ThemeToggle />
-          </View>
-          {/* Subscription */}
-          <View className="flex-row justify-between items-center border-b border-border pb-4">
-            <Text className="text-text text-base">Subscription</Text>
-            <View className="bg-secondary rounded-md px-2 py-1">
-              <Text className="text-black text-sm ">{subscriptionType}</Text>
-            </View>
-          </View>
-          {/* Email */}
-          <View className="flex-row justify-between items-center border-b border-border pb-4">
-            <Text className="text-text text-base ">Email</Text>
-            <Text className="text-text text-base">{email}</Text>
-          </View>
-          {/* Joined On */}
-          <View className="flex-row justify-between items-center">
-            <Text className="text-text text-base ">Joined On</Text>
-            <Text className="text-text text-base">{createdAtDateString}</Text>
-          </View>
+      <View className="border-b border-primary">
+        {/* Theme Toggle */}
+        <View className="border-t border-b border-border py-3 px-4 flex-row justify-between items-center">
+          <Text className="text-text text-base">Theme</Text>
+          <ThemeToggle />
+        </View>
+        {/* Subscription */}
+        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
+          <Text className="text-text text-base">Subscription</Text>
+
+          <Text className="text-primary text-sm font-medium ">
+            {subscriptionType}
+          </Text>
+        </View>
+        {/* Email */}
+        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
+          <Text className="text-text text-base ">Email</Text>
+          <Text className="text-text text-base">{email}</Text>
+        </View>
+        {/* Joined On */}
+        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
+          <Text className="text-text text-base ">Joined On</Text>
+          <Text className="text-text text-base">{createdAtDateString}</Text>
         </View>
       </View>
+
       <View>
         {/* Account Actions */}
-        {renderAccountActions(
-          'Account',
-          '/settings/account' as RelativePathString
-        )}
 
         {renderAccountActions(
           'Subscription',
@@ -91,7 +87,7 @@ const SettingsContent = ({
           '/settings/help' as RelativePathString
         )}
       </View>
-    </View>
+    </>
   );
 };
 

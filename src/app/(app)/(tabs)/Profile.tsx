@@ -1,36 +1,29 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import LeagueContent from '@/components/profile/LeagueContent';
-import { Button, ProfileImage } from '@/components/ui';
+import { LoadingOverlay } from '@/components/layout';
+import { Button, MyImage, ProfileImage } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
-import { useDeleteMemberImage, useUploadMemberImage } from '@/hooks/useMembers';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
-import { MemberLeague } from '@/types';
-import { FontAwesome } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import { FontAwesome6 } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { router } from 'expo-router';
 import { useCallback, useMemo } from 'react';
 import {
-  ActivityIndicator,
   Alert,
-  Dimensions,
+  Pressable,
+  SafeAreaView,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
 export default function Profile() {
-  const member = useMemberStore((state) => state.member);
-  const setMember = useMemberStore((state) => state.setMember);
-  const screenHeight = Dimensions.get('window').height;
-
-  console.log('screenHeight', screenHeight);
-
+  const { member } = useMemberStore();
+  const { colors } = useThemeTokens();
   const leagueId = member?.league_id;
-  const memberId = member?.id;
   const userId = member?.user_id;
 
   const leaveLeague = useLeaveLeague(userId ?? '');
-  const uploadImage = useUploadMemberImage(leagueId ?? '', memberId ?? '');
-  const deleteImage = useDeleteMemberImage(leagueId ?? '', memberId ?? '');
+
   const { data: league, isLoading } = useGetLeagueAndMembers(leagueId);
 
   const isOwner = useMemo(
@@ -42,6 +35,7 @@ export default function Profile() {
       ),
     [member?.user_id, league?.owner?.user_id]
   );
+
   const confirmLeaveLeague = useCallback(() => {
     if (!league?.id) return;
     Alert.alert(
@@ -66,134 +60,162 @@ export default function Profile() {
     );
   }, [leaveLeague, league?.id, league?.name]);
 
-  const handleSelectImage = useCallback(async () => {
-    if (!leagueId || !memberId) return;
+  if (!member || !league) return <LoadingOverlay />;
 
-    const options: ImagePicker.ImagePickerOptions = {
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 1,
-      aspect: [1, 1],
-    };
-
-    const result = await ImagePicker.launchImageLibraryAsync(options);
-    if (result.canceled) return;
-
-    const [asset] = result.assets;
-    if (!asset) return;
-
-    try {
-      const updatedMember = (await uploadImage.mutateAsync(asset)) as
-        | MemberLeague
-        | undefined;
-      if (updatedMember) {
-        setMember(updatedMember);
-      }
-      Alert.alert('Success', 'Profile image updated successfully');
-    } catch (error) {
-      console.error('Failed to update profile image:', error);
-      Alert.alert(
-        'Error',
-        error instanceof Error
-          ? error.message
-          : 'Failed to update profile image'
-      );
+  const handleCopyJoinCode = async () => {
+    if (typeof league.join_code === 'string') {
+      await Clipboard.setStringAsync(league.join_code || '');
+      Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
-  }, [leagueId, memberId, uploadImage, setMember]);
-
-  const confirmRemoveImage = useCallback(() => {
-    if (!member?.avatar_url || !leagueId || !memberId) return;
-
-    Alert.alert('Remove Image', 'Remove your profile image?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const updatedMember = (await deleteImage.mutateAsync(
-              member.avatar_url
-            )) as MemberLeague | undefined;
-            if (updatedMember) {
-              setMember(updatedMember);
-            }
-            Alert.alert('Removed', 'Profile image removed');
-          } catch (error) {
-            console.error('Failed to remove profile image:', error);
-            Alert.alert(
-              'Error',
-              error instanceof Error
-                ? error.message
-                : 'Failed to remove profile image'
-            );
-          }
-        },
-      },
-    ]);
-  }, [deleteImage, leagueId, member?.avatar_url, memberId, setMember]);
-
-  const isMutatingAvatar = uploadImage.isPending || deleteImage.isPending;
-
-  if (!member) {
-    return (
-      <Screen className="mx-2 my-1 items-center justify-center">
-        <LoadingOverlay />
-      </Screen>
-    );
-  }
+  };
+  console.log('league', JSON.stringify(league, null, 2));
 
   return (
-    <Screen className="mx-2 my-1">
-      <View className="flex-1">
-        {isLoading && <LoadingOverlay />}
-        {/* Member avatar */}
-        <View className="flex-row items-center justify-center mb-4">
-          <View className="relative">
-            <ProfileImage
-              memberId={member.id}
-              path={member.avatar_url}
-              nickname={member.nickname}
-              size="xl"
-              style={{ width: 144, height: 144 }}
+    <SafeAreaView className="flex-1 bg-background ">
+      {isLoading && <LoadingOverlay />}
+      {/* Member avatar */}
+      <View className="mt-4 items-center ">
+        <View className="relative">
+          <ProfileImage
+            memberId={member.id}
+            path={member.avatar_url}
+            nickname={member.nickname}
+            size="xl"
+            style={{ width: 120, height: 120 }}
+          />
+
+          <TouchableOpacity
+            onPress={() => router.push('/profile/edit-profile')}
+            className="absolute -right-2 -bottom-2 rounded-full w-9 h-9 items-center justify-center border border-border z-10"
+            style={{
+              boxShadow:
+                '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <FontAwesome6
+              name="pen-to-square"
+              size={16}
+              color={colors.secondary}
             />
-            {member.avatar_url && (
-              <TouchableOpacity
-                onPress={confirmRemoveImage}
-                disabled={isMutatingAvatar}
-                className="absolute -left-2 -bottom-2 bg-background rounded-full w-8 h-8 items-center justify-center border border-border z-10 shadow-md"
-              >
-                {deleteImage.isPending ? (
-                  <ActivityIndicator size="small" />
-                ) : (
-                  <FontAwesome name="trash" size={14} color="#ef4444" />
-                )}
-              </TouchableOpacity>
-            )}
+          </TouchableOpacity>
+        </View>
+        <Text className="text-xl text-muted font-semibold text-center mt-4">
+          {member.nickname}
+        </Text>
+      </View>
+
+      {/* League details */}
+      <View className="flex-grow justify-center px-4">
+        <View className=" bg-surface rounded-2xl border border-border p-4">
+          <View className="flex-row justify-between items-center px-4">
+            <MyImage
+              source={league?.competition?.logo || ''}
+              className="rounded-xl mr-3"
+              width={40}
+              height={40}
+              resizeMode="contain"
+            />
+            <Text className="flex-1 text-text text-xl text-center   uppercase">
+              {league.name}
+            </Text>
             <TouchableOpacity
-              onPress={handleSelectImage}
-              disabled={isMutatingAvatar}
-              className="absolute -right-2 -bottom-2 bg-primary rounded-full w-9 h-9 items-center justify-center border border-border z-10 shadow-md"
+              onPress={() => router.push('/profile/edit-league')}
             >
-              {uploadImage.isPending ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <FontAwesome name="plus" size={16} color="#fff" />
-              )}
+              <FontAwesome6
+                name="pen-to-square"
+                size={16}
+                color={colors.secondary}
+              />
             </TouchableOpacity>
           </View>
-        </View>
 
-        {league && <LeagueContent league={league} isOwner={isOwner} />}
+          <View className="h-[1px] bg-muted my-3" />
+          {/* League details */}
+          <View className="gap-3">
+            {/* Join Code */}
+            <View className="flex-row items-center justify-between ">
+              <Text className="text-text font-medium">Join Code</Text>
 
-        <View className="mt-auto mb-6 pt-6">
-          <Button
-            title={'Leave League'}
-            variant="error"
-            onPress={confirmLeaveLeague}
-            disabled={leaveLeague.isPending}
-          />
+              <Pressable
+                className="border border-border rounded-lg px-3 py-2"
+                onPress={handleCopyJoinCode}
+              >
+                <Text className="text-text  tracking-[2px] text-center ">
+                  {league.join_code}
+                </Text>
+              </Pressable>
+            </View>
+            <View className="h-[1px] bg-border" />
+            {/* Members */}
+            <View>
+              <View className="flex-row justify-between mb-1">
+                <Text className="text-text">Members</Text>
+                <Text className="text-text font-semibold">
+                  {league?.league_members.length || 0} / {league?.max_members}
+                </Text>
+              </View>
+            </View>
+            <View className="h-[1px] bg-border" />
+            {/* Owner */}
+            <View className="flex-row justify-between">
+              <Text className="text-text">League Owner</Text>
+              <Text className="text-text font-semibold">
+                {league.owner?.nickname || 'Unknown'}
+              </Text>
+            </View>
+            <View className="h-[1px] bg-border" />
+            {/* Competition details */}
+            <View className="flex-row justify-between">
+              <Text className="text-text">League</Text>
+              <View className="flex-row items-center">
+                <Text className="text-text font-semibold mr-2">
+                  {league.competition.name}
+                </Text>
+                <MyImage
+                  source={{ uri: league.competition.logo }}
+                  width={18}
+                  height={18}
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+            <View className="h-[1px] bg-border" />
+
+            <View className="flex-row justify-between items-center">
+              <Text className="text-text">Country</Text>
+              <View className="flex-row items-center">
+                <Text className="text-text font-semibold mr-2">
+                  {league.competition.country}
+                </Text>
+                <MyImage
+                  source={{ uri: league.competition.flag }}
+                  width={18}
+                  height={18}
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+
+            <View className="h-[1px] bg-border" />
+            {/* Created date */}
+            <View className="flex-row justify-between">
+              <Text className="text-text font-medium">Created at</Text>
+              <Text className="text-muted">
+                {new Date(league.created_at).toLocaleDateString()}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
-    </Screen>
+      {/* Leave League Button */}
+      <View className="mt-auto mb-4 px-6">
+        <Button
+          title={'Leave League'}
+          variant="error"
+          onPress={confirmLeaveLeague}
+          disabled={leaveLeague.isPending}
+        />
+      </View>
+    </SafeAreaView>
   );
 }

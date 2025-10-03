@@ -1,5 +1,4 @@
-import { Error, Screen } from '@/components/layout';
-import MemberHeader from '@/components/stats/MemberHeader';
+import { Error } from '@/components/layout';
 import PredictionChart from '@/components/stats/PredictionChart';
 import SkeletonStats from '@/components/stats/SkeletonStats';
 import StatsCard from '@/components/stats/StatsCard';
@@ -7,7 +6,7 @@ import { useMemberStats } from '@/hooks/useMembers';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
 import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 
 const Stats = () => {
   const { member } = useMemberStore();
@@ -24,19 +23,16 @@ const Stats = () => {
   }, [refetch]);
 
   if (error) return <Error error={error} />;
-  const t = true;
-  if (t) return <SkeletonStats />;
-  // if (isLoading) return <SkeletonStats />;
+
+  if (isLoading) return <SkeletonStats />;
   return (
-    <Screen>
+    <SafeAreaView className="flex-1 bg-background">
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
         }
       >
-        <MemberHeader member={member} />
-
         <View className="flex-row mb-4">
           <StatsCard
             title="Total Predictions"
@@ -97,7 +93,7 @@ const Stats = () => {
           />
         </View>
       </ScrollView>
-    </Screen>
+    </SafeAreaView>
   );
 };
 

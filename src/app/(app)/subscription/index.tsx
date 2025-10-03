@@ -1,4 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
+import { LoadingOverlay } from '@/components/layout';
 import {
   SubscriptionCard,
   SubscriptionFeatures,
@@ -11,7 +11,41 @@ import {
 import { SubscriptionType } from '@/services/subscriptionService';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, Text, View } from 'react-native';
+
+const subscriptionPlans = [
+  {
+    type: 'FREE' as SubscriptionType,
+    price: 'Free',
+    features: [
+      'Join up to 2 leagues',
+      'Create leagues with up to 6 members',
+      'Basic prediction stats',
+    ],
+  },
+  {
+    type: 'BASIC' as SubscriptionType,
+    price: '$4.99/mo',
+    features: [
+      'Join up to 3 leagues',
+      'Create leagues with up to 8 members',
+      'Advanced prediction stats',
+      'League history',
+    ],
+  },
+  {
+    type: 'PREMIUM' as SubscriptionType,
+    price: '$9.99/mo',
+    features: [
+      'Join up to 5 leagues',
+      'Create leagues with up to 10 members',
+      'Advanced prediction stats',
+      'League history',
+      'Custom league settings',
+      'Priority support',
+    ],
+  },
+];
 
 export default function SubscriptionScreen() {
   const { data: currentSubscription, isLoading: isLoadingSubscription } =
@@ -19,7 +53,6 @@ export default function SubscriptionScreen() {
   const { mutate: createSubscription, isPending: isCreatingSubscription } =
     useCreateSubscription();
 
-  // Ensure we always have a subscription type, even if the query is still loading
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
 
   console.log(
@@ -30,10 +63,6 @@ export default function SubscriptionScreen() {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(
     subscriptionType || null
   );
-
-  const handleSelectPlan = (plan: SubscriptionType) => {
-    setSelectedPlan(plan);
-  };
 
   const handleSubscribe = () => {
     if (!selectedPlan) {
@@ -88,43 +117,9 @@ export default function SubscriptionScreen() {
 
   const isLoading = isLoadingSubscription || isCreatingSubscription;
 
-  const subscriptionPlans = [
-    {
-      type: 'FREE' as SubscriptionType,
-      price: 'Free',
-      features: [
-        'Join up to 2 leagues',
-        'Create leagues with up to 6 members',
-        'Basic prediction stats',
-      ],
-    },
-    {
-      type: 'BASIC' as SubscriptionType,
-      price: '$4.99/mo',
-      features: [
-        'Join up to 3 leagues',
-        'Create leagues with up to 8 members',
-        'Advanced prediction stats',
-        'League history',
-      ],
-    },
-    {
-      type: 'PREMIUM' as SubscriptionType,
-      price: '$9.99/mo',
-      features: [
-        'Join up to 5 leagues',
-        'Create leagues with up to 10 members',
-        'Advanced prediction stats',
-        'League history',
-        'Custom league settings',
-        'Priority support',
-      ],
-    },
-  ];
-
   return (
-    <Screen>
-      <BackButton />
+    <SafeAreaView className="flex-1 bg-background">
+      <BackButton title="Subscription" />
 
       {isLoading && <LoadingOverlay />}
       <ScrollView className="flex-1 p-4">
@@ -143,7 +138,7 @@ export default function SubscriptionScreen() {
             price={plan.price}
             features={plan.features}
             isActive={subscriptionType === plan.type}
-            onSelect={() => handleSelectPlan(plan.type)}
+            onSelect={() => setSelectedPlan(plan.type)}
           />
         ))}
 
@@ -167,6 +162,6 @@ export default function SubscriptionScreen() {
           </View>
         )}
       </ScrollView>
-    </Screen>
+    </SafeAreaView>
   );
 }

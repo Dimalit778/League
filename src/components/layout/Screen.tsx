@@ -1,41 +1,45 @@
-import React, { useState } from 'react';
-import { LayoutChangeEvent, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useThemeStore } from '@/store/ThemeStore';
+import React from 'react';
+import { View } from 'react-native';
+import { Edge, SafeAreaView } from 'react-native-safe-area-context';
 
 type ScreenProps = {
   children: React.ReactNode;
   className?: string;
+
+  safeAreaMode?: 'tabs' | 'header' | 'full' | Edge[];
 };
 
-const Screen = ({ children, className }: ScreenProps) => {
-  const [contentHeight, setContentHeight] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(0);
+const Screen = ({
+  children,
+  className,
+  safeAreaMode = 'full',
+}: ScreenProps) => {
+  const getColor = useThemeStore((state) => state.getColor);
 
-  const handleContentSizeChange = (_: number, contentHeight: number) => {
-    setContentHeight(contentHeight);
+  const getEdges = (): Edge[] => {
+    switch (safeAreaMode) {
+      case 'tabs':
+        return ['left', 'right'];
+      case 'header':
+        return ['left', 'right', 'bottom'];
+      case 'full':
+        return ['top', 'left', 'right', 'bottom'];
+      default:
+        return safeAreaMode;
+    }
   };
-
-  const handleContainerLayout = (event: LayoutChangeEvent) => {
-    setContainerHeight(event.nativeEvent.layout.height);
-  };
-
-  const isScrollEnabled =
-    contentHeight > containerHeight && containerHeight > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['left', 'right']}>
-      <View
-        style={{ flex: 1 }}
-        className={className}
-        onLayout={handleContainerLayout}
-      >
-        <ScrollView
-          scrollEnabled={isScrollEnabled}
-          onContentSizeChange={handleContentSizeChange}
-          showsVerticalScrollIndicator={false}
-        >
-          {children}
-        </ScrollView>
+    <SafeAreaView
+      className="flex-1 bg-background"
+      edges={getEdges()}
+      style={{
+        backgroundColor: getColor('background'), // Fallback for immediate theme application
+      }}
+    >
+      <View style={{ flex: 1 }} className={className}>
+        {children}
       </View>
     </SafeAreaView>
   );
