@@ -31,7 +31,6 @@ export const useImagePrefetch = () => {
       );
 
       // Prefetch all images in parallel
-      console.log('Prefetching images:', validUrls.length);
       const results = await Promise.all(
         validUrls.map(async (url) => {
           try {

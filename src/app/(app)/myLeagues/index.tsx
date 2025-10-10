@@ -13,7 +13,7 @@ import { FlatList, Text, View } from 'react-native';
 
 export default function MyLeagues() {
   const { session } = useCurrentSession();
-  console.log('session -->', JSON.stringify(session, null, 2));
+
   const userId = session?.user?.id as string;
   const { data: memberLeagues, isLoading, error } = useGetUserLeagues();
   const { data: subscription } = useSubscription();

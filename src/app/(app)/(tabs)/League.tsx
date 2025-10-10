@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import LeaderboardCard from '@/components/league/LeaderboardCard';
 import TopThree from '@/components/league/TopThree';
 import { useLeaderboardWithAvatars } from '@/hooks/useLeaderboard';
@@ -20,7 +20,7 @@ const League = () => {
     refetch,
   } = useLeaderboardWithAvatars();
 
-  if (error) console.log('error', error);
+  if (error) return <Error error={error} />;
 
   const topThree = leaderboard?.slice(0, 3);
 
@@ -47,7 +47,6 @@ const League = () => {
         )}
         refreshing={isRefreshing}
         onRefresh={() => {
-          console.log('refreshing');
           refetch();
         }}
       />

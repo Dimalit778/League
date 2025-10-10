@@ -38,36 +38,35 @@ export const QUERY_KEYS = {
   },
 
   // ===== FIXTURE RELATED =====
-  fixtures: {
-    all: ['fixtures'] as const,
-    byId: (fixtureId?: number) =>
-      ['fixtures', fixtureId ?? TOKENS.pending] as const,
-    byRound: (competitionId?: number, round?: string) =>
+  matches: {
+    all: ['matches'] as const,
+    byId: (matchId?: number) => ['matches', matchId ?? TOKENS.pending] as const,
+    byMatchday: (competitionId?: number, matchday?: number) =>
       [
-        'fixtures',
-        'round',
+        'matches',
+        'matchday',
         competitionId ?? TOKENS.pending,
-        round ?? TOKENS.pending,
+        matchday ?? TOKENS.pending,
       ] as const,
     withPredictions: (
       competitionId?: number,
-      round?: string,
+      matchday?: number,
       userId?: string
     ) =>
       [
-        'fixtures',
+        'matches',
         'predictions',
         competitionId ?? TOKENS.pending,
-        round ?? TOKENS.pending,
+        matchday ?? TOKENS.pending,
         userId ?? TOKENS.me,
       ] as const,
-    byLeagueRound: (leagueId?: string, round?: string) =>
+    byLeagueMatchday: (leagueId?: string, matchday?: number) =>
       [
-        'fixtures',
+        'matches',
         'league',
         leagueId ?? TOKENS.pending,
-        'round',
-        round ?? TOKENS.pending,
+        'matchday',
+        matchday ?? TOKENS.pending,
       ] as const,
   },
 
@@ -78,13 +77,13 @@ export const QUERY_KEYS = {
       ['predictions', 'user', userId ?? TOKENS.me] as const,
     byFixture: (fixtureId?: number) =>
       ['predictions', 'fixture', fixtureId ?? TOKENS.pending] as const,
-    byUserAndRound: (userId?: string, round?: string) =>
+    byUserAndMatchday: (userId?: string, matchday?: number) =>
       [
         'predictions',
         'user',
         userId ?? TOKENS.me,
-        'round',
-        round ?? TOKENS.pending,
+        'matchday',
+        matchday ?? TOKENS.pending,
       ] as const,
     leagueByFixture: (fixtureId?: number, leagueId?: string) =>
       [
@@ -105,7 +104,7 @@ export const QUERY_KEYS = {
   // ===== COMPETITION RELATED =====
   competitions: {
     all: ['competitions'] as const,
-    roundsByLeague: (leagueId?: string) =>
+    matchdaysByLeague: (leagueId?: string) =>
       ['competitions', leagueId ?? TOKENS.pending, 'rounds'] as const,
   },
 

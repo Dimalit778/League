@@ -45,22 +45,19 @@ const GoogleAuth = () => {
         switch (error.code) {
           case statusCodes.IN_PROGRESS:
             Alert.alert('Error', 'User cancelled the login flow');
-            console.log('User cancelled the login flow');
+
             break;
           case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
             Alert.alert('Error', 'Play services not available');
-            console.log('Play services not available');
             break;
           case statusCodes.SIGN_IN_REQUIRED:
             Alert.alert('Error', 'Sign in required');
-            console.log('Sign in required');
             break;
           default:
             Alert.alert('Error', 'Google sign in failed');
-            console.log('Google sign in failed');
         }
       } else {
-        console.log('Google sign in failed');
+        Alert.alert('Error', 'Google sign in failed');
       }
     } finally {
       setIsLoading(false);

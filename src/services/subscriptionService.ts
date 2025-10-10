@@ -135,7 +135,7 @@ export const subscriptionService = {
     try {
       // Get current subscription (will return default FREE if none exists)
       const subscription = await this.getCurrentSubscription(userId);
-      console.log('subscription', JSON.stringify(subscription, null, 2));
+
       // This should never be null due to our default FREE subscription
       const subscriptionType = subscription?.subscription_type || 'FREE';
       const limits = this.getSubscriptionLimits(subscriptionType);

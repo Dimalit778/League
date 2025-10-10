@@ -16,118 +16,69 @@ export type Database = {
     Tables: {
       competitions: {
         Row: {
-          country: string
+          area_code: string
+          area_flag: string
+          area_id: number
+          area_name: string
+          code: string
           created_at: string
-          current_round: string | null
-          flag: string
+          current_matchday: number
           id: number
+          last_updated: string
           logo: string
           name: string
-          rounds_data: Json | null
-          season: number | null
+          season: number
+          season_end_date: string
+          season_id: number
+          season_start_date: string
+          total_matchdays: number | null
           type: string
           updated_at: string
+          winner: string | null
         }
         Insert: {
-          country: string
+          area_code: string
+          area_flag: string
+          area_id: number
+          area_name: string
+          code: string
           created_at?: string
-          current_round?: string | null
-          flag: string
+          current_matchday: number
           id: number
+          last_updated: string
           logo: string
           name: string
-          rounds_data?: Json | null
-          season?: number | null
-          type?: string
+          season: number
+          season_end_date: string
+          season_id: number
+          season_start_date: string
+          total_matchdays?: number | null
+          type: string
           updated_at?: string
+          winner?: string | null
         }
         Update: {
-          country?: string
+          area_code?: string
+          area_flag?: string
+          area_id?: number
+          area_name?: string
+          code?: string
           created_at?: string
-          current_round?: string | null
-          flag?: string
+          current_matchday?: number
           id?: number
+          last_updated?: string
           logo?: string
           name?: string
-          rounds_data?: Json | null
-          season?: number | null
+          season?: number
+          season_end_date?: string
+          season_id?: number
+          season_start_date?: string
+          total_matchdays?: number | null
           type?: string
           updated_at?: string
+          winner?: string | null
         }
         Relationships: []
-      }
-      fixtures: {
-        Row: {
-          away_score: number | null
-          away_team_id: number
-          competition_id: number
-          created_at: string
-          home_score: number | null
-          home_team_id: number
-          id: number
-          kickoff_time: string
-          round: string
-          season: number
-          status: string
-          updated_at: string
-          venue_city: string | null
-          venue_name: string | null
-        }
-        Insert: {
-          away_score?: number | null
-          away_team_id: number
-          competition_id: number
-          created_at?: string
-          home_score?: number | null
-          home_team_id: number
-          id: number
-          kickoff_time: string
-          round: string
-          season: number
-          status: string
-          updated_at?: string
-          venue_city?: string | null
-          venue_name?: string | null
-        }
-        Update: {
-          away_score?: number | null
-          away_team_id?: number
-          competition_id?: number
-          created_at?: string
-          home_score?: number | null
-          home_team_id?: number
-          id?: number
-          kickoff_time?: string
-          round?: string
-          season?: number
-          status?: string
-          updated_at?: string
-          venue_city?: string | null
-          venue_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fixtures_away_team_id_fkey"
-            columns: ["away_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fixtures_competition_id_fkey"
-            columns: ["competition_id"]
-            isOneToOne: false
-            referencedRelation: "competitions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fixtures_home_team_id_fkey"
-            columns: ["home_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       league_members: {
         Row: {
@@ -228,16 +179,104 @@ export type Database = {
           },
         ]
       }
+      matches: {
+        Row: {
+          away_team_id: number | null
+          competition_id: number | null
+          created_at: string | null
+          duration: string | null
+          group_stage: string | null
+          home_team_id: number | null
+          id: number
+          kick_off: string
+          matchday: number
+          referee: string | null
+          score_fulltime_away: number | null
+          score_fulltime_home: number | null
+          score_halftime_away: number | null
+          score_halftime_home: number | null
+          season_id: number
+          stage: string
+          status: string
+          updated_at: string | null
+          winner: string | null
+        }
+        Insert: {
+          away_team_id?: number | null
+          competition_id?: number | null
+          created_at?: string | null
+          duration?: string | null
+          group_stage?: string | null
+          home_team_id?: number | null
+          id: number
+          kick_off: string
+          matchday: number
+          referee?: string | null
+          score_fulltime_away?: number | null
+          score_fulltime_home?: number | null
+          score_halftime_away?: number | null
+          score_halftime_home?: number | null
+          season_id: number
+          stage?: string
+          status: string
+          updated_at?: string | null
+          winner?: string | null
+        }
+        Update: {
+          away_team_id?: number | null
+          competition_id?: number | null
+          created_at?: string | null
+          duration?: string | null
+          group_stage?: string | null
+          home_team_id?: number | null
+          id?: number
+          kick_off?: string
+          matchday?: number
+          referee?: string | null
+          score_fulltime_away?: number | null
+          score_fulltime_home?: number | null
+          score_halftime_away?: number | null
+          score_halftime_home?: number | null
+          season_id?: number
+          stage?: string
+          status?: string
+          updated_at?: string | null
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       predictions: {
         Row: {
           away_score: number
           created_at: string
-          fixture_id: number
           home_score: number
           id: string
           is_finished: boolean
           league_id: string
           league_member_id: string
+          match_id: number
           points: number
           updated_at: string
           user_id: string
@@ -245,12 +284,12 @@ export type Database = {
         Insert: {
           away_score: number
           created_at?: string
-          fixture_id: number
           home_score: number
           id?: string
           is_finished?: boolean
           league_id: string
           league_member_id: string
+          match_id: number
           points?: number
           updated_at?: string
           user_id: string
@@ -258,24 +297,17 @@ export type Database = {
         Update: {
           away_score?: number
           created_at?: string
-          fixture_id?: number
           home_score?: number
           id?: string
           is_finished?: boolean
           league_id?: string
           league_member_id?: string
+          match_id?: number
           points?: number
           updated_at?: string
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "predictions_fixture_id_fkey"
-            columns: ["fixture_id"]
-            isOneToOne: false
-            referencedRelation: "fixtures"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "predictions_league_id_fkey"
             columns: ["league_id"]
@@ -288,6 +320,13 @@ export type Database = {
             columns: ["league_member_id"]
             isOneToOne: false
             referencedRelation: "league_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
             referencedColumns: ["id"]
           },
           {
@@ -349,6 +388,7 @@ export type Database = {
           id: number
           logo: string
           name: string
+          tla: string | null
           updated_at: string
         }
         Insert: {
@@ -356,6 +396,7 @@ export type Database = {
           id: number
           logo: string
           name: string
+          tla?: string | null
           updated_at?: string
         }
         Update: {
@@ -363,6 +404,7 @@ export type Database = {
           id?: number
           logo?: string
           name?: string
+          tla?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -425,91 +467,16 @@ export type Database = {
         Args: { league_id: string }
         Returns: boolean
       }
-      can_predict_round: {
-        Args: { comp_id: number; round_name: string; season_year: number }
-        Returns: boolean
-      }
       create_new_league: {
-        Args:
-          | {
-              avatar_url: string
-              competition_id: number
-              league_name: string
-              logo: string
-              max_members: number
-              nickname: string
-            }
-          | {
-              avatar_url: string
-              competition_id: number
-              league_name: string
-              max_members: number
-              nickname: string
-            }
-        Returns: Json
-      }
-      generate_join_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_league_members_with_points: {
-        Args: { p_league_id: string }
-        Returns: {
-          avatar_url: string
-          nickname: string
-          predictions_count: number
-          total_points: number
-          user_id: string
-        }[]
-      }
-      get_member_predictions: {
-        Args: { p_league_id: string }
-        Returns: {
-          avatar_url: string
-          away_score: number
-          created_at: string
-          fixture_id: number
-          home_score: number
-          is_processed: boolean
-          nickname: string
-          points: number
-          prediction_id: string
-          user_id: string
-          winner: string
-        }[]
-      }
-      get_members_fixture_points: {
-        Args: { p_fixture_id: number; p_league_id: string }
-        Returns: {
-          avatar_url: string
-          away_score: number
-          home_score: number
-          is_processed: boolean
-          nickname: string
-          points: number
-          user_id: string
-          winner: string
-        }[]
-      }
-      get_user_leagues: {
-        Args: { user_uuid: string }
-        Returns: {
+        Args: {
           avatar_url: string
           competition_id: number
-          competition_logo: string
-          competition_name: string
-          created_at: string
-          is_owner: boolean
-          is_primary: boolean
-          join_code: string
-          league_id: string
           league_name: string
+          logo: string
           max_members: number
-          member_count: number
           nickname: string
-          owner_id: string
-          total_points: number
-        }[]
+        }
+        Returns: Json
       }
       join_league: {
         Args: {
@@ -527,6 +494,14 @@ export type Database = {
       leave_league: {
         Args: { p_league_id: string }
         Returns: Json
+      }
+      rls_storage_is_league_member: {
+        Args: { lg: string; uid: string }
+        Returns: boolean
+      }
+      rls_storage_is_member_owner: {
+        Args: { path_part: string; uid: string }
+        Returns: boolean
       }
     }
     Enums: {

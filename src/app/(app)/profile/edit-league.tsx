@@ -122,7 +122,7 @@ const EditLeague = () => {
                 {league.competition?.name}
               </Text>
               <Text className="text-muted text-sm">
-                {league.competition?.country}
+                {league.competition?.area_name}
               </Text>
             </View>
           </View>

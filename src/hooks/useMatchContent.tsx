@@ -1,11 +1,11 @@
 import FinishContent from '@/components/matchDetails/FinishContent';
 import ScheduledContent from '@/components/matchDetails/ScheduledContent';
-import { FixturesWithTeamsType } from '@/types';
+import { MatchesWithTeamsType } from '@/types';
 
-export const useMatchContent = (match: FixturesWithTeamsType) => {
+export const useMatchContent = (match: MatchesWithTeamsType) => {
   switch (match.status) {
     case 'scheduled':
-      if (new Date(match.kickoff_time) > new Date()) {
+      if (new Date(match.kick_off) > new Date()) {
         return <ScheduledContent match={match} />;
       }
     case 'live':

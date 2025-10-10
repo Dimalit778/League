@@ -1,54 +1,60 @@
-import { Error, LoadingOverlay } from '@/components/layout';
+import { LoadingOverlay } from '@/components/layout';
 import MatchList from '@/components/matches/MatchList';
-import RoundsList from '@/components/matches/RoundsList';
-import { useCompetitionRounds } from '@/hooks/useCompetitions';
+import MatchdaysList from '@/components/matches/MatchdaysList';
 import { useMemberStore } from '@/store/MemberStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
-export default function MatchesPage() {
-  const { member } = useMemberStore();
-  const {
-    data: competition,
-    isLoading,
-    error,
-  } = useCompetitionRounds(member?.league_id);
+const Matches = () => {
+  const { member, league, competition } = useMemberStore();
+  console.log('league', JSON.stringify(league, null, 2));
+  console.log('competition', JSON.stringify(competition, null, 2));
+  console.log('member', JSON.stringify(member, null, 2));
 
-  const [selectedRound, setSelectedRound] = useState<string | null>(null);
+  // const competition = member?.league?.competition;
+  const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
+
+  const matchdays = useMemo(
+    () =>
+      competition?.total_matchdays
+        ? Array.from({ length: competition.total_matchdays }, (_, i) => i + 1)
+        : [],
+    [competition?.total_matchdays]
+  );
 
   useEffect(() => {
-    if (competition?.current_round && !selectedRound) {
-      setSelectedRound(competition.current_round);
+    if (competition?.current_matchday && !selectedMatchday) {
+      setSelectedMatchday(competition.current_matchday);
     }
-  }, [competition?.current_round, selectedRound]);
+  }, [competition?.current_matchday, selectedMatchday]);
 
-  const handleRoundPress = useCallback((round: string) => {
-    setSelectedRound(round);
+  const handleMatchdayPress = useCallback((matchday: number) => {
+    setSelectedMatchday(matchday);
   }, []);
 
-  if (error) return <Error error={error} />;
-
   const userId = member?.user_id;
-  const showMatchList = !!selectedRound && !!competition && !!userId;
+  const showMatchList = !!selectedMatchday && !!competition && !!userId;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      {isLoading && !selectedRound && <LoadingOverlay />}
-      {selectedRound && (
-        <RoundsList
-          rounds={competition?.rounds || []}
-          selectedRound={selectedRound}
-          handleRoundPress={handleRoundPress}
+      {competition && !selectedMatchday && <LoadingOverlay />}
+      {selectedMatchday && (
+        <MatchdaysList
+          matchdays={matchdays}
+          selectedMatchday={selectedMatchday}
+          handleMatchdayPress={handleMatchdayPress}
         />
       )}
 
       {showMatchList && (
         <MatchList
-          selectedRound={selectedRound}
+          selectedMatchday={selectedMatchday}
           competitionId={competition.id}
           userId={userId}
         />
       )}
     </SafeAreaView>
   );
-}
+};
+
+export default Matches;

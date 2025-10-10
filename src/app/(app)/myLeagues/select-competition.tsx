@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, MyImage } from '@/components/ui';
 
 import { useGetCompetitions } from '@/hooks/useCompetitions';
@@ -44,7 +44,7 @@ const SelectCompetitionScreen = () => {
     });
   };
 
-  if (error) console.log(error);
+  if (error) return <Error error={error} />;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -67,10 +67,14 @@ const SelectCompetitionScreen = () => {
               }`}
             >
               <View className="flex-row items-center gap-4">
-                <MyImage source={{ uri: comp.flag }} width={48} height={48} />
+                <MyImage
+                  source={{ uri: comp.area_flag }}
+                  width={48}
+                  height={48}
+                />
                 <View className="flex-1 items-center">
                   <Text className="text-sm font-bold mb-1 text-muted">
-                    {comp.country}
+                    {comp.area_name}
                   </Text>
 
                   <Text className="text-xl text-center font-bold text-text">

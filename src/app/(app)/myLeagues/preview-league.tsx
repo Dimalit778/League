@@ -25,7 +25,7 @@ const PreviewLeague = () => {
 
   const handleShareJoinCode = async () => {
     try {
-      const shareMessage = `🏆 Join my ${leagueData?.competition?.name || 'Football'} league "${leagueData?.name}"!\n\nUse code: ${leagueData?.join_code}\n\nDownload the app to join!`;
+      const shareMessage = `🏆 Join my ${leagueData?.competition?.area_name || 'Football'} league "${leagueData?.name}"!\n\nUse code: ${leagueData?.join_code}\n\nDownload the app to join!`;
 
       await Share.share({
         message: shareMessage,
@@ -63,7 +63,8 @@ const PreviewLeague = () => {
             {leagueData?.name}
           </Text>
           <Text className="text-base text-muted text-center">
-            {leagueData?.competition?.country} • {leagueData?.competition?.name}
+            {leagueData?.competition?.area_name} •{' '}
+            {leagueData?.competition?.name}
           </Text>
         </View>
 

@@ -68,7 +68,6 @@ export default function Profile() {
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
-  console.log('league', JSON.stringify(league, null, 2));
 
   return (
     <SafeAreaView className="flex-1 bg-background ">

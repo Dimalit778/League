@@ -55,11 +55,6 @@ export default function SubscriptionScreen() {
 
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
 
-  console.log(
-    'currentSubscription',
-    JSON.stringify(currentSubscription, null, 2)
-  );
-
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(
     subscriptionType || null
   );

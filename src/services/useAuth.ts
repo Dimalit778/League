@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
+import { Alert } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -23,39 +24,28 @@ export const useAuth = () => {
     setIsLoading(true);
     try {
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log(
-        'Session before sign out:',
-        sessionData.session ? 'Found' : 'Not found'
-      );
 
       try {
         const { error } = await supabase.auth.signOut();
-        console.log(
-          'Sign out result:',
-          error ? `Error: ${error.message}` : 'Success'
-        );
+
         if (error && error.message !== 'Auth session missing!') {
           throw error;
         }
       } catch (signOutError) {
-        console.warn('Error during sign out:', signOutError);
-        // Continue with cleanup even if sign out fails
+        Alert.alert('Error', 'Failed to sign out');
       }
 
-      // Reset stores using their clearAll methods regardless of Supabase signOut result
       useMemberStore.getState().clearAll();
 
-      // Invalidate all user-related queries in the cache
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.all });
       queryClient.removeQueries({ queryKey: QUERY_KEYS.users.all });
 
-      // Force clear any session data from AsyncStorage directly as a fallback
       try {
         const keys = ['supabase.auth.token', 'supabase-auth-token'];
         const AsyncStorage =
           require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.multiRemove(keys);
-        console.log('Manually cleared auth storage keys');
+        Alert.alert('Success', 'Signed out successfully');
       } catch (storageError) {
         console.warn('Failed to manually clear auth storage:', storageError);
       }

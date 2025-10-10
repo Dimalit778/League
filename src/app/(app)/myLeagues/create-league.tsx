@@ -31,6 +31,7 @@ const schema = yup.object().shape({
 
 const CreateLeague = () => {
   const { competitionId, leagueLogo } = useLocalSearchParams();
+
   const { session } = useCurrentSession();
   const userId = session?.user?.id as string;
   const { data: subscription, isLoading: isLoadingSubscription } =

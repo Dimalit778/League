@@ -7,12 +7,17 @@ export type IconProps = {
 // Database Types
 // Member And League Type
 export type MemberLeague = Tables<'league_members'> & {
-  league: Tables<'leagues'>;
+  league: Tables<'leagues'> & {
+    competition: Tables<'competitions'>;
+  };
 };
-export type FoundLeague = Tables<'leagues'> & {
+export type FoundLeague = Pick<
+  Tables<'leagues'>,
+  'id' | 'name' | 'join_code' | 'max_members' | 'owner_id'
+> & {
   competition: Pick<
     Tables<'competitions'>,
-    'id' | 'name' | 'logo' | 'flag' | 'country'
+    'id' | 'name' | 'logo' | 'area_flag' | 'area_name'
   >;
   league_members: { count: number }[];
 };
@@ -20,7 +25,7 @@ export type leagueWithMembers = Tables<'leagues'> & {
   league_members: Tables<'league_members'>[];
   competition: Pick<
     Tables<'competitions'>,
-    'id' | 'name' | 'logo' | 'country' | 'flag'
+    'id' | 'name' | 'logo' | 'area_name' | 'area_flag'
   >;
   owner: Tables<'league_members'>;
 };
@@ -48,11 +53,11 @@ export type LeagueLeaderboardType = {
   user_id: string | null;
 };
 
-export type FixturesWithTeamsType = Tables<'fixtures'> & {
+export type MatchesWithTeamsType = Tables<'matches'> & {
   home_team: Tables<'teams'>;
   away_team: Tables<'teams'>;
 };
-export type FixturesWithTeamsAndPredictionsType = FixturesWithTeamsType & {
+export type MatchesWithTeamsAndPredictionsType = MatchesWithTeamsType & {
   predictions: Tables<'predictions'>[] | null;
 };
 

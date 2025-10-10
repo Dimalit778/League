@@ -7,21 +7,21 @@ import {
   View,
 } from 'react-native';
 
-type RoundsListProps = {
-  rounds: string[];
-  selectedRound: string;
-  handleRoundPress: (round: string) => void;
+type MatchdaysListProps = {
+  matchdays: number[];
+  selectedMatchday: number;
+  handleMatchdayPress: (matchday: number) => void;
 };
 
-export default function RoundsList({
-  rounds,
-  selectedRound,
-  handleRoundPress,
-}: RoundsListProps) {
-  const flatListRef = useRef<FlatList<string>>(null);
+const MatchdaysList = ({
+  matchdays,
+  selectedMatchday,
+  handleMatchdayPress,
+}: MatchdaysListProps) => {
+  const flatListRef = useRef<FlatList<number>>(null);
 
-  const handlePress = (round: string, index: number) => {
-    handleRoundPress(round);
+  const handlePress = (matchday: number, index: number) => {
+    handleMatchdayPress(matchday);
     flatListRef.current?.scrollToIndex({
       index,
       animated: true,
@@ -30,7 +30,9 @@ export default function RoundsList({
   };
 
   useEffect(() => {
-    const index = rounds.findIndex((round) => round === selectedRound);
+    const index = matchdays.findIndex(
+      (matchday) => matchday === selectedMatchday
+    );
     if (index !== -1) {
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({
@@ -46,23 +48,27 @@ export default function RoundsList({
     <View className="my-3 mx-1">
       <FlatList
         ref={flatListRef}
-        data={rounds}
+        data={matchdays}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item}
-        renderItem={({ item: round, index }) => {
+        keyExtractor={(item) => item.toString()}
+        renderItem={({ item: matchday, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => handlePress(round, index)}
-              className={selectedRound === round ? 'bg-primary' : 'bg-surface'}
+              onPress={() => handlePress(matchday, index)}
+              className={
+                selectedMatchday === matchday ? 'bg-primary' : 'bg-surface'
+              }
               style={styles.item}
             >
               <Text
                 className={`text-text font-semibold ${
-                  selectedRound === round ? 'text-background' : 'text-text'
+                  selectedMatchday === matchday
+                    ? 'text-background'
+                    : 'text-text'
                 }`}
               >
-                {round.match(/(\d+)$/)?.[1] ?? ''}
+                {matchday}
               </Text>
             </TouchableOpacity>
           );
@@ -75,7 +81,7 @@ export default function RoundsList({
       />
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   item: {
     height: 50,
@@ -86,3 +92,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 });
+
+export default MatchdaysList;

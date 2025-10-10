@@ -1,7 +1,7 @@
 import { formatTime } from '@/utils/match-utils';
 import footballField from '../../../assets/images/footballField.png';
 
-import { FixturesWithTeamsType } from '@/types';
+import { MatchesWithTeamsType } from '@/types';
 import { dateFormat } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from '../../../assets/icons';
 
-const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
+const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
   const insets = useSafeAreaInsets();
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
@@ -30,11 +30,11 @@ const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
           <View className="flex-row items-center justify-center">
             <Ionicons name="calendar-outline" size={16} color="#fff" />
             <Text className="text-white ml-1 text-sm font-medium">
-              {dateFormat(match.kickoff_time)}
+              {dateFormat(match.kick_off)}
             </Text>
           </View>
 
-          {match.venue_name && (
+          {/* {match.venue && (
             <View className="flex-row items-center mt-2 justify-center">
               <Ionicons name="location-outline" size={16} color="#fff" />
               <Text className="text-white ml-1 text-sm font-bold">
@@ -44,7 +44,7 @@ const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
                 <Text className="text-text text-sm">, {match.venue_city}</Text>
               )}
             </View>
-          )}
+          )} */}
         </View>
 
         <View className="p-6">
@@ -58,7 +58,7 @@ const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
                 <View className=" rounded-2xl p-4 items-center min-w-[100px]">
                   <Ionicons name="time-outline" size={24} color="#fff" />
                   <Text className="text-white text-sm mt-2 text-center">
-                    {formatTime(match.kickoff_time)}
+                    {formatTime(match.kick_off)}
                   </Text>
                 </View>
               )}
@@ -66,18 +66,18 @@ const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
                 <View className="items-center justify-center gap-2">
                   <Text className="text-green-500 text-lg">LIVE</Text>
                   <Text className="text-text text-3xl font-black">
-                    {match.home_score} : {match.away_score}
+                    {match.score_fulltime_home} : {match.score_fulltime_away}
                   </Text>
                 </View>
               )}
               {match.status === 'finished' && (
                 <View className="flex-row items-center border-2 border-gray-500 rounded-lg p-2">
                   <Text className="text-white text-2xl font-black">
-                    {match.home_score}
+                    {match.score_fulltime_home}
                   </Text>
                   <Text className="text-white text-2xl mx-2 font-bold">:</Text>
                   <Text className="text-white text-2xl font-black">
-                    {match.away_score}
+                    {match.score_fulltime_away}
                   </Text>
                 </View>
               )}
@@ -94,7 +94,7 @@ const MatchHeader = ({ match }: { match: FixturesWithTeamsType }) => {
 const TeamCard = ({
   team,
 }: {
-  team: FixturesWithTeamsType['home_team'] | FixturesWithTeamsType['away_team'];
+  team: MatchesWithTeamsType['home_team'] | MatchesWithTeamsType['away_team'];
 }) => {
   return (
     <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">

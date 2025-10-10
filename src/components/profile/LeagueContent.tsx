@@ -154,7 +154,7 @@ const LeagueContent = ({
                     {league.name}
                   </Text>
                   <Text className="text-muted text-xs">
-                    {league.competition?.name} • {league.competition?.country}
+                    {league.competition?.name} • {league.competition?.area_name}
                   </Text>
                 </View>
                 {isOwner && (

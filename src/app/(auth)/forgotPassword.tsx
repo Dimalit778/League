@@ -17,13 +17,12 @@ export default function ForgotPassword() {
   const router = useRouter();
 
   const resetPassword = async () => {
-    console.log('resetPassword');
     return { success: true };
   };
   const loading = false;
   const error = null;
   const clearError = () => {
-    console.log('clearError');
+    return;
   };
 
   const [email, setEmail] = useState('');

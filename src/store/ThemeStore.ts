@@ -61,7 +61,6 @@ export const useThemeStore = create<ThemeState>()(
               set({ theme: defaultTheme });
             }
           } catch (storageError) {
-            console.log('Storage access failed, using default theme');
             const defaultTheme: ThemeName = 'dark';
             colorScheme.set(defaultTheme);
             set({ theme: defaultTheme });

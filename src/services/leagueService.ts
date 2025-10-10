@@ -26,7 +26,7 @@ export const leagueService = {
     const { data, error } = await supabase
       .from('leagues')
       .select(
-        'id,name,join_code,max_members,owner_id,competition:competitions!inner (id,name,logo,flag,country) ,league_members(count)'
+        'id,name,join_code,max_members,owner_id,competition:competitions!inner (id,name,logo,area_flag,area_name) ,league_members(count)'
       )
       .eq('join_code', joinCode)
       .maybeSingle();
@@ -42,7 +42,7 @@ export const leagueService = {
       const { data: leagueData, error: leagueError } = await supabase
         .from('leagues')
         .select(
-          '*,competition:competitions!inner(id,name,logo,country,flag),league_members(count)'
+          '*,competition:competitions!inner(id,name,logo,area_name,area_flag),league_members(count)'
         )
         .eq('id', leagueId)
         .single();
@@ -76,7 +76,7 @@ export const leagueService = {
       const { data: leagueData, error: leagueError } = await supabase
         .from('leagues')
         .select(
-          '*,competition:competitions!inner(id,name,logo,country,flag),league_members(*)'
+          '*,competition:competitions!inner(id,name,logo,area_name,area_flag),league_members(*)'
         )
         .eq('id', leagueId)
         .single();

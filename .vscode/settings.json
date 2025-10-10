@@ -8,6 +8,7 @@
     "extratime",
     "fkey",
     "matchday",
+    "matchdays",
     "partialize",
     "Postgrest",
     "swipeable",

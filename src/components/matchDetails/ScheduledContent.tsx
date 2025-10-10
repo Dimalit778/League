@@ -3,14 +3,18 @@ import {
   useMemberPredictionByFixture,
   useUpdatePrediction,
 } from '@/hooks/usePredictions';
-import { FixturesWithTeamsType } from '@/types';
+import { MatchesWithTeamsAndPredictionsType } from '@/types';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Alert, Text, TextInput, View } from 'react-native';
 import { LoadingOverlay } from '../layout';
 import { Button } from '../ui';
 
-const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
+const ScheduledContent = ({
+  match,
+}: {
+  match: MatchesWithTeamsAndPredictionsType;
+}) => {
   const router = useRouter();
   const { data: prediction, isLoading } = useMemberPredictionByFixture(
     match.id
@@ -60,9 +64,7 @@ const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
       // Navigate immediately on success
       router.back();
     } catch (error) {
-      // Error is handled by the mutation's onError callback
-      console.log('Failed to create prediction');
-      // Optionally show an error toast/alert here
+      Alert.alert('Error', 'Failed to create prediction');
     }
   };
 
@@ -80,9 +82,7 @@ const ScheduledContent = ({ match }: { match: FixturesWithTeamsType }) => {
       // Navigate immediately on success
       router.back();
     } catch (error) {
-      // Error is handled by the mutation's onError callback
-      console.log('Failed to update prediction');
-      // Optionally show an error toast/alert here
+      Alert.alert('Error', 'Failed to update prediction');
     }
   };
   const handleEdit = () => {

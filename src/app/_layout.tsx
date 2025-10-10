@@ -35,10 +35,8 @@ const InitialApp = () => {
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {
-        console.log('App has come to the foreground, starting auto refresh');
         supabase.auth.startAutoRefresh();
       } else if (nextAppState === 'background' || nextAppState === 'inactive') {
-        console.log('App has gone to the background, stopping auto refresh');
         supabase.auth.stopAutoRefresh();
       }
     });
@@ -55,12 +53,6 @@ const InitialApp = () => {
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Layout Auth state change: -->', {
-        event,
-        session: !!session,
-        user: !!session?.user,
-      });
-
       const isLoggedIn = !!session?.user;
 
       setIsLoggedIn(isLoggedIn);
