@@ -115,6 +115,15 @@ export const QUERY_KEYS = {
     canCreateLeague: (userId?: string) =>
       ['subscriptions', userId ?? TOKENS.me, 'canCreateLeague'] as const,
   },
+  // ===== ADMIN RELATED =====
+  admin: {
+    dashboard: ['admin', 'dashboard'] as const,
+    users: ['admin', 'users'] as const,
+    leagues: ['admin', 'leagues'] as const,
+    leagueMembers: ['admin', 'league-members'] as const,
+    predictions: ['admin', 'predictions'] as const,
+    competitions: ['admin', 'competitions'] as const,
+  },
 } as const;
 // export const QUERY_KEYS = {
 //   // ===== USER RELATED =====

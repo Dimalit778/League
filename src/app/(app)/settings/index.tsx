@@ -70,6 +70,13 @@ const Settings = () => {
             email={user?.email}
           />
         </View>
+        <View className="mt-8 px-6">
+          <Button
+            title="Open Admin Dashboard"
+            onPress={() => router.push('/admin')}
+            variant="secondary"
+          />
+        </View>
       </View>
       <View className="pb-10">
         <Button
