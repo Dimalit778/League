@@ -57,7 +57,7 @@ export default function Welcome() {
       <View className="mt-10 px-5">
         <Button
           title="Get Started"
-          onPress={() => router.push('/signIn')}
+          onPress={() => router.push('/(auth)/signIn')}
           variant="secondary"
           size="lg"
         />

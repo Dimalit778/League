@@ -1,6 +1,6 @@
 import { Button, InputField } from '@/components/ui';
 
-import GoogleAuth from '@/components/GoogleAuth';
+// import GoogleAuth from '@/components/GoogleAuth';
 import BackButton from '@/components/ui/BackButton';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
@@ -105,7 +105,7 @@ const SignUp = () => {
             <Text className="text-gray-400 mx-2">OR</Text>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
-          <GoogleAuth />
+          {/* <GoogleAuth /> */}
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
             <Text className="text-muted text-center  ">
               Already have an account?

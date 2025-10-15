@@ -1,16 +1,14 @@
 import { LoadingOverlay } from '@/components/layout';
-import MatchList from '@/components/matches/MatchList';
 import MatchdaysList from '@/components/matches/MatchdaysList';
 import { useMemberStore } from '@/store/MemberStore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Matches = () => {
-  const { member   } = useMemberStore();
+  const { member } = useMemberStore();
+  const userId = member?.user_id;
   const competition = member?.league?.competition;
 
-  // const competition = member?.league?.competition;
   const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
 
   const matchdays = useMemo(
@@ -31,14 +29,13 @@ const Matches = () => {
     setSelectedMatchday(matchday);
   }, []);
 
-  const userId = member?.user_id;
   const showMatchList = !!selectedMatchday && !!competition && !!userId;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
       {competition && !selectedMatchday && <LoadingOverlay />}
       {selectedMatchday && (
-        <View className="mb-3">
+        <View className="mb-3 ">
           <MatchdaysList
             matchdays={matchdays}
             selectedMatchday={selectedMatchday}
@@ -46,15 +43,15 @@ const Matches = () => {
           />
         </View>
       )}
-
+      {/* 
       {showMatchList && (
         <MatchList
           selectedMatchday={selectedMatchday}
           competitionId={competition.id}
           userId={userId}
         />
-      )}
-    </SafeAreaView>
+      )} */}
+    </View>
   );
 };
 

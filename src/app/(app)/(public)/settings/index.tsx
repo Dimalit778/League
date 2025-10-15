@@ -11,7 +11,7 @@ import { router } from 'expo-router';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Settings() {
+const Settings = () => {
   const { data: user, isLoading } = useGetUser();
 
   const { data: subscription, isLoading: isLoadingSubscription } =
@@ -33,7 +33,7 @@ export default function Settings() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton title="Settings" />
-      {isLoading || (isLoadingSubscription && <LoadingOverlay />)}
+      {(isLoading || isLoadingSubscription) && <LoadingOverlay />}
 
       <View className="flex-1 ">
         <View className="mt-8 mx-3  flex-row justify-between items-center p-4 bg-surface rounded-xl border border-border">
@@ -72,4 +72,5 @@ export default function Settings() {
       </View>
     </SafeAreaView>
   );
-}
+};
+export default Settings;

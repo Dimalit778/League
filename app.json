@@ -27,12 +27,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.834363700117-m3ta90sugtdcr7h6fb6ccot7e5rb2s9f"
-        }
-      ],
+
       [
         "expo-image-picker",
         {

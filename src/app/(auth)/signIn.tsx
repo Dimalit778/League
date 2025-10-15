@@ -1,6 +1,6 @@
 import { Button, InputField } from '@/components/ui';
 
-import GoogleAuth from '@/components/GoogleAuth';
+// import GoogleAuth from '@/components/GoogleAuth';
 import BackButton from '@/components/ui/BackButton';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
@@ -100,7 +100,7 @@ const SignIn = () => {
           <View className="flex-1 h-px bg-gray-600" />
         </View>
 
-        <GoogleAuth />
+        {/* <GoogleAuth /> */}
 
         <Text className="text-muted text-center mt-5 ">
           Don't have an account?{' '}
