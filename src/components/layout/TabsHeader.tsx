@@ -22,7 +22,7 @@ const TabsHeader = ({
       }}
     >
       <View className="flex-row items-center justify-between py-3 px-4">
-        <Link href="/(app)/(public)/settings/help" asChild>
+        <Link href="/(app)/(public)/settings" asChild>
           <Pressable accessibilityRole="button">
             <SettingsIcon size={30} color={colors.primary} />
           </Pressable>

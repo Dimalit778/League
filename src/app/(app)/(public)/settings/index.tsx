@@ -11,7 +11,7 @@ import { router } from 'expo-router';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Settings = () => {
+export default function Settings() {
   const { data: user, isLoading } = useGetUser();
 
   const { data: subscription, isLoading: isLoadingSubscription } =
@@ -72,5 +72,4 @@ const Settings = () => {
       </View>
     </SafeAreaView>
   );
-};
-export default Settings;
+}

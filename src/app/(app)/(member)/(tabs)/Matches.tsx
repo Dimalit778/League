@@ -1,6 +1,8 @@
 import { LoadingOverlay } from '@/components/layout';
 import MatchdaysList from '@/components/matches/MatchdaysList';
+import MatchList from '@/components/matches/MatchList';
 import { useMemberStore } from '@/store/MemberStore';
+import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -25,6 +27,14 @@ const Matches = () => {
     }
   }, [competition?.current_matchday, selectedMatchday]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (competition?.current_matchday) {
+        setSelectedMatchday(competition.current_matchday);
+      }
+    }, [competition?.current_matchday])
+  );
+
   const handleMatchdayPress = useCallback((matchday: number) => {
     setSelectedMatchday(matchday);
   }, []);
@@ -43,14 +53,14 @@ const Matches = () => {
           />
         </View>
       )}
-      {/* 
+
       {showMatchList && (
         <MatchList
           selectedMatchday={selectedMatchday}
           competitionId={competition.id}
           userId={userId}
         />
-      )} */}
+      )}
     </View>
   );
 };

@@ -7,7 +7,6 @@ import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Stats = () => {
   const { member } = useMemberStore();
@@ -27,7 +26,7 @@ const Stats = () => {
 
   if (isLoading) return <SkeletonStats />;
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={
@@ -94,7 +93,7 @@ const Stats = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

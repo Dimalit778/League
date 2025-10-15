@@ -129,6 +129,16 @@ export default function MyLeagues() {
             </View>
           </View>
         )}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={5}
+        windowSize={10}
+        initialNumToRender={5}
+        updateCellsBatchingPeriod={50}
+        getItemLayout={(_, index) => ({
+          length: 100, // Approximate height of each league item
+          offset: 100 * index,
+          index,
+        })}
       />
     </View>
   );

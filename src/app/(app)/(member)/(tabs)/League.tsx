@@ -4,8 +4,9 @@ import TopThree from '@/components/league/TopThree';
 import { useLeaderboardWithAvatars } from '@/hooks/useLeaderboard';
 import { useMemberStore } from '@/store/MemberStore';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { useCallback } from 'react';
 import { FlatList, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const League = () => {
   const { member } = useMemberStore();
@@ -25,8 +26,27 @@ const League = () => {
 
   const topThree = leaderboard?.slice(0, 3);
 
+  const renderItem = useCallback(
+    ({ item, index }: { item: any; index: number }) => (
+      <LeaderboardCard
+        nickname={item.nickname ?? ''}
+        avatar_url={item.avatarUri ?? ''}
+        total_points={item.total_points ?? 0}
+        index={index + 1}
+        isCurrentUser={item.user_id === member?.user_id}
+      />
+    ),
+    [member?.user_id]
+  );
+
+  const keyExtractor = useCallback((item: any) => item.user_id ?? '', []);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
       {isLoading && !leaderboard && <LoadingOverlay />}
       <View style={{ paddingTop: contentTop }}>
         <TopThree topMembers={topThree} />
@@ -34,22 +54,22 @@ const League = () => {
       <FlatList
         data={leaderboard || []}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.user_id ?? ''}
-        renderItem={({ item, index }) => (
-          <LeaderboardCard
-            nickname={item.nickname ?? ''}
-            avatar_url={item.avatarUri ?? ''}
-            total_points={item.total_points ?? 0}
-            index={index + 1}
-            isCurrentUser={item.user_id === member?.user_id}
-          />
-        )}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
         refreshing={isRefetching}
-        onRefresh={() => {
-          refetch();
-        }}
+        onRefresh={handleRefresh}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={10}
+        updateCellsBatchingPeriod={50}
+        getItemLayout={(_, index) => ({
+          length: 80, // Approximate height of each leaderboard item
+          offset: 80 * index,
+          index,
+        })}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

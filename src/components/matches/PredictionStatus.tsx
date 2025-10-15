@@ -1,6 +1,7 @@
 import { Tables } from '@/types/database.types';
 
 import { predictionAccuracy } from '@/utils/match-utils';
+import { memo } from 'react';
 import { Text, View } from 'react-native';
 
 type PredictionStatusProps = {
@@ -12,50 +13,57 @@ type PredictionStatusProps = {
   };
 };
 
-const PredictionStatus = ({ prediction, match }: PredictionStatusProps) => {
-  if (!prediction) {
-    return null;
-  }
+const PredictionStatus = memo(
+  ({ prediction, match }: PredictionStatusProps) => {
+    if (!prediction) {
+      return null;
+    }
 
-  let accuracy = null;
-  if (prediction?.is_finished) {
-    accuracy = predictionAccuracy(
-      prediction.home_score,
-      prediction.away_score,
-      match.home_score,
-      match.away_score
+    let accuracy = null;
+    if (prediction?.is_finished) {
+      accuracy = predictionAccuracy(
+        prediction.home_score,
+        prediction.away_score,
+        match.home_score,
+        match.away_score
+      );
+    }
+
+    return (
+      <View className="flex-row border-b-2 border-border pb-2 mb-2">
+        <View className="flex-1 items-start">
+          {accuracy && (
+            <Text className="text-sm" style={{ color: accuracy.color }}>
+              {accuracy.text}
+            </Text>
+          )}
+        </View>
+        <View
+          className="flex-row min-w-[50px] justify-center rounded-md"
+          style={{
+            borderColor: accuracy?.color ?? '#ababab',
+            borderWidth: 1,
+          }}
+        >
+          <Text className="text-muted text-sm">
+            {prediction?.home_score ?? 0} - {prediction?.away_score ?? 0}
+          </Text>
+        </View>
+        <View className="flex-1 items-end">
+          {accuracy && (
+            <Text
+              className="text-sm font-bold"
+              style={{ color: accuracy.color }}
+            >
+              + {accuracy.points} pts
+            </Text>
+          )}
+        </View>
+      </View>
     );
   }
+);
 
-  return (
-    <View className="flex-row border-b-2 border-border pb-2 mb-2">
-      <View className="flex-1 items-start">
-        {accuracy && (
-          <Text className="text-sm" style={{ color: accuracy.color }}>
-            {accuracy.text}
-          </Text>
-        )}
-      </View>
-      <View
-        className="flex-row min-w-[50px] justify-center rounded-md"
-        style={{
-          borderColor: accuracy?.color ?? '#ababab',
-          borderWidth: 1,
-        }}
-      >
-        <Text className="text-muted text-sm">
-          {prediction?.home_score ?? 0} - {prediction?.away_score ?? 0}
-        </Text>
-      </View>
-      <View className="flex-1 items-end">
-        {accuracy && (
-          <Text className="text-sm font-bold" style={{ color: accuracy.color }}>
-            + {accuracy.points} pts
-          </Text>
-        )}
-      </View>
-    </View>
-  );
-};
+PredictionStatus.displayName = 'PredictionStatus';
 
 export default PredictionStatus;
