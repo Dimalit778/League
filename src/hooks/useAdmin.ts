@@ -1,7 +1,12 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { adminService } from '@/services/adminService';
 import { TablesInsert } from '@/types/database.types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 export const useAdminDashboard = () => {
   return useQuery({
@@ -11,10 +16,22 @@ export const useAdminDashboard = () => {
   });
 };
 
-export const useAdminUsers = () => {
+export const useAdminUsers = (page = 0, limit = 50) => {
   return useQuery({
+    queryKey: [...QUERY_KEYS.admin.users, page, limit],
+    queryFn: () => adminService.getUsers(page, limit),
+  });
+};
+
+export const useAdminUsersInfinite = () => {
+  return useInfiniteQuery({
     queryKey: QUERY_KEYS.admin.users,
-    queryFn: () => adminService.getUsers(),
+    queryFn: ({ pageParam = 0 }) => adminService.getUsers(pageParam, 50),
+    getNextPageParam: (lastPage, allPages) => {
+      // If we got less than 50 users, we've reached the end
+      return lastPage.length === 50 ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
   });
 };
 
@@ -53,7 +70,9 @@ export const useAddCompetition = () => {
     mutationFn: (competition: TablesInsert<'competitions'>) =>
       adminService.addCompetition(competition),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.admin.competitions });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.admin.competitions,
+      });
     },
   });
 };
@@ -65,7 +84,25 @@ export const useRemoveCompetition = () => {
     mutationFn: (competitionId: number) =>
       adminService.removeCompetition(competitionId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.admin.competitions });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.admin.competitions,
+      });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) => adminService.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.admin.users,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.admin.dashboard,
+      });
     },
   });
 };

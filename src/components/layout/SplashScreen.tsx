@@ -1,5 +1,5 @@
+import logo from '@assets/app-icon.png';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
-import logo from '../../../assets/app-icon.png';
 const SplashScreen = () => {
   return (
     <View style={styles.container}>

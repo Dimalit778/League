@@ -11,11 +11,11 @@ export const useGetLeagueLeaderboard = () => {
     queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
     queryFn: () => leaderboardService.getLeagueLeaderboard(leagueId!),
     enabled: !!leagueId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 };
 export const useLeaderboardWithAvatars = () => {
-  const base = useGetLeagueLeaderboard(); // returns your array (with avatar_url = path)
+  const base = useGetLeagueLeaderboard();
   const { data: rows } = base;
 
   return useQuery({
@@ -28,7 +28,6 @@ export const useLeaderboardWithAvatars = () => {
         return items.map((r) => ({ ...r, avatarUri: null as string | null }));
       }
 
-      // BULK: create signed URLs for all paths at once
       const options = {
         download: false,
         transform: { width: 80, height: 80, resize: 'cover', quality: 80 },
@@ -39,13 +38,11 @@ export const useLeaderboardWithAvatars = () => {
         .createSignedUrls(paths, 3600, options);
       if (error) throw error;
 
-      // Map path -> signedUrl
       const byPath = new Map<string, string | null>();
       data.forEach(({ path, signedUrl }) => {
         if (path) byPath.set(path, signedUrl ?? null);
       });
 
-      // Attach avatarUri per row (keep original avatar_url intact if you want)
       return items.map((r) => ({
         ...r,
         avatarUri: r.avatar_url ? (byPath.get(r.avatar_url) ?? null) : null,

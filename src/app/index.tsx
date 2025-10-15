@@ -1,18 +1,14 @@
-import { SplashScreen } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { Redirect, router } from 'expo-router';
-import { SafeAreaView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Welcome() {
-  const { session, loading } = useCurrentSession();
-
-  if (loading) {
-    return <SplashScreen />;
-  }
+  const { session } = useCurrentSession();
 
   if (session?.user) {
-    return <Redirect href="/(app)/myLeagues" />;
+    return <Redirect href="/(app)/(public)/myLeagues" />;
   }
 
   return (

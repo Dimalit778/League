@@ -1,17 +1,17 @@
 import { SplashScreen } from '@/components/layout';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { Redirect, Stack } from 'expo-router';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AuthLayout() {
-  const { session, loading } = useCurrentSession();
+  const { session, isLoading } = useCurrentSession();
 
-  if (loading) {
+  if (isLoading) {
     return <SplashScreen />;
   }
 
   if (session?.user) {
-    return <Redirect href="/(app)/(tabs)/League" />;
+    return <Redirect href="/(app)/(member)/(tabs)/League" />;
   }
 
   return (

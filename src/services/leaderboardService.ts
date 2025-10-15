@@ -1,17 +1,15 @@
-import { supabase } from "@/lib/supabase";
-
-
+import { supabase } from '@/lib/supabase';
 
 export const leaderboardService = {
-    async getLeagueLeaderboard(leagueId: string)  {
-        const { data, error } = await supabase
-          .from('league_leaderboard_view')
-          .select('*')
-          .eq('league_id', leagueId);
-        
-        if (error) throw error;
-        return data;
-    },
+  async getLeagueLeaderboard(leagueId: string) {
+    const { data, error } = await supabase
+      .from('league_leaderboard_view')
+      .select('*')
+      .eq('league_id', leagueId);
+
+    if (error) throw error;
+    return data;
+  },
   /**
    * Get all predictions for members of a specific league
    * @param leagueId - The UUID of the league
@@ -20,7 +18,7 @@ export const leaderboardService = {
   // async getMemberPredictions(leagueId: string): Promise<LeagueMemberPrediction[]> {
   //   const { data, error } = await supabase
   //     .rpc('get_member_predictions', { p_league_id: leagueId });
-    
+
   //   if (error) throw error;
   //   return data;
   // },
@@ -33,7 +31,7 @@ export const leaderboardService = {
   // async getLeagueMembersWithPoints(leagueId: string): Promise<LeagueMemberWithPoints[]> {
   //   const { data, error } = await supabase
   //     .rpc('get_league_members_with_points', { p_league_id: leagueId });
-    
+
   //   if (error) throw error;
   //   return data;
   // },
@@ -46,16 +44,15 @@ export const leaderboardService = {
    */
   // async getLeagueMembersFixturePoints(leagueId: string, fixtureId: number): Promise<LeagueMemberFixturePoints[]> {
   //   const { data, error } = await supabase
-  //     .rpc('get_members_fixture_points', { 
+  //     .rpc('get_members_fixture_points', {
   //       p_league_id: leagueId,
   //       p_fixture_id: fixtureId
   //     });
-    
+
   //   if (error) throw error;
   //   return data;
   // },
-  
- 
+
   /**
    * Get member predictions for a specific user in a league
    * @param leagueId - The UUID of the league
@@ -66,9 +63,9 @@ export const leaderboardService = {
   //   // We need to use the RPC function to get properly typed data
   //   const { data: allPredictions, error } = await supabase
   //     .rpc('get_member_predictions', { p_league_id: leagueId });
-    
+
   //   if (error) throw error;
-    
+
   //   // Filter predictions for the specific user
   //   return allPredictions.filter(prediction => prediction.user_id === userId);
   // },
@@ -81,7 +78,7 @@ export const leaderboardService = {
   // async calculateTotalLeaguePoints(leagueId: string): Promise<number> {
   //   const { data, error } = await supabase
   //     .rpc('get_league_members_with_points', { p_league_id: leagueId });
-    
+
   //   if (error) throw error;
   //   return data.reduce((sum, member) => sum + member.total_points, 0);
   // },
@@ -94,14 +91,14 @@ export const leaderboardService = {
    */
   // async getBestPredictionForFixture(leagueId: string, fixtureId: number): Promise<LeagueMemberFixturePoints | null> {
   //   const { data, error } = await supabase
-  //     .rpc('get_members_fixture_points', { 
+  //     .rpc('get_members_fixture_points', {
   //       p_league_id: leagueId,
   //       p_fixture_id: fixtureId
   //     });
-    
+
   //   if (error) throw error;
   //   if (!data || data.length === 0) return null;
-    
+
   //   return data.reduce((best, current) => {
   //     if (!best.points || (current.points && current.points > best.points)) {
   //       return current;

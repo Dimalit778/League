@@ -56,15 +56,15 @@ Deno.serve(async (req) => {
 
   
         const competitionData = {
-          id: data.id,
+          id: data.id,  
           name: data.name,
           code : data.code,
           type: data.type,
           logo: data.emblem,
-          area_id : data.area.id,
-          area_name : data.area.name,
-          area_code : data.area.code,
-          area_flag : data.area.flag,
+       
+          area : data.area.name,
+       
+          flag : data.area.flag,
           season_id : data.currentSeason.id,
           season : data.currentSeason.startDate.split('-')[0],
           season_start_date : data.currentSeason.startDate,

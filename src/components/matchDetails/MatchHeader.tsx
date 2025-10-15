@@ -1,8 +1,10 @@
 import { formatTime } from '@/utils/match-utils';
-import footballField from '../../../assets/images/footballField.png';
+import footballField from '@assets/images/footballField.png';
 
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { MatchesWithTeamsType } from '@/types';
 import { dateFormat } from '@/utils/formats';
+import { ArrowLeftIcon } from '@assets/icons';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {
@@ -13,10 +15,16 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeftIcon } from '../../../assets/icons';
 
 const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useThemeTokens();
+
+  const { status } = match;
+
+  const home = match.score_fulltime_home ?? '-';
+  const away = match.score_fulltime_away ?? '-';
+
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
       <View style={{ paddingTop: insets.top }}>
@@ -25,7 +33,7 @@ const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
             className="absolute top-2 left-4"
             onPress={() => router.back()}
           >
-            <ArrowLeftIcon size={30} color={'dark'} />
+            <ArrowLeftIcon size={30} color={colors.text} />
           </TouchableOpacity>
           <View className="flex-row items-center justify-center">
             <Ionicons name="calendar-outline" size={16} color="#fff" />
@@ -34,35 +42,48 @@ const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
             </Text>
           </View>
 
-          {/* {match.venue && (
+          {match.home_team.venue && (
             <View className="flex-row items-center mt-2 justify-center">
               <Ionicons name="location-outline" size={16} color="#fff" />
               <Text className="text-white ml-1 text-sm font-bold">
-                {match.venue_name}
+                {match.home_team.venue}
               </Text>
-              {match.venue_city && (
-                <Text className="text-text text-sm">, {match.venue_city}</Text>
-              )}
             </View>
-          )} */}
+          )}
         </View>
 
         <View className="p-6">
           <View className="flex-row items-center ">
             {/* Home Team */}
-            <TeamCard team={match.home_team} />
+            <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
+              <View className="relative">
+                <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
+                  <Image
+                    source={{ uri: match.home_team.logo }}
+                    className="w-16 h-16"
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
+              <Text className="text-white text-base font-bold text-center">
+                {match.home_team.shortName}
+              </Text>
+            </View>
 
             {/* Score */}
             <View className="mx-6">
-              {match.status === 'scheduled' && (
+              {['SCHEDULED', 'TIMED'].includes(status) && (
                 <View className=" rounded-2xl p-4 items-center min-w-[100px]">
                   <Ionicons name="time-outline" size={24} color="#fff" />
                   <Text className="text-white text-sm mt-2 text-center">
                     {formatTime(match.kick_off)}
                   </Text>
+                  <Text className="text-white text-sm mt-2 text-center">
+                    {dateFormat(match.kick_off)}
+                  </Text>
                 </View>
               )}
-              {match.status === 'live' && (
+              {['IN_PLAY'].includes(status) && (
                 <View className="items-center justify-center gap-2">
                   <Text className="text-green-500 text-lg">LIVE</Text>
                   <Text className="text-text text-3xl font-black">
@@ -70,7 +91,7 @@ const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
                   </Text>
                 </View>
               )}
-              {match.status === 'finished' && (
+              {['FINISHED'].includes(status) && (
                 <View className="flex-row items-center border-2 border-gray-500 rounded-lg p-2">
                   <Text className="text-white text-2xl font-black">
                     {match.score_fulltime_home}
@@ -84,33 +105,24 @@ const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
             </View>
 
             {/* Away Team */}
-            <TeamCard team={match.away_team} />
+            <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
+              <View className="relative">
+                <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
+                  <Image
+                    source={{ uri: match.away_team.logo }}
+                    className="w-16 h-16"
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
+              <Text className="text-white text-base font-bold text-center">
+                {match.away_team.shortName}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
     </ImageBackground>
-  );
-};
-const TeamCard = ({
-  team,
-}: {
-  team: MatchesWithTeamsType['home_team'] | MatchesWithTeamsType['away_team'];
-}) => {
-  return (
-    <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
-      <View className="relative">
-        <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
-          <Image
-            source={{ uri: team.logo }}
-            className="w-16 h-16"
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-      <Text className="text-white text-base font-bold text-center">
-        {team.name}
-      </Text>
-    </View>
   );
 };
 

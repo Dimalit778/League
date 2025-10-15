@@ -4,13 +4,13 @@ import GoogleAuth from '@/components/GoogleAuth';
 import BackButton from '@/components/ui/BackButton';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
+import { EmailIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
 import * as yup from 'yup';
-import { EmailIcon, LockIcon } from '../../../assets/icons';
 
 const schema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),

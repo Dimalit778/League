@@ -1,3 +1,4 @@
+import { useGetUser } from '@/hooks/useUsers';
 import { supabase } from '@/lib/supabase';
 import { useMemberStore } from '@/store/MemberStore';
 
@@ -7,6 +8,7 @@ import { AppState } from 'react-native';
 
 export default function AppLayout() {
   const { member, initializeMemberLeagues, isLoading } = useMemberStore();
+  const user = useGetUser();
 
   useEffect(() => {
     const initializeIfAuthenticated = async () => {
@@ -17,17 +19,13 @@ export default function AppLayout() {
         await initializeMemberLeagues();
       }
     };
-
     initializeIfAuthenticated();
-
-    // Monitor app state for re-sync when app comes to foreground
     const handleAppStateChange = async (nextAppState: string) => {
       if (nextAppState === 'active') {
         const {
           data: { session },
         } = await supabase.auth.getSession();
         if (session?.user) {
-          // Re-sync MemberStore when app comes to foreground
           await initializeMemberLeagues();
         }
       }
@@ -45,17 +43,17 @@ export default function AppLayout() {
 
   if (isLoading) return null;
 
+  const admin = user.data?.role === 'ADMIN';
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!member}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="profile" options={{ headerShown: false }} />
+        <Stack.Screen name="(member)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
-      <Stack.Screen name="settings" options={{ headerShown: false }} />
-      <Stack.Screen name="subscription" options={{ headerShown: false }} />
-      <Stack.Screen name="admin" options={{ headerShown: false }} />
+      <Stack.Protected guard={!!admin}>
+        <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Screen name="(public)" options={{ headerShown: false }} />
     </Stack>
   );
 }

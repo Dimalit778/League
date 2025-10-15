@@ -1,18 +1,18 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
+import { SettingsIcon, TrophyIcon } from '@assets/icons';
 import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SettingsIcon, TrophyIcon } from '../../../assets/icons';
 
 const TabsHeader = ({
   showLeagueName = true,
 }: {
   showLeagueName?: boolean;
 }) => {
-  const { member } = useMemberStore();
-  const insets = useSafeAreaInsets();
   const { colors } = useThemeTokens();
+  const member = useMemberStore((s) => s.member?.league);
+  const insets = useSafeAreaInsets();
 
   return (
     <View
@@ -30,7 +30,7 @@ const TabsHeader = ({
 
         {showLeagueName && (
           <Text className="font-bold  text-2xl text-primary" numberOfLines={1}>
-            {member?.league?.name}
+            {member?.name}
           </Text>
         )}
 

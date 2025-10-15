@@ -11,7 +11,10 @@ type DashboardCounts = {
 
 type LeagueWithRelations = Tables<'leagues'> & {
   owner?: Pick<Tables<'users'>, 'id' | 'full_name' | 'email'> | null;
-  competition?: Pick<Tables<'competitions'>, 'id' | 'name' | 'country' | 'flag'> | null;
+  competition?: Pick<
+    Tables<'competitions'>,
+    'id' | 'name' | 'area' | 'flag'
+  > | null;
 };
 
 type LeagueMemberWithRelations = Tables<'league_members'> & {
@@ -27,7 +30,14 @@ type PredictionWithRelations = Tables<'predictions'> & {
 
 export const adminService = {
   async getDashboardCounts(): Promise<DashboardCounts> {
-    const countTable = async (table: string) => {
+    const countTable = async (
+      table:
+        | 'users'
+        | 'leagues'
+        | 'league_members'
+        | 'predictions'
+        | 'subscription'
+    ) => {
       const { count, error } = await supabase
         .from(table)
         .select('*', { count: 'exact', head: true });
@@ -48,11 +58,15 @@ export const adminService = {
     return { users, leagues, leagueMembers, predictions, subscriptions };
   },
 
-  async getUsers() {
+  async getUsers(page = 0, limit = 50) {
+    const from = page * limit;
+    const to = from + limit - 1;
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
     return data as Tables<'users'>[];
@@ -66,26 +80,24 @@ export const adminService = {
 
     if (error) throw error;
 
-    return (
-      data?.map((league) => ({
-        ...league,
-        owner: league.owner
-          ? {
-              id: league.owner.id,
-              full_name: league.owner.full_name,
-              email: league.owner.email,
-            }
-          : null,
-        competition: league.competition
-          ? {
-              id: league.competition.id,
-              name: league.competition.name,
-              country: league.competition.country,
-              flag: league.competition.flag,
-            }
-          : null,
-      })) ?? []
-    ) as LeagueWithRelations[];
+    return (data?.map((league) => ({
+      ...league,
+      owner: league.owner
+        ? {
+            id: league.owner.id,
+            full_name: league.owner.full_name,
+            email: league.owner.email,
+          }
+        : null,
+      competition: league.competition
+        ? {
+            id: league.competition.id,
+            name: league.competition.name,
+            area: league.competition.area,
+            flag: league.competition.flag,
+          }
+        : null,
+    })) ?? []) as LeagueWithRelations[];
   },
 
   async getLeagueMembers() {
@@ -96,21 +108,19 @@ export const adminService = {
 
     if (error) throw error;
 
-    return (
-      data?.map((member) => ({
-        ...member,
-        league: member.league
-          ? { id: member.league.id, name: member.league.name }
-          : null,
-        user: member.user
-          ? {
-              id: member.user.id,
-              email: member.user.email,
-              full_name: member.user.full_name,
-            }
-          : null,
-      })) ?? []
-    ) as LeagueMemberWithRelations[];
+    return (data?.map((member) => ({
+      ...member,
+      league: member.league
+        ? { id: member.league.id, name: member.league.name }
+        : null,
+      user: member.user
+        ? {
+            id: member.user.id,
+            email: member.user.email,
+            full_name: member.user.full_name,
+          }
+        : null,
+    })) ?? []) as LeagueMemberWithRelations[];
   },
 
   async getPredictions() {
@@ -128,27 +138,25 @@ export const adminService = {
 
     if (error) throw error;
 
-    return (
-      data?.map((prediction) => ({
-        ...prediction,
-        league: prediction.league
-          ? { id: prediction.league.id, name: prediction.league.name }
-          : null,
-        member: prediction.member
-          ? {
-              id: prediction.member.id,
-              nickname: prediction.member.nickname,
-            }
-          : null,
-        user: prediction.user
-          ? {
-              id: prediction.user.id,
-              email: prediction.user.email,
-              full_name: prediction.user.full_name,
-            }
-          : null,
-      })) ?? []
-    ) as PredictionWithRelations[];
+    return (data?.map((prediction) => ({
+      ...prediction,
+      league: prediction.league
+        ? { id: prediction.league.id, name: prediction.league.name }
+        : null,
+      member: prediction.member
+        ? {
+            id: prediction.member.id,
+            nickname: prediction.member.nickname,
+          }
+        : null,
+      user: prediction.user
+        ? {
+            id: prediction.user.id,
+            email: prediction.user.email,
+            full_name: prediction.user.full_name,
+          }
+        : null,
+    })) ?? []) as PredictionWithRelations[];
   },
 
   async getCompetitions() {
@@ -180,11 +188,17 @@ export const adminService = {
 
     if (error) throw error;
   },
+
+  async deleteUser(userId: string) {
+    const { error } = await supabase.from('users').delete().eq('id', userId);
+
+    if (error) throw error;
+  },
 };
 
 export type {
   DashboardCounts,
-  LeagueWithRelations,
   LeagueMemberWithRelations,
+  LeagueWithRelations,
   PredictionWithRelations,
 };

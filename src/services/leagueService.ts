@@ -3,16 +3,15 @@ import { subscriptionService } from '@/services/subscriptionService';
 import {
   createLeagueProps,
   createLeagueResponse,
-  FoundLeague,
+  LeagueWithCompetition,
   MemberLeague,
 } from '@/types';
 
 export const leagueService = {
-  // GET user leagues - Used by useGetLeagues hook
   async getUserLeagues(userId: string): Promise<MemberLeague[]> {
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, league:leagues!league_id(*)')
+      .select('*, league:leagues!league_id(*,competition:competitions(*))')
       .eq('user_id', userId)
       .order('is_primary', { ascending: false });
 
@@ -21,28 +20,25 @@ export const leagueService = {
     return data as MemberLeague[];
   },
 
-  // FIND league by join code - Used by useFindLeagueByJoinCode hook
-  async findLeagueByJoinCode(joinCode: string): Promise<FoundLeague> {
+  async findLeagueByJoinCode(joinCode: string): Promise<LeagueWithCompetition> {
     const { data, error } = await supabase
       .from('leagues')
-      .select(
-        'id,name,join_code,max_members,owner_id,competition:competitions!inner (id,name,logo,area_flag,area_name) ,league_members(count)'
-      )
+      .select('*,competition:competitions(*)')
       .eq('join_code', joinCode)
-      .maybeSingle();
+      .single();
+
     if (error) throw new Error(error.message);
     if (!data) throw new Error('League not found');
 
-    return data as FoundLeague;
+    return data as LeagueWithCompetition;
   },
 
-  // GET full league and members by ID - Used by useGetFullLeagueData hook
   async getFullLeagueData(leagueId: string) {
     try {
       const { data: leagueData, error: leagueError } = await supabase
         .from('leagues')
         .select(
-          '*,competition:competitions!inner(id,name,logo,area_name,area_flag),league_members(count)'
+          '*,competition:competitions!inner(id,name,logo,area,flag),league_members(count)'
         )
         .eq('id', leagueId)
         .single();
@@ -70,13 +66,12 @@ export const leagueService = {
     }
   },
 
-  // GET full league including members list
   async getLeagueAndMembers(leagueId: string) {
     try {
       const { data: leagueData, error: leagueError } = await supabase
         .from('leagues')
         .select(
-          '*,competition:competitions!inner(id,name,logo,area_name,area_flag),league_members(*)'
+          '*,competition:competitions!inner(id,name,logo,area,flag),league_members(*)'
         )
         .eq('id', leagueId)
         .single();
@@ -102,7 +97,6 @@ export const leagueService = {
     }
   },
 
-  // CREATE league - Used internally by MemberStore
   async createLeague(params: createLeagueProps): Promise<createLeagueResponse> {
     const { canCreate, reason } = await subscriptionService.canCreateLeague(
       params.user_id
@@ -131,7 +125,6 @@ export const leagueService = {
         league_name: params.league_name,
         max_members: maxMembers,
         competition_id: params.competition_id,
-        logo: params.league_logo,
         nickname: params.nickname,
         avatar_url: '',
       }
@@ -142,20 +135,13 @@ export const leagueService = {
     return leagueData as createLeagueResponse;
   },
 
-  // JOIN league - Used internally by MemberStore
   async joinLeague(joinCode: string, nickname: string) {
     // First check if the league exists and get its details
     const league = await this.findLeagueByJoinCode(joinCode);
 
-    // Check if the league is full
-    if (league.league_members[0].count >= league.max_members) {
-      throw new Error('This league is full and cannot accept new members.');
-    }
-
     const { data, error } = await supabase.rpc('join_league', {
       league_join_code: joinCode,
       user_nickname: nickname,
-      user_avatar_url: '',
     });
 
     if (error) throw new Error(error.message);
@@ -163,7 +149,6 @@ export const leagueService = {
     return data;
   },
 
-  // LEAVE league - Used internally by MemberStore
   async leaveLeague(leagueId: string) {
     const { data, error } = await supabase.rpc('leave_league', {
       p_league_id: leagueId,
@@ -173,34 +158,32 @@ export const leagueService = {
     return data;
   },
 
-  // UPDATE primary league - Used internally by MemberStore
-  async updatePrimaryLeague(userId: string, leagueId: string) {
-    const { error } = await supabase
-      .from('league_members')
-      .update({
-        is_primary: false,
-      })
-      .eq('user_id', userId);
-
-    if (error) throw new Error(error.message);
-
-    // Then set the selected league as primary and return with league data
-    const { data: primaryLeague, error: primaryLeagueError } = await supabase
+  async updatePrimaryLeague(
+    userId: string,
+    leagueId: string
+  ): Promise<MemberLeague> {
+    const { data: primaryLeague, error: setPrimaryError } = await supabase
       .from('league_members')
       .update({
         is_primary: true,
       })
       .eq('league_id', leagueId)
       .eq('user_id', userId)
-      .select('*, league:leagues!league_id(*)')
+      .select('*, league:leagues!league_id(*,competition:competitions(*))')
       .single();
 
-    if (primaryLeagueError) throw new Error(primaryLeagueError.message);
+    if (setPrimaryError) throw new Error(setPrimaryError.message);
 
-    return primaryLeague;
+    const { error: unsetLeaguesError } = await supabase
+      .from('league_members')
+      .update({ is_primary: false })
+      .eq('user_id', userId)
+      .neq('league_id', leagueId);
+
+    if (unsetLeaguesError) throw new Error(unsetLeaguesError.message);
+
+    return primaryLeague as MemberLeague;
   },
-
-  // UPDATE league basic fields (e.g., name)
   async updateLeague(leagueId: string, data: { name?: string }) {
     const { data: updated, error } = await supabase
       .from('leagues')
@@ -212,7 +195,6 @@ export const leagueService = {
     return updated;
   },
 
-  // REMOVE member from league (owner only per RLS)
   async removeMember(leagueId: string, userId: string) {
     const { error } = await supabase
       .from('league_members')

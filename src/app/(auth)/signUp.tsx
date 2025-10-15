@@ -5,19 +5,14 @@ import BackButton from '@/components/ui/BackButton';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
 
+import { EmailIcon, LockIcon, UserIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
-import { EmailIcon, LockIcon, UserIcon } from '../../../assets/icons';
 const validateEmail = (email: string) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);

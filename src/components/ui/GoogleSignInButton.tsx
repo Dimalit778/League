@@ -1,5 +1,5 @@
+import { GoogleLogoIcon } from '@assets/icons';
 import { Pressable, Text } from 'react-native';
-import { GoogleLogoIcon } from '../../../assets/icons';
 
 type Props = {
   label?: string;

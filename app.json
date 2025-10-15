@@ -10,20 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dimalit778.league",
-      "infoPlist": {
-        "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
-
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
-          "NSAllowsLocalNetworking": true,
-          "NSExceptionDomains": {
-            "localhost": {
-              "NSExceptionAllowsInsecureHTTPLoads": true
-            }
-          }
-        }
-      }
+      "bundleIdentifier": "com.dimalit778.league"
     },
     "android": {
       "adaptiveIcon": {
@@ -72,7 +59,47 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "infoPlist": {
+              "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
+              "NSLocalNetworkUsageDescription": "Allow local network for development",
+              "NSBonjourServiceTypes": ["_expo._tcp"],
+              "NSAppTransportSecurity": {
+                "NSAllowsLocalNetworking": true,
+                "NSAllowsArbitraryLoads": true,
+                "NSExceptionDomains": {
+                  "localhost": {
+                    "NSIncludesSubdomains": false,
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true,
+                    "NSTemporaryExceptionMinimumTLSVersion": "1.2"
+                  },
+                  "127.0.0.1": {
+                    "NSIncludesSubdomains": false,
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
+                  },
+                  "192.168.0.0": {
+                    "NSIncludesSubdomains": true,
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
+                  },
+                  "192.20.0.36": {
+                    "NSIncludesSubdomains": true,
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
+                  },
+                  "10.0.0.0": {
+                    "NSIncludesSubdomains": true,
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -84,6 +111,10 @@
         "projectId": "0730f614-1c6a-437b-b74b-508698797f3e"
       }
     },
+    "updates": {
+      "url": "https://u.expo.dev/0730f614-1c6a-437b-b74b-508698797f3e"
+    },
+    "runtimeVersion": "1.0.0",
     "owner": "dimalit778"
   }
 }

@@ -36,6 +36,7 @@ const GoogleAuth = () => {
           provider: 'google',
           token: idToken as string,
         });
+
         if (error) throw new Error(error.message);
       } else {
         throw new Error('Google sign in failed');

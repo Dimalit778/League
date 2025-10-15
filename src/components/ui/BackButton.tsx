@@ -1,7 +1,7 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { ArrowLeftIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { ArrowLeftIcon } from '../../../assets/icons';
 
 interface BackButtonProps {
   title?: string;

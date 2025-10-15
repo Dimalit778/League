@@ -1,11 +1,6 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useEffect, useRef } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Text, TouchableOpacity } from 'react-native';
 
 type MatchdaysListProps = {
   matchdays: number[];
@@ -19,6 +14,7 @@ const MatchdaysList = ({
   handleMatchdayPress,
 }: MatchdaysListProps) => {
   const flatListRef = useRef<FlatList<number>>(null);
+  const { colors } = useThemeTokens();
 
   const handlePress = (matchday: number, index: number) => {
     handleMatchdayPress(matchday);
@@ -45,52 +41,44 @@ const MatchdaysList = ({
   }, []);
 
   return (
-    <View className="my-3 mx-1">
-      <FlatList
-        ref={flatListRef}
-        data={matchdays}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.toString()}
-        renderItem={({ item: matchday, index }) => {
-          return (
-            <TouchableOpacity
-              onPress={() => handlePress(matchday, index)}
-              className={
-                selectedMatchday === matchday ? 'bg-primary' : 'bg-surface'
-              }
-              style={styles.item}
+    <FlatList
+      ref={flatListRef}
+      data={matchdays}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyExtractor={(item) => item.toString()}
+      renderItem={({ item: matchday, index }) => {
+        return (
+          <TouchableOpacity
+            onPress={() => handlePress(matchday, index)}
+            style={{
+              height: 50,
+              width: 50,
+              borderRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginHorizontal: 5,
+              backgroundColor:
+                selectedMatchday === matchday ? colors.primary : colors.surface,
+            }}
+          >
+            <Text
+              className={`text-text font-semibold ${
+                selectedMatchday === matchday ? 'text-background' : 'text-text'
+              }`}
             >
-              <Text
-                className={`text-text font-semibold ${
-                  selectedMatchday === matchday
-                    ? 'text-background'
-                    : 'text-text'
-                }`}
-              >
-                {matchday}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
-        getItemLayout={(_, index) => ({
-          length: 60,
-          offset: 60 * index,
-          index,
-        })}
-      />
-    </View>
+              {matchday}
+            </Text>
+          </TouchableOpacity>
+        );
+      }}
+      getItemLayout={(_, index) => ({
+        length: 60,
+        offset: 60 * index,
+        index,
+      })}
+    />
   );
 };
-const styles = StyleSheet.create({
-  item: {
-    height: 50,
-    width: 50,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-});
 
 export default MatchdaysList;

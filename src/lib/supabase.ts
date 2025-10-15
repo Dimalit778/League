@@ -1,9 +1,10 @@
-import { Database } from "@/types/database.types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createClient } from "@supabase/supabase-js";
+import { Database } from '@/types/database.types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL! as string;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY! as string;
+const supabaseAnonKey = process.env
+  .EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY! as string;
 
 // Create a single instance of the Supabase client
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -13,5 +14,4 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: false,
   },
- 
 });

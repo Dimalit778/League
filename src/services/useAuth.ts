@@ -27,7 +27,6 @@ export const useAuth = () => {
 
       try {
         const { error } = await supabase.auth.signOut();
-
         if (error && error.message !== 'Auth session missing!') {
           throw error;
         }
@@ -45,7 +44,6 @@ export const useAuth = () => {
         const AsyncStorage =
           require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.multiRemove(keys);
-        Alert.alert('Success', 'Signed out successfully');
       } catch (storageError) {
         console.warn('Failed to manually clear auth storage:', storageError);
       }
@@ -66,7 +64,9 @@ export const useAuth = () => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullname } },
+        options: {
+          data: { full_name: fullname, provider: 'email', role: 'USER' },
+        },
       });
 
       if (error) throw new Error(error.message);

@@ -4,28 +4,25 @@ export type IconProps = {
   color?: string;
   size?: number;
 };
-// Database Types
-// Member And League Type
+
 export type MemberLeague = Tables<'league_members'> & {
   league: Tables<'leagues'> & {
     competition: Tables<'competitions'>;
   };
 };
-export type FoundLeague = Pick<
-  Tables<'leagues'>,
-  'id' | 'name' | 'join_code' | 'max_members' | 'owner_id'
-> & {
-  competition: Pick<
-    Tables<'competitions'>,
-    'id' | 'name' | 'logo' | 'area_flag' | 'area_name'
-  >;
+export type LeagueWithCompetition = Tables<'leagues'> & {
+  competition: Tables<'competitions'>;
+};
+export type LeagueWithCompetitionAndMembersCount = Tables<'leagues'> & {
+  competition: Tables<'competitions'>;
   league_members: { count: number }[];
 };
+
 export type leagueWithMembers = Tables<'leagues'> & {
   league_members: Tables<'league_members'>[];
   competition: Pick<
     Tables<'competitions'>,
-    'id' | 'name' | 'logo' | 'area_name' | 'area_flag'
+    'id' | 'name' | 'logo' | 'area' | 'flag'
   >;
   owner: Tables<'league_members'>;
 };
@@ -35,7 +32,6 @@ export type createLeagueProps = {
   competition_id: number;
   max_members: number;
   user_id: string;
-  league_logo: string;
 };
 
 export type createLeagueResponse = {

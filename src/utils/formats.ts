@@ -17,7 +17,7 @@ export const timeFormat = (time: string) => {
 export const timeFormatTimezone = (time: string) => {
   const timeObj = new Date(time);
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
+
   return timeObj.toLocaleTimeString(undefined, {
     hour: '2-digit',
     minute: '2-digit',

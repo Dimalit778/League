@@ -154,7 +154,7 @@ const LeagueContent = ({
                     {league.name}
                   </Text>
                   <Text className="text-muted text-xs">
-                    {league.competition?.name} • {league.competition?.area_name}
+                    {league.competition?.name} • {league.competition?.area}
                   </Text>
                 </View>
                 {isOwner && (
@@ -230,7 +230,7 @@ const LeagueContent = ({
                 <Text className="text-text">Country</Text>
                 <View className="flex-row items-center">
                   <Text className="text-text font-semibold mr-2">
-                    {league.competition.country}
+                    {league.competition.area}
                   </Text>
                   <MyImage
                     source={{ uri: league.competition.flag }}

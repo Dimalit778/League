@@ -5,13 +5,10 @@ type UserUpdate = TablesUpdate<'users'>;
 
 export const userService = {
   async getUser() {
-    // First get the current authenticated user
     const { data: authData, error: authError } = await supabase.auth.getUser();
 
     if (authError) throw authError;
     if (!authData.user) throw new Error('Not authenticated');
-
-    // Then fetch the user profile data using the authenticated user's ID
     const { data, error } = await supabase
       .from('users')
       .select('*')

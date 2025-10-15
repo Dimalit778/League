@@ -16,63 +16,57 @@ export type Database = {
     Tables: {
       competitions: {
         Row: {
-          area_code: string
-          area_flag: string
-          area_id: number
-          area_name: string
+          area: string
           code: string
           created_at: string
           current_matchday: number
+          flag: string
           id: number
           last_updated: string
           logo: string
           name: string
-          season: number
-          season_end_date: string
+          season_endDate: string
           season_id: number
-          season_start_date: string
+          season_startDate: string
+          season_year: number
           total_matchdays: number | null
           type: string
           updated_at: string
           winner: string | null
         }
         Insert: {
-          area_code: string
-          area_flag: string
-          area_id: number
-          area_name: string
+          area: string
           code: string
           created_at?: string
           current_matchday: number
+          flag: string
           id: number
           last_updated: string
           logo: string
           name: string
-          season: number
-          season_end_date: string
+          season_endDate: string
           season_id: number
-          season_start_date: string
+          season_startDate: string
+          season_year: number
           total_matchdays?: number | null
           type: string
           updated_at?: string
           winner?: string | null
         }
         Update: {
-          area_code?: string
-          area_flag?: string
-          area_id?: number
-          area_name?: string
+          area?: string
           code?: string
           created_at?: string
           current_matchday?: number
+          flag?: string
           id?: number
           last_updated?: string
           logo?: string
           name?: string
-          season?: number
-          season_end_date?: string
+          season_endDate?: string
           season_id?: number
-          season_start_date?: string
+          season_startDate?: string
+          season_year?: number
           total_matchdays?: number | null
           type?: string
           updated_at?: string
@@ -134,7 +128,6 @@ export type Database = {
           created_at: string
           id: string
           join_code: string
-          logo: string
           max_members: number
           name: string
           owner_id: string
@@ -145,7 +138,6 @@ export type Database = {
           created_at?: string
           id?: string
           join_code: string
-          logo: string
           max_members?: number
           name: string
           owner_id: string
@@ -156,7 +148,6 @@ export type Database = {
           created_at?: string
           id?: string
           join_code?: string
-          logo?: string
           max_members?: number
           name?: string
           owner_id?: string
@@ -388,24 +379,30 @@ export type Database = {
           id: number
           logo: string
           name: string
+          shortName: string | null
           tla: string | null
           updated_at: string
+          venue: string | null
         }
         Insert: {
           created_at?: string
           id: number
           logo: string
           name: string
+          shortName?: string | null
           tla?: string | null
           updated_at?: string
+          venue?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           logo?: string
           name?: string
+          shortName?: string | null
           tla?: string | null
           updated_at?: string
+          venue?: string | null
         }
         Relationships: []
       }
@@ -415,6 +412,8 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          provider: string
+          role: string
           updated_at: string
         }
         Insert: {
@@ -422,6 +421,8 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          provider?: string
+          role?: string
           updated_at?: string
         }
         Update: {
@@ -429,6 +430,8 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          provider?: string
+          role?: string
           updated_at?: string
         }
         Relationships: []
@@ -469,14 +472,17 @@ export type Database = {
       }
       create_new_league: {
         Args: {
-          avatar_url: string
+          avatar_url?: string
           competition_id: number
           league_name: string
-          logo: string
           max_members: number
           nickname: string
         }
         Returns: Json
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       join_league: {
         Args: {

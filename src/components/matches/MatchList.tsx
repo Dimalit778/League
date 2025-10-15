@@ -1,4 +1,5 @@
 import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
+import { dateFormat, timeFormatTimezone } from '@/utils/formats';
 
 import { MatchesWithTeamsAndPredictionsType } from '@/types';
 import { Image as ExpoImage } from 'expo-image';
@@ -6,7 +7,6 @@ import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Error } from '../layout';
-import { MatchStatus } from './MatchStatus';
 import PredictionStatus from './PredictionStatus';
 import MatchesSkeleton from './SkeletonMatches';
 
@@ -32,7 +32,7 @@ const MatchList = ({
   const router = useRouter();
   const handlePress = (match: MatchItem) => {
     router.push({
-      pathname: '/(app)/match/[id]',
+      pathname: '/(app)/(member)/match/[id]',
       params: {
         id: match.id,
         match: JSON.stringify(match),
@@ -42,6 +42,7 @@ const MatchList = ({
 
   const MatchItem = useCallback(({ match }: { match: MatchItem }) => {
     const SIZE = 30;
+
     const prediction = match.predictions?.[0] ?? null;
 
     return (
@@ -57,14 +58,13 @@ const MatchList = ({
           />
 
           <View className="flex-row items-center">
-            {/* Home Team */}
             <View className="flex-1 flex-row gap-2 items-center max-w-[40%]">
               <Text
                 className="text-text text-sm flex-1 text-right"
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {match.home_team.name}
+                {match.home_team.shortName}
               </Text>
               <ExpoImage
                 source={match.home_team.logo}
@@ -79,17 +79,50 @@ const MatchList = ({
               />
             </View>
 
-            {/* Score Section */}
             <View className="items-center min-w-[60px] mx-3">
-              <MatchStatus
-                status={match.status}
-                homeScore={match.score_fulltime_home ?? 0}
-                awayScore={match.score_fulltime_away ?? 0}
-                kickOffTime={match.kick_off}
-              />
+              <View className="w-full">
+                {match.status === 'SCHEDULED' ||
+                  (match.status === 'TIMED' && (
+                    <View className="flex-col items-center justify-center rounded-md border border-border py-1">
+                      <Text className="text-muted text-xs">
+                        {dateFormat(match.kick_off)}
+                      </Text>
+                      <Text className="text-text">
+                        {timeFormatTimezone(match.kick_off)}
+                      </Text>
+                    </View>
+                  ))}
+
+                {match.status === 'LIVE' ||
+                  (match.status === 'IN_PLAY' && (
+                    <View className="flex-col items-center justify-center py-2">
+                      <Text className="text-green-500 text-sm">LIVE</Text>
+                      <View className="flex-row items-center justify-center">
+                        <Text className="text-text">
+                          {match.score_fulltime_home ?? 0}
+                        </Text>
+                        <Text className="text-text">-</Text>
+                        <Text className="text-text">
+                          {match.score_fulltime_away ?? 0}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+
+                {match.status === 'FINISHED' && (
+                  <View className="flex-row justify-center py-2">
+                    <Text className="text-xl font-bold text-text ">
+                      {match.score_fulltime_home ?? 0}
+                    </Text>
+                    <Text className="text-xl font-bold text-text mx-1">-</Text>
+                    <Text className="text-xl font-bold text-text">
+                      {match.score_fulltime_away ?? 0}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
 
-            {/* Away Team */}
             <View className="flex-1 flex-row gap-2 items-center max-w-[40%]">
               <ExpoImage
                 source={match.away_team.logo}
@@ -107,7 +140,7 @@ const MatchList = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {match.away_team.name}
+                {match.away_team.shortName}
               </Text>
             </View>
           </View>
@@ -128,11 +161,11 @@ const MatchList = ({
   return (
     <FlatList
       data={matches}
-      renderItem={({ item }) => <MatchItem match={item} />}
       showsVerticalScrollIndicator={false}
       keyExtractor={keyExtractor}
       refreshing={isLoading}
       onRefresh={handleRefresh}
+      renderItem={({ item }) => <MatchItem match={item} />}
     />
   );
 };

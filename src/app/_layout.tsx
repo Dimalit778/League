@@ -23,11 +23,11 @@ const InitialApp = () => {
   const [loading, setLoading] = useState(true);
 
   const [fontsLoaded] = useFonts({
-    'Teko-Regular': require('../../assets/fonts/Teko-Regular.ttf'),
-    'Teko-Light': require('../../assets/fonts/Teko-Light.ttf'),
-    'Teko-Bold': require('../../assets/fonts/Teko-Bold.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.otf'),
-    'Inter-Light': require('../../assets/fonts/Inter-Light-BETA.otf'),
+    'Teko-Regular': require('@assets/fonts/Teko-Regular.ttf'),
+    'Teko-Light': require('@assets/fonts/Teko-Light.ttf'),
+    'Teko-Bold': require('@assets/fonts/Teko-Bold.ttf'),
+    'Inter-Regular': require('@assets/fonts/Inter-Regular.otf'),
+    'Inter-Light': require('@assets/fonts/Inter-Light-BETA.otf'),
   });
 
   useEffect(() => {

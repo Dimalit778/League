@@ -3,8 +3,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": [
+    "BLURHASH",
     "dimalit",
     "ellipsize",
+    "Entypo",
     "extratime",
     "fkey",
     "matchday",
