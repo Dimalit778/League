@@ -1,8 +1,7 @@
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
 import { FlatList, View } from 'react-native';
 
-const rounds = [1, 2, 3, 4, 5, 6, 7];
-const skeletonFixtures = Array.from({ length: 8 });
+const skeletonFixtures = Array.from({ length: 89 });
 
 export default function MatchesSkeleton() {
   return (
@@ -11,12 +10,12 @@ export default function MatchesSkeleton() {
       keyExtractor={(_, i) => `fixture-skeleton-${i}`}
       scrollEnabled={false}
       renderItem={() => (
-        <View className="flex-row items-center bg-surface px-3 p-2 mb-3">
+        <View className="flex-row items-center bg-surface p-2 my-1 border-b border-t border-border">
           {/* Home team */}
           <View className="flex-row items-center flex-1 justify-end gap-2">
             <AnimatedSkeleton style={{ height: 16, width: 96 }} />
             <AnimatedSkeleton
-              style={{ width: 40, height: 40, borderRadius: 20 }}
+              style={{ width: 35, height: 35, borderRadius: 15 }}
             />
           </View>
 
@@ -30,7 +29,7 @@ export default function MatchesSkeleton() {
           {/* Away team */}
           <View className="flex-row items-center flex-1 justify-start gap-2">
             <AnimatedSkeleton
-              style={{ width: 40, height: 40, borderRadius: 20 }}
+              style={{ width: 35, height: 35, borderRadius: 15 }}
             />
             <AnimatedSkeleton style={{ height: 16, width: 96 }} />
           </View>

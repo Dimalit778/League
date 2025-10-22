@@ -60,6 +60,25 @@ const FinishContent = ({ match_id }: { match_id: number }) => {
             onRefresh={() => {
               refetch();
             }}
+            // Advanced performance optimizations
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={5} // Reduced for better performance
+            windowSize={8} // Reduced window size
+            initialNumToRender={5} // Render fewer items initially
+            updateCellsBatchingPeriod={100} // Increased batching period
+            getItemLayout={(_, index) => ({
+              length: 80, // Approximate height of each prediction card
+              offset: 80 * index,
+              index,
+            })}
+            // Memory optimizations
+            legacyImplementation={false}
+            disableVirtualization={false}
+            // Lazy loading optimizations
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 0,
+              autoscrollToTopThreshold: 5,
+            }}
           />
         </>
       )}

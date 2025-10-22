@@ -1,9 +1,8 @@
-import { LoadingOverlay } from '@/components/layout';
 import MatchdaysList from '@/components/matches/MatchdaysList';
 import MatchList from '@/components/matches/MatchList';
 import { useMemberStore } from '@/store/MemberStore';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 const Matches = () => {
@@ -12,7 +11,7 @@ const Matches = () => {
   const competition = member?.league?.competition;
 
   const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
-
+  const [animateScroll, setAnimateScroll] = useState(false);
   const matchdays = useMemo(
     () =>
       competition?.total_matchdays
@@ -21,40 +20,37 @@ const Matches = () => {
     [competition?.total_matchdays]
   );
 
-  useEffect(() => {
-    if (competition?.current_matchday && !selectedMatchday) {
-      setSelectedMatchday(competition.current_matchday);
-    }
-  }, [competition?.current_matchday, selectedMatchday]);
-
   useFocusEffect(
     useCallback(() => {
       if (competition?.current_matchday) {
+        setAnimateScroll(false); // <- important: no animation on entry
         setSelectedMatchday(competition.current_matchday);
       }
+      return () => {
+        setSelectedMatchday(null); // unmount list while leaving
+      };
     }, [competition?.current_matchday])
   );
 
   const handleMatchdayPress = useCallback((matchday: number) => {
+    setAnimateScroll(true); // animate only on user tap
     setSelectedMatchday(matchday);
   }, []);
 
-  const showMatchList = !!selectedMatchday && !!competition && !!userId;
-
   return (
     <View className="flex-1 bg-background">
-      {competition && !selectedMatchday && <LoadingOverlay />}
       {selectedMatchday && (
         <View className="mb-3 ">
           <MatchdaysList
             matchdays={matchdays}
             selectedMatchday={selectedMatchday}
             handleMatchdayPress={handleMatchdayPress}
+            animateScroll={animateScroll}
           />
         </View>
       )}
 
-      {showMatchList && (
+      {selectedMatchday && competition && userId && (
         <MatchList
           selectedMatchday={selectedMatchday}
           competitionId={competition.id}

@@ -1,11 +1,12 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { memo, useCallback, useEffect, useRef } from 'react';
-import { FlatList, Pressable, Text } from 'react-native';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, LayoutChangeEvent, Pressable, Text } from 'react-native';
 
 type MatchdaysListProps = {
   matchdays: number[];
   selectedMatchday: number;
   handleMatchdayPress: (matchday: number) => void;
+  animateScroll: boolean;
 };
 
 type MatchdayItemProps = {
@@ -54,19 +55,41 @@ const MatchdaysList = ({
   matchdays,
   selectedMatchday,
   handleMatchdayPress,
+  animateScroll,
 }: MatchdaysListProps) => {
   const ref = useRef<FlatList>(null);
   const { colors } = useThemeTokens();
+  const [listWidth, setListWidth] = useState(0);
+  const onLayout = (e: LayoutChangeEvent) =>
+    setListWidth(e.nativeEvent.layout.width);
 
+  console.log('animateScroll', animateScroll);
+
+  // center on first render and whenever the selected day changes
   useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollToIndex({
-        index: selectedMatchday - 1,
-        animated: true,
-        viewPosition: 0.5,
-      });
-    }
-  }, [ref, selectedMatchday]);
+    if (!ref.current || !selectedMatchday || listWidth === 0) return;
+
+    ref.current.scrollToIndex({
+      index: selectedMatchday - 1,
+      animated: true,
+      viewPosition: 0.5, // center
+    });
+  }, [selectedMatchday, listWidth]);
+
+  // if RN couldn't compute the index yet, retry shortly after
+  const onScrollToIndexFailed = useCallback(
+    (info: { index: number; highestMeasuredFrameIndex: number }) => {
+      // Option A: retry once after a tick
+      setTimeout(() => {
+        ref.current?.scrollToIndex({
+          index: info.index,
+          animated: true,
+          viewPosition: 0.5,
+        });
+      }, 50);
+    },
+    []
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: number }) => (
@@ -80,31 +103,23 @@ const MatchdaysList = ({
     [selectedMatchday, colors, handleMatchdayPress]
   );
 
-  const keyExtractor = useCallback((item: number) => item.toString(), []);
-
-  const getItemLayout = useCallback(
-    (_: any, index: number) => ({
-      length: 60,
-      offset: 60 * index,
-      index,
-    }),
-    []
-  );
-
   return (
     <FlatList
       ref={ref}
       data={matchdays}
+      onLayout={onLayout}
       horizontal
       showsHorizontalScrollIndicator={false}
-      keyExtractor={keyExtractor}
-      getItemLayout={getItemLayout}
+      keyExtractor={(item) => item.toString()}
       renderItem={renderItem}
-      removeClippedSubviews={true}
-      maxToRenderPerBatch={10}
-      windowSize={10}
-      initialNumToRender={10}
       updateCellsBatchingPeriod={50}
+      getItemLayout={(_, index) => ({
+        length: 60,
+        offset: 60 * index,
+        index,
+      })}
+      initialScrollIndex={Math.max(0, (selectedMatchday ?? 1) - 1)}
+      onScrollToIndexFailed={onScrollToIndexFailed}
     />
   );
 };

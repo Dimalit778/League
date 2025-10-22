@@ -27,7 +27,6 @@ export default function MatchDetails() {
   } catch (e) {
     return <Error error={e as Error} />;
   }
-  console.log('match', JSON.stringify(match, null, 2));
 
   if (!match) return <SkeletonMatchDetails />;
 

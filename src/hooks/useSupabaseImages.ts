@@ -4,7 +4,7 @@ type StorageTransformOptions = {
   width?: number;
   height?: number;
   quality?: number;
-  resize?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+  resize?: 'cover' | 'contain' | 'fill';
 };
 
 type SignedUrlOptions = {
@@ -44,7 +44,11 @@ export const downloadImage = async (
 
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrl(path, expiresIn, transform ? { transform } : undefined);
+    .createSignedUrl(
+      path,
+      expiresIn,
+      transform ? { transform: { resize: transform.resize } } : undefined
+    );
 
   if (error) throw error;
 

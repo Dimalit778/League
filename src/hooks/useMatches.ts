@@ -35,6 +35,6 @@ export const useGetMatchesWithPredictions = (
     queryFn: () =>
       matchesService.getMatchesWithPredictions(matchday, competitionId, userId),
     enabled: !!matchday && !!competitionId && !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 30_000,
   });
 };

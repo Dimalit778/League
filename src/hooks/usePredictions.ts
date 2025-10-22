@@ -17,7 +17,7 @@ export const useCreatePrediction = () => {
     }) =>
       predictionService.createPrediction({
         user_id: member!.user_id,
-        fixture_id: prediction.fixture_id,
+        match_id: prediction.fixture_id,
         home_score: prediction.home_score,
         away_score: prediction.away_score,
         league_member_id: member!.id,
@@ -25,13 +25,13 @@ export const useCreatePrediction = () => {
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
     onError: (error) => {
       console.error('Failed to create prediction:', error);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
   });
 };
@@ -54,7 +54,7 @@ export const useUpdatePrediction = () => {
         user_id: member?.user_id,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.fixtures.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
     onError: (error) => {
       console.error('Failed to update prediction:', error);
@@ -65,9 +65,9 @@ export const useUpdatePrediction = () => {
 export const useMemberPredictionsByRound = (round: string) => {
   const { member } = useMemberStore();
   return useQuery({
-    queryKey: QUERY_KEYS.predictions.byUserAndRound(
+    queryKey: QUERY_KEYS.predictions.byUserAndMatchday(
       member?.user_id || '',
-      round
+      parseInt(round)
     ),
     queryFn: () =>
       predictionService.getMemberPredictionsByRound(member!.user_id, round),
@@ -95,6 +95,10 @@ export const useMemberPredictionByFixture = (fixtureId: number) => {
         fixtureId
       ),
     enabled: !!member?.user_id && !!fixtureId,
+    staleTime: 1000 * 60 * 2, // 2 minutes - predictions don't change often
+    gcTime: 1000 * 60 * 10, // 10 minutes - keep in cache longer (renamed from cacheTime)
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 };
 // Get League Predictions By Fixture

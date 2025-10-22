@@ -11,7 +11,7 @@ export const predictionService = {
       .from('predictions')
       .insert({
         user_id: prediction.user_id,
-        fixture_id: prediction.fixture_id,
+        match_id: prediction.match_id,
         home_score: prediction.home_score,
         away_score: prediction.away_score,
         league_id: prediction.league_id,
@@ -52,20 +52,20 @@ export const predictionService = {
       .select(
         `
         *,
-        fixtures!inner(
+        matches!inner(
           *,
-          home_team:teams!fixtures_home_team_id_fkey(*),
-          away_team:teams!fixtures_away_team_id_fkey(*)
+          home_team:teams!matches_home_team_id_fkey(*),
+          away_team:teams!matches_away_team_id_fkey(*)
         )
       `
       )
       .eq('user_id', userId);
 
     if (fixtureIds && fixtureIds.length > 0) {
-      query = query.in('fixture_id', fixtureIds);
+      query = query.in('match_id', fixtureIds);
     }
 
-    const { data, error } = await query.order('createdAt', {
+    const { data, error } = await query.order('created_at', {
       ascending: false,
     });
 
@@ -95,10 +95,13 @@ export const predictionService = {
       .from('predictions')
       .select('*')
       .eq('user_id', userId)
-      .eq('fixture_id', fixtureId)
+      .eq('match_id', fixtureId)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching prediction:', error);
+      throw error;
+    }
     return data;
   },
   // Get League Predictions By Fixture
@@ -110,7 +113,7 @@ export const predictionService = {
         id,
         user_id,
         league_id,
-        fixture_id,
+        match_id,
         home_score,
         away_score,
         points,
@@ -118,7 +121,7 @@ export const predictionService = {
       `
       )
       .eq('league_id', leagueId)
-      .eq('fixture_id', fixtureId)
+      .eq('match_id', fixtureId)
       .order('points', { ascending: false });
 
     if (error) throw error;
