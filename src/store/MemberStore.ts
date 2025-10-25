@@ -28,7 +28,13 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     }),
 
   initializeMemberLeagues: async () => {
-    set({ isLoading: true });
+    console.log('initializeMemberLeagues');
+
+    const currentState = get();
+    if (!currentState.member) {
+      set({ isLoading: true });
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -49,7 +55,6 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
 
     set({
       member: data as MemberLeague,
-
       isLoading: false,
     });
   },

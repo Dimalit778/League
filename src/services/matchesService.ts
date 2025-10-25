@@ -1,8 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import {
-  MatchesWithTeamsAndPredictionsType,
-  MatchesWithTeamsType,
-} from '@/types';
+import { MatchesWithTeams, MatchesWithTeamsAndPredictions } from '@/types';
 
 export const matchesService = {
   async getMatchById(id: number) {
@@ -27,7 +24,7 @@ export const matchesService = {
     matchday: number,
     competitionId: number,
     userId: string
-  ): Promise<MatchesWithTeamsAndPredictionsType[]> {
+  ): Promise<MatchesWithTeamsAndPredictions[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -35,7 +32,7 @@ export const matchesService = {
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*),
-        predictions(*)
+        predictions:predictions!predictions_match_id_fkey(*)
       `
       )
       .eq('competition_id', competitionId)
@@ -45,12 +42,13 @@ export const matchesService = {
 
     if (error) throw error;
 
-    return data as MatchesWithTeamsAndPredictionsType[];
+    return data as MatchesWithTeamsAndPredictions[];
   },
-  async getMatchesByMatchday(
+  async getMatches(
     matchday: number,
-    competitionId?: number
-  ): Promise<MatchesWithTeamsType[]> {
+    competitionId: number,
+    userId: string
+  ): Promise<MatchesWithTeams[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -60,12 +58,33 @@ export const matchesService = {
         away_team:teams!matches_away_team_id_fkey(*)
       `
       )
+      .eq('competition_id', competitionId)
+      .eq('matchday', matchday)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+
+    return data as MatchesWithTeams[];
+  },
+  async getMatchesByMatchday(
+    matchday: number,
+    competitionId?: number
+  ): Promise<MatchesWithTeams[]> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select(
+        `
+        *,
+        home_team:teams!matches_home_team_id_fkey(*),
+        away_team:teams!matches_away_team_id_fkey(*)
+        `
+      )
       .eq('competition_id', competitionId!)
       .eq('matchday', matchday)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    return data as MatchesWithTeamsType[];
+    return data as MatchesWithTeams[];
   },
 };

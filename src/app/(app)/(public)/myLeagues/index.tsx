@@ -19,7 +19,6 @@ export default function MyLeagues() {
   const setMember = useMemberStore((s) => s.setMember);
 
   const userId = session?.user?.id as string;
-
   const {
     data: memberLeagues,
     isLoading,
@@ -61,7 +60,6 @@ export default function MyLeagues() {
   return (
     <View className="flex-1 bg-background">
       {isLoading && <LoadingOverlay />}
-
       <View className="px-3 mt-2 mb-4">
         <SubscriptionStatus
           subscriptionType={subscription?.subscription_type || 'FREE'}

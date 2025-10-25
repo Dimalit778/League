@@ -38,3 +38,15 @@ export const useGetMatchesWithPredictions = (
     staleTime: 30_000,
   });
 };
+export const useGetMatches = (
+  matchday: number,
+  competitionId: number,
+  userId: string
+) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.matches.byMatchday(competitionId, matchday),
+    queryFn: () => matchesService.getMatches(matchday, competitionId, userId),
+    enabled: !!matchday && !!competitionId && !!userId,
+    staleTime: 30_000,
+  });
+};

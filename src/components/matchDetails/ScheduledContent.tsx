@@ -3,7 +3,7 @@ import {
   useMemberPredictionByFixture,
   useUpdatePrediction,
 } from '@/hooks/usePredictions';
-import { MatchesWithTeamsAndPredictionsType } from '@/types';
+import { MatchesWithTeamsAndPredictions } from '@/types';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Text, TextInput, View } from 'react-native';
@@ -13,13 +13,15 @@ import { Button } from '../ui';
 const ScheduledContent = ({
   match,
 }: {
-  match: MatchesWithTeamsAndPredictionsType;
+  match: MatchesWithTeamsAndPredictions;
 }) => {
   const router = useRouter();
   const { data: prediction, isLoading } = useMemberPredictionByFixture(
     match.id
   );
 
+  console.log('match', JSON.stringify(match, null, 2));
+  console.log('prediction', JSON.stringify(prediction, null, 2));
   // State management
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');

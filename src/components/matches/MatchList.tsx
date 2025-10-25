@@ -1,7 +1,7 @@
 import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
 import { dateFormat, timeFormatTimezone } from '@/utils/formats';
 
-import { MatchesWithTeamsAndPredictionsType } from '@/types';
+import { MatchesWithTeamsAndPredictions, MatchScore } from '@/types';
 import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { memo, useCallback } from 'react';
@@ -10,23 +10,21 @@ import { Error } from '../layout';
 import PredictionStatus from './PredictionStatus';
 import MatchesSkeleton from './SkeletonMatches';
 
-type MatchItem = MatchesWithTeamsAndPredictionsType;
+type MatchItem = MatchesWithTeamsAndPredictions;
+
 type MatchListProps = {
   selectedMatchday: number;
   competitionId: number;
   userId: string;
 };
 
-const matchStatusAreEqual = (prevProps: any, nextProps: any) => {
-  return (
-    prevProps.match.status === nextProps.match.status &&
-    prevProps.match.score_fulltime_home ===
-      nextProps.match.score_fulltime_home &&
-    prevProps.match.score_fulltime_away ===
-      nextProps.match.score_fulltime_away &&
-    prevProps.match.kick_off === nextProps.match.kick_off
-  );
-};
+const matchStatusAreEqual = (p: any, n: any) =>
+  p.match.status === n.match.status &&
+  (p.match.score?.fullTime?.home ?? 0) ===
+    (n.match.score?.fullTime?.home ?? 0) &&
+  (p.match.score?.fullTime?.away ?? 0) ===
+    (n.match.score?.fullTime?.away ?? 0) &&
+  p.match.kick_off === n.match.kick_off;
 
 const MatchStatusDisplay = memo(({ match }: { match: MatchItem }) => {
   if (match.status === 'SCHEDULED' || match.status === 'TIMED') {
@@ -43,9 +41,9 @@ const MatchStatusDisplay = memo(({ match }: { match: MatchItem }) => {
       <View className="items-center py-2">
         <Text className="text-green-500 text-sm">LIVE</Text>
         <View className="flex-row items-center justify-center">
-          <Text className="text-text">{match.score_fulltime_home ?? 0}</Text>
+          <Text className="text-text">{match.score?.fullTime?.home ?? 0}</Text>
           <Text className="text-text">-</Text>
-          <Text className="text-text">{match.score_fulltime_away ?? 0}</Text>
+          <Text className="text-text">{match.score?.fullTime?.away ?? 0}</Text>
         </View>
       </View>
     );
@@ -55,11 +53,11 @@ const MatchStatusDisplay = memo(({ match }: { match: MatchItem }) => {
     return (
       <View className="flex-row justify-center items-center py-2">
         <Text className="text-xl font-bold text-text ">
-          {match.score_fulltime_home ?? 0}
+          {match.score?.fullTime?.home ?? 0}
         </Text>
         <Text className="text-xl font-bold text-text mx-1">-</Text>
         <Text className="text-xl font-bold text-text">
-          {match.score_fulltime_away ?? 0}
+          {match.score?.fullTime?.away ?? 0}
         </Text>
       </View>
     );
@@ -68,27 +66,28 @@ const MatchStatusDisplay = memo(({ match }: { match: MatchItem }) => {
   return null;
 }, matchStatusAreEqual);
 
-const matchItemAreEqual = (prevProps: any, nextProps: any) => {
-  return (
-    prevProps.match.id === nextProps.match.id &&
-    prevProps.match.status === nextProps.match.status &&
-    prevProps.match.score_fulltime_home ===
-      nextProps.match.score_fulltime_home &&
-    prevProps.match.score_fulltime_away ===
-      nextProps.match.score_fulltime_away &&
-    prevProps.match.kick_off === nextProps.match.kick_off &&
-    prevProps.match.predictions?.[0]?.id ===
-      nextProps.match.predictions?.[0]?.id &&
-    prevProps.match.predictions?.[0]?.home_score ===
-      nextProps.match.predictions?.[0]?.home_score &&
-    prevProps.match.predictions?.[0]?.away_score ===
-      nextProps.match.predictions?.[0]?.away_score
-  );
-};
+const matchItemAreEqual = (p: any, n: any) =>
+  p.match.id === n.match.id &&
+  p.match.status === n.match.status &&
+  (p.match.score?.fullTime?.home ?? 0) ===
+    (n.match.score?.fullTime?.home ?? 0) &&
+  (p.match.score?.fullTime?.away ?? 0) ===
+    (n.match.score?.fullTime?.away ?? 0) &&
+  p.match.kick_off === n.match.kick_off &&
+  p.match.predictions?.[0]?.id === n.match.predictions?.[0]?.id &&
+  p.match.predictions?.[0]?.home_score ===
+    n.match.predictions?.[0]?.home_score &&
+  p.match.predictions?.[0]?.away_score === n.match.predictions?.[0]?.away_score;
 
 const MatchCardItem = memo(({ match }: { match: MatchItem }) => {
   const SIZE = 30;
   const prediction = match.predictions?.[0] ?? null;
+  const score: MatchScore = match.score ?? {
+    fullTime: { home: 0, away: 0 },
+    halfTime: { home: 0, away: 0 },
+    winner: null,
+    duration: null,
+  };
   const router = useRouter();
 
   return (
@@ -108,9 +107,9 @@ const MatchCardItem = memo(({ match }: { match: MatchItem }) => {
         <PredictionStatus
           prediction={prediction}
           match={{
-            home_score: match.score_fulltime_home ?? 0,
-            away_score: match.score_fulltime_away ?? 0,
-            status: match.status,
+            home_score: score.fullTime?.home ?? 0,
+            away_score: score.fullTime?.away ?? 0,
+            status: match.status ?? 'SCHEDULED',
           }}
         />
 

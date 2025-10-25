@@ -19,58 +19,40 @@ export type Database = {
           area: string
           code: string
           created_at: string
-          current_matchday: number
           flag: string
           id: number
           last_updated: string
           logo: string
           name: string
-          season_endDate: string
-          season_id: number
-          season_startDate: string
-          season_year: number
-          total_matchdays: number | null
+          season: Json | null
           type: string
           updated_at: string
-          winner: string | null
         }
         Insert: {
           area: string
           code: string
           created_at?: string
-          current_matchday: number
           flag: string
           id: number
           last_updated: string
           logo: string
           name: string
-          season_endDate: string
-          season_id: number
-          season_startDate: string
-          season_year: number
-          total_matchdays?: number | null
+          season?: Json | null
           type: string
           updated_at?: string
-          winner?: string | null
         }
         Update: {
           area?: string
           code?: string
           created_at?: string
-          current_matchday?: number
           flag?: string
           id?: number
           last_updated?: string
           logo?: string
           name?: string
-          season_endDate?: string
-          season_id?: number
-          season_startDate?: string
-          season_year?: number
-          total_matchdays?: number | null
+          season?: Json | null
           type?: string
           updated_at?: string
-          winner?: string | null
         }
         Relationships: []
       }
@@ -174,65 +156,47 @@ export type Database = {
         Row: {
           away_team_id: number | null
           competition_id: number | null
-          created_at: string | null
-          duration: string | null
-          group_stage: string | null
+          created_at: string
+          group: string | null
           home_team_id: number | null
           id: number
           kick_off: string
           matchday: number
           referee: string | null
-          score_fulltime_away: number | null
-          score_fulltime_home: number | null
-          score_halftime_away: number | null
-          score_halftime_home: number | null
-          season_id: number
-          stage: string
-          status: string
-          updated_at: string | null
-          winner: string | null
+          score: Json | null
+          stage: string | null
+          status: string | null
+          updated_at: string
         }
         Insert: {
           away_team_id?: number | null
           competition_id?: number | null
-          created_at?: string | null
-          duration?: string | null
-          group_stage?: string | null
+          created_at?: string
+          group?: string | null
           home_team_id?: number | null
           id: number
           kick_off: string
           matchday: number
           referee?: string | null
-          score_fulltime_away?: number | null
-          score_fulltime_home?: number | null
-          score_halftime_away?: number | null
-          score_halftime_home?: number | null
-          season_id: number
-          stage?: string
-          status: string
-          updated_at?: string | null
-          winner?: string | null
+          score?: Json | null
+          stage?: string | null
+          status?: string | null
+          updated_at?: string
         }
         Update: {
           away_team_id?: number | null
           competition_id?: number | null
-          created_at?: string | null
-          duration?: string | null
-          group_stage?: string | null
+          created_at?: string
+          group?: string | null
           home_team_id?: number | null
           id?: number
           kick_off?: string
           matchday?: number
           referee?: string | null
-          score_fulltime_away?: number | null
-          score_fulltime_home?: number | null
-          score_halftime_away?: number | null
-          score_halftime_home?: number | null
-          season_id?: number
-          stage?: string
-          status?: string
-          updated_at?: string | null
-          winner?: string | null
+          score?: Json | null
+          stage?: string | null
+          status?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -466,10 +430,7 @@ export type Database = {
       }
     }
     Functions: {
-      can_access_league: {
-        Args: { league_id: string }
-        Returns: boolean
-      }
+      can_access_league: { Args: { league_id: string }; Returns: boolean }
       create_new_league: {
         Args: {
           avatar_url?: string
@@ -480,8 +441,9 @@ export type Database = {
         }
         Returns: Json
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
+      is_admin: { Args: never; Returns: boolean }
+      is_member_in_league: {
+        Args: { _league: string; _user: string }
         Returns: boolean
       }
       join_league: {
@@ -497,10 +459,7 @@ export type Database = {
           success: boolean
         }[]
       }
-      leave_league: {
-        Args: { p_league_id: string }
-        Returns: Json
-      }
+      leave_league: { Args: { p_league_id: string }; Returns: Json }
       rls_storage_is_league_member: {
         Args: { lg: string; uid: string }
         Returns: boolean

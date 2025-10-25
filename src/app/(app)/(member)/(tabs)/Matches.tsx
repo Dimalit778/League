@@ -9,31 +9,35 @@ const Matches = () => {
   const { member } = useMemberStore();
   const userId = member?.user_id;
   const competition = member?.league?.competition;
+  const currentMatchday = (competition?.season as { current_matchday: number })
+    ?.current_matchday;
+  const totalMatchdays = (competition?.season as { total_matchdays: number })
+    ?.total_matchdays;
 
   const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
   const [animateScroll, setAnimateScroll] = useState(false);
   const matchdays = useMemo(
     () =>
-      competition?.total_matchdays
-        ? Array.from({ length: competition.total_matchdays }, (_, i) => i + 1)
+      totalMatchdays
+        ? Array.from({ length: totalMatchdays }, (_, i) => i + 1)
         : [],
-    [competition?.total_matchdays]
+    [totalMatchdays]
   );
 
   useFocusEffect(
     useCallback(() => {
-      if (competition?.current_matchday) {
-        setAnimateScroll(false); // <- important: no animation on entry
-        setSelectedMatchday(competition.current_matchday);
+      if (currentMatchday) {
+        setAnimateScroll(false);
+        setSelectedMatchday(currentMatchday);
       }
       return () => {
-        setSelectedMatchday(null); // unmount list while leaving
+        setSelectedMatchday(null);
       };
-    }, [competition?.current_matchday])
+    }, [currentMatchday])
   );
 
   const handleMatchdayPress = useCallback((matchday: number) => {
-    setAnimateScroll(true); // animate only on user tap
+    setAnimateScroll(true);
     setSelectedMatchday(matchday);
   }, []);
 

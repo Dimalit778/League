@@ -21,20 +21,6 @@ export const useGetUserLeagues = () => {
   });
 };
 
-export const useCreateLeague = (userId: string) => {
-  const queryClient = useQueryClient();
-  const { initializeMemberLeagues } = useMemberStore();
-  return useMutation({
-    mutationFn: leagueService.createLeague,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-      await initializeMemberLeagues();
-    },
-  });
-};
-
 export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
   const { initializeMemberLeagues } = useMemberStore();
@@ -81,14 +67,17 @@ export const useLeaveLeague = () => {
   const { session } = useCurrentSession();
   const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
-  const { initializeMemberLeagues } = useMemberStore();
+  const { initializeMemberLeagues, setMember } = useMemberStore();
 
   return useMutation({
     mutationFn: leagueService.leaveLeague,
     onSuccess: async () => {
+      // First invalidate queries to get fresh data
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
+
+      // Then initialize member leagues which will set member to null if no leagues
       await initializeMemberLeagues();
     },
   });
@@ -148,6 +137,31 @@ export const useRemoveMember = () => {
     },
     onError: (error) => {
       console.error('Failed to remove member:', error);
+    },
+  });
+};
+
+export const useCreateLeague = () => {
+  const { session } = useCurrentSession();
+  const userId = session?.user?.id as string;
+  const queryClient = useQueryClient();
+  const { initializeMemberLeagues } = useMemberStore();
+  return useMutation({
+    mutationFn: (params: {
+      league_name: string;
+      nickname: string;
+      competition_id: number;
+      max_members: number;
+      user_id: string;
+    }) => leagueService.createLeague(params),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.users.leagues(userId),
+      });
+      await initializeMemberLeagues();
+    },
+    onError: (error) => {
+      console.error('Failed to create league:', error);
     },
   });
 };

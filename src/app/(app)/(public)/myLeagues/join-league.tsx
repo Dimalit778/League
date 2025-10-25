@@ -11,7 +11,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-
   Text,
   View,
 } from 'react-native';
@@ -57,20 +56,15 @@ export default function JoinLeague() {
     nickname: string;
   }) => {
     if (!foundLeague) return;
-    joinLeague.mutate(
-      {
+    try {
+      await joinLeague.mutateAsync({
         join_code: foundLeague.join_code,
         nickname: formData.nickname,
-      },
-      {
-        onSuccess: () => {
-          router.replace('/(app)/(public)/myLeagues');
-        },
-        onError: (error: any) => {
-          Alert.alert('Error', error?.message || 'Failed to join league');
-        },
-      }
-    );
+      });
+      router.replace('/(app)/(public)/myLeagues');
+    } catch (error: any) {
+      Alert.alert('Error', error?.message || 'Failed to join league');
+    }
   };
 
   return (

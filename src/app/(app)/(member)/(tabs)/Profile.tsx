@@ -1,4 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
+import { ProfileSkeleton } from '@/components/profile/ProfileSkeleton';
 import { Button, MyImage, ProfileImage } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -6,29 +7,17 @@ import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { router } from 'expo-router';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
-  const { member } = useMemberStore();
+  const member = useMemberStore((s) => s.member);
+
   const { colors } = useThemeTokens();
-  const leagueId = member?.league_id;
-  const userId = member?.user_id;
 
   const leaveLeague = useLeaveLeague();
 
-  const { data: league, isLoading } = useGetLeagueAndMembers(leagueId);
-
-  const isOwner = useMemo(
-    () =>
-      Boolean(
-        member?.user_id &&
-          league?.owner?.user_id &&
-          member.user_id === league.owner.user_id
-      ),
-    [member?.user_id, league?.owner?.user_id]
-  );
+  const { data: league, isLoading } = useGetLeagueAndMembers(member?.league_id);
 
   const confirmLeaveLeague = useCallback(() => {
     if (!league?.id) return;
@@ -40,34 +29,33 @@ export default function Profile() {
         {
           text: 'Leave',
           style: 'destructive',
-          onPress: () =>
+          onPress: async () => {
             leaveLeague.mutate(league.id, {
               onSuccess: () => {
-                router.push('/(app)/(member)/(tabs)/League');
+                router.replace('/(app)/(public)/myLeagues');
               },
               onError: (error) => {
                 Alert.alert('Error', error.message);
               },
-            }),
+            });
+          },
         },
       ]
     );
-  }, [leaveLeague, league?.id, league?.name]);
-
-  if (!member || !league) return <LoadingOverlay />;
+  }, [leaveLeague, league?.id, league?.name, router]);
 
   const handleCopyJoinCode = async () => {
-    if (typeof league.join_code === 'string') {
-      await Clipboard.setStringAsync(league.join_code || '');
+    if (typeof league?.join_code === 'string') {
+      await Clipboard.setStringAsync(league?.join_code || '');
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
-
+  if (!member || !league || isLoading) return <ProfileSkeleton />;
   return (
-    <SafeAreaView className="flex-1 bg-background ">
-      {isLoading && <LoadingOverlay />}
+    <View className="flex-1 bg-background ">
+      {(isLoading || leaveLeague.isPending) && <LoadingOverlay />}
       {/* Member avatar */}
-      <View className="mt-4 items-center ">
+      <View className="items-center mt-4 ">
         <View className="relative">
           <ProfileImage
             memberId={member.id}
@@ -201,14 +189,15 @@ export default function Profile() {
         </View>
       </View>
       {/* Leave League Button */}
-      <View className="mt-auto mb-4 px-6">
+      <View className="px-6 mb-4">
         <Button
           title={'Leave League'}
           variant="error"
           onPress={confirmLeaveLeague}
           disabled={leaveLeague.isPending}
+          loading={leaveLeague.isPending}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

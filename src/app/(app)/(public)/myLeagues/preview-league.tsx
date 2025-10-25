@@ -1,20 +1,16 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
+import { LoadingOverlay } from '@/components/layout';
 import { Button, MyImage } from '@/components/ui';
 import { useGetFullLeagueData } from '@/hooks/useLeagues';
-
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PreviewLeague = () => {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
 
   const { data: leagueData } = useGetFullLeagueData(leagueId);
   const router = useRouter();
-
-  if (!leagueData) {
-    return <LoadingOverlay />;
-  }
 
   const handleCopyJoinCode = async () => {
     if (typeof leagueData?.join_code === 'string') {
@@ -35,9 +31,13 @@ const PreviewLeague = () => {
       console.error('Error sharing:', error);
     }
   };
+  const handleStartLeague = async () => {
+    router.replace('/(app)/(member)/(tabs)/League');
+  };
 
   return (
-    <Screen>
+    <SafeAreaView className="flex-1 bg-background">
+      {!leagueData && <LoadingOverlay />}
       {/* Success Header */}
       <View className="items-center my-8">
         <Text className="text-2xl font-bold text-center mb-2 text-text">
@@ -53,7 +53,7 @@ const PreviewLeague = () => {
         {/* Centered League Header */}
         <View className="items-center mb-6">
           <MyImage
-            source={leagueData?.competition?.logo}
+            source={leagueData?.competition?.logo as string}
             className="rounded-2xl mb-4"
             width={80}
             height={80}
@@ -104,15 +104,13 @@ const PreviewLeague = () => {
         />
 
         <Button
-          onPress={() => {
-            router.replace('/(app)/(member)/(tabs)/League');
-          }}
+          onPress={handleStartLeague}
           title="Start League"
           variant="primary"
           size="lg"
         />
       </View>
-    </Screen>
+    </SafeAreaView>
   );
 };
 

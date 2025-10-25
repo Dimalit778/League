@@ -4,6 +4,12 @@ export type IconProps = {
   color?: string;
   size?: number;
 };
+export type MatchScore = {
+  winner: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null;
+  duration: 'REGULAR' | 'EXTRA_TIME' | 'PENALTY_SHOOTOUT' | null;
+  fullTime?: { home: number | null; away: number | null };
+  halfTime?: { home: number | null; away: number | null };
+};
 
 export type MemberLeague = Tables<'league_members'> & {
   league: Tables<'leagues'> & {
@@ -49,11 +55,12 @@ export type LeagueLeaderboardType = {
   user_id: string | null;
 };
 
-export type MatchesWithTeamsType = Tables<'matches'> & {
+export type MatchesWithTeams = Tables<'matches'> & {
   home_team: Tables<'teams'>;
   away_team: Tables<'teams'>;
 };
-export type MatchesWithTeamsAndPredictionsType = MatchesWithTeamsType & {
+export type MatchesWithTeamsAndPredictions = MatchesWithTeams & {
+  score: MatchScore | null;
   predictions: Tables<'predictions'>[] | null;
 };
 

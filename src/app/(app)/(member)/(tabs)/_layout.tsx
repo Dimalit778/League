@@ -1,29 +1,13 @@
 import { LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
-import { SplashScreen, TabsHeader } from '@/components/layout';
+import { TabsHeader } from '@/components/layout';
 import { BottomTabsBar } from '@/components/layout/BottomTabsBar';
-import { useMemberStore } from '@/store/MemberStore';
-import { Redirect, Tabs, usePathname } from 'expo-router';
+import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
-  const { member, isLoading } = useMemberStore();
-  const pathname = usePathname();
-
-  if (isLoading) {
-    return <SplashScreen />;
-  }
-
-  if (!member) {
-    return <Redirect href="/myLeagues" />;
-  }
-
-  // Hide tabs for edit screens
-  const shouldHideTabs =
-    pathname.includes('/edit-profile') || pathname.includes('/edit-league');
-
   return (
     <Tabs
-      tabBar={(props) => (shouldHideTabs ? null : <BottomTabsBar {...props} />)}
+      tabBar={(props) => <BottomTabsBar {...props} />}
       screenOptions={{
         header: () => <TabsHeader showLeagueName={true} />,
         tabBarHideOnKeyboard: true,

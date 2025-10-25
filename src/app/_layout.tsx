@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 
 import { themes } from '@/lib/nativewind/themes';
+import { useMemberStore } from '@/store/MemberStore';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -18,7 +19,9 @@ const queryClient = new QueryClient();
 const InitialApp = () => {
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
-
+  const initializeMemberLeagues = useMemberStore(
+    (state) => state.initializeMemberLeagues
+  );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +35,7 @@ const InitialApp = () => {
 
   useEffect(() => {
     initializeTheme();
+    initializeMemberLeagues();
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {

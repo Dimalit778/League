@@ -11,7 +11,6 @@ import { useForm } from 'react-hook-form';
 import {
   Alert,
   KeyboardAvoidingView,
-
   Text,
   TouchableOpacity,
   View,
@@ -55,34 +54,30 @@ const CreateLeague = () => {
   });
 
   const [membersCount, setMembersCount] = useState<number | null>(null);
-  const createLeague = useCreateLeague(userId);
 
   // Get subscription limits
   const subscriptionType = subscription?.subscription_type || 'FREE';
   const limits = subscriptionService.getSubscriptionLimits(subscriptionType);
 
-  const onSubmit = handleSubmit((data) =>
-    createLeague.mutateAsync(
-      {
+  const createLeague = useCreateLeague();
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      const result = await createLeague.mutateAsync({
         league_name: data.leagueName,
         nickname: data.nickname,
         competition_id: Number(competitionId),
         max_members: membersCount ?? 6,
         user_id: userId,
-      },
-      {
-        onSuccess: (data) => {
-          router.push({
-            pathname: '/(app)/(public)/myLeagues/preview-league',
-            params: { leagueId: data.league_id },
-          });
-        },
-        onError: (error) => {
-          Alert.alert('Error', error.message || 'Failed to create league');
-        },
-      }
-    )
-  );
+      });
+      router.push({
+        pathname: '/(app)/(public)/myLeagues/preview-league',
+        params: { leagueId: result.league_id },
+      });
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create league');
+    }
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -176,7 +171,6 @@ const CreateLeague = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            loading={createLeague.isPending}
             disabled={!isValid}
           />
         </View>

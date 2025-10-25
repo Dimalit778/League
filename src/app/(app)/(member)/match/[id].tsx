@@ -3,16 +3,12 @@ import FinishContent from '@/components/matchDetails/FinishContent';
 import MatchHeader from '@/components/matchDetails/MatchHeader';
 import ScheduledContent from '@/components/matchDetails/ScheduledContent';
 import SkeletonMatchDetails from '@/components/matchDetails/SkeletonMatchDetails';
-import { Tables } from '@/types/database.types';
+import { MatchesWithTeamsAndPredictions } from '@/types';
 
 import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
-type MatchType = Tables<'matches'> & {
-  home_team: Tables<'teams'>;
-  away_team: Tables<'teams'>;
-  predictions: Tables<'predictions'>[] | null;
-};
+type MatchType = MatchesWithTeamsAndPredictions;
 
 export default function MatchDetails() {
   const params = useLocalSearchParams();
@@ -33,6 +29,7 @@ export default function MatchDetails() {
   const StatusContent = ({ match }: { match: MatchType }) => {
     switch (match.status) {
       case 'TIMED':
+      case 'SCHEDULED':
         if (new Date(match.kick_off) > new Date()) {
           return <ScheduledContent match={match} />;
         }
@@ -43,6 +40,7 @@ export default function MatchDetails() {
         return <FinishContent match_id={match.id} />;
     }
   };
+  console.log('match', JSON.stringify(match, null, 2));
 
   return (
     <View className="flex-1 bg-background">

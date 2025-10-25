@@ -2,7 +2,7 @@ import { formatTime } from '@/utils/match-utils';
 import footballField from '@assets/images/footballField.png';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { MatchesWithTeamsType } from '@/types';
+import { MatchesWithTeams, MatchScore } from '@/types';
 import { dateFormat } from '@/utils/formats';
 import { ArrowLeftIcon } from '@assets/icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,14 +16,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
+const MatchHeader = ({ match }: { match: MatchesWithTeams }) => {
   const insets = useSafeAreaInsets();
   const { colors } = useThemeTokens();
 
-  const { status } = match;
+  const status = match.status ?? 'SCHEDULED';
 
-  const home = match.score_fulltime_home ?? '-';
-  const away = match.score_fulltime_away ?? '-';
+  const score: MatchScore = match.score as MatchScore;
 
   return (
     <ImageBackground source={footballField} imageStyle={{ opacity: 0.4 }}>
@@ -87,18 +86,18 @@ const MatchHeader = ({ match }: { match: MatchesWithTeamsType }) => {
                 <View className="items-center justify-center gap-2">
                   <Text className="text-green-500 text-lg">LIVE</Text>
                   <Text className="text-text text-3xl font-black">
-                    {match.score_fulltime_home} : {match.score_fulltime_away}
+                    {score.fullTime?.home} : {score.fullTime?.away}
                   </Text>
                 </View>
               )}
               {['FINISHED'].includes(status) && (
                 <View className="flex-row items-center border-2 border-gray-500 rounded-lg p-2">
                   <Text className="text-white text-2xl font-black">
-                    {match.score_fulltime_home}
+                    {score.fullTime?.home}
                   </Text>
                   <Text className="text-white text-2xl mx-2 font-bold">:</Text>
                   <Text className="text-white text-2xl font-black">
-                    {match.score_fulltime_away}
+                    {score.fullTime?.away}
                   </Text>
                 </View>
               )}

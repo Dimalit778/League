@@ -60,26 +60,24 @@ const MatchdaysList = ({
   const ref = useRef<FlatList>(null);
   const { colors } = useThemeTokens();
   const [listWidth, setListWidth] = useState(0);
+
   const onLayout = (e: LayoutChangeEvent) =>
     setListWidth(e.nativeEvent.layout.width);
 
   console.log('animateScroll', animateScroll);
 
-  // center on first render and whenever the selected day changes
   useEffect(() => {
     if (!ref.current || !selectedMatchday || listWidth === 0) return;
 
     ref.current.scrollToIndex({
       index: selectedMatchday - 1,
-      animated: true,
-      viewPosition: 0.5, // center
+      animated: animateScroll,
+      viewPosition: 0.5,
     });
   }, [selectedMatchday, listWidth]);
 
-  // if RN couldn't compute the index yet, retry shortly after
   const onScrollToIndexFailed = useCallback(
     (info: { index: number; highestMeasuredFrameIndex: number }) => {
-      // Option A: retry once after a tick
       setTimeout(() => {
         ref.current?.scrollToIndex({
           index: info.index,
