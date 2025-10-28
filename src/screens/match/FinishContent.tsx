@@ -1,8 +1,8 @@
+import { LoadingOverlay } from '@/components/layout';
 import { useGetLeaguePredictionsByFixture } from '@/hooks/usePredictions';
 import { useMemberStore } from '@/store/MemberStore';
 import { PredictionLeaderboardType } from '@/types';
 import { FlatList, Text, View } from 'react-native';
-import { LoadingOverlay } from '../layout';
 import { PredictionsLeaderCard } from './PredictionsLeaderCard';
 
 const FinishContent = ({ match_id }: { match_id: number }) => {

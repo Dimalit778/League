@@ -5,19 +5,22 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 interface BackButtonProps {
   title?: string;
+  className?: string;
 }
 
-const BackButton = ({ title }: BackButtonProps) => {
+const BackButton = ({ title, className }: BackButtonProps) => {
   const { colors } = useThemeTokens();
   const router = useRouter();
 
   return (
-    <View className="flex-row h-14 items-center justify-center py-3  relative w-full border-b border-border">
+    <View
+      className={` flex-row h-14 items-center justify-center py-3  relative w-full${className}`}
+    >
       <TouchableOpacity
         className="absolute left-4 z-10"
         onPress={() => router.back()}
       >
-        <ArrowLeftIcon color={colors.text} size={28} />
+        <ArrowLeftIcon color="#fff" size={28} />
       </TouchableOpacity>
 
       {title && (

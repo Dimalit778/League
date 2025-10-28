@@ -38,12 +38,19 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    // Check if user is authenticated before making the query
+    if (!user?.id) {
+      set({ member: null, isLoading: false });
+      return;
+    }
+
     const { data, error } = await supabase
       .from('league_members')
       .select(
         '*, league:leagues!league_id(*,competition:competitions!inner(*))'
       )
-      .eq('user_id', user?.id as string)
+      .eq('user_id', user.id)
       .eq('is_primary', true)
       .maybeSingle();
 

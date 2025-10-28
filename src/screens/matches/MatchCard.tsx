@@ -1,22 +1,19 @@
-import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
-import { dateFormat, timeFormatTimezone } from '@/utils/formats';
-
-import { MatchesWithTeamsAndPredictions, MatchScore } from '@/types';
-import { Image as ExpoImage } from 'expo-image';
+import {
+  MatchesWithTeamsAndPredictions,
+  MatchScore,
+  PredictionLeaderboardType,
+} from '@/types';
 import { useRouter } from 'expo-router';
-import { memo, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { Error } from '../layout';
+import { memo } from 'react';
+import { Text, View } from 'react-native';
+
+import { dateFormat, timeFormatTimezone } from '@/utils/formats';
+import { Image as ExpoImage } from 'expo-image';
+import { TouchableOpacity } from 'react-native';
+
 import PredictionStatus from './PredictionStatus';
-import MatchesSkeleton from './SkeletonMatches';
 
 type MatchItem = MatchesWithTeamsAndPredictions;
-
-type MatchListProps = {
-  selectedMatchday: number;
-  competitionId: number;
-  userId: string;
-};
 
 const matchStatusAreEqual = (p: any, n: any) =>
   p.match.status === n.match.status &&
@@ -79,16 +76,17 @@ const matchItemAreEqual = (p: any, n: any) =>
     n.match.predictions?.[0]?.home_score &&
   p.match.predictions?.[0]?.away_score === n.match.predictions?.[0]?.away_score;
 
-const MatchCardItem = memo(({ match }: { match: MatchItem }) => {
+export const MatchCard = ({ match }: { match: MatchItem }) => {
+  const router = useRouter();
   const SIZE = 30;
   const prediction = match.predictions?.[0] ?? null;
+
   const score: MatchScore = match.score ?? {
     fullTime: { home: 0, away: 0 },
     halfTime: { home: 0, away: 0 },
     winner: null,
     duration: null,
   };
-  const router = useRouter();
 
   return (
     <TouchableOpacity
@@ -103,12 +101,11 @@ const MatchCardItem = memo(({ match }: { match: MatchItem }) => {
         })
       }
     >
-      <View className="p-2 my-1 bg-surface border-b border-t border-border ">
+      <View className=" my-2 bg-surface border-b border-t border-border ">
         <PredictionStatus
-          prediction={prediction}
+          prediction={prediction as PredictionLeaderboardType}
           match={{
-            home_score: score.fullTime?.home ?? 0,
-            away_score: score.fullTime?.away ?? 0,
+            score: match.score,
             status: match.status ?? 'SCHEDULED',
           }}
         />
@@ -163,51 +160,5 @@ const MatchCardItem = memo(({ match }: { match: MatchItem }) => {
       </View>
     </TouchableOpacity>
   );
-}, matchItemAreEqual);
-
-export default function MatchList({
-  selectedMatchday,
-  competitionId,
-  userId,
-}: MatchListProps) {
-  const {
-    data: matches,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  } = useGetMatchesWithPredictions(selectedMatchday, competitionId, userId);
-
-  const handleRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
-
-  if (error) return <Error error={error} />;
-  if (!matches && isLoading) return <MatchesSkeleton />;
-
-  return (
-    <FlatList
-      data={matches}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item.id.toString()}
-      refreshing={isFetching}
-      onRefresh={handleRefresh}
-      renderItem={({ item }) => <MatchCardItem match={item} />}
-      windowSize={5}
-      updateCellsBatchingPeriod={100}
-      getItemLayout={(_, index) => ({
-        length: 120,
-        offset: 120 * index,
-        index,
-      })}
-      // Lazy loading optimizations
-      maintainVisibleContentPosition={{
-        minIndexForVisible: 0,
-        autoscrollToTopThreshold: 10,
-      }}
-      // Memory optimizations
-      legacyImplementation={false}
-      disableVirtualization={false}
-    />
-  );
-}
+};
+export default MatchCard;

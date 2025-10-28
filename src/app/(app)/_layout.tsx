@@ -10,13 +10,13 @@ export default function AppLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(public)" options={{ headerShown: false }} />
       <Stack.Protected guard={!!member}>
         <Stack.Screen name="(member)" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!!admin}>
         <Stack.Screen name="(admin)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Screen name="(public)" options={{ headerShown: false }} />
     </Stack>
   );
 }

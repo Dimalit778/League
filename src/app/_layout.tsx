@@ -5,13 +5,14 @@ import { SplashScreen } from '@/components/layout';
 import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 
-import { themes } from '@/lib/nativewind/themes';
+import { getThemeTokens, themes } from '@/lib/nativewind/themes';
 import { useMemberStore } from '@/store/MemberStore';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { AppState, View } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const queryClient = new QueryClient();
 const InitialApp = () => {
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
+
   const initializeMemberLeagues = useMemberStore(
     (state) => state.initializeMemberLeagues
   );
@@ -75,7 +77,14 @@ const InitialApp = () => {
 
   return (
     <View className="flex-1" style={[themes[theme]]}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: getThemeTokens(theme).colors.background,
+          },
+        }}
+      >
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack.Protected>
@@ -93,7 +102,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <InitialApp />
+        <KeyboardProvider>
+          <InitialApp />
+        </KeyboardProvider>
       </SafeAreaProvider>
     </QueryClientProvider>
   );

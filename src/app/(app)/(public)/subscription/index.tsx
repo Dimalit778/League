@@ -1,13 +1,10 @@
 import { LoadingOverlay } from '@/components/layout';
-import {
-  SubscriptionCard,
-  SubscriptionFeatures,
-} from '@/components/subscription';
 import { BackButton } from '@/components/ui';
 import {
   useCreateSubscription,
   useSubscription,
 } from '@/hooks/useSubscription';
+import { SubscriptionCard, SubscriptionFeatures } from '@/screens/subscription';
 import { SubscriptionType } from '@/services/subscriptionService';
 import { router } from 'expo-router';
 import { useState } from 'react';

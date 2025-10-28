@@ -1,9 +1,9 @@
 import { LoadingOverlay } from '@/components/layout';
-import SettingsContent from '@/components/settings/SettingsContent';
 import { BackButton, Button } from '@/components/ui';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useGetUser } from '@/hooks/useUsers';
+import SettingsContent from '@/screens/settings/SettingsContent';
 import { useAuth } from '@/services/useAuth';
 import { Tables } from '@/types/database.types';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';

@@ -1,6 +1,5 @@
-import { Screen } from '@/components/layout';
+import { Screen } from '@/components/ui';
 import { View } from 'react-native';
-
 const SkeletonMatchDetails = () => {
   return (
     <Screen>

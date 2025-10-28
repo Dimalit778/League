@@ -54,7 +54,8 @@ export const predictionAccuracy = (
     return {
       type: 'exact',
       points: 3,
-      color: '#059669',
+      bg: '#059669',
+      color: '#ffffff',
 
       text: 'Perfect!',
       icon: '🎯',
@@ -63,7 +64,8 @@ export const predictionAccuracy = (
     return {
       type: 'result',
       points: 1,
-      color: '#F59E0B',
+      bg: '#F59E0B',
+      color: '#ffffff',
       text: 'Result ✓',
       icon: '📈',
     };
@@ -71,8 +73,8 @@ export const predictionAccuracy = (
   return {
     type: 'wrong',
     points: 0,
-    color: '#EF4444',
-
+    bg: '#EF4444',
+    color: '#ffffff',
     text: 'Miss',
     icon: '❌',
   };

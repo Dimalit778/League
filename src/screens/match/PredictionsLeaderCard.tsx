@@ -1,8 +1,9 @@
+import { Card } from '@/components/ui';
 import { PredictionLeaderboardType } from '@/types';
 import { FontAwesome } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
 import { memo } from 'react';
-import { Image, Text, View } from 'react-native';
-import { Card } from '../ui';
+import { Text, View } from 'react-native';
 
 // Custom comparison function for better memoization
 const areEqual = (prevProps: any, nextProps: any) => {
@@ -40,13 +41,16 @@ export const PredictionsLeaderCard = memo(
 
           {item.member.avatar_url ? (
             <View className="w-8 h-8 rounded-full overflow-hidden border-2 border-border">
-              <Image
-                source={{
-                  uri: item.member.avatar_url,
+              <ExpoImage
+                source={{ uri: item.member.avatar_url }}
+                style={{
+                  width: 30,
+                  height: 30,
                 }}
-                className="w-full h-full"
-                width={30}
-                height={30}
+                cachePolicy="memory-disk"
+                contentFit="contain"
+                transition={0}
+                priority="high"
               />
             </View>
           ) : (

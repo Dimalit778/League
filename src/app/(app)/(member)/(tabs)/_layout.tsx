@@ -1,54 +1,31 @@
-import { LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
-
-import { TabsHeader } from '@/components/layout';
-import { BottomTabsBar } from '@/components/layout/BottomTabsBar';
-import { Tabs } from 'expo-router';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
+  const { colors } = useThemeTokens();
   return (
-    <Tabs
-      tabBar={(props) => <BottomTabsBar {...props} />}
-      screenOptions={{
-        header: () => <TabsHeader showLeagueName={true} />,
-        tabBarHideOnKeyboard: true,
-      }}
-    >
-      <Tabs.Screen
-        name="League"
-        options={{
-          title: 'League',
-          tabBarIcon: ({ color, size }) => (
-            <LeagueIcon size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Matches"
-        options={{
-          title: 'Matches',
-          tabBarIcon: ({ color, size }) => (
-            <MatchesIcon size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Stats"
-        options={{
-          title: 'Stats',
-          tabBarIcon: ({ color, size }) => (
-            <RankIcon size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <ProfileIcon size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    <NativeTabs blurEffect="systemChromeMaterial" tintColor={colors.primary}>
+      <NativeTabs.Trigger name="League">
+        <Label>League</Label>
+        <Icon sf={{ default: 'trophy', selected: 'trophy.fill' }} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="Matches">
+        <Label>Matches</Label>
+        <Icon
+          sf={{
+            default: 'sportscourt',
+            selected: 'sportscourt.fill',
+          }}
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="Stats">
+        <Label>Stats</Label>
+        <Icon sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="Profile">
+        <Label>Profile</Label>
+        <Icon sf={{ default: 'person', selected: 'person.fill' }} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }

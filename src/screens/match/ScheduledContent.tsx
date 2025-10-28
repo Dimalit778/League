@@ -1,3 +1,5 @@
+import { LoadingOverlay } from '@/components/layout';
+import { Button } from '@/components/ui';
 import {
   useCreatePrediction,
   useMemberPredictionByFixture,
@@ -7,8 +9,6 @@ import { MatchesWithTeamsAndPredictions } from '@/types';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Text, TextInput, View } from 'react-native';
-import { LoadingOverlay } from '../layout';
-import { Button } from '../ui';
 
 const ScheduledContent = ({
   match,
@@ -20,8 +20,6 @@ const ScheduledContent = ({
     match.id
   );
 
-  console.log('match', JSON.stringify(match, null, 2));
-  console.log('prediction', JSON.stringify(prediction, null, 2));
   // State management
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');

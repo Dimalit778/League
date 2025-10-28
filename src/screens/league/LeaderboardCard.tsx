@@ -1,6 +1,6 @@
+import { Card, MyImage } from '@/components/ui';
 import { FontAwesome } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { Card, MyImage } from '../ui';
 
 interface LeaderboardCardProps {
   nickname: string;

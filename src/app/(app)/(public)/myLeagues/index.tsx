@@ -1,14 +1,15 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { SubscriptionStatus } from '@/components/subscription';
-import { Button, MyImage } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useSubscription } from '@/hooks/useSubscription';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { SubscriptionStatus } from '@/screens/subscription';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberLeague } from '@/types';
 import StarIcon from '@assets/icons/StarIcon';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -101,10 +102,16 @@ export default function MyLeagues() {
                 activeOpacity={0.8}
               >
                 <View className="flex-row items-center">
-                  <MyImage
+                  <ExpoImage
                     source={{ uri: item.league.competition.logo }}
-                    width={40}
-                    height={40}
+                    style={{
+                      width: 40,
+                      height: 40,
+                    }}
+                    cachePolicy="memory-disk"
+                    contentFit="contain"
+                    transition={0}
+                    priority="high"
                   />
 
                   <View className="flex-1 ps-4 ">

@@ -5,3 +5,4 @@ export { default as Icon } from './Icon';
 export { default as InputField } from './InputField';
 export { default as MyImage } from './MyImage';
 export { default as ProfileImage } from './ProfileImage';
+export { default as Screen } from './Screen';

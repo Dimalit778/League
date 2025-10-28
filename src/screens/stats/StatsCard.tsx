@@ -1,5 +1,5 @@
+import { Card } from '@/components/ui';
 import { Text } from 'react-native';
-import Card from '../ui/Card';
 
 interface StatsCardProps {
   title: string;

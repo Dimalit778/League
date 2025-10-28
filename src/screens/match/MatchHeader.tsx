@@ -6,14 +6,9 @@ import { MatchesWithTeams, MatchScore } from '@/types';
 import { dateFormat } from '@/utils/formats';
 import { ArrowLeftIcon } from '@assets/icons';
 import { Ionicons } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
-import {
-  Image,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ImageBackground, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MatchHeader = ({ match }: { match: MatchesWithTeams }) => {
@@ -57,10 +52,16 @@ const MatchHeader = ({ match }: { match: MatchesWithTeams }) => {
             <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
               <View className="relative">
                 <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
-                  <Image
+                  <ExpoImage
                     source={{ uri: match.home_team.logo }}
-                    className="w-16 h-16"
-                    resizeMode="contain"
+                    style={{
+                      width: 64,
+                      height: 64,
+                    }}
+                    cachePolicy="memory-disk"
+                    contentFit="contain"
+                    transition={0}
+                    priority="high"
                   />
                 </View>
               </View>
@@ -107,10 +108,16 @@ const MatchHeader = ({ match }: { match: MatchesWithTeams }) => {
             <View className="flex-1 items-center rounded-lg p-2 bg-gray-500/40">
               <View className="relative">
                 <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-3">
-                  <Image
+                  <ExpoImage
                     source={{ uri: match.away_team.logo }}
-                    className="w-16 h-16"
-                    resizeMode="contain"
+                    style={{
+                      width: 64,
+                      height: 64,
+                    }}
+                    cachePolicy="memory-disk"
+                    contentFit="contain"
+                    transition={0}
+                    priority="high"
                   />
                 </View>
               </View>

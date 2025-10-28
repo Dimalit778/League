@@ -1,4 +1,4 @@
-import { Screen } from '@/components/layout';
+import { Screen } from '@/components/ui';
 import { View } from 'react-native';
 
 export default function SkeletonStats() {

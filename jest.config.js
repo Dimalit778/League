@@ -9,7 +9,7 @@ module.exports = {
     '^@assets/(.*)$': '<rootDir>/assets/$1',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|@react-native-community|expo(nent)?|expo-.*|@expo|@gorhom|react-native-reanimated|react-native-gesture-handler)',
+    'node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|@react-native-community|expo(nent)?|expo-.*|@expo|@gorhom|react-native-reanimated|react-native-gesture-handler|msw)',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

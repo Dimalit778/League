@@ -107,6 +107,7 @@ const MatchdaysList = ({
       data={matchdays}
       onLayout={onLayout}
       horizontal
+      contentInsetAdjustmentBehavior="automatic"
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item.toString()}
       renderItem={renderItem}

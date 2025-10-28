@@ -1,18 +1,18 @@
-import { Button, InputField } from '@/components/ui';
+import { BackButton, Button, InputField, Screen } from '@/components/ui';
 
-// import GoogleAuth from '@/components/GoogleAuth';
-import BackButton from '@/components/ui/BackButton';
+import GoogleAuth from '@/components/GoogleAuth';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
-
+import logo from '@assets/app-icon.png';
 import { EmailIcon, LockIcon, UserIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Image, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
+
 const validateEmail = (email: string) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
@@ -49,24 +49,35 @@ const SignUp = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await signUp(data.email.trim(), data.password, data.fullname);
+      const result = await signUp(
+        data.email.trim(),
+        data.password,
+        data.fullname
+      );
     } catch (error: any) {
       Alert.alert('Error', errorMessage || 'An unexpected error occurred');
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView className="flex-1 ">
-        <BackButton />
+    <Screen>
+      <BackButton />
+      <KeyboardAwareScrollView
+        bottomOffset={62}
+        className="flex-1 bg-background "
+      >
+        <View className="items-center justify-center ">
+          <Image source={logo} resizeMode="contain" className="w-40  h-40" />
+        </View>
         <View className="items-center p-5 ">
-          <Text className="text-h1 text-secondary font-headBold text-center mb-5">
+          <Text className="text-h1 text-secondary font-headBold text-center ">
             Create an account
           </Text>
-          <Text className="text-center text-muted font-semibold mb-5">
+          <Text className="text-center text-muted font-semibold ">
             Sign up to get started
           </Text>
         </View>
+
         <View className=" mt-10 px-5 gap-4">
           <InputField
             control={control}
@@ -91,6 +102,11 @@ const SignUp = () => {
             icon={<LockIcon size={24} color={colors.muted} />}
             error={errors.password}
           />
+          {errorMessage && (
+            <View className="">
+              <Text className="text-error text-center">{errorMessage}</Text>
+            </View>
+          )}
 
           <Button
             title="Sign Up"
@@ -105,7 +121,7 @@ const SignUp = () => {
             <Text className="text-gray-400 mx-2">OR</Text>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
-          {/* <GoogleAuth /> */}
+          <GoogleAuth />
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
             <Text className="text-muted text-center  ">
               Already have an account?
@@ -115,8 +131,8 @@ const SignUp = () => {
             </Link>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </KeyboardAwareScrollView>
+    </Screen>
   );
 };
 

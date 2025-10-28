@@ -1,6 +1,6 @@
+import { Card } from '@/components/ui';
 import { MemberStatsType } from '@/types';
 import { Text, View } from 'react-native';
-import Card from '../ui/Card';
 
 const PredictionChart = (stats: MemberStatsType) => {
   // Calculate percentages for the chart

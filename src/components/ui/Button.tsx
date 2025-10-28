@@ -34,6 +34,7 @@ const Button = ({
 
   return (
     <TouchableOpacity
+      testID="button"
       className={`${className} ${
         color
           ? ''
