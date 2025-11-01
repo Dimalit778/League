@@ -15,6 +15,10 @@ import GoogleLogoIcon from './GoogleLogoIcon';
 import SettingsIcon from './SettingsIcon';
 import StarIcon from './StarIcon';
 import TrashIcon from './TrashIcon';
+// Points Icons
+import PlusSixIcon from './PlusSixIcon';
+import PlusThreeIcon from './PlusThreeIcon';
+import PlusZeroIcon from './PlusZeroIcon';
 
 export {
   ArrowLeftIcon,
@@ -24,6 +28,9 @@ export {
   LeagueIcon,
   LockIcon,
   MatchesIcon,
+  PlusSixIcon,
+  PlusThreeIcon,
+  PlusZeroIcon,
   ProfileIcon,
   RankIcon,
   SettingsIcon,

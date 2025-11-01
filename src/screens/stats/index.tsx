@@ -11,12 +11,7 @@ import StatsCard from './StatsCard';
 const Stats = () => {
   const { member } = useMemberStore();
 
-  const {
-    data: stats,
-    isLoading,
-    error,
-    refetch,
-  } = useMemberStats(member?.user_id);
+  const { data: stats, isLoading, error, refetch } = useMemberStats(member?.id);
 
   const onRefresh = useCallback(() => {
     refetch();
@@ -29,6 +24,7 @@ const Stats = () => {
     <View className="flex-1 bg-background">
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
+        showsVerticalScrollIndicator={false}
         className="flex-1 px-4 pt-4"
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />

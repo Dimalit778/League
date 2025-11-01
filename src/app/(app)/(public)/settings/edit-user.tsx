@@ -1,6 +1,6 @@
 import LoadingOverlay from '@/components/layout/LoadingOverlay';
+import { AvatarImage } from '@/components/ui';
 import BackButton from '@/components/ui/BackButton';
-import ProfileImage from '@/components/ui/ProfileImage';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useGetUser, useUpdateUser } from '@/hooks/useUsers';
@@ -201,71 +201,6 @@ const EditUser = () => {
       setIsUpdatingPassword(false);
     }
   };
-  // const handleSelectImage = useCallback(async () => {
-  //   if (!leagueId || !memberId) return;
-
-  //   const options: ImagePicker.ImagePickerOptions = {
-  //     mediaTypes: ['images'],
-  //     allowsEditing: true,
-  //     quality: 1,
-  //     aspect: [1, 1],
-  //   };
-
-  //   const result = await ImagePicker.launchImageLibraryAsync(options);
-  //   if (result.canceled) return;
-
-  //   const [asset] = result.assets;
-  //   if (!asset) return;
-
-  //   try {
-  //     const updatedMember = (await uploadImage.mutateAsync(asset)) as
-  //       | MemberLeague
-  //       | undefined;
-  //     if (updatedMember) {
-  //       setMember(updatedMember);
-  //     }
-  //     Alert.alert('Success', 'Profile image updated successfully');
-  //   } catch (error) {
-  //     console.error('Failed to update profile image:', error);
-  //     Alert.alert(
-  //       'Error',
-  //       error instanceof Error
-  //         ? error.message
-  //         : 'Failed to update profile image'
-  //     );
-  //   }
-  // }, [leagueId, memberId, uploadImage, setMember]);
-
-  // const confirmRemoveImage = useCallback(() => {
-  //   if (!member?.avatar_url || !leagueId || !memberId) return;
-
-  //   Alert.alert('Remove Image', 'Remove your profile image?', [
-  //     { text: 'Cancel', style: 'cancel' },
-  //     {
-  //       text: 'Remove',
-  //       style: 'destructive',
-  //       onPress: async () => {
-  //         try {
-  //           const updatedMember = (await deleteImage.mutateAsync(
-  //             member.avatar_url
-  //           )) as MemberLeague | undefined;
-  //           if (updatedMember) {
-  //             setMember(updatedMember);
-  //           }
-  //           Alert.alert('Removed', 'Profile image removed');
-  //         } catch (error) {
-  //           console.error('Failed to remove profile image:', error);
-  //           Alert.alert(
-  //             'Error',
-  //             error instanceof Error
-  //               ? error.message
-  //               : 'Failed to remove profile image'
-  //           );
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // }, [deleteImage, leagueId, member?.avatar_url, memberId, setMember]);
 
   if (isLoadingUser) return <LoadingOverlay />;
 
@@ -285,10 +220,10 @@ const EditUser = () => {
             {/* Profile Picture Section */}
             <View className="items-center space-y-4">
               <View className="relative">
-                <ProfileImage
-                  imageUrl={avatarUrl}
-                  nickname={user?.full_name}
-                  size="xl"
+                <AvatarImage
+                  imageUri={avatarUrl}
+                  nickname={user?.full_name ?? ''}
+                  className="w-24 h-24"
                 />
                 <TouchableOpacity
                   onPress={handleImagePicker}

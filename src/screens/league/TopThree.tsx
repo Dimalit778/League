@@ -1,64 +1,66 @@
+import { AvatarImage } from '@/components/ui';
+import { LeagueLeaderboardType } from '@/types';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Text, View } from 'react-native';
+type TopThreeProps = {
+  topMembers: LeagueLeaderboardType[];
+};
 
-const TopThree = ({ topMembers }: { topMembers: any }) => {
-  const getInitials = (nickname: string) => {
-    return nickname
-      .split(' ')
-      .map((name) => name.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const getPositionStyle = (position: number) => {
+const TopThree = ({ topMembers }: TopThreeProps) => {
+  const getPositionSize = (position: number) => {
     switch (position) {
       case 1:
-        return 'w-24 h-24 bg-yellow-500 border-4 border-yellow-400';
+        return {
+          size: 96,
+          className: 'bg-yellow-500 border-4 border-yellow-400',
+        };
       case 2:
-        return 'w-20 h-20 bg-teal-500 border-4 border-teal-400';
-      case 3:
-        return 'w-20 h-20 bg-blue-500 border-4 border-blue-400';
+        return {
+          size: 80,
+          className: 'bg-teal-500 border-4 border-teal-400 ',
+        };
       default:
-        return 'w-20 h-20 bg-gray-500 border-4 border-gray-400';
+        return {
+          size: 70,
+          className: 'bg-blue-500 border-4 border-blue-400 mt-2',
+        };
     }
   };
 
   const renderPlayer = (
-    member: {
-      nickname: string;
-      avatar_url: string;
-      total_points: number;
-      index: number;
-    } | null,
+    member: LeagueLeaderboardType | undefined,
     position: number
-  ) => (
-    <View className="items-center" key={position}>
-      <View className="relative ">
-        {position === 1 && member && (
-          <View className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-            <Text className="text-yellow-500 text-2xl">👑</Text>
-          </View>
-        )}
-        <View className="absolute -top-2 -left-2 w-6 h-6 bg-secondary rounded-full border-2 border-border items-center justify-center">
-          <Text className="text-text text-xs font-bold">{position}</Text>
-        </View>
-        <View
-          className={`rounded-full items-center justify-center ${getPositionStyle(position)} ${!member ? 'opacity-30' : ''}`}
-        >
-          {member ? (
-            <Text className="text-text font-bold text-lg">
-              {member.avatar_url || getInitials(member.nickname)}
-            </Text>
-          ) : (
-            <Text className="text-text text-lg">👤</Text>
+  ) => {
+    const { size, className } = getPositionSize(position);
+    return (
+      <View className="items-center" key={position}>
+        <View className="relative">
+          {position === 1 && member && (
+            <View className="absolute -top-7 left-1/2 transform -translate-x-1/2">
+              <FontAwesome6 name="crown" size={30} color="gold" />
+            </View>
           )}
+          <View
+            className={`absolute -top-2 -left-3 w-8 h-8 bg-secondary rounded-full justify-center items-center ${className}`}
+          >
+            <Text className="text-base font-bold text-background">
+              {position}
+            </Text>
+          </View>
+          <View
+            className={`rounded-full overflow-hidden ${className} ${!member ? 'opacity-30' : ''}`}
+            style={{ width: size, height: size }}
+          >
+            <AvatarImage
+              nickname={member?.nickname ?? ''}
+              imageUri={member?.imageUri ?? null}
+            />
+          </View>
         </View>
+        <Text className="mt-2 text-text font-bold">{member?.nickname}</Text>
       </View>
-      <Text className="mt-2 text-text font-bold">
-        {member ? member.nickname : '---'}
-      </Text>
-    </View>
-  );
+    );
+  };
 
   if (!topMembers || topMembers.length === 0) return null;
 

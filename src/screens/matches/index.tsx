@@ -3,16 +3,16 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import MatchdaysList from './MatchdaysList';
+import MatchdaysListSkeleton from './MatchdaysListSkeleton';
 import MatchList from './MatchList';
+import MatchesSkeleton from './SkeletonMatches';
 
 const Matches = () => {
   const { member } = useMemberStore();
   const userId = member?.user_id;
   const competition = member?.league?.competition;
-  const currentMatchday = (competition?.season as { current_matchday: number })
-    ?.current_matchday;
-  const totalMatchdays = (competition?.season as { total_matchdays: number })
-    ?.total_matchdays;
+  const currentMatchday = competition?.current_matchday as number;
+  const totalMatchdays = competition?.total_matchdays as number;
 
   const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
   const [animateScroll, setAnimateScroll] = useState(false);
@@ -41,18 +41,23 @@ const Matches = () => {
     setSelectedMatchday(matchday);
   }, []);
 
+  if (!matchdays.length || selectedMatchday == null) {
+    return (
+      <View className="flex-1 bg-background">
+        <MatchdaysListSkeleton />
+        <MatchesSkeleton />
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-background">
-      {selectedMatchday && (
-        <View className="mb-3 ">
-          <MatchdaysList
-            matchdays={matchdays}
-            selectedMatchday={selectedMatchday}
-            handleMatchdayPress={handleMatchdayPress}
-            animateScroll={animateScroll}
-          />
-        </View>
-      )}
+      <MatchdaysList
+        matchdays={matchdays ?? []}
+        selectedMatchday={selectedMatchday ?? 1}
+        handleMatchdayPress={handleMatchdayPress}
+        animateScroll={animateScroll}
+      />
 
       {selectedMatchday && competition && userId && (
         <MatchList

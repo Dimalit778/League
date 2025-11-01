@@ -1,7 +1,5 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { SettingsIcon, TrophyIcon } from '@assets/icons';
-import { router, Stack } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { Stack } from 'expo-router';
 
 export default function MemberLayout() {
   const { colors } = useThemeTokens();
@@ -15,35 +13,7 @@ export default function MemberLayout() {
       <Stack.Screen
         name="(tabs)"
         options={{
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
-          headerRight: () => (
-            <TouchableOpacity
-              accessibilityRole="button"
-              className="p-2"
-              onPress={() => router.push('/myLeagues')}
-            >
-              <TrophyIcon size={24} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-          headerLeft: () => (
-            <TouchableOpacity
-              accessibilityRole="button"
-              className="p-2"
-              onPress={() => router.push('/(app)/(public)/settings')}
-            >
-              <SettingsIcon size={24} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-          headerTitle: 'League',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: colors.primary,
-            fontSize: 20,
-            fontWeight: 'bold',
-          },
+          headerShown: false,
         }}
       />
       <Stack.Screen name="match/[id]" options={{ headerShown: false }} />

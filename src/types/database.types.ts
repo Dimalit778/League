@@ -19,12 +19,15 @@ export type Database = {
           area: string
           code: string
           created_at: string
+          current_matchday: number | null
           flag: string
           id: number
-          last_updated: string
           logo: string
           name: string
-          season: Json | null
+          season_end: string | null
+          season_id: number | null
+          season_start: string | null
+          total_matchdays: number | null
           type: string
           updated_at: string
         }
@@ -32,12 +35,15 @@ export type Database = {
           area: string
           code: string
           created_at?: string
+          current_matchday?: number | null
           flag: string
           id: number
-          last_updated: string
           logo: string
           name: string
-          season?: Json | null
+          season_end?: string | null
+          season_id?: number | null
+          season_start?: string | null
+          total_matchdays?: number | null
           type: string
           updated_at?: string
         }
@@ -45,12 +51,15 @@ export type Database = {
           area?: string
           code?: string
           created_at?: string
+          current_matchday?: number | null
           flag?: string
           id?: number
-          last_updated?: string
           logo?: string
           name?: string
-          season?: Json | null
+          season_end?: string | null
+          season_id?: number | null
+          season_start?: string | null
+          total_matchdays?: number | null
           type?: string
           updated_at?: string
         }
@@ -274,6 +283,13 @@ export type Database = {
             foreignKeyName: "predictions_league_member_id_fkey"
             columns: ["league_member_id"]
             isOneToOne: false
+            referencedRelation: "league_leaderboard_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
             referencedRelation: "league_members"
             referencedColumns: ["id"]
           },
@@ -406,6 +422,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           league_id: string | null
+          member_id: string | null
           nickname: string | null
           predictions_count: number | null
           total_points: number | null

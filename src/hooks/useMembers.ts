@@ -1,5 +1,6 @@
 import { QUERY_KEYS, TOKENS } from '@/lib/tanstack/keys';
 import { membersService } from '@/services/membersService';
+import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -12,8 +13,15 @@ export const useMemberStats = (memberId?: string) => {
     enabled: !!memberId,
   });
 };
-export const useUpdateMember = (memberId: string) => {
+export const useUpdateMember = (memberId?: string) => {
+  if (!memberId) {
+    throw new Error('Member ID is required');
+  }
   const queryClient = useQueryClient();
+  const initializeMemberLeagues = useMemberStore(
+    (state) => state.initializeMemberLeagues
+  );
+
   return useMutation({
     mutationFn: (nickname: string) =>
       membersService.updateMember(memberId, nickname),
@@ -24,14 +32,17 @@ export const useUpdateMember = (memberId: string) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.members.stats(memberId),
       });
+      // Also invalidate league queries to update member data in league context
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.leagues.all,
+      });
+      // Refresh the member store with latest data
+      initializeMemberLeagues();
     },
   });
 };
 
-export const useDeleteMemberImage = (
-  leagueId: string,
-  memberId: string
-) => {
+export const useDeleteMemberImage = (leagueId: string, memberId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (currentPath?: string | null) =>
@@ -79,17 +90,19 @@ export const useMemberAvatar = (
     enabled: !!path,
   });
 };
-export const useUploadMemberImage = (leagueId: string, memberId: string) => {
+export const useUploadMemberImage = (leagueId?: string, memberId?: string) => {
+  if (!leagueId || !memberId) {
+    throw new Error('League ID and member ID are required');
+  }
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (avatarUrl: ImagePicker.ImagePickerAsset) =>
       membersService.uploadAvatarImage(leagueId, memberId, avatarUrl),
     onSuccess: () => {
-      // Invalidate both image and avatar queries
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.members.avatar(memberId),
       });
-      // Also invalidate the general member query
+
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.members.byId(memberId),
       });

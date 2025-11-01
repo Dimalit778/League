@@ -27,6 +27,7 @@ export const QUERY_KEYS = {
 
   // ===== LEAGUE RELATED =====
   leagues: {
+    all: ['leagues'] as const,
     byId: (leagueId?: string) =>
       ['leagues', leagueId ?? TOKENS.pending] as const,
     byJoinCode: (joinCode?: string) =>

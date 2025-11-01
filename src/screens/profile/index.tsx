@@ -1,24 +1,59 @@
 import { LoadingOverlay } from '@/components/layout';
-import { Button, MyImage, ProfileImage } from '@/components/ui';
+import { AvatarImage, Button, MyImage } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
+import { useUpdateMember, useUploadMemberImage } from '@/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { ProfileSkeleton } from '@/screens/profile/ProfileSkeleton';
 import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as Clipboard from 'expo-clipboard';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useCallback } from 'react';
-import { Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import * as yup from 'yup';
 
 export default function Profile() {
   const member = useMemberStore((s) => s.member);
-
   const { colors } = useThemeTokens();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm({
+    resolver: yupResolver(
+      yup.object().shape({
+        nickname: yup
+          .string()
+          .min(2, 'Nickname must be at least 2 characters')
+          .required('Nickname is required'),
+      })
+    ),
+    mode: 'onChange',
+    defaultValues: {
+      nickname: member?.nickname || '',
+    },
+  });
 
   const leaveLeague = useLeaveLeague();
+  const updateMember = useUpdateMember(member?.id);
+  const uploadImage = useUploadMemberImage(member?.league_id, member?.id);
 
   const { data: league, isLoading } = useGetLeagueAndMembers(member?.league_id);
 
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
   const confirmLeaveLeague = useCallback(() => {
     if (!league?.id) return;
     Alert.alert(
@@ -44,49 +79,154 @@ export default function Profile() {
     );
   }, [leaveLeague, league?.id, league?.name, router]);
 
+  const handleSaveNickname = handleSubmit((data) => {
+    updateMember.mutate(data.nickname, {
+      onSuccess: () => {
+        setIsEditingNickname(false);
+        Alert.alert('Success', 'Nickname updated successfully!');
+      },
+    });
+  });
+
+  const handleCancelEdit = () => {
+    setIsEditingNickname(false);
+    reset({ nickname: member?.nickname || '' });
+  };
+
   const handleCopyJoinCode = async () => {
     if (typeof league?.join_code === 'string') {
       await Clipboard.setStringAsync(league?.join_code || '');
       Alert.alert('Copied!', 'Join code copied to clipboard.');
     }
   };
+  const handleImagePicker = async () => {
+    if (!member?.league_id || !member?.id) {
+      return;
+    }
+    try {
+      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!perm.granted) {
+        Alert.alert('Permission required', 'We need access to your photos.');
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0]?.base64) {
+        await uploadImage.mutateAsync(result.assets[0], {
+          onSuccess: () => {
+            Alert.alert('Success', 'Profile picture updated successfully!');
+          },
+          onError: (error) => {
+            Alert.alert('Error', 'Failed to upload image');
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
   if (!member || !league || isLoading) return <ProfileSkeleton />;
   return (
-    <View className="flex-1 bg-background ">
+    <KeyboardAwareScrollView
+      bottomOffset={62}
+      className="flex-1 bg-background "
+    >
       {(isLoading || leaveLeague.isPending) && <LoadingOverlay />}
-      {/* Member avatar */}
-      <View className="items-center mt-4 ">
-        <View className="relative">
-          <ProfileImage
-            memberId={member.id}
-            path={member.avatar_url}
-            nickname={member.nickname}
-            size="xl"
-            style={{ width: 120, height: 120 }}
-          />
-
-          <TouchableOpacity
-            onPress={() => router.push('/profile/edit-profile')}
-            className="absolute -right-2 -bottom-2 rounded-full w-9 h-9 items-center justify-center border border-border z-10"
-            style={{
-              boxShadow:
-                '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            }}
-          >
-            <FontAwesome6
-              name="pen-to-square"
-              size={16}
-              color={colors.secondary}
+      {/* Avatar */}
+      <View className="px-4 mt-4">
+        <View className="items-center px-4">
+          <View className="relative mb-4">
+            <AvatarImage
+              imageUri={member?.avatar_url}
+              nickname={member?.nickname}
+              className="w-40 h-40"
             />
-          </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleImagePicker}
+              disabled={uploadImage.isPending}
+              className="absolute -bottom-2 -right-2 bg-primary rounded-full p-3 border-2 border-background"
+            >
+              {uploadImage.isPending ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <FontAwesome6 name="camera" size={16} color="white" />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text className="text-xl text-muted font-semibold text-center mt-4">
-          {member.nickname}
-        </Text>
       </View>
 
-      {/* League details */}
-      <View className="flex-grow justify-center px-4">
+      {/* Nickname */}
+      <View className="px-4 mt-4">
+        {isEditingNickname ? (
+          <View>
+            <Controller
+              control={control}
+              name="nickname"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  className="bg-surface text-text border border-border rounded-lg px-4 py-3 mb-3"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Nickname"
+                  placeholderTextColor="#999"
+                  autoFocus
+                />
+              )}
+            />
+            {errors.nickname && (
+              <Text className="text-red-500 mb-3 text-sm">
+                {errors.nickname.message}
+              </Text>
+            )}
+            <View className="flex-row gap-2">
+              <Button
+                title="Save"
+                onPress={handleSaveNickname}
+                variant="primary"
+                loading={updateMember.isPending}
+                disabled={!isValid || updateMember.isPending}
+                className="flex-1"
+              />
+              <Button
+                title="Cancel"
+                onPress={handleCancelEdit}
+                variant="border"
+                disabled={updateMember.isPending}
+                className="flex-1"
+              />
+            </View>
+          </View>
+        ) : (
+          <View className="flex-row items-center justify-between bg-surface rounded-lg px-4 py-3 border border-border">
+            <Text className="text-text text-lg font-semibold">
+              {member?.nickname}
+            </Text>
+            <Pressable
+              onPress={() => setIsEditingNickname(true)}
+              className="p-2"
+            >
+              <FontAwesome6
+                name="pen-to-square"
+                size={16}
+                color={colors.secondary}
+              />
+            </Pressable>
+          </View>
+        )}
+      </View>
+
+      <View className="flex-grow justify-center px-4 mt-4">
         <View className=" bg-surface rounded-2xl border border-border p-4">
           <View className="flex-row justify-between items-center px-4">
             <MyImage
@@ -188,8 +328,8 @@ export default function Profile() {
           </View>
         </View>
       </View>
-      {/* Leave League Button */}
-      <View className="px-6 mb-4">
+
+      <View className="px-6 mt-4">
         <Button
           title={'Leave League'}
           variant="error"
@@ -198,6 +338,6 @@ export default function Profile() {
           loading={leaveLeague.isPending}
         />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }

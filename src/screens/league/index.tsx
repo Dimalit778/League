@@ -1,10 +1,13 @@
-import { Error, LoadingOverlay } from '@/components/layout';
-import { useLeaderboardWithAvatars } from '@/hooks/useLeaderboard';
+import { Error } from '@/components/layout';
+import { useGetLeaderboard } from '@/hooks/useLeaderboard';
+import usePrefetchImages from '@/hooks/usePrefetchImages';
 import LeaderboardCard from '@/screens/league/LeaderboardCard';
+import LeagueSkeleton from '@/screens/league/LeagueSkeleton';
 import TopThree from '@/screens/league/TopThree';
 import { useMemberStore } from '@/store/MemberStore';
+import { LeagueLeaderboardType } from '@/types';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,43 +23,44 @@ const League = () => {
     isRefetching,
     error,
     refetch,
-  } = useLeaderboardWithAvatars();
+  } = useGetLeaderboard();
 
-  if (error) return <Error error={error} />;
-
-  const topThree = leaderboard?.slice(0, 3);
-
-  const renderItem = useCallback(
-    ({ item, index }: { item: any; index: number }) => (
-      <LeaderboardCard
-        nickname={item.nickname ?? ''}
-        avatar_url={item.avatarUri ?? ''}
-        total_points={item.total_points ?? 0}
-        index={index + 1}
-        isCurrentUser={item.user_id === member?.user_id}
-      />
-    ),
-    [member?.user_id]
+  const imageUris = useMemo(
+    () => leaderboard?.map((item) => item.imageUri).filter(Boolean) ?? [],
+    [leaderboard]
   );
 
-  const keyExtractor = useCallback((item: any) => item.user_id ?? '', []);
+  const imagesReady = usePrefetchImages(imageUris);
+
+  const topThree = leaderboard?.slice(0, 3) ?? [];
 
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
 
+  const loading = !imagesReady || (isLoading && !leaderboard);
+
+  if (error) return <Error error={error} />;
+  if (loading) return <LeagueSkeleton />;
+
   return (
     <View className="flex-1 bg-background">
-      {isLoading && !leaderboard && <LoadingOverlay />}
       <View style={{ paddingTop: contentTop }}>
-        <TopThree topMembers={topThree} />
+        <TopThree topMembers={topThree as LeagueLeaderboardType[]} />
       </View>
+
       <FlatList
         data={leaderboard || []}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
+        keyExtractor={(item: any) => item.user_id}
+        renderItem={({ item, index }) => (
+          <LeaderboardCard
+            item={item}
+            index={index}
+            isCurrentUser={item.user_id === member?.user_id}
+          />
+        )}
         refreshing={isRefetching}
         onRefresh={handleRefresh}
         maxToRenderPerBatch={10}

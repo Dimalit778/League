@@ -2,7 +2,6 @@ import { supabase } from '@/lib/supabase';
 import { MemberStatsType } from '@/types';
 
 import { decode } from 'base64-arraybuffer';
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
 export const membersService = {
@@ -98,10 +97,10 @@ export const membersService = {
     avatarUrl: ImagePicker.ImagePickerAsset
   ) {
     try {
-      const base64 = await FileSystem.readAsStringAsync(avatarUrl.uri, {
-        encoding: 'base64',
-      });
-
+      const base64 = avatarUrl.base64;
+      if (!base64) {
+        throw new Error('No base64 available');
+      }
       const extensionFromName = avatarUrl.fileName?.split('.').pop();
       const extensionFromUri = avatarUrl.uri.split('.').pop()?.split('?')[0];
       const fileExtension =

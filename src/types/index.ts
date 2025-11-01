@@ -48,6 +48,7 @@ export type createLeagueResponse = {
 };
 
 export type LeagueLeaderboardType = {
+  imageUri?: string | null;
   nickname: string | null;
   avatar_url?: string | null;
   total_points: number | null;

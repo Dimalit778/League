@@ -1,6 +1,12 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, LayoutChangeEvent, Pressable, Text } from 'react-native';
+import {
+  FlatList,
+  LayoutChangeEvent,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 
 type MatchdaysListProps = {
   matchdays: number[];
@@ -64,8 +70,6 @@ const MatchdaysList = ({
   const onLayout = (e: LayoutChangeEvent) =>
     setListWidth(e.nativeEvent.layout.width);
 
-  console.log('animateScroll', animateScroll);
-
   useEffect(() => {
     if (!ref.current || !selectedMatchday || listWidth === 0) return;
 
@@ -89,37 +93,36 @@ const MatchdaysList = ({
     []
   );
 
-  const renderItem = useCallback(
-    ({ item }: { item: number }) => (
-      <MatchdayItem
-        matchday={item}
-        selectedMatchday={selectedMatchday}
-        colors={colors}
-        onPress={handleMatchdayPress}
-      />
-    ),
-    [selectedMatchday, colors, handleMatchdayPress]
-  );
-
   return (
-    <FlatList
-      ref={ref}
-      data={matchdays}
-      onLayout={onLayout}
-      horizontal
-      contentInsetAdjustmentBehavior="automatic"
-      showsHorizontalScrollIndicator={false}
-      keyExtractor={(item) => item.toString()}
-      renderItem={renderItem}
-      updateCellsBatchingPeriod={50}
-      getItemLayout={(_, index) => ({
-        length: 60,
-        offset: 60 * index,
-        index,
-      })}
-      initialScrollIndex={Math.max(0, (selectedMatchday ?? 1) - 1)}
-      onScrollToIndexFailed={onScrollToIndexFailed}
-    />
+    <View>
+      <FlatList
+        ref={ref}
+        data={matchdays}
+        onLayout={onLayout}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.toString()}
+        renderItem={({ item }) => (
+          <MatchdayItem
+            key={item.toString()}
+            matchday={item}
+            selectedMatchday={selectedMatchday}
+            colors={colors ?? {}}
+            onPress={handleMatchdayPress}
+          />
+        )}
+        style={{
+          paddingBottom: 5,
+        }}
+        getItemLayout={(_, index) => ({
+          length: 60,
+          offset: 60 * index,
+          index,
+        })}
+        initialScrollIndex={Math.max(0, (selectedMatchday ?? 1) - 1)}
+        onScrollToIndexFailed={onScrollToIndexFailed}
+      />
+    </View>
   );
 };
 

@@ -30,15 +30,15 @@ const PredictionChart = (stats: MemberStatsType) => {
           <>
             <View
               style={{ width: `${bingoPercentage}%` }}
-              className="bg-green-500"
+              className="bg-green-500 border-1 border-black"
             />
             <View
               style={{ width: `${regularPercentage}%` }}
-              className="bg-yellow-500"
+              className="bg-gray-500 "
             />
             <View
               style={{ width: `${missedPercentage}%` }}
-              className="bg-red-500"
+              className="bg-red-500 "
             />
           </>
         ) : (
@@ -52,7 +52,7 @@ const PredictionChart = (stats: MemberStatsType) => {
           <Text className="text-text">Bingo ({stats.bingoHits})</Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-3 h-3 rounded-full bg-yellow-500 mr-2" />
+          <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
           <Text className="text-text">Regular ({stats.regularHits})</Text>
         </View>
         <View className="flex-row items-center">

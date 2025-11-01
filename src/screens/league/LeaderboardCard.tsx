@@ -1,45 +1,25 @@
-import { Card, MyImage } from '@/components/ui';
-import { FontAwesome } from '@expo/vector-icons';
+import { AvatarImage, Card } from '@/components/ui';
+import { LeagueLeaderboardType } from '@/types';
 import { Text, View } from 'react-native';
 
-interface LeaderboardCardProps {
-  nickname: string;
-  avatar_url: string;
-  total_points: number;
+type Item = {
+  item: LeagueLeaderboardType;
   index: number;
-  isCurrentUser?: boolean;
-}
+  isCurrentUser: boolean;
+};
+const LeaderboardCard = ({ item, index, isCurrentUser }: Item) => {
+  const { nickname, imageUri, total_points } = item;
 
-const LeaderboardCard = ({
-  nickname,
-  avatar_url,
-  total_points,
-  index,
-  isCurrentUser = false,
-}: LeaderboardCardProps) => {
   return (
     <Card className={`${isCurrentUser ? 'border-primary' : ''} p-2 mx-3 my-1`}>
       <View className="flex-row items-center gap-3">
         {/* Position Badge */}
-        <View className="w-8 h-8 rounded-full items-center justify-center">
-          <Text className="text-text font-semibold text-sm">{index}</Text>
+        <View className="w-8 h-8 rounded-full items-center justify-center bg-background">
+          <Text className="text-text font-semibold text-sm">{index + 1}</Text>
         </View>
-
-        {/* User Avatar */}
-
-        {avatar_url ? (
-          <View className="w-10 h-10 rounded-full overflow-hidden border-2 border-border">
-            <MyImage
-              source={avatar_url}
-              className="w-full h-full"
-              width={40}
-              height={40}
-            />
-          </View>
-        ) : (
-          <FontAwesome name="user-circle-o" size={40} color="grey" />
-        )}
-
+        <View className="w-10 h-10 rounded-full overflow-hidden">
+          <AvatarImage nickname={nickname ?? ''} imageUri={imageUri ?? null} />
+        </View>
         {/* User Info */}
         <View className="flex-1">
           <Text className="text-text font-bold" numberOfLines={1}>
