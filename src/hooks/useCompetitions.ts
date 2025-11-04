@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useCompetitionRounds = (leagueId?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.competitions.matchdaysByLeague(leagueId),
+    queryKey: QUERY_KEYS.competitions.fixturesByLeague(leagueId),
     queryFn: () => competitionService.getCompetitionRounds(leagueId!),
     enabled: !!leagueId,
   });

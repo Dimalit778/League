@@ -14,11 +14,11 @@ export const getNumberOfRounds = async () => {
     throw new Error('No response from API');
   }
   const data = await response.json();
-  const total_matchdays = Math.max(
+  const total_fixtures = Math.max(
     ...data.matches.map((match: { matchday: number }) => match.matchday)
   );
-  console.log('total_matchdays', total_matchdays);
-  return total_matchdays;
+  console.log('total_fixtures', total_fixtures);
+  return total_fixtures;
 };
 export const getMatchesByRound = async (round: string) => {
   const response = await fetch(

@@ -2,46 +2,46 @@ import { useMemberStore } from '@/store/MemberStore';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import MatchdaysList from './MatchdaysList';
-import MatchdaysListSkeleton from './MatchdaysListSkeleton';
-import MatchList from './MatchList';
-import MatchesSkeleton from './SkeletonMatches';
+import FixturesList from './components/fixtures/fixtures-list';
+import MatchdaysListSkeleton from './components/fixtures/SkeletonFixtures';
+import MatchList from './components/matches/Matches-list';
+import MatchesSkeleton from './components/matches/SkeletonMatches';
 
-const Matches = () => {
+const MatchesScreen = () => {
   const { member } = useMemberStore();
   const userId = member?.user_id;
   const competition = member?.league?.competition;
-  const currentMatchday = competition?.current_matchday as number;
-  const totalMatchdays = competition?.total_matchdays as number;
+  const currentFixture = competition?.current_fixture as number;
+  const totalFixtures = competition?.total_fixtures as number;
 
-  const [selectedMatchday, setSelectedMatchday] = useState<number | null>(null);
+  const [selectedFixture, setSelectedFixture] = useState<number | null>(null);
   const [animateScroll, setAnimateScroll] = useState(false);
-  const matchdays = useMemo(
+  const fixtures = useMemo(
     () =>
-      totalMatchdays
-        ? Array.from({ length: totalMatchdays }, (_, i) => i + 1)
+      totalFixtures
+        ? Array.from({ length: totalFixtures }, (_, i) => i + 1)
         : [],
-    [totalMatchdays]
+    [totalFixtures]
   );
 
   useFocusEffect(
     useCallback(() => {
-      if (currentMatchday) {
+      if (currentFixture) {
         setAnimateScroll(false);
-        setSelectedMatchday(currentMatchday);
+        setSelectedFixture(currentFixture);
       }
       return () => {
-        setSelectedMatchday(null);
+        setSelectedFixture(null);
       };
-    }, [currentMatchday])
+    }, [currentFixture])
   );
 
-  const handleMatchdayPress = useCallback((matchday: number) => {
+  const handleFixturePress = useCallback((fixture: number) => {
     setAnimateScroll(true);
-    setSelectedMatchday(matchday);
+    setSelectedFixture(fixture);
   }, []);
 
-  if (!matchdays.length || selectedMatchday == null) {
+  if (!fixtures.length || selectedFixture == null) {
     return (
       <View className="flex-1 bg-background">
         <MatchdaysListSkeleton />
@@ -52,16 +52,16 @@ const Matches = () => {
 
   return (
     <View className="flex-1 bg-background">
-      <MatchdaysList
-        matchdays={matchdays ?? []}
-        selectedMatchday={selectedMatchday ?? 1}
-        handleMatchdayPress={handleMatchdayPress}
+      <FixturesList
+        fixtures={fixtures ?? []}
+        selectedFixture={selectedFixture ?? 1}
+        handleFixturePress={handleFixturePress}
         animateScroll={animateScroll}
       />
 
-      {selectedMatchday && competition && userId && (
+      {selectedFixture && competition && userId && (
         <MatchList
-          selectedMatchday={selectedMatchday}
+          selectedFixture={selectedFixture}
           competitionId={competition.id}
           userId={userId}
         />
@@ -70,4 +70,4 @@ const Matches = () => {
   );
 };
 
-export default Matches;
+export default MatchesScreen;

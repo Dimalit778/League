@@ -8,32 +8,32 @@ import {
   View,
 } from 'react-native';
 
-type MatchdaysListProps = {
-  matchdays: number[];
-  selectedMatchday: number;
-  handleMatchdayPress: (matchday: number) => void;
+type FixturesListProps = {
+  fixtures: number[];
+  selectedFixture: number;
+  handleFixturePress: (fixture: number) => void;
   animateScroll: boolean;
 };
 
-type MatchdayItemProps = {
-  matchday: number;
-  selectedMatchday: number;
+type FixtureItemProps = {
+  fixture: number;
+  selectedFixture: number;
   colors: {
     primary: string;
     surface: string;
     background: string;
     text: string;
   };
-  onPress: (matchday: number) => void;
+  onPress: (fixture: number) => void;
 };
 
-const MatchdayItem = memo(
-  ({ matchday, selectedMatchday, colors, onPress }: MatchdayItemProps) => {
-    const isSelected = selectedMatchday === matchday;
+const FixtureItem = memo(
+  ({ fixture, selectedFixture, colors, onPress }: FixtureItemProps) => {
+    const isSelected = selectedFixture === fixture;
 
     return (
       <Pressable
-        onPress={() => onPress(matchday)}
+        onPress={() => onPress(fixture)}
         style={{
           height: 50,
           width: 50,
@@ -50,19 +50,19 @@ const MatchdayItem = memo(
             color: isSelected ? colors.background : colors.text,
           }}
         >
-          {matchday}
+          {fixture}
         </Text>
       </Pressable>
     );
   }
 );
 
-const MatchdaysList = ({
-  matchdays,
-  selectedMatchday,
-  handleMatchdayPress,
+const FixturesList = ({
+  fixtures,
+  selectedFixture,
+  handleFixturePress,
   animateScroll,
-}: MatchdaysListProps) => {
+}: FixturesListProps) => {
   const ref = useRef<FlatList>(null);
   const { colors } = useThemeTokens();
   const [listWidth, setListWidth] = useState(0);
@@ -71,14 +71,14 @@ const MatchdaysList = ({
     setListWidth(e.nativeEvent.layout.width);
 
   useEffect(() => {
-    if (!ref.current || !selectedMatchday || listWidth === 0) return;
+    if (!ref.current || !selectedFixture || listWidth === 0) return;
 
     ref.current.scrollToIndex({
-      index: selectedMatchday - 1,
+      index: selectedFixture - 1,
       animated: animateScroll,
       viewPosition: 0.5,
     });
-  }, [selectedMatchday, listWidth]);
+  }, [selectedFixture, listWidth]);
 
   const onScrollToIndexFailed = useCallback(
     (info: { index: number; highestMeasuredFrameIndex: number }) => {
@@ -97,18 +97,18 @@ const MatchdaysList = ({
     <View>
       <FlatList
         ref={ref}
-        data={matchdays}
+        data={fixtures}
         onLayout={onLayout}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.toString()}
         renderItem={({ item }) => (
-          <MatchdayItem
+          <FixtureItem
             key={item.toString()}
-            matchday={item}
-            selectedMatchday={selectedMatchday}
+            fixture={item}
+            selectedFixture={selectedFixture}
             colors={colors ?? {}}
-            onPress={handleMatchdayPress}
+            onPress={handleFixturePress}
           />
         )}
         style={{
@@ -119,11 +119,11 @@ const MatchdaysList = ({
           offset: 60 * index,
           index,
         })}
-        initialScrollIndex={Math.max(0, (selectedMatchday ?? 1) - 1)}
+        initialScrollIndex={Math.max(0, (selectedFixture ?? 1) - 1)}
         onScrollToIndexFailed={onScrollToIndexFailed}
       />
     </View>
   );
 };
 
-export default MatchdaysList;
+export default FixturesList;

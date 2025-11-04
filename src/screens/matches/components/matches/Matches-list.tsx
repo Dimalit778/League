@@ -2,21 +2,20 @@ import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
 
 import { useCallback } from 'react';
 import { FlatList } from 'react-native';
-import { Error } from '../../components/layout';
+import { Error } from '../../../../components/layout';
 import MatchCard from './MatchCard';
 import MatchesSkeleton from './SkeletonMatches';
 
 type MatchListProps = {
-  selectedMatchday: number;
+  selectedFixture: number;
   competitionId: number;
   userId: string;
-  matchdays?: number[];
-  handleMatchdayPress?: (matchday: number) => void;
+  handleFixturePress?: (fixture: number) => void;
   animateScroll?: boolean;
 };
 
 const MatchList = ({
-  selectedMatchday,
+  selectedFixture,
   competitionId,
   userId,
 }: MatchListProps) => {
@@ -26,7 +25,7 @@ const MatchList = ({
     isFetching,
     error,
     refetch,
-  } = useGetMatchesWithPredictions(selectedMatchday, competitionId, userId);
+  } = useGetMatchesWithPredictions(selectedFixture, competitionId, userId);
 
   const handleRefresh = useCallback(() => {
     refetch();

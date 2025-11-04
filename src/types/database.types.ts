@@ -19,7 +19,7 @@ export type Database = {
           area: string
           code: string
           created_at: string
-          current_matchday: number | null
+          current_fixture: number | null
           flag: string
           id: number
           logo: string
@@ -27,7 +27,7 @@ export type Database = {
           season_end: string | null
           season_id: number | null
           season_start: string | null
-          total_matchdays: number | null
+          total_fixtures: number | null
           type: string
           updated_at: string
         }
@@ -35,7 +35,7 @@ export type Database = {
           area: string
           code: string
           created_at?: string
-          current_matchday?: number | null
+          current_fixture?: number | null
           flag: string
           id: number
           logo: string
@@ -43,7 +43,7 @@ export type Database = {
           season_end?: string | null
           season_id?: number | null
           season_start?: string | null
-          total_matchdays?: number | null
+          total_fixtures?: number | null
           type: string
           updated_at?: string
         }
@@ -51,7 +51,7 @@ export type Database = {
           area?: string
           code?: string
           created_at?: string
-          current_matchday?: number | null
+          current_fixture?: number | null
           flag?: string
           id?: number
           logo?: string
@@ -59,7 +59,7 @@ export type Database = {
           season_end?: string | null
           season_id?: number | null
           season_start?: string | null
-          total_matchdays?: number | null
+          total_fixtures?: number | null
           type?: string
           updated_at?: string
         }
@@ -166,11 +166,11 @@ export type Database = {
           away_team_id: number | null
           competition_id: number | null
           created_at: string
+          fixture: number
           group: string | null
           home_team_id: number | null
           id: number
           kick_off: string
-          matchday: number
           referee: string | null
           score: Json | null
           stage: string | null
@@ -181,11 +181,11 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          fixture: number
           group?: string | null
           home_team_id?: number | null
           id: number
           kick_off: string
-          matchday: number
           referee?: string | null
           score?: Json | null
           stage?: string | null
@@ -196,11 +196,11 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          fixture?: number
           group?: string | null
           home_team_id?: number | null
           id?: number
           kick_off?: string
-          matchday?: number
           referee?: string | null
           score?: Json | null
           stage?: string | null

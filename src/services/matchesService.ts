@@ -21,7 +21,7 @@ export const matchesService = {
     return data;
   },
   async getMatchesWithPredictions(
-    matchday: number,
+    fixture: number,
     competitionId: number,
     userId: string
   ): Promise<MatchesWithTeamsAndPredictions[]> {
@@ -36,7 +36,7 @@ export const matchesService = {
       `
       )
       .eq('competition_id', competitionId)
-      .eq('matchday', matchday)
+      .eq('fixture', fixture)
       .eq('predictions.user_id', userId)
       .order('kick_off', { ascending: true });
 
@@ -45,7 +45,7 @@ export const matchesService = {
     return data as MatchesWithTeamsAndPredictions[];
   },
   async getMatches(
-    matchday: number,
+    fixture: number,
     competitionId: number,
     userId: string
   ): Promise<MatchesWithTeams[]> {
@@ -59,7 +59,7 @@ export const matchesService = {
       `
       )
       .eq('competition_id', competitionId)
-      .eq('matchday', matchday)
+      .eq('fixture', fixture)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
@@ -67,7 +67,7 @@ export const matchesService = {
     return data as MatchesWithTeams[];
   },
   async getMatchesByMatchday(
-    matchday: number,
+    fixture: number,
     competitionId?: number
   ): Promise<MatchesWithTeams[]> {
     const { data, error } = await supabase
@@ -80,7 +80,7 @@ export const matchesService = {
         `
       )
       .eq('competition_id', competitionId!)
-      .eq('matchday', matchday)
+      .eq('fixture', fixture)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;

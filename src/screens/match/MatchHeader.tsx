@@ -1,9 +1,8 @@
-import { formatTime } from '@/utils/match-utils';
 import footballField from '@assets/images/footballField.png';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { MatchesWithTeams, MatchScore } from '@/types';
-import { dateFormat } from '@/utils/formats';
+import { dateFormat, formatTime } from '@/utils/formats';
 import { ArrowLeftIcon } from '@assets/icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';

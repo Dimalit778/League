@@ -1,9 +1,10 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, MyImage } from '@/components/ui';
+import { BackButton, Button } from '@/components/ui';
 
 import { useGetCompetitions } from '@/hooks/useCompetitions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Tables } from '@/types/database.types';
+import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -31,7 +32,14 @@ const CompetitionsCard = memo(
             borderColor: isSelected ? colors.primary : colors.border,
           }}
         >
-          <MyImage source={{ uri: comp.flag }} width={48} height={48} />
+          <ExpoImage
+            source={comp.flag}
+            style={{ width: 48, height: 48 }}
+            cachePolicy="memory-disk"
+            contentFit="contain"
+            transition={120}
+            priority="high"
+          />
           <View className="flex-1 items-center">
             <Text className="text-sm font-bold mb-1 text-muted">
               {comp.area}
@@ -46,11 +54,13 @@ const CompetitionsCard = memo(
             </Text>
           </View>
 
-          <MyImage
-            source={{ uri: comp.logo }}
-            width={52}
-            height={52}
-            resizeMode="cover"
+          <ExpoImage
+            source={comp.logo}
+            style={{ width: 52, height: 52 }}
+            cachePolicy="memory-disk"
+            contentFit="contain"
+            transition={120}
+            priority="high"
           />
         </View>
       </TouchableOpacity>
@@ -84,10 +94,10 @@ const SelectCompetitionScreen = () => {
 
   if (error) return <Error error={error} />;
 
+  if (isLoading) return <LoadingOverlay />;
   return (
     <SafeAreaView className="flex-1 bg-background ">
       <BackButton title="Select a Competition" />
-      {isLoading && <LoadingOverlay />}
 
       <FlatList
         data={competitions}
@@ -102,22 +112,15 @@ const SelectCompetitionScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, padding: 10 }}
-        initialNumToRender={5}
-        maxToRenderPerBatch={10}
-        updateCellsBatchingPeriod={50}
-        windowSize={10}
-        removeClippedSubviews={true}
         getItemLayout={(_, index) => ({
           length: 100,
           offset: 100 * index,
           index,
         })}
-        // Lazy loading optimizations
         maintainVisibleContentPosition={{
           minIndexForVisible: 0,
           autoscrollToTopThreshold: 10,
         }}
-        // Memory optimizations
         legacyImplementation={false}
         disableVirtualization={false}
       />

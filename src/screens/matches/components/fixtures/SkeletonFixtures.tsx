@@ -1,14 +1,14 @@
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
 import { FlatList, View } from 'react-native';
 
-const skeletonMatchdays = Array.from({ length: 12 }, (_, i) => i + 1);
+const skeletonFixtures = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export default function MatchdaysListSkeleton() {
+export default function SkeletonFixtures() {
   return (
     <View>
       <FlatList
-        data={skeletonMatchdays}
-        keyExtractor={(item) => `matchday-skeleton-${item}`}
+        data={skeletonFixtures}
+        keyExtractor={(item) => `fixture-skeleton-${item}`}
         horizontal
         showsHorizontalScrollIndicator={false}
         scrollEnabled={false}

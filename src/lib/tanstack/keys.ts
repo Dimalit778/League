@@ -42,32 +42,32 @@ export const QUERY_KEYS = {
   matches: {
     all: ['matches'] as const,
     byId: (matchId?: number) => ['matches', matchId ?? TOKENS.pending] as const,
-    byMatchday: (competitionId?: number, matchday?: number) =>
+    byMatchday: (competitionId?: number, fixture?: number) =>
       [
         'matches',
-        'matchday',
+        'fixture',
         competitionId ?? TOKENS.pending,
-        matchday ?? TOKENS.pending,
+        fixture ?? TOKENS.pending,
       ] as const,
     withPredictions: (
       competitionId?: number,
-      matchday?: number,
+      fixture?: number,
       userId?: string
     ) =>
       [
         'matches',
         'predictions',
         competitionId ?? TOKENS.pending,
-        matchday ?? TOKENS.pending,
+        fixture ?? TOKENS.pending,
         userId ?? TOKENS.me,
       ] as const,
-    byLeagueMatchday: (leagueId?: string, matchday?: number) =>
+    byLeagueMatchday: (leagueId?: string, fixture?: number) =>
       [
         'matches',
         'league',
         leagueId ?? TOKENS.pending,
-        'matchday',
-        matchday ?? TOKENS.pending,
+        'fixture',
+        fixture ?? TOKENS.pending,
       ] as const,
   },
 
@@ -78,13 +78,13 @@ export const QUERY_KEYS = {
       ['predictions', 'user', userId ?? TOKENS.me] as const,
     byFixture: (fixtureId?: number) =>
       ['predictions', 'fixture', fixtureId ?? TOKENS.pending] as const,
-    byUserAndMatchday: (userId?: string, matchday?: number) =>
+    byUserAndMatchday: (userId?: string, fixture?: number) =>
       [
         'predictions',
         'user',
         userId ?? TOKENS.me,
-        'matchday',
-        matchday ?? TOKENS.pending,
+        'fixture',
+        fixture ?? TOKENS.pending,
       ] as const,
     leagueByFixture: (fixtureId?: number, leagueId?: string) =>
       [
@@ -105,7 +105,7 @@ export const QUERY_KEYS = {
   // ===== COMPETITION RELATED =====
   competitions: {
     all: ['competitions'] as const,
-    matchdaysByLeague: (leagueId?: string) =>
+    fixturesByLeague: (leagueId?: string) =>
       ['competitions', leagueId ?? TOKENS.pending, 'rounds'] as const,
   },
 
