@@ -1,12 +1,13 @@
-import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { MatchesWithTeamsAndPredictions, MatchScore } from '@/types';
 import { Tables } from '@/types/database.types';
-import { dateFormat, dayNameFormat } from '@/utils/formats';
+import { timeFormat } from '@/utils/formats';
+import { getSimpleMatchStatus } from '@/utils/matchHelper';
 import { AddIcon } from '@assets/icons';
 import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import MatchHeader from './MatchHeader';
 
 type MatchItem = MatchesWithTeamsAndPredictions;
 type Prediction = Tables<'predictions'>;
@@ -14,13 +15,12 @@ type Prediction = Tables<'predictions'>;
 const TEAM_LOGO_SIZE = 44;
 const STATUS = {
   SCHEDULED: 'SCHEDULED',
+  PAUSED: 'PAUSED',
   TIMED: 'TIMED',
   LIVE: 'LIVE',
   IN_PLAY: 'IN_PLAY',
   FINISHED: 'FINISHED',
 } as const;
-
-type MatchStatus = keyof typeof STATUS | string | null;
 
 const normalizeStatus = (status: string | null): string => {
   return status?.toUpperCase() ?? '';
@@ -36,45 +36,43 @@ const ScoreDisplay = memo(
     awayScore: number;
     borderColor?: string;
   }) => (
-    <View
-      className={`flex-row items-center justify-center border ${borderColor} rounded-md px-3 py-2`}
-    >
-      <Text className="text-text text-xl font-bold">{homeScore}</Text>
-      <Text className="text-text text-lg mx-1">-</Text>
-      <Text className="text-text text-xl font-bold">{awayScore}</Text>
+    <View className="flex-row items-center justify-center ">
+      <View className="flex-grow border border-border rounded-md items-center justify-center py-2">
+        <Text className="text-text text-xl font-bold ">{homeScore}</Text>
+      </View>
+      <Text className="text-text text-xl mx-1">:</Text>
+      <View className="flex-grow border border-border rounded-md items-center justify-center py-2">
+        <Text className="text-text text-xl font-bold">{awayScore}</Text>
+      </View>
     </View>
   )
 );
 
-const AddIconButton = memo(() => {
-  const { colors } = useThemeTokens();
-  return (
-    <View className="items-center justify-center py-3 px-4">
-      <View className="bg-surface/50 rounded-full p-2 border border-border/50">
-        <AddIcon size={24} color={colors.muted} />
-      </View>
-    </View>
-  );
-});
-
-const MatchStatusDisplay = memo(
+const MatchScoreDisplay = memo(
   ({
     status,
+    matchScore,
     prediction,
+    kickOff,
   }: {
     status: string | null;
     prediction: Prediction | null;
     matchScore: MatchScore | null;
+    kickOff: string;
   }) => {
     const normalizedStatus = normalizeStatus(status);
     const hasPrediction = prediction !== null;
     const homeScore = prediction?.home_score ?? 0;
     const awayScore = prediction?.away_score ?? 0;
+
+    const isLiveOrInPlay =
+      normalizedStatus === STATUS.LIVE ||
+      normalizedStatus === STATUS.IN_PLAY ||
+      normalizedStatus === STATUS.PAUSED;
+
     const isScheduledOrTimed =
       normalizedStatus === STATUS.SCHEDULED ||
       normalizedStatus === STATUS.TIMED;
-    const isLiveOrInPlay =
-      normalizedStatus === STATUS.LIVE || normalizedStatus === STATUS.IN_PLAY;
 
     // Determine border color based on prediction points if finished
     const getBorderColor = (): string => {
@@ -94,13 +92,18 @@ const MatchStatusDisplay = memo(
     };
 
     if (isScheduledOrTimed && !hasPrediction) {
-      return <AddIconButton />;
+      return (
+        <View className="flex-1 items-center justify-center gap-2">
+          <Text className="text-text">{timeFormat(kickOff)}</Text>
+          <AddIcon size={30} color={'grey'} />
+        </View>
+      );
     }
 
     return (
       <View className="flex-1 items-center justify-center">
         {isLiveOrInPlay && (
-          <View className="bg-green-500/20 rounded-full px-2.5 py-0.5 mb-1">
+          <View className="bg-green-500/20 rounded-full px-2.5 py-0.5 mb-2">
             <Text className="text-green-500 text-xs font-bold">LIVE</Text>
           </View>
         )}
@@ -115,32 +118,6 @@ const MatchStatusDisplay = memo(
   }
 );
 
-const MatchHeader = memo(({ match }: { match: MatchItem }) => {
-  return (
-    <View className="flex-row items-center px-4 py-1 bg-muted">
-      <View className="flex-1">
-        <Text className="text-dark text-xs font-medium uppercase tracking-wide">
-          {dayNameFormat(match.kick_off)}
-        </Text>
-      </View>
-      <View className="min-w-[70px] mx-3 items-center">
-        {match.status === STATUS.LIVE || match.status === STATUS.IN_PLAY ? (
-          <Text className="text-green-200 text-xs font-bold">LIVE</Text>
-        ) : (
-          <Text className="text-dark text-xs font-bold">
-            {match.score?.fullTime?.home ?? 0} -{' '}
-            {match.score?.fullTime?.away ?? 0}
-          </Text>
-        )}
-      </View>
-      <View className="flex-1 items-end">
-        <Text className="text-dark text-xs font-medium">
-          {dateFormat(match.kick_off)}
-        </Text>
-      </View>
-    </View>
-  );
-});
 const TeamLogo = memo(({ logo, size }: { logo: string; size: number }) => (
   <View className="mb-2">
     <ExpoImage
@@ -172,6 +149,9 @@ const TeamDisplay = memo(
 export const MatchCard = memo(({ match }: { match: MatchItem }) => {
   const router = useRouter();
   const prediction = match.predictions?.[0] ?? null;
+  const matchStatus = getSimpleMatchStatus(match.status);
+
+  console.log('match', JSON.stringify(match, null, 2));
 
   const handlePress = () => {
     router.push({
@@ -189,14 +169,19 @@ export const MatchCard = memo(({ match }: { match: MatchItem }) => {
       android_ripple={{ color: '#e5e7eb' }}
       onPress={handlePress}
     >
-      <MatchHeader match={match} />
+      <MatchHeader
+        status={matchStatus}
+        kickOff={match.kick_off}
+        prediction={prediction}
+      />
 
       <View className="flex-row justify-between  py-4 px-2">
         <TeamDisplay team={match.home_team} logoSize={TEAM_LOGO_SIZE} />
 
         <View className="min-w-[80px] max-w-[100px]">
-          <MatchStatusDisplay
-            status={match.status}
+          <MatchScoreDisplay
+            status={matchStatus}
+            kickOff={match.kick_off}
             matchScore={match.score}
             prediction={prediction}
           />
