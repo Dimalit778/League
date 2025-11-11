@@ -19,6 +19,10 @@ const BackButton = ({ title, className }: BackButtonProps) => {
       <TouchableOpacity
         className="absolute left-4 z-10"
         onPress={() => router.back()}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={title ? `Go back from ${title}` : 'Go back'}
+        accessibilityHint="Double tap to navigate to the previous screen"
       >
         <ArrowLeftIcon color="#fff" size={28} />
       </TouchableOpacity>

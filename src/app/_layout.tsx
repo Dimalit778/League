@@ -1,23 +1,59 @@
 import '../../global.css';
 
-import { SplashScreen } from '@/components/layout';
+import {
+  AppErrorBoundary,
+  NetworkStatusBanner,
+  SplashScreen,
+} from '@/components/layout';
 
 import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
 
 import { getThemeTokens, themes } from '@/lib/nativewind/themes';
 import { useMemberStore } from '@/store/MemberStore';
+import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useNavigationContainerRef } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { AppState, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: true,
+});
+
+Sentry.init({
+  dsn: 'https://014844ec8a09d0a4fac8a7fdbb0d17b1@o4510343122190336.ingest.de.sentry.io/4510343191265360',
+  attachScreenshot: true,
+  sendDefaultPii: true,
+  enableLogs: true,
+  tracesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [
+    Sentry.mobileReplayIntegration({
+      maskAllText: false,
+      maskAllImages: false,
+      maskAllVectors: false,
+    }),
+    navigationIntegration,
+    Sentry.spotlightIntegration(),
+    Sentry.feedbackIntegration(),
+  ],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 const InitialApp = () => {
+  const ref = useNavigationContainerRef();
+  useEffect(() => {
+    navigationIntegration.registerNavigationContainer(ref);
+  }, [ref]);
+
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
 
@@ -77,6 +113,7 @@ const InitialApp = () => {
 
   return (
     <View className="flex-1" style={[themes[theme]]}>
+      <NetworkStatusBanner />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -98,14 +135,17 @@ const InitialApp = () => {
   );
 };
 
-export default function RootLayout() {
+const RootLayout = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <KeyboardProvider>
-          <InitialApp />
-        </KeyboardProvider>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <KeyboardProvider>
+            <InitialApp />
+          </KeyboardProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
   );
-}
+};
+export default Sentry.wrap(RootLayout);

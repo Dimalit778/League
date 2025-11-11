@@ -14,6 +14,8 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   className?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 const Button = ({
@@ -25,12 +27,18 @@ const Button = ({
   className = '',
   loading = false,
   disabled = false,
+  accessibilityLabel,
+  accessibilityHint,
 }: ButtonProps) => {
   const handlePress = () => {
     if (!loading && !disabled) {
       onPress();
     }
   };
+
+  // Generate accessibility label from title if not provided
+  const label = accessibilityLabel || title;
+  const hint = accessibilityHint || (loading ? 'Loading' : disabled ? 'Button disabled' : `Double tap to ${title.toLowerCase()}`);
 
   return (
     <TouchableOpacity
@@ -51,6 +59,11 @@ const Button = ({
       ]}
       onPress={handlePress}
       activeOpacity={0.8}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={hint}
+      accessibilityState={{ disabled: disabled || loading }}
     >
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />

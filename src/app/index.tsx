@@ -14,11 +14,19 @@ export default function Welcome() {
   return (
     <SafeAreaView className="flex-1 bg-background justify-center">
       <View className="justify-center items-center ">
-        <Text className="text-5xl text-secondary font-headBold pt-3">
+        <Text 
+          className="text-5xl text-secondary font-headBold pt-3"
+          accessible={true}
+          accessibilityRole="header"
+        >
           Welcome to League
         </Text>
 
-        <Text className="text-base text-muted text-center mt-2">
+        <Text 
+          className="text-base text-muted text-center mt-2"
+          accessible={true}
+          accessibilityRole="text"
+        >
           Your ultimate football companion. Track leagues, follow matches, and
           stay connected with the beautiful game.
         </Text>
@@ -60,6 +68,8 @@ export default function Welcome() {
           onPress={() => router.push('/(auth)/signIn')}
           variant="secondary"
           size="lg"
+          accessibilityLabel="Get started with League app"
+          accessibilityHint="Double tap to sign in or create an account"
         />
       </View>
     </SafeAreaView>

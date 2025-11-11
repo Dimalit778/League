@@ -18,12 +18,6 @@ export default function usePrefetchImages(
   const prevSigRef = useRef<string>('');
 
   useEffect(() => {
-    console.log('usePrefetchImages effect:', {
-      uniqueUrls,
-      signature,
-      prevSignature: prevSigRef.current,
-    });
-
     // If nothing changed, keep current ready state; no flicker.
     if (prevSigRef.current === signature) {
       if (uniqueUrls.length === 0) setReady(true);
@@ -32,33 +26,27 @@ export default function usePrefetchImages(
     prevSigRef.current = signature;
 
     if (uniqueUrls.length === 0) {
-      console.log('No URLs to prefetch, setting ready to true');
       setReady(true);
       return;
     }
 
     let cancelled = false;
     setReady(false);
-    console.log('Starting image prefetch for', uniqueUrls.length, 'images');
 
     const timeoutId = setTimeout(() => {
       if (!cancelled) {
-        console.log('Image prefetch timeout reached, setting ready to true');
         setReady(true); // safety net
       }
     }, timeoutMs);
 
     (async () => {
       try {
-        console.log('Prefetching images...');
         await Promise.all(
           uniqueUrls.map((u) =>
             ExpoImage.prefetch(u, { cachePolicy: 'memory-disk' })
           )
         );
-        console.log('All images prefetched successfully');
       } catch (err) {
-        console.warn('Image prefetch warning:', err);
       } finally {
         if (!cancelled) {
           clearTimeout(timeoutId);

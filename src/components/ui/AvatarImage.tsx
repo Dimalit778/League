@@ -35,9 +35,17 @@ const AvatarImage = ({
           transition={0}
           priority="high"
           style={{ width: '100%', height: '100%' }}
+          accessible={true}
+          accessibilityRole="image"
+          accessibilityLabel={`${nickname}'s avatar`}
         />
       ) : (
-        <View className="items-center justify-center">
+        <View 
+          className="items-center justify-center"
+          accessible={true}
+          accessibilityRole="text"
+          accessibilityLabel={`${nickname}'s avatar initial ${initial}`}
+        >
           <Text className="text-primary font-semibold text-2xl">{initial}</Text>
         </View>
       )}

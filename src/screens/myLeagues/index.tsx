@@ -8,6 +8,7 @@ import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberLeague } from '@/types';
 import StarIcon from '@assets/icons/StarIcon';
+import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
@@ -18,6 +19,8 @@ const MyLeagues = () => {
   const { session } = useCurrentSession();
   const queryClient = useQueryClient();
   const setMember = useMemberStore((s) => s.setMember);
+  const member = useMemberStore((s) => s.member);
+  console.log('member', JSON.stringify(member, null, 2));
 
   const userId = session?.user?.id as string;
   const {
@@ -82,6 +85,12 @@ const MyLeagues = () => {
           onPress={() => router.push('/myLeagues/join-league')}
         />
       </View>
+      <Button
+        title="Try!"
+        onPress={() => {
+          Sentry.captureException(new global.Error('First error'));
+        }}
+      />
       <FlatList
         data={memberLeagues}
         showsVerticalScrollIndicator={false}

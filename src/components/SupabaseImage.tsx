@@ -5,9 +5,10 @@ import { Image, View } from 'react-native';
 
 type SupabaseImageProps = {
   path: string;
+  accessibilityLabel?: string;
 } & ComponentProps<typeof Image>;
 
-const SupabaseImage = ({ path, ...imageProps }: SupabaseImageProps) => {
+const SupabaseImage = ({ path, accessibilityLabel, ...imageProps }: SupabaseImageProps) => {
   const [image, setImage] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   console.log('path', path);
@@ -34,7 +35,15 @@ const SupabaseImage = ({ path, ...imageProps }: SupabaseImageProps) => {
       </View>
     );
 
-  return <Image source={{ uri: image }} {...imageProps} />;
+  return (
+    <Image 
+      source={{ uri: image }} 
+      {...imageProps}
+      accessible={true}
+      accessibilityRole="image"
+      accessibilityLabel={accessibilityLabel || 'Image'}
+    />
+  );
 };
 
 export default SupabaseImage;

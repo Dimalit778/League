@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
+import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
+import { formatErrorForUser } from '@/utils/networkErrorHandler';
 import { useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -60,7 +62,19 @@ export const useAuth = () => {
   }
   async function signUp(email: string, password: string, fullname: string) {
     setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+    
     try {
+      // Check network connection before making request
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -69,12 +83,14 @@ export const useAuth = () => {
         },
       });
 
-      if (error) throw new Error(error.message);
+      if (error) throw error;
 
       return { success: true };
     } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
       setIsError(true);
-      return { success: false, error: error.message || 'Failed to sign up' };
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
     } finally {
       setIsLoading(false);
     }
@@ -83,22 +99,33 @@ export const useAuth = () => {
     setIsLoading(true);
     setIsError(false);
     setErrorMessage(null);
+    
     try {
+      // Check network connection before making request
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
       });
 
-      if (error) throw new Error(error.message);
+      if (error) throw error;
 
       // Sync MemberStore after successful sign in
       await useMemberStore.getState().initializeMemberLeagues();
 
       return { success: true };
     } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
       setIsError(true);
-      setErrorMessage(error.message || 'Failed to sign in');
-      return { success: false, error: error.message || 'Failed to sign in' };
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
     } finally {
       setIsLoading(false);
     }
