@@ -15,7 +15,7 @@ import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppState, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -62,6 +62,7 @@ const InitialApp = () => {
   );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const hasInitialized = useRef(false);
 
   const [fontsLoaded] = useFonts({
     'Teko-Regular': require('@assets/fonts/Teko-Regular.ttf'),
@@ -72,8 +73,12 @@ const InitialApp = () => {
   });
 
   useEffect(() => {
-    initializeTheme();
-    initializeMemberLeagues();
+    // Initialize theme and member leagues only once when app opens
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      initializeTheme();
+      initializeMemberLeagues();
+    }
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {

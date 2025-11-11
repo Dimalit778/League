@@ -2,6 +2,7 @@ import { Error } from '@/components/layout';
 import { useMemberStats } from '@/hooks/useMembers';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import PredictionChart from './PredictionChart';
@@ -10,6 +11,7 @@ import StatsCard from './StatsCard';
 
 const Stats = () => {
   const { member } = useMemberStore();
+  const isFocused = useIsFocused();
 
   const { data: stats, isLoading, error, refetch } = useMemberStats(member?.id);
 
@@ -27,7 +29,7 @@ const Stats = () => {
         showsVerticalScrollIndicator={false}
         className="flex-1 px-4 pt-4"
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />
         }
       >
         <View className="flex-row mb-4">

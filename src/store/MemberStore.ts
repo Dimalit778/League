@@ -28,7 +28,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     }),
 
   initializeMemberLeagues: async () => {
-    console.log('initializeMemberLeagues');
+    console.log('-------------------------------- initializeMemberLeagues');
 
     const currentState = get();
     if (!currentState.member) {

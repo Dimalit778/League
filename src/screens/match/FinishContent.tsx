@@ -2,11 +2,13 @@ import { LoadingOverlay } from '@/components/layout';
 import { useGetLeaguePredictionsByFixture } from '@/hooks/usePredictions';
 import { useMemberStore } from '@/store/MemberStore';
 import { PredictionLeaderboardType } from '@/types';
+import { useIsFocused } from '@react-navigation/native';
 import { FlatList, Text, View } from 'react-native';
 import { PredictionsLeaderCard } from './PredictionsLeaderCard';
 
 const FinishContent = ({ match_id }: { match_id: number }) => {
   const { member } = useMemberStore();
+  const isFocused = useIsFocused();
   const {
     data: leaguePredictions,
     isLoading,
@@ -56,7 +58,7 @@ const FinishContent = ({ match_id }: { match_id: number }) => {
               />
             )}
             showsVerticalScrollIndicator={false}
-            refreshing={isLoading}
+            refreshing={isFocused && isLoading}
             onRefresh={() => {
               refetch();
             }}

@@ -1,5 +1,6 @@
 import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
 
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { Error } from '../../../../components/layout';
@@ -19,6 +20,7 @@ const MatchList = ({
   competitionId,
   userId,
 }: MatchListProps) => {
+  const isFocused = useIsFocused();
   const {
     data: matches,
     isLoading,
@@ -39,7 +41,7 @@ const MatchList = ({
       data={matches}
       showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.id.toString()}
-      refreshing={isFetching}
+      refreshing={isFocused && isFetching}
       onRefresh={handleRefresh}
       renderItem={({ item }) => <MatchCard match={item} />}
       style={{ paddingTop: 10 }}

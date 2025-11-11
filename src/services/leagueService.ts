@@ -162,6 +162,13 @@ export const leagueService = {
     userId: string,
     leagueId: string
   ): Promise<MemberLeague> {
+    const { error: unsetLeaguesError } = await supabase
+      .from('league_members')
+      .update({ is_primary: false })
+      .eq('user_id', userId)
+      .neq('league_id', leagueId);
+
+    if (unsetLeaguesError) throw new Error(unsetLeaguesError.message);
     const { data: primaryLeague, error: setPrimaryError } = await supabase
       .from('league_members')
       .update({
@@ -173,14 +180,6 @@ export const leagueService = {
       .single();
 
     if (setPrimaryError) throw new Error(setPrimaryError.message);
-
-    const { error: unsetLeaguesError } = await supabase
-      .from('league_members')
-      .update({ is_primary: false })
-      .eq('user_id', userId)
-      .neq('league_id', leagueId);
-
-    if (unsetLeaguesError) throw new Error(unsetLeaguesError.message);
 
     return primaryLeague as MemberLeague;
   },

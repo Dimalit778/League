@@ -5,6 +5,7 @@ import {
   useAdminCompetitions,
   useRemoveCompetition,
 } from '@/hooks/useAdmin';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
@@ -28,6 +29,7 @@ const initialFormState = {
 type FormState = typeof initialFormState;
 
 const AdminCompetitions = () => {
+  const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } =
     useAdminCompetitions();
   const addCompetition = useAddCompetition();
@@ -140,7 +142,7 @@ const AdminCompetitions = () => {
         className="flex-1 px-4 pt-4"
         refreshControl={
           <RefreshControl
-            refreshing={isLoading || isRefetching}
+            refreshing={isFocused && (isLoading || isRefetching)}
             onRefresh={onRefresh}
           />
         }

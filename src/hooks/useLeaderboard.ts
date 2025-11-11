@@ -4,6 +4,19 @@ import { leaderboardService } from '@/services/leaderboardService';
 import { useMemberStore } from '@/store/MemberStore';
 import { useQuery } from '@tanstack/react-query';
 
+// Image cache for batch operations
+const imageCache = new Map<string, string>();
+
+const buildCacheKey = (path: string) => {
+  const transform = JSON.stringify({
+    width: 80,
+    height: 80,
+    resize: 'cover',
+    quality: 80,
+  });
+  return `avatars:${path}:3600:${transform}`;
+};
+
 export const useGetLeaderboard = () => {
   const leagueId = useMemberStore((s) => s.member?.league_id);
 
@@ -12,6 +25,7 @@ export const useGetLeaderboard = () => {
     enabled: !!leagueId,
     staleTime: 1000 * 60 * 5,
     queryFn: async () => {
+      // Fetch leaderboard data first
       const rows = await leaderboardService.getLeagueLeaderboard(leagueId!);
 
       const paths = rows.map((r) => r.avatar_url).filter(Boolean) as string[];
@@ -19,23 +33,51 @@ export const useGetLeaderboard = () => {
         return rows.map((r) => ({ ...r, imageUri: null as string | null }));
       }
 
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .createSignedUrls(paths, 3600, {
-          download: false,
-          transform: { width: 80, height: 80, resize: 'cover', quality: 80 },
-        } as any);
+      // Check cache first and separate cached vs uncached paths
+      const cachedUrls = new Map<string, string | null>();
+      const uncachedPaths: string[] = [];
 
-      if (error) throw error;
-
-      const byPath = new Map<string, string | null>();
-      data.forEach(({ path, signedUrl }) => {
-        if (path) byPath.set(path, signedUrl ?? null);
+      paths.forEach((path) => {
+        const cacheKey = buildCacheKey(path);
+        const cached = imageCache.get(cacheKey);
+        if (cached) {
+          cachedUrls.set(path, cached);
+        } else {
+          uncachedPaths.push(path);
+        }
       });
+
+      // Only fetch signed URLs for uncached paths
+      let fetchedUrls = new Map<string, string | null>();
+      if (uncachedPaths.length > 0) {
+        const { data, error } = await supabase.storage
+          .from('avatars')
+          .createSignedUrls(uncachedPaths, 3600, {
+            download: false,
+            transform: { width: 80, height: 80, resize: 'cover', quality: 80 },
+          } as any);
+
+        if (error) throw error;
+
+        // Store in cache and map
+        data.forEach(({ path, signedUrl }) => {
+          if (path) {
+            const cacheKey = buildCacheKey(path);
+            const url = signedUrl ?? null;
+            fetchedUrls.set(path, url);
+            if (url) {
+              imageCache.set(cacheKey, url);
+            }
+          }
+        });
+      }
+
+      // Merge cached and fetched URLs
+      const allUrls = new Map([...cachedUrls, ...fetchedUrls]);
 
       return rows.map((r) => ({
         ...r,
-        imageUri: r.avatar_url ? (byPath.get(r.avatar_url) ?? null) : null,
+        imageUri: r.avatar_url ? (allUrls.get(r.avatar_url) ?? null) : null,
       }));
     },
   });

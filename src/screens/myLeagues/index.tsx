@@ -19,8 +19,6 @@ const MyLeagues = () => {
   const { session } = useCurrentSession();
   const queryClient = useQueryClient();
   const setMember = useMemberStore((s) => s.setMember);
-  const member = useMemberStore((s) => s.member);
-  console.log('member', JSON.stringify(member, null, 2));
 
   const userId = session?.user?.id as string;
   const {
@@ -32,12 +30,16 @@ const MyLeagues = () => {
     queryFn: () => leagueService.getUserLeagues(userId),
   });
 
-  const { mutate: updatePrimaryLeague } = useMutation({
+  const { mutateAsync: updatePrimaryLeague } = useMutation({
     mutationFn: (leagueId: string) =>
       leagueService.updatePrimaryLeague(userId, leagueId),
     onSuccess: (league) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
+      });
+      // Invalidate all leaderboard queries to ensure fresh data
+      queryClient.invalidateQueries({
+        queryKey: ['leaderboard'],
       });
       setMember(league);
     },
@@ -49,10 +51,9 @@ const MyLeagues = () => {
   const { data: subscription } = useSubscription();
 
   const handleSetPrimary = useCallback(
-    (league: MemberLeague) => {
-      setMember(league);
+    async (league: MemberLeague) => {
       if (!league.is_primary) {
-        updatePrimaryLeague(league.league_id);
+        await updatePrimaryLeague(league.league_id);
       }
       router.push('/(app)/(member)/(tabs)/League');
     },

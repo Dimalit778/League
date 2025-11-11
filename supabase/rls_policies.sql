@@ -160,30 +160,6 @@ CREATE POLICY "Users: Delete own predictions"
   USING (user_id = auth.uid());
 
 -- ============================================================================
--- LEAGUE_MEMBERS TABLE POLICIES
--- ============================================================================
-
--- Admins can do everything on league_members
-CREATE POLICY "Admin: Full access to league_members"
-  ON public.league_members FOR ALL
-  TO authenticated
-  USING (public.is_admin())
-  WITH CHECK (public.is_admin());
-
--- Users can read their own league memberships
-CREATE POLICY "Users: Read own league memberships"
-  ON public.league_members FOR SELECT
-  TO authenticated
-  USING (user_id = auth.uid());
-
--- Users can update their own league memberships (e.g., set is_primary)
-CREATE POLICY "Users: Update own league memberships"
-  ON public.league_members FOR UPDATE
-  TO authenticated
-  USING (user_id = auth.uid())
-  WITH CHECK (user_id = auth.uid());
-
--- ============================================================================
 -- SUBSCRIPTION TABLE POLICIES
 -- ============================================================================
 

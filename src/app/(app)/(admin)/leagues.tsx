@@ -1,11 +1,13 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton } from '@/components/ui';
 import { useAdminLeagues } from '@/hooks/useAdmin';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AdminLeagues = () => {
+  const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } = useAdminLeagues();
 
   const onRefresh = useCallback(() => {
@@ -23,7 +25,7 @@ const AdminLeagues = () => {
         className="flex-1 px-4 pt-4"
         refreshControl={
           <RefreshControl
-            refreshing={isLoading || isRefetching}
+            refreshing={isFocused && (isLoading || isRefetching)}
             onRefresh={onRefresh}
           />
         }

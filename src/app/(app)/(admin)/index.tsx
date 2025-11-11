@@ -4,6 +4,7 @@ import { useAdminDashboard } from '@/hooks/useAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/services/useAuth';
 import Entypo from '@expo/vector-icons/Entypo';
+import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import {
@@ -58,6 +59,7 @@ const AdminDashboard = () => {
   const { signOut } = useAuth();
   const router = useRouter();
   const { colors } = useThemeTokens();
+  const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } = useAdminDashboard();
   const onRefresh = useCallback(() => {
     refetch();
@@ -72,7 +74,7 @@ const AdminDashboard = () => {
         className="flex-1 p-4"
         refreshControl={
           <RefreshControl
-            refreshing={isLoading || isRefetching}
+            refreshing={isFocused && (isLoading || isRefetching)}
             onRefresh={onRefresh}
           />
         }
