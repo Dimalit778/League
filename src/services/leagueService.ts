@@ -4,10 +4,20 @@ import {
   createLeagueProps,
   createLeagueResponse,
   LeagueWithCompetition,
+  leagueWithMembers,
   MemberLeague,
 } from '@/types';
 
 export const leagueService = {
+  async getLeagueLeaderboard(leagueId: string) {
+    const { data, error } = await supabase
+      .from('league_leaderboard_view')
+      .select('*')
+      .eq('league_id', leagueId);
+
+    if (error) throw error;
+    return data;
+  },
   async getUserLeagues(userId: string): Promise<MemberLeague[]> {
     const { data, error } = await supabase
       .from('league_members')
@@ -33,40 +43,7 @@ export const leagueService = {
     return data as LeagueWithCompetition;
   },
 
-  async getFullLeagueData(leagueId: string) {
-    try {
-      const { data: leagueData, error: leagueError } = await supabase
-        .from('leagues')
-        .select(
-          '*,competition:competitions!inner(id,name,logo,area,flag),league_members(count)'
-        )
-        .eq('id', leagueId)
-        .single();
-
-      if (leagueError) throw new Error(leagueError.message);
-      if (!leagueData) throw new Error('League not found');
-
-      const { data: ownerData, error: ownerError } = await supabase
-        .from('league_members')
-        .select('nickname')
-        .eq('user_id', leagueData.owner_id)
-        .eq('league_id', leagueId)
-        .single();
-
-      if (ownerError)
-        return console.error('Error fetching owner data:', ownerError);
-
-      return {
-        ...leagueData,
-        owner: ownerData,
-      };
-    } catch (error: any) {
-      console.error('Error in getFullLeagueData:', error.message);
-      throw error;
-    }
-  },
-
-  async getLeagueAndMembers(leagueId: string) {
+  async getLeagueAndMembers(leagueId: string): Promise<leagueWithMembers> {
     try {
       const { data: leagueData, error: leagueError } = await supabase
         .from('leagues')
@@ -77,20 +54,8 @@ export const leagueService = {
         .single();
 
       if (leagueError) throw new Error(leagueError.message);
-      if (!leagueData) throw new Error('League not found');
-      const { data: owner, error: ownerError } = await supabase
-        .from('league_members')
-        .select('*')
-        .eq('league_id', leagueId)
-        .eq('user_id', leagueData.owner_id)
-        .single();
-      if (ownerError) throw new Error(ownerError.message);
-      if (!owner) throw new Error('Owner not found');
 
-      return {
-        ...leagueData,
-        owner,
-      };
+      return leagueData as leagueWithMembers;
     } catch (error: any) {
       console.error('Error in getLeagueAndMembers:', error.message);
       throw error;
@@ -136,9 +101,6 @@ export const leagueService = {
   },
 
   async joinLeague(joinCode: string, nickname: string) {
-    // First check if the league exists and get its details
-    const league = await this.findLeagueByJoinCode(joinCode);
-
     const { data, error } = await supabase.rpc('join_league', {
       league_join_code: joinCode,
       user_nickname: nickname,

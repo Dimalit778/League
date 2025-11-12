@@ -1,5 +1,5 @@
 import { Error } from '@/components/layout';
-import { useGetLeaderboard } from '@/hooks/useLeaderboard';
+import { useGetLeagueLeaderboard } from '@/hooks/useLeagues';
 import LeaderboardCard from '@/screens/league/LeaderboardCard';
 import LeagueSkeleton from '@/screens/league/LeagueSkeleton';
 import TopThree from '@/screens/league/TopThree';
@@ -11,13 +11,12 @@ import { useCallback } from 'react';
 import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const League = () => {
-  const { member } = useMemberStore();
+const LeagueScreen = () => {
+  const { member, league } = useMemberStore();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
   const contentTop = Math.max(0, headerHeight - insets.top);
   const isFocused = useIsFocused();
-  // const [isSwitchingLeague, setIsSwitchingLeague] = useState(false);
 
   const {
     data: leaderboard,
@@ -25,14 +24,7 @@ const League = () => {
     isRefetching,
     error,
     refetch,
-  } = useGetLeaderboard();
-
-  // const imageUris = useMemo(
-  //   () => leaderboard?.map((item) => item.imageUri).filter(Boolean) ?? [],
-  //   [leaderboard]
-  // );
-
-  // const imagesReady = usePrefetchImages(imageUris);
+  } = useGetLeagueLeaderboard(league?.id);
 
   const topThree = leaderboard?.slice(0, 3) ?? [];
 
@@ -40,13 +32,8 @@ const League = () => {
     refetch();
   }, [refetch]);
 
-  const loading =
-    (isLoading && !leaderboard) ||
-    // isSwitchingLeague ||
-    (member?.league_id && !leaderboard);
-
   if (error) return <Error error={error} />;
-  if (loading) return <LeagueSkeleton />;
+  if (isLoading) return <LeagueSkeleton />;
 
   return (
     <View className="flex-1 bg-background">
@@ -68,18 +55,20 @@ const League = () => {
         )}
         refreshing={isFocused && isRefetching}
         onRefresh={handleRefresh}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={10}
-        updateCellsBatchingPeriod={50}
         getItemLayout={(_, index) => ({
           length: 80,
           offset: 80 * index,
           index,
         })}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10,
+        }}
+        legacyImplementation={false}
+        disableVirtualization={false}
       />
     </View>
   );
 };
 
-export default League;
+export default LeagueScreen;

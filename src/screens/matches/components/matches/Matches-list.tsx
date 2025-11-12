@@ -1,9 +1,9 @@
 import { useGetMatchesWithPredictions } from '@/hooks/useMatches';
 
+import { Error } from '@/components/layout';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { FlatList } from 'react-native';
-import { Error } from '../../../../components/layout';
 import MatchCard from './MatchCard';
 import MatchesSkeleton from './SkeletonMatches';
 

@@ -1,5 +1,5 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { dateFormat, dayNameFormat, timeFormat } from '@/utils/formats';
+import { dateFormat, dayNameFormat } from '@/utils/formats';
 import { getSimpleMatchStatus } from '@/utils/matchHelper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
@@ -57,14 +57,10 @@ const MatchHeader = ({ status, kickOff, prediction }: MatchHeaderProps) => {
       </View>
       <View className="min-w-[80px] mx-3 ">
         <LinearGradient colors={colors}>
-          {matchStatus === 'SCHEDULED' ? (
-            <Text className="text-background text-xs font-medium text-center">
-              {timeFormat(kickOff)}
-            </Text>
-          ) : (
+          {prediction && (
             <Text className="text-background font-medium text-center">
-              {prediction?.home_score ?? '-/-'} -
-              {prediction?.away_score ?? '-/-'}
+              {prediction?.home_score ?? null} -{' '}
+              {prediction?.away_score ?? null}
             </Text>
           )}
         </LinearGradient>

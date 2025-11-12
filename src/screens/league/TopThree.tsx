@@ -52,8 +52,8 @@ const TopThree = ({ topMembers }: TopThreeProps) => {
             style={{ width: size, height: size }}
           >
             <AvatarImage
-              nickname={member?.nickname ?? ''}
-              imageUri={member?.imageUri ?? null}
+              nickname={member?.nickname!}
+              path={member?.avatar_url}
             />
           </View>
         </View>

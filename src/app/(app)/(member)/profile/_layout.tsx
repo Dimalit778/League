@@ -7,7 +7,6 @@ const ProfileLayout = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="edit-profile" />
       <Stack.Screen name="edit-league" />
     </Stack>
   );

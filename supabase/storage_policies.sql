@@ -4,12 +4,17 @@ values ('avatars', 'avatars', false)
 on conflict (id) do nothing;
 
 -- Helper: check if user is the owner of a member_id
+-- member_id can be just the UUID or include file extension (e.g., "uuid.jpg")
 create or replace function is_owner_of_member(uid uuid, member_id text)
 returns boolean language sql stable as $$
   select exists (
     select 1
     from league_members
-    where user_id = uid and id::text = member_id::text
+    where user_id = uid 
+      and (
+        id::text = member_id::text 
+        or id::text = split_part(member_id, '.', 1)
+      )
   );
 $$;
 

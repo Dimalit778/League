@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import { useGetLeaguePredictionsByFixture } from '@/hooks/usePredictions';
 import { useMemberStore } from '@/store/MemberStore';
 import { PredictionLeaderboardType } from '@/types';
@@ -17,7 +17,7 @@ const FinishContent = ({ match_id }: { match_id: number }) => {
   } = useGetLeaguePredictionsByFixture(match_id);
 
   if (isLoading) return <LoadingOverlay />;
-  if (error) console.log('error', error);
+  if (error) return <Error error={error} />;
 
   return (
     <View className="flex-1 bg-surface rounded-xl p-4 mb-4">

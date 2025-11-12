@@ -11,7 +11,7 @@ const TabsHeader = ({
   showLeagueName?: boolean;
 }) => {
   const { colors } = useThemeTokens();
-  const member = useMemberStore((s) => s.member?.league);
+  const { league } = useMemberStore();
   const insets = useSafeAreaInsets();
 
   return (
@@ -30,7 +30,7 @@ const TabsHeader = ({
 
         {showLeagueName && (
           <Text className="font-bold  text-2xl text-primary" numberOfLines={1}>
-            {member?.name}
+            {league?.name}
           </Text>
         )}
 

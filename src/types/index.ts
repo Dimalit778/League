@@ -30,7 +30,6 @@ export type leagueWithMembers = Tables<'leagues'> & {
     Tables<'competitions'>,
     'id' | 'name' | 'logo' | 'area' | 'flag'
   >;
-  owner: Tables<'league_members'>;
 };
 export type createLeagueProps = {
   league_name: string;

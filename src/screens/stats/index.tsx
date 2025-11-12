@@ -29,7 +29,10 @@ const Stats = () => {
         showsVerticalScrollIndicator={false}
         className="flex-1 px-4 pt-4"
         refreshControl={
-          <RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={isFocused && isLoading}
+            onRefresh={onRefresh}
+          />
         }
       >
         <View className="flex-row mb-4">

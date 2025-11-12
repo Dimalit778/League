@@ -9,7 +9,11 @@ const Error = ({ error }: ErrorProps) => {
   const errorMessage =
     typeof error === 'string'
       ? error
-      : formatErrorForUser(error instanceof Error ? error : { message: error.message });
+      : formatErrorForUser(
+          error && typeof error === 'object' && 'message' in error
+            ? error
+            : { message: String(error?.message || error || 'Unknown error') }
+        );
 
   return (
     <View className="flex-1 justify-center items-center bg-background px-6">

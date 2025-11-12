@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
+import { Image } from 'react-native';
 
 type StorageTransformOptions = {
   width?: number;
@@ -14,9 +16,9 @@ type SignedUrlOptions = {
   cache?: boolean;
 };
 
-const imageCache = new Map<string, string>();
+export const imageCache = new Map<string, string>();
 
-const buildCacheKey = (path: string, options?: SignedUrlOptions) => {
+export const buildCacheKey = (path: string, options?: SignedUrlOptions) => {
   const bucket = options?.bucket ?? 'avatars';
   const expiresIn = options?.expiresIn ?? 3600;
   const transform = options?.transform
@@ -61,10 +63,134 @@ export const downloadImage = async (
   return signedUrl;
 };
 
+export const downloadMultipleImages = async (
+  paths: string[],
+  options?: SignedUrlOptions
+): Promise<Map<string, string | null>> => {
+  if (paths.length === 0) {
+    return new Map();
+  }
+
+  const bucket = options?.bucket ?? 'avatars';
+  const expiresIn = options?.expiresIn ?? 60 * 60 * 24; // 1 day
+  const transform = options?.transform;
+  const shouldUseCache = options?.cache !== false;
+
+  // Check cache first and separate cached vs uncached paths
+  const cachedUrls = new Map<string, string | null>();
+  const uncachedPaths: string[] = [];
+
+  paths.forEach((path) => {
+    if (!path) return;
+
+    const cacheKey = buildCacheKey(path, options);
+    const cached = shouldUseCache ? imageCache.get(cacheKey) : undefined;
+
+    if (cached) {
+      cachedUrls.set(path, cached);
+    } else {
+      uncachedPaths.push(path);
+    }
+  });
+
+  // Only fetch signed URLs for uncached paths
+  const fetchedUrls = new Map<string, string | null>();
+  if (uncachedPaths.length > 0) {
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUrls(uncachedPaths, expiresIn, {
+        download: false,
+        transform: transform
+          ? {
+              width: transform.width,
+              height: transform.height,
+              resize: transform.resize,
+              quality: transform.quality,
+            }
+          : undefined,
+      } as any);
+
+    if (error) throw error;
+
+    // Store in cache and map
+    data.forEach(({ path, signedUrl }) => {
+      if (path) {
+        const cacheKey = buildCacheKey(path, options);
+        const url = signedUrl ?? null;
+        fetchedUrls.set(path, url);
+
+        if (shouldUseCache && url) {
+          imageCache.set(cacheKey, url);
+        }
+      }
+    });
+  }
+
+  // Merge cached and fetched URLs
+  return new Map([...cachedUrls, ...fetchedUrls]);
+};
+
 export const invalidateImageCache = (path: string) => {
   [...imageCache.keys()].forEach((key) => {
     if (key.includes(`:${path}:`)) {
       imageCache.delete(key);
     }
   });
+};
+
+export const useSupabaseImageCache = (paths: string[], bucket = 'avatars') => {
+  const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      if (!paths.length) {
+        setImageUrls(new Map());
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const { data, error: storageError } = await supabase.storage
+          .from(bucket)
+          .createSignedUrls(paths, 60 * 60 * 24); // 1 day
+
+        if (storageError) {
+          throw storageError;
+        }
+
+        const map = new Map<string, string>();
+        data.forEach((item) => {
+          if (item.path && item.signedUrl) {
+            map.set(item.path, item.signedUrl);
+          }
+        });
+
+        // Prefetch for smooth UI - don't fail if prefetch fails
+        await Promise.all(
+          data
+            .map((item) => item.signedUrl)
+            .filter(Boolean)
+            .map((url) => Image.prefetch(url).catch(() => {}))
+        );
+
+        setImageUrls(map);
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error('Failed to load images');
+        setError(error);
+        console.error('Failed to load Supabase images:', error);
+        setImageUrls(new Map());
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, [paths, bucket]);
+
+  return { imageUrls, error, isLoading };
 };

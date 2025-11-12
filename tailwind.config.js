@@ -17,7 +17,6 @@ module.exports = {
       },
       fontFamily: {
         headBold: 'var(--font-headline-bold)',
-        headLight: 'var(--font-headline-light) ',
       },
       fontSize: {
         h1: 'var(--font-size-h1)',

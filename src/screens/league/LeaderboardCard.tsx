@@ -8,7 +8,7 @@ type Item = {
   isCurrentUser: boolean;
 };
 const LeaderboardCard = ({ item, index, isCurrentUser }: Item) => {
-  const { nickname, imageUri, total_points } = item;
+  const { nickname, avatar_url, total_points } = item;
 
   return (
     <Card className={`${isCurrentUser ? 'border-primary' : ''} p-2 mx-3 my-1`}>
@@ -18,7 +18,7 @@ const LeaderboardCard = ({ item, index, isCurrentUser }: Item) => {
           <Text className="text-text font-semibold text-sm">{index + 1}</Text>
         </View>
         <View className="w-10 h-10 rounded-full overflow-hidden">
-          <AvatarImage nickname={nickname ?? ''} imageUri={imageUri ?? null} />
+          <AvatarImage nickname={nickname!} path={avatar_url} />
         </View>
         {/* User Info */}
         <View className="flex-1">

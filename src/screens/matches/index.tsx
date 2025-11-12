@@ -8,9 +8,9 @@ import MatchList from './components/matches/Matches-list';
 import MatchesSkeleton from './components/matches/SkeletonMatches';
 
 const MatchesScreen = () => {
-  const { member } = useMemberStore();
+  const { member, league } = useMemberStore();
   const userId = member?.user_id;
-  const competition = member?.league?.competition;
+  const competition = league?.competition;
   const currentFixture = competition?.current_fixture as number;
   const totalFixtures = competition?.total_fixtures as number;
 
@@ -53,7 +53,7 @@ const MatchesScreen = () => {
   return (
     <View className="flex-1 bg-background">
       <FixturesList
-        fixtures={fixtures ?? []}
+        fixtures={fixtures}
         selectedFixture={selectedFixture ?? 1}
         handleFixturePress={handleFixturePress}
         animateScroll={animateScroll}

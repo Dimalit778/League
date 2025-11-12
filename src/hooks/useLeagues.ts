@@ -2,8 +2,40 @@ import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Image } from 'expo-image';
 import { useCurrentSession } from './useCurrentSession';
+import { downloadMultipleImages } from './useSupabaseImages';
 
+/**
+ * Helper function to download and prefetch avatar images
+ * @param avatarPaths Array of avatar paths from Supabase storage
+ * @returns Map of original path to signed URL
+ */
+async function downloadAndPrefetchAvatars(
+  avatarPaths: string[]
+): Promise<Map<string, string | null>> {
+  if (avatarPaths.length === 0) {
+    return new Map();
+  }
+
+  const imageUrls = await downloadMultipleImages(avatarPaths, {
+    bucket: 'avatars',
+  });
+
+  const validUrls = Array.from(imageUrls.values()).filter(
+    (url): url is string => url !== null
+  );
+
+  if (validUrls.length > 0) {
+    await Promise.all(
+      validUrls.map((url) =>
+        Image.prefetch(url, { cachePolicy: 'memory-disk' }).catch(() => {})
+      )
+    );
+  }
+
+  return imageUrls;
+}
 export const useGetUserLeagues = () => {
   const { session } = useCurrentSession();
   const userId = session?.user?.id;
@@ -23,7 +55,7 @@ export const useGetUserLeagues = () => {
 
 export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
-  const { initializeMemberLeagues } = useMemberStore();
+  const { initializeMember } = useMemberStore();
 
   return useMutation({
     mutationFn: ({
@@ -37,7 +69,7 @@ export const useJoinLeague = (userId: string) => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
-      await initializeMemberLeagues();
+      await initializeMember();
     },
 
     onError: (error) => {
@@ -55,19 +87,34 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
   });
 };
 
-export const useGetFullLeagueData = (leagueId: string) => {
+export const useGetLeagueLeaderboard = (leagueId?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.leagues.byId(leagueId),
-    queryFn: () => leagueService.getFullLeagueData(leagueId),
+    queryKey: leagueId
+      ? QUERY_KEYS.leaderboard.byLeague(leagueId)
+      : (['leaderboard', 'unknown'] as const),
     enabled: !!leagueId,
+    staleTime: 1000 * 60 * 5,
+    queryFn: async () => {
+      if (!leagueId) {
+        throw new Error('League id is required to fetch leaderboard');
+      }
+      const rows = await leagueService.getLeagueLeaderboard(leagueId);
+
+      const paths = rows.map((r) => r.avatar_url).filter(Boolean) as string[];
+      const imageUrls = await downloadAndPrefetchAvatars(paths);
+
+      return rows.map((r) => ({
+        ...r,
+        avatar_url: r.avatar_url ? (imageUrls.get(r.avatar_url) ?? null) : null,
+      }));
+    },
   });
 };
-
 export const useLeaveLeague = () => {
   const { session } = useCurrentSession();
   const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
-  const { initializeMemberLeagues, setMember } = useMemberStore();
+  const { initializeMember } = useMemberStore();
 
   return useMutation({
     mutationFn: leagueService.leaveLeague,
@@ -78,7 +125,7 @@ export const useLeaveLeague = () => {
       });
 
       // Then initialize member leagues which will set member to null if no leagues
-      await initializeMemberLeagues();
+      await initializeMember();
     },
   });
 };
@@ -88,21 +135,42 @@ export const useGetLeagueAndMembers = (leagueId?: string) => {
     queryKey: leagueId
       ? QUERY_KEYS.leagues.leagueAndMembers(leagueId)
       : (['leagues', 'unknown', 'full'] as const),
-    queryFn: () => {
-      if (!leagueId) {
-        throw new Error('League id is required to fetch members');
-      }
-      return leagueService.getLeagueAndMembers(leagueId);
-    },
     enabled: !!leagueId,
+    staleTime: 1000 * 60 * 5,
+    queryFn: async () => {
+      if (!leagueId) {
+        throw new Error('League id is required to fetch league and members');
+      }
+      const rows = await leagueService.getLeagueAndMembers(leagueId);
+
+      const paths = rows.league_members
+        .map((r) => r.avatar_url)
+        .filter(Boolean) as string[];
+      const imageUrls = await downloadAndPrefetchAvatars(paths);
+
+      return {
+        ...rows,
+        league_members: rows.league_members.map((r) => ({
+          ...r,
+          avatar_url: r.avatar_url
+            ? (imageUrls.get(r.avatar_url) ?? null)
+            : null,
+        })),
+      };
+    },
   });
 };
 
 export const useUpdateLeague = () => {
+  const { initializeMember } = useMemberStore();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ leagueId, name }: { leagueId: string; name?: string }) =>
-      leagueService.updateLeague(leagueId, { name }),
+    mutationFn: ({ leagueId, name }: { leagueId?: string; name?: string }) => {
+      if (!leagueId) {
+        throw new Error('League id is required to update league');
+      }
+      return leagueService.updateLeague(leagueId, { name });
+    },
     onSuccess: async (updated) => {
       await Promise.all([
         queryClient.invalidateQueries({
@@ -112,6 +180,7 @@ export const useUpdateLeague = () => {
           queryKey: QUERY_KEYS.leagues.leagueAndMembers(updated.id),
         }),
       ]);
+      await initializeMember();
     },
     onError: (error) => {
       console.error('Failed to update league:', error);
@@ -145,7 +214,7 @@ export const useCreateLeague = () => {
   const { session } = useCurrentSession();
   const userId = session?.user?.id as string;
   const queryClient = useQueryClient();
-  const { initializeMemberLeagues } = useMemberStore();
+  const { initializeMember } = useMemberStore();
   return useMutation({
     mutationFn: (params: {
       league_name: string;
@@ -158,7 +227,7 @@ export const useCreateLeague = () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
-      await initializeMemberLeagues();
+      await initializeMember();
     },
     onError: (error) => {
       console.error('Failed to create league:', error);

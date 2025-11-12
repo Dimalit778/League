@@ -1,5 +1,5 @@
-import League from '@/screens/league';
+import LeagueScreen from '@/screens/league';
 
-export default function LeagueScreen() {
-  return <League />;
+export default function League() {
+  return <LeagueScreen />;
 }

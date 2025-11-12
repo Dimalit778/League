@@ -6,21 +6,37 @@ import {
 } from '@/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
 
-import { BackButton, Button, MyImage, ProfileImage } from '@/components/ui';
+import { AvatarImage, BackButton, Button, MyImage } from '@/components/ui';
 import { MemberLeague } from '@/types';
-import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const EditLeague = () => {
-  const router = useRouter();
-  const { member: currentMember } = useMemberStore();
-  const leagueId = currentMember?.league_id;
+const EditLeagueScreen = () => {
+  const { member, league } = useMemberStore();
 
-  const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId);
+  const {
+    data: leagueData,
+    isLoading,
+    error,
+  } = useGetLeagueAndMembers(league?.id);
+
   const removeMember = useRemoveMember();
   const updateLeague = useUpdateLeague();
+
+  // Sort members to display owner first
+  const sortedMembers = useMemo(() => {
+    if (!leagueData?.league_members || !leagueData?.owner_id) {
+      return [];
+    }
+    return [...leagueData.league_members].sort((a, b) => {
+      const aIsOwner = a.user_id === leagueData.owner_id;
+      const bIsOwner = b.user_id === leagueData.owner_id;
+      if (aIsOwner && !bIsOwner) return -1;
+      if (!aIsOwner && bIsOwner) return 1;
+      return 0;
+    });
+  }, [leagueData?.league_members, leagueData?.owner_id]);
 
   const [editedLeagueName, setEditedLeagueName] = useState('');
 
@@ -30,16 +46,8 @@ const EditLeague = () => {
     }
   }, [league?.name]);
 
-  // Filter out the current member from the list
-  const otherMembers = useMemo(() => {
-    if (!league?.league_members || !currentMember?.user_id) return [];
-    return league.league_members.filter(
-      (member) => member.user_id !== currentMember.user_id
-    );
-  }, [league?.league_members, currentMember?.user_id]);
-
   const handleRemoveMember = (deletedMember: MemberLeague) => {
-    if (!league || currentMember?.user_id !== league.owner_id) return;
+    if (!league || member?.user_id !== league.owner_id) return;
     Alert.alert(
       'Remove Member',
       `Remove ${deletedMember.nickname} from this league?`,
@@ -60,7 +68,9 @@ const EditLeague = () => {
 
   const trimmedLeagueName = editedLeagueName.trim();
   const canSaveLeagueName =
-    league && trimmedLeagueName.length > 0 && trimmedLeagueName !== league.name;
+    leagueData &&
+    trimmedLeagueName.length > 0 &&
+    trimmedLeagueName !== leagueData.name;
 
   const handleSaveLeague = () => {
     const trimmedName = editedLeagueName.trim();
@@ -69,50 +79,56 @@ const EditLeague = () => {
       return;
     }
 
-    if (!leagueId) {
-      Alert.alert('Error', 'League not found.');
-      return;
-    }
-
     updateLeague.mutate(
-      { leagueId, name: trimmedName },
+      { leagueId: leagueData?.id, name: trimmedName },
       {
-        onSuccess: () => {
-          Alert.alert('Success', 'League updated successfully', [
-            { text: 'OK', onPress: () => router.back() },
-          ]);
-        },
         onError: (error) => {
           Alert.alert('Error', error.message);
         },
       }
     );
   };
-
-  if (isLoading) return <LoadingOverlay />;
-  if (error) return <Error error={error} />;
-  if (!league) {
+  const MemberCard = ({ member }: { member: MemberLeague }) => {
+    const isOwner = member.user_id === leagueData?.owner_id;
     return (
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 justify-center items-center p-4">
-          <Text className="text-text text-lg text-center">
-            League not found
-          </Text>
+      <View className="flex-row items-center justify-between py-3 px-2 bg-surface rounded-lg border border-border">
+        <View className="flex-row items-center flex-1">
+          <View className="mr-3 w-10 h-10 rounded-full overflow-hidden">
+            <AvatarImage
+              nickname={member.nickname}
+              path={member.avatar_url ?? null}
+            />
+          </View>
+          <View className="flex-1">
+            <Text className="text-text font-medium">{member.nickname}</Text>
+            {isOwner && <Text className="text-muted text-xs">Owner</Text>}
+          </View>
         </View>
-      </SafeAreaView>
+        {!isOwner && (
+          <Button
+            title={removeMember.isPending ? '...' : 'Remove'}
+            size="sm"
+            variant="error"
+            onPress={() => handleRemoveMember(member as MemberLeague)}
+          />
+        )}
+      </View>
     );
-  }
+  };
+
+  if (isLoading || !leagueData) return <LoadingOverlay />;
+  if (error) return <Error error={error} />;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton title="Edit League" />
-      {/* League Header with Competition Info */}
+
       <View className="p-4">
         <View className="bg-surface rounded-2xl border border-border p-4 mb-4">
           {/* Competition Logo and Name */}
           <View className="flex-row items-center mb-4">
             <MyImage
-              source={league.competition?.logo || ''}
+              source={leagueData.competition?.logo || ''}
               className="rounded-xl mr-3"
               width={40}
               height={40}
@@ -120,10 +136,10 @@ const EditLeague = () => {
             />
             <View className="flex-1">
               <Text className="text-text text-lg font-bold">
-                {league.competition?.name}
+                {leagueData.competition?.name}
               </Text>
               <Text className="text-muted text-sm">
-                {league.competition?.area}
+                {leagueData.competition?.area}
               </Text>
             </View>
           </View>
@@ -145,45 +161,12 @@ const EditLeague = () => {
         </View>
       </View>
 
-      {/* Members management */}
-      <View className="px-4 flex-grow">
-        <Text className="text-text font-semibold mb-2">Other Members</Text>
-        <View className="gap-2">
-          {otherMembers.length === 0 ? (
-            <Text className="text-secondary italic p-2">
-              No other members in this league
-            </Text>
-          ) : (
-            otherMembers.map((member) => (
-              <View
-                key={member.id}
-                className="flex-row items-center justify-between py-3 px-2 bg-surface rounded-lg border border-border"
-              >
-                <View className="flex-row items-center">
-                  <View className="mr-3">
-                    <ProfileImage
-                      memberId={member.id}
-                      path={member.avatar_url}
-                      size="sm"
-                      nickname={member.nickname}
-                    />
-                  </View>
-                  <Text className="text-text font-medium">
-                    {member.nickname}
-                  </Text>
-                </View>
-                <Button
-                  title={removeMember.isPending ? '...' : 'Remove'}
-                  size="sm"
-                  variant="error"
-                  onPress={() => handleRemoveMember(member as MemberLeague)}
-                  disabled={member.user_id === league.owner_id}
-                />
-              </View>
-            ))
-          )}
-        </View>
-      </View>
+      <FlatList
+        data={sortedMembers}
+        renderItem={({ item }) => <MemberCard member={item as MemberLeague} />}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+      />
 
       {/* Save/Cancel */}
       <View className="flex-row gap-3 mt-6 px-4">
@@ -199,4 +182,4 @@ const EditLeague = () => {
   );
 };
 
-export default EditLeague;
+export default EditLeagueScreen;

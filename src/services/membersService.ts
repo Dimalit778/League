@@ -1,11 +1,10 @@
 import { supabase } from '@/lib/supabase';
-import { MemberStatsType } from '@/types';
+import { MemberLeague, MemberStatsType } from '@/types';
 
 import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
 
 export const membersService = {
-  // Get Member Stats
   async getMemberStats(memberId: string): Promise<MemberStatsType> {
     if (!memberId) {
       throw new Error('No member ID available');
@@ -45,7 +44,10 @@ export const membersService = {
       accuracy: Math.round(accuracy * 100) / 100,
     };
   },
-  async updateMember(memberId: string, nickname: string) {
+  async updateMember(
+    memberId: string,
+    nickname: string
+  ): Promise<MemberLeague> {
     const { data, error } = await supabase
       .from('league_members')
       .update({ nickname })
@@ -54,48 +56,14 @@ export const membersService = {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as MemberLeague;
   },
 
-  async getMemberAvatar(
-    path: string,
-    options?: {
-      width?: number;
-      height?: number;
-      quality?: number;
-      resize?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
-      expiresIn?: number;
-    }
-  ) {
-    const {
-      width = 96,
-      height = 96,
-      quality = 80,
-      resize = 'cover',
-      expiresIn = 3600,
-    } = options ?? {};
-
-    const { data, error } = await supabase.storage
-      .from('avatars')
-      .createSignedUrl(path, expiresIn, {
-        transform: {
-          width,
-          height,
-          resize:
-            resize === 'inside' || resize === 'outside' ? 'cover' : resize,
-          quality,
-        },
-      });
-
-    if (error) throw error;
-
-    return data?.signedUrl;
-  },
-  async uploadAvatarImage(
+  async uploadImage(
     leagueId: string,
     memberId: string,
     avatarUrl: ImagePicker.ImagePickerAsset
-  ) {
+  ): Promise<MemberLeague> {
     try {
       const base64 = avatarUrl.base64;
       if (!base64) {
@@ -133,17 +101,17 @@ export const membersService = {
         .single();
 
       if (memberError) throw memberError;
-      return memberData;
+      return memberData as MemberLeague;
     } catch (error) {
       console.error('Error uploading avatar:', error);
       throw error;
     }
   },
-  async removeAvatar(
+  async deleteImage(
     leagueId: string,
     memberId: string,
     currentPath?: string | null
-  ) {
+  ): Promise<MemberLeague> {
     try {
       if (currentPath) {
         const { error: storageError } = await supabase.storage
@@ -160,7 +128,7 @@ export const membersService = {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as MemberLeague;
     } catch (error) {
       console.error('Error removing avatar:', error);
       throw error;

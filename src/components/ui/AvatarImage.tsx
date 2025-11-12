@@ -3,22 +3,19 @@ import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { Text, View } from 'react-native';
 
 type AvatarImageProps = {
-  nickname: string;
-  imageUri: string | null;
-
+  nickname?: string | null;
+  path?: string | null;
   style?: ImageStyle;
-
   className?: string;
 };
 
 const AvatarImage = ({
   nickname,
-  imageUri,
-
+  path,
   style,
   className,
 }: AvatarImageProps) => {
-  const initial = nickname.charAt(0).toUpperCase();
+  const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
 
   return (
     <View
@@ -27,9 +24,9 @@ const AvatarImage = ({
         className
       )}
     >
-      {imageUri ? (
+      {path ? (
         <ExpoImage
-          source={{ uri: imageUri }}
+          source={{ uri: path }}
           contentFit="cover"
           cachePolicy="memory-disk"
           transition={0}
@@ -37,14 +34,18 @@ const AvatarImage = ({
           style={{ width: '100%', height: '100%' }}
           accessible={true}
           accessibilityRole="image"
-          accessibilityLabel={`${nickname}'s avatar`}
+          accessibilityLabel={nickname ? `${nickname}'s avatar` : 'User avatar'}
         />
       ) : (
-        <View 
+        <View
           className="items-center justify-center"
           accessible={true}
           accessibilityRole="text"
-          accessibilityLabel={`${nickname}'s avatar initial ${initial}`}
+          accessibilityLabel={
+            nickname
+              ? `${nickname}'s avatar initial ${initial}`
+              : `Avatar initial ${initial}`
+          }
         >
           <Text className="text-primary font-semibold text-2xl">{initial}</Text>
         </View>

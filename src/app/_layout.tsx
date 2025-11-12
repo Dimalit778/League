@@ -57,19 +57,13 @@ const InitialApp = () => {
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
 
-  const initializeMemberLeagues = useMemberStore(
-    (state) => state.initializeMemberLeagues
-  );
+  const initializeMember = useMemberStore((state) => state.initializeMember);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const hasInitialized = useRef(false);
 
   const [fontsLoaded] = useFonts({
-    'Teko-Regular': require('@assets/fonts/Teko-Regular.ttf'),
-    'Teko-Light': require('@assets/fonts/Teko-Light.ttf'),
     'Teko-Bold': require('@assets/fonts/Teko-Bold.ttf'),
-    'Inter-Regular': require('@assets/fonts/Inter-Regular.otf'),
-    'Inter-Light': require('@assets/fonts/Inter-Light-BETA.otf'),
   });
 
   useEffect(() => {
@@ -77,7 +71,7 @@ const InitialApp = () => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       initializeTheme();
-      initializeMemberLeagues();
+      initializeMember();
     }
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {

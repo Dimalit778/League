@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Settings() {
   const { data: user, isLoading } = useGetUser();
+  const role = user?.role;
 
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
@@ -53,13 +54,15 @@ export default function Settings() {
             email={user?.email}
           />
         </View>
-        <View className="mt-8 px-6">
-          <Button
-            title="Open Admin Dashboard"
-            onPress={() => router.push('/(app)/(admin)/competitions')}
-            variant="secondary"
-          />
-        </View>
+        {role === 'ADMIN' && (
+          <View className="mt-8 px-6">
+            <Button
+              title="Open Admin Dashboard"
+              onPress={() => router.push('/(app)/(admin)/competitions')}
+              variant="secondary"
+            />
+          </View>
+        )}
       </View>
       <View className="pb-10">
         <Button

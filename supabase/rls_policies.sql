@@ -160,6 +160,45 @@ CREATE POLICY "Users: Delete own predictions"
   USING (user_id = auth.uid());
 
 -- ============================================================================
+-- LEAGUE_MEMBERS TABLE POLICIES
+-- ============================================================================
+
+-- Admins can do everything on league_members
+CREATE POLICY "Admin: Full access to league_members"
+  ON public.league_members FOR ALL
+  TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+-- League members can read members in their leagues
+-- Also allow users to read their own records (needed for UPDATE operations)
+CREATE POLICY "Users: Read members in their leagues"
+  ON public.league_members FOR SELECT
+  TO authenticated
+  USING (
+    public.is_league_member(league_id) OR user_id = auth.uid()
+  );
+
+-- Users can create their own league_members (join leagues)
+CREATE POLICY "Users: Create own league_members"
+  ON public.league_members FOR INSERT
+  TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
+-- Users can update their own league_members
+CREATE POLICY "Users: Update own league_members"
+  ON public.league_members FOR UPDATE
+  TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+
+-- Users can delete their own league_members (leave leagues)
+CREATE POLICY "Users: Delete own league_members"
+  ON public.league_members FOR DELETE
+  TO authenticated
+  USING (user_id = auth.uid());
+
+-- ============================================================================
 -- SUBSCRIPTION TABLE POLICIES
 -- ============================================================================
 

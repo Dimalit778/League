@@ -24,7 +24,7 @@ const BackButton = ({ title, className }: BackButtonProps) => {
         accessibilityLabel={title ? `Go back from ${title}` : 'Go back'}
         accessibilityHint="Double tap to navigate to the previous screen"
       >
-        <ArrowLeftIcon color="#fff" size={28} />
+        <ArrowLeftIcon color={colors.text} size={28} />
       </TouchableOpacity>
 
       {title && (

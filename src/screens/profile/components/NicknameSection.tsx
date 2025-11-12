@@ -1,52 +1,53 @@
 import { Button } from '@/components/ui';
 import { useUpdateMember } from '@/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import * as yup from 'yup';
 
-const schema = yup.object().shape({
-  nickname: yup.string().required('Nickname is required'),
-});
+type NicknameSectionProps = {
+  initialNickname: string;
+};
 
-const MemberNickname = () => {
-  const member = useMemberStore((s) => s.member);
-  const [isEditingNickname, setIsEditingNickname] = useState(false);
+export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
   const { colors } = useThemeTokens();
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const updateMember = useUpdateMember();
+
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
     reset,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(
+      yup.object().shape({
+        nickname: yup
+          .string()
+          .min(2, 'Nickname must be at least 2 characters')
+          .required('Nickname is required'),
+      })
+    ),
     mode: 'onChange',
     defaultValues: {
-      nickname: member?.nickname || '',
+      nickname: initialNickname || '',
     },
   });
-
-  const updateMember = useUpdateMember(member?.id || '');
 
   const handleSaveNickname = handleSubmit((data) => {
     updateMember.mutate(data.nickname, {
       onSuccess: () => {
         setIsEditingNickname(false);
-        Alert.alert('Success', 'Nickname updated successfully!');
-      },
-      onError: (error) => {
-        Alert.alert('Error', error.message);
       },
     });
   });
 
   const handleCancelEdit = () => {
     setIsEditingNickname(false);
-    reset({ nickname: member?.nickname || '' });
+    reset({ nickname: initialNickname || '' });
   };
 
   return (
@@ -94,7 +95,7 @@ const MemberNickname = () => {
       ) : (
         <View className="flex-row items-center justify-between bg-surface rounded-lg px-4 py-3 border border-border">
           <Text className="text-text text-lg font-semibold">
-            {member?.nickname}
+            {initialNickname}
           </Text>
           <Pressable onPress={() => setIsEditingNickname(true)} className="p-2">
             <FontAwesome6
@@ -108,5 +109,3 @@ const MemberNickname = () => {
     </View>
   );
 };
-
-export default MemberNickname;

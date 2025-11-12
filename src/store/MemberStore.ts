@@ -1,35 +1,47 @@
+import { downloadImage } from '@/hooks/useSupabaseImages';
 import { supabase } from '@/lib/supabase';
-import { MemberLeague } from '@/types';
-
+import { LeagueWithCompetition, MemberLeague } from '@/types';
+import { Tables } from '@/types/database.types';
 import { create } from 'zustand';
 
 interface MemberState {
-  member: MemberLeague | null;
+  member: Tables<'league_members'> | null;
+  league: LeagueWithCompetition | null;
   isLoading: boolean;
   error: string | null;
   setMember: (member: MemberLeague | null) => void;
   clearAll: () => void;
-  initializeMemberLeagues: () => Promise<void>;
+  initializeMember: () => Promise<void>;
 }
 
 export const useMemberStore = create<MemberState>()((set, get) => ({
   member: null,
+  league: null,
   isLoading: false,
   error: null,
   setIsLoading: (isLoading: boolean) => set({ isLoading: isLoading }),
   setError: (error: string | null) => set({ error: error }),
-  setMember: (member: MemberLeague | null) => set({ member }),
+  setMember: (memberData: MemberLeague | null) => {
+    if (!memberData) {
+      set({ member: null, league: null });
+      return;
+    }
+    const { league, ...member } = memberData;
+    set({
+      member,
+      league: league || null,
+    });
+  },
 
   clearAll: () =>
     set({
       member: null,
+      league: null,
       isLoading: false,
       error: null,
     }),
 
-  initializeMemberLeagues: async () => {
-    console.log('-------------------------------- initializeMemberLeagues');
-
+  initializeMember: async () => {
     const currentState = get();
     if (!currentState.member) {
       set({ isLoading: true });
@@ -39,9 +51,8 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
       data: { user },
     } = await supabase.auth.getUser();
 
-    // Check if user is authenticated before making the query
     if (!user?.id) {
-      set({ member: null, isLoading: false });
+      set({ member: null, league: null, isLoading: false });
       return;
     }
 
@@ -56,12 +67,32 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
 
     if (error) throw new Error(error.message);
     if (!data) {
-      set({ member: null, isLoading: false });
+      set({ member: null, league: null, isLoading: false });
       return;
     }
 
+    const memberData = data as MemberLeague;
+
+    // Extract league from member data
+    const { league, ...memberWithoutLeague } = memberData;
+
+    if (memberWithoutLeague.avatar_url) {
+      try {
+        const signedUrl = await downloadImage(memberWithoutLeague.avatar_url, {
+          bucket: 'avatars',
+          expiresIn: 60 * 60 * 24, // 1 day
+        });
+        if (signedUrl) {
+          memberWithoutLeague.avatar_url = signedUrl;
+        }
+      } catch (error) {
+        console.error('Failed to create signed URL for avatar:', error);
+      }
+    }
+
     set({
-      member: data as MemberLeague,
+      member: memberWithoutLeague,
+      league: league,
       isLoading: false,
     });
   },

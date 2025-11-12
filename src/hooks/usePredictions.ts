@@ -14,24 +14,24 @@ export const useCreatePrediction = () => {
       fixture_id: number;
       home_score: number;
       away_score: number;
-    }) =>
-      predictionService.createPrediction({
-        user_id: member!.user_id,
+    }) => {
+      if (!member?.user_id || !member?.id || !member?.league_id) {
+        throw new Error('Member data is required to create prediction');
+      }
+      return predictionService.createPrediction({
+        user_id: member.user_id,
         match_id: prediction.fixture_id,
         home_score: prediction.home_score,
         away_score: prediction.away_score,
-        league_member_id: member!.id,
-        league_id: member!.league_id,
-      }),
-
+        league_member_id: member.id,
+        league_id: member.league_id,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
     onError: (error) => {
       console.error('Failed to create prediction:', error);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
   });
 };
@@ -46,32 +46,41 @@ export const useUpdatePrediction = () => {
       id: string;
       home_score: number;
       away_score: number;
-    }) =>
-      predictionService.updatePrediction({
+    }) => {
+      if (!member?.user_id) {
+        throw new Error('User ID is required to update prediction');
+      }
+      return predictionService.updatePrediction({
         id: prediction.id,
         home_score: prediction.home_score,
         away_score: prediction.away_score,
-        user_id: member?.user_id,
-      }),
+        user_id: member.user_id,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.matches.all });
     },
     onError: (error) => {
       console.error('Failed to update prediction:', error);
     },
-    onSettled: () => {},
   });
 };
 export const useMemberPredictionsByRound = (round: string) => {
   const { member } = useMemberStore();
+  const userId = member?.user_id;
+
   return useQuery({
     queryKey: QUERY_KEYS.predictions.byUserAndMatchday(
-      member?.user_id || '',
+      userId || '',
       parseInt(round)
     ),
-    queryFn: () =>
-      predictionService.getMemberPredictionsByRound(member!.user_id, round),
-    enabled: !!member?.user_id && !!round,
+    queryFn: () => {
+      if (!userId) {
+        throw new Error('User ID is required to fetch predictions');
+      }
+      return predictionService.getMemberPredictionsByRound(userId, round);
+    },
+    enabled: !!userId && !!round,
   });
 };
 
@@ -86,35 +95,41 @@ export const useMemberPredictions = (userId: string) => {
 // Get User Prediction By Fixture
 export const useMemberPredictionByFixture = (fixtureId: number) => {
   const { member } = useMemberStore();
+  const userId = member?.user_id;
 
   return useQuery({
     queryKey: QUERY_KEYS.predictions.byFixture(fixtureId),
-    queryFn: () =>
-      predictionService.getMemberPredictionByFixture(
-        member!.user_id,
-        fixtureId
-      ),
-    enabled: !!member?.user_id && !!fixtureId,
+    queryFn: () => {
+      if (!userId) {
+        throw new Error('User ID is required to fetch prediction');
+      }
+      return predictionService.getMemberPredictionByFixture(userId, fixtureId);
+    },
+    enabled: !!userId && !!fixtureId,
     staleTime: 1000 * 60 * 2, // 2 minutes - predictions don't change often
     gcTime: 1000 * 60 * 10, // 10 minutes - keep in cache longer (renamed from cacheTime)
     retry: 2, // Retry failed requests twice
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
 // Get League Predictions By Fixture
 export const useGetLeaguePredictionsByFixture = (fixtureId: number) => {
   const { member } = useMemberStore();
+  const leagueId = member?.league_id;
+  const userId = member?.user_id;
+
   return useQuery({
-    queryKey: QUERY_KEYS.predictions.leagueByFixture(
-      fixtureId,
-      member?.league_id || ''
-    ),
-    queryFn: () =>
-      predictionService.getLeaguePredictionsByFixture(
+    queryKey: QUERY_KEYS.predictions.leagueByFixture(fixtureId, leagueId || ''),
+    queryFn: () => {
+      if (!leagueId) {
+        throw new Error('League ID is required to fetch league predictions');
+      }
+      return predictionService.getLeaguePredictionsByFixture(
         fixtureId,
-        member!.league_id
-      ),
-    enabled: !!member?.user_id && !!fixtureId && !!member?.league_id,
+        leagueId
+      );
+    },
+    enabled: !!userId && !!fixtureId && !!leagueId,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

@@ -14,9 +14,6 @@ type ThemeTokens = {
   };
   fonts: {
     headlineBold: string;
-    headlineLight: string;
-    body: string;
-    bodyLight: string;
   };
   sizes: {
     h1: string;
@@ -37,9 +34,6 @@ const light: ThemeTokens = {
   },
   fonts: {
     headlineBold: 'Teko-Bold',
-    headlineLight: 'Teko-Light',
-    body: 'Inter-Regular',
-    bodyLight: 'Inter-Light',
   },
   sizes: {
     h1: '42px',
@@ -60,9 +54,6 @@ const dark: ThemeTokens = {
   },
   fonts: {
     headlineBold: 'Teko-Bold',
-    headlineLight: 'Teko-Light',
-    body: 'Inter-Regular',
-    bodyLight: 'Inter-Light',
   },
   sizes: {
     h1: '42px',
@@ -80,9 +71,6 @@ const toNativeWindVars = (tokens: ThemeTokens) => ({
   '--color-error': tokens.colors.error,
   '--color-success': tokens.colors.success,
   '--font-headline-bold': tokens.fonts.headlineBold,
-  '--font-headline-light': tokens.fonts.headlineLight,
-  '--font-body': tokens.fonts.body,
-  '--font-body-light': tokens.fonts.bodyLight,
   '--font-size-h1': tokens.sizes.h1,
 });
 

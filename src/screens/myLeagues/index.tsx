@@ -8,18 +8,15 @@ import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberLeague } from '@/types';
 import StarIcon from '@assets/icons/StarIcon';
-import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
-import { useCallback } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 const MyLeagues = () => {
   const { session } = useCurrentSession();
   const queryClient = useQueryClient();
-  const setMember = useMemberStore((s) => s.setMember);
-
+  const { initializeMember, setMember } = useMemberStore();
   const userId = session?.user?.id as string;
   const {
     data: memberLeagues,
@@ -33,15 +30,17 @@ const MyLeagues = () => {
   const { mutateAsync: updatePrimaryLeague } = useMutation({
     mutationFn: (leagueId: string) =>
       leagueService.updatePrimaryLeague(userId, leagueId),
-    onSuccess: (league) => {
+    onSuccess: async (primaryLeague) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
-      // Invalidate all leaderboard queries to ensure fresh data
       queryClient.invalidateQueries({
         queryKey: ['leaderboard'],
       });
-      setMember(league);
+      setMember(primaryLeague);
+      await initializeMember();
+      // Navigate after member is initialized
+      router.replace('/(app)/(member)/(tabs)/League');
     },
     onError: (error) => {
       console.error('Failed to update primary league:', error);
@@ -50,16 +49,16 @@ const MyLeagues = () => {
 
   const { data: subscription } = useSubscription();
 
-  const handleSetPrimary = useCallback(
-    async (league: MemberLeague) => {
-      if (!league.is_primary) {
-        await updatePrimaryLeague(league.league_id);
-      }
-      router.push('/(app)/(member)/(tabs)/League');
-    },
-    [updatePrimaryLeague]
-  );
-
+  const handleSetPrimary = async (league: MemberLeague) => {
+    if (!league.is_primary) {
+      await updatePrimaryLeague(league.league_id);
+    } else {
+      // If already primary, just set member and navigate
+      setMember(league);
+      await initializeMember();
+      router.replace('/(app)/(member)/(tabs)/League');
+    }
+  };
   if (error) return <Error error={error} />;
 
   return (
@@ -86,12 +85,7 @@ const MyLeagues = () => {
           onPress={() => router.push('/myLeagues/join-league')}
         />
       </View>
-      <Button
-        title="Try!"
-        onPress={() => {
-          Sentry.captureException(new global.Error('First error'));
-        }}
-      />
+
       <FlatList
         data={memberLeagues}
         showsVerticalScrollIndicator={false}

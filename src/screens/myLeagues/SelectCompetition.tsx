@@ -1,9 +1,11 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
 
-import { useGetCompetitions } from '@/hooks/useCompetitions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { competitionService } from '@/services/competitionService';
 import { Tables } from '@/types/database.types';
+import { useQuery } from '@tanstack/react-query';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useState } from 'react';
@@ -69,11 +71,20 @@ const CompetitionsCard = memo(
 );
 
 const SelectCompetitionScreen = () => {
+  const {
+    data: competitions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: QUERY_KEYS.competitions.all,
+    queryFn: () => competitionService.getCompetitions(),
+
+    staleTime: 10 * 60 * 60 * 1000,
+    retry: 2,
+  });
   const [selectedCompetition, setSelectedCompetition] =
     useState<Competition | null>(null);
   const { colors } = useThemeTokens();
-
-  const { data: competitions, isLoading, error } = useGetCompetitions();
 
   const handleContinue = () => {
     if (!selectedCompetition) {
