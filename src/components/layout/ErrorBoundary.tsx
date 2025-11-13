@@ -5,6 +5,7 @@ import { ErrorInfo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Sentry from '@sentry/react-native';
 
 type ErrorFallbackProps = {
   error: Error;
@@ -78,8 +79,19 @@ type AppErrorBoundaryProps = {
 
 export const AppErrorBoundary = ({ children }: AppErrorBoundaryProps) => {
   const handleError = (error: Error, errorInfo: ErrorInfo) => {
-    // In production, you would send this to your error reporting service
-    // Example: Sentry.captureException(error, { extra: errorInfo });
+    // Send to Sentry in production
+    if (!__DEV__) {
+      Sentry.captureException(error, {
+        contexts: {
+          react: {
+            componentStack: errorInfo.componentStack,
+          },
+        },
+        extra: {
+          errorInfo,
+        },
+      });
+    }
 
     if (__DEV__) {
       console.error('ErrorBoundary caught an error:', error, errorInfo);

@@ -8,10 +8,20 @@
     "scheme": "league",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "privacy": "public",
+    "splash": {
+      "image": "./assets/app-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.league",
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "dark",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "backgroundColor": "#0f172a",

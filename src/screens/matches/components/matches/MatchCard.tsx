@@ -12,7 +12,6 @@ import { Pressable, Text, View } from 'react-native';
 import MatchHeader from './MatchHeader';
 
 type MatchItem = MatchesWithTeamsAndPredictions;
-type Prediction = Tables<'predictions'>;
 type Team = Tables<'teams'>;
 
 const TEAM_LOGO_SIZE = 44;
@@ -53,7 +52,7 @@ const MatchScoreDisplay = memo(
       return (
         <View className="flex-1 items-center">
           <View className="flex-row items-center justify-center gap-1">
-            <Ionicons name="time-outline" size={24} color={colors.text} />
+            <Ionicons name="time-outline" size={14} color={colors.text} />
             <Text className="text-text text-sm ">{timeFormat(kickOff)}</Text>
           </View>
 
@@ -86,6 +85,8 @@ const MatchScoreDisplay = memo(
   }
 );
 
+MatchScoreDisplay.displayName = 'MatchScoreDisplay';
+
 const TeamDisplay = memo(
   ({ team, logoSize }: { team: Team; logoSize: number }) => (
     <View className="flex-1 items-center">
@@ -109,6 +110,8 @@ const TeamDisplay = memo(
     </View>
   )
 );
+
+TeamDisplay.displayName = 'TeamDisplay';
 
 export const MatchCard = memo(({ match }: { match: MatchItem }) => {
   const router = useRouter();
