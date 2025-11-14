@@ -1,8 +1,11 @@
-import { MatchesWithTeams } from '@/types';
+import { Match } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
-const LiveContent = ({ match }: { match: MatchesWithTeams }) => {
+interface LiveContentProps {
+  match: Match;
+}
+export default function LiveContent({ match }: LiveContentProps) {
   const events = [
     {
       id: 1,
@@ -43,35 +46,22 @@ const LiveContent = ({ match }: { match: MatchesWithTeams }) => {
 
       <View className="p-4">
         {events.map((event: any, index: any) => (
-          <View
-            key={event.id}
-            className="flex-row items-center py-3 border-b border-border/20 last:border-b-0"
-          >
+          <View key={event.id} className="flex-row items-center py-3 border-b border-border/20 last:border-b-0">
             <View className="w-8 h-8 bg-primary/10 rounded-full items-center justify-center mr-3">
-              <Ionicons
-                name={getEventIcon(event.type) as any}
-                size={16}
-                color="#6366F1"
-              />
+              <Ionicons name={getEventIcon(event.type) as any} size={16} color="#6366F1" />
             </View>
 
             <View className="flex-1">
               <Text className="text-text font-semibold">{event.player}</Text>
-              {event.details && (
-                <Text className="text-textMuted text-sm">{event.details}</Text>
-              )}
+              {event.details && <Text className="text-textMuted text-sm">{event.details}</Text>}
             </View>
 
             <View className="bg-primary/10 px-3 py-1 rounded-full">
-              <Text className="text-primary font-bold text-sm">
-                {event.time}'
-              </Text>
+              <Text className="text-primary font-bold text-sm">{event.time}'</Text>
             </View>
           </View>
         ))}
       </View>
     </View>
   );
-};
-
-export default LiveContent;
+}

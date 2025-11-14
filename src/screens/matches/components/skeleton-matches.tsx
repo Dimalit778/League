@@ -4,7 +4,7 @@ import { FlatList, View } from 'react-native';
 const skeletonFixtures = Array.from({ length: 10 });
 const TEAM_LOGO_SIZE = 44;
 
-export default function MatchesSkeleton() {
+export default function SkeletonMatches() {
   return (
     <FlatList
       data={skeletonFixtures}

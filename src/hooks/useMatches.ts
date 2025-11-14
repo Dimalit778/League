@@ -50,3 +50,27 @@ export const useGetMatches = (
     staleTime: 30_000,
   });
 };
+export const useGetMatchesWithMemberPredictions = (
+  fixture: number,
+  competitionId: number,
+  memberId: string
+) => {
+  return useQuery({
+    queryKey: [
+      'matches',
+      'member',
+      'predictions',
+      competitionId,
+      fixture,
+      memberId,
+    ],
+    queryFn: () =>
+      matchesService.getMatchesWithMemberPredictions(
+        fixture,
+        competitionId,
+        memberId
+      ),
+    enabled: !!fixture && !!competitionId && !!memberId,
+    staleTime: 30_000,
+  });
+};

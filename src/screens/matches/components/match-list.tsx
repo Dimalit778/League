@@ -4,8 +4,8 @@ import { Error } from '@/components/layout';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { FlatList } from 'react-native';
-import MatchCard from './MatchCard';
-import MatchesSkeleton from './SkeletonMatches';
+import MatchItem from './match-item';
+import SkeletonMatches from './skeleton-matches';
 
 type MatchListProps = {
   selectedFixture: number;
@@ -15,11 +15,11 @@ type MatchListProps = {
   animateScroll?: boolean;
 };
 
-const MatchList = ({
+export default function MatchList({
   selectedFixture,
   competitionId,
   userId,
-}: MatchListProps) => {
+}: MatchListProps) {
   const isFocused = useIsFocused();
   const {
     data: matches,
@@ -34,7 +34,7 @@ const MatchList = ({
   }, [refetch]);
 
   if (error) return <Error error={error} />;
-  if (!matches && isLoading) return <MatchesSkeleton />;
+  if (!matches && isLoading) return <SkeletonMatches />;
 
   return (
     <FlatList
@@ -43,7 +43,7 @@ const MatchList = ({
       keyExtractor={(item) => item.id.toString()}
       refreshing={isFocused && isFetching}
       onRefresh={handleRefresh}
-      renderItem={({ item }) => <MatchCard match={item} />}
+      renderItem={({ item }) => <MatchItem match={item} />}
       style={{ paddingTop: 10 }}
       getItemLayout={(_, index) => ({
         length: 120,
@@ -58,5 +58,4 @@ const MatchList = ({
       disableVirtualization={false}
     />
   );
-};
-export default MatchList;
+}

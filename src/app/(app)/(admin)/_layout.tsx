@@ -1,12 +1,15 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
 
 const AdminLayout = () => {
+  const { colors } = useThemeTokens();
+
   return (
     <Stack
       screenOptions={{
         headerShown: false,
         contentStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: colors.background,
         },
       }}
     >

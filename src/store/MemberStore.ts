@@ -1,12 +1,15 @@
 import { downloadImage } from '@/hooks/useSupabaseImages';
 import { supabase } from '@/lib/supabase';
-import { LeagueWithCompetition, MemberLeague } from '@/types';
+import { MemberLeague } from '@/types';
 import { Tables } from '@/types/database.types';
 import { create } from 'zustand';
 
+type League = Tables<'leagues'> & { competition: Tables<'competitions'> };
+type Member = Tables<'league_members'>;
+
 interface MemberState {
-  member: Tables<'league_members'> | null;
-  league: LeagueWithCompetition | null;
+  member: Member | null;
+  league: League | null;
   isLoading: boolean;
   error: string | null;
   setMember: (member: MemberLeague | null) => void;
@@ -58,9 +61,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
 
     const { data, error } = await supabase
       .from('league_members')
-      .select(
-        '*, league:leagues!league_id(*,competition:competitions!inner(*))'
-      )
+      .select('*, league:leagues!league_id(*,competition:competitions!inner(*))')
       .eq('user_id', user.id)
       .eq('is_primary', true)
       .maybeSingle();

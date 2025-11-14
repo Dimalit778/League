@@ -1,10 +1,9 @@
 import { Error } from '@/components/layout';
 import { useGetLeagueLeaderboard } from '@/hooks/useLeagues';
-import LeaderboardCard from '@/screens/league/LeaderboardCard';
-import LeagueSkeleton from '@/screens/league/LeagueSkeleton';
-import TopThree from '@/screens/league/TopThree';
-import { useMemberStore } from '@/store/MemberStore';
-import { LeagueLeaderboardType } from '@/types';
+import LeaderboardCard from '@/screens/league/components/leaderboard-card';
+import LeagueSkeleton from '@/screens/league/components/skeleton';
+import TopThree from '@/screens/league/components/top-tree';
+import { useStoreData } from '@/store/store';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -12,19 +11,13 @@ import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const LeagueScreen = () => {
-  const { member, league } = useMemberStore();
+  const { member, league } = useStoreData();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
   const contentTop = Math.max(0, headerHeight - insets.top);
   const isFocused = useIsFocused();
 
-  const {
-    data: leaderboard,
-    isLoading,
-    isRefetching,
-    error,
-    refetch,
-  } = useGetLeagueLeaderboard(league?.id);
+  const { data: leaderboard, isLoading, isRefetching, error, refetch } = useGetLeagueLeaderboard(league.id);
 
   const topThree = leaderboard?.slice(0, 3) ?? [];
 
@@ -38,20 +31,16 @@ const LeagueScreen = () => {
   return (
     <View className="flex-1 bg-background">
       <View style={{ paddingTop: contentTop }}>
-        <TopThree topMembers={topThree as LeagueLeaderboardType[]} />
+        <TopThree topMembers={topThree} />
       </View>
 
       <FlatList
-        data={leaderboard || []}
+        data={leaderboard}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
-        keyExtractor={(item: any) => item.user_id}
+        keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
         renderItem={({ item, index }) => (
-          <LeaderboardCard
-            item={item}
-            index={index}
-            isCurrentUser={item.user_id === member?.user_id}
-          />
+          <LeaderboardCard item={item} index={index} isCurrentUser={item.user_id === member?.user_id} />
         )}
         refreshing={isFocused && isRefetching}
         onRefresh={handleRefresh}

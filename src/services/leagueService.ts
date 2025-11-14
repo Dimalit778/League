@@ -1,24 +1,14 @@
 import { supabase } from '@/lib/supabase';
 import { subscriptionService } from '@/services/subscriptionService';
-import {
-  createLeagueProps,
-  createLeagueResponse,
-  LeagueWithCompetition,
-  leagueWithMembers,
-  MemberLeague,
-} from '@/types';
 
 export const leagueService = {
   async getLeagueLeaderboard(leagueId: string) {
-    const { data, error } = await supabase
-      .from('league_leaderboard_view')
-      .select('*')
-      .eq('league_id', leagueId);
+    const { data, error } = await supabase.from('league_leaderboard_view').select('*').eq('league_id', leagueId);
 
     if (error) throw error;
     return data;
   },
-  async getUserLeagues(userId: string): Promise<MemberLeague[]> {
+  async getUserLeagues(userId: string) {
     const { data, error } = await supabase
       .from('league_members')
       .select('*, league:leagues!league_id(*,competition:competitions(*))')
@@ -27,10 +17,10 @@ export const leagueService = {
 
     if (error) throw new Error(error.message);
 
-    return data as MemberLeague[];
+    return data;
   },
 
-  async findLeagueByJoinCode(joinCode: string): Promise<LeagueWithCompetition> {
+  async findLeagueByJoinCode(joinCode: string) {
     const { data, error } = await supabase
       .from('leagues')
       .select('*,competition:competitions(*)')
@@ -40,64 +30,62 @@ export const leagueService = {
     if (error) throw new Error(error.message);
     if (!data) throw new Error('League not found');
 
-    return data as LeagueWithCompetition;
+    return data;
   },
 
-  async getLeagueAndMembers(leagueId: string): Promise<leagueWithMembers> {
-    try {
-      const { data: leagueData, error: leagueError } = await supabase
-        .from('leagues')
-        .select(
-          '*,competition:competitions!inner(id,name,logo,area,flag),league_members(*)'
-        )
-        .eq('id', leagueId)
-        .single();
+  async getLeagueAndMembers(leagueId: string) {
+    const { data: leagueData, error: leagueError } = await supabase
+      .from('leagues')
+      .select('*,competition:competitions!inner(id,name,logo,area,flag),league_members(*)')
+      .eq('id', leagueId)
+      .single();
 
-      if (leagueError) throw new Error(leagueError.message);
+    if (leagueError) throw new Error(leagueError.message);
 
-      return leagueData as leagueWithMembers;
-    } catch (error: any) {
-      console.error('Error in getLeagueAndMembers:', error.message);
-      throw error;
-    }
+    return leagueData;
+  },
+  async getLeagueWithCompetition(leagueId: string) {
+    const { data, error } = await supabase
+      .from('leagues')
+      .select('*,competition:competitions(*)')
+      .eq('id', leagueId)
+      .single();
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('League not found');
+
+    return data;
   },
 
-  async createLeague(params: createLeagueProps): Promise<createLeagueResponse> {
-    const { canCreate, reason } = await subscriptionService.canCreateLeague(
-      params.user_id
-    );
+  async createLeague(params: {
+    league_name: string;
+    max_members: number;
+    competition_id: number;
+    nickname: string;
+    user_id: string;
+  }) {
+    const { canCreate, reason } = await subscriptionService.canCreateLeague(params.user_id);
 
     if (!canCreate) {
-      throw new Error(
-        reason ||
-          "You've reached your league limit. Please upgrade your subscription."
-      );
+      throw new Error(reason || "You've reached your league limit. Please upgrade your subscription.");
     }
 
-    // Get subscription to determine max members allowed
-    const subscription = await subscriptionService.getCurrentSubscription(
-      params.user_id
-    );
-    const limits = subscriptionService.getSubscriptionLimits(
-      subscription?.subscription_type || 'FREE'
-    );
-    // Ensure max_members doesn't exceed subscription limit
+    const subscription = await subscriptionService.getCurrentSubscription(params.user_id);
+    const limits = subscriptionService.getSubscriptionLimits(subscription?.subscription_type || 'FREE');
+
     const maxMembers = Math.min(params.max_members, limits.maxMembersPerLeague);
 
-    const { data: leagueData, error } = await supabase.rpc(
-      'create_new_league',
-      {
-        league_name: params.league_name,
-        max_members: maxMembers,
-        competition_id: params.competition_id,
-        nickname: params.nickname,
-        avatar_url: '',
-      }
-    );
+    const { data: leagueData, error } = await supabase.rpc('create_new_league', {
+      league_name: params.league_name,
+      max_members: maxMembers,
+      competition_id: params.competition_id,
+      nickname: params.nickname,
+      avatar_url: undefined,
+    });
 
     if (error) throw new Error(error.message);
 
-    return leagueData as createLeagueResponse;
+    return leagueData;
   },
 
   async joinLeague(joinCode: string, nickname: string) {
@@ -120,10 +108,7 @@ export const leagueService = {
     return data;
   },
 
-  async updatePrimaryLeague(
-    userId: string,
-    leagueId: string
-  ): Promise<MemberLeague> {
+  async updatePrimaryLeague(userId: string, leagueId: string) {
     const { error: unsetLeaguesError } = await supabase
       .from('league_members')
       .update({ is_primary: false })
@@ -143,7 +128,7 @@ export const leagueService = {
 
     if (setPrimaryError) throw new Error(setPrimaryError.message);
 
-    return primaryLeague as MemberLeague;
+    return primaryLeague;
   },
   async updateLeague(leagueId: string, data: { name?: string }) {
     const { data: updated, error } = await supabase
@@ -157,11 +142,7 @@ export const leagueService = {
   },
 
   async removeMember(leagueId: string, userId: string) {
-    const { error } = await supabase
-      .from('league_members')
-      .delete()
-      .eq('league_id', leagueId)
-      .eq('user_id', userId);
+    const { error } = await supabase.from('league_members').delete().eq('league_id', leagueId).eq('user_id', userId);
     if (error) throw new Error(error.message);
     return true;
   },

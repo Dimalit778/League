@@ -1,9 +1,11 @@
 import { SplashScreen } from '@/components/layout';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Redirect, Stack } from 'expo-router';
 
 export default function AuthLayout() {
   const { session, isLoading } = useCurrentSession();
+  const { colors } = useThemeTokens();
 
   if (isLoading) {
     return <SplashScreen />;
@@ -17,6 +19,9 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
       }}
     >
       <Stack.Screen name="signIn" options={{ headerShown: false }} />

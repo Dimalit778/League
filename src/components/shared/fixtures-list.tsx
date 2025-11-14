@@ -57,12 +57,12 @@ const FixtureItem = memo(
   }
 );
 
-const FixturesList = ({
+export default function FixturesList({
   fixtures,
   selectedFixture,
   handleFixturePress,
   animateScroll,
-}: FixturesListProps) => {
+}: FixturesListProps) {
   const ref = useRef<FlatList>(null);
   const { colors } = useThemeTokens();
   const [listWidth, setListWidth] = useState(0);
@@ -124,6 +124,4 @@ const FixturesList = ({
       />
     </View>
   );
-};
-
-export default FixturesList;
+}

@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { userService } from '@/services/usersService';
-import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 import { TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -15,7 +15,7 @@ export const useGetUser = () => {
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
 
   return useMutation({
     mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) => {

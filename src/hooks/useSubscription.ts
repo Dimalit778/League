@@ -3,11 +3,11 @@ import {
   subscriptionService,
   SubscriptionType,
 } from '@/services/subscriptionService';
-import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useSubscription = () => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useQuery({
@@ -27,7 +27,7 @@ export const useSubscription = () => {
 
 export const useCreateSubscription = () => {
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useMutation({
@@ -59,7 +59,7 @@ export const useCreateSubscription = () => {
 
 export const useCancelSubscription = () => {
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useMutation({
@@ -76,7 +76,7 @@ export const useCancelSubscription = () => {
 };
 
 export const useCanCreateLeague = () => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useQuery({

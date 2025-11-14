@@ -1,5 +1,5 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 import { SettingsIcon, TrophyIcon } from '@assets/icons';
 import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
@@ -11,7 +11,7 @@ const TabsHeader = ({
   showLeagueName?: boolean;
 }) => {
   const { colors } = useThemeTokens();
-  const { league } = useMemberStore();
+  const { league } = useStoreData();
   const insets = useSafeAreaInsets();
 
   return (

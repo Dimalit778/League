@@ -3,7 +3,7 @@ import { Button } from '@/components/ui';
 import { useCurrentSession } from '@/hooks/useCurrentSession';
 import { useSubscription } from '@/hooks/useSubscription';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
-import { SubscriptionStatus } from '@/screens/subscription';
+import SubscriptionStatus from '@/screens/subscription/components/SubscriptionStatus';
 import { leagueService } from '@/services/leagueService';
 import { useMemberStore } from '@/store/MemberStore';
 import { MemberLeague } from '@/types';

@@ -18,10 +18,10 @@ type MatchHeaderProps = {
 };
 const getMatchStatusColor = (
   status: string,
-  prediction: Prediction | null
+  prediction: Prediction | null,
+  mutedColor: string
 ): [string, string] => {
   const normalizedStatus = status?.toUpperCase();
-  const { colors } = useThemeTokens();
 
   if (
     normalizedStatus === 'FINISHED' &&
@@ -38,15 +38,24 @@ const getMatchStatusColor = (
     if (points === 0) {
       return ['#6B7280', '#EF4444'];
     }
-    return [colors.muted, colors.muted];
+    return [mutedColor, mutedColor];
   }
 
-  return [colors.muted, colors.muted];
+  return [mutedColor, mutedColor];
 };
 
-const MatchHeader = ({ status, kickOff, prediction }: MatchHeaderProps) => {
+export default function Header({
+  status,
+  kickOff,
+  prediction,
+}: MatchHeaderProps) {
+  const { colors } = useThemeTokens();
   const matchStatus = getSimpleMatchStatus(status);
-  const colors = getMatchStatusColor(matchStatus, prediction);
+  const matchColors = getMatchStatusColor(
+    matchStatus,
+    prediction,
+    colors.muted
+  );
 
   return (
     <View className="bg-muted flex-row items-center justify-center px-4 ">
@@ -56,7 +65,7 @@ const MatchHeader = ({ status, kickOff, prediction }: MatchHeaderProps) => {
         </Text>
       </View>
       <View className="min-w-[80px] mx-3 ">
-        <LinearGradient colors={colors}>
+        <LinearGradient colors={matchColors}>
           {prediction && (
             <Text className="text-background font-medium text-center">
               {prediction?.home_score ?? null} -{' '}
@@ -72,6 +81,4 @@ const MatchHeader = ({ status, kickOff, prediction }: MatchHeaderProps) => {
       </View>
     </View>
   );
-};
-
-export default MatchHeader;
+}

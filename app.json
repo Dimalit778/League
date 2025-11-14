@@ -9,6 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "privacy": "public",
+    "privacyPolicy": "https://yourdomain.com/privacy-policy",
+    "termsOfService": "https://yourdomain.com/terms-of-service",
     "splash": {
       "image": "./assets/app-icon.png",
       "resizeMode": "contain",
@@ -52,10 +54,7 @@
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
           "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera for your avatar.",
           "isAccessMediaLocationEnabled": true,
-          "granularPermissions": [
-            "audio",
-            "photo"
-          ]
+          "granularPermissions": ["audio", "photo"]
         }
       ],
       [
@@ -82,13 +81,22 @@
             "infoPlist": {
               "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
               "NSLocalNetworkUsageDescription": "Allow local network for development",
-              "NSBonjourServiceTypes": [
-                "_expo._tcp"
-              ],
+              "NSBonjourServiceTypes": ["_expo._tcp"],
               "NSAppTransportSecurity": {
                 "NSAllowsLocalNetworking": true,
-                "NSAllowsArbitraryLoads": true,
                 "NSExceptionDomains": {
+                  "keuavfvgwhwckqordjbp.supabase.co": {
+                    "NSIncludesSubdomains": true,
+                    "NSExceptionRequiresForwardSecrecy": true,
+                    "NSExceptionMinimumTLSVersion": "TLSv1.2",
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": false
+                  },
+                  "sentry.io": {
+                    "NSIncludesSubdomains": true,
+                    "NSExceptionRequiresForwardSecrecy": true,
+                    "NSExceptionMinimumTLSVersion": "TLSv1.2",
+                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": false
+                  },
                   "localhost": {
                     "NSIncludesSubdomains": false,
                     "NSTemporaryExceptionAllowsInsecureHTTPLoads": true,
@@ -96,18 +104,6 @@
                   },
                   "127.0.0.1": {
                     "NSIncludesSubdomains": false,
-                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
-                  },
-                  "192.168.0.0": {
-                    "NSIncludesSubdomains": true,
-                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
-                  },
-                  "192.20.0.36": {
-                    "NSIncludesSubdomains": true,
-                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
-                  },
-                  "10.0.0.0": {
-                    "NSIncludesSubdomains": true,
                     "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
                   }
                 }

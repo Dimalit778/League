@@ -1,31 +1,15 @@
 import { supabase } from '@/lib/supabase';
 import { TablesInsert, TablesUpdate } from '@/types/database.types';
 
-type UserPredictionInsert = TablesInsert<'predictions'>;
-type UserPredictionUpdate = TablesUpdate<'predictions'>;
-
 export const predictionService = {
-  // Create
-  async createPrediction(prediction: UserPredictionInsert) {
-    const { data, error } = await supabase
-      .from('predictions')
-      .insert({
-        user_id: prediction.user_id,
-        match_id: prediction.match_id,
-        home_score: prediction.home_score,
-        away_score: prediction.away_score,
-        league_id: prediction.league_id,
-        league_member_id: prediction.league_member_id,
-      })
-      .select()
-      .single();
+  async createPrediction(prediction: TablesInsert<'predictions'>) {
+    const { data, error } = await supabase.from('predictions').insert(prediction).select().single();
 
     if (error) throw error;
     return data;
   },
-  // Update Prediction
-  async updatePrediction(updates: UserPredictionUpdate) {
-    const { id, user_id, ...rest } = updates;
+  async updatePrediction(updates: TablesUpdate<'predictions'>) {
+    const { id, user_id } = updates;
     if (!id) throw new Error('Prediction ID is required');
     if (!user_id) throw new Error('User ID is required');
 
@@ -45,7 +29,6 @@ export const predictionService = {
 
     return data;
   },
-  // Get Member Predictions
   async getMemberPredictions(userId: string, fixtureIds?: number[]) {
     let query = supabase
       .from('predictions')
@@ -72,24 +55,18 @@ export const predictionService = {
     if (error) throw error;
     return data;
   },
-  // Get Member Predictions By Round
   async getMemberPredictionsByRound(userId: string, round: string) {
-    const { data, error } = await supabase
-      .from('predictions')
-      .select('*')
-      .eq('user_id', userId);
+    const { data, error } = await supabase.from('predictions').select('*').eq('user_id', userId);
     // .eq("round", round);
 
     if (error) throw error;
     return data;
   },
-  // Delete Prediction
   async deletePrediction(id: string) {
     const { error } = await supabase.from('predictions').delete().eq('id', id);
 
     if (error) throw error;
   },
-  // Get Member Prediction By Fixture
   async getMemberPredictionByFixture(userId: string, fixtureId: number) {
     const { data, error } = await supabase
       .from('predictions')
@@ -104,7 +81,6 @@ export const predictionService = {
     }
     return data;
   },
-  // Get League Predictions By Fixture
   async getLeaguePredictionsByFixture(fixtureId: number, leagueId: string) {
     const { data, error } = await supabase
       .from('predictions')
@@ -126,6 +102,25 @@ export const predictionService = {
 
     if (error) throw error;
 
+    return data;
+  },
+  async getPredictionsByLeagueMemberId(memberId: string) {
+    const { data, error } = await supabase
+      .from('predictions')
+      .select(
+        `
+        *,
+        matches!inner(
+          *,
+          home_team:teams!matches_home_team_id_fkey(*),
+          away_team:teams!matches_away_team_id_fkey(*)
+        )
+      `
+      )
+      .eq('league_member_id', memberId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
     return data;
   },
 };

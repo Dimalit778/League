@@ -1,14 +1,13 @@
-import { useMemberStore } from '@/store/MemberStore';
+import { FixturesList, SkeletonFixtures } from '@/components/shared';
+import { useStoreData } from '@/store/store';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import FixturesList from './components/fixtures/fixtures-list';
-import MatchdaysListSkeleton from './components/fixtures/SkeletonFixtures';
-import MatchList from './components/matches/Matches-list';
-import MatchesSkeleton from './components/matches/SkeletonMatches';
+import MatchList from './components/match-list';
+import SkeletonMatches from './components/skeleton-matches';
 
 const MatchesScreen = () => {
-  const { member, league } = useMemberStore();
+  const { member, league } = useStoreData();
   const userId = member?.user_id;
   const competition = league?.competition;
   const currentFixture = competition?.current_fixture as number;
@@ -80,8 +79,8 @@ const MatchesScreen = () => {
   if (!fixtures.length || selectedFixture == null) {
     return (
       <View className="flex-1 bg-background">
-        <MatchdaysListSkeleton />
-        <MatchesSkeleton />
+        <SkeletonFixtures />
+        <SkeletonMatches />
       </View>
     );
   }

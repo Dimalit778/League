@@ -4,7 +4,7 @@ import {
   useRemoveMember,
   useUpdateLeague,
 } from '@/hooks/useLeagues';
-import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 
 import { AvatarImage, BackButton, Button, MyImage } from '@/components/ui';
 import { MemberLeague } from '@/types';
@@ -13,7 +13,7 @@ import { Alert, FlatList, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EditLeagueScreen = () => {
-  const { member, league } = useMemberStore();
+  const { member, league } = useStoreData();
 
   const {
     data: leagueData,

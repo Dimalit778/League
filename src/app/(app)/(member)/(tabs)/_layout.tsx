@@ -2,15 +2,21 @@ import { LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
 import { TabsHeader } from '@/components/layout';
 import { BottomTabsBar } from '@/components/layout/BottomTabs';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
+  const { colors } = useThemeTokens();
+
   return (
     <Tabs
       tabBar={(props) => <BottomTabsBar {...props} />}
       screenOptions={{
         header: () => <TabsHeader showLeagueName={true} />,
         tabBarHideOnKeyboard: true,
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
       }}
     >
       <Tabs.Screen

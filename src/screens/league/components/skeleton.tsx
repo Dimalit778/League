@@ -8,9 +8,7 @@ const TopThreeSkeleton = () => {
       {/* Second place */}
       <View className="items-center">
         <View className="relative">
-          <AnimatedSkeleton
-            style={{ width: 80, height: 80, borderRadius: 40 }}
-          />
+          <AnimatedSkeleton style={{ width: 80, height: 80, borderRadius: 40 }} />
         </View>
         <AnimatedSkeleton style={{ width: 60, height: 16, marginTop: 8 }} />
       </View>
@@ -19,9 +17,7 @@ const TopThreeSkeleton = () => {
       <View className="items-center -mt-8">
         <View className="relative">
           <View className="absolute -top-7 left-1/2 transform -translate-x-1/2"></View>
-          <AnimatedSkeleton
-            style={{ width: 96, height: 96, borderRadius: 48 }}
-          />
+          <AnimatedSkeleton style={{ width: 96, height: 96, borderRadius: 48 }} />
         </View>
         <AnimatedSkeleton style={{ width: 70, height: 16, marginTop: 8 }} />
       </View>
@@ -29,9 +25,7 @@ const TopThreeSkeleton = () => {
       {/* Third place */}
       <View className="items-center">
         <View className="relative">
-          <AnimatedSkeleton
-            style={{ width: 80, height: 80, borderRadius: 40 }}
-          />
+          <AnimatedSkeleton style={{ width: 80, height: 80, borderRadius: 40 }} />
         </View>
         <AnimatedSkeleton style={{ width: 60, height: 16, marginTop: 8 }} />
       </View>
@@ -61,7 +55,7 @@ const LeaderboardCardSkeleton = () => {
   );
 };
 
-const LeagueSkeleton = () => {
+export default function LeagueSkeleton() {
   const skeletonCards = Array.from({ length: 7 });
 
   return (
@@ -74,6 +68,4 @@ const LeagueSkeleton = () => {
       </View>
     </Screen>
   );
-};
-
-export default LeagueSkeleton;
+}

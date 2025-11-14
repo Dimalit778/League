@@ -4,15 +4,15 @@ import { useGetLeagueAndMembers, useLeaveLeague } from '@/hooks/useLeagues';
 import { AvatarSection } from '@/screens/profile/components/AvatarSection';
 import { LeagueDetailsSection } from '@/screens/profile/components/LeagueDetailsSection';
 import { NicknameSection } from '@/screens/profile/components/NicknameSection';
-import { ProfileSkeleton } from '@/screens/profile/ProfileSkeleton';
-import { useMemberStore } from '@/store/MemberStore';
+import { ProfileSkeleton } from '@/screens/profile/components/ProfileSkeleton';
+import { useStoreData } from '@/store/store';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-export default function Profile() {
-  const { member, league } = useMemberStore();
+const ProfileScreen = () => {
+  const { member, league } = useStoreData();
   const { data: leagueData } = useGetLeagueAndMembers(league?.id);
 
   const leaveLeague = useLeaveLeague();
@@ -68,4 +68,6 @@ export default function Profile() {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default ProfileScreen;

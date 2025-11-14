@@ -2,22 +2,22 @@ import { invalidateImageCache } from '@/hooks/useSupabaseImages';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { membersService } from '@/services/membersService';
 import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 
-export const useMemberStats = () => {
-  const { member } = useMemberStore();
+export const useMemberStats = (memberId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.members.stats(member?.id),
-    queryFn: () => membersService.getMemberStats(member?.id!),
+    queryKey: QUERY_KEYS.members.stats(memberId),
+    queryFn: () => membersService.getMemberStats(memberId),
     staleTime: 5 * 60 * 1000,
     retry: 2,
-    enabled: !!member?.id,
   });
 };
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
-  const { initializeMember, league, member } = useMemberStore();
+  const { league, member } = useStoreData();
+  const initializeMember = useMemberStore((s) => s.initializeMember);
   const memberId = member?.id;
   const leagueId = league?.id;
 
@@ -53,7 +53,7 @@ export const useUpdateMember = () => {
 };
 
 export const useDeleteMemberImage = () => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const leagueId = member?.league_id;
   const memberId = member?.id;
   const queryClient = useQueryClient();
@@ -62,11 +62,7 @@ export const useDeleteMemberImage = () => {
       if (!leagueId || !memberId) {
         throw new Error('League ID and member ID are required');
       }
-      return membersService.deleteImage(
-        leagueId,
-        memberId,
-        currentPath ?? undefined
-      );
+      return membersService.deleteImage(leagueId, memberId, currentPath ?? undefined);
     },
     onSuccess: (_, currentPath) => {
       if (!leagueId || !memberId) return;
@@ -93,7 +89,7 @@ export const useDeleteMemberImage = () => {
 };
 
 export const useUploadMemberImage = () => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const leagueId = member?.league_id;
   const memberId = member?.id;
   const queryClient = useQueryClient();
@@ -126,5 +122,33 @@ export const useUploadMemberImage = () => {
         queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
       });
     },
+  });
+};
+
+// --- new
+export const useMemberPredictions = (memberId?: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.members.predictions(memberId),
+    queryFn: () => {
+      if (!memberId) {
+        throw new Error('Member ID is required');
+      }
+      return membersService.getMemberPredictions(memberId);
+    },
+    enabled: !!memberId,
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+};
+
+export const useMemberStatsById = (memberId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.members.stats(memberId),
+    queryFn: () => {
+      return membersService.getMemberStats(memberId);
+    },
+
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
 };

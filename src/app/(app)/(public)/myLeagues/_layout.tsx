@@ -1,9 +1,18 @@
 import { TabsHeader } from '@/components/layout';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
 
 export default function MyLeaguesLayout() {
+  const { colors } = useThemeTokens();
+
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{

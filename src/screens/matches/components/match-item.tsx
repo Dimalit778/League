@@ -1,18 +1,15 @@
+import { TeamDisplay } from '@/components/shared';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { MatchesWithTeamsAndPredictions, MatchScore } from '@/types';
-import { Tables } from '@/types/database.types';
 import { timeFormat } from '@/utils/formats';
 import { getSimpleMatchStatus } from '@/utils/matchHelper';
 import { AddIcon } from '@assets/icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import MatchHeader from './MatchHeader';
-
-type MatchItem = MatchesWithTeamsAndPredictions;
-type Team = Tables<'teams'>;
+import Header from './header';
+type MatchItemType = MatchesWithTeamsAndPredictions;
 
 const TEAM_LOGO_SIZE = 44;
 const STATUS = {
@@ -87,33 +84,8 @@ const MatchScoreDisplay = memo(
 
 MatchScoreDisplay.displayName = 'MatchScoreDisplay';
 
-const TeamDisplay = memo(
-  ({ team, logoSize }: { team: Team; logoSize: number }) => (
-    <View className="flex-1 items-center">
-      <View className="mb-2">
-        <ExpoImage
-          source={team.logo}
-          style={{ width: logoSize, height: logoSize }}
-          cachePolicy="memory-disk"
-          contentFit="contain"
-          transition={0}
-          priority="high"
-        />
-      </View>
-      <Text
-        className="text-text text-sm font-semibold text-center px-1"
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {team.shortName}
-      </Text>
-    </View>
-  )
-);
 
-TeamDisplay.displayName = 'TeamDisplay';
-
-export const MatchCard = memo(({ match }: { match: MatchItem }) => {
+export default function MatchItem({ match }: { match: MatchItemType }) {
   const router = useRouter();
   const prediction = match.predictions?.[0] ?? null;
   const matchStatus = getSimpleMatchStatus(match.status);
@@ -134,7 +106,7 @@ export const MatchCard = memo(({ match }: { match: MatchItem }) => {
       android_ripple={{ color: '#e5e7eb' }}
       onPress={handlePress}
     >
-      <MatchHeader
+      <Header
         status={matchStatus}
         kickOff={match.kick_off}
         prediction={prediction}
@@ -155,8 +127,4 @@ export const MatchCard = memo(({ match }: { match: MatchItem }) => {
       </View>
     </Pressable>
   );
-});
-
-MatchCard.displayName = 'MatchCard';
-
-export default MatchCard;
+}

@@ -6,14 +6,7 @@ import { Image } from 'expo-image';
 import { useCurrentSession } from './useCurrentSession';
 import { downloadMultipleImages } from './useSupabaseImages';
 
-/**
- * Helper function to download and prefetch avatar images
- * @param avatarPaths Array of avatar paths from Supabase storage
- * @returns Map of original path to signed URL
- */
-async function downloadAndPrefetchAvatars(
-  avatarPaths: string[]
-): Promise<Map<string, string | null>> {
+async function downloadAndPrefetchAvatars(avatarPaths: string[]): Promise<Map<string, string | null>> {
   if (avatarPaths.length === 0) {
     return new Map();
   }
@@ -22,16 +15,10 @@ async function downloadAndPrefetchAvatars(
     bucket: 'avatars',
   });
 
-  const validUrls = Array.from(imageUrls.values()).filter(
-    (url): url is string => url !== null
-  );
+  const validUrls = Array.from(imageUrls.values()).filter((url): url is string => url !== null);
 
   if (validUrls.length > 0) {
-    await Promise.all(
-      validUrls.map((url) =>
-        Image.prefetch(url, { cachePolicy: 'memory-disk' }).catch(() => {})
-      )
-    );
+    await Promise.all(validUrls.map((url) => Image.prefetch(url, { cachePolicy: 'memory-disk' }).catch(() => {})));
   }
 
   return imageUrls;
@@ -40,9 +27,7 @@ export const useGetUserLeagues = () => {
   const { session } = useCurrentSession();
   const userId = session?.user?.id;
   return useQuery({
-    queryKey: userId
-      ? QUERY_KEYS.users.leagues(userId)
-      : (['users', 'unknown', 'leagues'] as const),
+    queryKey: userId ? QUERY_KEYS.users.leagues(userId) : (['users', 'unknown', 'leagues'] as const),
     queryFn: () => {
       if (!userId) {
         throw new Error('User id is required to fetch leagues');
@@ -58,13 +43,8 @@ export const useJoinLeague = (userId: string) => {
   const { initializeMember } = useMemberStore();
 
   return useMutation({
-    mutationFn: ({
-      join_code,
-      nickname,
-    }: {
-      join_code: string;
-      nickname: string;
-    }) => leagueService.joinLeague(join_code, nickname),
+    mutationFn: ({ join_code, nickname }: { join_code: string; nickname: string }) =>
+      leagueService.joinLeague(join_code, nickname),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.users.leagues(userId),
@@ -87,17 +67,11 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
   });
 };
 
-export const useGetLeagueLeaderboard = (leagueId?: string) => {
+export const useGetLeagueLeaderboard = (leagueId: string) => {
   return useQuery({
-    queryKey: leagueId
-      ? QUERY_KEYS.leaderboard.byLeague(leagueId)
-      : (['leaderboard', 'unknown'] as const),
-    enabled: !!leagueId,
+    queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
     staleTime: 1000 * 60 * 5,
     queryFn: async () => {
-      if (!leagueId) {
-        throw new Error('League id is required to fetch leaderboard');
-      }
       const rows = await leagueService.getLeagueLeaderboard(leagueId);
 
       const paths = rows.map((r) => r.avatar_url).filter(Boolean) as string[];
@@ -132,9 +106,7 @@ export const useLeaveLeague = () => {
 
 export const useGetLeagueAndMembers = (leagueId?: string) => {
   return useQuery({
-    queryKey: leagueId
-      ? QUERY_KEYS.leagues.leagueAndMembers(leagueId)
-      : (['leagues', 'unknown', 'full'] as const),
+    queryKey: leagueId ? QUERY_KEYS.leagues.leagueAndMembers(leagueId) : (['leagues', 'unknown', 'full'] as const),
     enabled: !!leagueId,
     staleTime: 1000 * 60 * 5,
     queryFn: async () => {
@@ -143,18 +115,14 @@ export const useGetLeagueAndMembers = (leagueId?: string) => {
       }
       const rows = await leagueService.getLeagueAndMembers(leagueId);
 
-      const paths = rows.league_members
-        .map((r) => r.avatar_url)
-        .filter(Boolean) as string[];
+      const paths = rows.league_members.map((r) => r.avatar_url).filter(Boolean) as string[];
       const imageUrls = await downloadAndPrefetchAvatars(paths);
 
       return {
         ...rows,
         league_members: rows.league_members.map((r) => ({
           ...r,
-          avatar_url: r.avatar_url
-            ? (imageUrls.get(r.avatar_url) ?? null)
-            : null,
+          avatar_url: r.avatar_url ? (imageUrls.get(r.avatar_url) ?? null) : null,
         })),
       };
     },

@@ -8,6 +8,9 @@ export default function MemberLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
       }}
     >
       <Stack.Screen
@@ -17,7 +20,11 @@ export default function MemberLayout() {
         }}
       />
       <Stack.Screen name="match/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="profile" options={{ headerShown: false }} />
+      <Stack.Screen name="member/details" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="profile/edit-league"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

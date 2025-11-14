@@ -1,6 +1,5 @@
 import { Error } from '@/components/layout';
 import { useMemberStats } from '@/hooks/useMembers';
-import { useMemberStore } from '@/store/MemberStore';
 import { MemberStatsType } from '@/types';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -10,10 +9,9 @@ import SkeletonStats from './SkeletonStats';
 import StatsCard from './StatsCard';
 
 const Stats = () => {
-  const { member } = useMemberStore();
   const isFocused = useIsFocused();
 
-  const { data: stats, isLoading, error, refetch } = useMemberStats(member?.id);
+  const { data: stats, isLoading, error, refetch } = useMemberStats();
 
   const onRefresh = useCallback(() => {
     refetch();

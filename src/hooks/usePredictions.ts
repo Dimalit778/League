@@ -1,20 +1,16 @@
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { predictionService } from '@/services/predictionService';
-import { useMemberStore } from '@/store/MemberStore';
+import { useStoreData } from '@/store/store';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Create Prediction
 export const useCreatePrediction = () => {
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
 
   return useMutation({
-    mutationFn: (prediction: {
-      fixture_id: number;
-      home_score: number;
-      away_score: number;
-    }) => {
+    mutationFn: (prediction: { fixture_id: number; home_score: number; away_score: number }) => {
       if (!member?.user_id || !member?.id || !member?.league_id) {
         throw new Error('Member data is required to create prediction');
       }
@@ -39,14 +35,10 @@ export const useCreatePrediction = () => {
 // Update Prediction
 export const useUpdatePrediction = () => {
   const queryClient = useQueryClient();
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
 
   return useMutation({
-    mutationFn: (prediction: {
-      id: string;
-      home_score: number;
-      away_score: number;
-    }) => {
+    mutationFn: (prediction: { id: string; home_score: number; away_score: number }) => {
       if (!member?.user_id) {
         throw new Error('User ID is required to update prediction');
       }
@@ -66,14 +58,11 @@ export const useUpdatePrediction = () => {
   });
 };
 export const useMemberPredictionsByRound = (round: string) => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useQuery({
-    queryKey: QUERY_KEYS.predictions.byUserAndMatchday(
-      userId || '',
-      parseInt(round)
-    ),
+    queryKey: QUERY_KEYS.predictions.byUserAndMatchday(userId || '', parseInt(round)),
     queryFn: () => {
       if (!userId) {
         throw new Error('User ID is required to fetch predictions');
@@ -94,7 +83,7 @@ export const useMemberPredictions = (userId: string) => {
 };
 // Get User Prediction By Fixture
 export const useMemberPredictionByFixture = (fixtureId: number) => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const userId = member?.user_id;
 
   return useQuery({
@@ -114,7 +103,7 @@ export const useMemberPredictionByFixture = (fixtureId: number) => {
 };
 // Get League Predictions By Fixture
 export const useGetLeaguePredictionsByFixture = (fixtureId: number) => {
-  const { member } = useMemberStore();
+  const { member } = useStoreData();
   const leagueId = member?.league_id;
   const userId = member?.user_id;
 
@@ -124,10 +113,7 @@ export const useGetLeaguePredictionsByFixture = (fixtureId: number) => {
       if (!leagueId) {
         throw new Error('League ID is required to fetch league predictions');
       }
-      return predictionService.getLeaguePredictionsByFixture(
-        fixtureId,
-        leagueId
-      );
+      return predictionService.getLeaguePredictionsByFixture(fixtureId, leagueId);
     },
     enabled: !!userId && !!fixtureId && !!leagueId,
     staleTime: 1000 * 60 * 5, // 5 minutes
