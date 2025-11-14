@@ -1,6 +1,6 @@
 import { downloadImage } from '@/hooks/useSupabaseImages';
 import { supabase } from '@/lib/supabase';
-import { MemberLeague } from '@/types';
+import { MemberLeagueType } from '@/types';
 import { Tables } from '@/types/database.types';
 import { create } from 'zustand';
 
@@ -12,7 +12,7 @@ interface MemberState {
   league: League | null;
   isLoading: boolean;
   error: string | null;
-  setMember: (member: MemberLeague | null) => void;
+  setMember: (member: MemberLeagueType | null) => void;
   clearAll: () => void;
   initializeMember: () => Promise<void>;
 }
@@ -24,7 +24,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
   error: null,
   setIsLoading: (isLoading: boolean) => set({ isLoading: isLoading }),
   setError: (error: string | null) => set({ error: error }),
-  setMember: (memberData: MemberLeague | null) => {
+  setMember: (memberData: MemberLeagueType | null) => {
     if (!memberData) {
       set({ member: null, league: null });
       return;
@@ -72,7 +72,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
       return;
     }
 
-    const memberData = data as MemberLeague;
+    const memberData = data as MemberLeagueType;
 
     // Extract league from member data
     const { league, ...memberWithoutLeague } = memberData;

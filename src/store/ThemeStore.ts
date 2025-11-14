@@ -1,8 +1,25 @@
 import { ThemeName, getThemeTokens } from '@/lib/nativewind/themes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colorScheme } from 'nativewind';
+import { createMMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+// Create MMKV storage instance
+const storage = createMMKV({ id: 'theme-storage' });
+
+// Create custom storage adapter for MMKV
+const mmkvStorage = {
+  setItem: (name: string, value: string) => {
+    return storage.set(name, value);
+  },
+  getItem: (name: string) => {
+    const value = storage.getString(name);
+    return value ?? null;
+  },
+  removeItem: (name: string) => {
+    return storage.remove(name);
+  },
+};
 
 interface ThemeState {
   theme: ThemeName;
@@ -46,21 +63,14 @@ export const useThemeStore = create<ThemeState>()(
 
       initializeTheme: async () => {
         try {
-          // For development mode, handle potential SSR errors
-          try {
-            const savedData = await AsyncStorage.getItem('theme-storage');
+          const savedData = mmkvStorage.getItem('theme-storage');
 
-            if (savedData) {
-              const parsed = JSON.parse(savedData);
-              const themeToUse = parsed.state?.theme || 'dark';
-              colorScheme.set(themeToUse);
-              set({ theme: themeToUse as ThemeName });
-            } else {
-              const defaultTheme: ThemeName = 'dark';
-              colorScheme.set(defaultTheme);
-              set({ theme: defaultTheme });
-            }
-          } catch (storageError) {
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            const themeToUse = parsed.state?.theme || 'dark';
+            colorScheme.set(themeToUse);
+            set({ theme: themeToUse as ThemeName });
+          } else {
             const defaultTheme: ThemeName = 'dark';
             colorScheme.set(defaultTheme);
             set({ theme: defaultTheme });
@@ -75,7 +85,7 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: 'theme-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => mmkvStorage),
       skipHydration: false,
     }
   )

@@ -3,6 +3,7 @@ import { predictionService } from '@/services/predictionService';
 import { useStoreData } from '@/store/store';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { downloadAndPrefetchAvatars } from '@/utils/downloadAndPrefetchAvatars';
 
 // Create Prediction
 export const useCreatePrediction = () => {
@@ -95,28 +96,30 @@ export const useMemberPredictionByFixture = (fixtureId: number) => {
       return predictionService.getMemberPredictionByFixture(userId, fixtureId);
     },
     enabled: !!userId && !!fixtureId,
-    staleTime: 1000 * 60 * 2, // 2 minutes - predictions don't change often
-    gcTime: 1000 * 60 * 10, // 10 minutes - keep in cache longer (renamed from cacheTime)
-    retry: 2, // Retry failed requests twice
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 10,
+    retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
 // Get League Predictions By Fixture
-export const useGetLeaguePredictionsByFixture = (fixtureId: number) => {
-  const { member } = useStoreData();
-  const leagueId = member?.league_id;
-  const userId = member?.user_id;
-
+export const useGetLeaguePredictionsByFixture = (fixtureId: number, leagueId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.predictions.leagueByFixture(fixtureId, leagueId || ''),
-    queryFn: () => {
-      if (!leagueId) {
-        throw new Error('League ID is required to fetch league predictions');
-      }
-      return predictionService.getLeaguePredictionsByFixture(fixtureId, leagueId);
+    queryKey: QUERY_KEYS.predictions.leagueByFixture(fixtureId, leagueId),
+    queryFn: async () => {
+      const rows = await predictionService.getLeaguePredictionsByFixture(fixtureId, leagueId);
+      const paths = rows.map((r) => r.member.avatar_url).filter(Boolean) as string[];
+      const imageUrls = await downloadAndPrefetchAvatars(paths);
+      return rows.map((r) => ({
+        ...r,
+        member: {
+          ...r.member,
+          avatar_url: r.member.avatar_url ? (imageUrls.get(r.member.avatar_url) ?? null) : null,
+        },
+      }));
     },
-    enabled: !!userId && !!fixtureId && !!leagueId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+
+    staleTime: 1000 * 60 * 5,
   });
 };
 

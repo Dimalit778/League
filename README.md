@@ -1,11 +1,3 @@
-// Add to app.json plugin for google auth ------
-[
-"@react-native-google-signin/google-signin",
-{
-"iosUrlScheme": "com.googleusercontent.apps.834363700117-m3ta90sugtdcr7h6fb6ccot7e5rb2s9f"
-}
-],
-
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

@@ -16,7 +16,10 @@ module.exports = {
         success: 'var(--color-success)',
       },
       fontFamily: {
-        headBold: 'var(--font-headline-bold)',
+        header: 'var(--font-headline-bold)',
+        nunito: ['Nunito_400Regular'],
+        'nunito-bold': ['Nunito_700Bold'],
+        'nunito-black': ['Nunito_900Black'],
       },
       fontSize: {
         h1: 'var(--font-size-h1)',

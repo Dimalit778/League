@@ -34,6 +34,12 @@ export type MatchType = Tables<'matches'> & {
   away_team: Tables<'teams'>;
   score: ScoreType;
 };
+export type MatchWithPredictionsType = Tables<'matches'> & {
+  home_team: Tables<'teams'>;
+  away_team: Tables<'teams'>;
+  score: ScoreType;
+  predictions: PredictionType[];
+};
 export type PredictionType = Tables<'predictions'>;
 
 export type LeaderboardAndMemberType = Tables<'predictions'> & {
@@ -50,4 +56,5 @@ export type StatsType = {
   missedHits: number;
   accuracy: number;
   totalPoints: number;
+  position?: number | null;
 };

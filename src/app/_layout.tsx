@@ -1,13 +1,9 @@
-import '../../global.css';
-
-import {
-  AppErrorBoundary,
-  NetworkStatusBanner,
-  SplashScreen,
-} from '@/components/layout';
-
+import { AppErrorBoundary, NetworkStatusBanner, SplashScreen } from '@/components/layout';
 import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/store/ThemeStore';
+import { Nunito_400Regular, Nunito_700Bold, Nunito_900Black } from '@expo-google-fonts/nunito';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import '../../global.css';
 
 import { getThemeTokens, themes } from '@/lib/nativewind/themes';
 import { useMemberStore } from '@/store/MemberStore';
@@ -20,7 +16,7 @@ import { AppState, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({});
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: true,
 });
@@ -62,8 +58,10 @@ const InitialApp = () => {
   const [loading, setLoading] = useState(true);
   const hasInitialized = useRef(false);
 
-  const [fontsLoaded] = useFonts({
-    'Teko-Bold': require('@assets/fonts/Teko-Bold.ttf'),
+  let [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+    Nunito_900Black,
   });
 
   useEffect(() => {
@@ -138,11 +136,13 @@ const RootLayout = () => {
   return (
     <AppErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <KeyboardProvider>
-            <InitialApp />
-          </KeyboardProvider>
-        </SafeAreaProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <SafeAreaProvider>
+            <KeyboardProvider>
+              <InitialApp />
+            </KeyboardProvider>
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
       </QueryClientProvider>
     </AppErrorBoundary>
   );

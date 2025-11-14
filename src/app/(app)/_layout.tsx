@@ -2,7 +2,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useGetUser } from '@/hooks/useUsers';
 import { useMemberStore } from '@/store/MemberStore';
 
-import { Stack } from 'expo-router';
+import { Stack } from '@/components/layout/Stack';
 
 export default function AppLayout() {
   const member = useMemberStore((s) => s.member);

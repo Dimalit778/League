@@ -16,10 +16,7 @@ type FormData = yup.InferType<typeof schema>;
 
 const schema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup
-    .string()
-    .min(6, 'Minimum 6 characters')
-    .required('Password is required'),
+  password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
 });
 
 const SignIn = () => {
@@ -53,13 +50,9 @@ const SignIn = () => {
           <Image source={logo} resizeMode="contain" className="w-40  h-40" />
         </View>
         <View className="items-center p-5">
-          <Text className="text-h1 text-secondary font-headBold">
-            Welcome Back
-          </Text>
+          <Text className="text-h1 text-secondary font-headBold">Welcome Back</Text>
 
-          <Text className="text-muted font-semibold ">
-            Sign in to your account
-          </Text>
+          <Text className="text-muted font-semibold ">Sign in to your account</Text>
         </View>
 
         {/* Form */}
@@ -95,7 +88,7 @@ const SignIn = () => {
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
             disabled={!isValid || isLoading}
-            variant="primary"
+            variant="secondary"
             size="lg"
           />
           <View className="flex-row items-center my-4">

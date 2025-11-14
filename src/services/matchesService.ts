@@ -19,7 +19,7 @@ export const matchesService = {
 
     return data;
   },
-  async getMatchesWithPredictions(fixture: number, competitionId: number, userId: string) {
+  async getMatchesWithPredictions(fixture: number, competitionId: number, leagueId: string) {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -32,7 +32,7 @@ export const matchesService = {
       )
       .eq('competition_id', competitionId)
       .eq('fixture', fixture)
-      .eq('predictions.user_id', userId)
+      .eq('predictions.league_id', leagueId)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
@@ -108,5 +108,24 @@ export const matchesService = {
     }));
 
     return matchesWithPredictions;
+  },
+  async getMatchWithPredictions(id: number, leagueId: string) {
+    const { data, error } = await supabase
+      .from('matches')
+      .select(
+        `
+        *,
+        home_team:teams!matches_home_team_id_fkey(*),
+        away_team:teams!matches_away_team_id_fkey(*),
+        predictions:predictions!predictions_match_id_fkey(*)
+      `
+      )
+      .eq('id', id)
+      .eq('predictions.league_id', leagueId)
+      .single();
+
+    if (error) throw error;
+
+    return data;
   },
 };

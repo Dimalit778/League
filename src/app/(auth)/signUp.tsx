@@ -23,14 +23,8 @@ const schema = yup.object().shape({
     .string()
     .test('email', 'Invalid email', (value) => validateEmail(value || ''))
     .required('Email is required'),
-  password: yup
-    .string()
-    .min(6, 'Minimum 6 characters')
-    .required('Password is required'),
-  fullname: yup
-    .string()
-    .required('Full name is required')
-    .min(3, 'Full name must be at least 3 characters'),
+  password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
+  fullname: yup.string().required('Full name is required').min(3, 'Full name must be at least 3 characters'),
 });
 type FormData = yup.InferType<typeof schema>;
 
@@ -49,33 +43,23 @@ const SignUp = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const result = await signUp(
-        data.email.trim(),
-        data.password,
-        data.fullname
-      );
+      await signUp(data.email.trim(), data.password, data.fullname);
     } catch (error: any) {
       Alert.alert('Error', errorMessage || 'An unexpected error occurred');
+      console.log(error);
     }
   };
 
   return (
     <Screen>
       <BackButton />
-      <KeyboardAwareScrollView
-        bottomOffset={62}
-        className="flex-1 bg-background "
-      >
+      <KeyboardAwareScrollView bottomOffset={62} className="flex-1 bg-background ">
         <View className="items-center justify-center ">
           <Image source={logo} resizeMode="contain" className="w-40  h-40" />
         </View>
         <View className="items-center p-5 ">
-          <Text className="text-h1 text-secondary font-headBold text-center ">
-            Create an account
-          </Text>
-          <Text className="text-center text-muted font-semibold ">
-            Sign up to get started
-          </Text>
+          <Text className="text-h1 text-secondary font-headBold text-center ">Create an account</Text>
+          <Text className="text-center text-muted font-semibold ">Sign up to get started</Text>
         </View>
 
         <View className=" mt-10 px-5 gap-4">
@@ -123,9 +107,7 @@ const SignUp = () => {
           </View>
           <GoogleAuth />
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
-            <Text className="text-muted text-center  ">
-              Already have an account?
-            </Text>
+            <Text className="text-muted text-center  ">Already have an account?</Text>
             <Link href="/signIn" replace>
               <Text className=" text-secondary font-bold">Sign In</Text>
             </Link>

@@ -62,7 +62,7 @@ export const useDeleteMemberImage = () => {
       if (!leagueId || !memberId) {
         throw new Error('League ID and member ID are required');
       }
-      return membersService.deleteImage(leagueId, memberId, currentPath ?? undefined);
+      return membersService.deleteImage(memberId, currentPath ?? undefined);
     },
     onSuccess: (_, currentPath) => {
       if (!leagueId || !memberId) return;
@@ -148,6 +148,36 @@ export const useMemberStatsById = (memberId: string) => {
       return membersService.getMemberStats(memberId);
     },
 
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+};
+
+export const useMemberDataAndStats = (memberId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.members.dataAndStats(memberId),
+    queryFn: () => {
+      if (!memberId) {
+        throw new Error('Member ID is required');
+      }
+      return membersService.getMemberDataAndStats(memberId);
+    },
+    enabled: !!memberId,
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+};
+
+export const useMemberLeague = (memberId: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.members.byId(memberId), 'league'],
+    queryFn: () => {
+      if (!memberId) {
+        throw new Error('Member ID is required');
+      }
+      return membersService.getMemberLeague(memberId);
+    },
+    enabled: !!memberId,
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });

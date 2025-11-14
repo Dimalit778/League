@@ -1,17 +1,13 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useStoreData } from '@/store/store';
+import { useMemberStore } from '@/store/MemberStore';
 import { SettingsIcon, TrophyIcon } from '@assets/icons';
 import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const TabsHeader = ({
-  showLeagueName = true,
-}: {
-  showLeagueName?: boolean;
-}) => {
+const TabsHeader = ({ showLeagueName = true }: { showLeagueName?: boolean }) => {
   const { colors } = useThemeTokens();
-  const { league } = useStoreData();
+  const { league } = useMemberStore();
   const insets = useSafeAreaInsets();
 
   return (

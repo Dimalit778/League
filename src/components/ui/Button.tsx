@@ -1,9 +1,5 @@
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { cn } from '@/lib/nativewind/utils';
+import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 
 interface ButtonProps {
   title: string;
@@ -36,27 +32,40 @@ const Button = ({
     }
   };
 
-  // Generate accessibility label from title if not provided
   const label = accessibilityLabel || title;
-  const hint = accessibilityHint || (loading ? 'Loading' : disabled ? 'Button disabled' : `Double tap to ${title.toLowerCase()}`);
+  const hint =
+    accessibilityHint || (loading ? 'Loading' : disabled ? 'Button disabled' : `Double tap to ${title.toLowerCase()}`);
+
+  const sizeClasses = {
+    sm: 'px-3 py-2 min-h-[32px]',
+    md: 'px-6 py-3 min-h-[44px]',
+    lg: 'px-6 py-4 min-h-[52px]',
+  };
+
+  const textSizeClasses = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+  };
+
+  const variantClasses = {
+    primary: 'bg-primary',
+    secondary: 'bg-secondary',
+    error: 'bg-error',
+    border: 'bg-border',
+  };
 
   return (
     <TouchableOpacity
       testID="button"
-      className={`${className} ${
-        color
-          ? ''
-          : `px-4 py-2 bg-${variant} rounded-md ${
-              disabled || loading ? 'opacity-50' : ''
-            }`
-      }
-      }`}
-      style={[
-        styles.button,
-        styles[size],
-        (disabled || loading) && styles.disabled,
-        color ? { backgroundColor: color, borderRadius: 8 } : null,
-      ]}
+      className={cn(
+        'rounded-[17px] items-center justify-center flex-row',
+        sizeClasses[size],
+        !color && variantClasses[variant],
+        (disabled || loading) && 'opacity-50',
+        className
+      )}
+      style={color ? { backgroundColor: color, borderRadius: 17 } : undefined}
       onPress={handlePress}
       activeOpacity={0.8}
       accessible={true}
@@ -68,37 +77,10 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text className="text-background text-sm font-semibold">{title}</Text>
+        <Text className={cn('text-text font-semibold', textSizeClasses[size])}>{title}</Text>
       )}
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  sm: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    minHeight: 32,
-  },
-  md: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    minHeight: 44,
-  },
-  lg: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    minHeight: 52,
-  },
-  disabled: {
-    opacity: 0.8,
-  },
-});
 
 export default Button;

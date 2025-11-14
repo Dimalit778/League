@@ -11,51 +11,36 @@ export const QUERY_KEYS = {
   users: {
     all: ['users'] as const,
     byId: (userId?: string) => ['users', userId ?? TOKENS.me] as const,
-    leagues: (userId?: string) =>
-      ['users', userId ?? TOKENS.me, 'leagues'] as const,
+    leagues: (userId?: string) => ['users', userId ?? TOKENS.me, 'leagues'] as const,
   },
 
   // ===== MEMBER RELATED =====
   members: {
-    byId: (memberId?: string) =>
-      ['members', memberId ?? TOKENS.pending] as const,
-    stats: (memberId?: string) =>
-      ['members', memberId ?? TOKENS.pending, 'stats'] as const,
-    avatar: (memberId?: string) =>
-      ['members', memberId ?? TOKENS.pending, 'avatar'] as const,
-    predictions: (memberId?: string) =>
-      ['members', memberId ?? TOKENS.pending, 'predictions'] as const,
+    byId: (memberId?: string) => ['members', memberId ?? TOKENS.pending] as const,
+    stats: (memberId?: string) => ['members', memberId ?? TOKENS.pending, 'stats'] as const,
+    avatar: (memberId?: string) => ['members', memberId ?? TOKENS.pending, 'avatar'] as const,
+    predictions: (memberId?: string) => ['members', memberId ?? TOKENS.pending, 'predictions'] as const,
+    dataAndStats: (memberId?: string) => ['members', memberId ?? TOKENS.pending, 'dataAndStats'] as const,
   },
 
   // ===== LEAGUE RELATED =====
   leagues: {
     all: ['leagues'] as const,
-    byId: (leagueId?: string) =>
-      ['leagues', leagueId ?? TOKENS.pending] as const,
-    byJoinCode: (joinCode?: string) =>
-      ['leagues', 'joinCode', joinCode ?? TOKENS.pending] as const,
-    leagueAndMembers: (leagueId?: string) =>
-      ['leagues', leagueId ?? TOKENS.pending, 'full'] as const,
-    members: (leagueId?: string) =>
-      ['leagues', leagueId ?? TOKENS.pending, 'members'] as const,
+    byId: (leagueId?: string) => ['leagues', leagueId ?? TOKENS.pending] as const,
+    byJoinCode: (joinCode?: string) => ['leagues', 'joinCode', joinCode ?? TOKENS.pending] as const,
+    leagueAndMembers: (leagueId?: string) => ['leagues', leagueId ?? TOKENS.pending, 'full'] as const,
+    members: (leagueId?: string) => ['leagues', leagueId ?? TOKENS.pending, 'members'] as const,
   },
 
   // ===== FIXTURE RELATED =====
   matches: {
     all: ['matches'] as const,
     byId: (matchId?: number) => ['matches', matchId ?? TOKENS.pending] as const,
+    byIdWithPredictions: (matchId?: number, leagueId?: string) =>
+      ['matches', 'predictions', matchId ?? TOKENS.pending, leagueId ?? TOKENS.pending] as const,
     byMatchday: (competitionId?: number, fixture?: number) =>
-      [
-        'matches',
-        'fixture',
-        competitionId ?? TOKENS.pending,
-        fixture ?? TOKENS.pending,
-      ] as const,
-    withPredictions: (
-      competitionId?: number,
-      fixture?: number,
-      userId?: string
-    ) =>
+      ['matches', 'fixture', competitionId ?? TOKENS.pending, fixture ?? TOKENS.pending] as const,
+    withPredictions: (competitionId?: number, fixture?: number, userId?: string) =>
       [
         'matches',
         'predictions',
@@ -64,59 +49,35 @@ export const QUERY_KEYS = {
         userId ?? TOKENS.me,
       ] as const,
     byLeagueMatchday: (leagueId?: string, fixture?: number) =>
-      [
-        'matches',
-        'league',
-        leagueId ?? TOKENS.pending,
-        'fixture',
-        fixture ?? TOKENS.pending,
-      ] as const,
+      ['matches', 'league', leagueId ?? TOKENS.pending, 'fixture', fixture ?? TOKENS.pending] as const,
   },
 
   // ===== PREDICTION RELATED =====
   predictions: {
     all: ['predictions'] as const,
-    byUser: (userId?: string) =>
-      ['predictions', 'user', userId ?? TOKENS.me] as const,
-    byFixture: (fixtureId?: number) =>
-      ['predictions', 'fixture', fixtureId ?? TOKENS.pending] as const,
+    byUser: (userId?: string) => ['predictions', 'user', userId ?? TOKENS.me] as const,
+    byFixture: (fixtureId?: number) => ['predictions', 'fixture', fixtureId ?? TOKENS.pending] as const,
     byUserAndMatchday: (userId?: string, fixture?: number) =>
-      [
-        'predictions',
-        'user',
-        userId ?? TOKENS.me,
-        'fixture',
-        fixture ?? TOKENS.pending,
-      ] as const,
+      ['predictions', 'user', userId ?? TOKENS.me, 'fixture', fixture ?? TOKENS.pending] as const,
     leagueByFixture: (fixtureId?: number, leagueId?: string) =>
-      [
-        'predictions',
-        'league',
-        leagueId ?? TOKENS.pending,
-        'fixture',
-        fixtureId ?? TOKENS.pending,
-      ] as const,
+      ['predictions', 'league', leagueId ?? TOKENS.pending, 'fixture', fixtureId ?? TOKENS.pending] as const,
   },
 
   // ===== LEADERBOARD RELATED =====
   leaderboard: {
-    byLeague: (leagueId?: string) =>
-      ['leaderboard', 'league', leagueId ?? TOKENS.pending] as const,
+    byLeague: (leagueId?: string) => ['leaderboard', 'league', leagueId ?? TOKENS.pending] as const,
   },
 
   // ===== COMPETITION RELATED =====
   competitions: {
     all: ['competitions'] as const,
-    fixturesByLeague: (leagueId?: string) =>
-      ['competitions', leagueId ?? TOKENS.pending, 'rounds'] as const,
+    fixturesByLeague: (leagueId?: string) => ['competitions', leagueId ?? TOKENS.pending, 'rounds'] as const,
   },
 
   // ===== SUBSCRIPTION RELATED =====
   subscriptions: {
-    byUser: (userId?: string) =>
-      ['subscriptions', userId ?? TOKENS.me] as const,
-    canCreateLeague: (userId?: string) =>
-      ['subscriptions', userId ?? TOKENS.me, 'canCreateLeague'] as const,
+    byUser: (userId?: string) => ['subscriptions', userId ?? TOKENS.me] as const,
+    canCreateLeague: (userId?: string) => ['subscriptions', userId ?? TOKENS.me, 'canCreateLeague'] as const,
   },
   // ===== ADMIN RELATED =====
   admin: {
