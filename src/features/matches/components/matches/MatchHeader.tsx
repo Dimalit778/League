@@ -1,0 +1,63 @@
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { dateFormat, dayNameFormat } from '@/utils/formats';
+import { getSimpleMatchStatus } from '@/utils/matchHelper';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text, View } from 'react-native';
+
+type Prediction = {
+  home_score: number;
+  away_score: number;
+  points?: number;
+  is_finished?: boolean;
+};
+
+type MatchHeaderProps = {
+  status: string;
+  kickOff: string;
+  prediction: Prediction | null;
+};
+const getMatchStatusColor = (status: string, prediction: Prediction | null, mutedColor: string): [string, string] => {
+  const normalizedStatus = status?.toUpperCase();
+
+  if (normalizedStatus === 'FINISHED' && prediction?.is_finished && prediction.points !== undefined) {
+    const points = prediction.points;
+    if (points === 5) {
+      return ['#FCD34D', '#F59E0B'];
+    }
+    if (points === 3) {
+      return ['#10B981', '#059669'];
+    }
+    if (points === 0) {
+      return ['#6B7280', '#EF4444'];
+    }
+    return [mutedColor, mutedColor];
+  }
+
+  return [mutedColor, mutedColor];
+};
+
+export default function MatchHeader({ status, kickOff, prediction }: MatchHeaderProps) {
+  const { colors } = useThemeTokens();
+  const matchStatus = getSimpleMatchStatus(status);
+  const matchColors = getMatchStatusColor(matchStatus, prediction, colors.muted);
+
+  return (
+    <View className="bg-muted flex-row items-center justify-center px-4 ">
+      <View className="flex-1 ">
+        <Text className="text-background text-xs font-medium ">{dayNameFormat(kickOff)}</Text>
+      </View>
+      <View className="min-w-[80px] mx-3 ">
+        <LinearGradient colors={matchColors}>
+          {prediction && (
+            <Text className="text-background font-medium text-center">
+              {prediction?.home_score ?? null} - {prediction?.away_score ?? null}
+            </Text>
+          )}
+        </LinearGradient>
+      </View>
+      <View className="flex-1 items-end">
+        <Text className="text-background text-xs font-medium">{dateFormat(kickOff)}</Text>
+      </View>
+    </View>
+  );
+}

@@ -1,6 +1,6 @@
 import { TabsHeader } from '@/components/layout';
 import { Stack } from '@/components/layout/Stack';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import Transition from 'react-native-screen-transitions';
 
 export default function MyLeaguesLayout() {

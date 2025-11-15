@@ -1,0 +1,202 @@
+import { supabase } from '@/lib/supabase';
+import { MemberLeagueType, MemberStatsType } from '../types';
+
+import { decode } from 'base64-arraybuffer';
+import * as ImagePicker from 'expo-image-picker';
+
+export const memberApi = {
+  async getMemberStats(memberId: string): Promise<MemberStatsType> {
+    if (!memberId) {
+      throw new Error('No member ID available');
+    }
+
+    // Get member's league_id first
+    const { data: memberData, error: memberError } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('id', memberId)
+      .single();
+
+    if (memberError) throw memberError;
+    if (!memberData?.league_id) {
+      throw new Error('Member league not found');
+    }
+
+    // Fetch stats and leaderboard in parallel
+    const [predictionsResult, leaderboardResult] = await Promise.all([
+      supabase
+        .from('predictions')
+        .select('points, is_finished')
+        .eq('league_member_id', memberId)
+        .eq('is_finished', true),
+      supabase
+        .from('league_leaderboard_view')
+        .select('member_id, total_points')
+        .eq('league_id', memberData.league_id)
+        .order('total_points', { ascending: false }),
+    ]);
+
+    if (predictionsResult.error) throw predictionsResult.error;
+    if (leaderboardResult.error) throw leaderboardResult.error;
+
+    const predictionsData = predictionsResult.data;
+    const leaderboardData = leaderboardResult.data;
+
+    const totalPredictions = predictionsData.length;
+    const totalPoints = predictionsData.reduce((sum, prediction) => sum + (prediction.points || 0), 0);
+
+    const bingoHits = predictionsData.filter((p) => p.points === 3).length;
+    const regularHits = predictionsData.filter((p) => p.points === 1).length;
+    const missedHits = predictionsData.filter((p) => p.points === 0).length;
+
+    const accuracy = totalPredictions > 0 ? ((bingoHits + regularHits) / totalPredictions) * 100 : 0;
+
+    // Find member's position in leaderboard
+    const memberIndex = leaderboardData.findIndex((entry) => entry.member_id === memberId);
+    const position = memberIndex !== -1 ? memberIndex + 1 : null;
+
+    return {
+      totalPredictions,
+      bingoHits,
+      regularHits,
+      missedHits,
+      totalPoints,
+      accuracy: Math.round(accuracy * 100) / 100,
+      position,
+    };
+  },
+  async updateMember(memberId: string, nickname: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .update({ nickname })
+      .eq('id', memberId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async uploadImage(
+    leagueId: string,
+    memberId: string,
+    avatarUrl: ImagePicker.ImagePickerAsset
+  ): Promise<MemberLeagueType> {
+    try {
+      const base64 = avatarUrl.base64;
+      if (!base64) {
+        throw new Error('No base64 available');
+      }
+      const extensionFromName = avatarUrl.fileName?.split('.').pop();
+      const extensionFromUri = avatarUrl.uri.split('.').pop()?.split('?')[0];
+      const fileExtension = extensionFromName ?? extensionFromUri ?? (avatarUrl.type === 'image' ? 'jpg' : 'bin');
+
+      const normalizedExtension = fileExtension.replace('jpeg', 'jpg');
+      const contentType =
+        avatarUrl.mimeType ?? (normalizedExtension === 'jpg' ? 'image/jpeg' : `image/${normalizedExtension}`);
+
+      const filePath = `${leagueId}/${memberId}.${normalizedExtension}`;
+
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, decode(base64), {
+        contentType,
+        upsert: true,
+      });
+      if (uploadError) throw uploadError;
+
+      const { data: memberData, error: memberError } = await supabase
+        .from('league_members')
+        .update({ avatar_url: filePath })
+        .eq('id', memberId)
+        .select()
+        .single();
+
+      if (memberError) throw memberError;
+      return memberData as MemberLeagueType;
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      throw error;
+    }
+  },
+  async deleteImage(memberId: string, currentPath?: string | null) {
+    if (currentPath) {
+      const { error: storageError } = await supabase.storage.from('avatars').remove([currentPath]);
+      if (storageError) throw storageError;
+    }
+
+    const { data, error } = await supabase
+      .from('league_members')
+      .update({ avatar_url: null })
+      .eq('id', memberId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getMemberPredictions(memberId: string) {
+    const { data, error } = await supabase
+      .from('predictions')
+      .select(
+        `
+        *,
+        matches!inner(
+          *,
+          home_team:teams!matches_home_team_id_fkey(*),
+          away_team:teams!matches_away_team_id_fkey(*)
+        )
+      `
+      )
+      .eq('league_member_id', memberId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+  async getMemberInfo(memberId: string): Promise<MemberLeagueType | null> {
+    const { data, error } = await supabase
+      .from('league_members')
+      .select('*, league:leagues!league_id(*, competition:competitions(*))')
+      .eq('id', memberId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    let signedAvatarUrl: string | null = null;
+    if (data.avatar_url) {
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('avatars')
+        .createSignedUrl(data.avatar_url, 60 * 60 * 24); // 24 hours
+
+      if (!signedUrlError && signedUrlData?.signedUrl) {
+        signedAvatarUrl = signedUrlData.signedUrl;
+      }
+    }
+
+    return {
+      ...data,
+      avatar_url: signedAvatarUrl,
+    } as MemberLeagueType;
+  },
+
+  async getMemberDataAndStats(memberId: string) {
+    // Fetch member data and stats in parallel
+    const [memberData, stats] = await Promise.all([this.getMemberInfo(memberId), this.getMemberStats(memberId)]);
+
+    return {
+      member: memberData,
+      stats,
+    };
+  },
+  async getMemberProfile(memberId: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .select('*, league:leagues!league_id(*, competition:competitions(*))')
+      .eq('id', memberId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+};

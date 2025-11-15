@@ -1,6 +1,5 @@
 import { Stack } from '@/components/layout/Stack';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
-import Transition from 'react-native-screen-transitions';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 
 export default function PublicLayout() {
   const { colors } = useThemeTokens();
@@ -15,10 +14,7 @@ export default function PublicLayout() {
       }}
     >
       <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="settings"
-        options={{ ...Transition.presets.DraggableCard(), contentStyle: { backgroundColor: 'transparent' } }}
-      />
+      <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="subscription" options={{ headerShown: false }} />
     </Stack>
   );

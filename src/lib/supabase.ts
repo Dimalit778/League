@@ -17,7 +17,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Create MMKV storage instance for Supabase auth
 const authStorage = createMMKV({ id: 'supabase-auth' });
 
 // Create custom storage adapter compatible with Supabase's expected interface

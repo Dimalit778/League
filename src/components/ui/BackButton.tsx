@@ -1,21 +1,19 @@
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { ArrowLeftIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 interface BackButtonProps {
   title?: string;
-  className?: string;
+  textColor?: 'text-text' | 'text-primary' | 'text-secondary';
 }
 
-const BackButton = ({ title, className }: BackButtonProps) => {
+const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) => {
   const { colors } = useThemeTokens();
   const router = useRouter();
 
   return (
-    <View
-      className={` flex-row h-14 items-center justify-center py-3  relative w-full${className}`}
-    >
+    <View className=" flex-row h-14 items-center justify-center py-3  relative w-full">
       <TouchableOpacity
         className="absolute left-4 z-10"
         onPress={() => router.back()}
@@ -27,11 +25,7 @@ const BackButton = ({ title, className }: BackButtonProps) => {
         <ArrowLeftIcon color={colors.text} size={28} />
       </TouchableOpacity>
 
-      {title && (
-        <Text className="text-text text-lg text-center flex-1 px-16">
-          {title}
-        </Text>
-      )}
+      {title && <Text className={`${textColor} text-xl text-center font-nunito`}>{title}</Text>}
     </View>
   );
 };

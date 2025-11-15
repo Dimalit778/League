@@ -1,100 +1,126 @@
-import { downloadImage } from '@/hooks/useSupabaseImages';
 import { supabase } from '@/lib/supabase';
-import { MemberLeagueType } from '@/types';
-import { Tables } from '@/types/database.types';
 import { create } from 'zustand';
 
-type League = Tables<'leagues'> & { competition: Tables<'competitions'> };
+import { downloadImage } from '@/hooks/useSupabaseImages';
+import { Tables } from '@/types/database.types';
+
 type Member = Tables<'league_members'>;
 
+type MemberWithLeague = Member & {
+  league?: {
+    id: string;
+    competition_id: number;
+  } | null;
+};
+
 interface MemberState {
+  memberId: string | null;
+  leagueId: string | null;
   member: Member | null;
-  league: League | null;
   isLoading: boolean;
   error: string | null;
-  setMember: (member: MemberLeagueType | null) => void;
+  setActiveMember: (memberData: MemberWithLeague | null) => void;
   clearAll: () => void;
   initializeMember: () => Promise<void>;
 }
 
 export const useMemberStore = create<MemberState>()((set, get) => ({
+  memberId: null,
+  leagueId: null,
   member: null,
-  league: null,
   isLoading: false,
   error: null,
-  setIsLoading: (isLoading: boolean) => set({ isLoading: isLoading }),
-  setError: (error: string | null) => set({ error: error }),
-  setMember: (memberData: MemberLeagueType | null) => {
+
+  setActiveMember: (memberData: MemberWithLeague | null) => {
     if (!memberData) {
-      set({ member: null, league: null });
+      set({
+        memberId: null,
+        leagueId: null,
+        member: null,
+      });
       return;
     }
-    const { league, ...member } = memberData;
+
+    const { league, ...memberWithoutLeague } = memberData;
+
     set({
-      member,
-      league: league || null,
+      memberId: memberWithoutLeague.id,
+      leagueId: league?.id ?? null,
+      member: memberWithoutLeague,
     });
   },
 
   clearAll: () =>
     set({
+      memberId: null,
+      leagueId: null,
       member: null,
-      league: null,
       isLoading: false,
       error: null,
     }),
 
   initializeMember: async () => {
+    console.log('initializeMember');
     const currentState = get();
-    if (!currentState.member) {
-      set({ isLoading: true });
+    if (!currentState.memberId) {
+      set({ isLoading: true, error: null });
     }
 
     const {
       data: { user },
+      error: userError,
     } = await supabase.auth.getUser();
 
+    if (userError) {
+      set({ isLoading: false, error: userError.message, memberId: null, leagueId: null, member: null });
+      return;
+    }
+
     if (!user?.id) {
-      set({ member: null, league: null, isLoading: false });
+      set({ isLoading: false, memberId: null, leagueId: null, member: null });
       return;
     }
 
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, league:leagues!league_id(*,competition:competitions!inner(*))')
+      .select('*, league:leagues!league_id(id, competition_id)')
       .eq('user_id', user.id)
       .eq('is_primary', true)
       .maybeSingle();
 
-    if (error) throw new Error(error.message);
-    if (!data) {
-      set({ member: null, league: null, isLoading: false });
+    if (error) {
+      set({ isLoading: false, error: error.message, memberId: null, leagueId: null, member: null });
       return;
     }
 
-    const memberData = data as MemberLeagueType;
+    if (!data) {
+      set({ isLoading: false, memberId: null, leagueId: null, member: null });
+      return;
+    }
 
-    // Extract league from member data
+    const memberData = data as MemberWithLeague;
     const { league, ...memberWithoutLeague } = memberData;
 
     if (memberWithoutLeague.avatar_url) {
       try {
         const signedUrl = await downloadImage(memberWithoutLeague.avatar_url, {
           bucket: 'avatars',
-          expiresIn: 60 * 60 * 24, // 1 day
+          expiresIn: 60 * 60 * 24,
         });
         if (signedUrl) {
           memberWithoutLeague.avatar_url = signedUrl;
         }
-      } catch (error) {
-        console.error('Failed to create signed URL for avatar:', error);
+      } catch (err) {
+        console.error('Failed to create signed URL for avatar:', err);
       }
     }
 
     set({
+      memberId: memberWithoutLeague.id,
+      leagueId: league?.id ?? null,
       member: memberWithoutLeague,
-      league: league,
       isLoading: false,
+      error: null,
     });
   },
 }));

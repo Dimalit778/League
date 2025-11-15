@@ -2,7 +2,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 
 export function BottomTabsBar({
   state,

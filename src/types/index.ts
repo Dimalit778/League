@@ -11,11 +11,6 @@ export type ScoreType = {
   halfTime?: { home: number | null; away: number | null };
 };
 
-export type MemberLeagueType = Tables<'league_members'> & {
-  league: Tables<'leagues'> & {
-    competition: Tables<'competitions'>;
-  };
-};
 export type LeagueWithCompetitionType = Tables<'leagues'> & {
   competition: Tables<'competitions'>;
 };
@@ -44,17 +39,4 @@ export type PredictionType = Tables<'predictions'>;
 
 export type LeaderboardAndMemberType = Tables<'predictions'> & {
   member: Tables<'league_members'>;
-};
-
-export type MemberPredictionType = Tables<'predictions'> & {
-  member: Tables<'league_members'>;
-};
-export type StatsType = {
-  totalPredictions: number;
-  bingoHits: number;
-  regularHits: number;
-  missedHits: number;
-  accuracy: number;
-  totalPoints: number;
-  position?: number | null;
 };

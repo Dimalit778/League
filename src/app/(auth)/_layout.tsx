@@ -1,6 +1,6 @@
 import { SplashScreen } from '@/components/layout';
-import { useCurrentSession } from '@/hooks/useCurrentSession';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { Redirect, Stack } from 'expo-router';
 
 export default function AuthLayout() {
@@ -24,9 +24,10 @@ export default function AuthLayout() {
         },
       }}
     >
+      <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="signIn" options={{ headerShown: false }} />
       <Stack.Screen name="signUp" options={{ headerShown: false }} />
-      <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="resetPassword" options={{ headerShown: false }} />
     </Stack>
   );
 }

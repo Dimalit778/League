@@ -1,12 +1,6 @@
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
 import { useMemo, useState } from 'react';
-import {
-  DimensionValue,
-  ImageStyle,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { DimensionValue, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';
@@ -25,14 +19,16 @@ interface ImageCProps {
   forceSvg?: boolean;
   placeholder?: any;
   fallbackSource?: Src;
+  tintColor?: string;
 }
 
 const MyImage = ({
   source,
   className,
+  tintColor,
   resizeMode = 'contain',
-  width,
-  height,
+  width = '100%',
+  height = '100%',
   transition = 120,
   cachePolicy = 'disk',
   priority = 'normal',
@@ -57,22 +53,15 @@ const MyImage = ({
 
   // Normalize to a URI string when available
   const uri =
-    typeof source === 'string'
-      ? source
-      : typeof source === 'object' && 'uri' in source
-        ? source.uri
-        : undefined;
+    typeof source === 'string' ? source : typeof source === 'object' && 'uri' in source ? source.uri : undefined;
 
   // Robust SVG detection (string URL, {uri}, or data URI)
   const isSvg =
     forceSvg ||
-    (typeof uri === 'string' &&
-      (uri.toLowerCase().includes('.svg') ||
-        uri.startsWith('data:image/svg+xml')));
+    (typeof uri === 'string' && (uri.toLowerCase().includes('.svg') || uri.startsWith('data:image/svg+xml')));
 
   // Only inject size style if provided (so NativeWind className can control size)
-  const sizeStyle: StyleProp<ImageStyle> =
-    width !== undefined || height !== undefined ? { width, height } : undefined;
+  const sizeStyle: StyleProp<ImageStyle> = width !== undefined || height !== undefined ? { width, height } : undefined;
 
   // Build expo-image source without clobbering require(...) or headers
   const expoSource = useMemo(() => {
@@ -83,8 +72,7 @@ const MyImage = ({
   }, [source]);
 
   // Stable recycling key helps lists (ignore cache-busting query params if you want)
-  const recyclingKey =
-    typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
+  const recyclingKey = typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
 
   if (isSvg && uri) {
     // Render SVG via react-native-svg (no caching; wrap to size)
@@ -110,6 +98,8 @@ const MyImage = ({
       placeholder={placeholder}
       onError={() => setFailed(true)}
       style={sizeStyle}
+      tintColor={tintColor}
+
       // headers can also be passed inside the { uri, headers } object if needed
     />
   );

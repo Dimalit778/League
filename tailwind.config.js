@@ -16,10 +16,11 @@ module.exports = {
         success: 'var(--color-success)',
       },
       fontFamily: {
-        header: 'var(--font-headline-bold)',
         nunito: ['Nunito_400Regular'],
         'nunito-bold': ['Nunito_700Bold'],
         'nunito-black': ['Nunito_900Black'],
+        teko: ['Teko-Regular'],
+        'teko-bold': ['Teko-Bold'],
       },
       fontSize: {
         h1: 'var(--font-size-h1)',

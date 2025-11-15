@@ -13,7 +13,8 @@ type ThemeTokens = {
     success: string;
   };
   fonts: {
-    header: string;
+    teko: string;
+    tekoBold: string;
     nunito: string;
     nunitoBold: string;
     nunitoBlack: string;
@@ -36,7 +37,8 @@ const light: ThemeTokens = {
     success: '#22c55e',
   },
   fonts: {
-    header: 'Teko-Bold',
+    tekoBold: 'Teko-Bold',
+    teko: 'Teko-Regular',
     nunito: 'Nunito_400Regular',
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
@@ -59,7 +61,8 @@ const dark: ThemeTokens = {
     success: '#4ade80',
   },
   fonts: {
-    header: 'Teko-Bold',
+    teko: 'Teko-Regular',
+    tekoBold: 'Teko-Bold',
     nunito: 'Nunito_400Regular',
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
@@ -79,11 +82,12 @@ const toNativeWindVars = (tokens: ThemeTokens) => ({
   '--color-text-muted': tokens.colors.muted,
   '--color-error': tokens.colors.error,
   '--color-success': tokens.colors.success,
-  '--font-header': tokens.fonts.header,
   '--font-size-h1': tokens.sizes.h1,
   '--font-nunito': tokens.fonts.nunito,
   '--font-nunito-bold': tokens.fonts.nunitoBold,
   '--font-nunito-black': tokens.fonts.nunitoBlack,
+  '--font-teko': tokens.fonts.teko,
+  '--font-teko-bold': tokens.fonts.tekoBold,
 });
 
 export const themeTokens = {

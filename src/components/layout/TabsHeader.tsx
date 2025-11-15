@@ -1,4 +1,4 @@
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
 import { SettingsIcon, TrophyIcon } from '@assets/icons';
 import { Link } from 'expo-router';
