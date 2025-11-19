@@ -1,5 +1,6 @@
 import { Database } from '@/types/database.types';
 import { createClient } from '@supabase/supabase-js';
+// cspell:ignore MMKV
 import { createMMKV } from 'react-native-mmkv';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;

@@ -3,7 +3,7 @@ import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
 import { supabase } from '@/lib/supabase';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
-import { formatErrorForUser } from '@/utils/networkErrorHandler';
+import { formatErrorForUser } from '@/utils/errorFormats';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
@@ -12,10 +12,18 @@ import { useState } from 'react';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const redirectUri = AuthSession.makeRedirectUri({
-  scheme: 'league',
-  path: 'auth/callback',
-});
+// Create redirect URI for password reset
+const getPasswordResetRedirectUri = () => {
+  const uri = AuthSession.makeRedirectUri({
+    scheme: 'league',
+    path: 'resetPassword',
+  });
+  // Force custom scheme in development (AuthSession.makeRedirectUri can return localhost in dev)
+  if (uri.startsWith('localhost://') || uri.startsWith('http://localhost')) {
+    return 'league://resetPassword';
+  }
+  return uri;
+};
 
 export const useAuthActions = () => {
   const queryClient = useQueryClient();
@@ -138,10 +146,15 @@ export const useAuthActions = () => {
     setErrorMessage(null);
 
     try {
+      const googleRedirectUri = AuthSession.makeRedirectUri({
+        scheme: 'league',
+        path: 'auth/callback',
+      });
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUri,
+          redirectTo: googleRedirectUri,
           skipBrowserRedirect: true,
           queryParams: {
             access_type: 'offline',
@@ -155,7 +168,7 @@ export const useAuthActions = () => {
         throw new Error('Failed to start Google sign in.');
       }
 
-      const authResult = await WebBrowser.openAuthSessionAsync(data.url, redirectUri);
+      const authResult = await WebBrowser.openAuthSessionAsync(data.url, googleRedirectUri);
 
       if (authResult.type !== 'success' || !authResult.url) {
         throw new Error(
@@ -188,11 +201,156 @@ export const useAuthActions = () => {
     }
   }
 
+  async function verifyOtp(email: string, token: string) {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+
+    try {
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: token.trim(),
+        type: 'email',
+      });
+
+      if (error) throw error;
+
+      if (!session?.user) {
+        throw new Error('Verification failed. Please try again.');
+      }
+
+      await useMemberStore.getState().initializeMember();
+
+      return { success: true };
+    } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
+      setIsError(true);
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function resendOtp(email: string) {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+
+    try {
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+      });
+
+      if (error) throw error;
+
+      return { success: true };
+    } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
+      setIsError(true);
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function resendPasswordResetOtp(email: string) {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+
+    try {
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
+      // For password reset, we need to call resetPasswordForEmail again
+      const redirectTo = getPasswordResetRedirectUri();
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo,
+      });
+
+      if (error) throw error;
+
+      return { success: true };
+    } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
+      setIsError(true);
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function sendResetPasswordLink(email: string) {
+    setIsLoading(true);
+    setIsError(false);
+    setErrorMessage(null);
+
+    try {
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        const networkError = 'No internet connection. Please check your network and try again.';
+        setIsError(true);
+        setErrorMessage(networkError);
+        return { success: false, error: networkError };
+      }
+
+      const redirectTo = getPasswordResetRedirectUri();
+      console.log('redirectTo', redirectTo);
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo,
+      });
+
+      if (error) throw error;
+
+      return { success: true };
+    } catch (error: any) {
+      const userFriendlyError = formatErrorForUser(error);
+      setIsError(true);
+      setErrorMessage(userFriendlyError);
+      return { success: false, error: userFriendlyError };
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return {
     signOut,
     signUp,
     signIn,
     signInWithGoogle,
+    verifyOtp,
+    resendOtp,
+    sendResetPasswordLink,
+
+    resendPasswordResetOtp,
     isLoading,
     isError,
     errorMessage,

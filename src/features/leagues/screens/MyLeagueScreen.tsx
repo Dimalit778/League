@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import LeagueCard from '../components/LeagueCard';
 import { useUpdatePrimaryLeague } from '../hooks/useLeagues';
 
@@ -56,6 +56,13 @@ const MyLeagues = () => {
         {leagues?.map((league) => (
           <LeagueCard key={league.league.id} item={league} handleSetPrimary={handleSetPrimary} />
         ))}
+        {leagues?.length === 0 && (
+          <View className="flex-1 pt-10">
+            <Text className="text-center text-muted font-nunito-bold text-lg">
+              Create or join a league to get started
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

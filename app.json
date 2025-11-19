@@ -54,10 +54,7 @@
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
           "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera for your avatar.",
           "isAccessMediaLocationEnabled": true,
-          "granularPermissions": [
-            "audio",
-            "photo"
-          ]
+          "granularPermissions": ["audio", "photo"]
         }
       ],
       [
@@ -84,9 +81,7 @@
             "infoPlist": {
               "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
               "NSLocalNetworkUsageDescription": "Allow local network for development",
-              "NSBonjourServiceTypes": [
-                "_expo._tcp"
-              ],
+              "NSBonjourServiceTypes": ["_expo._tcp"],
               "NSAppTransportSecurity": {
                 "NSAllowsLocalNetworking": true,
                 "NSExceptionDomains": {

@@ -10,8 +10,10 @@ import { themes } from '@/lib/nativewind/themes';
 import { useAppStore } from '@/store/AppStore';
 import { useMemberStore } from '@/store/MemberStore';
 
+import footballBg from '@assets/images/football-bg.png';
 import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Asset } from 'expo-asset';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import { useEffect, useRef } from 'react';
@@ -72,6 +74,10 @@ const InitialApp = () => {
     Nunito_700Bold,
     Nunito_900Black,
   });
+  const preloadLandingImage = async () => {
+    const asset = Asset.fromModule(footballBg);
+    await asset.downloadAsync();
+  };
 
   const hasInitialized = useRef(false);
 
@@ -80,6 +86,7 @@ const InitialApp = () => {
       hasInitialized.current = true;
       initializeTheme();
       initializeMember();
+      preloadLandingImage();
     }
   }, [initializeTheme, initializeMember]);
 

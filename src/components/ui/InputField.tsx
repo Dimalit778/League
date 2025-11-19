@@ -1,5 +1,5 @@
 import { Control, Controller, FieldError } from 'react-hook-form';
-import { Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 type InputFieldProps = {
   control: Control<any>;
@@ -11,6 +11,8 @@ type InputFieldProps = {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoCorrect?: boolean;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  onRightIconPress?: () => void;
   clearError?: () => void;
   accessibilityLabel?: string;
   accessibilityHint?: string;
@@ -26,6 +28,8 @@ const InputField = ({
   autoCorrect = false,
   error,
   icon,
+  rightIcon,
+  onRightIconPress,
   clearError,
   accessibilityLabel,
   accessibilityHint,
@@ -83,6 +87,17 @@ const InputField = ({
             />
           )}
         />
+        {rightIcon && (
+          <Pressable
+            onPress={onRightIconPress}
+            className="ml-2 p-1"
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Toggle password visibility"
+          >
+            {rightIcon}
+          </Pressable>
+        )}
       </View>
       {error && (
         <Text 

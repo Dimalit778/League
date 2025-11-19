@@ -21,16 +21,28 @@ export const useAuth = () => {
         const user = session?.user ?? null;
         setUserFromSupabase(user);
       })
+      .catch((error) => {
+        console.error('Error initializing auth:', error);
+        if (!isMounted) return;
+        setUserFromSupabase(null);
+      })
       .finally(() => {
         if (isMounted) setAuthLoading(false);
       });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) return;
+
       const user = session?.user ?? null;
-      setUserFromSupabase(user);
+
+      // Handle all auth events (including TOKEN_REFRESHED)
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        setUserFromSupabase(user);
+      } else if (event === 'SIGNED_OUT') {
+        setUserFromSupabase(null);
+      }
     });
 
     return () => {

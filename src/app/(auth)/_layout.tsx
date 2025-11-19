@@ -1,7 +1,7 @@
 import { SplashScreen } from '@/components/layout';
 import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
   const { session, isLoading } = useCurrentSession();
@@ -9,10 +9,6 @@ export default function AuthLayout() {
 
   if (isLoading) {
     return <SplashScreen />;
-  }
-
-  if (session?.user) {
-    return <Redirect href="/(app)/(public)/myLeagues" />;
   }
 
   return (
@@ -27,7 +23,9 @@ export default function AuthLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="signIn" options={{ headerShown: false }} />
       <Stack.Screen name="signUp" options={{ headerShown: false }} />
+      <Stack.Screen name="verifyEmail" options={{ headerShown: false }} />
       <Stack.Screen name="resetPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="sendResetLink" options={{ headerShown: false }} />
     </Stack>
   );
 }

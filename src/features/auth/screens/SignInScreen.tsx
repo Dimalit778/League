@@ -1,10 +1,12 @@
+import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/queries/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import { EmailIcon, LockIcon } from '@assets/icons';
+import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -17,9 +19,11 @@ const schema = yup.object().shape({
   password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
 });
 
-const SignIn = () => {
+const SignInScreen = () => {
   const { colors } = useThemeTokens();
-  const { signIn, isLoading, isError, errorMessage, clearError } = useAuthActions();
+  const { signIn, isLoading, errorMessage, clearError, resendOtp } = useAuthActions();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const {
     control,
@@ -31,14 +35,21 @@ const SignIn = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    const { success, error } = await signIn(data.email, data.password);
-    if (!success) {
-      console.error('Sign in error:', error);
+    const result = await signIn(data.email, data.password);
+    console.log('result sign in,', JSON.stringify(result));
+
+    if (result.error && result.error.includes('Email not confirmed')) {
+      resendOtp(data.email);
+      router.push({
+        pathname: '/verifyEmail',
+        params: { email: data.email },
+      });
     }
   };
 
   return (
     <Screen>
+      {(isLoading || isGoogleLoading) && <LoadingOverlay />}
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
@@ -65,8 +76,16 @@ const SignIn = () => {
             control={control}
             name="password"
             placeholder="Password"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             icon={<LockIcon size={24} color={colors.muted} />}
+            rightIcon={
+              showPassword ? (
+                <EyeOpenIcon size={24} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={24} color={colors.muted} />
+              )
+            }
+            onRightIconPress={() => setShowPassword(!showPassword)}
             error={errors.password}
             clearError={clearError}
           />
@@ -91,18 +110,22 @@ const SignIn = () => {
             <View className="flex-1 h-px bg-gray-600" />
           </View>
 
-          <GoogleAuth />
-
-          <Text className="text-muted text-center mt-5 ">
-            Don't have an account?
-            <Link href="/signUp" replace>
-              <Text className="text-secondary font-bold">Sign Up</Text>
+          <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
+          <View className="px-5 mt-5 gap-4 ">
+            <View className="flex-row items-center justify-center gap-2">
+              <Text className="text-muted text-center">Don't have an account?</Text>
+              <Link href="/signUp" replace>
+                <Text className="text-secondary font-bold">Sign Up</Text>
+              </Link>
+            </View>
+            <Link href="/sendResetLink" asChild>
+              <Text className="text-secondary font-bold text-center mt-5 ">Forgot Password</Text>
             </Link>
-          </Text>
+          </View>
         </View>
       </KeyboardAwareScrollView>
     </Screen>
   );
 };
 
-export default SignIn;
+export default SignInScreen;

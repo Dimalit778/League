@@ -1,36 +1,29 @@
+import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
-
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/queries/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import { EmailIcon, LockIcon, UserIcon } from '@assets/icons';
+import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon, UserIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
-const validateEmail = (email: string) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
-};
-
 const schema = yup.object().shape({
-  email: yup
-    .string()
-    .test('email', 'Invalid email', (value) => validateEmail(value || ''))
-    .required('Email is required'),
+  email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
   fullname: yup.string().required('Full name is required').min(3, 'Full name must be at least 3 characters'),
 });
 type FormData = yup.InferType<typeof schema>;
 
-const SignUp = () => {
-  const { signUp, isLoading, isError, errorMessage } = useAuthActions();
+const SignUpScreen = () => {
+  const { signUp, isLoading, errorMessage } = useAuthActions();
   const { colors } = useThemeTokens();
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const {
     control,
     handleSubmit,
@@ -39,16 +32,24 @@ const SignUp = () => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
+  const onSubmit = async (form: FormData) => {
+    const email = form.email.trim();
+    const password = form.password.trim();
+    const fullname = form.fullname.trim();
 
-  const onSubmit = async (data: FormData) => {
-    const { success, error } = await signUp(data.email.trim(), data.password, data.fullname);
-    if (!success) {
-      console.error('Sign up error:', error);
+    const result = await signUp(email, password, fullname);
+
+    if (result.success) {
+      router.push({
+        pathname: '/verifyEmail',
+        params: { email },
+      });
     }
   };
 
   return (
     <Screen>
+      {(isLoading || isGoogleLoading) && <LoadingOverlay />}
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
@@ -81,6 +82,14 @@ const SignUp = () => {
             secureTextEntry={!showPassword}
             icon={<LockIcon size={24} color={colors.muted} />}
             error={errors.password}
+            onRightIconPress={() => setShowPassword(!showPassword)}
+            rightIcon={
+              showPassword ? (
+                <EyeOpenIcon size={18} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={18} color={colors.muted} />
+              )
+            }
           />
           {errorMessage && (
             <View className="">
@@ -101,7 +110,7 @@ const SignUp = () => {
             <Text className="text-gray-400 mx-2">OR</Text>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
-          <GoogleAuth />
+          <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
             <Text className="text-muted text-center  ">Already have an account?</Text>
             <Link href="/signIn" replace>
@@ -114,4 +123,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpScreen;

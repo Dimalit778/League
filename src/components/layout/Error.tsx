@@ -1,4 +1,4 @@
-import { formatErrorForUser } from '@/utils/networkErrorHandler';
+import { formatErrorForUser } from '@/utils/errorFormats';
 import { Text, View } from 'react-native';
 
 type ErrorProps = {
@@ -18,9 +18,7 @@ const Error = ({ error }: ErrorProps) => {
   return (
     <View className="flex-1 justify-center items-center bg-background px-6">
       <Text className="text-error text-4xl mb-4">⚠️</Text>
-      <Text className="text-error text-2xl font-bold text-center">
-        {errorMessage}
-      </Text>
+      <Text className="text-error text-2xl font-bold text-center">{errorMessage}</Text>
     </View>
   );
 };

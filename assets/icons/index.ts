@@ -1,5 +1,7 @@
 // Auth Icons
 import EmailIcon from './EmailIcon';
+import EyeClosedIcon from './EyeClosedIcon';
+import EyeOpenIcon from './EyeOpenIcon';
 import LockIcon from './LockIcon';
 import UserIcon from './UserIcon';
 // Tabs Icons
@@ -25,6 +27,8 @@ export {
   AddIcon,
   ArrowLeftIcon,
   EmailIcon,
+  EyeClosedIcon,
+  EyeOpenIcon,
   GoogleLogoIcon,
   GoogleLogoMonoIcon,
   LeagueIcon,
