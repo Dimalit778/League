@@ -1,23 +1,25 @@
 import { Error } from '@/components/layout';
-import { useGetMatchesWithMemberPredictions } from '../../hooks/useMatches';
+import { useMemberStore } from '@/store/MemberStore';
 import { useEffect, useRef } from 'react';
 import { FlatList, Text, View } from 'react-native';
+import { useGetMatchesByFixtureWithMemberPredictions } from '../../hooks/useMatches';
 import MatchesSkeleton from '../MatchesSkeleton';
-import MatchCard from './MatchCard';
+import MatchesListCard from './MatchesListCard';
 
-interface MatchListProps {
-  selectedFixture: number;
-  competitionId: number;
-  memberId: string;
-}
-
-export default function MatchesList({ selectedFixture, competitionId, memberId }: MatchListProps) {
+export default function MatchesList({ selectedFixture }: { selectedFixture: number }) {
+  const competitionId = useMemberStore((s) => s.competitionId ?? 0);
+  const leagueId = useMemberStore((s) => s.leagueId ?? '');
+  const memberId = useMemberStore((s) => s.memberId ?? '');
   const flatListRef = useRef<FlatList>(null);
+
   const {
     data: matches,
     isLoading,
+    isFetching,
+    refetch,
+    isRefetching,
     error,
-  } = useGetMatchesWithMemberPredictions(selectedFixture, competitionId, memberId);
+  } = useGetMatchesByFixtureWithMemberPredictions(selectedFixture, leagueId, competitionId, memberId);
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
@@ -30,11 +32,13 @@ export default function MatchesList({ selectedFixture, competitionId, memberId }
   return (
     <FlatList
       ref={flatListRef}
+      refreshing={isFetching || isRefetching}
+      onRefresh={refetch}
       key={`fixture-${selectedFixture}`}
       data={matches}
       showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <MatchCard match={item} />}
+      renderItem={({ item }) => <MatchesListCard match={item} />}
       getItemLayout={(_, index) => ({
         length: 80,
         offset: 80 * index,

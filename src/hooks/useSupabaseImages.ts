@@ -1,6 +1,4 @@
 import { supabase } from '@/lib/supabase';
-import { useEffect, useState } from 'react';
-import { Image } from 'react-native';
 
 type StorageTransformOptions = {
   width?: number;
@@ -21,16 +19,11 @@ export const imageCache = new Map<string, string>();
 export const buildCacheKey = (path: string, options?: SignedUrlOptions) => {
   const bucket = options?.bucket ?? 'avatars';
   const expiresIn = options?.expiresIn ?? 3600;
-  const transform = options?.transform
-    ? JSON.stringify(options.transform)
-    : 'no-transform';
+  const transform = options?.transform ? JSON.stringify(options.transform) : 'no-transform';
   return `${bucket}:${path}:${expiresIn}:${transform}`;
 };
 
-export const downloadImage = async (
-  path: string,
-  options?: SignedUrlOptions
-) => {
+export const downloadImage = async (path: string, options?: SignedUrlOptions) => {
   if (!path) return undefined;
 
   const cacheKey = buildCacheKey(path, options);
@@ -46,11 +39,7 @@ export const downloadImage = async (
 
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrl(
-      path,
-      expiresIn,
-      transform ? { transform: { resize: transform.resize } } : undefined
-    );
+    .createSignedUrl(path, expiresIn, transform ? { transform: { resize: transform.resize } } : undefined);
 
   if (error) throw error;
 
@@ -96,19 +85,17 @@ export const downloadMultipleImages = async (
   // Only fetch signed URLs for uncached paths
   const fetchedUrls = new Map<string, string | null>();
   if (uncachedPaths.length > 0) {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .createSignedUrls(uncachedPaths, expiresIn, {
-        download: false,
-        transform: transform
-          ? {
-              width: transform.width,
-              height: transform.height,
-              resize: transform.resize,
-              quality: transform.quality,
-            }
-          : undefined,
-      } as any);
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrls(uncachedPaths, expiresIn, {
+      download: false,
+      transform: transform
+        ? {
+            width: transform.width,
+            height: transform.height,
+            resize: transform.resize,
+            quality: transform.quality,
+          }
+        : undefined,
+    } as any);
 
     if (error) throw error;
 
@@ -136,61 +123,4 @@ export const invalidateImageCache = (path: string) => {
       imageCache.delete(key);
     }
   });
-};
-
-export const useSupabaseImageCache = (paths: string[], bucket = 'avatars') => {
-  const [imageUrls, setImageUrls] = useState<Map<string, string>>(new Map());
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      if (!paths.length) {
-        setImageUrls(new Map());
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const { data, error: storageError } = await supabase.storage
-          .from(bucket)
-          .createSignedUrls(paths, 60 * 60 * 24); // 1 day
-
-        if (storageError) {
-          throw storageError;
-        }
-
-        const map = new Map<string, string>();
-        data.forEach((item) => {
-          if (item.path && item.signedUrl) {
-            map.set(item.path, item.signedUrl);
-          }
-        });
-
-        // Prefetch for smooth UI - don't fail if prefetch fails
-        await Promise.all(
-          data
-            .map((item) => item.signedUrl)
-            .filter(Boolean)
-            .map((url) => Image.prefetch(url).catch(() => {}))
-        );
-
-        setImageUrls(map);
-      } catch (err) {
-        const error =
-          err instanceof Error ? err : new Error('Failed to load images');
-        setError(error);
-        console.error('Failed to load Supabase images:', error);
-        setImageUrls(new Map());
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    load();
-  }, [paths, bucket]);
-
-  return { imageUrls, error, isLoading };
 };

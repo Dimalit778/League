@@ -20,18 +20,32 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const authStorage = createMMKV({ id: 'supabase-auth' });
 
-// Create custom storage adapter compatible with Supabase's expected interface
 const supabaseStorage = {
   getItem: (key: string): Promise<string | null> => {
-    return Promise.resolve(authStorage.getString(key) ?? null);
+    try {
+      return Promise.resolve(authStorage.getString(key) ?? null);
+    } catch (error) {
+      console.warn('Storage getItem error:', error);
+      return Promise.resolve(null);
+    }
   },
   setItem: (key: string, value: string): Promise<void> => {
-    authStorage.set(key, value);
-    return Promise.resolve();
+    try {
+      authStorage.set(key, value);
+      return Promise.resolve();
+    } catch (error) {
+      console.warn('Storage setItem error:', error);
+      return Promise.resolve();
+    }
   },
   removeItem: (key: string): Promise<void> => {
-    authStorage.remove(key);
-    return Promise.resolve();
+    try {
+      authStorage.remove(key);
+      return Promise.resolve();
+    } catch (error) {
+      console.warn('Storage removeItem error:', error);
+      return Promise.resolve();
+    }
   },
 };
 

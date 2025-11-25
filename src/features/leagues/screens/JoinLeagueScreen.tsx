@@ -1,14 +1,15 @@
-import { BackButton, Button, InputField, MyImage } from '@/components/ui';
+import { BackButton, Button, InputField } from '@/components/ui';
 import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import FullLeagueCard from '../components/FullLeagueCard';
 
 const schema = Yup.object().shape({
   inviteCode: Yup.string().min(7).max(7).required('Invite code is required'),
@@ -18,47 +19,53 @@ const schema = Yup.object().shape({
 export default function JoinLeague() {
   const router = useRouter();
   const { session } = useCurrentSession();
+
   const userId = session?.user?.id as string;
   const {
     control,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
   const inviteCodeValue = watch('inviteCode');
-  const [foundLeague, setFoundLeague] = useState<LeagueWithCompetition | null>(null);
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
+
+  const [foundLeague, setFoundLeague] = useState<typeof data | null>(null);
 
   const joinLeague = useJoinLeague(userId);
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 7) {
-      setFoundLeague(data as LeagueWithCompetition);
+      setFoundLeague(data);
+    } else if (inviteCodeValue?.length === 7 && !isLoading && !data) {
+      setFoundLeague(null);
     } else {
       setFoundLeague(null);
     }
-  }, [data, inviteCodeValue]);
+  }, [data, inviteCodeValue, isLoading]);
 
   const onClickJoinLeague = async (formData: { inviteCode: string; nickname: string }) => {
     if (!foundLeague) return;
     try {
       await joinLeague.mutateAsync({
-        join_code: foundLeague.join_code,
+        join_code: inviteCodeValue,
         nickname: formData.nickname,
       });
       router.replace('/(app)/(public)/myLeagues');
     } catch (error: any) {
-      Alert.alert('Error', error?.message || 'Failed to join league');
+      setError('nickname', { type: 'manual', message: error?.message || 'Failed to join league' });
     }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <BackButton />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-background">
+      <BackButton title="Join League" />
+
+      <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="flex-1 px-4 pt-6">
           <View className="mb-6">
             <Text className="text-lg font-semibold text-text mb-2">Invite Code</Text>
@@ -74,16 +81,10 @@ export default function JoinLeague() {
             <Text className="text-sm text-muted mt-1 text-center">Ask the league admin for the invite code</Text>
             {isLoading && <Text className="text-sm text-muted mt-2 text-center">Searching for league...</Text>}
           </View>
-          {/* Preview League Card */}
+
           {foundLeague && (
-            <View className="bg-surface p-4 mx-3 border border-border rounded-2xl">
-              <View className="items-center mb-6">
-                <MyImage source={foundLeague?.competition?.logo} width={80} height={80} resizeMode="contain" />
-                <Text className="text-2xl font-bold text-center text-text mb-2 ">{foundLeague?.name}</Text>
-                <Text className="text-base text-muted text-center">
-                  {foundLeague?.competition?.area} • {foundLeague?.competition?.name}
-                </Text>
-              </View>
+            <View className="gap-4">
+              <FullLeagueCard league={foundLeague} />
               <View className="mx-4 gap-4">
                 <InputField
                   control={control}
@@ -103,23 +104,24 @@ export default function JoinLeague() {
           )}
 
           {error && !foundLeague && !isLoading && inviteCodeValue?.length === 7 && (
-            <View className="mb-6 p-4 bg-error border border-error rounded-xl">
-              <Text className="text-error text-center">No league found with this invite code</Text>
+            <View className="mb-6 p-4 bg-red-500 border border-error rounded-xl">
+              <Text className="text-text text-center font-bold">League not found</Text>
             </View>
           )}
 
-          {/* How it Works */}
-          <View className=" mt-8 p-4 bg-surface rounded-xl">
-            <Text className="text-lg font-semibold text-text mb-2 text-center">How to Join a League</Text>
-            <Text className="text-muted text-md leading-5 ">
-              1. Get the 7-digit invite code from the league admin{'\n'}
-              2. Enter the code above to find the league{'\n'}
-              3. Choose your nickname for the league{'\n'}
-              4. Tap "Join League" to become a member
-            </Text>
-          </View>
+          {!foundLeague && (
+            <View className=" mt-8 p-4 bg-surface rounded-xl">
+              <Text className="text-lg font-semibold text-text mb-2 text-center">How to Join a League</Text>
+              <Text className="text-muted text-md leading-5 ">
+                1. Get the 7-digit invite code from the league admin{'\n'}
+                2. Enter the code above to find the league{'\n'}
+                3. Choose your nickname for the league{'\n'}
+                4. Tap "Join League" to become a member
+              </Text>
+            </View>
+          )}
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

@@ -46,7 +46,7 @@ export default function TopThree({ topMembers }: TopThreeProps) {
 
   return (
     <View style={{ paddingTop: insets.top }}>
-      <View className="flex-row justify-center gap-5 py-4 ">
+      <View className="flex-row justify-center gap-5 mb-3  ">
         <View className="items-center">{renderPlayer(topMembers[1], 2)}</View>
         <View className="items-center -mt-8">{renderPlayer(topMembers[0], 1)}</View>
         <View className="items-center">{renderPlayer(topMembers[2], 3)}</View>

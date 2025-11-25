@@ -4,12 +4,6 @@ export type IconProps = {
   color?: string;
   size?: number;
 };
-export type ScoreType = {
-  winner: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null;
-  duration: 'REGULAR' | 'EXTRA_TIME' | 'PENALTY_SHOOTOUT' | null;
-  fullTime?: { home: number | null; away: number | null };
-  halfTime?: { home: number | null; away: number | null };
-};
 
 export type LeagueWithCompetitionType = Tables<'leagues'> & {
   competition: Tables<'competitions'>;
@@ -23,19 +17,6 @@ export type LeagueWithMembersType = Tables<'leagues'> & {
   league_members: Tables<'league_members'>[];
   competition: Pick<Tables<'competitions'>, 'id' | 'name' | 'logo' | 'area' | 'flag'>;
 };
-
-export type MatchType = Tables<'matches'> & {
-  home_team: Tables<'teams'>;
-  away_team: Tables<'teams'>;
-  score: ScoreType;
-};
-export type MatchWithPredictionsType = Tables<'matches'> & {
-  home_team: Tables<'teams'>;
-  away_team: Tables<'teams'>;
-  score: ScoreType;
-  predictions: PredictionType[];
-};
-export type PredictionType = Tables<'predictions'>;
 
 export type LeaderboardAndMemberType = Tables<'predictions'> & {
   member: Tables<'league_members'>;

@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { create } from 'zustand';
 
-import { downloadImage } from '@/hooks/useSupabaseImages';
 import { Tables } from '@/types/database.types';
 
 type Member = Tables<'league_members'>;
@@ -16,6 +15,7 @@ type MemberWithLeague = Member & {
 interface MemberState {
   memberId: string | null;
   leagueId: string | null;
+  competitionId: number | null;
   member: Member | null;
   isLoading: boolean;
   error: string | null;
@@ -27,6 +27,7 @@ interface MemberState {
 export const useMemberStore = create<MemberState>()((set, get) => ({
   memberId: null,
   leagueId: null,
+  competitionId: null,
   member: null,
   isLoading: false,
   error: null,
@@ -36,6 +37,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
       set({
         memberId: null,
         leagueId: null,
+        competitionId: null,
         member: null,
       });
       return;
@@ -46,6 +48,7 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     set({
       memberId: memberWithoutLeague.id,
       leagueId: league?.id ?? null,
+      competitionId: league?.competition_id ?? null,
       member: memberWithoutLeague,
     });
   },
@@ -54,13 +57,13 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     set({
       memberId: null,
       leagueId: null,
+      competitionId: null,
       member: null,
       isLoading: false,
       error: null,
     }),
 
   initializeMember: async () => {
-    console.log('initializeMember');
     const currentState = get();
     if (!currentState.memberId) {
       set({ isLoading: true, error: null });
@@ -101,23 +104,10 @@ export const useMemberStore = create<MemberState>()((set, get) => ({
     const memberData = data as MemberWithLeague;
     const { league, ...memberWithoutLeague } = memberData;
 
-    if (memberWithoutLeague.avatar_url) {
-      try {
-        const signedUrl = await downloadImage(memberWithoutLeague.avatar_url, {
-          bucket: 'avatars',
-          expiresIn: 60 * 60 * 24,
-        });
-        if (signedUrl) {
-          memberWithoutLeague.avatar_url = signedUrl;
-        }
-      } catch (err) {
-        console.error('Failed to create signed URL for avatar:', err);
-      }
-    }
-
     set({
       memberId: memberWithoutLeague.id,
       leagueId: league?.id ?? null,
+      competitionId: league?.competition_id ?? null,
       member: memberWithoutLeague,
       isLoading: false,
       error: null,

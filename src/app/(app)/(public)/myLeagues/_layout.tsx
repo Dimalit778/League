@@ -1,7 +1,6 @@
 import { TabsHeader } from '@/components/layout';
 import { Stack } from '@/components/layout/Stack';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import Transition from 'react-native-screen-transitions';
 
 export default function MyLeaguesLayout() {
   const { colors } = useThemeTokens();
@@ -15,10 +14,7 @@ export default function MyLeaguesLayout() {
           header: () => <TabsHeader showLeagueName={false} />,
         }}
       />
-      <Stack.Screen
-        name="join-league"
-        options={{ ...Transition.presets.DraggableCard(), contentStyle: { backgroundColor: 'transparent' } }}
-      />
+      <Stack.Screen name="join-league" options={{ headerShown: false }} />
       <Stack.Screen name="select-competition" options={{ headerShown: false }} />
       <Stack.Screen name="create-league" options={{ headerShown: false }} />
       <Stack.Screen name="preview-league" options={{ headerShown: false }} />

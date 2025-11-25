@@ -1,8 +1,9 @@
 import { AvatarImage } from '@/components/ui';
+import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
@@ -12,6 +13,7 @@ type AvatarSectionProps = {
 };
 
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
+  const memberId = useMemberStore((s) => s.memberId);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const uploadImage = useUploadMemberImage();
@@ -42,43 +44,42 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
     }
   };
 
-  const handleCancelPreview = useCallback(() => {
+  const handleCancelPreview = () => {
     setPreviewImage(null);
     setPickedAsset(null);
-  }, []);
+  };
 
-  const handleSavePreview = useCallback(async () => {
-    if (!pickedAsset) return;
+  const handleSavePreview = async () => {
+    if (!pickedAsset || !memberId) return;
+
     try {
-      await uploadImage.mutateAsync(pickedAsset);
-      // await initializeMemberLeagues();
+      await uploadImage.mutateAsync({ memberId, avatarUrl: pickedAsset });
       setPreviewImage(null);
       setPickedAsset(null);
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
-  }, [uploadImage, pickedAsset]);
+  };
 
-  const handleDeleteImage = useCallback(() => {
+  const handleDeleteImage = async () => {
+    if (!memberId || !avatarUrl) return;
     Alert.alert('Delete Profile Picture', 'Are you sure you want to delete your profile picture?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => {
-          deleteImage.mutate(avatarUrl ?? null, {
-            onSuccess: () => {
-              // initializeMemberLeagues();
-            },
-            onError: () => {
-              Alert.alert('Error', 'Failed to delete image');
-            },
-          });
+        onPress: async () => {
+          try {
+            await deleteImage.mutateAsync({ memberId, currentPath: avatarUrl });
+          } catch (error) {
+            console.error('Error deleting image:', error);
+            Alert.alert('Error', 'Failed to delete image');
+          }
         },
       },
     ]);
-  }, []);
+  };
 
   return (
     <View className="items-center px-4">

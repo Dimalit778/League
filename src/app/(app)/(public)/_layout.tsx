@@ -15,7 +15,7 @@ export default function PublicLayout() {
     >
       <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
-      <Stack.Screen name="subscription" options={{ headerShown: false }} />
+      <Stack.Screen name="subscription/index" options={{ headerShown: false }} />
     </Stack>
   );
 }

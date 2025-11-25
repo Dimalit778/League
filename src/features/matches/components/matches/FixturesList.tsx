@@ -1,12 +1,6 @@
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  FlatList,
-  LayoutChangeEvent,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, LayoutChangeEvent, Pressable, Text, View } from 'react-native';
 
 type FixturesListProps = {
   fixtures: number[];
@@ -27,35 +21,33 @@ type FixtureItemProps = {
   onPress: (fixture: number) => void;
 };
 
-const FixtureItem = memo(
-  ({ fixture, selectedFixture, colors, onPress }: FixtureItemProps) => {
-    const isSelected = selectedFixture === fixture;
+const FixtureItem = ({ fixture, selectedFixture, colors, onPress }: FixtureItemProps) => {
+  const isSelected = selectedFixture === fixture;
 
-    return (
-      <Pressable
-        onPress={() => onPress(fixture)}
+  return (
+    <Pressable
+      onPress={() => onPress(fixture)}
+      style={{
+        height: 50,
+        width: 50,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 5,
+        backgroundColor: isSelected ? colors.primary : colors.surface,
+      }}
+    >
+      <Text
+        className="text-text font-semibold"
         style={{
-          height: 50,
-          width: 50,
-          borderRadius: 10,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginHorizontal: 5,
-          backgroundColor: isSelected ? colors.primary : colors.surface,
+          color: isSelected ? colors.background : colors.text,
         }}
       >
-        <Text
-          className="text-text font-semibold"
-          style={{
-            color: isSelected ? colors.background : colors.text,
-          }}
-        >
-          {fixture}
-        </Text>
-      </Pressable>
-    );
-  }
-);
+        {fixture}
+      </Text>
+    </Pressable>
+  );
+};
 
 export default function FixturesList({
   fixtures,
@@ -67,8 +59,7 @@ export default function FixturesList({
   const { colors } = useThemeTokens();
   const [listWidth, setListWidth] = useState(0);
 
-  const onLayout = (e: LayoutChangeEvent) =>
-    setListWidth(e.nativeEvent.layout.width);
+  const onLayout = (e: LayoutChangeEvent) => setListWidth(e.nativeEvent.layout.width);
 
   useEffect(() => {
     if (!ref.current || !selectedFixture || listWidth === 0) return;
@@ -78,20 +69,17 @@ export default function FixturesList({
       animated: animateScroll,
       viewPosition: 0.5,
     });
-  }, [selectedFixture, listWidth]);
+  }, [selectedFixture, listWidth, animateScroll]);
 
-  const onScrollToIndexFailed = useCallback(
-    (info: { index: number; highestMeasuredFrameIndex: number }) => {
-      setTimeout(() => {
-        ref.current?.scrollToIndex({
-          index: info.index,
-          animated: true,
-          viewPosition: 0.5,
-        });
-      }, 50);
-    },
-    []
-  );
+  const onScrollToIndexFailed = useCallback((info: { index: number; highestMeasuredFrameIndex: number }) => {
+    setTimeout(() => {
+      ref.current?.scrollToIndex({
+        index: info.index,
+        animated: true,
+        viewPosition: 0.5,
+      });
+    }, 50);
+  }, []);
 
   return (
     <View>

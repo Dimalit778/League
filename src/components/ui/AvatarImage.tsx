@@ -1,4 +1,5 @@
 import { cn } from '@/lib/nativewind/utils';
+import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { Text, View } from 'react-native';
 
@@ -9,13 +10,9 @@ type AvatarImageProps = {
   className?: string;
 };
 
-const AvatarImage = ({
-  nickname,
-  path,
-  style,
-  className,
-}: AvatarImageProps) => {
+const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => {
   const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
+  const profileImage = getProfileImage(path);
 
   return (
     <View
@@ -24,9 +21,9 @@ const AvatarImage = ({
         className
       )}
     >
-      {path ? (
+      {profileImage ? (
         <ExpoImage
-          source={{ uri: path }}
+          source={{ uri: profileImage }}
           contentFit="cover"
           cachePolicy="memory-disk"
           transition={0}
@@ -41,11 +38,7 @@ const AvatarImage = ({
           className="items-center justify-center"
           accessible={true}
           accessibilityRole="text"
-          accessibilityLabel={
-            nickname
-              ? `${nickname}'s avatar initial ${initial}`
-              : `Avatar initial ${initial}`
-          }
+          accessibilityLabel={nickname ? `${nickname}'s avatar initial ${initial}` : `Avatar initial ${initial}`}
         >
           <Text className="text-primary font-semibold text-2xl">{initial}</Text>
         </View>

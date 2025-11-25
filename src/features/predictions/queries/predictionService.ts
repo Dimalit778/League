@@ -2,6 +2,17 @@ import { supabase } from '@/lib/supabase';
 import { TablesInsert, TablesUpdate } from '@/types/database.types';
 
 export const predictionService = {
+  async getMyPredictionsView(leagueId: string) {
+    const { data, error } = await supabase
+      .from('my_predictions_view')
+      .select('*')
+      .eq('league_id', leagueId)
+      .order('prediction_created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
   async createPrediction(prediction: TablesInsert<'predictions'>) {
     const { data, error } = await supabase.from('predictions').insert(prediction).select().single();
 

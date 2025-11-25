@@ -77,11 +77,7 @@ export const memberApi = {
     return data;
   },
 
-  async uploadImage(
-    leagueId: string,
-    memberId: string,
-    avatarUrl: ImagePicker.ImagePickerAsset
-  ): Promise<MemberLeagueType> {
+  async uploadMemberImage(memberId: string, avatarUrl: ImagePicker.ImagePickerAsset): Promise<MemberLeagueType> {
     try {
       const base64 = avatarUrl.base64;
       if (!base64) {
@@ -95,14 +91,16 @@ export const memberApi = {
       const contentType =
         avatarUrl.mimeType ?? (normalizedExtension === 'jpg' ? 'image/jpeg' : `image/${normalizedExtension}`);
 
-      const filePath = `${leagueId}/${memberId}.${normalizedExtension}`;
-
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, decode(base64), {
+      const filePath = `${memberId}.${normalizedExtension}`;
+      // 🔥 use your bucket name here
+      const { error: uploadError } = await supabase.storage.from('profile_images').upload(filePath, decode(base64), {
         contentType,
         upsert: true,
       });
+
       if (uploadError) throw uploadError;
 
+      // 🔥 update your members table, NOT the bucket name
       const { data: memberData, error: memberError } = await supabase
         .from('league_members')
         .update({ avatar_url: filePath })
@@ -111,12 +109,14 @@ export const memberApi = {
         .single();
 
       if (memberError) throw memberError;
+
       return memberData as MemberLeagueType;
     } catch (error) {
       console.error('Error uploading avatar:', error);
       throw error;
     }
   },
+
   async deleteImage(memberId: string, currentPath?: string | null) {
     if (currentPath) {
       const { error: storageError } = await supabase.storage.from('avatars').remove([currentPath]);
@@ -181,21 +181,20 @@ export const memberApi = {
   },
 
   async getMemberDataAndStats(memberId: string) {
-    // Fetch member data and stats in parallel
     const [memberData, stats] = await Promise.all([this.getMemberInfo(memberId), this.getMemberStats(memberId)]);
-
+    const arrayOfFixtures = Array.from(
+      { length: memberData?.league?.competition?.total_fixtures ?? 0 },
+      (_, index) => index + 1
+    );
     return {
       member: memberData,
       stats,
+      totalFixtures: arrayOfFixtures,
+      currentFixture: memberData?.league?.competition?.current_fixture ?? 1,
     };
   },
   async getMemberProfile(memberId: string) {
-    const { data, error } = await supabase
-      .from('league_members')
-      .select('*, league:leagues!league_id(*, competition:competitions(*))')
-      .eq('id', memberId)
-      .single();
-
+    const { data, error } = await supabase.from('league_members').select('*').eq('id', memberId).single();
     if (error) throw error;
     return data;
   },

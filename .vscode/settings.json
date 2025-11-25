@@ -41,5 +41,6 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "chatgpt.openOnStartup": true
+  "chatgpt.openOnStartup": true,
+  "editor.fontSize": 14
 }

@@ -1,9 +1,9 @@
-import { invalidateImageCache } from '@/hooks/useSupabaseImages';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { memberApi } from '../api/membersApi';
+
 export const useMemberStats = (memberId: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.members.stats(memberId),
@@ -50,71 +50,43 @@ export const useUpdateMember = () => {
 };
 
 export const useDeleteMemberImage = () => {
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const memberId = useMemberStore((s) => s.memberId);
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (currentPath?: string | null) => {
-      if (!leagueId || !memberId) {
-        throw new Error('League ID and member ID are required');
-      }
-      return memberApi.deleteImage(memberId, currentPath ?? undefined);
+    mutationFn: ({ memberId, currentPath }: { memberId: string; currentPath?: string | null }) => {
+      return memberApi.deleteImage(memberId, currentPath);
     },
-    onSuccess: (_, currentPath) => {
-      if (!leagueId || !memberId) return;
-      if (currentPath) {
-        invalidateImageCache(currentPath);
-      }
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.byId(memberId),
+        queryKey: QUERY_KEYS.members.byId(data?.id),
       });
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.stats(memberId),
+        queryKey: QUERY_KEYS.members.stats(data?.id),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.leagues.leagueAndMembers(data?.league_id),
       });
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.avatar(memberId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+        queryKey: QUERY_KEYS.leaderboard.byLeague(data?.league_id),
       });
     },
   });
 };
 
 export const useUploadMemberImage = () => {
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const memberId = useMemberStore((s) => s.memberId);
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (avatarUrl: ImagePicker.ImagePickerAsset) => {
-      if (!leagueId || !memberId) {
-        throw new Error('League ID and member ID are required');
-      }
-      return memberApi.uploadImage(leagueId, memberId, avatarUrl);
+    mutationFn: ({ memberId, avatarUrl }: { memberId: string; avatarUrl: ImagePicker.ImagePickerAsset }) => {
+      return memberApi.uploadMemberImage(memberId, avatarUrl);
     },
     onSuccess: (data) => {
-      if (!leagueId || !memberId) return;
-      if (data?.avatar_url) {
-        invalidateImageCache(data.avatar_url);
-      }
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.avatar(memberId),
+        queryKey: QUERY_KEYS.members.byId(data?.id),
       });
+
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.byId(memberId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.members.stats(memberId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+        queryKey: QUERY_KEYS.leaderboard.byLeague(data?.league_id),
       });
     },
   });
@@ -153,10 +125,9 @@ export const useMemberDataAndStats = (memberId: string) => {
 
 export const useMemberProfile = (memberId: string) => {
   return useQuery({
-    queryKey: [...QUERY_KEYS.members.byId(memberId), 'league'],
+    queryKey: QUERY_KEYS.members.byId(memberId),
     queryFn: () => memberApi.getMemberProfile(memberId),
-    enabled: !!memberId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 };

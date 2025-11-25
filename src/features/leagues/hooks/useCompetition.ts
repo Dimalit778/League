@@ -11,3 +11,12 @@ export const useGetCompetitions = () => {
   });
   return { data, error, isLoading };
 };
+
+export const useGetCompetitionFixtures = (competitionId: number) => {
+  return useQuery({
+    queryKey: ['competitions', 'fixtures', competitionId],
+    queryFn: () => competitionApi.getCompetitionFixtures(competitionId),
+    enabled: !!competitionId,
+    staleTime: 30_000,
+  });
+};

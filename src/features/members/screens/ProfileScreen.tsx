@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { AvatarSection } from '@/features/members/components/profile/AvatarSection';
@@ -6,58 +6,44 @@ import { LeagueDetailsSection } from '@/features/members/components/profile/Leag
 import { NicknameSection } from '@/features/members/components/profile/NicknameSection';
 import { ProfileSkeleton } from '@/features/members/components/profile/ProfileSkeleton';
 import { useMemberStore } from '@/store/MemberStore';
-import { router } from 'expo-router';
-import { useCallback } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { useMemberProfile } from '../hooks/useMembers';
 
 const ProfileScreen = () => {
   const leagueId = useMemberStore((s) => s.leagueId);
-  const member = useMemberStore((s) => s.member);
-  const { data: leagueData } = useGetLeagueAndMembers(leagueId!);
+  const memberId = useMemberStore((s) => s.memberId);
+  const { data: memberData, isLoading: memberLoading, error: memberError } = useMemberProfile(memberId ?? '');
+  const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId ?? '');
+  const { mutate: leaveLeague, isPending: leaveLeaguePending } = useLeaveLeague();
 
-  const leaveLeague = useLeaveLeague();
-
-  const confirmLeaveLeague = useCallback(() => {
+  const confirmLeaveLeague = () => {
     if (!leagueId) return;
-    Alert.alert('Leave League', `Are you sure you want to leave "${leagueData?.name}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Leave',
-        style: 'destructive',
-        onPress: async () => {
-          leaveLeague.mutate(leagueId!, {
-            onSuccess: () => {
-              router.replace('/(app)/(public)/myLeagues');
-            },
-            onError: (error) => {
-              Alert.alert('Error', error.message);
-            },
-          });
-        },
-      },
-    ]);
-  }, [leaveLeague, leagueId, leagueData?.name]);
+    leaveLeague(leagueId);
+  };
 
-  if (!member || !leagueId || !leagueData) return <ProfileSkeleton />;
+  if (memberLoading || leagueLoading) return <ProfileSkeleton />;
+  if (memberError || leagueError)
+    return <Error error={memberError || (leagueError as string | Error | { message: string })} />;
+  if (!memberData || !leagueData) return <Error error="Member or league data not found" />;
 
   return (
     <KeyboardAwareScrollView bottomOffset={62} className="flex-1 bg-background">
-      {leaveLeague.isPending && <LoadingOverlay />}
+      {leaveLeaguePending && <LoadingOverlay />}
 
-      <AvatarSection nickname={member?.nickname!} avatarUrl={member?.avatar_url!} />
+      <AvatarSection nickname={memberData?.nickname} avatarUrl={memberData?.avatar_url} />
 
-      <NicknameSection initialNickname={member?.nickname!} />
+      <NicknameSection initialNickname={memberData?.nickname} />
 
-      <LeagueDetailsSection league={leagueData} memberUserId={member?.user_id!} />
+      <LeagueDetailsSection league={leagueData} memberUserId={memberData?.user_id} />
 
       <View className="px-6 mt-4">
         <Button
           title="Leave League"
           variant="error"
           onPress={confirmLeaveLeague}
-          disabled={leaveLeague.isPending}
-          loading={leaveLeague.isPending}
+          disabled={leaveLeaguePending}
+          loading={leaveLeaguePending}
         />
       </View>
     </KeyboardAwareScrollView>

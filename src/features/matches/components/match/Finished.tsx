@@ -1,29 +1,16 @@
-import { useGetMatchesWithPredictions } from '../../hooks/useMatches';
-import { useStoreData } from '@/store/store';
+import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { FlatList, Text, View } from 'react-native';
-import { Error, LoadingOverlay } from '@/components/layout';
+import { PredictionsMemberType } from '../../types';
 
-export default function FinishedMatch({ matchId }: { matchId: number }) {
-  const { member, league } = useStoreData();
+interface FinishedMatchProps {
+  predictions: PredictionsMemberType[] | undefined;
+  avatarMap: Map<string, string | null>;
+}
 
-  const {
-    data: predictions,
-    isLoading,
-    error,
-  } = useGetMatchesWithPredictions(matchId, league?.competition_id || 0, league?.id || '');
-
-  console.log('predictions', JSON.stringify(predictions, null, 2));
-
-  if (isLoading) return <LoadingOverlay />;
-  if (error) return <Error error={error} />;
-  if (!predictions || predictions?.length === 0)
-    return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-center text-2xl text-text">No predictions found</Text>
-      </View>
-    );
+export default function FinishedMatch({ predictions = [], avatarMap }: FinishedMatchProps) {
+  const member = useMemberStore((state) => state.member);
 
   return (
     <View className="flex-1 bg-background px-4">
@@ -32,27 +19,44 @@ export default function FinishedMatch({ matchId }: { matchId: number }) {
         <Text className="text-muted  text-sm font-nunito mb-4">See how your members predicted this match</Text>
       </View>
 
-      <View className="flex-row px-1 mb-2">
+      <View className="flex-row px-1 mb-2 ">
         <Text className="flex-1 text-[10px] text-secondary">Player</Text>
         <Text className="w-16 text-[10px] text-secondary text-center">Prediction</Text>
         <Text className="w-10 text-[10px] text-secondary text-center">Points</Text>
       </View>
-
       <FlatList
         data={predictions}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item, index }) => (
-          <PredictionsLeaderCard item={item} index={index + 1} currentUserId={member?.user_id || ''} />
-        )}
+        renderItem={({ item, index }) => {
+          return (
+            <PredictionsLeaderCard
+              item={item}
+              index={index + 1}
+              currentUserId={member?.user_id || ''}
+              avatarMap={avatarMap}
+            />
+          );
+        }}
       />
     </View>
   );
 }
 
-function PredictionsLeaderCard({ item, index, currentUserId }: any) {
-  const isCurrentUser = currentUserId === item.user_id;
-  console.log('item', JSON.stringify(item, null, 2));
-
+function PredictionsLeaderCard({
+  item,
+  index,
+  currentUserId,
+  avatarMap,
+}: {
+  item: PredictionsMemberType;
+  index: number;
+  currentUserId: string;
+  avatarMap: Map<string, string | null>;
+}) {
+  const isCurrentUser = currentUserId === item.league_member.user_id;
+  const borderColor = item.points === 3 ? 'green' : item.points === 1 ? 'gray' : 'red';
+  const avatarPath = item.league_member.avatar_url;
+  const avatarUrl = avatarPath ? (avatarMap.get(avatarPath) ?? avatarPath) : null;
   return (
     <View
       className={`
@@ -69,9 +73,9 @@ function PredictionsLeaderCard({ item, index, currentUserId }: any) {
         </View>
 
         {/* Avatar */}
-        {item.member.avatar_url ? (
+        {avatarUrl ? (
           <ExpoImage
-            source={{ uri: item.member.avatar_url }}
+            source={{ uri: avatarUrl }}
             style={{ width: 32, height: 32, borderRadius: 16 }}
             contentFit="cover"
             cachePolicy="memory-disk"
@@ -82,7 +86,7 @@ function PredictionsLeaderCard({ item, index, currentUserId }: any) {
 
         {/* Nickname */}
         <Text className={`text-sm font-semibold ${isCurrentUser ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
-          {item.member.nickname}
+          {item.league_member.nickname}
         </Text>
       </View>
 
@@ -97,13 +101,13 @@ function PredictionsLeaderCard({ item, index, currentUserId }: any) {
       <View
         className="w-9 h-9 rounded-full items-center justify-center border"
         style={{
-          borderColor: item.points === 3 ? 'green' : item.points === 1 ? 'gray' : 'red',
+          borderColor: borderColor,
         }}
       >
         <Text
           className="text-xs font-bold"
           style={{
-            color: item.points === 3 ? 'green' : item.points === 1 ? 'gray' : 'red',
+            color: borderColor,
           }}
         >
           {item.points ?? 0}

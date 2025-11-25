@@ -16,7 +16,6 @@ export const LeagueDetailsSection = ({
   memberUserId: string;
 }) => {
   const { colors } = useThemeTokens();
-  console.log('league', JSON.stringify(league, null, 2));
 
   const handleCopyJoinCode = async () => {
     if (typeof league.join_code === 'string') {

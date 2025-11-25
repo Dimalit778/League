@@ -1,7 +1,8 @@
 import { Tables } from '@/types/database.types';
 
+type MemberType = Tables<'league_members'>;
 type MemberPredictionType = Tables<'predictions'> & {
-  member: Tables<'league_members'>;
+  member: MemberType;
 };
 type MemberStatsType = {
   totalPredictions: number;
@@ -12,12 +13,12 @@ type MemberStatsType = {
   totalPoints: number;
   position?: number | null;
 };
-type MemberLeagueType = Tables<'league_members'> & {
+type MemberLeagueType = MemberType & {
   league: Tables<'leagues'> & {
     competition: Tables<'competitions'>;
   };
 };
-type MemberProfileType = Tables<'league_members'> & {
+type MemberProfileType = MemberType & {
   league: Tables<'leagues'> & {
     competition: Tables<'competitions'>;
   };
@@ -27,4 +28,11 @@ type leagueWithMembersType = Tables<'leagues'> & {
   competition: Tables<'competitions'>;
 };
 
-export type { leagueWithMembersType, MemberLeagueType, MemberPredictionType, MemberProfileType, MemberStatsType };
+export type {
+  leagueWithMembersType,
+  MemberLeagueType,
+  MemberPredictionType,
+  MemberProfileType,
+  MemberStatsType,
+  MemberType,
+};

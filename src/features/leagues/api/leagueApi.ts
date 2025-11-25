@@ -1,4 +1,3 @@
-import { subscriptionApi } from '@/features/subscription/api/subscriptionApi';
 import { supabase } from '@/lib/supabase';
 
 export const leagueApi = {
@@ -19,17 +18,14 @@ export const leagueApi = {
 
     return data;
   },
-
-  async findLeagueByJoinCode(joinCode: string) {
+  async getMyLeaguesView(userId: string) {
     const { data, error } = await supabase
-      .from('leagues')
-      .select('*,competition:competitions(*)')
-      .eq('join_code', joinCode)
-      .single();
+      .from('my_leagues_view')
+      .select('*')
+      .order('is_primary', { ascending: false }) // primary leagues first
+      .order('league_created_at', { ascending: true });
 
-    if (error) throw new Error(error.message);
-    if (!data) throw new Error('League not found');
-
+    if (error) throw error;
     return data;
   },
 
@@ -57,57 +53,6 @@ export const leagueApi = {
     return data;
   },
 
-  async createLeague(params: {
-    league_name: string;
-    max_members: number;
-    competition_id: number;
-    nickname: string;
-    user_id: string;
-  }) {
-    const { canCreate, reason } = await subscriptionApi.canCreateLeague(params.user_id);
-
-    if (!canCreate) {
-      throw new Error(reason || "You've reached your league limit. Please upgrade your subscription.");
-    }
-
-    const subscription = await subscriptionApi.getCurrentSubscription(params.user_id);
-    const limits = subscriptionApi.getSubscriptionLimits(subscription?.subscription_type || 'FREE');
-
-    const maxMembers = Math.min(params.max_members, limits.maxMembersPerLeague);
-
-    const { data: leagueData, error } = await supabase.rpc('create_new_league', {
-      league_name: params.league_name,
-      max_members: maxMembers,
-      competition_id: params.competition_id,
-      nickname: params.nickname,
-      avatar_url: undefined,
-    });
-
-    if (error) throw new Error(error.message);
-
-    return leagueData;
-  },
-
-  async joinLeague(joinCode: string, nickname: string) {
-    const { data, error } = await supabase.rpc('join_league', {
-      league_join_code: joinCode,
-      user_nickname: nickname,
-    });
-
-    if (error) throw new Error(error.message);
-
-    return data;
-  },
-
-  async leaveLeague(leagueId: string) {
-    const { data, error } = await supabase.rpc('leave_league', {
-      p_league_id: leagueId,
-    });
-    if (error) throw new Error(error.message);
-
-    return data;
-  },
-
   async updatePrimaryLeague(userId: string, leagueId: string) {
     const { error: unsetLeaguesError } = await supabase
       .from('league_members')
@@ -130,6 +75,58 @@ export const leagueApi = {
 
     return primaryLeague;
   },
+
+  async removeMember(memberId: string) {
+    console.log('memberId', memberId);
+    const { data: memberData, error: memberError } = await supabase
+      .from('league_members')
+      .select('*')
+      .eq('id', memberId)
+      .single();
+    console.log('memberError', JSON.stringify(memberError, null, 2));
+    console.log('memberData', JSON.stringify(memberData, null, 2));
+
+    if (memberError) throw new Error(memberError.message);
+    if (!memberData) throw new Error('Member not found');
+
+    const leagueId = memberData.league_id;
+
+    const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
+    if (error) throw new Error(error.message);
+    console.log('data', JSON.stringify(data, null, 2));
+    console.log('error', JSON.stringify(error, null, 2));
+    return { data, leagueId };
+  },
+  //  -- LEAGUE OPERATIONS
+  async createLeague(params: { league_name: string; max_members: number; competition_id: number; nickname: string }) {
+    const { data, error } = await supabase.rpc('create_new_league', {
+      league_name: params.league_name,
+      max_members: params.max_members,
+      competition_id: params.competition_id,
+      nickname: params.nickname,
+    });
+
+    if (error) throw error;
+
+    console.log('data', JSON.stringify(data, null, 2));
+    return data;
+  },
+  async joinLeague(joinCode: string, nickname: string) {
+    const { data, error } = await supabase.rpc('join_league', {
+      league_join_code: joinCode,
+      user_nickname: nickname,
+    });
+
+    if (error) {
+      throw new Error(error.message || 'Failed to join league');
+    }
+
+    if (!data) {
+      throw new Error('Failed to join league');
+    }
+
+    return data;
+  },
   async updateLeague(leagueId: string, data: { name?: string }) {
     const { data: updated, error } = await supabase
       .from('leagues')
@@ -140,10 +137,29 @@ export const leagueApi = {
     if (error) throw new Error(error.message);
     return updated;
   },
+  async leaveLeague(leagueId: string) {
+    const { data, error } = await supabase.rpc('leave_league', {
+      p_league_id: leagueId,
+    });
+    console.log('data', JSON.stringify(data, null, 2));
+    console.log('error', JSON.stringify(error, null, 2));
 
-  async removeMember(leagueId: string, userId: string) {
-    const { error } = await supabase.from('league_members').delete().eq('league_id', leagueId).eq('user_id', userId);
+    if (error) {
+      throw new Error(error.message || 'Failed to leave league');
+    }
+
+    return data;
+  },
+  async findLeagueByJoinCode(joinCode: string) {
+    const { data, error } = await supabase.rpc('find_league_by_code', {
+      p_join_code: joinCode,
+    });
+
     if (error) throw new Error(error.message);
-    return true;
+    if (!data || data.length === 0) throw new Error('League not found');
+
+    const league = data[0];
+
+    return league;
   },
 };

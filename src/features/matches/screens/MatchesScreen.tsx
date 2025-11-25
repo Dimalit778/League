@@ -1,37 +1,26 @@
-import { useGetLeagueWithCompetition } from '@/features/leagues/hooks/useLeagues';
+import { useGetCompetitionFixtures } from '@/features/leagues/hooks/useCompetition';
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
 import MatchesList from '@/features/matches/components/matches/MatchesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
-import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useFocusEffect, usePathname } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 const MatchesScreen = () => {
-  const member = useMemberStore((s) => s.member);
-  const userId = useAuthStore((s) => s.userId);
-  const leagueId = useMemberStore((s) => s.leagueId);
+  const competitionId = useMemberStore((s) => s.competitionId);
 
-  const { data: league } = useGetLeagueWithCompetition(leagueId!);
-  const competition = league?.competition;
-  const totalFixtures = competition?.total_fixtures ?? 0;
-  const currentFixture = competition?.current_fixture ?? 0;
   const pathname = usePathname();
 
-  const [selectedFixture, setSelectedFixture] = useState<number | null>(null);
+  const { data: fixturesData } = useGetCompetitionFixtures(competitionId ?? 0);
+
+  const [selectedFixture, setSelectedFixture] = useState<number | null>(fixturesData?.currentFixture ?? 1);
   const [animateScroll, setAnimateScroll] = useState(false);
   const preservedFixtureRef = useRef<number | null>(null);
   const previousPathnameRef = useRef<string>(pathname);
   const isNavigatingToMatchRef = useRef(false);
 
-  const fixtures = useMemo(
-    () => (totalFixtures ? Array.from({ length: totalFixtures }, (_, i) => i + 1) : []),
-    [totalFixtures]
-  );
-
-  // Track pathname changes to detect navigation to/from match detail
   useEffect(() => {
     const isOnMatchDetail = pathname?.includes('/match/');
     const isOnMatchesPage = pathname?.includes('/Matches');
@@ -66,12 +55,12 @@ const MatchesScreen = () => {
         setSelectedFixture(preservedFixtureRef.current);
         preservedFixtureRef.current = null;
         isNavigatingToMatchRef.current = false;
-      } else if (currentFixture && !preservedFixtureRef.current) {
+      } else if (fixturesData?.currentFixture && !preservedFixtureRef.current) {
         // Otherwise, reset to current fixture (coming from other pages)
         setAnimateScroll(false);
-        setSelectedFixture(currentFixture);
+        setSelectedFixture(fixturesData?.currentFixture ?? 1);
       }
-    }, [currentFixture])
+    }, [fixturesData?.currentFixture])
   );
 
   const handleFixturePress = useCallback((fixture: number) => {
@@ -79,7 +68,7 @@ const MatchesScreen = () => {
     setSelectedFixture(fixture);
   }, []);
 
-  if (!fixtures.length || selectedFixture == null) {
+  if (fixturesData?.allFixtures?.length === 0 || selectedFixture == null || !fixturesData?.allFixtures) {
     return (
       <View className="flex-1 bg-background">
         <SkeletonFixtures />
@@ -91,15 +80,13 @@ const MatchesScreen = () => {
   return (
     <View className="flex-1 bg-background">
       <FixturesList
-        fixtures={fixtures}
-        selectedFixture={selectedFixture ?? 1}
+        fixtures={fixturesData?.allFixtures}
+        selectedFixture={selectedFixture}
         handleFixturePress={handleFixturePress}
         animateScroll={animateScroll}
       />
 
-      {selectedFixture && competition && userId && (
-        <MatchesList selectedFixture={selectedFixture} competitionId={competition.id} memberId={member?.id!} />
-      )}
+      <MatchesList selectedFixture={selectedFixture} />
     </View>
   );
 };

@@ -84,14 +84,18 @@ export const useAuthActions = () => {
         setErrorMessage(networkError);
         return { success: false, error: networkError };
       }
+      console.log('email', email);
+      console.log('password', password);
+      console.log('fullname', fullname);
 
       const { error } = await supabase.auth.signUp({
-        email,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           data: { full_name: fullname, provider: 'email', role: 'USER' },
         },
       });
+      console.log('error ------->,', JSON.stringify(error));
 
       if (error) throw error;
 
@@ -121,7 +125,7 @@ export const useAuthActions = () => {
       }
 
       const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         password: password.trim(),
       });
 
@@ -219,7 +223,7 @@ export const useAuthActions = () => {
         data: { session },
         error,
       } = await supabase.auth.verifyOtp({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         token: token.trim(),
         type: 'email',
       });
@@ -259,7 +263,7 @@ export const useAuthActions = () => {
 
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
       });
 
       if (error) throw error;
@@ -291,7 +295,7 @@ export const useAuthActions = () => {
 
       // For password reset, we need to call resetPasswordForEmail again
       const redirectTo = getPasswordResetRedirectUri();
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo,
       });
 
@@ -324,7 +328,7 @@ export const useAuthActions = () => {
 
       const redirectTo = getPasswordResetRedirectUri();
       console.log('redirectTo', redirectTo);
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo,
       });
 

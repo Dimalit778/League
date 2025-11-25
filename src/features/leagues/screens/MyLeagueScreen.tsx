@@ -1,27 +1,18 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { Button } from '@/components/ui';
-import { leagueApi } from '@/features/leagues/api/leagueApi';
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useAuthStore } from '@/store/AuthStore';
 
 import { useMemberStore } from '@/store/MemberStore';
-import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import LeagueCard from '../components/LeagueCard';
-import { useUpdatePrimaryLeague } from '../hooks/useLeagues';
+import MyLeagueCard from '../components/MyLeagueCard';
+import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
 
 const MyLeagues = () => {
   const userId = useAuthStore((state) => state.userId);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
-  const {
-    data: leagues,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: QUERY_KEYS.users.leagues(userId!),
-    queryFn: () => leagueApi.getMyLeagues(userId!),
-  });
+
+  const { data: leagues, isLoading, error } = useMyLeagues(userId ?? '');
 
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague(userId!);
 
@@ -54,7 +45,7 @@ const MyLeagues = () => {
       </View>
       <View className="flex-1 gap-3 p-2 mt-4">
         {leagues?.map((league) => (
-          <LeagueCard key={league.league.id} item={league} handleSetPrimary={handleSetPrimary} />
+          <MyLeagueCard key={league.league.id} item={league} handleSetPrimary={handleSetPrimary} />
         ))}
         {leagues?.length === 0 && (
           <View className="flex-1 pt-10">

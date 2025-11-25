@@ -5,7 +5,7 @@ interface LeagueCardProps {
   item: any;
   handleSetPrimary: (leagueId: string, isPrimary: boolean) => void;
 }
-export default function LeagueCard({ item, handleSetPrimary }: LeagueCardProps) {
+export default function MyLeagueCard({ item, handleSetPrimary }: LeagueCardProps) {
   return (
     <View className="bg-surface rounded-xl">
       <TouchableOpacity onPress={() => handleSetPrimary(item.league.id, item.is_primary)} activeOpacity={0.8}>

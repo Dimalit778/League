@@ -1,21 +1,18 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { AvatarImage, BackButton, Card } from '@/components/ui';
-import FixtureMatches from '@/features/matches/components/matches/FixtureMatches';
+import FixturesList from '@/features/matches/components/matches/FixturesList';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MemberStatsType } from '../types';
 
 const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
-  const { data: memberData, error: memberDataError, isLoading: memberDataLoading } = useMemberDataAndStats(memberId);
+  const { data, error, isLoading } = useMemberDataAndStats(memberId);
 
-  const member = memberData?.member;
-  const stats = memberData?.stats;
-  const memberPosition = stats?.position ?? null;
-  const competitionId = member?.league?.competition?.id;
+  const { member, stats, totalFixtures = [] } = data ?? {};
 
-  if (memberDataError) return <Error error={memberDataError} />;
-  if (memberDataLoading || !memberData || !member || !competitionId) return <LoadingOverlay />;
+  if (error) return <Error error={error} />;
+  if (isLoading) return <LoadingOverlay />;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -40,14 +37,14 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
             <View className="h-6 w-px bg-border" />
             <View className="items-end">
               <Text className="text-muted text-[10px] uppercase tracking-wide mb-0.5">Position</Text>
-              <Text className="text-primary text-base font-semibold">{memberPosition ?? '—'}</Text>
+              <Text className="text-primary text-base font-semibold">{stats?.position ?? '—'}</Text>
             </View>
           </View>
         </View>
       </Card>
 
       {stats && <MemberStats stats={stats} />}
-      <FixtureMatches memberId={memberId} competitionId={competitionId as number} />
+      <FixturesList fixtures={totalFixtures} selectedFixture={1} handleFixturePress={() => {}} animateScroll={false} />
     </SafeAreaView>
   );
 };

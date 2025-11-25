@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -153,6 +153,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "leagues_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "my_leagues_view"
+            referencedColumns: ["competition_id"]
+          },
+          {
+            foreignKeyName: "leagues_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["competition_id"]
+          },
+          {
             foreignKeyName: "leagues_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -174,7 +188,7 @@ export type Database = {
           referee: string | null
           score: Json | null
           stage: string | null
-          status: string | null
+          status: Database["public"]["Enums"]["match_status"] | null
           updated_at: string
         }
         Insert: {
@@ -189,7 +203,7 @@ export type Database = {
           referee?: string | null
           score?: Json | null
           stage?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["match_status"] | null
           updated_at?: string
         }
         Update: {
@@ -204,10 +218,24 @@ export type Database = {
           referee?: string | null
           score?: Json | null
           stage?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["match_status"] | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "matches_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["away_team_id"]
+          },
+          {
+            foreignKeyName: "matches_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["home_team_id"]
+          },
           {
             foreignKeyName: "matches_away_team_id_fkey"
             columns: ["away_team_id"]
@@ -221,6 +249,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "competitions"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "my_leagues_view"
+            referencedColumns: ["competition_id"]
+          },
+          {
+            foreignKeyName: "matches_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["competition_id"]
+          },
+          {
+            foreignKeyName: "matches_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["away_team_id"]
+          },
+          {
+            foreignKeyName: "matches_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["home_team_id"]
           },
           {
             foreignKeyName: "matches_home_team_id_fkey"
@@ -238,12 +294,10 @@ export type Database = {
           home_score: number
           id: string
           is_finished: boolean
-          league_id: string
           league_member_id: string
           match_id: number
           points: number
           updated_at: string
-          user_id: string
         }
         Insert: {
           away_score: number
@@ -251,12 +305,10 @@ export type Database = {
           home_score: number
           id?: string
           is_finished?: boolean
-          league_id: string
           league_member_id: string
           match_id: number
           points?: number
           updated_at?: string
-          user_id: string
         }
         Update: {
           away_score?: number
@@ -264,21 +316,12 @@ export type Database = {
           home_score?: number
           id?: string
           is_finished?: boolean
-          league_id?: string
           league_member_id?: string
           match_id?: number
           points?: number
           updated_at?: string
-          user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "predictions_league_id_fkey"
-            columns: ["league_id"]
-            isOneToOne: false
-            referencedRelation: "leagues"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "predictions_league_member_id_fkey"
             columns: ["league_member_id"]
@@ -294,6 +337,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "my_leagues_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "v_member_profile"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "predictions_match_id_fkey"
             columns: ["match_id"]
             isOneToOne: false
@@ -301,11 +358,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "predictions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "predictions_match_id_fkey"
+            columns: ["match_id"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: "my_predictions_view"
+            referencedColumns: ["match_id"]
           },
         ]
       }
@@ -424,8 +481,182 @@ export type Database = {
           league_id: string | null
           member_id: string | null
           nickname: string | null
-          predictions_count: number | null
           total_points: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      my_leagues_view: {
+        Row: {
+          avatar_url: string | null
+          competition_area: string | null
+          competition_code: string | null
+          competition_flag: string | null
+          competition_id: number | null
+          competition_logo: string | null
+          competition_name: string | null
+          is_primary: boolean | null
+          join_code: string | null
+          league_created_at: string | null
+          league_id: string | null
+          league_name: string | null
+          league_updated_at: string | null
+          max_members: number | null
+          member_created_at: string | null
+          member_id: string | null
+          member_updated_at: string | null
+          members_count: number | null
+          nickname: string | null
+          owner_id: string | null
+          owner_nickname: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leagues_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      my_predictions_view: {
+        Row: {
+          away_team_id: number | null
+          away_team_logo: string | null
+          away_team_name: string | null
+          competition_flag: string | null
+          competition_id: number | null
+          competition_logo: string | null
+          competition_name: string | null
+          fixture: number | null
+          group: string | null
+          home_team_id: number | null
+          home_team_logo: string | null
+          home_team_name: string | null
+          is_finished: boolean | null
+          join_code: string | null
+          kick_off: string | null
+          league_id: string | null
+          league_member_id: string | null
+          league_name: string | null
+          match_id: number | null
+          max_members: number | null
+          member_avatar_url: string | null
+          member_nickname: string | null
+          owner_id: string | null
+          points: number | null
+          predicted_away_score: number | null
+          predicted_home_score: number | null
+          prediction_created_at: string | null
+          prediction_id: string | null
+          prediction_updated_at: string | null
+          referee: string | null
+          score: Json | null
+          stage: string | null
+          status: Database["public"]["Enums"]["match_status"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leagues_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "league_leaderboard_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "league_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "my_leagues_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "v_member_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_member_profile: {
+        Row: {
+          avatar_full_url: string | null
+          avatar_url: string | null
+          competition_area: string | null
+          competition_logo: string | null
+          id: string | null
+          join_code: string | null
+          league_created_at: string | null
+          league_id: string | null
+          league_logo: string | null
+          league_name: string | null
+          league_owner_nickname: string | null
+          max_members: number | null
+          member_created_at: string | null
+          members_count: number | null
+          members_ratio: string | null
+          nickname: string | null
           user_id: string | null
         }
         Relationships: [
@@ -447,18 +678,34 @@ export type Database = {
       }
     }
     Functions: {
-      can_access_league: { Args: { league_id: string }; Returns: boolean }
       create_new_league: {
         Args: {
-          avatar_url?: string
           competition_id: number
           league_name: string
           max_members: number
           nickname: string
         }
-        Returns: Json
+        Returns: string
       }
+      f_leave_league: { Args: { p_league_id: string }; Returns: Json }
+      find_league_by_code: {
+        Args: { p_join_code: string }
+        Returns: {
+          competition_area: string
+          competition_flag: string
+          competition_logo: string
+          competition_name: string
+          league_id: string
+          league_name: string
+          max_members: number
+          members_count: number
+          owner_nickname: string
+        }[]
+      }
+      fun_leave_league: { Args: { p_league_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
+      is_league_member: { Args: { league_id_param: string }; Returns: boolean }
+      is_league_owner: { Args: { league_id_param: string }; Returns: boolean }
       is_member_in_league: {
         Args: { _league: string; _user: string }
         Returns: boolean
@@ -477,16 +724,19 @@ export type Database = {
         }[]
       }
       leave_league: { Args: { p_league_id: string }; Returns: Json }
-      rls_storage_is_league_member: {
-        Args: { lg: string; uid: string }
-        Returns: boolean
-      }
-      rls_storage_is_member_owner: {
-        Args: { path_part: string; uid: string }
-        Returns: boolean
-      }
+      member_leave_league: { Args: { p_member_id: string }; Returns: Json }
+      rls_is_member_self: { Args: { _member: string }; Returns: boolean }
+      rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
     }
     Enums: {
+      match_status:
+        | "TIMED"
+        | "SCHEDULED"
+        | "IN_PLAY"
+        | "LIVE"
+        | "FINISHED"
+        | "POSTPONED"
+      role: "USER" | "ADMIN"
       subscription_type: "FREE" | "BASIC" | "PREMIUM"
     }
     CompositeTypes: {
@@ -615,6 +865,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      match_status: [
+        "TIMED",
+        "SCHEDULED",
+        "IN_PLAY",
+        "LIVE",
+        "FINISHED",
+        "POSTPONED",
+      ],
+      role: ["USER", "ADMIN"],
       subscription_type: ["FREE", "BASIC", "PREMIUM"],
     },
   },

@@ -100,9 +100,9 @@ export const subscriptionApi = {
 
   async getUserLeagueCount(userId: string): Promise<number> {
     const { count, error } = await supabase
-      .from('leagues')
+      .from('league_members')
       .select('*', { count: 'exact', head: true })
-      .eq('owner_id', userId);
+      .eq('user_id', userId);
 
     if (error) throw new Error(error.message);
     return count || 0;
@@ -112,13 +112,15 @@ export const subscriptionApi = {
     try {
       // Get current subscription (will return default FREE if none exists)
       const subscription = await this.getCurrentSubscription(userId);
+      console.log('subscription', JSON.stringify(subscription, null, 2));
 
       // This should never be null due to our default FREE subscription
       const subscriptionType = subscription?.subscription_type || 'FREE';
       const limits = this.getSubscriptionLimits(subscriptionType);
 
       const leagueCount = await this.getUserLeagueCount(userId);
-
+      console.log('leagueCount', leagueCount);
+      console.log('limits', limits);
       if (leagueCount >= limits.maxLeagues) {
         return {
           canCreate: false,

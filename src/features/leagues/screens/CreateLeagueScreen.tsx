@@ -3,10 +3,10 @@ import { BackButton, Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useAuthStore } from '@/store/AuthStore';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -18,6 +18,10 @@ const schema = yup.object().shape({
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
   const userId = useAuthStore((state) => state.userId);
+  const { mutateAsync: createLeague, isPending } = useCreateLeague(userId ?? '');
+  const [membersCount, setMembersCount] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const {
     control,
     handleSubmit,
@@ -34,8 +38,6 @@ const CreateLeagueScreen = () => {
     resolver: yupResolver(schema),
   });
 
-  const { mutateAsync: createLeague, isPending } = useCreateLeague();
-  const [membersCount, setMembersCount] = useState<number | null>(null);
   const MemberOption = ({ value, label }: { value: number; label: string }) => {
     const isActive = membersCount === value;
     return (
@@ -51,24 +53,14 @@ const CreateLeagueScreen = () => {
     );
   };
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      const result = await createLeague({
-        league_name: data.leagueName,
-        nickname: data.nickname,
-        competition_id: Number(competitionId),
-        max_members: membersCount ?? 6,
-        user_id: userId!,
-      });
-      const leagueId = (result as { league_id?: string })?.league_id;
-      router.push({
-        pathname: '/(app)/(public)/myLeagues/preview-league',
-        params: { leagueId },
-      });
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to create league');
-    }
+    await createLeague({
+      league_name: data.leagueName,
+      nickname: data.nickname,
+      competition_id: Number(competitionId),
+      max_members: membersCount ?? 6,
+      user_id: userId!,
+    });
   });
-
   return (
     <Screen>
       {isPending && <LoadingOverlay />}
@@ -120,6 +112,7 @@ const CreateLeagueScreen = () => {
               <MemberOption value={10} label="10 Members" />
             </View>
           </View>
+          {error && <Text className="text-red-500 text-center text-sm ">{error}</Text>}
         </KeyboardAwareScrollView>
 
         {/* Fixed bottom button */}
@@ -129,7 +122,7 @@ const CreateLeagueScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending}
+            disabled={!isValid || isPending || !!error}
           />
         </View>
       </View>

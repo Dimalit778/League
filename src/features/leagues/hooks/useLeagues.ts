@@ -2,8 +2,8 @@ import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
-import { downloadAndPrefetchAvatars } from '@/utils/downloadAndPrefetchAvatars';
+import { router } from 'expo-router';
+import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
 
 export const useMyLeagues = (userId: string) => {
@@ -14,6 +14,105 @@ export const useMyLeagues = (userId: string) => {
   });
 };
 
+export const useMyLeaguesView = (userId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.users.leagues(userId),
+    queryFn: () => leagueApi.getMyLeaguesView(userId),
+    enabled: !!userId,
+  });
+};
+
+export const useGetLeaderboard = (leagueId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+    staleTime: 1000 * 60 * 5,
+    queryFn: async () => await leagueApi.getLeaderboardView(leagueId),
+  });
+};
+
+export const useRemoveMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (memberId: string) => leagueApi.removeMember(memberId),
+
+    onSuccess: async (result, memberId) => {
+      const leagueId = result.leagueId;
+      if (leagueId) {
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+          }),
+        ]);
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to remove member:', error);
+    },
+  });
+};
+
+export const useGetLeagueWithCompetition = (leagueId?: string) => {
+  return useQuery({
+    queryKey: leagueId ? QUERY_KEYS.leagues.byId(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
+    enabled: !!leagueId,
+    staleTime: 1000 * 60 * 5,
+    queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
+  });
+};
+
+export const useGetLeagueAndMembers = (leagueId?: string) => {
+  return useQuery({
+    queryKey: leagueId ? QUERY_KEYS.leagues.leagueAndMembers(leagueId) : (['leagues', 'unknown', 'full'] as const),
+    enabled: !!leagueId,
+    staleTime: 1000 * 60 * 5,
+    queryFn: () => leagueApi.getLeagueAndMembers(leagueId!),
+  });
+};
+
+export const useUpdatePrimaryLeague = (userId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (leagueId: string) => leagueApi.updatePrimaryLeague(userId, leagueId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.users.leagues(userId),
+      });
+    },
+  });
+};
+//  -- LEAGUE OPERATIONS
+export const useCreateLeague = (userId: string) => {
+  const queryClient = useQueryClient();
+  const { initializeMember } = useMemberStore();
+  return useMutation({
+    mutationFn: async (params: {
+      league_name: string;
+      nickname: string;
+      competition_id: number;
+      max_members: number;
+    }) => {
+      const leagueId = await leagueApi.createLeague(params);
+      return leagueId;
+    },
+
+    onSuccess: async (leagueId) => {
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.users.leagues(userId),
+      });
+      await initializeMember();
+      router.replace({
+        pathname: '/(app)/(public)/myLeagues/preview-league',
+        params: { leagueId },
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to create league:', error);
+    },
+  });
+};
 export const useJoinLeague = (userId: string) => {
   const queryClient = useQueryClient();
   const { initializeMember } = useMemberStore();
@@ -26,85 +125,15 @@ export const useJoinLeague = (userId: string) => {
         queryKey: QUERY_KEYS.users.leagues(userId),
       });
       await initializeMember();
+      console.log('joined league ------->,');
     },
 
     onError: (error) => {
+      console.log('error ------->,', JSON.stringify(error));
       console.error('Failed to join league:', error);
     },
   });
 };
-
-export const useFindLeagueByJoinCode = (joinCode: string) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.leagues.byJoinCode(joinCode),
-    queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
-    enabled: joinCode?.length === 7,
-    retry: 1,
-  });
-};
-
-export const useGetLeaderboard = (leagueId: string) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
-    staleTime: 1000 * 60 * 5,
-    queryFn: async () => {
-      const rows = await leagueApi.getLeaderboardView(leagueId);
-
-      const paths = rows.map((r) => r.avatar_url).filter(Boolean) as string[];
-      const imageUrls = await downloadAndPrefetchAvatars(paths);
-
-      return rows.map((r) => ({
-        ...r,
-        avatar_url: r.avatar_url ? (imageUrls.get(r.avatar_url) ?? null) : null,
-      }));
-    },
-  });
-};
-export const useLeaveLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
-  const queryClient = useQueryClient();
-  const { initializeMember } = useMemberStore();
-
-  return useMutation({
-    mutationFn: leagueApi.leaveLeague,
-    onSuccess: async () => {
-      // First invalidate queries to get fresh data
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-
-      // Then initialize member leagues which will set member to null if no leagues
-      await initializeMember();
-    },
-  });
-};
-
-export const useGetLeagueAndMembers = (leagueId?: string) => {
-  return useQuery({
-    queryKey: leagueId ? QUERY_KEYS.leagues.leagueAndMembers(leagueId) : (['leagues', 'unknown', 'full'] as const),
-    enabled: !!leagueId,
-    staleTime: 1000 * 60 * 5,
-    queryFn: async () => {
-      if (!leagueId) {
-        throw new Error('League id is required to fetch league and members');
-      }
-      const rows = await leagueApi.getLeagueAndMembers(leagueId);
-
-      const paths = rows.league_members.map((r) => r.avatar_url).filter(Boolean) as string[];
-      const imageUrls = await downloadAndPrefetchAvatars(paths);
-
-      return {
-        ...rows,
-        league_members: rows.league_members.map((r) => ({
-          ...r,
-          avatar_url: r.avatar_url ? (imageUrls.get(r.avatar_url) ?? null) : null,
-        })),
-      };
-    },
-  });
-};
-
 export const useUpdateLeague = () => {
   const { initializeMember } = useMemberStore();
   const queryClient = useQueryClient();
@@ -131,71 +160,38 @@ export const useUpdateLeague = () => {
     },
   });
 };
-
-export const useRemoveMember = () => {
+export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ leagueId, userId }: { leagueId: string; userId: string }) =>
-      leagueApi.removeMember(leagueId, userId),
+  const { initializeMember } = useMemberStore();
 
-    onSuccess: async (_data, { leagueId }) => {
+  return useMutation({
+    mutationFn: async (leagueId: string) => {
+      const result = await leagueApi.leaveLeague(leagueId);
+      return result;
+    },
+    onSuccess: async (result, leagueId) => {
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
-        }),
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
+        }),
       ]);
-    },
-    onError: (error) => {
-      console.error('Failed to remove member:', error);
-    },
-  });
-};
 
-export const useCreateLeague = () => {
-  const { session } = useCurrentSession();
-  const userId = session?.user?.id as string;
-  const queryClient = useQueryClient();
-  const { initializeMember } = useMemberStore();
-  return useMutation({
-    mutationFn: (params: {
-      league_name: string;
-      nickname: string;
-      competition_id: number;
-      max_members: number;
-      user_id: string;
-    }) => leagueApi.createLeague(params),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
       await initializeMember();
+      router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
-      console.error('Failed to create league:', error);
+      Alert.alert('Error', error.message);
     },
   });
 };
-
-export const useGetLeagueWithCompetition = (leagueId?: string) => {
+export const useFindLeagueByJoinCode = (joinCode: string) => {
   return useQuery({
-    queryKey: leagueId ? QUERY_KEYS.leagues.byId(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
-    enabled: !!leagueId,
-    staleTime: 1000 * 60 * 5,
-    queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
-  });
-};
-
-export const useUpdatePrimaryLeague = (userId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (leagueId: string) => leagueApi.updatePrimaryLeague(userId, leagueId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-    },
+    queryKey: QUERY_KEYS.leagues.byJoinCode(joinCode),
+    queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
+    enabled: joinCode?.length === 7,
+    retry: 1,
   });
 };
