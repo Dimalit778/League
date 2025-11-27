@@ -1,10 +1,11 @@
+import { LoadingOverlay } from '@/components/layout';
 import { AvatarImage } from '@/components/ui';
 import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
 type AvatarSectionProps = {
@@ -13,19 +14,30 @@ type AvatarSectionProps = {
 };
 
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
-  const memberId = useMemberStore((s) => s.memberId);
+  const { memberId, leagueId } = useMemberStore();
+  const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const uploadImage = useUploadMemberImage();
   const deleteImage = useDeleteMemberImage();
 
+  const previousImageRef = useRef<string | null>(avatarUrl);
+
+  useEffect(() => {
+    setImage(avatarUrl);
+    previousImageRef.current = avatarUrl;
+  }, [avatarUrl]);
+
   const handleImagePicker = async () => {
     try {
+      // Request permissions
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
         Alert.alert('Permission required', 'We need access to your photos.');
         return;
       }
+
+      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -34,6 +46,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         base64: true,
       });
 
+      // Handle result
       if (!result.canceled && result.assets[0]?.uri) {
         setPreviewImage(result.assets[0].uri);
         setPickedAsset(result.assets[0]);
@@ -50,31 +63,39 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   };
 
   const handleSavePreview = async () => {
-    if (!pickedAsset || !memberId) return;
+    if (!pickedAsset || !memberId || !leagueId) return;
+    previousImageRef.current = image;
 
     try {
-      await uploadImage.mutateAsync({ memberId, avatarUrl: pickedAsset });
+      const data = await uploadImage.mutateAsync({ memberId, avatarUrl: pickedAsset });
+      setImage(data?.avatar_url ?? null);
       setPreviewImage(null);
       setPickedAsset(null);
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
+      setImage(previousImageRef.current);
     }
   };
 
   const handleDeleteImage = async () => {
-    if (!memberId || !avatarUrl) return;
+    if (!memberId || !image) return;
+
     Alert.alert('Delete Profile Picture', 'Are you sure you want to delete your profile picture?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
         onPress: async () => {
+          previousImageRef.current = image;
+          setImage(null);
           try {
-            await deleteImage.mutateAsync({ memberId, currentPath: avatarUrl });
+            await deleteImage.mutateAsync({ memberId, currentPath: image });
           } catch (error) {
             console.error('Error deleting image:', error);
             Alert.alert('Error', 'Failed to delete image');
+
+            setImage(previousImageRef.current);
           }
         },
       },
@@ -84,6 +105,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   return (
     <View className="items-center px-4">
       <View className="relative mb-4">
+        {deleteImage.isPending || (uploadImage.isPending && <LoadingOverlay />)}
         <View className="w-40 h-40 rounded-full overflow-hidden bg-surface">
           {previewImage ? (
             <ExpoImage
@@ -95,7 +117,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               transition={0}
             />
           ) : (
-            <AvatarImage nickname={nickname} path={avatarUrl} className="w-40 h-40 rounded-full" />
+            <AvatarImage nickname={nickname} path={image} className="w-40 h-40 rounded-full" />
           )}
         </View>
 
@@ -105,6 +127,8 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               onPress={handleCancelPreview}
               disabled={uploadImage.isPending}
               className="absolute -bottom-2 -left-2 bg-red-500 rounded-full p-3 border-2 border-background"
+              accessibilityLabel="Cancel image selection"
+              accessibilityRole="button"
             >
               <FontAwesome6 name="xmark" size={16} color="white" />
             </TouchableOpacity>
@@ -112,31 +136,33 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               onPress={handleSavePreview}
               disabled={uploadImage.isPending}
               className="absolute -bottom-2 -right-2 bg-primary rounded-full p-3 border-2 border-background"
+              accessibilityLabel="Save profile picture"
+              accessibilityRole="button"
             >
-              <FontAwesome6 name="plus" size={16} color="white" />
+              <FontAwesome6 name="check" size={16} color="white" />
             </TouchableOpacity>
           </>
         ) : (
           <>
             <TouchableOpacity
               onPress={handleImagePicker}
-              disabled={uploadImage.isPending}
+              disabled={uploadImage.isPending || deleteImage.isPending}
               className="absolute -bottom-2 -right-2 bg-primary rounded-full p-3 border-2 border-background"
+              accessibilityLabel="Change profile picture"
+              accessibilityRole="button"
             >
               <FontAwesome6 name="camera" size={16} color="white" />
             </TouchableOpacity>
 
-            {avatarUrl && (
+            {image && (
               <TouchableOpacity
                 onPress={handleDeleteImage}
-                disabled={deleteImage.isPending}
+                disabled={deleteImage.isPending || uploadImage.isPending}
                 className="absolute -bottom-2 -left-2 bg-red-500 rounded-full p-3 border-2 border-background"
+                accessibilityLabel="Delete profile picture"
+                accessibilityRole="button"
               >
-                {deleteImage.isPending ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <FontAwesome6 name="trash" size={16} color="white" />
-                )}
+                <FontAwesome6 name="trash" size={16} color="white" />
               </TouchableOpacity>
             )}
           </>

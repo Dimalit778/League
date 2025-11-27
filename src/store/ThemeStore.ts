@@ -23,32 +23,15 @@ const mmkvStorage = {
 
 interface ThemeState {
   theme: ThemeName;
-  isDark: boolean;
-  tokens: ReturnType<typeof getThemeTokens>;
   setTheme: (theme: ThemeName) => void;
   toggleTheme: () => void;
   initializeTheme: () => Promise<void>;
-  getColor: (
-    colorName: keyof ReturnType<typeof getThemeTokens>['colors']
-  ) => string;
 }
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
       theme: 'dark' as ThemeName,
-
-      get tokens() {
-        return getThemeTokens(get().theme);
-      },
-
-      get isDark() {
-        return get().theme === 'dark';
-      },
-
-      getColor: (colorName) => {
-        return get().tokens.colors[colorName];
-      },
 
       setTheme: (theme: ThemeName) => {
         colorScheme.set(theme);
@@ -62,25 +45,9 @@ export const useThemeStore = create<ThemeState>()(
       },
 
       initializeTheme: async () => {
-        try {
-          const savedData = mmkvStorage.getItem('theme-storage');
-
-          if (savedData) {
-            const parsed = JSON.parse(savedData);
-            const themeToUse = parsed.state?.theme || 'dark';
-            colorScheme.set(themeToUse);
-            set({ theme: themeToUse as ThemeName });
-          } else {
-            const defaultTheme: ThemeName = 'dark';
-            colorScheme.set(defaultTheme);
-            set({ theme: defaultTheme });
-          }
-        } catch (error) {
-          console.error('Failed to initialize theme:', error);
-          const defaultTheme: ThemeName = 'dark';
-          colorScheme.set(defaultTheme);
-          set({ theme: defaultTheme });
-        }
+        // Sync nativewind colorScheme with hydrated theme
+        const currentTheme = get().theme;
+        colorScheme.set(currentTheme);
       },
     }),
     {
@@ -90,3 +57,9 @@ export const useThemeStore = create<ThemeState>()(
     }
   )
 );
+
+// Selectors - use these in components for derived state
+export const selectIsDark = (state: ThemeState) => state.theme === 'dark';
+export const selectTokens = (state: ThemeState) => getThemeTokens(state.theme);
+export const selectColor = (colorName: keyof ReturnType<typeof getThemeTokens>['colors']) => (state: ThemeState) =>
+  getThemeTokens(state.theme).colors[colorName];

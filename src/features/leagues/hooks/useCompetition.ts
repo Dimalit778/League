@@ -6,7 +6,7 @@ export const useGetCompetitions = () => {
   const { data, error, isLoading } = useQuery({
     queryKey: QUERY_KEYS.competitions.all,
     queryFn: competitionApi.getCompetitions,
-    staleTime: 10 * 60 * 60 * 1000,
+
     retry: 2,
   });
   return { data, error, isLoading };
@@ -17,6 +17,5 @@ export const useGetCompetitionFixtures = (competitionId: number) => {
     queryKey: ['competitions', 'fixtures', competitionId],
     queryFn: () => competitionApi.getCompetitionFixtures(competitionId),
     enabled: !!competitionId,
-    staleTime: 30_000,
   });
 };

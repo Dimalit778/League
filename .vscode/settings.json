@@ -11,13 +11,15 @@
     "fkey",
     "matchday",
     "matchdays",
+    "mmkv",
     "Nunito",
     "partialize",
     "Postgrest",
     "sportscourt",
     "Subviews",
     "swipeable",
-    "Teko"
+    "Teko",
+    "xmark"
   ],
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
@@ -41,6 +43,5 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "chatgpt.openOnStartup": true,
-  "editor.fontSize": 14
+  "chatgpt.openOnStartup": true
 }

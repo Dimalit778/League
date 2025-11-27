@@ -4,7 +4,6 @@ import { supabase } from '@/lib/supabase';
 import { QUERY_KEYS } from '@/lib/tanstack/keys';
 import { useMemberStore } from '@/store/MemberStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -52,13 +51,6 @@ export const useAuthActions = () => {
 
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.users.all });
       queryClient.removeQueries({ queryKey: QUERY_KEYS.users.all });
-
-      try {
-        const keys = ['supabase.auth.token', 'supabase-auth-token'];
-        await AsyncStorage.multiRemove(keys);
-      } catch (storageError) {
-        console.warn('Failed to manually clear auth storage:', storageError);
-      }
 
       return { success: true };
     } catch (error: any) {

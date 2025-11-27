@@ -7,7 +7,6 @@ import '../../global.css';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { themes } from '@/lib/nativewind/themes';
-import { useAppStore } from '@/store/AppStore';
 import { useMemberStore } from '@/store/MemberStore';
 
 import footballBg from '@assets/images/football-bg.png';
@@ -16,12 +15,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Asset } from 'expo-asset';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const queryClient = new QueryClient({});
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      retry: 2,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: true,
 });
@@ -51,21 +63,10 @@ Sentry.init({
 
 const InitialApp = () => {
   const ref = useNavigationContainerRef();
-  useEffect(() => {
-    navigationIntegration.registerNavigationContainer(ref);
-  }, [ref]);
-
-  const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
-
-  const initializeMember = useMemberStore((state) => state.initializeMember);
-
-  const hasHydrated = useAppStore((s) => s.hasHydrated);
-  const isAppReady = useAppStore((s) => s.isAppReady);
-  const setHasHydrated = useAppStore((s) => s.setHasHydrated);
-  const setIsAppReady = useAppStore((s) => s.setIsAppReady);
-
   const { isLoggedIn, isAuthLoading } = useAuth();
+
+  const [isReady, setIsReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Teko_700Bold,
@@ -74,35 +75,30 @@ const InitialApp = () => {
     Nunito_700Bold,
     Nunito_900Black,
   });
-  const preloadLandingImage = async () => {
-    const asset = Asset.fromModule(footballBg);
-    await asset.downloadAsync();
-  };
-
-  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (!hasInitialized.current) {
-      hasInitialized.current = true;
-      initializeTheme();
-      initializeMember();
-      preloadLandingImage();
-    }
-  }, [initializeTheme, initializeMember]);
+    navigationIntegration.registerNavigationContainer(ref);
+  }, [ref]);
 
   useEffect(() => {
-    if (!hasHydrated && !isAuthLoading) {
-      setHasHydrated(true);
-    }
-  }, [hasHydrated, isAuthLoading, setHasHydrated]);
+    const initialize = async () => {
+      await Promise.all([
+        useThemeStore.getState().initializeTheme(),
+        useMemberStore.getState().initializeMember(),
+        Asset.fromModule(footballBg).downloadAsync(),
+      ]);
+    };
+
+    initialize();
+  }, []);
 
   useEffect(() => {
-    if (!isAppReady && hasHydrated && fontsLoaded) {
-      setIsAppReady(true);
+    if (fontsLoaded && !isAuthLoading) {
+      setIsReady(true);
     }
-  }, [isAppReady, hasHydrated, fontsLoaded, setIsAppReady]);
+  }, [fontsLoaded, isAuthLoading]);
 
-  if (!isAppReady) {
+  if (!isReady) {
     return <SplashScreen />;
   }
 

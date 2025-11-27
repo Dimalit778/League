@@ -1,16 +1,13 @@
 import { supabase } from '@/lib/supabase';
-import { MemberLeagueType, MemberStatsType } from '../types';
+import {} from '../types';
 
 import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
 
 export const memberApi = {
-  async getMemberStats(memberId: string): Promise<MemberStatsType> {
-    if (!memberId) {
-      throw new Error('No member ID available');
-    }
+  async getMemberStats(memberId: string) {
+    if (!memberId) throw new Error('No member ID available');
 
-    // Get member's league_id first
     const { data: memberData, error: memberError } = await supabase
       .from('league_members')
       .select('league_id')
@@ -18,11 +15,7 @@ export const memberApi = {
       .single();
 
     if (memberError) throw memberError;
-    if (!memberData?.league_id) {
-      throw new Error('Member league not found');
-    }
 
-    // Fetch stats and leaderboard in parallel
     const [predictionsResult, leaderboardResult] = await Promise.all([
       supabase
         .from('predictions')
@@ -77,22 +70,34 @@ export const memberApi = {
     return data;
   },
 
-  async uploadMemberImage(memberId: string, avatarUrl: ImagePicker.ImagePickerAsset): Promise<MemberLeagueType> {
+  async uploadMemberImage(memberId: string, avatarUrl: ImagePicker.ImagePickerAsset) {
     try {
-      const base64 = avatarUrl.base64;
-      if (!base64) {
-        throw new Error('No base64 available');
+      const { data: currentMember, error: fetchError } = await supabase
+        .from('league_members')
+        .select('avatar_url')
+        .eq('id', memberId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      if (currentMember?.avatar_url) {
+        await supabase.storage.from('profile_images').remove([currentMember.avatar_url]);
       }
+
+      // Validate base64 data
+      const base64 = avatarUrl.base64;
+      if (!base64) throw new Error('No base64 data available');
+
+      // Determine file extension and content type
       const extensionFromName = avatarUrl.fileName?.split('.').pop();
       const extensionFromUri = avatarUrl.uri.split('.').pop()?.split('?')[0];
       const fileExtension = extensionFromName ?? extensionFromUri ?? (avatarUrl.type === 'image' ? 'jpg' : 'bin');
-
       const normalizedExtension = fileExtension.replace('jpeg', 'jpg');
       const contentType =
         avatarUrl.mimeType ?? (normalizedExtension === 'jpg' ? 'image/jpeg' : `image/${normalizedExtension}`);
 
-      const filePath = `${memberId}.${normalizedExtension}`;
-      // 🔥 use your bucket name here
+      const timestamp = Date.now();
+      const filePath = `${memberId}_${timestamp}.${normalizedExtension}`;
       const { error: uploadError } = await supabase.storage.from('profile_images').upload(filePath, decode(base64), {
         contentType,
         upsert: true,
@@ -100,7 +105,7 @@ export const memberApi = {
 
       if (uploadError) throw uploadError;
 
-      // 🔥 update your members table, NOT the bucket name
+      // Update member record with new avatar path
       const { data: memberData, error: memberError } = await supabase
         .from('league_members')
         .update({ avatar_url: filePath })
@@ -110,7 +115,7 @@ export const memberApi = {
 
       if (memberError) throw memberError;
 
-      return memberData as MemberLeagueType;
+      return memberData;
     } catch (error) {
       console.error('Error uploading avatar:', error);
       throw error;
@@ -119,7 +124,7 @@ export const memberApi = {
 
   async deleteImage(memberId: string, currentPath?: string | null) {
     if (currentPath) {
-      const { error: storageError } = await supabase.storage.from('avatars').remove([currentPath]);
+      const { error: storageError } = await supabase.storage.from('profile_images').remove([currentPath]);
       if (storageError) throw storageError;
     }
 
@@ -153,7 +158,7 @@ export const memberApi = {
     if (error) throw error;
     return data;
   },
-  async getMemberInfo(memberId: string): Promise<MemberLeagueType | null> {
+  async getMemberInfo(memberId: string) {
     const { data, error } = await supabase
       .from('league_members')
       .select('*, league:leagues!league_id(*, competition:competitions(*))')
@@ -162,22 +167,7 @@ export const memberApi = {
 
     if (error) throw error;
     if (!data) return null;
-
-    let signedAvatarUrl: string | null = null;
-    if (data.avatar_url) {
-      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-        .from('avatars')
-        .createSignedUrl(data.avatar_url, 60 * 60 * 24); // 24 hours
-
-      if (!signedUrlError && signedUrlData?.signedUrl) {
-        signedAvatarUrl = signedUrlData.signedUrl;
-      }
-    }
-
-    return {
-      ...data,
-      avatar_url: signedAvatarUrl,
-    } as MemberLeagueType;
+    return data;
   },
 
   async getMemberDataAndStats(memberId: string) {

@@ -58,7 +58,6 @@ export const useGetLeagueWithCompetition = (leagueId?: string) => {
   return useQuery({
     queryKey: leagueId ? QUERY_KEYS.leagues.byId(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
     enabled: !!leagueId,
-    staleTime: 1000 * 60 * 5,
     queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
   });
 };
@@ -67,7 +66,6 @@ export const useGetLeagueAndMembers = (leagueId?: string) => {
   return useQuery({
     queryKey: leagueId ? QUERY_KEYS.leagues.leagueAndMembers(leagueId) : (['leagues', 'unknown', 'full'] as const),
     enabled: !!leagueId,
-    staleTime: 1000 * 60 * 5,
     queryFn: () => leagueApi.getLeagueAndMembers(leagueId!),
   });
 };

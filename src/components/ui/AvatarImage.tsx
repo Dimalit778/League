@@ -17,7 +17,7 @@ const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => 
   return (
     <View
       className={cn(
-        'w-full h-full items-center justify-center bg-surface border border-border rounded-full',
+        'w-full h-full items-center justify-center bg-surface border border-border rounded-full overflow-hidden',
         className
       )}
     >
@@ -28,7 +28,7 @@ const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => 
           cachePolicy="memory-disk"
           transition={0}
           priority="high"
-          style={{ width: '100%', height: '100%' }}
+          style={[{ width: '100%', height: '100%', borderRadius: 9999 }, style]}
           accessible={true}
           accessibilityRole="image"
           accessibilityLabel={nickname ? `${nickname}'s avatar` : 'User avatar'}

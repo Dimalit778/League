@@ -7,17 +7,6 @@ export const TOKENS = {
 // QUERY KEYS
 //
 export const QUERY_KEYS = {
-  allData: [
-    'users',
-    'members',
-    'leagues',
-    'matches',
-    'predictions',
-    'leaderboard',
-    'competitions',
-    'subscriptions',
-    'admin',
-  ] as const,
   users: {
     all: ['users'] as const,
     byId: (userId?: string) => ['users', userId ?? TOKENS.me] as const,

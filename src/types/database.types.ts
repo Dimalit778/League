@@ -687,7 +687,6 @@ export type Database = {
         }
         Returns: string
       }
-      f_leave_league: { Args: { p_league_id: string }; Returns: Json }
       find_league_by_code: {
         Args: { p_join_code: string }
         Returns: {
@@ -702,7 +701,6 @@ export type Database = {
           owner_nickname: string
         }[]
       }
-      fun_leave_league: { Args: { p_league_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_league_member: { Args: { league_id_param: string }; Returns: boolean }
       is_league_owner: { Args: { league_id_param: string }; Returns: boolean }
@@ -724,7 +722,6 @@ export type Database = {
         }[]
       }
       leave_league: { Args: { p_league_id: string }; Returns: Json }
-      member_leave_league: { Args: { p_member_id: string }; Returns: Json }
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
       rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
     }
