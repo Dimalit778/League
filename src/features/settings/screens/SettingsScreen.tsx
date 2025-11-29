@@ -1,7 +1,7 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
 import { useGetUser } from '@/features/admin/hooks/useUsers';
-import { useAuthActions } from '@/features/auth/queries/useAuthActions';
+import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
   const { data: user, isLoading } = useGetUser();
-  const role = user?.role;
 
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
 
@@ -49,7 +48,7 @@ const SettingsScreen = () => {
             email={user?.email}
           />
         </View>
-        {role === 'ADMIN' && (
+        {user?.role === 'ADMIN' && (
           <View className="mt-8 px-6">
             <Button
               title="Open Admin Dashboard"

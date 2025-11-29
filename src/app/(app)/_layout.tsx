@@ -1,14 +1,17 @@
-import { useGetUser } from '@/features/admin/hooks/useUsers';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import { useMemberStore } from '@/store/MemberStore';
 
 import { Stack } from '@/components/layout/Stack';
+import { useGetUser } from '@/features/admin/hooks/useUsers';
+import { usePrimaryMember } from '@/features/members/hooks/useMembers';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function AppLayout() {
-  const hasMember = useMemberStore((s) => !!s.memberId);
-  const user = useGetUser();
-  const admin = user?.data?.role === 'ADMIN';
-
+  const { isLoggedIn } = useAuth();
+  const { data: userData } = useGetUser();
+  const role = userData?.role ?? null;
+  const { data: primaryMember } = usePrimaryMember();
+  const admin = isLoggedIn && role === 'ADMIN';
+  const hasMember = !!primaryMember;
   const { colors } = useThemeTokens();
 
   return (

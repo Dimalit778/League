@@ -1,6 +1,6 @@
 import { BackButton, Button, InputField } from '@/components/ui';
-import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
+import { useAuth } from '@/providers/AuthProvider';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
-  const { session } = useCurrentSession();
+  const { session } = useAuth();
 
   const userId = session?.user?.id as string;
   const {

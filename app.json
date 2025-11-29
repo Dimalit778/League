@@ -119,7 +119,15 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app-icon.png",
+          "color": "#0f172a",
+          "sounds": []
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

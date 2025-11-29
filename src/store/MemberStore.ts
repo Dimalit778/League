@@ -1,116 +1,78 @@
+import { MemberLeagueType } from '@/features/members/types';
 import { supabase } from '@/lib/supabase';
 import { create } from 'zustand';
+import { useAuthStore } from './AuthStore';
 
-import { Tables } from '@/types/database.types';
+type MemberState = {
+  activeMember: MemberLeagueType | null;
+  memberId?: string | null;
+  leagueId?: string | null;
+  userId?: string | null;
+  competitionId?: number | null;
 
-type Member = Tables<'league_members'>;
-
-type MemberWithLeague = Member & {
-  league?: {
-    id: string;
-    competition_id: number;
-  } | null;
+  setActiveMember: (activeMember: MemberLeagueType | null) => void;
+  initializeMember: () => Promise<void>;
+  clearMember: () => void;
 };
 
-interface MemberState {
-  memberId: string | null;
-  leagueId: string | null;
-  competitionId: number | null;
-  member: Member | null;
-  isLoading: boolean;
-  error: string | null;
-  setActiveMember: (memberData: MemberWithLeague | null) => void;
-  clearAll: () => void;
-  initializeMember: () => Promise<void>;
-}
-
-export const useMemberStore = create<MemberState>()((set, get) => ({
+export const useMemberStore = create<MemberState>()((set) => ({
+  activeMember: null,
   memberId: null,
   leagueId: null,
+  userId: null,
   competitionId: null,
-  member: null,
-  isLoading: false,
-  error: null,
 
-  setActiveMember: (memberData: MemberWithLeague | null) => {
-    if (!memberData) {
-      set({
-        memberId: null,
-        leagueId: null,
-        competitionId: null,
-        member: null,
-      });
-      return;
-    }
-
-    const { league, ...memberWithoutLeague } = memberData;
-
+  setActiveMember: (activeMember) => {
     set({
-      memberId: memberWithoutLeague.id,
-      leagueId: league?.id ?? null,
-      competitionId: league?.competition_id ?? null,
-      member: memberWithoutLeague,
+      activeMember,
+      memberId: activeMember?.id,
+      leagueId: activeMember?.league.id,
+      userId: activeMember?.user_id,
+      competitionId: activeMember?.league.competition.id,
     });
   },
 
-  clearAll: () =>
-    set({
-      memberId: null,
-      leagueId: null,
-      competitionId: null,
-      member: null,
-      isLoading: false,
-      error: null,
-    }),
-
   initializeMember: async () => {
-    const currentState = get();
-    if (!currentState.memberId) {
-      set({ isLoading: true, error: null });
-    }
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError) {
-      set({ isLoading: false, error: userError.message, memberId: null, leagueId: null, member: null });
-      return;
-    }
-
-    if (!user?.id) {
-      set({ isLoading: false, memberId: null, leagueId: null, member: null });
+    const { user } = useAuthStore.getState();
+    if (!user) {
+      set({
+        activeMember: null,
+        memberId: null,
+        leagueId: null,
+        userId: null,
+        competitionId: null,
+      });
       return;
     }
 
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, league:leagues!league_id(id, competition_id)')
+      .select('*, league:leagues!league_id(*, competition:competitions(*))')
       .eq('user_id', user.id)
       .eq('is_primary', true)
       .maybeSingle();
 
     if (error) {
-      set({ isLoading: false, error: error.message, memberId: null, leagueId: null, member: null });
-      return;
+      console.error('initializeMember error', error);
     }
 
-    if (!data) {
-      set({ isLoading: false, memberId: null, leagueId: null, member: null });
-      return;
-    }
-
-    const memberData = data as MemberWithLeague;
-    const { league, ...memberWithoutLeague } = memberData;
+    const activeMember = data ?? null;
 
     set({
-      memberId: memberWithoutLeague.id,
-      leagueId: league?.id ?? null,
-      competitionId: league?.competition_id ?? null,
-      member: memberWithoutLeague,
-      isLoading: false,
-      error: null,
+      activeMember,
+      memberId: activeMember?.id,
+      leagueId: activeMember?.league.id,
+      userId: activeMember?.user_id,
+      competitionId: activeMember?.league.competition.id,
     });
   },
+
+  clearMember: () =>
+    set({
+      activeMember: null,
+      memberId: null,
+      leagueId: null,
+      userId: null,
+      competitionId: null,
+    }),
 }));

@@ -1,14 +1,15 @@
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
-import { useAuthStore } from '@/store/AuthStore';
+import { KEYS } from '@/lib/queryClient';
+import { useAuth } from '@/providers/AuthProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { subscriptionApi } from '../api/subscriptionApi';
-import { SubscriptionType } from '../types';
+import type { SubscriptionType } from '../types';
 
 export const useSubscription = () => {
-  const userId = useAuthStore((s) => s.userId);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useQuery({
-    queryKey: userId ? QUERY_KEYS.subscriptions.byUser(userId) : (['subscriptions', 'unknown'] as const),
+    queryKey: userId ? KEYS.subscriptions.byUser(userId) : (['subscriptions', 'unknown'] as const),
     queryFn: () => {
       if (!userId) {
         throw new Error('User id is required to load subscription');
@@ -22,7 +23,8 @@ export const useSubscription = () => {
 
 export const useCreateSubscription = () => {
   const queryClient = useQueryClient();
-  const userId = useAuthStore((s) => s.userId);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useMutation({
     mutationFn: ({
@@ -40,7 +42,7 @@ export const useCreateSubscription = () => {
     onSuccess: () => {
       if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.subscriptions.byUser(userId),
+        queryKey: KEYS.subscriptions.byUser(userId),
       });
     },
   });
@@ -48,7 +50,8 @@ export const useCreateSubscription = () => {
 
 export const useCancelSubscription = () => {
   const queryClient = useQueryClient();
-  const userId = useAuthStore((s) => s.userId);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useMutation({
     mutationFn: (subscriptionId: string) => {
@@ -57,18 +60,19 @@ export const useCancelSubscription = () => {
     onSuccess: () => {
       if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.subscriptions.byUser(userId),
+        queryKey: KEYS.subscriptions.byUser(userId),
       });
     },
   });
 };
 
 export const useCanCreateLeague = () => {
-  const userId = useAuthStore((s) => s.userId);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useQuery({
     queryKey: userId
-      ? QUERY_KEYS.subscriptions.canCreateLeague(userId)
+      ? KEYS.subscriptions.canCreateLeague(userId)
       : (['subscriptions', 'unknown', 'canCreateLeague'] as const),
     queryFn: () => {
       if (!userId) {

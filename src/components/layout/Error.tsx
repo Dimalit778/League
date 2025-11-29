@@ -12,7 +12,7 @@ const Error = ({ error }: ErrorProps) => {
       : formatErrorForUser(
           error && typeof error === 'object' && 'message' in error
             ? error
-            : { message: String(error?.message || error || 'Unknown error') }
+            : { message: String((error as Error)?.message ?? error ?? 'Unknown error') }
         );
 
   return (

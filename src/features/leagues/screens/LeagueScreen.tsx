@@ -4,28 +4,19 @@ import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
 import TopThree from '@/features/leagues/components/TopThree';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
-import { useIsFocused } from '@react-navigation/native';
 import { Link } from 'expo-router';
-import { useCallback } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 const LeagueScreen = () => {
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const member = useMemberStore((s) => s.member);
+  const leagueId = useMemberStore((s) => s.leagueId ?? '');
+  const memberId = useMemberStore((s) => s.memberId ?? '');
 
-  const isFocused = useIsFocused();
-
-  const { data: leaderboard, isLoading, isRefetching, error, refetch } = useGetLeaderboard(leagueId!);
+  const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
 
   const topThree = leaderboard?.slice(0, 3) ?? [];
 
-  const handleRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
-
   if (error) return <Error error={error} />;
-  if (isLoading) return <LeagueSkeleton />;
-
+  if (!leaderboard || isLoading) return <LeagueSkeleton />;
   return (
     <View className="flex-1 bg-background">
       <TopThree topMembers={topThree} />
@@ -36,21 +27,20 @@ const LeagueScreen = () => {
         contentInsetAdjustmentBehavior="automatic"
         keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
         renderItem={({ item, index }) => (
-          <LeaderboardCard item={item} index={index} isCurrentUser={item.user_id === member?.user_id} />
+          <LeaderboardCard item={item} index={index} isCurrentUser={item.member_id === memberId} />
         )}
-        refreshing={isFocused && isRefetching}
-        onRefresh={handleRefresh}
         getItemLayout={(_, index) => ({
           length: 80,
           offset: 80 * index,
           index,
         })}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-          autoscrollToTopThreshold: 10,
-        }}
-        legacyImplementation={false}
-        disableVirtualization={false}
+        // maintainVisibleContentPosition={{
+        //   minIndexForVisible: 0,
+        //   autoscrollToTopThreshold: 10,
+        // }}
+
+        // legacyImplementation={false}
+        // disableVirtualization={false}
       />
     </View>
   );

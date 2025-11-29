@@ -1,4 +1,6 @@
+import { clsx, type ClassValue } from 'clsx';
 import { vars } from 'nativewind';
+import { twMerge } from 'tailwind-merge';
 
 type ThemeTokens = {
   colors: {
@@ -52,7 +54,7 @@ const dark: ThemeTokens = {
   colors: {
     primary: '#fb923c',
     secondary: '#4285F4',
-    background: '#0f172a',
+    background: '#0b1120',
     surface: '#1e293b',
     border: '#334155',
     text: '#f1f5f9',
@@ -105,3 +107,7 @@ export const themes = {
 export const getThemeColor = (theme: ThemeName, color: keyof ThemeTokens['colors']) => themeTokens[theme].colors[color];
 
 export const getThemeTokens = (theme: ThemeName) => themeTokens[theme];
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

@@ -188,4 +188,16 @@ export const memberApi = {
     if (error) throw error;
     return data;
   },
+  async getPrimaryMember(userId: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .select('*, league:leagues!league_id(*, competition:competitions(*))')
+      .eq('user_id', userId)
+      .eq('is_primary', true)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+    return data;
+  },
 };

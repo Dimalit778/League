@@ -1,33 +1,30 @@
 import { Error } from '@/components/layout';
 import { useMemberStore } from '@/store/MemberStore';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { useGetMatchesByFixtureWithMemberPredictions } from '../../hooks/useMatches';
+import { useGetMatches } from '../../hooks/useMatches';
 import MatchesSkeleton from '../MatchesSkeleton';
 import MatchesListCard from './MatchesListCard';
 
-export default function MatchesList({ selectedFixture }: { selectedFixture: number }) {
-  const competitionId = useMemberStore((s) => s.competitionId ?? 0);
-  const leagueId = useMemberStore((s) => s.leagueId ?? '');
-  const memberId = useMemberStore((s) => s.memberId ?? '');
+type MatchesListProps = {
+  selectedFixture: number;
+};
+
+export default function MatchesList({ selectedFixture }: MatchesListProps) {
+  const competitionId = useMemberStore((s) => s.competitionId);
+  const memberId = useMemberStore((s) => s.memberId);
+
   const flatListRef = useRef<FlatList>(null);
 
-  const {
-    data: matches,
-    isLoading,
-    isFetching,
-    refetch,
-    isRefetching,
-    error,
-  } = useGetMatchesByFixtureWithMemberPredictions(selectedFixture, leagueId, competitionId, memberId);
-
-  useEffect(() => {
-    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [selectedFixture]);
+  const { data, isLoading, isFetching, refetch, isRefetching, error } = useGetMatches({
+    selectedFixture,
+    competitionId,
+    memberId,
+  });
 
   if (error) return <Error error={error} />;
 
-  if (!matches && isLoading) return <MatchesSkeleton />;
+  if (isLoading) return <MatchesSkeleton />;
 
   return (
     <FlatList
@@ -35,10 +32,11 @@ export default function MatchesList({ selectedFixture }: { selectedFixture: numb
       refreshing={isFetching || isRefetching}
       onRefresh={refetch}
       key={`fixture-${selectedFixture}`}
-      data={matches}
+      data={data ?? []}
       showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <MatchesListCard match={item} />}
+      renderItem={({ item }) => <MatchesListCard key={item.id} match={item} />}
+      ItemSeparatorComponent={() => <View className="h-3 " />}
       getItemLayout={(_, index) => ({
         length: 80,
         offset: 80 * index,

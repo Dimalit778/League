@@ -68,7 +68,7 @@ export const leagueApi = {
       })
       .eq('league_id', leagueId)
       .eq('user_id', userId)
-      .select('*, league:leagues!league_id(*,competition:competitions(*))')
+      .select('*, league:leagues!league_id(*, competition:competitions(*))')
       .single();
 
     if (setPrimaryError) throw new Error(setPrimaryError.message);

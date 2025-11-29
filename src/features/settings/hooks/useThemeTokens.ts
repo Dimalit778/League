@@ -1,4 +1,4 @@
-import { getThemeTokens, ThemeName } from '@/lib/nativewind/themes';
+import { getThemeTokens, ThemeName } from '@/lib/nativeWind';
 import { useThemeStore } from '@/store/ThemeStore';
 
 export const useThemeTokens = () => {

@@ -1,21 +1,21 @@
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
-import { useQuery } from '@tanstack/react-query';
+import { KEYS } from '@/lib/queryClient';
+import { useMemberStore } from '@/store/MemberStore';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { competitionApi } from '../api/competitionApi';
 
 export const useGetCompetitions = () => {
-  const { data, error, isLoading } = useQuery({
-    queryKey: QUERY_KEYS.competitions.all,
+  return useQuery({
+    queryKey: KEYS.competitions.all,
     queryFn: competitionApi.getCompetitions,
-
-    retry: 2,
+    staleTime: 1000 * 60 * 60 * 24,
   });
-  return { data, error, isLoading };
 };
 
-export const useGetCompetitionFixtures = (competitionId: number) => {
+export const useGetCompetitionFixtures = () => {
+  const competitionId = useMemberStore((s) => s.competitionId);
   return useQuery({
-    queryKey: ['competitions', 'fixtures', competitionId],
-    queryFn: () => competitionApi.getCompetitionFixtures(competitionId),
-    enabled: !!competitionId,
+    queryKey: KEYS.competitions.fixtures(competitionId ?? 0),
+    queryFn: competitionId ? () => competitionApi.getCompetitionFixtures(competitionId) : skipToken,
+    staleTime: 1000 * 60 * 60 * 24,
   });
 };

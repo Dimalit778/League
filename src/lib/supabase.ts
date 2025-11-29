@@ -1,8 +1,6 @@
 import { Database } from '@/types/database.types';
 import { createClient } from '@supabase/supabase-js';
-// cspell:ignore MMKV
-import { createMMKV } from 'react-native-mmkv';
-
+import { authStorage, createMMKVStorageAdapter } from './storage';
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
@@ -18,12 +16,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-const authStorage = createMMKV({ id: 'supabase-auth' });
-
-const supabaseStorage = {
+// Convert synchronous MMKV adapter to Promise-based for Supabase
+const mmkvAdapter = createMMKVStorageAdapter(authStorage);
+const MMKVStorage = {
   getItem: (key: string): Promise<string | null> => {
     try {
-      return Promise.resolve(authStorage.getString(key) ?? null);
+      return Promise.resolve(mmkvAdapter.getItem(key));
     } catch (error) {
       console.warn('Storage getItem error:', error);
       return Promise.resolve(null);
@@ -31,7 +29,7 @@ const supabaseStorage = {
   },
   setItem: (key: string, value: string): Promise<void> => {
     try {
-      authStorage.set(key, value);
+      mmkvAdapter.setItem(key, value);
       return Promise.resolve();
     } catch (error) {
       console.warn('Storage setItem error:', error);
@@ -40,7 +38,7 @@ const supabaseStorage = {
   },
   removeItem: (key: string): Promise<void> => {
     try {
-      authStorage.remove(key);
+      mmkvAdapter.removeItem(key);
       return Promise.resolve();
     } catch (error) {
       console.warn('Storage removeItem error:', error);
@@ -49,10 +47,9 @@ const supabaseStorage = {
   },
 };
 
-// Create a single instance of the Supabase client
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: supabaseStorage,
+    storage: MMKVStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

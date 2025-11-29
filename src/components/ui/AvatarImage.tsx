@@ -1,4 +1,4 @@
-import { cn } from '@/lib/nativewind/utils';
+import { cn } from '@/lib/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { Text, View } from 'react-native';

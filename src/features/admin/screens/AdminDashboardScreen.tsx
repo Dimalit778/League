@@ -1,7 +1,7 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
-import { useAuth } from '@/features/auth/queries/useAuthActions';
+import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
@@ -51,7 +51,7 @@ const navigationLinks = [
 ];
 
 const AdminDashboardScreen = () => {
-  const { signOut } = useAuth();
+  const { signOut } = useAuthActions();
   const router = useRouter();
   const { colors } = useThemeTokens();
   const isFocused = useIsFocused();

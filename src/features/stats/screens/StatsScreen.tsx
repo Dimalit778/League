@@ -10,10 +10,10 @@ import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 const StatsScreen = () => {
-  const { member } = useMemberStore();
+  const memberId = useMemberStore((s) => s.memberId);
   const isFocused = useIsFocused();
 
-  const { data: stats, isLoading, error, refetch } = useMemberStats(member?.id ?? '');
+  const { data: stats, isLoading, error, refetch } = useMemberStats(memberId ?? '');
 
   const onRefresh = useCallback(() => {
     refetch();

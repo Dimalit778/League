@@ -1,4 +1,4 @@
-import { createMMKV } from 'react-native-mmkv';
+import { appStorage, createMMKVStorageAdapter } from '@/lib/storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -9,24 +9,9 @@ interface LanguageState {
   toggleLanguage: () => void;
   initializeLanguage: () => Promise<void>;
 }
-const STORAGE_KEY = 'language-storage';
 
-// Create MMKV storage instance
-const storage = createMMKV({ id: STORAGE_KEY });
+const mmkvStorage = createMMKVStorageAdapter(appStorage);
 
-// Create custom storage adapter for MMKV
-const mmkvStorage = {
-  setItem: (name: string, value: string) => {
-    return storage.set(name, value);
-  },
-  getItem: (name: string) => {
-    const value = storage.getString(name);
-    return value ?? null;
-  },
-  removeItem: (name: string) => {
-    return storage.remove(name);
-  },
-};
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set, get) => ({
@@ -38,7 +23,7 @@ export const useLanguageStore = create<LanguageState>()(
       },
       initializeLanguage: async () => {
         try {
-          const stored = mmkvStorage.getItem(STORAGE_KEY);
+          const stored = mmkvStorage.getItem('language');
           if (stored) {
             const parsed = JSON.parse(stored);
             const savedLanguage = parsed.state?.language as SupportedLanguage | undefined;
@@ -53,7 +38,7 @@ export const useLanguageStore = create<LanguageState>()(
       },
     }),
     {
-      name: STORAGE_KEY,
+      name: 'language-storage',
       storage: createJSONStorage(() => mmkvStorage),
       skipHydration: false,
     }

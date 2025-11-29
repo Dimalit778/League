@@ -5,10 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
  * @returns Permission states and request functions
  */
 export const useImagePickerPermissions = () => {
-  const [cameraPermission, requestCameraPermission] =
-    ImagePicker.useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] =
-    ImagePicker.useMediaLibraryPermissions();
+  const [cameraPermission, requestCameraPermission] = ImagePicker.useCameraPermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
 
   /**
    * Check and request both camera and media library permissions if needed
@@ -16,9 +14,7 @@ export const useImagePickerPermissions = () => {
    */
   const checkPermissions = async (): Promise<boolean> => {
     const results = await Promise.all([
-      cameraPermission?.granted
-        ? Promise.resolve(true)
-        : requestCameraPermission().then((result) => result.granted),
+      cameraPermission?.granted ? Promise.resolve(true) : requestCameraPermission().then((result) => result.granted),
       mediaLibraryPermission?.granted
         ? Promise.resolve(true)
         : requestMediaLibraryPermission().then((result) => result.granted),
@@ -31,8 +27,6 @@ export const useImagePickerPermissions = () => {
     cameraPermission,
     mediaLibraryPermission,
     checkPermissions,
-    hasAllPermissions:
-      cameraPermission?.granted === true &&
-      mediaLibraryPermission?.granted === true,
+    hasAllPermissions: cameraPermission?.granted === true && mediaLibraryPermission?.granted === true,
   };
 };

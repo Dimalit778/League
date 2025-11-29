@@ -1,5 +1,6 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
+import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { EmailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
-import { useAuthActions } from '../queries/useAuthActions';
 
 type EmailFormData = yup.InferType<typeof emailSchema>;
 

@@ -14,7 +14,8 @@ type AvatarSectionProps = {
 };
 
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
-  const { memberId, leagueId } = useMemberStore();
+  const memberId = useMemberStore((s) => s.memberId);
+  const leagueId = useMemberStore((s) => s.leagueId);
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);

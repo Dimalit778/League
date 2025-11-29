@@ -1,7 +1,7 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
-import { useAuthStore } from '@/store/AuthStore';
+import { useAuth } from '@/providers/AuthProvider';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -17,10 +17,11 @@ const schema = yup.object().shape({
 
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
-  const userId = useAuthStore((state) => state.userId);
+
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const { mutateAsync: createLeague, isPending } = useCreateLeague(userId ?? '');
   const [membersCount, setMembersCount] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const {
     control,
@@ -58,7 +59,6 @@ const CreateLeagueScreen = () => {
       nickname: data.nickname,
       competition_id: Number(competitionId),
       max_members: membersCount ?? 6,
-      user_id: userId!,
     });
   });
   return (
@@ -112,7 +112,6 @@ const CreateLeagueScreen = () => {
               <MemberOption value={10} label="10 Members" />
             </View>
           </View>
-          {error && <Text className="text-red-500 text-center text-sm ">{error}</Text>}
         </KeyboardAwareScrollView>
 
         {/* Fixed bottom button */}
@@ -122,7 +121,7 @@ const CreateLeagueScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending || !!error}
+            disabled={!isValid || isPending}
           />
         </View>
       </View>

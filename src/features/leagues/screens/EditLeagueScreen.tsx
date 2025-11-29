@@ -1,6 +1,7 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 
 import { Screen } from '@/components/layout';
 import { LogoBadge } from '@/components/LogoBadge';
@@ -40,7 +41,7 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
   );
 };
 export default function EditLeagueScreen() {
-  const member = useMemberStore((s) => s.member);
+  const { data: primaryMember } = usePrimaryMember();
   const leagueId = useMemberStore((s) => s.leagueId);
 
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
@@ -67,7 +68,7 @@ export default function EditLeagueScreen() {
   }, [league?.name]);
 
   const handleRemoveMember = async (memberId: string, nickname: string) => {
-    if (!leagueId || member?.user_id !== league?.owner_id) return;
+    if (!leagueId || primaryMember?.user_id !== league?.owner_id) return;
     Alert.alert('Remove Member', `Remove ${nickname} from this league?`, [
       { text: 'Cancel', style: 'cancel' },
       {

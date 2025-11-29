@@ -1,7 +1,7 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
-import { useAuthActions } from '@/features/auth/queries/useAuthActions';
+import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon, UserIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';

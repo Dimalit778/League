@@ -1,6 +1,6 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, Screen } from '@/components/ui';
-import { useAuthActions } from '@/features/auth/queries/useAuthActions';
+import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';

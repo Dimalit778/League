@@ -6,8 +6,8 @@ export type ScoreType = {
   halfTime?: { home: number | null; away: number | null };
 };
 
-export type TeamType = Tables<'teams'>;
-export type PredictionType = Tables<'predictions'>;
+type TeamType = Tables<'teams'>;
+type PredictionType = Tables<'predictions'>;
 
 export type MatchType = Tables<'matches'> & {
   home_team: TeamType;
@@ -18,12 +18,12 @@ export type MatchWithPredictionsType = MatchType & {
   predictions: Tables<'predictions'>[];
 };
 
-export type MatchWithPredictionsAndMemberType = MatchType & {
+export type MatchWithPredictions = MatchType & {
   predictions?: (PredictionType & {
     league_member: Tables<'league_members'>;
   })[];
 };
 
-export type PredictionsMemberType = Tables<'predictions'> & {
+export type PredictionMemberType = Tables<'predictions'> & {
   league_member: Tables<'league_members'>;
 };

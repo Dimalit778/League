@@ -1,4 +1,4 @@
-import { MatchWithPredictionsAndMemberType } from '@/features/matches/types';
+import { MatchWithPredictions } from '@/features/matches/types';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
@@ -66,7 +66,7 @@ function ScoreCard({
   );
 }
 
-export default function MatchHeader({ match }: { match: MatchWithPredictionsAndMemberType }) {
+export default function MatchHeader({ match }: { match: MatchWithPredictions }) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -85,7 +85,7 @@ export default function MatchHeader({ match }: { match: MatchWithPredictionsAndM
           )}
         </View>
       </View>
-      <View className="p-6">
+      <View className="px-6 mb-6">
         <View className="flex-row items-center justify-center">
           <TeamCard logo={match.home_team.logo} shortName={match.home_team?.shortName || ''} />
           <ScoreCard

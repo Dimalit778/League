@@ -1,22 +1,27 @@
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
-import { useMemberStore } from '@/store/MemberStore';
+import { KEYS } from '@/lib/queryClient';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { useAuth } from '@/providers/AuthProvider';
+import { useAuthStore } from '@/store/AuthStore';
+import { useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
 
-export const useMyLeagues = (userId: string) => {
+export const useMyLeagues = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   return useQuery({
-    queryKey: userId ? QUERY_KEYS.users.leagues(userId) : (['users', 'unknown', 'leagues'] as const),
+    queryKey: KEYS.users.leagues(userId),
     queryFn: () => leagueApi.getMyLeagues(userId),
     enabled: !!userId,
   });
 };
 
-export const useMyLeaguesView = (userId: string) => {
+export const useMyLeaguesView = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   return useQuery({
-    queryKey: QUERY_KEYS.users.leagues(userId),
+    queryKey: [...KEYS.users.leagues(userId), 'view'] as const,
     queryFn: () => leagueApi.getMyLeaguesView(userId),
     enabled: !!userId,
   });
@@ -24,9 +29,10 @@ export const useMyLeaguesView = (userId: string) => {
 
 export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
-    staleTime: 1000 * 60 * 5,
+    queryKey: KEYS.leagues.leaderboard(leagueId),
+    enabled: !!leagueId,
     queryFn: async () => await leagueApi.getLeaderboardView(leagueId),
+    staleTime: 5000 * 60 * 5,
   });
 };
 
@@ -40,10 +46,10 @@ export const useRemoveMember = () => {
       if (leagueId) {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
+            queryKey: KEYS.leagues.members(leagueId),
           }),
           queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+            queryKey: KEYS.leagues.leaderboard(leagueId),
           }),
         ]);
       }
@@ -56,7 +62,7 @@ export const useRemoveMember = () => {
 
 export const useGetLeagueWithCompetition = (leagueId?: string) => {
   return useQuery({
-    queryKey: leagueId ? QUERY_KEYS.leagues.byId(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
+    queryKey: leagueId ? KEYS.leagues.detail(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
     enabled: !!leagueId,
     queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
   });
@@ -64,27 +70,42 @@ export const useGetLeagueWithCompetition = (leagueId?: string) => {
 
 export const useGetLeagueAndMembers = (leagueId?: string) => {
   return useQuery({
-    queryKey: leagueId ? QUERY_KEYS.leagues.leagueAndMembers(leagueId) : (['leagues', 'unknown', 'full'] as const),
+    queryKey: leagueId ? KEYS.leagues.members(leagueId) : (['leagues', 'unknown', 'full'] as const),
     enabled: !!leagueId,
     queryFn: () => leagueApi.getLeagueAndMembers(leagueId!),
   });
 };
 
-export const useUpdatePrimaryLeague = (userId: string) => {
+export const useUpdatePrimaryLeague = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   const queryClient = useQueryClient();
+  const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
-    mutationFn: (leagueId: string) => leagueApi.updatePrimaryLeague(userId, leagueId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
+    mutationFn: ({ leagueId }: { leagueId: string }) => leagueApi.updatePrimaryLeague(userId, leagueId),
+    onSuccess: async (data, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.leaderboard(variables.leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+      ]);
+      initializeMember();
+    },
+    onError: (error) => {
+      console.error('Failed to update primary league:', error);
+      initializeMember();
     },
   });
 };
 //  -- LEAGUE OPERATIONS
-export const useCreateLeague = (userId: string) => {
+export const useCreateLeague = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   const queryClient = useQueryClient();
-  const { initializeMember } = useMemberStore();
   return useMutation({
     mutationFn: async (params: {
       league_name: string;
@@ -97,10 +118,14 @@ export const useCreateLeague = (userId: string) => {
     },
 
     onSuccess: async (leagueId) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-      await initializeMember();
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+      ]);
       router.replace({
         pathname: '/(app)/(public)/myLeagues/preview-league',
         params: { leagueId },
@@ -111,18 +136,22 @@ export const useCreateLeague = (userId: string) => {
     },
   });
 };
-export const useJoinLeague = (userId: string) => {
+export const useJoinLeague = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   const queryClient = useQueryClient();
-  const { initializeMember } = useMemberStore();
 
   return useMutation({
     mutationFn: ({ join_code, nickname }: { join_code: string; nickname: string }) =>
       leagueApi.joinLeague(join_code, nickname),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.users.leagues(userId),
-      });
-      await initializeMember();
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+      ]);
       console.log('joined league ------->,');
     },
 
@@ -133,8 +162,9 @@ export const useJoinLeague = (userId: string) => {
   });
 };
 export const useUpdateLeague = () => {
-  const { initializeMember } = useMemberStore();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   return useMutation({
     mutationFn: ({ leagueId, name }: { leagueId?: string; name?: string }) => {
       if (!leagueId) {
@@ -145,13 +175,16 @@ export const useUpdateLeague = () => {
     onSuccess: async (updated) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.leagues.byId(updated.id),
+          queryKey: KEYS.leagues.detail(updated.id),
         }),
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.leagues.leagueAndMembers(updated.id),
+          queryKey: KEYS.leagues.members(updated.id),
         }),
+        userId &&
+          queryClient.invalidateQueries({
+            queryKey: KEYS.members.primary(userId),
+          }),
       ]);
-      await initializeMember();
     },
     onError: (error) => {
       console.error('Failed to update league:', error);
@@ -160,7 +193,8 @@ export const useUpdateLeague = () => {
 };
 export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
-  const { initializeMember } = useMemberStore();
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useMutation({
     mutationFn: async (leagueId: string) => {
@@ -170,14 +204,16 @@ export const useLeaveLeague = () => {
     onSuccess: async (result, leagueId) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId),
+          queryKey: KEYS.leagues.leaderboard(leagueId),
         }),
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId),
+          queryKey: KEYS.leagues.members(leagueId),
         }),
+        userId &&
+          queryClient.invalidateQueries({
+            queryKey: KEYS.members.primary(userId),
+          }),
       ]);
-
-      await initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
@@ -187,7 +223,7 @@ export const useLeaveLeague = () => {
 };
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.leagues.byJoinCode(joinCode),
+    queryKey: KEYS.leagues.byJoinCode(joinCode),
     queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
     enabled: joinCode?.length === 7,
     retry: 1,

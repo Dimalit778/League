@@ -1,46 +1,46 @@
 import { supabase } from '@/lib/supabase';
-import { MatchWithPredictionsAndMemberType } from '../types';
+import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
 
 export const matchesApi = {
-  async getMatch(matchId: number) {
-    const { data, error } = await supabase
-      .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*)
-  
-      `
-      )
-      .eq('id', matchId)
-      .single();
+  // async getMatch(matchId: number): Promise<MatchType> {
+  //   const { data, error } = await supabase
+  //     .from('matches')
+  //     .select(
+  //       `
+  //       *,
+  //       home_team:teams!matches_home_team_id_fkey(*),
+  //       away_team:teams!matches_away_team_id_fkey(*)
 
-    if (error) throw error;
+  //     `
+  //     )
+  //     .eq('id', matchId)
+  //     .single();
 
-    return data;
-  },
+  //   if (error) throw error;
 
-  async getMatchesByFixture(fixture: number, competitionId?: number) {
-    const { data, error } = await supabase
-      .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*)
-        `
-      )
-      .eq('competition_id', competitionId!)
-      .eq('fixture', fixture)
-      .order('kick_off', { ascending: true });
+  //   return data as MatchType;
+  // },
 
-    if (error) throw error;
+  // async getMatchesByFixture(fixture: number, competitionId?: number): Promise<MatchType[]> {
+  //   const { data, error } = await supabase
+  //     .from('matches')
+  //     .select(
+  //       `
+  //       *,
+  //       home_team:teams!matches_home_team_id_fkey(*),
+  //       away_team:teams!matches_away_team_id_fkey(*)
+  //       `
+  //     )
+  //     .eq('competition_id', competitionId!)
+  //     .eq('fixture', fixture)
+  //     .order('kick_off', { ascending: true });
 
-    return data;
-  },
+  //   if (error) throw error;
 
-  async getMatchWithPredictions(matchId: number, leagueId: string): Promise<MatchWithPredictionsAndMemberType> {
+  //   return data as MatchType[];
+  // },
+  // Get One match with Members predictions
+  async getMatchWithPredictions(leagueId: string, matchId: number): Promise<MatchWithPredictions> {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -63,13 +63,18 @@ export const matchesApi = {
       )
       .eq('id', matchId)
       .eq('predictions.league_member.league_id', leagueId)
-      .single();
+      .single<MatchWithPredictions>();
 
     if (error) throw error;
     if (!data) throw new Error('Match not found');
-    return data as MatchWithPredictionsAndMemberType;
+    return data;
   },
-  async getMatchesByFixtureWithMemberPredictions(fixture: number, competitionId: number, memberId: string) {
+  // Get matches by fixture with current Member predictions
+  async getMatchesByFixtureWithMemberPredictions(
+    fixture: number,
+    competitionId: number,
+    memberId: string
+  ): Promise<MatchWithPredictionsType[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -87,6 +92,6 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    return data;
+    return data as MatchWithPredictionsType[];
   },
 };

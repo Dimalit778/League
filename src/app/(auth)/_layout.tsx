@@ -1,13 +1,13 @@
 import { SplashScreen } from '@/components/layout';
-import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useAuth } from '@/providers/AuthProvider';
 import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
-  const { session, isLoading } = useCurrentSession();
+  const { isAuthLoading } = useAuth();
   const { colors } = useThemeTokens();
 
-  if (isLoading) {
+  if (isAuthLoading) {
     return <SplashScreen />;
   }
 

@@ -1,10 +1,10 @@
 import LoadingOverlay from '@/components/layout/LoadingOverlay';
 import { AvatarImage } from '@/components/ui';
 import BackButton from '@/components/ui/BackButton';
-import { useCurrentSession } from '@/features/auth/hooks/useCurrentSession';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { useGetUser, useUpdateUser } from '@/features/admin/hooks/useUsers';
+import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/providers/AuthProvider';
 import { LockIcon, UserIcon } from '@assets/icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { decode } from 'base64-arraybuffer';
@@ -26,10 +26,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EditUserScreen = () => {
   const theme = useThemeTokens();
-  const { session } = useCurrentSession();
+  const { session } = useAuth();
   const { data: user, isLoading: isLoadingUser } = useGetUser();
-  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
-    useUpdateUser();
+  const { mutateAsync: updateUser, isPending: isUpdatingUser } = useUpdateUser();
 
   // Form state
   const [fullName, setFullName] = useState('');
@@ -52,14 +51,10 @@ const EditUserScreen = () => {
   const handleImagePicker = async () => {
     try {
       // Request permission
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (permissionResult.granted === false) {
-        Alert.alert(
-          'Permission Required',
-          'Permission to access photo library is required!'
-        );
+        Alert.alert('Permission Required', 'Permission to access photo library is required!');
         return;
       }
 
@@ -86,19 +81,16 @@ const EditUserScreen = () => {
     setIsUploadingImage(true);
     try {
       // Resize and compress image
-      const manipulatedImage = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { width: 400, height: 400 } }],
-        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-      );
+      const manipulatedImage = await ImageManipulator.manipulateAsync(uri, [{ resize: { width: 400, height: 400 } }], {
+        compress: 0.8,
+        format: ImageManipulator.SaveFormat.JPEG,
+      });
 
       // Convert to base64
       const response = await fetch(manipulatedImage.uri);
       const blob = await response.blob();
       const arrayBuffer = await blob.arrayBuffer();
-      const base64String = btoa(
-        String.fromCharCode(...new Uint8Array(arrayBuffer))
-      );
+      const base64String = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
       // Generate unique filename
       const fileExt = 'jpg';
@@ -106,12 +98,10 @@ const EditUserScreen = () => {
       const filePath = `avatars/${fileName}`;
 
       // Upload to Supabase storage
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, decode(base64String), {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
+      const { error: uploadError } = await supabase.storage.from('images').upload(filePath, decode(base64String), {
+        contentType: 'image/jpeg',
+        upsert: true,
+      });
 
       if (uploadError) throw uploadError;
 
@@ -207,24 +197,13 @@ const EditUserScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View className="p-6 space-y-8">
             {/* Profile Picture Section */}
             <View className="items-center space-y-4">
               <View className="relative">
-                <AvatarImage
-                  path={avatarUrl}
-                  nickname={user?.full_name ?? ''}
-                  className="w-24 h-24"
-                />
+                <AvatarImage path={avatarUrl} nickname={user?.full_name ?? ''} className="w-24 h-24" />
                 <TouchableOpacity
                   onPress={handleImagePicker}
                   disabled={isUploadingImage}
@@ -246,9 +225,7 @@ const EditUserScreen = () => {
             <View className="space-y-6">
               <View className="flex-row items-center space-x-3 mb-4">
                 <UserIcon color={theme.colors.primary} />
-                <Text className="text-text text-lg font-semibold">
-                  Profile Information
-                </Text>
+                <Text className="text-text text-lg font-semibold">Profile Information</Text>
               </View>
 
               {/* Full Name */}
@@ -269,9 +246,7 @@ const EditUserScreen = () => {
                 <View className="bg-surface border border-border rounded-lg px-4 py-3 opacity-60">
                   <Text className="text-text">{session?.user?.email}</Text>
                 </View>
-                <Text className="text-text-secondary text-xs">
-                  Email cannot be changed from this screen
-                </Text>
+                <Text className="text-text-secondary text-xs">Email cannot be changed from this screen</Text>
               </View>
 
               {/* Update Profile Button */}
@@ -283,9 +258,7 @@ const EditUserScreen = () => {
                 {isUpdatingUser ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Text className="text-white font-semibold">
-                    Update Profile
-                  </Text>
+                  <Text className="text-white font-semibold">Update Profile</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -294,9 +267,7 @@ const EditUserScreen = () => {
             <View className="space-y-6">
               <View className="flex-row items-center space-x-3 mb-4">
                 <LockIcon color={theme.colors.primary} />
-                <Text className="text-text text-lg font-semibold">
-                  Change Password
-                </Text>
+                <Text className="text-text text-lg font-semibold">Change Password</Text>
               </View>
 
               {/* Current Password */}
@@ -327,9 +298,7 @@ const EditUserScreen = () => {
 
               {/* Confirm New Password */}
               <View className="space-y-2">
-                <Text className="text-text font-medium">
-                  Confirm New Password
-                </Text>
+                <Text className="text-text font-medium">Confirm New Password</Text>
                 <TextInput
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -349,9 +318,7 @@ const EditUserScreen = () => {
                 {isUpdatingPassword ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Text className="text-white font-semibold">
-                    Update Password
-                  </Text>
+                  <Text className="text-white font-semibold">Update Password</Text>
                 )}
               </TouchableOpacity>
 
@@ -367,4 +334,3 @@ const EditUserScreen = () => {
 };
 
 export default EditUserScreen;
-

@@ -1,40 +1,55 @@
-// src/store/AuthStore.ts
-import type { User } from '@supabase/supabase-js';
+import { userStorage } from '@/lib/storage';
+import { Tables } from '@/types/database.types';
+import type { Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
-type AuthState = {
-  userId: string | null;
-  fullName: string | null;
-  email: string | null;
+type UserType = Tables<'users'>;
+
+type AuthStore = {
+  user: UserType | null;
+  session: Session | null;
   isAuthLoading: boolean;
+  isAuthenticated: boolean;
 
-  // actions
-  setUserFromSupabase: (user: User | null) => void;
-  setAuthLoading: (value: boolean) => void;
-  clearAuth: () => void;
+  setUser: (user: UserType | null) => void;
+  setSession: (session: Session | null) => void;
+  setIsAuthLoading: (loading: boolean) => void;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
-  userId: null,
-  fullName: null,
-  email: null,
-  isAuthLoading: false,
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      session: null,
+      isAuthLoading: true,
+      isAuthenticated: false,
 
-  setUserFromSupabase: (user) =>
-    set({
-      userId: user?.id ?? null,
-      fullName: user?.user_metadata.full_name ?? null,
-      email: user?.email ?? null,
-      isAuthLoading: false,
+      setUser: (user) => set({ user, isAuthenticated: !!user?.id }),
+      setSession: (session) => set({ session }),
+      setIsAuthLoading: (isAuthLoading) => set({ isAuthLoading }),
     }),
+    {
+      name: 'auth-store',
+      storage: createJSONStorage(() => ({
+        setItem: (name, value) => {
+          userStorage.set(name, value);
+        },
+        getItem: (name) => {
+          const value = userStorage.getString(name);
+          return value ?? null;
+        },
+        removeItem: (name) => {
+          userStorage.remove(name);
+        },
+      })),
 
-  setAuthLoading: (value) => set({ isAuthLoading: value }),
-
-  clearAuth: () =>
-    set({
-      userId: null,
-      fullName: null,
-      email: null,
-      isAuthLoading: false,
-    }),
-}));
+      partialize: (state) =>
+        ({
+          user: state.user,
+          session: state.session,
+          isAuthenticated: state.isAuthenticated,
+        }) as AuthStore,
+    }
+  )
+);

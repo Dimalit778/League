@@ -1,4 +1,4 @@
-import { cn } from '@/lib/nativewind/utils';
+import { cn } from '@/lib/nativeWind';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 
 interface ButtonProps {

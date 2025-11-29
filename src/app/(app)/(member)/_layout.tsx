@@ -1,6 +1,5 @@
-import { Stack } from '@/components/layout/Stack';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-import Transition from 'react-native-screen-transitions';
+import { Stack } from 'expo-router';
 
 export default function MemberLayout() {
   const { colors } = useThemeTokens();
@@ -23,8 +22,7 @@ export default function MemberLayout() {
       <Stack.Screen
         name="match/[id]"
         options={{
-          ...Transition.presets.ZoomIn(),
-          contentStyle: { backgroundColor: 'transparent' },
+          headerShown: false,
         }}
       />
       <Stack.Screen name="member/id" options={{ headerShown: false }} />

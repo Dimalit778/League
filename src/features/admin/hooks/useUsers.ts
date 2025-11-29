@@ -1,11 +1,11 @@
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { KEYS } from '@/lib/queryClient';
 import { userService } from '../queries/usersService';
 
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetUser = () => {
   return useQuery({
-    queryKey: QUERY_KEYS.users.all,
+    queryKey: KEYS.users.all,
     queryFn: () => userService.getUser(),
     retry: 2,
     staleTime: 60 * 1000, // 1 minute
@@ -25,9 +25,9 @@ export const useUpdateUser = () => {
   //     },
   //     onSuccess: (data) => {
   //       if (!member?.user_id) return;
-  //       queryClient.setQueryData(QUERY_KEYS.users.byId(member.user_id), data);
+  //       queryClient.setQueryData(KEYS.users.byId(member.user_id), data);
   //       queryClient.invalidateQueries({
-  //         queryKey: QUERY_KEYS.users.byId(member.user_id),
+  //         queryKey: KEYS.users.byId(member.user_id),
   //       });
   //     },
   //     onError: (error) => {

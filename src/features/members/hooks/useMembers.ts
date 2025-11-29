@@ -1,7 +1,9 @@
-import { QUERY_KEYS } from '@/lib/tanstack/keys';
+import { KEYS } from '@/lib/queryClient';
+import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
+import { useEffect } from 'react';
 import { memberApi } from '../api/membersApi';
 
 // Constants
@@ -15,20 +17,20 @@ const invalidateMemberQueries = (
   leagueId?: string
 ) => {
   // Invalidate member-specific queries
-  queryClient.invalidateQueries({ queryKey: QUERY_KEYS.members.byId(memberId) });
-  queryClient.invalidateQueries({ queryKey: QUERY_KEYS.members.stats(memberId) });
-  queryClient.invalidateQueries({ queryKey: QUERY_KEYS.members.dataAndStats(memberId) });
+  queryClient.invalidateQueries({ queryKey: KEYS.members.byId(memberId) });
+  queryClient.invalidateQueries({ queryKey: KEYS.members.stats(memberId) });
+  queryClient.invalidateQueries({ queryKey: KEYS.members.dataAndStats(memberId) });
 
   // Invalidate league queries if leagueId is provided
   if (leagueId) {
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.leaderboard.byLeague(leagueId) });
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.leagues.leagueAndMembers(leagueId) });
+    queryClient.invalidateQueries({ queryKey: KEYS.members.leaderboard(leagueId) });
+    queryClient.invalidateQueries({ queryKey: KEYS.leagues.leagueAndMembers(leagueId) });
   }
 };
 
 export const useMemberStats = (memberId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.members.stats(memberId),
+    queryKey: KEYS.members.stats(memberId),
     queryFn: () => memberApi.getMemberStats(memberId),
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
@@ -36,17 +38,22 @@ export const useMemberStats = (memberId: string) => {
 };
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
-  const { leagueId, memberId, initializeMember } = useMemberStore();
+  const leagueId = useMemberStore((s) => s.leagueId);
+  const memberId = useMemberStore((s) => s.memberId);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   return useMutation({
     mutationFn: (nickname: string) => {
-      if (!memberId || !leagueId) throw new Error('Member ID and League ID are required');
+      if (!memberId || !leagueId || !userId) throw new Error('Member ID, League ID and User ID are required');
       return memberApi.updateMember(memberId, nickname);
     },
     onSuccess: () => {
       if (!memberId || !leagueId) return;
       invalidateMemberQueries(queryClient, memberId, leagueId);
-      initializeMember();
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: KEYS.members.primary(userId) });
+      }
     },
     onError: (error) => {
       console.error('Failed to update member:', error);
@@ -84,7 +91,7 @@ export const useUploadMemberImage = () => {
 
 export const useMemberPredictions = (memberId?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.members.predictions(memberId),
+    queryKey: KEYS.members.predictions(memberId),
     queryFn: () => {
       if (!memberId) throw new Error('Member ID is required');
       return memberApi.getMemberPredictions(memberId);
@@ -97,7 +104,7 @@ export const useMemberPredictions = (memberId?: string) => {
 
 export const useMemberDataAndStats = (memberId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.members.dataAndStats(memberId),
+    queryKey: KEYS.members.dataAndStats(memberId),
     queryFn: () => {
       if (!memberId) throw new Error('Member ID is required');
       return memberApi.getMemberDataAndStats(memberId);
@@ -110,7 +117,30 @@ export const useMemberDataAndStats = (memberId: string) => {
 
 export const useMemberProfile = (memberId: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.members.byId(memberId),
+    queryKey: KEYS.members.byId(memberId),
     queryFn: () => memberApi.getMemberProfile(memberId),
   });
+};
+
+export const usePrimaryMember = () => {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const { setActiveMember } = useMemberStore();
+
+  const query = useQuery({
+    queryKey: KEYS.members.primary(userId ?? undefined),
+    queryFn: async () => {
+      if (!userId) return null;
+      return memberApi.getPrimaryMember(userId);
+    },
+    enabled: !!userId,
+    staleTime: STALE_TIME,
+  });
+  useEffect(() => {
+    if (query.data !== undefined) {
+      setActiveMember(query.data);
+    }
+  }, [query.data, setActiveMember]);
+
+  return query;
 };

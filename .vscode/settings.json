@@ -19,6 +19,7 @@
     "Subviews",
     "swipeable",
     "Teko",
+    "viewability",
     "xmark"
   ],
   "deno.enablePaths": ["supabase/functions"],
