@@ -1,7 +1,8 @@
 import { LogoBadge } from '@/components/LogoBadge';
 import { MyImage } from '@/components/ui';
-import { leagueWithMembersType } from '@/features/members/types';
+
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { LeagueWithMembersType } from '@/types';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Link } from 'expo-router';
@@ -12,7 +13,7 @@ export const LeagueDetailsSection = ({
   league,
   memberUserId,
 }: {
-  league: leagueWithMembersType;
+  league: LeagueWithMembersType;
   memberUserId: string;
 }) => {
   const { colors } = useThemeTokens();
@@ -24,7 +25,7 @@ export const LeagueDetailsSection = ({
     }
   };
   const owner = useMemo(() => {
-    return league.league_members.find((member) => member.user_id === league.owner_id);
+    return league.league_members.find((member: { user_id: string }) => member.user_id === league.owner_id);
   }, [league.league_members, league.owner_id]);
 
   return (

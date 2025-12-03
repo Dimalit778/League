@@ -203,6 +203,112 @@ exception
     raise exception 'Failed to leave league: %', sqlerrm;
 end$$;
 
+-- Leave a league by league_id (RPC function used by API)
+-- Handles ownership transfer, primary league, and league deletion
+-- Returns json with success status and message, throws exception on error
+create or replace function public.leave_league(
+  p_league_id uuid
+)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  v_user_id uuid;
+  v_league_owner_id uuid;
+  v_is_primary_league boolean;
+  v_league_name text;
+  v_other_members_count integer;
+  v_new_owner_id uuid;
+  v_next_primary_member_id uuid;
+begin
+  -- Get current user ID
+  v_user_id := auth.uid();
+  
+  if v_user_id is null then
+    raise exception 'User not authenticated';
+  end if;
+
+  -- Get league info
+  select owner_id, name into v_league_owner_id, v_league_name
+  from public.leagues
+  where id = p_league_id;
+  
+  if v_league_owner_id is null then
+    raise exception 'League not found';
+  end if;
+
+  -- Check membership and get primary status
+  select is_primary into v_is_primary_league
+  from public.league_members
+  where user_id = v_user_id and league_id = p_league_id;
+  
+  if v_is_primary_league is null then
+    raise exception 'User is not a member of this league';
+  end if;
+
+  -- Count other members (before deletion)
+  select count(*) into v_other_members_count
+  from public.league_members
+  where league_id = p_league_id and user_id != v_user_id;
+
+  -- Transfer ownership if needed (before deleting member)
+  if v_league_owner_id = v_user_id and v_other_members_count > 0 then
+    select user_id into v_new_owner_id
+    from public.league_members
+    where league_id = p_league_id and user_id != v_user_id
+    order by created_at asc
+    limit 1;
+    
+    update public.leagues
+    set owner_id = v_new_owner_id
+    where id = p_league_id;
+  end if;
+
+  -- **ACTUALLY DELETE THE MEMBER** (this was missing in your original function!)
+  delete from public.league_members
+  where user_id = v_user_id and league_id = p_league_id;
+
+  -- Handle primary league (set user's next league as primary)
+  if v_is_primary_league then
+    -- Find the next league_member for this user (from other leagues)
+    select id into v_next_primary_member_id
+    from public.league_members
+    where user_id = v_user_id
+    order by created_at asc
+    limit 1;
+
+    -- If there's another league_member, set it as primary
+    if v_next_primary_member_id is not null then
+      -- First, unset all other primary flags for this user
+      update public.league_members
+      set is_primary = false
+      where user_id = v_user_id;
+
+      -- Then set the next one as primary
+      update public.league_members
+      set is_primary = true
+      where id = v_next_primary_member_id;
+    end if;
+  end if;
+
+  -- Delete league if empty (after member deletion)
+  if v_league_owner_id = v_user_id and v_other_members_count = 0 then
+    delete from public.leagues
+    where id = p_league_id;
+    return json_build_object('success', true, 'message', 'League deleted');
+  end if;
+
+  return json_build_object(
+    'success', true,
+    'message', format('Left %s', v_league_name)
+  );
+
+exception
+  when others then
+    raise exception 'Failed to leave league: %', sqlerrm;
+end$$;
+
 -- Leave a league by member_id
 -- If the leaving member was primary, sets the user's next league_member as primary
 -- Returns json with success status, throws exception on error

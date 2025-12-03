@@ -1,6 +1,6 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 
@@ -14,10 +14,16 @@ export function BottomTabsBar({
   return (
     <View className="bg-background">
       <LinearGradient
-        colors={[colors.background, colors.surface, colors.border]}
+        colors={[colors.background, colors.surface]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.tabBar]}
+        style={[
+          styles.tabBar,
+          styles.tabBarShadow,
+          {
+            borderTopColor: colors.border,
+          },
+        ]}
       >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -51,8 +57,8 @@ export function BottomTabsBar({
 
           const icon = options.tabBarIcon?.({
             focused: isFocused,
-            color: isFocused ? colors.primary : colors.muted,
-            size: isFocused ? 32 : 24,
+            color: isFocused ? colors.background : colors.muted,
+            size: isFocused ? 26 : 22,
           });
 
           return (
@@ -73,10 +79,12 @@ export function BottomTabsBar({
                     : styles.iconWrapperInactive,
                   {
                     backgroundColor: isFocused
-                      ? colors.background
-                      : colors.border,
-                    borderColor: isFocused ? colors.primary : colors.border,
+                      ? colors.primary
+                      : colors.surface,
+                    borderWidth: isFocused ? 0 : 0.5,
+                    borderColor: isFocused ? 'transparent' : colors.border,
                   },
+                  isFocused ? styles.iconWrapperShadow : {},
                 ]}
               >
                 {icon}
@@ -86,7 +94,7 @@ export function BottomTabsBar({
                   styles.label,
                   {
                     color: isFocused ? colors.text : colors.muted,
-                    fontWeight: isFocused ? 'bold' : 'normal',
+                    fontWeight: isFocused ? '600' : '500',
                   },
                 ]}
               >
@@ -103,36 +111,62 @@ export function BottomTabsBar({
 const styles = StyleSheet.create({
   tabBar: {
     paddingBottom: 25,
+    paddingTop: 8,
     paddingHorizontal: 8,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderTopWidth: 0.5,
+  },
+  tabBarShadow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
   item: {
     flex: 1,
     alignItems: 'center',
   },
-
   iconWrapper: {
-    width: 55,
-    height: 55,
-    borderRadius: 29,
-    borderWidth: 1,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconWrapperShadow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
   iconWrapperInactive: {
-    transform: [{ translateY: 6 }],
+    transform: [{ translateY: 4 }],
   },
   iconWrapperActive: {
     transform: [{ translateY: 0 }],
   },
   label: {
-    marginTop: 12,
-    fontSize: 12,
-    letterSpacing: 0.3,
+    marginTop: 10,
+    fontSize: 11,
+    letterSpacing: 0.2,
   },
 });
 

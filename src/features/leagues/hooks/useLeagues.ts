@@ -8,7 +8,6 @@ import { useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
-
 export const useMyLeagues = () => {
   const userId = useAuthStore((state) => state.user?.id ?? '');
   return useQuery({
@@ -221,11 +220,31 @@ export const useLeaveLeague = () => {
     },
   });
 };
-export const useFindLeagueByJoinCode = (joinCode: string) => {
-  return useQuery({
-    queryKey: KEYS.leagues.byJoinCode(joinCode),
-    queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
-    enabled: joinCode?.length === 7,
-    retry: 1,
+export const useDeleteLeague = () => {
+  const queryClient = useQueryClient();
+  const initializeMember = useMemberStore((s) => s.initializeMember);
+  return useMutation({
+    mutationFn: async ({ leagueId, userId }: { leagueId: string; userId: string }) => {
+      const result = await leagueApi.deleteLeague(leagueId, userId);
+      return result;
+    },
+    onSuccess: async (result, { leagueId, userId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.all,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.all,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.all,
+        }),
+        await initializeMember(),
+        router.replace('/(app)/(public)/myLeagues'),
+      ]);
+    },
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };

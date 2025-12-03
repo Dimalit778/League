@@ -10,21 +10,15 @@ import { memberApi } from '../api/membersApi';
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
 const RETRY_COUNT = 2;
 
-// Helper function to invalidate member-related queries
 const invalidateMemberQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   memberId: string,
   leagueId?: string
 ) => {
-  // Invalidate member-specific queries
   queryClient.invalidateQueries({ queryKey: KEYS.members.byId(memberId) });
   queryClient.invalidateQueries({ queryKey: KEYS.members.stats(memberId) });
-  queryClient.invalidateQueries({ queryKey: KEYS.members.dataAndStats(memberId) });
-
-  // Invalidate league queries if leagueId is provided
   if (leagueId) {
-    queryClient.invalidateQueries({ queryKey: KEYS.members.leaderboard(leagueId) });
-    queryClient.invalidateQueries({ queryKey: KEYS.leagues.leagueAndMembers(leagueId) });
+    queryClient.invalidateQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) });
   }
 };
 
@@ -69,7 +63,6 @@ export const useDeleteMemberImage = () => {
       return memberApi.deleteImage(memberId, currentPath);
     },
     onSuccess: (data) => {
-      if (!data?.id) return;
       invalidateMemberQueries(queryClient, data.id, data.league_id);
     },
   });
@@ -83,7 +76,6 @@ export const useUploadMemberImage = () => {
       return memberApi.uploadMemberImage(memberId, avatarUrl);
     },
     onSuccess: (data) => {
-      if (!data?.id) return;
       invalidateMemberQueries(queryClient, data.id, data.league_id);
     },
   });
@@ -91,7 +83,7 @@ export const useUploadMemberImage = () => {
 
 export const useMemberPredictions = (memberId?: string) => {
   return useQuery({
-    queryKey: KEYS.members.predictions(memberId),
+    queryKey: KEYS.predictions.byMember(memberId as string),
     queryFn: () => {
       if (!memberId) throw new Error('Member ID is required');
       return memberApi.getMemberPredictions(memberId);
@@ -104,7 +96,7 @@ export const useMemberPredictions = (memberId?: string) => {
 
 export const useMemberDataAndStats = (memberId: string) => {
   return useQuery({
-    queryKey: KEYS.members.dataAndStats(memberId),
+    queryKey: KEYS.members.stats(memberId),
     queryFn: () => {
       if (!memberId) throw new Error('Member ID is required');
       return memberApi.getMemberDataAndStats(memberId);
@@ -128,7 +120,7 @@ export const usePrimaryMember = () => {
   const { setActiveMember } = useMemberStore();
 
   const query = useQuery({
-    queryKey: KEYS.members.primary(userId ?? undefined),
+    queryKey: KEYS.members.primary(userId as string),
     queryFn: async () => {
       if (!userId) return null;
       return memberApi.getPrimaryMember(userId);

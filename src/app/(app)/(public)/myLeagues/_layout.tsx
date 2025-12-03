@@ -1,6 +1,6 @@
 import { TabsHeader } from '@/components/layout';
-import { Stack } from '@/components/layout/Stack';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { Stack } from 'expo-router';
 
 export default function MyLeaguesLayout() {
   const { colors } = useThemeTokens();

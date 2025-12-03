@@ -13,11 +13,11 @@ export const KEYS = {
 
   // ==================== MEMBERS ====================
   members: {
-    detail: (memberId: string) => ['members', memberId] as const,
+    all: ['members'] as const,
+    byId: (memberId: string) => ['members', memberId] as const,
     primary: (userId: string) => ['members', 'primary', userId] as const,
     stats: (memberId: string) => ['members', memberId, 'stats'] as const,
     predictions: (memberId: string) => ['members', memberId, 'predictions'] as const,
-    dataAndStats: (memberId: string) => ['members', memberId, 'data-stats'] as const,
   },
 
   // ==================== LEAGUES ====================
@@ -31,6 +31,10 @@ export const KEYS = {
 
   // ==================== MATCHES ====================
   matches: {
+    uniqueDates: (competitionId: number, fixtureNumber: number) =>
+      ['matches', competitionId, fixtureNumber, 'unique-dates'] as const,
+    byDate: (competitionId: number, fixtureNumber: number, date: string) =>
+      ['matches', competitionId, fixtureNumber, date] as const,
     detail: (matchId: number) => ['matches', matchId] as const,
     byFixture: (fixture?: number, competitionId?: number, memberId?: string) =>
       memberId

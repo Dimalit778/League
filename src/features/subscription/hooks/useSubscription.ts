@@ -1,30 +1,25 @@
 import { KEYS } from '@/lib/queryClient';
 import { useAuth } from '@/providers/AuthProvider';
+import { useAuthStore } from '@/store/AuthStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { subscriptionApi } from '../api/subscriptionApi';
 import type { SubscriptionType } from '../types';
 
 export const useSubscription = () => {
-  const { user } = useAuth();
+  const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? null;
 
   return useQuery({
-    queryKey: userId ? KEYS.subscriptions.byUser(userId) : (['subscriptions', 'unknown'] as const),
+    queryKey: ['subscriptions', userId],
     queryFn: () => {
-      if (!userId) {
-        throw new Error('User id is required to load subscription');
-      }
-      return subscriptionApi.getCurrentSubscription(userId);
+      return subscriptionApi.getCurrentSubscription(userId as string);
     },
     enabled: !!userId,
-    staleTime: 60 * 1000 * 5, // 5 minutes
   });
 };
 
-export const useCreateSubscription = () => {
+export const useCreateSubscription = (userId: string | null) => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
 
   return useMutation({
     mutationFn: ({
@@ -42,7 +37,7 @@ export const useCreateSubscription = () => {
     onSuccess: () => {
       if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: KEYS.subscriptions.byUser(userId),
+        queryKey: KEYS.subscriptions.detail(userId),
       });
     },
   });
@@ -60,7 +55,7 @@ export const useCancelSubscription = () => {
     onSuccess: () => {
       if (!userId) return;
       queryClient.invalidateQueries({
-        queryKey: KEYS.subscriptions.byUser(userId),
+        queryKey: KEYS.subscriptions.detail(userId),
       });
     },
   });

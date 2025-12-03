@@ -1,6 +1,5 @@
-import { Stack } from '@/components/layout/Stack';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
-
+import { Stack } from 'expo-router';
 export default function PublicLayout() {
   const { colors } = useThemeTokens();
 

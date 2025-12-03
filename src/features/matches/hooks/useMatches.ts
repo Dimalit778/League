@@ -3,15 +3,6 @@ import { useMemberStore } from '@/store/MemberStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { matchesApi } from '../api/matchesService';
 
-export const useGetMatchesByFixture = ({ fixture, competitionId }: { fixture: number; competitionId?: number }) => {
-  return useQuery({
-    queryKey: KEYS.matches.byFixture(fixture, competitionId),
-    queryFn: competitionId ? () => matchesApi.getMatchesByFixture(fixture, competitionId) : skipToken,
-    staleTime: 5000 * 60 * 5,
-    refetchOnMount: false,
-    placeholderData: (previousData) => previousData,
-  });
-};
 // Get match detail with all members predictions
 export const useGetMatchDetail = (matchId: number) => {
   const leagueId = useMemberStore((s) => s.leagueId);
@@ -36,6 +27,7 @@ type UseGetMatchesProps = {
   competitionId?: number | null | undefined;
   memberId?: string | null | undefined;
 };
+// Get matches by fixture with current Member predictions
 export const useGetMatches = ({ selectedFixture, competitionId, memberId }: UseGetMatchesProps) => {
   return useQuery({
     queryKey: KEYS.matches.byFixture(selectedFixture, competitionId as number, memberId as string),
@@ -48,10 +40,42 @@ export const useGetMatches = ({ selectedFixture, competitionId, memberId }: UseG
   });
 };
 
-export const useGetMatch = ({ matchId }: { matchId?: number }) => {
+// export const useGetMatch = ({ matchId }: { matchId?: number }) => {
+//   return useQuery({
+//     queryKey: KEYS.matches.detail(matchId as number),
+//     queryFn: matchId ? () => matchesApi.getMatch(matchId) : skipToken,
+//     staleTime: 5000 * 60 * 5 * 60, // 5 minutes
+//   });
+// };
+export const useGetUniqueDates = ({
+  competitionId,
+  fixtureNumber,
+}: {
+  competitionId: number;
+  fixtureNumber: number;
+}) => {
   return useQuery({
-    queryKey: KEYS.matches.detail(matchId as number),
-    queryFn: matchId ? () => matchesApi.getMatch(matchId) : skipToken,
-    staleTime: 5000 * 60 * 5 * 60, // 5 minutes
+    queryKey: KEYS.matches.uniqueDates(competitionId, fixtureNumber),
+    queryFn: () => matchesApi.getUniqueDates(competitionId, fixtureNumber),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+export const useGetMatchesByDate = ({
+  competitionId,
+  fixtureNumber,
+  date,
+}: {
+  competitionId: number;
+  fixtureNumber: number;
+  date: string;
+}) => {
+  return useQuery({
+    queryKey: KEYS.matches.byDate(competitionId, fixtureNumber, date),
+    queryFn:
+      date && competitionId && fixtureNumber
+        ? () => matchesApi.getMatchesByDate(competitionId, fixtureNumber, date)
+        : skipToken,
+    staleTime: 1000 * 60 * 5,
+    enabled: !!date && !!competitionId && !!fixtureNumber,
   });
 };

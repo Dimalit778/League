@@ -107,8 +107,6 @@ export const leagueApi = {
     });
 
     if (error) throw error;
-
-    console.log('data', JSON.stringify(data, null, 2));
     return data;
   },
   async joinLeague(joinCode: string, nickname: string) {
@@ -149,6 +147,45 @@ export const leagueApi = {
     }
 
     return data;
+  },
+  async deleteLeague(leagueId: string, userId: string) {
+    const { error: deleteError } = await supabase.from('leagues').delete().eq('id', leagueId).eq('owner_id', userId);
+    if (deleteError) throw new Error(deleteError.message);
+
+    // After deletion, check if user has other league memberships and set one as primary
+    const { data: remainingMembers, error: membersError } = await supabase
+      .from('league_members')
+      .select('id, league_id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+      .limit(1);
+
+    if (membersError) {
+      // Log error but don't throw - deletion was successful
+      console.error('Error checking remaining members:', membersError);
+    } else if (remainingMembers && remainingMembers.length > 0) {
+      // First, unset all primary flags for this user
+      const { error: unsetError } = await supabase
+        .from('league_members')
+        .update({ is_primary: false })
+        .eq('user_id', userId);
+
+      if (unsetError) {
+        console.error('Error unsetting primary flags:', unsetError);
+      } else {
+        // Then set the first remaining league member as primary
+        const { error: updatePrimaryError } = await supabase
+          .from('league_members')
+          .update({ is_primary: true })
+          .eq('id', remainingMembers[0].id);
+
+        if (updatePrimaryError) {
+          console.error('Error setting primary league:', updatePrimaryError);
+        }
+      }
+    }
+
+    return true;
   },
   async findLeagueByJoinCode(joinCode: string) {
     const { data, error } = await supabase.rpc('find_league_by_code', {

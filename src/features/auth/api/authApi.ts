@@ -146,7 +146,7 @@ export const signOut = async (queryClient: QueryClient) => {
     }
 
     // Clear member store
-    useMemberStore.getState().clearAll();
+    useMemberStore.getState().clearMember();
 
     // Clear queries
     queryClient.invalidateQueries({ queryKey: KEYS.users.all });

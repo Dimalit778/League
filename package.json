@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
-    "sync-types": "npx supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
+    "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
     "remove-console-logs": "node ./scripts/remove-console-logs.js",
     "prebuild": "npm run remove-console-logs"
   },
@@ -95,7 +95,7 @@
     "msw": "^2.7.3",
     "react-native-svg-transformer": "^1.5.1",
     "react-test-renderer": "19.1.0",
-    "supabase": "^2.62.5",
+    "supabase": "^2.65.2",
     "typescript": "~5.9.2"
   },
   "expo": {

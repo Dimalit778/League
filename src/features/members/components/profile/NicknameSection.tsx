@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui';
 import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -15,11 +16,11 @@ type NicknameSectionProps = {
 export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
   const { colors } = useThemeTokens();
   const [isEditingNickname, setIsEditingNickname] = useState(false);
-  const [displayNickname, setDisplayNickname] = useState(initialNickname || '');
+  const [displayNickname, setDisplayNickname] = useState(formatNameCapitalize(initialNickname));
   const updateMember = useUpdateMember();
 
   useEffect(() => {
-    setDisplayNickname(initialNickname || '');
+    setDisplayNickname(formatNameCapitalize(initialNickname));
   }, [initialNickname]);
 
   const {
@@ -35,7 +36,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
     ),
     mode: 'onChange',
     defaultValues: {
-      nickname: initialNickname || '',
+      nickname: formatNameCapitalize(initialNickname),
     },
   });
 
@@ -45,20 +46,20 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
 
     updateMember.mutate(data.nickname, {
       onError: () => {
-        setDisplayNickname(initialNickname || '');
+        setDisplayNickname(initialNickname);
         setIsEditingNickname(true);
-        reset({ nickname: initialNickname || '' });
+        reset({ nickname: initialNickname });
       },
     });
   });
 
   const handleCancelEdit = () => {
     setIsEditingNickname(false);
-    reset({ nickname: displayNickname || '' });
+    reset({ nickname: displayNickname });
   };
 
   const handleStartEdit = () => {
-    reset({ nickname: displayNickname || '' });
+    reset({ nickname: displayNickname });
     setIsEditingNickname(true);
   };
 

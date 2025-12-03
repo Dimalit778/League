@@ -447,9 +447,9 @@ export type Database = {
         Row: {
           created_at: string
           email: string
-          expo_notification_token: string | null
           full_name: string
           id: string
+          notification_token: string | null
           provider: string
           role: string
           updated_at: string
@@ -457,9 +457,9 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
-          expo_notification_token?: string | null
           full_name: string
           id: string
+          notification_token?: string | null
           provider?: string
           role?: string
           updated_at?: string
@@ -467,9 +467,9 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
-          expo_notification_token?: string | null
           full_name?: string
           id?: string
+          notification_token?: string | null
           provider?: string
           role?: string
           updated_at?: string

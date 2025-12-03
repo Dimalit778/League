@@ -17,6 +17,6 @@ export const competitionApi = {
 
     const allFixtures = Array.from({ length: data?.total_fixtures ?? 0 }, (_, i) => i + 1);
     const currentFixture = data?.current_fixture ?? 0;
-    return { allFixtures, currentFixture };
+    return { id: competitionId, allFixtures, currentFixture, totalFixtures: data?.total_fixtures ?? 0 };
   },
 };
