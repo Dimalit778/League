@@ -1,17 +1,66 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { AvatarImage, BackButton, Card } from '@/components/ui';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
+import MatchesList from '@/features/matches/components/matches/MatchesList';
+import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
+import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
-import { Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MemberStatsType } from '../types';
+import MemberStats from '../components/memberStats';
 
 const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
   const { data, error, isLoading } = useMemberDataAndStats(memberId);
+  const { member, stats, totalFixtures = [], currentFixture = 1 } = data ?? {};
+  const competitionId = member?.league?.competition?.id ?? 0;
 
-  const { member, stats, totalFixtures = [] } = data ?? {};
+  const {
+    data: allFinishedMatches,
+    isLoading: matchesLoading,
+    error: matchesError,
+  } = useGetMemberFinishedMatches(memberId, competitionId);
 
-  if (error) return <Error error={error} />;
+  const fixturesWithFinishedMatches = useMemo(() => {
+    if (!allFinishedMatches) return [];
+    const fixtureSet = new Set(
+      allFinishedMatches.map((match) => match.fixture).filter((f): f is number => f !== null && f !== undefined)
+    );
+    return Array.from(fixtureSet).sort((a, b) => a - b);
+  }, [allFinishedMatches]);
+
+  const availableFixtures = useMemo(() => {
+    if (fixturesWithFinishedMatches.length === 0) return totalFixtures;
+    return totalFixtures.filter((fixture) => fixturesWithFinishedMatches.includes(fixture));
+  }, [totalFixtures, fixturesWithFinishedMatches]);
+
+  const initialFixture = useMemo(() => {
+    if (fixturesWithFinishedMatches.length > 0) {
+      return fixturesWithFinishedMatches[0];
+    }
+    return currentFixture;
+  }, [fixturesWithFinishedMatches, currentFixture]);
+
+  const [selectedFixture, setSelectedFixture] = useState<number>(initialFixture);
+  const [animateScroll, setAnimateScroll] = useState(false);
+
+  useEffect(() => {
+    if (availableFixtures.length > 0 && !availableFixtures.includes(selectedFixture)) {
+      setSelectedFixture(availableFixtures[0]);
+    }
+  }, [availableFixtures, selectedFixture]);
+
+  const handleFixturePress = (fixture: number) => {
+    setSelectedFixture(fixture);
+    setAnimateScroll(true);
+  };
+
+  const matches = useMemo(() => {
+    if (!allFinishedMatches) return [];
+    return allFinishedMatches.filter((match) => match.fixture === selectedFixture);
+  }, [allFinishedMatches, selectedFixture]);
+
+  if (error || matchesError) return <Error error={error || (matchesError as Error)} />;
   if (isLoading) return <LoadingOverlay />;
 
   return (
@@ -43,77 +92,19 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
         </View>
       </Card>
 
-      {stats && <MemberStats stats={stats} />}
-      <FixturesList fixtures={totalFixtures} selectedFixture={1} handleFixturePress={() => {}} animateScroll={false} />
+      <MemberStats stats={stats} />
+      <FixturesList
+        fixtures={availableFixtures}
+        selectedFixture={selectedFixture}
+        handleFixturePress={handleFixturePress}
+        animateScroll={animateScroll}
+        fixtureDateRanges={[]}
+      />
+      <ScrollView className="flex-1 mt-2" showsVerticalScrollIndicator={false}>
+        {matchesLoading ? <SkeletonMatches /> : <MatchesList matches={matches} />}
+      </ScrollView>
     </SafeAreaView>
   );
 };
-
-function MemberStats({ stats }: { stats?: MemberStatsType }) {
-  const topRowStats = [
-    {
-      label: 'Predictions',
-      value: stats?.totalPredictions ?? 0,
-      color: 'text-text' as const,
-    },
-    {
-      label: 'Accuracy',
-      value: `${stats?.accuracy ?? 0}%`,
-      color: 'text-text' as const,
-    },
-  ];
-
-  const bottomRowStats = [
-    {
-      label: 'Bingo',
-      value: stats?.bingoHits ?? 0,
-      color: 'text-success' as const,
-    },
-    {
-      label: 'Hits',
-      value: stats?.regularHits ?? 0,
-      color: 'text-primary' as const,
-    },
-    {
-      label: 'Missed',
-      value: stats?.missedHits ?? 0,
-      color: 'text-error' as const,
-    },
-  ];
-
-  return (
-    <Card className="p-2 mx-3 my-2 ">
-      <View className="flex-row mb-2">
-        {topRowStats.map((item) => (
-          <View key={item.label} className="flex-1 px-2">
-            <View
-              className={`bg-surface border border-border rounded-lg p-2 items-center justify-center ${
-                item.color || ''
-              }`}
-            >
-              <Text className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</Text>
-              <Text className={`${item.color} text-base font-bold`}>{item.value}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-
-      <View className="flex-row">
-        {bottomRowStats.map((item) => (
-          <View key={item.label} className="flex-1 px-2">
-            <View
-              className={`bg-surface border border-border rounded-lg p-2 items-center justify-center ${
-                item.color || ''
-              }`}
-            >
-              <Text className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</Text>
-              <Text className={`${item.color} text-base font-bold`}>{item.value}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    </Card>
-  );
-}
 
 export default MemberDetailsScreen;

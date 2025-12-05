@@ -1,5 +1,5 @@
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { supabase } from '@/lib/supabase';
 import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,8 +8,6 @@ import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
-
-type PasswordFormData = yup.InferType<typeof passwordSchema>;
 
 const passwordSchema = yup.object().shape({
   password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
@@ -44,7 +42,7 @@ const ResetPasswordScreen = () => {
         }
       }
     });
-  }, []);
+  }, [passwordForm]);
   return (
     <Screen>
       <BackButton />

@@ -60,9 +60,7 @@ const PrivacyScreen = () => {
     },
     {
       title: 'Contact Us',
-      body: [
-        'If you have any questions or concerns about these policy terms, contact us at support@league.app.',
-      ],
+      body: ['If you have any questions or concerns about these policy terms, contact us at support@league.app.'],
     },
   ];
 
@@ -72,14 +70,9 @@ const PrivacyScreen = () => {
       <ScrollView className="flex-1 p-4">
         {policySections.map((section) => (
           <View key={section.title}>
-            <Text className="text-lg font-semibold text-white">
-              {section.title}
-            </Text>
+            <Text className="text-lg font-semibold text-white">{section.title}</Text>
             {section.body.map((paragraph) => (
-              <Text
-                key={paragraph}
-                className="mt-2 text-base leading-6 text-zinc-300"
-              >
+              <Text key={paragraph} className="mt-2 text-base leading-6 text-zinc-300">
                 {`• ${paragraph}`}
               </Text>
             ))}
@@ -87,8 +80,7 @@ const PrivacyScreen = () => {
         ))}
 
         <Text className="mt-8 text-xs text-zinc-500">
-          By continuing to use League you acknowledge that you have read and
-          agree to these policy terms.
+          By continuing to use League you acknowledge that you have read and agree to these policy terms.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -96,4 +88,3 @@ const PrivacyScreen = () => {
 };
 
 export default PrivacyScreen;
-

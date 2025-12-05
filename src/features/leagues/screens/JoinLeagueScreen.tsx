@@ -1,6 +1,5 @@
 import { BackButton, Button, InputField } from '@/components/ui';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
-import { useAuth } from '@/providers/AuthProvider';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -18,9 +17,7 @@ const schema = Yup.object().shape({
 
 export default function JoinLeague() {
   const router = useRouter();
-  const { session } = useAuth();
 
-  const userId = session?.user?.id as string;
   const {
     control,
     handleSubmit,
@@ -36,7 +33,7 @@ export default function JoinLeague() {
 
   const [foundLeague, setFoundLeague] = useState<typeof data | null>(null);
 
-  const joinLeague = useJoinLeague(userId);
+  const joinLeague = useJoinLeague();
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 7) {

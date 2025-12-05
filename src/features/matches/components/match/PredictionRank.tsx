@@ -66,7 +66,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
 
 export default function PredictionRank({ predictions }: { predictions: PredictionMemberType[] }) {
   const memberId = useMemberStore((state) => state.memberId) ?? '';
-  console.log('predictions', JSON.stringify(predictions, null, 2));
+
   return (
     <View className="flex-1 bg-background p-4">
       <View className="flex-row px-1 gap-3 py-2  ">

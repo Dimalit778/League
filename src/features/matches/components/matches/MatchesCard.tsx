@@ -1,4 +1,4 @@
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { AddIcon } from '@assets/icons';
@@ -7,7 +7,7 @@ import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
-import { getPointsColorKey, POINTS_COLOR } from '../../utils/pointsColor';
+import { getPredictionResultLabel } from '../../utils/pointsColor';
 const TEAM_LOGO_SIZE = 32;
 
 type MatchesCardProps = {
@@ -102,20 +102,25 @@ const HeaderDisplay = ({ kickOff, isScheduled, isLive, isFinished }: HeaderDispl
 };
 
 const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) => {
-  const { colors } = useThemeTokens();
   const points = prediction?.points ?? 0;
   const isPredictionFinished = prediction?.is_finished ?? false;
   const predictionScore =
-    prediction?.home_score && prediction?.away_score ? `${prediction.home_score} - ${prediction.away_score}` : null;
-  const pointsColorKey = getPointsColorKey(points);
-  const pointsTextColor = prediction?.is_finished ? POINTS_COLOR[pointsColorKey] : colors.text;
+    prediction?.home_score !== null &&
+    prediction?.away_score !== null &&
+    prediction?.home_score !== undefined &&
+    prediction?.away_score !== undefined
+      ? `${prediction.home_score} - ${prediction.away_score}`
+      : null;
+  const predictionResult = getPredictionResultLabel(prediction?.points, isPredictionFinished, isFinished);
 
   return (
     <View className="flex-row items-center justify-between">
       {isPredictionFinished && isFinished && (
-        <Text className="text-text text-sm" style={{ color: pointsTextColor }}>
-          {pointsColorKey.charAt(0).toUpperCase() + pointsColorKey.slice(1)}
-        </Text>
+        <View className="w-1/3 flex-row items-center">
+          <Text className="text-text text-sm" style={{ color: predictionResult?.color }}>
+            {predictionResult?.title}
+          </Text>
+        </View>
       )}
 
       <View className="flex-1 items-center">
@@ -127,15 +132,18 @@ const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) =
       </View>
 
       {isPredictionFinished && isFinished && points != null && (
-        <Text className="text-text text-sm font-semibold" style={{ color: pointsTextColor }}>
-          {points} pts
-        </Text>
+        <View className="w-1/3 flex-row items-center justify-end">
+          <Text className="text-text text-sm font-semibold" style={{ color: predictionResult?.color }}>
+            {points} pts
+          </Text>
+        </View>
       )}
     </View>
   );
 };
 export default function MatchesCard({ match }: MatchesCardProps) {
   const { colors } = useThemeTokens();
+  console.log('match', JSON.stringify(match, null, 2));
   const matchStatus = getMatchStatus(match.status);
   const prediction = match.predictions?.[0] ?? null;
   const homeScore = match.score?.fullTime?.home ?? null;
@@ -145,11 +153,16 @@ export default function MatchesCard({ match }: MatchesCardProps) {
   const isLive = isMatchLive(matchStatus);
   const isScheduled = isMatchScheduled(matchStatus);
 
+  const predictionResult = getPredictionResultLabel(prediction?.points, prediction?.is_finished, isFinished);
+
   return (
     <Link href={`/(app)/(member)/match/${match.id}`} asChild>
       <Pressable
-        className="flex-1 m-1.5  rounded-lg  border border-border "
-        style={{ backgroundColor: isFinished ? hexToRgba(colors.surface, 0.4) : '' }}
+        className="flex-1 m-1.5  rounded-md border border-border "
+        style={{
+          backgroundColor: isFinished ? hexToRgba(colors.surface, 0.4) : '',
+          borderColor: predictionResult?.color,
+        }}
       >
         <HeaderDisplay kickOff={match.kick_off} isScheduled={isScheduled} isLive={isLive} isFinished={isFinished} />
 
@@ -167,7 +180,7 @@ export default function MatchesCard({ match }: MatchesCardProps) {
           <TeamDisplay team={match.away_team} />
         </View>
 
-        <View className="flex-1 bg-surface border-t border-border  px-2 ">
+        <View className="flex-1 bg-surface border-t border-border px-2 rounded-b-md">
           <PredictionDisplay prediction={prediction} isFinished={isFinished} />
         </View>
       </Pressable>

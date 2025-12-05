@@ -13,8 +13,8 @@ import { useGetMatches } from '../hooks/useMatches';
 
 const MatchesScreen = () => {
   const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
-  const memberId = useMemberStore((s) => s.memberId);
-  const competitionId = useMemberStore((s) => s.competitionId);
+  const memberId = useMemberStore((s) => s.memberId) ?? '';
+  const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
   const currentFixture = fixturesData?.currentFixture ?? 0;
 

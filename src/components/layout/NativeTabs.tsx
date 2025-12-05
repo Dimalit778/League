@@ -1,4 +1,4 @@
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { Platform } from 'react-native';
 

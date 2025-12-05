@@ -8,6 +8,9 @@
     "scheme": "league",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "privacy": "public",
+    "privacyPolicy": "https://yourdomain.com/privacy-policy",
+    "termsOfService": "https://yourdomain.com/terms-of-service",
     "splash": {
       "image": "./assets/app-icon.png",
       "resizeMode": "contain",

@@ -1,4 +1,4 @@
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { cn } from '@/lib/nativeWind';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Pressable, Text, View } from 'react-native';
@@ -77,24 +77,35 @@ export default function FixturesList({
   const onLayout = (e: LayoutChangeEvent) => setListWidth(e.nativeEvent.layout.width);
 
   useEffect(() => {
-    if (!ref.current || !selectedFixture || listWidth === 0) return;
+    if (!ref.current || !selectedFixture || listWidth === 0 || fixtures.length === 0) return;
+
+    // Find the actual index of selectedFixture in the fixtures array
+    const index = fixtures.findIndex((fixture) => fixture === selectedFixture);
+    if (index === -1) return;
 
     ref.current.scrollToIndex({
-      index: selectedFixture - 1,
+      index,
       animated: animateScroll,
       viewPosition: 0.5,
     });
-  }, [selectedFixture, listWidth, animateScroll]);
+  }, [selectedFixture, listWidth, animateScroll, fixtures]);
 
-  const onScrollToIndexFailed = useCallback((info: { index: number; highestMeasuredFrameIndex: number }) => {
-    setTimeout(() => {
-      ref.current?.scrollToIndex({
-        index: info.index,
-        animated: true,
-        viewPosition: 0.5,
-      });
-    }, 50);
-  }, []);
+  const onScrollToIndexFailed = useCallback(
+    (info: { index: number; highestMeasuredFrameIndex: number }) => {
+      // If index is out of range, scroll to the last available index
+      const maxIndex = fixtures.length - 1;
+      const safeIndex = Math.min(info.index, maxIndex);
+
+      setTimeout(() => {
+        ref.current?.scrollToIndex({
+          index: Math.max(0, safeIndex),
+          animated: true,
+          viewPosition: 0.5,
+        });
+      }, 50);
+    },
+    [fixtures.length]
+  );
 
   return (
     <View>
@@ -121,7 +132,7 @@ export default function FixturesList({
           offset: fixtureItemSpacing * index,
           index,
         })}
-        initialScrollIndex={Math.max(0, (selectedFixture ?? 1) - 1)}
+        initialScrollIndex={Math.max(0, fixtures.findIndex((f) => f === selectedFixture) || 0)}
         onScrollToIndexFailed={onScrollToIndexFailed}
       />
     </View>

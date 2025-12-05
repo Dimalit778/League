@@ -1,7 +1,7 @@
 import { LogoBadge } from '@/components/LogoBadge';
 import { MyImage } from '@/components/ui';
 
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { LeagueWithMembersType } from '@/types';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';

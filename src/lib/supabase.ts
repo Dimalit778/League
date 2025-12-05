@@ -23,7 +23,6 @@ const MMKVStorage = {
     try {
       return Promise.resolve(mmkvAdapter.getItem(key));
     } catch (error) {
-      console.warn('Storage getItem error:', error);
       return Promise.resolve(null);
     }
   },
@@ -32,7 +31,6 @@ const MMKVStorage = {
       mmkvAdapter.setItem(key, value);
       return Promise.resolve();
     } catch (error) {
-      console.warn('Storage setItem error:', error);
       return Promise.resolve();
     }
   },
@@ -41,7 +39,6 @@ const MMKVStorage = {
       mmkvAdapter.removeItem(key);
       return Promise.resolve();
     } catch (error) {
-      console.warn('Storage removeItem error:', error);
       return Promise.resolve();
     }
   },

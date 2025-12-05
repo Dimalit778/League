@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from 'react-native';
-import { SubscriptionType } from '../../api/subscriptionApi';
+import { SubscriptionType } from '../../types';
 
 interface SubscriptionCardProps {
   type: SubscriptionType;

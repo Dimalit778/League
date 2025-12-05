@@ -9,7 +9,7 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <BottomTabsBar {...props} />}
       screenOptions={{
-        header: () => <TabsHeader showLeagueName={true} />,
+        header: () => <TabsHeader />,
         tabBarHideOnKeyboard: true,
       }}
     >

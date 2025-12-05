@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { SubscriptionType } from '../../api/subscriptionApi';
+import { SubscriptionType } from '../../types';
 
 interface SubscriptionFeaturesProps {
   subscriptionType: SubscriptionType;

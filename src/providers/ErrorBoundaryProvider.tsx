@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import * as Sentry from '@sentry/react-native';
 import { router } from 'expo-router';
 import { ErrorInfo } from 'react';

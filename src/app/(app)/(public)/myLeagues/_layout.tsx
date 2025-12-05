@@ -1,5 +1,5 @@
 import { TabsHeader } from '@/components/layout';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
 
 export default function MyLeaguesLayout() {
@@ -11,7 +11,7 @@ export default function MyLeaguesLayout() {
         name="index"
         options={{
           headerShown: true,
-          header: () => <TabsHeader showLeagueName={false} />,
+          header: () => <TabsHeader tabsLayout={false} />,
         }}
       />
       <Stack.Screen name="join-league" options={{ headerShown: false }} />

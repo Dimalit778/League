@@ -2,7 +2,7 @@ import LoadingOverlay from '@/components/layout/LoadingOverlay';
 import { AvatarImage } from '@/components/ui';
 import BackButton from '@/components/ui/BackButton';
 import { useGetUser, useUpdateUser } from '@/features/admin/hooks/useUsers';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { LockIcon, UserIcon } from '@assets/icons';
@@ -70,7 +70,6 @@ const EditUserScreen = () => {
         await uploadImage(result.assets[0].uri);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
       Alert.alert('Error', 'Failed to pick image');
     }
   };
@@ -118,7 +117,6 @@ const EditUserScreen = () => {
       setAvatarUrl(publicUrl);
       Alert.alert('Success', 'Profile picture updated successfully!');
     } catch (error) {
-      console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
     } finally {
       setIsUploadingImage(false);
@@ -137,7 +135,6 @@ const EditUserScreen = () => {
       });
       Alert.alert('Success', 'Profile updated successfully!');
     } catch (error) {
-      console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile');
     }
   };
@@ -185,7 +182,6 @@ const EditUserScreen = () => {
 
       Alert.alert('Success', 'Password updated successfully!');
     } catch (error) {
-      console.error('Error updating password:', error);
       Alert.alert('Error', 'Failed to update password');
     } finally {
       setIsUpdatingPassword(false);

@@ -1,6 +1,6 @@
 import { useGetUser } from '@/features/admin/hooks/useUsers';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { Stack } from 'expo-router';
 

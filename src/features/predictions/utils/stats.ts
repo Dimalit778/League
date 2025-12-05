@@ -1,4 +1,4 @@
-import { predictionService } from '../queries/predictionService';
+import { predictionService } from '../api/predictionService';
 type MyPredictionRow = Awaited<ReturnType<typeof predictionService.getMyPredictionsView>>[number];
 
 export function computePredictionStats(rows: MyPredictionRow[]) {

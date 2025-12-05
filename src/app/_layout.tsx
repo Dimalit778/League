@@ -75,8 +75,7 @@ const AppBootstrap = () => {
       try {
         await Promise.all([initializeTheme(), initializeMember(), Asset.fromModule(footballBg).downloadAsync()]);
       } catch (e) {
-        console.error('Error during app bootstrap', e);
-      } finally {
+        } finally {
         if (!cancelled) {
           setIsReady(true);
           await ExpoSplashScreen.hideAsync().catch(() => {});

@@ -53,8 +53,8 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         setPickedAsset(result.assets[0]);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
       Alert.alert('Error', 'Failed to pick image');
+      console.error(error);
     }
   };
 
@@ -73,9 +73,9 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
       setPreviewImage(null);
       setPickedAsset(null);
     } catch (error) {
-      console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
       setImage(previousImageRef.current);
+      console.error(error);
     }
   };
 
@@ -93,10 +93,10 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
           try {
             await deleteImage.mutateAsync({ memberId, currentPath: image });
           } catch (error) {
-            console.error('Error deleting image:', error);
             Alert.alert('Error', 'Failed to delete image');
 
             setImage(previousImageRef.current);
+            console.error(error);
           }
         },
       },

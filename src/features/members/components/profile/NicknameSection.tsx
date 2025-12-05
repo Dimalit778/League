@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -87,7 +87,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
             <Button
               title="Save"
               onPress={handleSaveNickname}
-              variant="primary"
+              variant="secondary"
               loading={updateMember.isPending}
               disabled={!isValid || updateMember.isPending}
               className="flex-1"
@@ -95,7 +95,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
             <Button
               title="Cancel"
               onPress={handleCancelEdit}
-              variant="border"
+              variant="error"
               disabled={updateMember.isPending}
               className="flex-1"
             />

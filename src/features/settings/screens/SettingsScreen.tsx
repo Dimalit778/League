@@ -2,8 +2,8 @@ import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuthStore } from '@/store/AuthStore';
 import { Tables } from '@/types/database.types';
 import { formatNameCapitalize } from '@/utils/formats';
@@ -15,8 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
   const fullName = formatNameCapitalize(user?.full_name);
-
-  console.log('fullName', fullName);
 
   const { data: subscription, isLoading } = useSubscription();
 

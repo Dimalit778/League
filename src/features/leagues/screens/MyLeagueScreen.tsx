@@ -32,16 +32,11 @@ const MyLeagues = () => {
       <View className="flex-row justify-between px-2">
         <Button
           title="Create League"
-          variant="secondary"
+          variant="outline"
           size="md"
           onPress={() => router.push('/myLeagues/select-competition')}
         />
-        <Button
-          title="Join League"
-          variant="secondary"
-          size="md"
-          onPress={() => router.push('/myLeagues/join-league')}
-        />
+        <Button title="Join League" variant="outline" size="md" onPress={() => router.push('/myLeagues/join-league')} />
       </View>
       <View className="flex-1 gap-3 p-2 mt-4">
         {leagues.map((league) => (

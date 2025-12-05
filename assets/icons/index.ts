@@ -13,7 +13,9 @@ import RankIcon from './RankIcon';
 import TrophyIcon from './TrophyIcon';
 // Other Icons
 import AddIcon from './AddIcon';
+import ArrowDownIcon from './ArrowDownIcon';
 import ArrowLeftIcon from './ArrowLeftIcon';
+import ArrowUpIcon from './ArrowUpIcon';
 import GoogleLogoIcon from './GoogleLogoIcon';
 import SettingsIcon from './SettingsIcon';
 import StarIcon from './StarIcon';
@@ -25,7 +27,9 @@ import PlusZeroIcon from './PlusZeroIcon';
 
 export {
   AddIcon,
+  ArrowDownIcon,
   ArrowLeftIcon,
+  ArrowUpIcon,
   EmailIcon,
   EyeClosedIcon,
   EyeOpenIcon,

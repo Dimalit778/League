@@ -2,7 +2,7 @@ import { Error, LoadingOverlay } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
 
 import Screen from '@/components/layout/Screen';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Tables } from '@/types/database.types';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';

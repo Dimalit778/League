@@ -1,7 +1,6 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
-import { useAuth } from '@/providers/AuthProvider';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -18,9 +17,7 @@ const schema = yup.object().shape({
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
 
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
-  const { mutateAsync: createLeague, isPending } = useCreateLeague(userId ?? '');
+  const { mutateAsync: createLeague, isPending } = useCreateLeague();
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
   const {

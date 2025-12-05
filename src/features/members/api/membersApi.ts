@@ -38,8 +38,8 @@ export const memberApi = {
     const totalPredictions = predictionsData.length;
     const totalPoints = predictionsData.reduce((sum, prediction) => sum + (prediction.points || 0), 0);
 
-    const bingoHits = predictionsData.filter((p) => p.points === 3).length;
-    const regularHits = predictionsData.filter((p) => p.points === 1).length;
+    const bingoHits = predictionsData.filter((p) => p.points === 5).length;
+    const regularHits = predictionsData.filter((p) => p.points === 3).length;
     const missedHits = predictionsData.filter((p) => p.points === 0).length;
 
     const accuracy = totalPredictions > 0 ? ((bingoHits + regularHits) / totalPredictions) * 100 : 0;
@@ -117,7 +117,6 @@ export const memberApi = {
 
       return memberData;
     } catch (error) {
-      console.error('Error uploading avatar:', error);
       throw error;
     }
   },
@@ -173,9 +172,10 @@ export const memberApi = {
   async getMemberDataAndStats(memberId: string) {
     const [memberData, stats] = await Promise.all([this.getMemberInfo(memberId), this.getMemberStats(memberId)]);
     const arrayOfFixtures = Array.from(
-      { length: memberData?.league?.competition?.total_fixtures ?? 0 },
+      { length: memberData?.league?.competition?.current_fixture ?? 0 },
       (_, index) => index + 1
     );
+
     return {
       member: memberData,
       stats,

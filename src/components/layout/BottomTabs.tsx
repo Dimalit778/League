@@ -2,13 +2,9 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 
-export function BottomTabsBar({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabBarProps) {
+export function BottomTabsBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useThemeTokens();
 
   return (
@@ -74,13 +70,9 @@ export function BottomTabsBar({
               <View
                 style={[
                   styles.iconWrapper,
-                  isFocused
-                    ? styles.iconWrapperActive
-                    : styles.iconWrapperInactive,
+                  isFocused ? styles.iconWrapperActive : styles.iconWrapperInactive,
                   {
-                    backgroundColor: isFocused
-                      ? colors.primary
-                      : colors.surface,
+                    backgroundColor: isFocused ? colors.primary : colors.surface,
                     borderWidth: isFocused ? 0 : 0.5,
                     borderColor: isFocused ? 'transparent' : colors.border,
                   },

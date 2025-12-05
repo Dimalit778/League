@@ -6,7 +6,8 @@ import { LeagueDetailsSection } from '@/features/members/components/profile/Leag
 import { NicknameSection } from '@/features/members/components/profile/NicknameSection';
 import { ProfileSkeleton } from '@/features/members/components/profile/ProfileSkeleton';
 import { useMemberStore } from '@/store/MemberStore';
-import { Alert, View } from 'react-native';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useMemberProfile } from '../hooks/useMembers';
 
@@ -52,13 +53,14 @@ const ProfileScreen = () => {
         <Button title="Leave League" variant="error" onPress={confirmLeaveLeague} disabled={leaveLeague.isPending} />
         {leagueData.owner_id === memberData?.user_id && (
           <View className=" flex-row justify-center  items-center mt-4">
-            <Button
-              title="Delete League"
-              size="sm"
-              color="red"
+            <TouchableOpacity
               onPress={confirmDeleteLeague}
               disabled={deleteLeague.isPending}
-            />
+              className="flex-row items-center gap-2 bg-red-800 rounded-lg p-3"
+            >
+              <Text className="text-white text-sm font-semibold">Delete League</Text>
+              <FontAwesome6 name="trash" size={16} color="white" />
+            </TouchableOpacity>
           </View>
         )}
       </View>

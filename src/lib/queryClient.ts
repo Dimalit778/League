@@ -31,6 +31,7 @@ export const KEYS = {
 
   // ==================== MATCHES ====================
   matches: {
+    finished: (memberId: string) => ['matches', 'finished', memberId] as const,
     uniqueDates: (competitionId: number, fixtureNumber: number) =>
       ['matches', competitionId, fixtureNumber, 'unique-dates'] as const,
     byDate: (competitionId: number, fixtureNumber: number, date: string) =>

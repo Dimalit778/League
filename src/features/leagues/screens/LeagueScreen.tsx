@@ -5,6 +5,7 @@ import TopThree from '@/features/leagues/components/TopThree';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { useMemberStore } from '@/store/MemberStore';
 import { Link } from 'expo-router';
+import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 const LeagueScreen = () => {
@@ -34,19 +35,12 @@ const LeagueScreen = () => {
           offset: 80 * index,
           index,
         })}
-        // maintainVisibleContentPosition={{
-        //   minIndexForVisible: 0,
-        //   autoscrollToTopThreshold: 10,
-        // }}
-
-        // legacyImplementation={false}
-        // disableVirtualization={false}
       />
     </View>
   );
 };
 
-const LeaderboardCard = ({ item, index, isCurrentUser }: any) => {
+const LeaderboardCard = React.memo(({ item, index, isCurrentUser }: any) => {
   const { nickname, avatar_url, total_points } = item;
   const memberId = item.member_id;
   return (
@@ -86,6 +80,7 @@ const LeaderboardCard = ({ item, index, isCurrentUser }: any) => {
       </TouchableOpacity>
     </Link>
   );
-};
+});
 
+LeaderboardCard.displayName = 'LeaderboardCard';
 export default LeagueScreen;

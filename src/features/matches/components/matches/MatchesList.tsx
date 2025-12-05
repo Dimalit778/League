@@ -13,7 +13,7 @@ export default function MatchesList({ matches }: MatchesListProps) {
   if (!matches) return <MatchesSkeleton />;
 
   return (
-    <View className="">
+    <View>
       <FlatList
         ref={flatListRef}
         data={matches}

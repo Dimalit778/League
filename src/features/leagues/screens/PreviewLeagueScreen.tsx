@@ -1,16 +1,14 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { Button, MyImage } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Share, Text, TouchableOpacity, View } from 'react-native';
 
 const PreviewLeague = () => {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
-  const { colors } = useThemeTokens();
   const { data: leagueData } = useGetLeagueAndMembers(leagueId);
-  console.log('leagueData', JSON.stringify(leagueData, null, 2));
+
   const router = useRouter();
 
   const handleCopyJoinCode = async () => {
@@ -29,7 +27,7 @@ const PreviewLeague = () => {
         title: `Join ${leagueData?.name} League`,
       });
     } catch (error) {
-      console.error('Error sharing:', error);
+      console.error(error);
     }
   };
   const handleStartLeague = async () => {

@@ -1,5 +1,5 @@
-import { useTranslation } from '../hooks/useTranslation';
 import { Pressable, Text } from 'react-native';
+import { useTranslation } from '../../../hooks/useTranslation';
 const LanguageToggle = () => {
   const { language, toggleLanguage, t } = useTranslation();
   const nextLanguageLabel = language === 'en' ? t('Hebrew') : t('English');

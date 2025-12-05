@@ -1,4 +1,4 @@
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Feather } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import { Dimensions, FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -42,8 +42,8 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
               onPress={() => onTabPress(index)}
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
-              <Feather name={tab.icon} size={16} color={isActive ? colors.primary : colors.text} />
-              <Text className={`ml-2 font-bold ${isActive ? 'text-white' : 'text-slate-400'}`}>{tab.title}</Text>
+              <Feather name={tab.icon} size={20} color={isActive ? colors.primary : colors.muted} />
+              <Text className={`ml-2 font-bold ${isActive ? 'text-primary' : 'text-muted'}`}>{tab.title}</Text>
             </TouchableOpacity>
           );
         })}

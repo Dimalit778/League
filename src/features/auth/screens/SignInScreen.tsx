@@ -2,7 +2,7 @@ import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
@@ -36,7 +36,6 @@ const SignInScreen = () => {
 
   const onSubmit = async (data: FormData) => {
     const result = await signIn(data.email, data.password);
-    console.log('result sign in,', JSON.stringify(result));
 
     if (result.error && result.error.includes('Email not confirmed')) {
       resendOtp(data.email);

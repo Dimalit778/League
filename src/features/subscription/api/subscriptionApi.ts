@@ -112,15 +112,12 @@ export const subscriptionApi = {
     try {
       // Get current subscription (will return default FREE if none exists)
       const subscription = await this.getCurrentSubscription(userId);
-      console.log('subscription', JSON.stringify(subscription, null, 2));
 
       // This should never be null due to our default FREE subscription
       const subscriptionType = subscription?.subscription_type || 'FREE';
       const limits = this.getSubscriptionLimits(subscriptionType);
 
       const leagueCount = await this.getUserLeagueCount(userId);
-      console.log('leagueCount', leagueCount);
-      console.log('limits', limits);
       if (leagueCount >= limits.maxLeagues) {
         return {
           canCreate: false,
@@ -130,7 +127,7 @@ export const subscriptionApi = {
 
       return { canCreate: true };
     } catch (error) {
-      console.error('Error checking if user can create league:', error);
+      console.error('canCreateLeague error', error);
       return {
         canCreate: false,
         reason: 'An error occurred while checking subscription status.',

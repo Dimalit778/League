@@ -1,4 +1,4 @@
-import { SubscriptionType } from '@/features/subscription/api/subscriptionApi';
+import { SubscriptionType } from '../types';
 
 export const plans = [
   {

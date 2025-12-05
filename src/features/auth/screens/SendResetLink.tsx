@@ -1,7 +1,7 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, InputField, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { EmailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';

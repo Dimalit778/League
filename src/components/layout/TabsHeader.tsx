@@ -1,15 +1,16 @@
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
-import { useGetLeagueWithCompetition } from '@/features/leagues/hooks/useLeagues';
 import { SettingsIcon, TrophyIcon } from '@assets/icons';
 import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AvatarImage } from '../ui';
 
-const TabsHeader = ({ showLeagueName = true }: { showLeagueName?: boolean }) => {
+const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
   const { colors } = useThemeTokens();
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const { data: league } = useGetLeagueWithCompetition(leagueId ?? undefined);
+  const activeMember = useMemberStore((s) => s.activeMember);
+  console.log('activeMember', JSON.stringify(activeMember, null, 2));
+
   const insets = useSafeAreaInsets();
 
   return (
@@ -20,16 +21,23 @@ const TabsHeader = ({ showLeagueName = true }: { showLeagueName?: boolean }) => 
       }}
     >
       <View className="flex-row items-center justify-between py-3 px-4">
-        <Link href="/(app)/(public)/settings" asChild>
-          <Pressable accessibilityRole="button">
-            <SettingsIcon size={30} color={colors.primary} />
-          </Pressable>
-        </Link>
-
-        {showLeagueName && (
-          <Text className="font-bold  text-2xl text-primary" numberOfLines={1}>
-            {league?.name}
-          </Text>
+        {tabsLayout ? (
+          <View className="flex-row items-center gap-3">
+            <AvatarImage
+              path={activeMember?.avatar_url}
+              className="w-10 h-10 rounded-full"
+              nickname={activeMember?.nickname}
+            />
+            <Text className="font-bold  text-lg text-primary" numberOfLines={1}>
+              {activeMember?.nickname}
+            </Text>
+          </View>
+        ) : (
+          <Link href="/settings" asChild>
+            <Pressable accessibilityRole="button">
+              <SettingsIcon size={30} color={colors.primary} />
+            </Pressable>
+          </Link>
         )}
 
         <Link href="/myLeagues" asChild>

@@ -18,16 +18,6 @@ export const leagueApi = {
 
     return data;
   },
-  async getMyLeaguesView(userId: string) {
-    const { data, error } = await supabase
-      .from('my_leagues_view')
-      .select('*')
-      .order('is_primary', { ascending: false }) // primary leagues first
-      .order('league_created_at', { ascending: true });
-
-    if (error) throw error;
-    return data;
-  },
 
   async getLeagueAndMembers(leagueId: string) {
     const { data: leagueData, error: leagueError } = await supabase

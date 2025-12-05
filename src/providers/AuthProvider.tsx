@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       .catch((error) => {
-        console.error('Error initializing auth:', error);
         if (!isMounted) return;
         useAuthStore.setState({
           session: null,

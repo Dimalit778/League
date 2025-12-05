@@ -17,15 +17,6 @@ export const useMyLeagues = () => {
   });
 };
 
-export const useMyLeaguesView = () => {
-  const userId = useAuthStore((state) => state.user?.id ?? '');
-  return useQuery({
-    queryKey: [...KEYS.users.leagues(userId), 'view'] as const,
-    queryFn: () => leagueApi.getMyLeaguesView(userId),
-    enabled: !!userId,
-  });
-};
-
 export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
     queryKey: KEYS.leagues.leaderboard(leagueId),
@@ -41,7 +32,7 @@ export const useRemoveMember = () => {
     mutationFn: (memberId: string) => leagueApi.removeMember(memberId),
 
     onSuccess: async (result, memberId) => {
-      const leagueId = result.leagueId;
+      const leagueId = result?.leagueId;
       if (leagueId) {
         await Promise.all([
           queryClient.invalidateQueries({
@@ -53,9 +44,7 @@ export const useRemoveMember = () => {
         ]);
       }
     },
-    onError: (error) => {
-      console.error('Failed to remove member:', error);
-    },
+    onError: (error) => {},
   });
 };
 
@@ -96,9 +85,15 @@ export const useUpdatePrimaryLeague = () => {
       initializeMember();
     },
     onError: (error) => {
-      console.error('Failed to update primary league:', error);
       initializeMember();
     },
+  });
+};
+export const useFindLeagueByJoinCode = (joinCode: string) => {
+  return useQuery({
+    queryKey: ['leagues', 'joinCode', joinCode],
+    queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
+    enabled: !!joinCode,
   });
 };
 //  -- LEAGUE OPERATIONS
@@ -130,9 +125,7 @@ export const useCreateLeague = () => {
         params: { leagueId },
       });
     },
-    onError: (error) => {
-      console.error('Failed to create league:', error);
-    },
+    onError: (error) => {},
   });
 };
 export const useJoinLeague = () => {
@@ -151,12 +144,10 @@ export const useJoinLeague = () => {
           queryKey: KEYS.members.primary(userId),
         }),
       ]);
-      console.log('joined league ------->,');
     },
 
     onError: (error) => {
-      console.log('error ------->,', JSON.stringify(error));
-      console.error('Failed to join league:', error);
+      console.error(error);
     },
   });
 };
@@ -185,16 +176,13 @@ export const useUpdateLeague = () => {
           }),
       ]);
     },
-    onError: (error) => {
-      console.error('Failed to update league:', error);
-    },
+    onError: (error) => {},
   });
 };
 export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
 
+  const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
     mutationFn: async (leagueId: string) => {
       const result = await leagueApi.leaveLeague(leagueId);
@@ -203,15 +191,15 @@ export const useLeaveLeague = () => {
     onSuccess: async (result, leagueId) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.leaderboard(leagueId),
+          queryKey: KEYS.leagues.all,
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.members(leagueId),
+          queryKey: KEYS.users.all,
         }),
-        userId &&
-          queryClient.invalidateQueries({
-            queryKey: KEYS.members.primary(userId),
-          }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.all,
+        }),
+        initializeMember(),
       ]);
       router.replace('/(app)/(public)/myLeagues');
     },
@@ -239,9 +227,9 @@ export const useDeleteLeague = () => {
         queryClient.invalidateQueries({
           queryKey: KEYS.members.all,
         }),
-        await initializeMember(),
-        router.replace('/(app)/(public)/myLeagues'),
+        initializeMember(),
       ]);
+      router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
       Alert.alert('Error', error.message);

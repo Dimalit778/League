@@ -38,7 +38,6 @@ export const predictionService = {
       .maybeSingle();
 
     if (error) {
-      console.error('Error fetching prediction:', error);
       throw error;
     }
     return data;

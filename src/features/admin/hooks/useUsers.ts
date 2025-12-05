@@ -1,8 +1,9 @@
 import { KEYS } from '@/lib/queryClient';
 import { userService } from '../queries/usersService';
 
-import { useQuery } from '@tanstack/react-query';
-
+import { useMemberStore } from '@/store/MemberStore';
+import { TablesUpdate } from '@/types/database.types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 export const useGetUser = () => {
   return useQuery({
     queryKey: KEYS.users.all,
@@ -13,25 +14,22 @@ export const useGetUser = () => {
 };
 
 export const useUpdateUser = () => {
-  //   const queryClient = useQueryClient();
-  //   const userId =
-  //  const memberId = useMemberStore((s) => s.memberId);
-  //   return useMutation({
-  //     mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) => {
-  //       if (!member?.user_id) {
-  //         throw new Error('User id is required to update the profile');
-  //       }
-  //       return userService.updateUserProfile(member.user_id, updates);
-  //     },
-  //     onSuccess: (data) => {
-  //       if (!member?.user_id) return;
-  //       queryClient.setQueryData(KEYS.users.byId(member.user_id), data);
-  //       queryClient.invalidateQueries({
-  //         queryKey: KEYS.users.byId(member.user_id),
-  //       });
-  //     },
-  //     onError: (error) => {
-  //       console.error('Failed to update user:', error);
-  //     },
-  //   });
+  const queryClient = useQueryClient();
+
+  const userId = useMemberStore((s) => s.userId) ?? '';
+  return useMutation({
+    mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) => {
+      return userService.updateUserProfile(userId, updates);
+    },
+    onSuccess: (data) => {
+      if (!userId) return;
+      queryClient.setQueryData(KEYS.users.detail(userId), data);
+      queryClient.invalidateQueries({
+        queryKey: KEYS.users.detail(userId),
+      });
+    },
+    onError: (error) => {
+      console.error('updateUser error', error);
+    },
+  });
 };

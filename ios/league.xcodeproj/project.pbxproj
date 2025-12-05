@@ -23,7 +23,7 @@
 		4EE3297414956F303469D7E6 /* libPods-league.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-league.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		806009B8B6A4DC50FA3CF511 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-league/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		8E2D1CC0CA46C31571E713FC /* Pods-league.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-league.debug.xcconfig"; path = "Target Support Files/Pods-league/Pods-league.debug.xcconfig"; sourceTree = "<group>"; };
-		9F975E167BA88792FB6E2BE0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = league/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		9F975E167BA88792FB6E2BE0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = league/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = league/SplashScreen.storyboard; sourceTree = "<group>"; };
 		ABF3317C4F77F979B7915E55 /* Pods-league.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-league.release.xcconfig"; path = "Target Support Files/Pods-league/Pods-league.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -128,7 +128,6 @@
 				8E2D1CC0CA46C31571E713FC /* Pods-league.debug.xcconfig */,
 				ABF3317C4F77F979B7915E55 /* Pods-league.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -390,6 +389,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = league/league.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9RX475USL3;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -426,6 +426,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = league/league.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9RX475USL3;
 				INFOPLIST_FILE = league/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

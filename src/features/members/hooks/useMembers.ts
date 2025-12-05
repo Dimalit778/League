@@ -22,10 +22,11 @@ const invalidateMemberQueries = (
   }
 };
 
-export const useMemberStats = (memberId: string) => {
+export const useMemberStats = (memberId?: string) => {
   return useQuery({
-    queryKey: KEYS.members.stats(memberId),
-    queryFn: () => memberApi.getMemberStats(memberId),
+    queryKey: KEYS.members.stats(memberId as string),
+    queryFn: () => memberApi.getMemberStats(memberId as string),
+    enabled: !!memberId,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });
@@ -49,33 +50,33 @@ export const useUpdateMember = () => {
         queryClient.invalidateQueries({ queryKey: KEYS.members.primary(userId) });
       }
     },
-    onError: (error) => {
-      console.error('Failed to update member:', error);
-    },
+    onError: (error) => {},
   });
 };
 
 export const useDeleteMemberImage = () => {
   const queryClient = useQueryClient();
-
+  const { setActiveMember, activeMember } = useMemberStore();
   return useMutation({
     mutationFn: ({ memberId, currentPath }: { memberId: string; currentPath?: string | null }) => {
       return memberApi.deleteImage(memberId, currentPath);
     },
     onSuccess: (data) => {
       invalidateMemberQueries(queryClient, data.id, data.league_id);
+      setActiveMember({ ...activeMember!, avatar_url: null });
     },
   });
 };
 
 export const useUploadMemberImage = () => {
   const queryClient = useQueryClient();
-
+  const { setActiveMember, activeMember } = useMemberStore();
   return useMutation({
     mutationFn: ({ memberId, avatarUrl }: { memberId: string; avatarUrl: ImagePicker.ImagePickerAsset }) => {
       return memberApi.uploadMemberImage(memberId, avatarUrl);
     },
     onSuccess: (data) => {
+      setActiveMember({ ...activeMember!, avatar_url: data.avatar_url });
       invalidateMemberQueries(queryClient, data.id, data.league_id);
     },
   });

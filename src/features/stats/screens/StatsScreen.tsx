@@ -1,19 +1,19 @@
 import { Error } from '@/components/layout';
+import { useMemberStats } from '@/features/members/hooks/useMembers';
 import PredictionChart from '@/features/stats/components/stats/PredictionChart';
 import SkeletonStats from '@/features/stats/components/stats/SkeletonStats';
 import StatsCard from '@/features/stats/components/stats/StatsCard';
-import { useMemberStats } from '@/features/members/hooks/useMembers';
 import { useMemberStore } from '@/store/MemberStore';
-import { StatsType } from '@/types';
+
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-
+import { StatsType } from '../types';
 const StatsScreen = () => {
-  const memberId = useMemberStore((s) => s.memberId);
+  const memberId = useMemberStore((s) => s.memberId) as string;
   const isFocused = useIsFocused();
 
-  const { data: stats, isLoading, error, refetch } = useMemberStats(memberId ?? '');
+  const { data: stats, isLoading, error, refetch } = useMemberStats(memberId);
 
   const onRefresh = useCallback(() => {
     refetch();
@@ -77,4 +77,3 @@ const StatsScreen = () => {
 };
 
 export default StatsScreen;
-

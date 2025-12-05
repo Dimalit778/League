@@ -2,7 +2,7 @@ import { KEYS } from '@/lib/queryClient';
 import { useMemberStore } from '@/store/MemberStore';
 import { TablesInsert } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { predictionService } from '../queries/predictionService';
+import { predictionService } from '../api/predictionService';
 // Get Predictions by League Fixture
 export const useGetPredictionsByLeagueFixture = (leagueId: string, fixture: number) => {
   return useQuery({
@@ -14,6 +14,7 @@ export const useGetPredictionsByLeagueFixture = (leagueId: string, fixture: numb
 // Upsert Prediction (Create or Update)
 export const useUpsertPrediction = () => {
   const queryClient = useQueryClient();
+  const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const leagueId = useMemberStore((s) => s.leagueId) ?? '';
   const memberId = useMemberStore((s) => s.memberId) ?? '';
   return useMutation({
@@ -21,23 +22,34 @@ export const useUpsertPrediction = () => {
       return predictionService.upsertPrediction(prediction);
     },
     onSuccess: (data) => {
+      // Invalidate all predictions queries for the league
       queryClient.invalidateQueries({
-        queryKey: KEYS.predictions.byLeagueFixture(leagueId, data.match_id),
+        queryKey: ['predictions', 'league', leagueId],
       });
+
+      // Invalidate all matches queries that include this member or competition
+      // This ensures the matches list updates with the new prediction
       queryClient.invalidateQueries({
         queryKey: ['matches'],
         predicate: (query) => {
           const key = query.queryKey as any[];
-          return key.includes(memberId);
+          return (
+            key.includes(memberId) || key.includes(competitionId) || key.includes('member') || key.includes('fixture')
+          );
         },
       });
+
+      // Invalidate specific match detail with predictions
       queryClient.invalidateQueries({
         queryKey: KEYS.matches.withPredictions(leagueId, data.match_id),
       });
+
+      // Invalidate match detail
+      queryClient.invalidateQueries({
+        queryKey: KEYS.matches.detail(data.match_id),
+      });
     },
-    onError: (error) => {
-      console.error('Failed to save prediction:', error);
-    },
+    onError: (error) => {},
   });
 };
 

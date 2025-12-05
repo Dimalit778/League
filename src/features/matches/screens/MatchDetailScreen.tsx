@@ -19,10 +19,9 @@ const MatchDetailScreen = () => {
   if (isLoading) return <LoadingOverlay />;
   if (error) return <Error error={error} />;
   if (!matchData) return <Error error={{ message: 'No match data found' }} />;
-  console.log('matchData', JSON.stringify(matchData, null, 2));
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 " style={{ backgroundColor: '#000' }}>
       <ImageBackground
         className="absolute top-0 left-0 right-0 w-full h-[350px] opacity-60"
         resizeMode={'cover'}

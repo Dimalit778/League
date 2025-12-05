@@ -1,18 +1,21 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton } from '@/components/ui';
-import { SubscriptionType } from '@/features/subscription/api/subscriptionApi';
+
 import SubscriptionCard from '@/features/subscription/components/subscription/SubscriptionCard';
 import SubscriptionFeatures from '@/features/subscription/components/subscription/SubscriptionFeatures';
 import { useCreateSubscription, useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { useAuthStore } from '@/store/AuthStore';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
 
 const SubscriptionScreen = () => {
+  const userid = useAuthStore.getState().user?.id ?? null;
   const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
-  const { mutate: createSubscription, isPending: isCreatingSubscription } = useCreateSubscription();
+  const { mutate: createSubscription, isPending: isCreatingSubscription } = useCreateSubscription(userid);
 
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
 

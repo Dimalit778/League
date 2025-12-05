@@ -5,7 +5,7 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   color?: string;
-  variant?: 'primary' | 'secondary' | 'error' | 'border';
+  variant?: 'primary' | 'secondary' | 'error' | 'border' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
@@ -18,7 +18,6 @@ const Button = ({
   title,
   onPress,
   variant = 'primary',
-  color = '',
   size = 'md',
   className = '',
   loading = false,
@@ -53,6 +52,15 @@ const Button = ({
     secondary: 'bg-secondary',
     error: 'bg-error',
     border: 'bg-border',
+    outline: 'bg-transparent border border-text',
+  };
+
+  const textVariantClasses = {
+    primary: 'text-white',
+    secondary: 'text-white',
+    error: 'text-white',
+    border: 'text-white',
+    outline: 'text-text',
   };
 
   return (
@@ -61,11 +69,10 @@ const Button = ({
       className={cn(
         'rounded-[17px] items-center justify-center flex-row',
         sizeClasses[size],
-        !color && variantClasses[variant],
+        variantClasses[variant],
         (disabled || loading) && 'opacity-50',
         className
       )}
-      style={color ? { backgroundColor: color, borderRadius: 17 } : undefined}
       onPress={handlePress}
       activeOpacity={0.8}
       accessible={true}
@@ -77,7 +84,7 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text className={cn('text-text font-semibold', textSizeClasses[size])}>{title}</Text>
+        <Text className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}>{title}</Text>
       )}
     </TouchableOpacity>
   );

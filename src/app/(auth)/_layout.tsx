@@ -1,5 +1,5 @@
 import { SplashScreen } from '@/components/layout';
-import { useThemeTokens } from '@/features/settings/hooks/useThemeTokens';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { Stack } from 'expo-router';
 
