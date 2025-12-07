@@ -15,20 +15,18 @@ import TrophyIcon from './TrophyIcon';
 import AddIcon from './AddIcon';
 import ArrowDownIcon from './ArrowDownIcon';
 import ArrowLeftIcon from './ArrowLeftIcon';
+import ArrowRightIcon from './ArrowRightIcon';
 import ArrowUpIcon from './ArrowUpIcon';
 import GoogleLogoIcon from './GoogleLogoIcon';
 import SettingsIcon from './SettingsIcon';
 import StarIcon from './StarIcon';
 import TrashIcon from './TrashIcon';
-// Points Icons
-import PlusSixIcon from './PlusSixIcon';
-import PlusThreeIcon from './PlusThreeIcon';
-import PlusZeroIcon from './PlusZeroIcon';
 
 export {
   AddIcon,
   ArrowDownIcon,
   ArrowLeftIcon,
+  ArrowRightIcon,
   ArrowUpIcon,
   EmailIcon,
   EyeClosedIcon,
@@ -38,9 +36,6 @@ export {
   LeagueIcon,
   LockIcon,
   MatchesIcon,
-  PlusSixIcon,
-  PlusThreeIcon,
-  PlusZeroIcon,
   ProfileIcon,
   RankIcon,
   SettingsIcon,

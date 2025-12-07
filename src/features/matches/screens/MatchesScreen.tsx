@@ -3,6 +3,7 @@ import { useGetCompetitionFixtures } from '@/features/leagues/hooks/useCompetiti
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberStore } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
@@ -15,6 +16,9 @@ const MatchesScreen = () => {
   const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
   const memberId = useMemberStore((s) => s.memberId) ?? '';
   const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
+  const { language } = useTranslation();
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
+
   const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
   const currentFixture = fixturesData?.currentFixture ?? 0;
 
@@ -31,18 +35,15 @@ const MatchesScreen = () => {
     const wasOnMatchDetail = previousPathnameRef.current?.includes('/match/');
     const wasOnMatchesPage = previousPathnameRef.current?.includes('/Matches');
 
-    // If we're navigating away from matches to match detail, preserve the fixture
     if (isOnMatchDetail && wasOnMatchesPage && selectedFixture) {
       preservedFixtureRef.current = selectedFixture;
       isNavigatingToMatchRef.current = true;
     }
 
-    // If we're coming back from match detail to matches, mark that we should restore
     if (isOnMatchesPage && wasOnMatchDetail && preservedFixtureRef.current) {
       isNavigatingToMatchRef.current = true;
     }
 
-    // If we're coming to matches from other pages (not match detail), clear preserved fixture
     if (isOnMatchesPage && !wasOnMatchDetail && !wasOnMatchesPage) {
       preservedFixtureRef.current = null;
       isNavigatingToMatchRef.current = false;
@@ -73,8 +74,7 @@ const MatchesScreen = () => {
   const {
     data: matches,
     isLoading: matchesLoading,
-    // isFetching: matchesFetching,
-    // isRefetching: matchesRefetching,
+
     refetch: matchesRefetch,
     error: matchesError,
   } = useGetMatches({
@@ -97,12 +97,12 @@ const MatchesScreen = () => {
       const endDate = dates[dates.length - 1];
 
       if (startDate && endDate) {
-        ranges[fixture] = formatDateRange(startDate.toISOString(), endDate.toISOString());
+        ranges[fixture] = formatDateRange(startDate.toISOString(), endDate.toISOString(), locale);
       }
     });
 
     return ranges;
-  }, [matches, allFixtures]);
+  }, [matches, allFixtures, locale]);
 
   if (fixturesLoading || matchesLoading || !selectedFixture) {
     return (
@@ -131,7 +131,7 @@ const MatchesScreen = () => {
         refreshControl={<RefreshControl refreshing={false} onRefresh={matchesRefetch} />}
         showsVerticalScrollIndicator={false}
       >
-        <MatchesList matches={matches ?? []} />
+        <MatchesList matches={matches} />
       </ScrollView>
     </View>
   );

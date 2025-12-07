@@ -1,5 +1,7 @@
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
-import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import { CText } from './CText';
 
 interface ButtonProps {
   title: string;
@@ -25,6 +27,8 @@ const Button = ({
   accessibilityLabel,
   accessibilityHint,
 }: ButtonProps) => {
+  const { t } = useTranslation();
+
   const handlePress = () => {
     if (!loading && !disabled) {
       onPress();
@@ -33,7 +37,12 @@ const Button = ({
 
   const label = accessibilityLabel || title;
   const hint =
-    accessibilityHint || (loading ? 'Loading' : disabled ? 'Button disabled' : `Double tap to ${title.toLowerCase()}`);
+    accessibilityHint ||
+    (loading
+      ? t('Loading')
+      : disabled
+        ? t('Button disabled')
+        : t('Double tap to {{action}}', { action: title.toLowerCase() }));
 
   const sizeClasses = {
     sm: 'px-3 py-2 min-h-[32px]',
@@ -84,7 +93,7 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <Text className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}>{title}</Text>
+        <CText className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}>{title}</CText>
       )}
     </TouchableOpacity>
   );

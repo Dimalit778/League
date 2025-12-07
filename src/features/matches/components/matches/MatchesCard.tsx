@@ -1,10 +1,12 @@
+import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { AddIcon } from '@assets/icons';
 import { Image as ExpoImage } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
 import { getPredictionResultLabel } from '../../utils/pointsColor';
@@ -46,7 +48,7 @@ const TeamDisplay = ({ team }: TeamDisplayProps) => (
       transition={0}
       priority="high"
     />
-    <Text className="text-text text-xs text-center mt-1">{team.tla}</Text>
+    <CText className="text-text text-xs text-center mt-1">{team.tla}</CText>
   </View>
 );
 
@@ -56,9 +58,9 @@ const ScoreDisplay = ({ isFinished, isLive, isScheduled, homeScore, awayScore }:
   if (isFinished) {
     return (
       <View className="flex-row items-center">
-        <Text className="text-muted text-xl ">{homeScore}</Text>
+        <CText className="text-muted text-xl ">{homeScore}</CText>
         <View className="w-0.5 h-full bg-border mx-3" />
-        <Text className="text-muted text-xl ">{awayScore}</Text>
+        <CText className="text-muted text-xl ">{awayScore}</CText>
       </View>
     );
   }
@@ -68,9 +70,9 @@ const ScoreDisplay = ({ isFinished, isLive, isScheduled, homeScore, awayScore }:
       <View className="items-center ">
         <View className="w-1.5 h-1.5 rounded-full bg-success" />
         <View className="flex-row items-center justify-center gap-1 mt-1">
-          <Text className="text-text text-xl ">{homeScore}</Text>
-          <Text className="text-text text-xl ">:</Text>
-          <Text className="text-text text-xl ">{awayScore}</Text>
+          <CText className="text-text text-xl ">{homeScore}</CText>
+          <CText className="text-text text-xl ">:</CText>
+          <CText className="text-text text-xl ">{awayScore}</CText>
         </View>
       </View>
     );
@@ -88,20 +90,23 @@ const ScoreDisplay = ({ isFinished, isLive, isScheduled, homeScore, awayScore }:
 };
 
 const HeaderDisplay = ({ kickOff, isScheduled, isLive, isFinished }: HeaderDisplayProps) => {
-  const dateStr = formatMatchdayDate(kickOff);
+  const { t, language } = useTranslation();
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
+  const dateStr = formatMatchdayDate(kickOff, locale);
   const kickOffTime = formatTime(kickOff);
 
   return (
     <View className="flex-row items-center justify-between p-1 px-2  ">
-      <Text className="text-text text-xs font-bold">{dateStr}</Text>
-      <Text className={isLive ? 'text-success text-xs ' : isFinished ? 'text-muted text-xs ' : 'text-text text-xs '}>
-        {isScheduled ? kickOffTime : isLive ? 'Live' : isFinished ? 'FT' : null}
-      </Text>
+      <CText className="text-text text-xs font-bold">{dateStr}</CText>
+      <CText className={isLive ? 'text-success text-xs ' : isFinished ? 'text-muted text-xs ' : 'text-text text-xs '}>
+        {isScheduled ? kickOffTime : isLive ? t('Live') : isFinished ? t('FT') : null}
+      </CText>
     </View>
   );
 };
 
 const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) => {
+  const { t } = useTranslation();
   const points = prediction?.points ?? 0;
   const isPredictionFinished = prediction?.is_finished ?? false;
   const predictionScore =
@@ -112,30 +117,30 @@ const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) =
       ? `${prediction.home_score} - ${prediction.away_score}`
       : null;
   const predictionResult = getPredictionResultLabel(prediction?.points, isPredictionFinished, isFinished);
-
+  const predictionResultTitle = predictionResult?.title ?? '';
   return (
     <View className="flex-row items-center justify-between">
       {isPredictionFinished && isFinished && (
         <View className="w-1/3 flex-row items-center">
-          <Text className="text-text text-sm" style={{ color: predictionResult?.color }}>
-            {predictionResult?.title}
-          </Text>
+          <CText className="text-text text-sm" style={{ color: predictionResult?.color }}>
+            {t(predictionResultTitle)}
+          </CText>
         </View>
       )}
 
       <View className="flex-1 items-center">
         {isFinished && !predictionScore ? (
-          <Text className="text-muted text-xs ">No prediction</Text>
+          <CText className="text-muted text-xs ">{t('No prediction')}</CText>
         ) : (
-          <Text className="text-text text-sm">{predictionScore}</Text>
+          <CText className="text-text text-sm">{predictionScore}</CText>
         )}
       </View>
 
       {isPredictionFinished && isFinished && points != null && (
         <View className="w-1/3 flex-row items-center justify-end">
-          <Text className="text-text text-sm font-semibold" style={{ color: predictionResult?.color }}>
-            {points} pts
-          </Text>
+          <CText className="text-text text-sm font-semibold" style={{ color: predictionResult?.color }}>
+            {points} {t('pts')}
+          </CText>
         </View>
       )}
     </View>
@@ -143,7 +148,7 @@ const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) =
 };
 export default function MatchesCard({ match }: MatchesCardProps) {
   const { colors } = useThemeTokens();
-  console.log('match', JSON.stringify(match, null, 2));
+
   const matchStatus = getMatchStatus(match.status);
   const prediction = match.predictions?.[0] ?? null;
   const homeScore = match.score?.fullTime?.home ?? null;
@@ -156,34 +161,36 @@ export default function MatchesCard({ match }: MatchesCardProps) {
   const predictionResult = getPredictionResultLabel(prediction?.points, prediction?.is_finished, isFinished);
 
   return (
-    <Link href={`/(app)/(member)/match/${match.id}`} asChild>
-      <Pressable
-        className="flex-1 m-1.5  rounded-md border border-border "
-        style={{
-          backgroundColor: isFinished ? hexToRgba(colors.surface, 0.4) : '',
-          borderColor: predictionResult?.color,
-        }}
-      >
-        <HeaderDisplay kickOff={match.kick_off} isScheduled={isScheduled} isLive={isLive} isFinished={isFinished} />
+    <View className="flex-1 max-w-[50%] ">
+      <Link href={`/(app)/(member)/match/${match.id}`} asChild>
+        <Pressable
+          className="flex-1 m-1.5  rounded-md border border-border "
+          style={{
+            backgroundColor: isFinished ? hexToRgba(colors.surface, 0.4) : '',
+            borderColor: predictionResult?.color,
+          }}
+        >
+          <HeaderDisplay kickOff={match.kick_off} isScheduled={isScheduled} isLive={isLive} isFinished={isFinished} />
 
-        <View className="flex-row py-3  ">
-          <TeamDisplay team={match.home_team} />
+          <View className="flex-row py-3  ">
+            <TeamDisplay team={match.home_team} />
 
-          <ScoreDisplay
-            isFinished={isFinished}
-            isLive={isLive}
-            isScheduled={isScheduled}
-            homeScore={homeScore}
-            awayScore={awayScore}
-          />
+            <ScoreDisplay
+              isFinished={isFinished}
+              isLive={isLive}
+              isScheduled={isScheduled}
+              homeScore={homeScore}
+              awayScore={awayScore}
+            />
 
-          <TeamDisplay team={match.away_team} />
-        </View>
+            <TeamDisplay team={match.away_team} />
+          </View>
 
-        <View className="flex-1 bg-surface border-t border-border px-2 rounded-b-md">
-          <PredictionDisplay prediction={prediction} isFinished={isFinished} />
-        </View>
-      </Pressable>
-    </Link>
+          <View className="flex-1 bg-surface border-t border-border px-2 rounded-b-md">
+            <PredictionDisplay prediction={prediction} isFinished={isFinished} />
+          </View>
+        </Pressable>
+      </Link>
+    </View>
   );
 }

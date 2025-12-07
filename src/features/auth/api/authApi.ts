@@ -1,11 +1,11 @@
 import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
 import { KEYS } from '@/lib/queryClient';
 import { supabase } from '@/lib/supabase';
+import { useMemberStore } from '@/store/MemberStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import type { QueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { useMemberStore } from '@/store/MemberStore';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -220,7 +220,7 @@ export const sendResetPasswordLink = async (email: string) => {
     }
 
     const redirectTo = getPasswordResetRedirectUri();
-    console.log('redirectTo', redirectTo);
+
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
       redirectTo,
     });
@@ -255,4 +255,3 @@ export const resendPasswordResetOtp = async (email: string) => {
     return { success: false, error: userFriendlyError };
   }
 };
-

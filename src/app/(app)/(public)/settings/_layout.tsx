@@ -15,7 +15,7 @@ export default function SettingsLayout() {
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="privacy" options={{ headerShown: false }} />
-      <Stack.Screen name="edit-user" options={{ headerShown: false }} />
+
       <Stack.Screen name="help" options={{ headerShown: false }} />
     </Stack>
   );

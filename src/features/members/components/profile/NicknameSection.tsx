@@ -1,11 +1,12 @@
-import { Button } from '@/components/ui';
+import { Button, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 import * as yup from 'yup';
 import { useUpdateMember } from '../../hooks/useMembers';
 
@@ -15,6 +16,7 @@ type NicknameSectionProps = {
 
 export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [displayNickname, setDisplayNickname] = useState(formatNameCapitalize(initialNickname));
   const updateMember = useUpdateMember();
@@ -31,7 +33,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
   } = useForm({
     resolver: yupResolver(
       yup.object().shape({
-        nickname: yup.string().min(2, 'Nickname must be at least 2 characters').required('Nickname is required'),
+        nickname: yup.string().min(2, t('Nickname must be at least 2 characters')).required(t('Nickname is required')),
       })
     ),
     mode: 'onChange',
@@ -76,16 +78,18 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                placeholder="Nickname"
+                placeholder={t('Nickname')}
                 placeholderTextColor="#999"
                 autoFocus
               />
             )}
           />
-          {errors.nickname && <Text className="text-red-500 mb-3 text-sm">{errors.nickname.message}</Text>}
+          {errors.nickname && (
+            <CText className="text-error mb-3 text-sm text-center">{t(errors.nickname.message as string)}</CText>
+          )}
           <View className="flex-row gap-2">
             <Button
-              title="Save"
+              title={t('Save')}
               onPress={handleSaveNickname}
               variant="secondary"
               loading={updateMember.isPending}
@@ -93,7 +97,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
               className="flex-1"
             />
             <Button
-              title="Cancel"
+              title={t('Cancel')}
               onPress={handleCancelEdit}
               variant="error"
               disabled={updateMember.isPending}
@@ -103,7 +107,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
         </View>
       ) : (
         <View className="flex-row items-center justify-between bg-surface rounded-lg px-4 py-3 border border-border">
-          <Text className="text-text text-lg font-semibold">{displayNickname}</Text>
+          <CText className="text-text text-lg font-semibold">{displayNickname}</CText>
           <Pressable onPress={handleStartEdit} className="p-2">
             <FontAwesome6 name="pen-to-square" size={16} color={colors.secondary} />
           </Pressable>

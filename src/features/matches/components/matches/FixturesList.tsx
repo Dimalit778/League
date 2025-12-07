@@ -1,7 +1,7 @@
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { CText } from '@/components/ui';
 import { cn } from '@/lib/nativeWind';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, LayoutChangeEvent, Pressable, Text, View } from 'react-native';
+import { FlatList, LayoutChangeEvent, Pressable, View } from 'react-native';
 
 type FixturesListProps = {
   fixtures: number[];
@@ -17,20 +17,13 @@ type FixtureItemProps = {
   selectedFixture: number;
   isToday?: boolean;
   dateRange?: string;
-  colors: {
-    primary: string;
-    surface: string;
-    background: string;
-    text: string;
-    border: string;
-  };
   onPress: (fixture: number) => void;
 };
 const fixtureWidth = 55;
 const fixtureHeight = 30;
 const fixtureMargin = 7;
 const fixtureItemSpacing = fixtureWidth + fixtureMargin * 2;
-const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, colors, onPress }: FixtureItemProps) => {
+const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, onPress }: FixtureItemProps) => {
   const isSelected = selectedFixture === fixture;
 
   return (
@@ -46,7 +39,7 @@ const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, colors, onP
           isSelected ? 'bg-primary text-text' : isToday ? 'border-[1px] border-text' : 'border-[0.5px] border-border'
         )}
       >
-        <Text
+        <CText
           className={cn(
             'text-text font-bold text-sm',
             isToday ? 'text-text' : 'text-text',
@@ -54,9 +47,9 @@ const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, colors, onP
           )}
         >
           {fixture}
-        </Text>
+        </CText>
       </Pressable>
-      {dateRange && <Text className="text-text text-xs ">{dateRange}</Text>}
+      {dateRange && <CText className="text-text text-xs ">{dateRange}</CText>}
     </View>
   );
 };
@@ -71,7 +64,6 @@ export default function FixturesList({
 }: FixturesListProps) {
   const ref = useRef<FlatList>(null);
 
-  const { colors } = useThemeTokens();
   const [listWidth, setListWidth] = useState(0);
 
   const onLayout = (e: LayoutChangeEvent) => setListWidth(e.nativeEvent.layout.width);
@@ -92,7 +84,6 @@ export default function FixturesList({
 
   const onScrollToIndexFailed = useCallback(
     (info: { index: number; highestMeasuredFrameIndex: number }) => {
-      // If index is out of range, scroll to the last available index
       const maxIndex = fixtures.length - 1;
       const safeIndex = Math.min(info.index, maxIndex);
 
@@ -123,7 +114,6 @@ export default function FixturesList({
             selectedFixture={selectedFixture}
             isToday={currentFixture !== undefined && item === currentFixture}
             dateRange={fixtureDateRanges[item]}
-            colors={colors ?? {}}
             onPress={handleFixturePress}
           />
         )}

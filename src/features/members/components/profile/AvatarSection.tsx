@@ -1,5 +1,6 @@
 import { LoadingOverlay } from '@/components/layout';
 import { AvatarImage } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
@@ -14,6 +15,7 @@ type AvatarSectionProps = {
 };
 
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
+  const { t } = useTranslation();
   const memberId = useMemberStore((s) => s.memberId);
   const leagueId = useMemberStore((s) => s.leagueId);
   const [image, setImage] = useState<string | null>(avatarUrl);
@@ -34,7 +36,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
       // Request permissions
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert('Permission required', 'We need access to your photos.');
+        Alert.alert(t('Permission required'), t('We need access to your photos.'));
         return;
       }
 
@@ -53,7 +55,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         setPickedAsset(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      Alert.alert(t('Error'), t('Failed to pick image'));
       console.error(error);
     }
   };
@@ -73,7 +75,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
       setPreviewImage(null);
       setPickedAsset(null);
     } catch (error) {
-      Alert.alert('Error', 'Failed to upload image');
+      Alert.alert(t('Error'), t('Failed to upload image'));
       setImage(previousImageRef.current);
       console.error(error);
     }
@@ -82,10 +84,10 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   const handleDeleteImage = async () => {
     if (!memberId || !image) return;
 
-    Alert.alert('Delete Profile Picture', 'Are you sure you want to delete your profile picture?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('Delete Profile Picture'), t('Are you sure you want to delete your profile picture?'), [
+      { text: t('Cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('Delete'),
         style: 'destructive',
         onPress: async () => {
           previousImageRef.current = image;
@@ -93,7 +95,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
           try {
             await deleteImage.mutateAsync({ memberId, currentPath: image });
           } catch (error) {
-            Alert.alert('Error', 'Failed to delete image');
+            Alert.alert(t('Error'), t('Failed to delete image'));
 
             setImage(previousImageRef.current);
             console.error(error);
@@ -128,7 +130,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               onPress={handleCancelPreview}
               disabled={uploadImage.isPending}
               className="absolute -bottom-2 -left-2 bg-red-500 rounded-full p-3 border-2 border-background"
-              accessibilityLabel="Cancel image selection"
+              accessibilityLabel={t('Cancel image selection')}
               accessibilityRole="button"
             >
               <FontAwesome6 name="xmark" size={16} color="white" />
@@ -137,7 +139,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               onPress={handleSavePreview}
               disabled={uploadImage.isPending}
               className="absolute -bottom-2 -right-2 bg-primary rounded-full p-3 border-2 border-background"
-              accessibilityLabel="Save profile picture"
+              accessibilityLabel={t('Save profile picture')}
               accessibilityRole="button"
             >
               <FontAwesome6 name="check" size={16} color="white" />
@@ -149,7 +151,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
               onPress={handleImagePicker}
               disabled={uploadImage.isPending || deleteImage.isPending}
               className="absolute -bottom-2 -right-2 bg-primary rounded-full p-3 border-2 border-background"
-              accessibilityLabel="Change profile picture"
+              accessibilityLabel={t('Change profile picture')}
               accessibilityRole="button"
             >
               <FontAwesome6 name="camera" size={16} color="white" />
@@ -160,7 +162,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
                 onPress={handleDeleteImage}
                 disabled={deleteImage.isPending || uploadImage.isPending}
                 className="absolute -bottom-2 -left-2 bg-red-500 rounded-full p-3 border-2 border-background"
-                accessibilityLabel="Delete profile picture"
+                accessibilityLabel={t('Delete profile picture')}
                 accessibilityRole="button"
               >
                 <FontAwesome6 name="trash" size={16} color="white" />

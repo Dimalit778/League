@@ -1,10 +1,10 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, Screen } from '@/components/ui';
+import { BackButton, Button, CText, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 const VerifyEmailScreen = () => {
@@ -118,7 +118,7 @@ const VerifyEmailScreen = () => {
       <Screen>
         <BackButton />
         <View className="flex-1 items-center justify-center px-5">
-          <Text className="text-error text-center">Email address is missing. Please try signing up again.</Text>
+          <CText className="text-error text-center">Email address is missing. Please try signing up again.</CText>
         </View>
       </Screen>
     );
@@ -130,11 +130,11 @@ const VerifyEmailScreen = () => {
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
-          <Text className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
             Verify Email
-          </Text>
-          <Text className="text-center text-muted font-nunito-bold mt-2">We've sent a 6-digit code to</Text>
-          <Text className="text-center text-secondary font-nunito-bold mt-1">{email}</Text>
+          </CText>
+          <CText className="text-center text-muted font-nunito-bold mt-2">We've sent a 6-digit code to</CText>
+          <CText className="text-center text-secondary font-nunito-bold mt-1">{email}</CText>
         </View>
 
         <View className="px-5 gap-4">
@@ -168,19 +168,19 @@ const VerifyEmailScreen = () => {
 
           {errorMessage && (
             <View className="">
-              <Text className="text-error text-center">{errorMessage}</Text>
+              <CText className="text-error text-center">{errorMessage}</CText>
             </View>
           )}
 
           {successMessage && (
             <View className="">
-              <Text className="text-green-500 text-center font-nunito-bold">Email verified successfully!</Text>
+              <CText className="text-green-500 text-center font-nunito-bold">Email verified successfully!</CText>
             </View>
           )}
 
           {resendSuccess && (
             <View className="">
-              <Text className="text-green-500 text-center">Code resent successfully!</Text>
+              <CText className="text-green-500 text-center">Code resent successfully!</CText>
             </View>
           )}
 
@@ -194,9 +194,9 @@ const VerifyEmailScreen = () => {
           />
 
           <View className="flex-row items-center justify-center mt-4 gap-2">
-            <Text className="text-muted text-center">Didn't receive the code?</Text>
+            <CText className="text-muted text-center">Didn't receive the code?</CText>
             {resendCoolDown > 0 ? (
-              <Text className="text-muted text-center">Resend in {resendCoolDown}s</Text>
+              <CText className="text-muted text-center">Resend in {resendCoolDown}s</CText>
             ) : (
               <Pressable
                 onPress={handleResend}
@@ -206,7 +206,7 @@ const VerifyEmailScreen = () => {
                 accessibilityLabel="Resend verification code"
                 accessibilityHint="Resend the verification code to your email"
               >
-                <Text className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</Text>
+                <CText className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</CText>
               </Pressable>
             )}
           </View>

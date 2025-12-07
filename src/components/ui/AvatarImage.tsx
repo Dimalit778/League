@@ -1,7 +1,8 @@
+import { CText } from '@/components/ui/CText';
 import { cn } from '@/lib/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 type AvatarImageProps = {
   nickname?: string | null;
@@ -40,7 +41,7 @@ const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => 
           accessibilityRole="text"
           accessibilityLabel={nickname ? `${nickname}'s avatar initial ${initial}` : `Avatar initial ${initial}`}
         >
-          <Text className="text-primary font-semibold text-2xl">{initial}</Text>
+          <CText className="text-primary font-semibold text-2xl">{initial}</CText>
         </View>
       )}
     </View>

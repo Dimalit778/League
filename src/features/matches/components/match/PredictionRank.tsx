@@ -1,6 +1,7 @@
-import { AvatarImage } from '@/components/ui';
+import { AvatarImage, CText } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberStore } from '@/store/MemberStore';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { PredictionMemberType } from '../../types';
 
 type RankCardProps = {
@@ -23,7 +24,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
       <View className="flex-row items-center gap-3 flex-1">
         {/* Position pill */}
         <View className="w-7 h-7 rounded-full border border-border items-center justify-center">
-          <Text className="text-xs text-secondary">{index}</Text>
+          <CText className="text-xs text-secondary">{index}</CText>
         </View>
 
         {/* Avatar */}
@@ -32,16 +33,16 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
         </View>
 
         {/* Nickname */}
-        <Text className={`text-sm font-semibold ${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
+        <CText className={`text-sm font-semibold ${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
           {item.league_member?.nickname}
-        </Text>
+        </CText>
       </View>
 
       {/* Middle: prediction */}
       <View className="px-2 py-1 rounded-xl border border-border mx-4 ">
-        <Text className="text-xs text-text">
+        <CText className="text-xs text-text">
           {item.home_score ?? '-'} - {item.away_score ?? '-'}
-        </Text>
+        </CText>
       </View>
 
       {/* Right: points bubble */}
@@ -51,14 +52,14 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
           borderColor: borderColor,
         }}
       >
-        <Text
+        <CText
           className="text-xs font-bold"
           style={{
             color: borderColor,
           }}
         >
           {item.points ?? 0}
-        </Text>
+        </CText>
       </View>
     </View>
   );
@@ -66,13 +67,13 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
 
 export default function PredictionRank({ predictions }: { predictions: PredictionMemberType[] }) {
   const memberId = useMemberStore((state) => state.memberId) ?? '';
-
+  const { t } = useTranslation();
   return (
     <View className="flex-1 bg-background p-4">
       <View className="flex-row px-1 gap-3 py-2  ">
-        <Text className="flex-1 text-sm text-text">Player</Text>
-        <Text className="text-sm text-text text-center">Prediction</Text>
-        <Text className="text-sm text-text text-center">Points</Text>
+        <CText className="flex-1 text-sm text-text text-left  ">{t('Player')}</CText>
+        <CText className="text-sm text-text text-center">{t('Prediction')}</CText>
+        <CText className="text-sm text-text text-center">{t('Points')}</CText>
       </View>
       <FlatList
         data={predictions}
@@ -84,7 +85,7 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
         }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center mt-16">
-            <Text className="text-center font-nunito-bold text-2xl font-bold text-muted">No predictions</Text>
+            <CText className="text-center font-nunito-bold text-2xl font-bold text-muted">{t('No predictions')}</CText>
           </View>
         }
         showsVerticalScrollIndicator={false}

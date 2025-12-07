@@ -189,18 +189,16 @@ export const useLeaveLeague = () => {
       return result;
     },
     onSuccess: async (result, leagueId) => {
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.all,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.users.all,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.members.all,
-        }),
-        initializeMember(),
-      ]);
+      queryClient.invalidateQueries({
+        queryKey: KEYS.leagues.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.users.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.members.all,
+      });
+      initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
@@ -217,18 +215,16 @@ export const useDeleteLeague = () => {
       return result;
     },
     onSuccess: async (result, { leagueId, userId }) => {
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.all,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.users.all,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.members.all,
-        }),
-        initializeMember(),
-      ]);
+      queryClient.invalidateQueries({
+        queryKey: KEYS.leagues.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.users.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.members.all,
+      });
+      initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {

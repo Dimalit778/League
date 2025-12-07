@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, InputField, Screen } from '@/components/ui';
+import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { EmailIcon } from '@assets/icons';
@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -39,12 +39,12 @@ const SendResetLink = () => {
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
-          <Text className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
             Reset Password
-          </Text>
-          <Text className="text-muted font-nunito-bold text-center mt-2">
+          </CText>
+          <CText className="text-muted font-nunito-bold text-center mt-2">
             Enter your email address and we'll send you a reset link
-          </Text>
+          </CText>
         </View>
 
         <View className="px-5 gap-4">
@@ -60,7 +60,7 @@ const SendResetLink = () => {
 
           {errorMessage && (
             <View className="">
-              <Text className="text-error text-center">{errorMessage}</Text>
+              <CText className="text-error text-center">{errorMessage}</CText>
             </View>
           )}
 
@@ -75,7 +75,7 @@ const SendResetLink = () => {
 
           <View className="flex-row items-center justify-center mt-5">
             <Link href="/(auth)/signIn" replace>
-              <Text className="text-secondary font-bold">Back to Sign In</Text>
+              <CText className="text-secondary font-bold">Back to Sign In</CText>
             </Link>
           </View>
         </View>

@@ -6,9 +6,10 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { useState } from 'react';
 
+import { CText } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
-import { Alert, Text } from 'react-native';
+import { Alert } from 'react-native';
 import GoogleSignInButton from './GoogleSignInButton';
 
 const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS || '';
@@ -95,7 +96,7 @@ const GoogleAuth = ({
   return (
     <>
       <GoogleSignInButton onPress={handleGoogleSignIn} loading={isLoading} disabled={isLoading} />
-      {errorMessage && <Text className="text-error text-sm text-center mt-2">{errorMessage}</Text>}
+      {errorMessage && <CText className="text-error text-sm text-center mt-2">{errorMessage}</CText>}
     </>
   );
 };

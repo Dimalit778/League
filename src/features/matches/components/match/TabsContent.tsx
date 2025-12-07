@@ -1,7 +1,9 @@
+import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Feather } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
-import { Dimensions, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, TouchableOpacity, View } from 'react-native';
 import { PredictionMemberType } from '../../types';
 import MatchStats from './MatchStats';
 import PredictionRank from './PredictionRank';
@@ -11,6 +13,7 @@ const tabs = [
   { id: 1, title: 'STATS', icon: 'bar-chart-2' as const },
 ];
 export default function TabsContent({ predictions }: { predictions: PredictionMemberType[] }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const flatListRef = useRef(null);
   const isScrollingProgrammatically = useRef(false);
@@ -19,7 +22,6 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
     isScrollingProgrammatically.current = true;
     setActiveTab(index);
     (flatListRef.current as any)?.scrollToIndex({ index, animated: true });
-    // Reset flag after animation completes
     setTimeout(() => {
       isScrollingProgrammatically.current = false;
     }, 300);
@@ -43,7 +45,7 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
               <Feather name={tab.icon} size={20} color={isActive ? colors.primary : colors.muted} />
-              <Text className={`ml-2 font-bold ${isActive ? 'text-primary' : 'text-muted'}`}>{tab.title}</Text>
+              <CText className={`ml-2 font-bold ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</CText>
             </TouchableOpacity>
           );
         })}

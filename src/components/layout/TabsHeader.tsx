@@ -9,7 +9,6 @@ import { AvatarImage } from '../ui';
 const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
   const { colors } = useThemeTokens();
   const activeMember = useMemberStore((s) => s.activeMember);
-  console.log('activeMember', JSON.stringify(activeMember, null, 2));
 
   const insets = useSafeAreaInsets();
 

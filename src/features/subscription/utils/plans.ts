@@ -8,7 +8,8 @@ export const plans = [
   },
   {
     type: 'BASIC' as SubscriptionType,
-    price: '$4.99/mo',
+    price: '$4.99',
+
     features: [
       'Join up to 3 leagues',
       'Create leagues with up to 8 members',
@@ -18,7 +19,7 @@ export const plans = [
   },
   {
     type: 'PREMIUM' as SubscriptionType,
-    price: '$9.99/mo',
+    price: '$9.99',
     features: [
       'Join up to 5 leagues',
       'Create leagues with up to 10 members',

@@ -1,5 +1,8 @@
+import { CText } from '@/components/ui/CText';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { Control, Controller, FieldError } from 'react-hook-form';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 
 type InputFieldProps = {
   control: Control<any>;
@@ -34,26 +37,28 @@ const InputField = ({
   accessibilityLabel,
   accessibilityHint,
 }: InputFieldProps) => {
-  // Generate accessibility label from name/placeholder if not provided
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
+
   const getAccessibilityLabel = () => {
     if (accessibilityLabel) return accessibilityLabel;
-    if (name === 'email') return 'Email address';
-    if (name === 'password') return 'Password';
-    return placeholder || `${name} input field`;
+    if (name === 'email') return t('Email address');
+    if (name === 'password') return t('Password');
+    return placeholder || t('{{name}} input field', { name });
   };
 
   const getAccessibilityHint = () => {
     if (accessibilityHint) return accessibilityHint;
-    if (secureTextEntry) return 'Enter your password securely';
-    if (name === 'email') return 'Enter your email address';
-    return `Enter ${placeholder.toLowerCase()}`;
+    if (secureTextEntry) return t('Enter your password securely');
+    if (name === 'email') return t('Enter your email address');
+    return t('Enter {{placeholder}}', { placeholder: placeholder.toLowerCase() });
   };
 
   return (
     <View>
       <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 ">
         {icon && (
-          <View className="mr-2" accessible={false}>
+          <View className={isRTL ? 'ml-2' : 'mr-2'} accessible={false}>
             {icon}
           </View>
         )}
@@ -65,13 +70,13 @@ const InputField = ({
               placeholder={placeholder}
               placeholderTextColor="#aaa"
               secureTextEntry={secureTextEntry}
-              className="flex-1 text-text py-4 "
+              className="flex-1 text-text py-4"
+              style={{ textAlign: isRTL ? 'right' : 'left' }}
               onBlur={onBlur}
               onChangeText={(text) => {
                 onChange(text);
-                // Clear auth error when user starts typing
                 if (name === 'email' || name === 'password') {
-                  clearError?.(); // Optional chaining in case clearError isn't passed
+                  clearError?.();
                 }
               }}
               value={value}
@@ -82,7 +87,6 @@ const InputField = ({
               accessibilityRole="text"
               accessibilityLabel={getAccessibilityLabel()}
               accessibilityHint={getAccessibilityHint()}
-              accessibilityState={{ invalid: !!error }}
               accessibilityLiveRegion="polite"
             />
           )}
@@ -90,24 +94,24 @@ const InputField = ({
         {rightIcon && (
           <Pressable
             onPress={onRightIconPress}
-            className="ml-2 p-1"
+            className={isRTL ? 'mr-2 p-1' : 'ml-2 p-1'}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Toggle password visibility"
+            accessibilityLabel={t('Toggle password visibility')}
           >
             {rightIcon}
           </Pressable>
         )}
       </View>
       {error && (
-        <Text 
-          className="text-red-500 mt-1 text-sm"
+        <CText
+          className="text-red-500 mt-1 text-sm text-center"
           accessible={true}
           accessibilityRole="text"
           accessibilityLiveRegion="assertive"
         >
-          {error.message}
-        </Text>
+          {t(error.message ?? '')}
+        </CText>
       )}
     </View>
   );

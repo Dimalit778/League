@@ -1,12 +1,12 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { AvatarImage, BackButton, Card } from '@/components/ui';
+import { AvatarImage, BackButton, Card, CText } from '@/components/ui';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
 import MatchesList from '@/features/matches/components/matches/MatchesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MemberStats from '../components/memberStats';
 
@@ -74,19 +74,19 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
           </View>
 
           <View className="flex-1">
-            <Text className="text-text text-lg font-bold" numberOfLines={1}>
+            <CText className="text-text text-lg font-bold" numberOfLines={1}>
               {member?.nickname}
-            </Text>
+            </CText>
           </View>
           <View className="flex-row items-center gap-4">
             <View className="items-end">
-              <Text className="text-muted text-[10px] uppercase tracking-wide mb-0.5">Points</Text>
-              <Text className="text-primary text-base font-semibold">{stats?.totalPoints.toLocaleString() ?? 0}</Text>
+              <CText className="text-muted text-[10px] uppercase tracking-wide mb-0.5">Points</CText>
+              <CText className="text-primary text-base font-semibold">{stats?.totalPoints.toLocaleString() ?? 0}</CText>
             </View>
             <View className="h-6 w-px bg-border" />
             <View className="items-end">
-              <Text className="text-muted text-[10px] uppercase tracking-wide mb-0.5">Position</Text>
-              <Text className="text-primary text-base font-semibold">{stats?.position ?? '—'}</Text>
+              <CText className="text-muted text-[10px] uppercase tracking-wide mb-0.5">Position</CText>
+              <CText className="text-primary text-base font-semibold">{stats?.position ?? '—'}</CText>
             </View>
           </View>
         </View>

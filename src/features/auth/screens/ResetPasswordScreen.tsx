@@ -1,11 +1,11 @@
-import { BackButton, Button, InputField, Screen } from '@/components/ui';
+import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { supabase } from '@/lib/supabase';
 import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -30,15 +30,10 @@ const ResetPasswordScreen = () => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('event', event);
-      console.log('session', JSON.stringify(session, null, 2));
       if (event === 'PASSWORD_RECOVERY') {
-        const { data, error } = await supabase.auth.updateUser({ password: passwordForm.getValues('password') });
+        const { error } = await supabase.auth.updateUser({ password: passwordForm.getValues('password') });
         if (error) {
           console.error(error);
-        }
-        if (data) {
-          console.log('data', JSON.stringify(data, null, 2));
         }
       }
     });
@@ -48,10 +43,10 @@ const ResetPasswordScreen = () => {
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
-          <Text className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
             New Password
-          </Text>
-          <Text className="text-muted font-nunito-bold text-center mt-2">Enter your new password</Text>
+          </CText>
+          <CText className="text-muted font-nunito-bold text-center mt-2">Enter your new password</CText>
         </View>
 
         <View className="px-5 gap-4">

@@ -1,8 +1,9 @@
+import { CText } from '@/components/ui';
 import { MatchWithPredictions } from '@/features/matches/types';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function TeamCard({ logo, shortName }: { logo: string; shortName: string }) {
@@ -23,7 +24,7 @@ function TeamCard({ logo, shortName }: { logo: string; shortName: string }) {
           />
         </View>
       </View>
-      <Text className="text-white text-base font-bold text-center">{shortName}</Text>
+      <CText className="text-white text-base font-bold text-center">{shortName}</CText>
     </View>
   );
 }
@@ -44,22 +45,22 @@ function ScoreCard({
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
         <View className=" rounded-2xl p-4 items-center min-w-[100px]">
           <Ionicons name="time-outline" size={24} color="#fff" />
-          <Text className="text-white text-sm mt-2 text-center">{formatTime(kick_off)}</Text>
+          <CText className="text-white text-sm mt-2 text-center">{formatTime(kick_off)}</CText>
         </View>
       )}
       {['IN_PLAY'].includes(matchStatus) && (
         <View className="items-center justify-center gap-2">
-          <Text className="text-green-500 text-lg">LIVE</Text>
-          <Text className="text-text text-3xl font-black">
+          <CText className="text-green-500 text-lg">LIVE</CText>
+          <CText className="text-text text-3xl font-black">
             {homeScore} : {awayScore}
-          </Text>
+          </CText>
         </View>
       )}
       {['FINISHED'].includes(matchStatus) && (
         <View className="flex-row items-center border-2 border-gray-500 rounded-lg p-2">
-          <Text className="text-white text-2xl font-black">{homeScore}</Text>
-          <Text className="text-white text-2xl mx-2 font-bold">:</Text>
-          <Text className="text-white text-2xl font-black">{awayScore}</Text>
+          <CText className="text-white text-2xl font-black">{homeScore}</CText>
+          <CText className="text-white text-2xl mx-2 font-bold">:</CText>
+          <CText className="text-white text-2xl font-black">{awayScore}</CText>
         </View>
       )}
     </View>
@@ -75,12 +76,12 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
         <View className="items-center justify-center">
           <View className="flex-row items-center justify-center">
             <Ionicons name="calendar-outline" size={16} color="#fff" />
-            <Text className="text-white ml-1 text-sm font-medium">{dateFormat(match.kick_off)}</Text>
+            <CText className="text-white ml-1 text-sm font-medium">{dateFormat(match.kick_off)}</CText>
           </View>
           {match.home_team.venue && (
             <View className="flex-row items-center mt-2 justify-center">
               <Ionicons name="location-outline" size={16} color="#fff" />
-              <Text className="text-white ml-1 text-sm font-bold">{match.home_team.venue}</Text>
+              <CText className="text-white ml-1 text-sm font-bold">{match.home_team.venue}</CText>
             </View>
           )}
         </View>

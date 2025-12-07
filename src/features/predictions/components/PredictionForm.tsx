@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui';
+import { Button, CText } from '@/components/ui';
 import { PredictionMemberType } from '@/features/matches/types';
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberStore } from '@/store/MemberStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 type PredictionFormProps = {
   prediction?: PredictionMemberType;
   matchId: number;
@@ -33,9 +34,9 @@ const ScoreInput = ({ value, onIncrement, onDecrement }: ScoreInputProps) => {
       </Pressable>
 
       <View className="w-20 h-16 border-t border-b border-text bg-surface justify-center items-center">
-        <Text className=" text-text text-center font-nunito-black" style={{ fontSize: 30 }}>
+        <CText className=" text-text text-center font-nunito-black" style={{ fontSize: 30 }}>
           {value === null ? 0 : value.toString()}
-        </Text>
+        </CText>
       </View>
 
       <Pressable
@@ -51,6 +52,7 @@ const ScoreInput = ({ value, onIncrement, onDecrement }: ScoreInputProps) => {
 };
 
 export default function PredictionForm({ prediction, matchId }: PredictionFormProps) {
+  const { t } = useTranslation();
   const memberId = useMemberStore((s) => s.memberId);
   const router = useRouter();
   const [homeScore, setHomeScore] = useState<number | 0>(0);
@@ -116,24 +118,20 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
     setAwayScore(awayScore - 1);
   };
 
-  // Determine if save button should be disabled
-  // If prediction exists: disable only when both scores are unchanged
-  // If no prediction: always enable (user can save 0-0)
   const isSaveDisabled = prediction ? newHomeScore === homeScore && newAwayScore === awayScore : false;
-  console.log('isSaveDisabled', isSaveDisabled);
 
   return (
     <View className="flex-1 mt-4 p-5 bg-background rounded-t-3xl">
       <View className="py-3 border-b border-border">
-        <Text className="text-text text-center text-2xl font-nunito-black">
-          {prediction ? 'My Prediction' : 'Enter your prediction'}
-        </Text>
+        <CText className="text-text text-center text-2xl font-nunito-black">
+          {prediction ? t('My Prediction') : t('Enter your prediction')}
+        </CText>
       </View>
       <View className="flex-1 ">
         {/* Score Inputs */}
         <View className="flex-row justify-center items-center mt-12">
           <ScoreInput value={homeScore} onIncrement={handleHomeIncrement} onDecrement={handleHomeDecrement} />
-          <Text className="text-lg font-bold text-primary mx-4">-</Text>
+          <CText className="text-lg font-bold text-primary mx-4">-</CText>
           <ScoreInput value={awayScore} onIncrement={handleAwayIncrement} onDecrement={handleAwayDecrement} />
         </View>
 
@@ -142,7 +140,7 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
           <View className="flex-row gap-3">
             <View className="flex-1">
               <Button
-                title={prediction ? 'Save' : 'Save Prediction'}
+                title={prediction ? t('Save') : t('Save Prediction')}
                 onPress={handleSave}
                 loading={upsertPrediction.isPending}
                 disabled={upsertPrediction.isPending || isSaveDisabled}

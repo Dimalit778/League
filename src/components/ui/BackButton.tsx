@@ -1,7 +1,9 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { ArrowLeftIcon } from '@assets/icons';
+import { useIsRTL } from '@/providers/LanguageProvider';
+import { ArrowLeftIcon, ArrowRightIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { CText } from './CText';
 
 interface BackButtonProps {
   title?: string;
@@ -11,6 +13,8 @@ interface BackButtonProps {
 const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) => {
   const { colors } = useThemeTokens();
   const router = useRouter();
+  const isRTL = useIsRTL();
+  const ArrowIcon = isRTL ? ArrowRightIcon : ArrowLeftIcon;
 
   return (
     <View className=" flex-row h-14 items-center justify-center py-3  relative w-full">
@@ -22,10 +26,10 @@ const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) => {
         accessibilityLabel={title ? `Go back from ${title}` : 'Go back'}
         accessibilityHint="Double tap to navigate to the previous screen"
       >
-        <ArrowLeftIcon color={colors.text} size={28} />
+        <ArrowIcon color={colors.text} size={28} />
       </TouchableOpacity>
 
-      {title && <Text className={`${textColor} text-xl text-center font-nunito`}>{title}</Text>}
+      {title && <CText className={`${textColor} text-xl text-center font-nunito`}>{title}</CText>}
     </View>
   );
 };

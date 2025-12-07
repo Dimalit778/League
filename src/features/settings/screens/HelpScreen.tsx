@@ -1,13 +1,14 @@
 import { BackButton, Card } from '@/components/ui';
+import { CText } from '@/components/ui/CText';
+import { useTranslation } from '@/hooks/useTranslation';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
-import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 const HelpScreen = () => {
   const handleEmailPress = () => {
     Linking.openURL('mailto:support@league.app?subject=Help Request');
   };
-
+  const { t } = useTranslation();
   const helpSections = [
     {
       title: 'Getting Started',
@@ -138,25 +139,26 @@ const HelpScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <BackButton title="Help & Support" />
-      <ScrollView className="flex-1 p-4">
+      <BackButton title={t('Help & Support')} />
+      <ScrollView className="flex-1 " contentContainerClassName="p-4">
         {/* Welcome Section */}
         <Card className="mb-6 p-4">
-          <Text className="text-xl font-semibold text-text mb-2">Welcome to League</Text>
-          <Text className="text-base leading-6 text-zinc-300">
-            League is a football prediction app where you compete with friends by predicting match results. Create or
-            join leagues, make predictions, and climb the leaderboard!
-          </Text>
+          <CText className="text-xl font-semibold text-text mb-2">{t('Welcome to League Champion')}</CText>
+          <CText className="text-base leading-6 text-zinc-300">
+            {t(
+              'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!'
+            )}
+          </CText>
         </Card>
 
         {/* Help Sections */}
         {helpSections.map((section) => (
           <View key={section.title} className="mb-6">
-            <Text className="text-lg font-semibold text-text mb-3">{section.title}</Text>
+            <CText className="text-lg font-semibold text-text mb-3">{t(section.title)}</CText>
             {section.items.map((item, index) => (
               <Card key={index} className="mb-3 p-4">
-                <Text className="text-base font-medium text-primary mb-2">{item.question}</Text>
-                <Text className="text-sm leading-5 text-zinc-300">{item.answer}</Text>
+                <CText className="text-base font-medium text-primary mb-2">{t(item.question)}</CText>
+                <CText className="text-sm leading-5 text-zinc-300">{t(item.answer)}</CText>
               </Card>
             ))}
           </View>
@@ -164,39 +166,40 @@ const HelpScreen = () => {
 
         {/* Contact Support */}
         <Card className="mb-6 p-4">
-          <Text className="text-lg font-semibold text-text mb-3">Contact Support</Text>
-          <Text className="text-base leading-6 text-zinc-300 mb-4">
-            Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as
-            possible.
-          </Text>
+          <CText className="text-lg font-semibold text-text mb-3">{t('Contact Support')}</CText>
+          <CText className="text-base leading-6 text-zinc-300 mb-4">
+            {t(
+              "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible."
+            )}
+          </CText>
           <TouchableOpacity
             onPress={handleEmailPress}
             className="flex-row items-center justify-center bg-primary rounded-lg py-3 px-4"
           >
             <FontAwesome6 name="envelope" size={16} color="white" />
-            <Text className="text-white font-medium ml-2">Email Support</Text>
+            <CText className="text-white font-medium ml-2">{t('Email Support')} </CText>
           </TouchableOpacity>
-          <Text className="text-xs text-zinc-400 mt-2 text-center">support@league.app</Text>
+          <CText className="text-xs text-zinc-400 mt-2 text-center">{t('support@leaguechampion.app')}</CText>
         </Card>
 
         {/* App Information */}
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-text mb-3">App Information</Text>
+          <CText className="text-lg font-semibold text-text mb-3">{t('App Information')}</CText>
           <Card className="p-4">
             <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-base text-zinc-300">Version</Text>
-              <Text className="text-base text-text">1.0.0</Text>
+              <CText className="text-base text-zinc-300">{t('Version')}</CText>
+              <CText className="text-base text-text">1.0.0</CText>
             </View>
             <View className="flex-row justify-between items-center">
-              <Text className="text-base text-zinc-300">Platform</Text>
-              <Text className="text-base text-text">iOS & Android</Text>
+              <CText className="text-base text-zinc-300">{t('Platform')}</CText>
+              <CText className="text-base text-text">{t('iOS & Android')}</CText>
             </View>
           </Card>
         </View>
 
-        <Text className="mt-4 mb-8 text-xs text-zinc-500 text-center">
-          Thank you for using League! We're constantly working to improve your experience.
-        </Text>
+        <CText className="mt-4 mb-8 text-xs text-zinc-500 text-center">
+          {t("Thank you for using League! We're constantly working to improve your experience.")}
+        </CText>
       </ScrollView>
     </SafeAreaView>
   );

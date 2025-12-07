@@ -1,11 +1,12 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, InputField } from '@/components/ui';
+import { BackButton, Button, CText, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
+import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -16,7 +17,7 @@ const schema = yup.object().shape({
 
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
-
+  const { t } = useTranslation();
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
@@ -46,7 +47,7 @@ const CreateLeagueScreen = () => {
         }`}
         activeOpacity={0.8}
       >
-        <Text className={`text-base font-bold ${isActive ? 'text-secondary' : 'text-text'}`}>{label}</Text>
+        <CText className={`text-base font-bold ${isActive ? 'text-secondary' : 'text-text'}`}>{t(label)}</CText>
       </TouchableOpacity>
     );
   };
@@ -61,8 +62,8 @@ const CreateLeagueScreen = () => {
   return (
     <Screen>
       {isPending && <LoadingOverlay />}
-      <BackButton title="League Details" textColor="text-primary" />
-      <View className="flex-1">
+      <BackButton title={t('League Details')} />
+      <View className="flex-1 ">
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="handled"
           bottomOffset={72}
@@ -73,12 +74,12 @@ const CreateLeagueScreen = () => {
           }}
         >
           {/* League name */}
-          <View className="mb-6">
-            <Text className="text-lg font-semibold mb-2 text-text">League Name</Text>
+          <View className="mb-6 ">
+            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('League Name')}</CText>
             <InputField
               control={control}
               name="leagueName"
-              placeholder="Enter league name"
+              placeholder={t('Enter league name')}
               maxLength={50}
               autoCorrect={false}
               autoCapitalize="words"
@@ -88,11 +89,11 @@ const CreateLeagueScreen = () => {
 
           {/* Nickname */}
           <View className="mb-6">
-            <Text className="text-lg font-semibold mb-2 text-text">Your Nickname</Text>
+            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('Your Nickname')}</CText>
             <InputField
               control={control}
               name="nickname"
-              placeholder="Enter your nickname"
+              placeholder={t('Enter your nickname')}
               autoCorrect={false}
               autoCapitalize="words"
               error={errors.nickname}
@@ -101,12 +102,14 @@ const CreateLeagueScreen = () => {
 
           {/* Members count */}
           <View className="mb-4">
-            <Text className="text-lg font-semibold mb-2 text-text">Number of Members</Text>
-            <Text className="text-xs text-muted mb-3">Choose how many friends can join this league.</Text>
+            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('Number of Members')}</CText>
+            <CText className="text-xs text-muted mb-3 text-center">
+              {t('Choose how many friends can join this league.')}
+            </CText>
 
             <View className="flex-row">
-              <MemberOption value={6} label="6 Members" />
-              <MemberOption value={10} label="10 Members" />
+              <MemberOption value={6} label={t('6 Members')} />
+              <MemberOption value={10} label={t('10 Members')} />
             </View>
           </View>
         </KeyboardAwareScrollView>
@@ -114,7 +117,7 @@ const CreateLeagueScreen = () => {
         {/* Fixed bottom button */}
         <View className="px-4 pb-5 pt-2 bg-background">
           <Button
-            title="Create League"
+            title={t('Create League')}
             onPress={onSubmit}
             variant="primary"
             size="lg"

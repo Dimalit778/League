@@ -1,9 +1,12 @@
-// app/_layout.tsx (or similar)
 import '../../global.css';
+
+import '@/lib/i18n/autoTranslate';
 
 import { SplashScreen as AppSplashScreen, NetworkStatusBanner } from '@/components/layout';
 import { AuthProvider, QueryProvider, ThemeProvider, useAuth } from '@/providers';
 import { ErrorBoundaryProvider } from '@/providers/ErrorBoundaryProvider';
+import { LanguageProvider } from '@/providers/LanguageProvider';
+import { useLanguageStore } from '@/store/LanguageStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useThemeStore } from '@/store/ThemeStore';
 
@@ -52,6 +55,8 @@ const AppBootstrap = () => {
   const { isLoggedIn, isAuthLoading } = useAuth();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   const initializeTheme = useThemeStore((s) => s.initializeTheme);
+  const initializeLanguage = useLanguageStore((s) => s.initializeLanguage);
+
   const [isReady, setIsReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
@@ -73,9 +78,12 @@ const AppBootstrap = () => {
 
     const prepare = async () => {
       try {
+        await initializeLanguage();
+
         await Promise.all([initializeTheme(), initializeMember(), Asset.fromModule(footballBg).downloadAsync()]);
-      } catch (e) {
-        } finally {
+      } catch (e: any) {
+        console.error('AppBootstrap error', e);
+      } finally {
         if (!cancelled) {
           setIsReady(true);
           await ExpoSplashScreen.hideAsync().catch(() => {});
@@ -88,7 +96,7 @@ const AppBootstrap = () => {
     return () => {
       cancelled = true;
     };
-  }, [fontsLoaded, isAuthLoading, initializeTheme, initializeMember]);
+  }, [fontsLoaded, isAuthLoading, initializeTheme, initializeLanguage, initializeMember]);
 
   if (!isReady) {
     return <AppSplashScreen />;
@@ -116,15 +124,15 @@ const RootLayout = () => (
       <QueryProvider>
         <AuthProvider>
           <ThemeProvider>
-            {/* <NotificationProvider> */}
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaProvider>
-                <KeyboardProvider>
-                  <AppBootstrap />
-                </KeyboardProvider>
-              </SafeAreaProvider>
-            </GestureHandlerRootView>
-            {/* </NotificationProvider> */}
+            <LanguageProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <SafeAreaProvider>
+                  <KeyboardProvider>
+                    <AppBootstrap />
+                  </KeyboardProvider>
+                </SafeAreaProvider>
+              </GestureHandlerRootView>
+            </LanguageProvider>
           </ThemeProvider>
         </AuthProvider>
       </QueryProvider>

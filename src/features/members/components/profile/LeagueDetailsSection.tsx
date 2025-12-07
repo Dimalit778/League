@@ -1,13 +1,15 @@
-import { LogoBadge } from '@/components/LogoBadge';
 import { MyImage } from '@/components/ui';
+import { LogoBadge } from '@/components/ui/LogoBadge';
 
+import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { LeagueWithMembersType } from '@/types';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Link } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, TouchableOpacity, View } from 'react-native';
 
 export const LeagueDetailsSection = ({
   league,
@@ -17,11 +19,11 @@ export const LeagueDetailsSection = ({
   memberUserId: string;
 }) => {
   const { colors } = useThemeTokens();
-
+  const { t } = useTranslation();
   const handleCopyJoinCode = async () => {
     if (typeof league.join_code === 'string') {
       await Clipboard.setStringAsync(league.join_code || '');
-      Alert.alert('Copied!', 'Join code copied to clipboard.');
+      Alert.alert(t('Copied!'), t('Join code copied to clipboard.'));
     }
   };
   const owner = useMemo(() => {
@@ -34,7 +36,7 @@ export const LeagueDetailsSection = ({
         <View className="flex-row justify-between items-center ">
           <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={50} height={50} />
 
-          <Text
+          <CText
             className="text-primary font-nunito-bold text-2xl text-center uppercase tracking-widest"
             style={{
               textShadowRadius: 2,
@@ -42,7 +44,7 @@ export const LeagueDetailsSection = ({
             }}
           >
             {league.name}
-          </Text>
+          </CText>
 
           {league.owner_id === memberUserId && (
             <Link href="/profile/edit-league" asChild>
@@ -58,9 +60,9 @@ export const LeagueDetailsSection = ({
         <View className="gap-3">
           {/* Join Code */}
           <View className="flex-row items-center justify-between">
-            <Text className="text-text font-medium">Join Code</Text>
+            <CText className="text-text font-medium">{t('Join Code')}</CText>
             <Pressable className="border border-border rounded-lg px-3 py-1" onPress={handleCopyJoinCode}>
-              <Text className="text-text tracking-[2px] text-center">{league.join_code}</Text>
+              <CText className="text-text tracking-[2px] text-center">{league.join_code}</CText>
             </Pressable>
           </View>
           <View className="h-[1px] bg-border" />
@@ -68,35 +70,35 @@ export const LeagueDetailsSection = ({
           {/* Members */}
           <View>
             <View className="flex-row justify-between mb-1">
-              <Text className="text-text">Members</Text>
-              <Text className="text-text font-semibold">
+              <CText className="text-text">{t('Members')}</CText>
+              <CText className="text-text font-semibold">
                 {league?.league_members.length || 0} / {league?.max_members}
-              </Text>
+              </CText>
             </View>
           </View>
           <View className="h-[1px] bg-border" />
 
           {/* Owner */}
           <View className="flex-row justify-between">
-            <Text className="text-text">League Owner</Text>
-            <Text className="text-text font-semibold">{owner?.nickname || 'Unknown'}</Text>
+            <CText className="text-text">{t('League Owner')}</CText>
+            <CText className="text-text font-semibold">{owner?.nickname || 'Unknown'}</CText>
           </View>
           <View className="h-[1px] bg-border" />
 
           {/* Competition details */}
           <View className="flex-row justify-between">
-            <Text className="text-text">League</Text>
+            <CText className="text-text">{t('League')}</CText>
             <View className="flex-row items-center">
-              <Text className="text-text font-semibold mr-2">{league.competition.name}</Text>
+              <CText className="text-text font-semibold mr-2">{league.competition.name}</CText>
               <LogoBadge source={{ uri: league.competition.logo }} width={18} height={18} />
             </View>
           </View>
           <View className="h-[1px] bg-border" />
 
           <View className="flex-row justify-between items-center">
-            <Text className="text-text">Country</Text>
+            <CText className="text-text">{t('Country')}</CText>
             <View className="flex-row items-center">
-              <Text className="text-text font-semibold mr-2">{league.competition.area}</Text>
+              <CText className="text-text font-semibold mr-2">{league.competition.area}</CText>
               <MyImage source={{ uri: league.competition.flag }} width={18} height={18} resizeMode="contain" />
             </View>
           </View>
@@ -105,8 +107,8 @@ export const LeagueDetailsSection = ({
 
           {/* Created date */}
           <View className="flex-row justify-between">
-            <Text className="text-text font-medium">Created at</Text>
-            <Text className="text-muted">{new Date(league.created_at).toLocaleDateString()}</Text>
+            <CText className="text-text font-medium">{t('Created at')}</CText>
+            <CText className="text-muted">{new Date(league.created_at).toLocaleDateString()}</CText>
           </View>
         </View>
       </View>

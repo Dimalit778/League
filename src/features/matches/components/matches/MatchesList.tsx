@@ -1,16 +1,18 @@
+import { CText } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import MatchesSkeleton from '../MatchesSkeleton';
 import MatchesCard from './MatchesCard';
 
 type MatchesListProps = {
-  matches: MatchWithPredictionsType[];
+  matches: MatchWithPredictionsType[] | undefined;
 };
 export default function MatchesList({ matches }: MatchesListProps) {
   const flatListRef = useRef<FlatList>(null);
-
-  if (!matches) return <MatchesSkeleton />;
+  const { t } = useTranslation();
+  if (!matches || matches.length === 0) return <MatchesSkeleton />;
 
   return (
     <View>
@@ -27,11 +29,7 @@ export default function MatchesList({ matches }: MatchesListProps) {
           index,
         })}
         scrollEnabled={false}
-        ListEmptyComponent={
-          <View className="p-4 items-center">
-            <Text className="text-text/50 text-center">No finished matches in this fixture</Text>
-          </View>
-        }
+        ListEmptyComponent={<CText className="text-text text-center">{t('No matches found')}</CText>}
       />
     </View>
   );

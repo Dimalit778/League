@@ -1,5 +1,5 @@
-import { Card } from '@/components/ui';
-import { Text, View } from 'react-native';
+import { Card, CText } from '@/components/ui';
+import { View } from 'react-native';
 import { MemberStatsType } from '../types';
 
 export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
@@ -44,8 +44,8 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <Text className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</Text>
-              <Text className={`${item.color} text-base font-bold`}>{item.value}</Text>
+              <CText className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</CText>
+              <CText className={`${item.color} text-base font-bold`}>{item.value}</CText>
             </View>
           </View>
         ))}
@@ -59,8 +59,8 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <Text className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</Text>
-              <Text className={`${item.color} text-base font-bold`}>{item.value}</Text>
+              <CText className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</CText>
+              <CText className={`${item.color} text-base font-bold`}>{item.value}</CText>
             </View>
           </View>
         ))}

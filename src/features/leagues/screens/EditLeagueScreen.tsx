@@ -1,14 +1,15 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
-import { useMemberStore } from '@/store/MemberStore';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
+import { useMemberStore } from '@/store/MemberStore';
 
 import { Screen } from '@/components/layout';
-import { LogoBadge } from '@/components/LogoBadge';
-import { AvatarImage, BackButton, Button } from '@/components/ui';
+import { AvatarImage, BackButton, Button, CText } from '@/components/ui';
+import { LogoBadge } from '@/components/ui/LogoBadge';
 import { MemberType } from '@/features/members/types';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Text, TextInput, View } from 'react-native';
+import { Alert, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 type MemberCardProps = {
@@ -18,20 +19,21 @@ type MemberCardProps = {
 };
 
 const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) => {
+  const { t } = useTranslation();
   return (
     <View className="flex-row items-center justify-between py-3 px-2 bg-surface rounded-lg border border-border">
       <View className="flex-row items-center flex-1">
         <View className="mr-3 w-10 h-10 rounded-full overflow-hidden">
           <AvatarImage nickname={member.nickname} path={member.avatar_url ?? null} />
         </View>
-        <View className="flex-1">
-          <Text className="text-text font-medium">{member.nickname}</Text>
-          {isOwner && <Text className="text-muted text-xs">Owner</Text>}
+        <View className="flex-1 items-start">
+          <CText className="text-text font-medium">{member.nickname}</CText>
+          {isOwner && <CText className="text-muted text-xs">{t('League Owner')}</CText>}
         </View>
       </View>
       {!isOwner && (
         <Button
-          title="Remove"
+          title={t('Remove')}
           size="sm"
           variant="error"
           onPress={() => handleRemoveMember(member.id, member.nickname)}
@@ -43,7 +45,7 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
 export default function EditLeagueScreen() {
   const { data: primaryMember } = usePrimaryMember();
   const leagueId = useMemberStore((s) => s.leagueId);
-
+  const { t } = useTranslation();
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
 
   const removeMember = useRemoveMember();
@@ -69,10 +71,10 @@ export default function EditLeagueScreen() {
 
   const handleRemoveMember = async (memberId: string, nickname: string) => {
     if (!leagueId || primaryMember?.user_id !== league?.owner_id) return;
-    Alert.alert('Remove Member', `Remove ${nickname} from this league?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('Remove Member'), `${t('Remove')} ${nickname} ${t('from this league')}?`, [
+      { text: t('Cancel'), style: 'cancel' },
       {
-        text: 'Remove',
+        text: t('Remove'),
         style: 'destructive',
         onPress: async () => {
           await removeMember.mutateAsync(memberId);
@@ -86,7 +88,7 @@ export default function EditLeagueScreen() {
   const handleSaveLeague = () => {
     const trimmedName = editedLeagueName.trim();
     if (!trimmedName) {
-      Alert.alert('Validation', 'League name cannot be empty.');
+      Alert.alert(t('Validation'), t('League name cannot be empty.'));
       return;
     }
 
@@ -94,7 +96,7 @@ export default function EditLeagueScreen() {
       { leagueId: league?.id, name: trimmedName },
       {
         onError: (error) => {
-          Alert.alert('Error', error.message);
+          Alert.alert(t('Error'), error.message);
         },
       }
     );
@@ -105,15 +107,15 @@ export default function EditLeagueScreen() {
 
   return (
     <Screen>
-      <BackButton title="Edit League" />
+      <BackButton title={t('Edit League')} />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="p-4">
           <View className="bg-surface rounded-2xl border border-border p-4 mb-4">
             <View className="flex-row items-center gap-3 mb-4">
               <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
               <View className="flex-1">
-                <Text className="text-text text-lg font-bold">{league?.competition?.name}</Text>
-                <Text className="text-muted text-sm">{league?.competition?.area}</Text>
+                <CText className="text-text text-lg font-bold">{league?.competition?.name}</CText>
+                <CText className="text-muted text-sm">{league?.competition?.area}</CText>
               </View>
             </View>
 
@@ -121,7 +123,7 @@ export default function EditLeagueScreen() {
               <TextInput
                 value={editedLeagueName}
                 onChangeText={setEditedLeagueName}
-                placeholder="Enter league name"
+                placeholder={t('Enter league name')}
                 className="text-text px-3 py-3 bg-background border border-border rounded-lg"
                 keyboardType="default"
                 autoCapitalize="words"
@@ -145,7 +147,7 @@ export default function EditLeagueScreen() {
         </View>
         <View className="flex-row gap-3 mt-6 px-4">
           <Button
-            title="Save"
+            title={t('Save')}
             onPress={handleSaveLeague}
             loading={updateLeague.isPending}
             disabled={!canSaveLeagueName || updateLeague.isPending}

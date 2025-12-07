@@ -1,9 +1,10 @@
-import { Card } from '@/components/ui';
-import { Text, View } from 'react-native';
+import { Card, CText } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
+import { View } from 'react-native';
 import { StatsType } from '../../types';
 
 const PredictionChart = (stats: StatsType) => {
-  // Calculate percentages for the chart
+  const { t } = useTranslation();
   const bingoPercentage = stats.totalPredictions > 0 ? (stats.bingoHits / stats.totalPredictions) * 100 : 0;
 
   const regularPercentage = stats.totalPredictions > 0 ? (stats.regularHits / stats.totalPredictions) * 100 : 0;
@@ -12,7 +13,7 @@ const PredictionChart = (stats: StatsType) => {
 
   return (
     <Card className="p-4 mb-4">
-      <Text className="text-text text-lg font-bold mb-4">Prediction Results</Text>
+      <CText className="text-text text-lg font-bold mb-4">Prediction Results</CText>
 
       <View className="h-6 flex-row rounded-md overflow-hidden mb-4">
         {stats.totalPredictions > 0 ? (
@@ -29,15 +30,21 @@ const PredictionChart = (stats: StatsType) => {
       <View className="flex-row justify-between">
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
-          <Text className="text-text">Bingo ({stats.bingoHits})</Text>
+          <CText className="text-text">
+            {t('Bingo')} ({stats.bingoHits})
+          </CText>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
-          <Text className="text-text">Regular ({stats.regularHits})</Text>
+          <CText className="text-text">
+            {t('Regular')} ({stats.regularHits})
+          </CText>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
-          <Text className="text-text">Missed ({stats.missedHits})</Text>
+          <CText className="text-text">
+            {t('Missed')} ({stats.missedHits})
+          </CText>
         </View>
       </View>
     </Card>

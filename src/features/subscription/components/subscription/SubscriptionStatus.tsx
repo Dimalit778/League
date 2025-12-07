@@ -1,5 +1,6 @@
+import { CText } from '@/components/ui';
 import { Link } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { SubscriptionType } from '../../types';
 
 interface SubscriptionStatusProps {
@@ -40,16 +41,16 @@ const SubscriptionStatus = ({ subscriptionType = 'FREE', expiresAt = null }: Sub
       <TouchableOpacity className="flex-row items-center justify-between p-4 bg-surface rounded-lg border border-border mb-4">
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getStatusColor()} mr-2`} />
-          <Text className="text-text font-medium">{getStatusText()}</Text>
+          <CText className="text-text font-medium">{getStatusText()}</CText>
         </View>
 
         {expiresAt && subscriptionType !== 'FREE' && (
-          <Text className="text-textMuted text-sm">Expires: {formatExpiryDate()}</Text>
+          <CText className="text-textMuted text-sm">Expires: {formatExpiryDate()}</CText>
         )}
 
         {(!subscriptionType || subscriptionType === 'FREE') && (
           <View className="bg-primary px-2 py-1 rounded">
-            <Text className="text-white text-xs font-medium">Upgrade</Text>
+            <CText className="text-white text-xs font-medium">Upgrade</CText>
           </View>
         )}
       </TouchableOpacity>

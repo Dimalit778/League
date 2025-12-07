@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, InputField, Screen } from '@/components/ui';
+import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -52,11 +52,11 @@ const SignInScreen = () => {
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="items-center py-16">
-          <Text className=" text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className=" text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
             Welcome Back
-          </Text>
+          </CText>
 
-          <Text className="text-muted font-nunito-bold ">Sign in to your account</Text>
+          <CText className="text-muted font-nunito-bold ">Sign in to your account</CText>
         </View>
 
         {/* Form */}
@@ -91,7 +91,7 @@ const SignInScreen = () => {
 
           {errorMessage && (
             <View className="">
-              <Text className="text-error text-center">{errorMessage}</Text>
+              <CText className="text-error text-center">{errorMessage}</CText>
             </View>
           )}
 
@@ -105,20 +105,20 @@ const SignInScreen = () => {
           />
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-gray-600" />
-            <Text className="text-gray-400 mx-2">OR</Text>
+            <CText className="text-gray-400 mx-2">OR</CText>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
 
           <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-muted text-center">Don't have an account?</Text>
+              <CText className="text-muted text-center">Don't have an account?</CText>
               <Link href="/signUp" replace>
-                <Text className="text-secondary font-bold">Sign Up</Text>
+                <CText className="text-secondary font-bold">Sign Up</CText>
               </Link>
             </View>
             <Link href="/sendResetLink" asChild>
-              <Text className="text-secondary font-bold text-center mt-5 ">Forgot Password</Text>
+              <CText className="text-secondary font-bold text-center mt-5 ">Forgot Password</CText>
             </Link>
           </View>
         </View>

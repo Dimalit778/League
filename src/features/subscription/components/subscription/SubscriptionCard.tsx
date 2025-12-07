@@ -1,6 +1,7 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { CText } from '@/components/ui/CText';
+import { useTranslation } from '@/hooks/useTranslation';
+import { TouchableOpacity, View } from 'react-native';
 import { SubscriptionType } from '../../types';
-
 interface SubscriptionCardProps {
   type: SubscriptionType;
   price: string;
@@ -22,20 +23,23 @@ const getTypeColor = (type: SubscriptionType) => {
 };
 
 const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }: SubscriptionCardProps) => {
+  const { t } = useTranslation();
   return (
     <View className={`rounded-lg border ${isActive ? 'border-primary border-2' : 'border-border'} p-4 mb-4 bg-surface`}>
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getTypeColor(type)} mr-2`} />
-          <Text className="text-text font-bold text-lg">{type}</Text>
+          <CText className="font-bold text-lg">{t(type)}</CText>
         </View>
-        <Text className="text-primary font-bold text-xl">{price}</Text>
+        <CText className="text-primary font-bold text-xl">
+          {t(price)}/{t('mo')}
+        </CText>
       </View>
 
       <View className="mb-4">
         {features.map((feature, index) => (
           <View key={index} className="flex-row items-center mb-2">
-            <Text className="text-text text-sm">• {feature}</Text>
+            <CText className="text-sm">• {t(feature)}</CText>
           </View>
         ))}
       </View>
@@ -45,11 +49,11 @@ const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }:
         className={`py-2  rounded-lg ${isActive ? '' : 'bg-primary'}`}
         disabled={isActive}
       >
-        <Text
+        <CText
           className={`text-center ${isActive ? 'text-primary font-headBold text-2xl' : 'text-background font-medium text-lg'}`}
         >
-          {isActive ? 'Current Plan' : 'Select Plan'}
-        </Text>
+          {isActive ? t('Current Plan') : t('Select Plan')}
+        </CText>
       </TouchableOpacity>
     </View>
   );

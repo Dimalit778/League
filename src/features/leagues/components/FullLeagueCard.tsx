@@ -1,6 +1,6 @@
-import { LogoBadge } from '@/components/LogoBadge';
-import { MyImage } from '@/components/ui';
-import { Text, View } from 'react-native';
+import { CText, MyImage } from '@/components/ui';
+import { LogoBadge } from '@/components/ui/LogoBadge';
+import { View } from 'react-native';
 import { FullLeagueType } from '../types';
 
 export default function FullLeagueCard({ league }: { league: FullLeagueType }) {
@@ -9,14 +9,14 @@ export default function FullLeagueCard({ league }: { league: FullLeagueType }) {
       <View className="items-center gap-2">
         <LogoBadge source={league.competition_logo} width={80} height={80} />
 
-        <Text
+        <CText
           className="text-primary font-nunito-bold text-2xl text-center uppercase"
           style={{
             letterSpacing: 1,
           }}
         >
           {league.league_name}
-        </Text>
+        </CText>
       </View>
 
       <View className="h-[1px] bg-muted my-3" />
@@ -24,32 +24,32 @@ export default function FullLeagueCard({ league }: { league: FullLeagueType }) {
       <View className="gap-3">
         <View>
           <View className="flex-row justify-between ">
-            <Text className="text-text">Members</Text>
-            <Text className="text-text font-semibold">
+            <CText className="text-text">Members</CText>
+            <CText className="text-text font-semibold">
               {league.members_count || 0} / {league.max_members}
-            </Text>
+            </CText>
           </View>
         </View>
         <View className="h-[1px] bg-muted" />
         {/* Owner */}
         <View className="flex-row justify-between">
-          <Text className="text-text">League Owner</Text>
-          <Text className="text-text font-semibold">{league.owner_nickname}</Text>
+          <CText className="text-text">League Owner</CText>
+          <CText className="text-text font-semibold">{league.owner_nickname}</CText>
         </View>
         <View className="h-[1px] bg-muted" />
         {/* Competition details */}
         <View className="flex-row justify-between">
-          <Text className="text-text">League</Text>
+          <CText className="text-text">League</CText>
           <View className="flex-row items-center">
-            <Text className="text-text font-semibold mr-2">{league.competition_name}</Text>
+            <CText className="text-text font-semibold mr-2">{league.competition_name}</CText>
             <LogoBadge source={{ uri: league.competition_logo }} width={18} height={18} />
           </View>
         </View>
         <View className="h-[1px] bg-muted" />
         <View className="flex-row justify-between items-center pb-1">
-          <Text className="text-text">Country</Text>
+          <CText className="text-text">Country</CText>
           <View className="flex-row items-center">
-            <Text className="text-text font-semibold mr-2">{league.competition_area}</Text>
+            <CText className="text-text font-semibold mr-2">{league.competition_area}</CText>
             <MyImage source={league.competition_flag} width={18} height={18} resizeMode="contain" />
           </View>
         </View>

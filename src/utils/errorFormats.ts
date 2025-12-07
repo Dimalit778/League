@@ -153,11 +153,9 @@ export const getErrorInfo = (error: any): ErrorInfo => {
   }
 
   if (isValidationError(error)) {
-    console.log('error validation ------->,', JSON.stringify(error));
-    
     // Handle specific Supabase auth error codes
     const errorCode = error?.code || '';
-    
+
     if (errorCode === 'email_address_invalid') {
       return {
         category: 'validation',
@@ -165,7 +163,7 @@ export const getErrorInfo = (error: any): ErrorInfo => {
         canRetry: false,
       };
     }
-    
+
     if (errorCode === 'signup_disabled') {
       return {
         category: 'validation',
@@ -173,7 +171,7 @@ export const getErrorInfo = (error: any): ErrorInfo => {
         canRetry: false,
       };
     }
-    
+
     if (errorCode === 'weak_password') {
       return {
         category: 'validation',
@@ -181,7 +179,7 @@ export const getErrorInfo = (error: any): ErrorInfo => {
         canRetry: false,
       };
     }
-    
+
     const message = error.message || 'Please check your input and try again.';
     return {
       category: 'validation',

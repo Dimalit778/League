@@ -1,5 +1,6 @@
+import { CText } from '@/components/ui';
 import { GoogleLogoIcon } from '@assets/icons';
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 
 type Props = {
   label?: string;
@@ -22,9 +23,9 @@ const GoogleSignInButton = ({ label = 'Sign in with Google', loading, disabled, 
       accessibilityLabel={label}
     >
       <GoogleLogoIcon size={22} />
-      <Text className="text-md font-semibold text-text" numberOfLines={1}>
+      <CText className="text-md font-semibold text-text" numberOfLines={1}>
         {label}
-      </Text>
+      </CText>
     </Pressable>
   );
 };

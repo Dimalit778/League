@@ -36,12 +36,14 @@ const formatTime = (dateString: string) => {
   });
 };
 
-const formatDateRange = (startDate: string, endDate: string) => {
+const formatDateRange = (startDate: string, endDate: string, locale: string = 'en-GB') => {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const startMonth = start.toLocaleDateString('en-GB', { month: 'short' });
+
+  const startMonth = start.toLocaleDateString(locale, { month: 'short' });
+
   const startDay = start.getDate();
-  const endMonth = end.toLocaleDateString('en-GB', { month: 'short' });
+  const endMonth = end.toLocaleDateString(locale, { month: 'short' });
   const endDay = end.getDate();
 
   if (startMonth === endMonth) {
@@ -50,9 +52,10 @@ const formatDateRange = (startDate: string, endDate: string) => {
   return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
 };
 
-const formatMatchdayDate = (date: string) => {
+const formatMatchdayDate = (date: string, locale: string = 'en-GB') => {
   const dateObj = new Date(date);
-  const day = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+  const day = dateObj.toLocaleDateString(locale, { weekday: 'short' });
+
   const dayNum = dateObj.getDate();
   const month = dateObj.getMonth() + 1;
   return `${day}, ${dayNum}/${month}`;
