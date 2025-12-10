@@ -66,10 +66,13 @@ League Champion transforms the way friends, families, and communities engage wit
 ## Tech stack
 
 - [Expo Router](https://expo.dev/router) on React Native 0.81
-- Supabase auth + typed queries (`src/lib/supabase.ts`, `src/types/database.types.ts`)
-- Zustand for client state, TanStack Query for data fetching, NativeWind for styling
-- React Hook Form + Yup for validation; Testing Library + Jest for unit tests
-- TanStack
+- Supabase 
+- Zustand
+- TanStack Query
+- NativeWind for styling
+- React Hook Form + Yup for validation
 
-![image](https://github.com/Dimalit778/Shopapp/blob/main/IMG_9332.png?raw=true)
 
+![image](https://github.com/Dimalit778/League/blob/main/appImages/leaderboard.PNG?raw=true)
+![image](https://github.com/Dimalit778/League/blob/main/appImages/matches.PNG?raw=true)
+![image](https://github.com/Dimalit778/League/blob/main/appImages/match-details.PNG?raw=true)
