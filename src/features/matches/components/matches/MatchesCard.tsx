@@ -1,6 +1,7 @@
 import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativeWind';
 import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { AddIcon } from '@assets/icons';
@@ -98,7 +99,9 @@ const HeaderDisplay = ({ kickOff, isScheduled, isLive, isFinished }: HeaderDispl
   return (
     <View className="flex-row items-center justify-between p-1 px-2  ">
       <CText className="text-text text-xs font-bold">{dateStr}</CText>
-      <CText className={isLive ? 'text-success text-xs ' : isFinished ? 'text-muted text-xs ' : 'text-text text-xs '}>
+      <CText
+        className={cn(isLive ? 'text-success text-xs ' : isFinished ? 'text-muted text-xs ' : 'text-text text-xs ')}
+      >
         {isScheduled ? kickOffTime : isLive ? t('Live') : isFinished ? t('FT') : null}
       </CText>
     </View>
@@ -138,7 +141,7 @@ const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) =
 
       {isPredictionFinished && isFinished && points != null && (
         <View className="w-1/3 flex-row items-center justify-end">
-          <CText className="text-text text-sm font-semibold" style={{ color: predictionResult?.color }}>
+          <CText className="text-sm font-semibold" style={{ color: predictionResult?.color }}>
             {points} {t('pts')}
           </CText>
         </View>
