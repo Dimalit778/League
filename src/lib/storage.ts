@@ -1,18 +1,51 @@
-import { createMMKV, type MMKV } from 'react-native-mmkv';
+import { Platform } from 'react-native';
 
-// App-level storage: theme, language, and other app-wide settings
-// These persist across user sessions
-export const appStorage = createMMKV({ id: 'app-storage' });
+// Web-compatible storage adapter using localStorage
+const createWebStorage = (id: string) => ({
+  set: (key: string, value: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`${id}:${key}`, value);
+    }
+  },
+  getString: (key: string): string | undefined => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(`${id}:${key}`) ?? undefined;
+    }
+    return undefined;
+  },
+  remove: (key: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(`${id}:${key}`);
+    }
+  },
+});
 
-// User-specific storage: auth state, member data
-export const userStorage = createMMKV({ id: 'user-storage' });
+// Storage interface that works on both native and web
+type StorageInstance = {
+  set: (key: string, value: string) => void;
+  getString: (key: string) => string | undefined;
+  remove: (key: string) => void;
+};
 
-// Auth storage: Supabase session storage (kept separate for Supabase client)
-export const authStorage = createMMKV({ id: 'auth-storage' });
+let appStorage: StorageInstance;
+let userStorage: StorageInstance;
+let authStorage: StorageInstance;
 
-// Zustand-compatible storage adapter from an MMKV instance
+if (Platform.OS === 'web') {
+  appStorage = createWebStorage('app-storage');
+  userStorage = createWebStorage('user-storage');
+  authStorage = createWebStorage('auth-storage');
+} else {
+  const { createMMKV } = require('react-native-mmkv');
+  appStorage = createMMKV({ id: 'app-storage' });
+  userStorage = createMMKV({ id: 'user-storage' });
+  authStorage = createMMKV({ id: 'auth-storage' });
+}
 
-export function createMMKVStorageAdapter(storage: MMKV) {
+export { appStorage, userStorage, authStorage };
+
+// Zustand-compatible storage adapter
+export function createMMKVStorageAdapter(storage: StorageInstance) {
   return {
     setItem: (name: string, value: string) => {
       storage.set(name, value);

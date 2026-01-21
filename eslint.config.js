@@ -1,5 +1,5 @@
-const { FlatCompat } = require("@eslint/eslintrc");
-const js = require("@eslint/js");
+const { FlatCompat } = require('@eslint/eslintrc');
+const js = require('@eslint/js');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -7,8 +7,8 @@ const compat = new FlatCompat({
 });
 
 module.exports = [
-  ...compat.extends("expo", "prettier"),
+  ...compat.extends('expo', 'prettier'),
   {
-    ignores: ["dist/*"],
+    ignores: ['dist/*'],
   },
 ];
