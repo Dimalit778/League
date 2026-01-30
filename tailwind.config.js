@@ -2,7 +2,14 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,tsx}'],
   presets: [require('nativewind/preset')],
+  darkMode: 'class',
   theme: {
+    screens: {
+      sm: '480px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+    },
     extend: {
       colors: {
         primary: 'var(--color-primary)',
@@ -22,8 +29,12 @@ module.exports = {
         teko: ['Teko-Regular'],
         'teko-bold': ['Teko-Bold'],
       },
-      fontSize: {
-        h1: 'var(--font-size-h1)',
+
+      maxWidth: {
+        sm: '400px',
+        md: '680px',
+        lg: '900px',
+        xl: '1280px',
       },
     },
   },

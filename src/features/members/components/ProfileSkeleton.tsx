@@ -1,8 +1,9 @@
+import { Screen } from '@/components/layout';
 import { View } from 'react-native';
 
 export function ProfileSkeleton() {
   return (
-    <View className="flex-1 bg-background">
+    <Screen>
       {/* Avatar section skeleton */}
       <View className="px-4 mt-4">
         <View className="items-center px-4">
@@ -97,6 +98,6 @@ export function ProfileSkeleton() {
       <View className="px-6  mb-4">
         <View className="w-full h-12 bg-muted rounded-lg animate-pulse" />
       </View>
-    </View>
+    </Screen>
   );
 }

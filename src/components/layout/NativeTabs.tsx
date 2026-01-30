@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 // Constants
 const IS_IOS = Platform.OS === 'ios';
 
-export default function TabLayout() {
+export const TabLayout = () => {
   const { colors } = useThemeTokens();
   return (
     <NativeTabs
@@ -62,4 +62,4 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
     </NativeTabs>
   );
-}
+};

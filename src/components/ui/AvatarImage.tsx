@@ -11,7 +11,7 @@ type AvatarImageProps = {
   className?: string;
 };
 
-const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => {
+export const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => {
   const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
   const profileImage = getProfileImage(path);
 
@@ -19,7 +19,7 @@ const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => 
     <View
       className={cn(
         'w-full h-full items-center justify-center bg-surface border border-border rounded-full overflow-hidden',
-        className
+        className,
       )}
     >
       {profileImage ? (
@@ -47,5 +47,3 @@ const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => 
     </View>
   );
 };
-
-export default AvatarImage;

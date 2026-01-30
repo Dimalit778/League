@@ -12,7 +12,7 @@ type ErrorFallbackProps = {
   resetErrorBoundary: () => void;
 };
 
-const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
+export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
   const { colors } = useThemeTokens();
 
   const handleGoHome = () => {

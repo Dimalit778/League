@@ -1,7 +1,6 @@
-import { Error, LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
 
-import Screen from '@/components/layout/Screen';
 import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -34,7 +33,7 @@ const SelectCompetitionScreen = () => {
 
   if (isLoading) return <LoadingOverlay />;
   return (
-    <Screen className="px-2">
+    <Screen withSafeArea>
       <BackButton title={t('Select a Competition')} />
       <ScrollView className="flex-" contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}>
         {competitions?.map((comp) => (
@@ -54,9 +53,13 @@ const SelectCompetitionScreen = () => {
                 priority="high"
               />
               <View className="flex-1 items-center">
-                <CText className="text-sm font-bold mb-1 text-muted">{t(comp.area)}</CText>
+                <CText variant="caption" className="text-muted">
+                  {t(comp.area)}
+                </CText>
                 <CText
-                  className="text-xl text-center font-bold"
+                  variant="body"
+                  bold
+                  className="text-center"
                   style={{
                     color: selectedCompetition?.id === comp.id ? colors.primary : colors.text,
                   }}

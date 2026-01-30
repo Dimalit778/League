@@ -21,7 +21,7 @@ type InputFieldProps = {
   accessibilityHint?: string;
 };
 
-const InputField = ({
+export const InputField = ({
   control,
   name,
   placeholder,
@@ -105,7 +105,8 @@ const InputField = ({
       </View>
       {error && (
         <CText
-          className="text-red-500 mt-1 text-sm text-center"
+          variant="small"
+          className="text-error mt-1 text-center"
           accessible={true}
           accessibilityRole="text"
           accessibilityLiveRegion="assertive"
@@ -116,5 +117,3 @@ const InputField = ({
     </View>
   );
 };
-
-export default InputField;

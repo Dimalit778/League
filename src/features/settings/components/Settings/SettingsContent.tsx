@@ -5,7 +5,7 @@ import { useThemeStore } from '@/store/ThemeStore';
 import { Tables } from '@/types/database.types';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { RelativePathString, useRouter } from 'expo-router';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 
@@ -34,12 +34,12 @@ const SettingsContent = ({
     };
 
     return (
-      <TouchableWithoutFeedback onPress={handlePress}>
+      <Pressable onPress={handlePress}>
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
           <CText className="text-text text-base ">{title}</CText>
           <AntDesign name={ArrowIcon} size={16} color={theme === 'dark' ? 'white' : 'black'} />
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   };
   return (

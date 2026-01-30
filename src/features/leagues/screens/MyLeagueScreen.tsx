@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay } from '@/components/layout';
+import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { Button } from '@/components/ui';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -31,7 +31,7 @@ const MyLeagues = () => {
   if (error) return <Error error={error as Error} />;
 
   return (
-    <View className="flex-1 bg-background p-2">
+    <Screen>
       <View className="flex-row justify-between px-2">
         <Button
           title={t('Create League')}
@@ -62,7 +62,7 @@ const MyLeagues = () => {
           </View>
         )}
       </View>
-    </View>
+    </Screen>
   );
 };
 

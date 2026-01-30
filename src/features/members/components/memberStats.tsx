@@ -35,7 +35,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
   ];
 
   return (
-    <Card className="p-2 mx-3 my-2 ">
+    <Card className="p-2 my-2 ">
       <View className="flex-row mb-2">
         {topRowStats.map((item) => (
           <View key={item.label} className="flex-1 px-2">
@@ -44,8 +44,12 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <CText className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</CText>
-              <CText className={`${item.color} text-base font-bold`}>{item.value}</CText>
+              <CText variant="caption" className="text-muted uppercase">
+                {item.label}
+              </CText>
+              <CText variant="body" bold className={`${item.color}`}>
+                {item.value}
+              </CText>
             </View>
           </View>
         ))}
@@ -59,8 +63,12 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <CText className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">{item.label}</CText>
-              <CText className={`${item.color} text-base font-bold`}>{item.value}</CText>
+              <CText variant="caption" className="text-muted uppercase">
+                {item.label}
+              </CText>
+              <CText variant="body" bold className={`${item.color}`}>
+                {item.value}
+              </CText>
             </View>
           </View>
         ))}

@@ -1,4 +1,4 @@
-import { Error } from '@/components/layout';
+import { Error, Screen } from '@/components/layout';
 import { useGetCompetitionFixtures } from '@/features/leagues/hooks/useCompetition';
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
@@ -11,9 +11,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import MatchesList from '../components/matches/MatchesList';
 import { useGetMatches } from '../hooks/useMatches';
-
 const MatchesScreen = () => {
   const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
+
   const memberId = useMemberStore((s) => s.memberId) ?? '';
   const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const { language } = useTranslation();
@@ -74,7 +74,6 @@ const MatchesScreen = () => {
   const {
     data: matches,
     isLoading: matchesLoading,
-
     refetch: matchesRefetch,
     error: matchesError,
   } = useGetMatches({
@@ -106,10 +105,10 @@ const MatchesScreen = () => {
 
   if (fixturesLoading || matchesLoading || !selectedFixture) {
     return (
-      <View className="flex-1 bg-background">
+      <Screen>
         <SkeletonFixtures />
         <SkeletonMatches />
-      </View>
+      </Screen>
     );
   }
 
@@ -117,23 +116,29 @@ const MatchesScreen = () => {
   if (matchesError) return <Error error={matchesError} />;
 
   return (
-    <View className="flex-1 bg-background">
-      <FixturesList
-        fixtures={allFixtures}
-        selectedFixture={selectedFixture}
-        currentFixture={currentFixture}
-        handleFixturePress={handleFixturePress}
-        animateScroll={animateScroll}
-        fixtureDateRanges={fixtureDateRanges}
-      />
-      <ScrollView
-        className="flex-1"
-        refreshControl={<RefreshControl refreshing={false} onRefresh={matchesRefetch} />}
-        showsVerticalScrollIndicator={false}
-      >
-        <MatchesList matches={matches} />
-      </ScrollView>
-    </View>
+    <>
+      <View className="bg-background pt-2">
+        <FixturesList
+          fixtures={allFixtures}
+          selectedFixture={selectedFixture}
+          currentFixture={currentFixture}
+          handleFixturePress={handleFixturePress}
+          animateScroll={animateScroll}
+          fixtureDateRanges={fixtureDateRanges}
+        />
+      </View>
+      <Screen>
+        <View className="flex-1 bg-background">
+          <ScrollView
+            className="flex-1"
+            refreshControl={<RefreshControl refreshing={false} onRefresh={matchesRefetch} />}
+            showsVerticalScrollIndicator={false}
+          >
+            <MatchesList matches={matches} />
+          </ScrollView>
+        </View>
+      </Screen>
+    </>
   );
 };
 

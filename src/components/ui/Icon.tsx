@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from 'react-native';
 
 interface MyIconProps {
   icon: any; // You might want to use a more specific type here
@@ -24,7 +24,7 @@ function CustomIcon({ size, round, style, ...props }: CustomIconProps) {
   return <Image style={[iconStyle.icon, style]} {...props} />;
 }
 
-const Icon = ({ icon, color, size, bRadius }: MyIconProps) => (
+export const Icon = ({ icon, color, size, bRadius }: MyIconProps) => (
   <CustomIcon
     source={icon}
     resizeMode="contain"
@@ -36,5 +36,3 @@ const Icon = ({ icon, color, size, bRadius }: MyIconProps) => (
     }}
   />
 );
-
-export default Icon;

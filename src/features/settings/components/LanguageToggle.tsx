@@ -11,7 +11,7 @@ const LanguageToggle = () => {
   };
 
   return (
-    <View pointerEvents="box-only">
+    <View>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.7}
@@ -25,17 +25,23 @@ const LanguageToggle = () => {
         accessibilityState={{ checked: isHebrew }}
       >
         <View className="w-10 h-8 items-center justify-center">
-          <CText className="text-text text-xs font-medium">EN</CText>
+          <CText variant="caption" bold className="text-text">
+            EN
+          </CText>
         </View>
         <View className="w-10 h-8 items-center justify-center">
-          <CText className="text-text text-xs font-medium">עב</CText>
+          <CText variant="caption" bold className="text-text">
+            עב
+          </CText>
         </View>
         <View
           className={`absolute w-10 h-8 bg-background rounded-full items-center justify-center ${
             isHebrew ? 'right-1' : 'left-1'
           }`}
         >
-          <CText className="text-text text-xs font-semibold">{isHebrew ? 'עב' : 'EN'}</CText>
+          <CText variant="caption" bold className="text-text">
+            {isHebrew ? 'עב' : 'EN'}
+          </CText>
         </View>
       </TouchableOpacity>
     </View>

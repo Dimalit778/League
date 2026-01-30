@@ -1,6 +1,7 @@
 import { getThemeTokens, type ThemeName } from '@/lib/nativeWind';
 import { appStorage, createMMKVStorageAdapter } from '@/lib/storage';
 import { colorScheme } from 'nativewind';
+import { Platform } from 'react-native';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -19,7 +20,17 @@ export const useThemeStore = create<ThemeState>()(
       theme: 'dark' as ThemeName,
 
       setTheme: (theme: ThemeName) => {
-        colorScheme.set(theme);
+        if (Platform.OS === 'web') {
+          // On web, manually toggle the 'dark' class on document element
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } else {
+          // On native, use NativeWind's colorScheme
+          colorScheme.set(theme);
+        }
         set({ theme });
       },
 
@@ -30,9 +41,17 @@ export const useThemeStore = create<ThemeState>()(
       },
 
       initializeTheme: async () => {
-        // Sync nativewind colorScheme with hydrated theme
+        // Sync theme with platform-specific implementation
         const currentTheme = get().theme;
-        colorScheme.set(currentTheme);
+        if (Platform.OS === 'web') {
+          if (currentTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } else {
+          colorScheme.set(currentTheme);
+        }
       },
     }),
     {

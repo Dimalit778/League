@@ -47,7 +47,9 @@ const CreateLeagueScreen = () => {
         }`}
         activeOpacity={0.8}
       >
-        <CText className={`text-base font-bold ${isActive ? 'text-secondary' : 'text-text'}`}>{t(label)}</CText>
+        <CText variant="body" className={`${isActive ? 'text-secondary' : 'text-text'}`}>
+          {t(label)}
+        </CText>
       </TouchableOpacity>
     );
   };
@@ -60,10 +62,10 @@ const CreateLeagueScreen = () => {
     });
   });
   return (
-    <Screen>
+    <Screen withSafeArea>
       {isPending && <LoadingOverlay />}
       <BackButton title={t('League Details')} />
-      <View className="flex-1 ">
+      <View className="flex-1 mt-4">
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="handled"
           bottomOffset={72}
@@ -74,8 +76,10 @@ const CreateLeagueScreen = () => {
           }}
         >
           {/* League name */}
-          <View className="mb-6 ">
-            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('League Name')}</CText>
+          <View className="mb-8">
+            <CText variant="body" className="mb-2 text-left">
+              {t('League Name')}
+            </CText>
             <InputField
               control={control}
               name="leagueName"
@@ -88,8 +92,10 @@ const CreateLeagueScreen = () => {
           </View>
 
           {/* Nickname */}
-          <View className="mb-6">
-            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('Your Nickname')}</CText>
+          <View className="mb-8">
+            <CText variant="body" className="mb-2 text-left">
+              {t('Your Nickname')}
+            </CText>
             <InputField
               control={control}
               name="nickname"
@@ -101,13 +107,15 @@ const CreateLeagueScreen = () => {
           </View>
 
           {/* Members count */}
-          <View className="mb-4">
-            <CText className="text-lg font-semibold mb-2 text-text text-left">{t('Number of Members')}</CText>
-            <CText className="text-xs text-muted mb-3 text-center">
+          <View>
+            <CText variant="body" className="mb-2 text-left">
+              {t('Number of Members')}
+            </CText>
+            <CText variant="caption" className="text-muted mb-3 text-center">
               {t('Choose how many friends can join this league.')}
             </CText>
 
-            <View className="flex-row">
+            <View className="flex-row mt-4">
               <MemberOption value={6} label={t('6 Members')} />
               <MemberOption value={10} label={t('10 Members')} />
             </View>

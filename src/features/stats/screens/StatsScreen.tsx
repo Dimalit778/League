@@ -1,4 +1,4 @@
-import { Error } from '@/components/layout';
+import { Error, Screen } from '@/components/layout';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
 import PredictionChart from '@/features/stats/components/stats/PredictionChart';
 import SkeletonStats from '@/features/stats/components/stats/SkeletonStats';
@@ -25,7 +25,7 @@ const StatsScreen = () => {
 
   if (isLoading) return <SkeletonStats />;
   return (
-    <View className="flex-1 bg-background px-4 pt-4">
+    <Screen className="px-2">
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
@@ -68,7 +68,7 @@ const StatsScreen = () => {
           />
         </View>
       </ScrollView>
-    </View>
+    </Screen>
   );
 };
 

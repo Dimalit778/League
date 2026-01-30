@@ -27,8 +27,14 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
           <AvatarImage nickname={member.nickname} path={member.avatar_url ?? null} />
         </View>
         <View className="flex-1 items-start">
-          <CText className="text-text font-medium">{member.nickname}</CText>
-          {isOwner && <CText className="text-muted text-xs">{t('League Owner')}</CText>}
+          <CText variant="body" bold>
+            {member.nickname}
+          </CText>
+          {isOwner && (
+            <CText variant="caption" className="text-muted">
+              {t('League Owner')}
+            </CText>
+          )}
         </View>
       </View>
       {!isOwner && (
@@ -98,7 +104,7 @@ export default function EditLeagueScreen() {
         onError: (error) => {
           Alert.alert(t('Error'), error.message);
         },
-      }
+      },
     );
   };
 
@@ -106,7 +112,7 @@ export default function EditLeagueScreen() {
   if (error) return <Error error={error} />;
 
   return (
-    <Screen>
+    <Screen withSafeArea>
       <BackButton title={t('Edit League')} />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="p-4">
@@ -114,8 +120,12 @@ export default function EditLeagueScreen() {
             <View className="flex-row items-center gap-3 mb-4">
               <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
               <View className="flex-1">
-                <CText className="text-text text-lg font-bold">{league?.competition?.name}</CText>
-                <CText className="text-muted text-sm">{league?.competition?.area}</CText>
+                <CText variant="body" bold>
+                  {league?.competition?.name}
+                </CText>
+                <CText variant="caption" className="text-muted">
+                  {league?.competition?.area}
+                </CText>
               </View>
             </View>
 

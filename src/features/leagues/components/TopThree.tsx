@@ -6,14 +6,12 @@ import { Tables } from '@/types/database.types';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Link } from 'expo-router';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type LeaderboardType = Tables<'league_leaderboard_view'>;
 type TopThreeProps = {
   topMembers: LeaderboardType[];
 };
 export default function TopThree({ topMembers }: TopThreeProps) {
-  const insets = useSafeAreaInsets();
   const isRTL = useIsRTL();
 
   const renderPlayer = (member: LeaderboardType | undefined, position: number) => {
@@ -61,13 +59,13 @@ export default function TopThree({ topMembers }: TopThreeProps) {
   if (!topMembers || topMembers.length === 0) return null;
 
   return (
-    <View style={{ paddingTop: insets.top }}>
+    
       <View className="flex-row justify-center gap-5 mb-3  ">
         <View className="items-center">{renderPlayer(topMembers[1], 2)}</View>
         <View className="items-center -mt-8">{renderPlayer(topMembers[0], 1)}</View>
         <View className="items-center">{renderPlayer(topMembers[2], 3)}</View>
       </View>
-    </View>
+    
   );
 }
 function getPositionSize(position: number): { size: number; className: string } {

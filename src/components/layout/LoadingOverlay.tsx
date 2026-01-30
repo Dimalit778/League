@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const LoadingOverlay = () => {
+export const LoadingOverlay = () => {
   return (
     <View style={styles.overlay}>
       <ActivityIndicator size="large" color="orange" />
@@ -21,5 +21,3 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
 });
-
-export default LoadingOverlay;

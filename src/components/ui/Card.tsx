@@ -7,7 +7,7 @@ interface CardProps {
   className?: string;
 }
 
-const Card = ({ children, className }: CardProps) => {
+export const Card = ({ children, className }: CardProps) => {
   return (
     <View
       className={`
@@ -22,5 +22,3 @@ const Card = ({ children, className }: CardProps) => {
     </View>
   );
 };
-
-export default Card;

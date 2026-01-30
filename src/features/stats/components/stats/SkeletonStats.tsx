@@ -1,8 +1,9 @@
+import { Screen } from '@/components/layout';
 import { ScrollView, View } from 'react-native';
 
 export default function SkeletonStats() {
   return (
-    <View className="flex-1 bg-background">
+    <Screen>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
@@ -83,7 +84,6 @@ export default function SkeletonStats() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </Screen>
   );
 }
-

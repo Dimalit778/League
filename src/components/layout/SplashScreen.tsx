@@ -1,6 +1,6 @@
 import logo from '@assets/app-icon.png';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
-const SplashScreen = () => {
+export const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logo} />
@@ -23,4 +23,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-export default SplashScreen;

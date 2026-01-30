@@ -1,5 +1,7 @@
+export { AlertProvider } from './AlertProvider';
 export { AuthProvider, useAuth } from './AuthProvider';
-export { ErrorBoundaryProvider as ErrorBoundaryProvider } from './ErrorBoundaryProvider';
-export { NotificationProvider as NotificationProvider } from './NotificationProvider';
-export { QueryProvider as QueryProvider } from './QueryProvider';
-export { ThemeProvider as ThemeProvider } from './ThemeProvider';
+export { ErrorBoundaryProvider, ErrorFallback } from './ErrorBoundaryProvider';
+export { LanguageProvider, useIsRTL, useLanguageContext } from './LanguageProvider';
+export { NotificationProvider } from './NotificationProvider';
+export { queryClient, QueryProvider } from './QueryProvider';
+export { ThemeProvider } from './ThemeProvider';

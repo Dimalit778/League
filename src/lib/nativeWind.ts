@@ -21,9 +21,6 @@ type ThemeTokens = {
     nunitoBold: string;
     nunitoBlack: string;
   };
-  sizes: {
-    h1: string;
-  };
 };
 
 const light: ThemeTokens = {
@@ -45,9 +42,7 @@ const light: ThemeTokens = {
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
   },
-  sizes: {
-    h1: '42px',
-  },
+
 };
 
 const dark: ThemeTokens = {
@@ -69,9 +64,7 @@ const dark: ThemeTokens = {
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
   },
-  sizes: {
-    h1: '42px',
-  },
+  
 };
 
 const toNativeWindVars = (tokens: ThemeTokens) => ({
@@ -84,7 +77,6 @@ const toNativeWindVars = (tokens: ThemeTokens) => ({
   '--color-text-muted': tokens.colors.muted,
   '--color-error': tokens.colors.error,
   '--color-success': tokens.colors.success,
-  '--font-size-h1': tokens.sizes.h1,
   '--font-nunito': tokens.fonts.nunito,
   '--font-nunito-bold': tokens.fonts.nunitoBold,
   '--font-nunito-black': tokens.fonts.nunitoBlack,

@@ -1,7 +1,7 @@
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
 import { FlatList, View } from 'react-native';
 
-const skeletonFixtures = Array.from({ length: 12 }, (_, i) => i + 1);
+const skeletonFixtures = Array.from({ length: 18 }, (_, i) => i + 1);
 
 export default function SkeletonFixtures() {
   return (

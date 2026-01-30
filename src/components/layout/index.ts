@@ -1,8 +1,10 @@
-export { default as Error } from './Error';
-
+export { BottomTabsBar } from './BottomTabsBar';
+export { DrawerMenu } from './DrawerMenu';
+export { Error } from './Error';
 export { LoadingLogo } from './LoadingLogo';
-export { default as LoadingOverlay } from './LoadingOverlay';
+export { LoadingOverlay } from './LoadingOverlay';
 export { NetworkStatusBanner } from './NetworkStatusBanner';
-export { default as Screen } from './Screen';
-export { default as SplashScreen } from './SplashScreen';
-export { default as TabsHeader } from './TabsHeader';
+export { Screen } from './Screen';
+export { SidebarMenu } from './SidebarMenu';
+export { SplashScreen } from './SplashScreen';
+export { TabsHeader } from './TabsHeader';

@@ -2,20 +2,27 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { Button, CText, MyImage } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAlert } from '@/providers/AlertProvider';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Share, TouchableOpacity, View } from 'react-native';
+import { Share, TouchableOpacity, View } from 'react-native';
 
 const PreviewLeague = () => {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
   const { data: leagueData } = useGetLeagueAndMembers(leagueId);
   const { t } = useTranslation();
+  const { showAlert } = useAlert();
   const router = useRouter();
 
   const handleCopyJoinCode = async () => {
     if (typeof leagueData?.join_code === 'string') {
       await Clipboard.setStringAsync(leagueData?.join_code || '');
-      Alert.alert('Copied!', 'Join code copied to clipboard.');
+      showAlert({
+        title: 'Copied!',
+        message: 'Join code copied to clipboard.',
+        type: 'success',
+        buttons: [{ text: 'OK' }],
+      });
     }
   };
 
@@ -43,11 +50,11 @@ const PreviewLeague = () => {
   };
 
   return (
-    <Screen>
+    <Screen withSafeArea>
       {!leagueData && <LoadingOverlay />}
 
       <View className="items-center my-8">
-        <CText className="text-2xl font-bold text-center mb-2 text-primary font-nunito-black">
+        <CText variant="h2" bold className="text-center mb-2 text-primary">
           {t('League Created Successfully!')}
         </CText>
       </View>
@@ -58,25 +65,35 @@ const PreviewLeague = () => {
             <MyImage source={leagueData?.competition?.logo as string} />
           </View>
 
-          <CText className="text-3xl text-center text-primary mb-2  font-nunito-black">{leagueData?.name}</CText>
-          <CText className="text-base text-muted text-center">
+          <CText variant="h3" bold className="text-center text-primary my-2">
+            {leagueData?.name}
+          </CText>
+          <CText variant="caption" className="text-muted text-center">
             {t(leagueData?.competition?.area || '')} • {t(leagueData?.competition?.name || '')}
           </CText>
         </View>
 
         <View className="rounded-xl p-4 mb-4 border border-border">
-          <CText className="text-sm font-medium text-muted mb-1 text-center">{t('Your Nickname')}</CText>
-          <CText className="text-lg font-bold text-text text-center">{leagueData?.league_members[0]?.nickname}</CText>
+          <CText variant="caption" className="text-muted mb-1 text-center">
+            {t('Your Nickname')}
+          </CText>
+          <CText variant="body" bold className="text-text text-center">
+            {leagueData?.league_members[0]?.nickname}
+          </CText>
         </View>
 
         <View className="p-4">
-          <CText className="text-sm font-medium text-muted mb-3 text-center">{t('League Join Code')}</CText>
+          <CText variant="caption" className="text-muted mb-3 text-center">
+            {t('League Join Code')}
+          </CText>
           <TouchableOpacity onPress={handleCopyJoinCode} className=" border border-border rounded-lg p-4 mb-3">
-            <CText className="text-2xl font-mono font-bold text-primary text-center tracking-[8px]">
+            <CText variant="h3" bold className="text-primary text-center tracking-[8px]">
               {leagueData?.join_code}
             </CText>
           </TouchableOpacity>
-          <CText className="text-xs text-muted text-center">{t('Tap to copy code')}</CText>
+          <CText variant="caption" className="text-muted text-center">
+            {t('Tap to copy code')}
+          </CText>
         </View>
       </View>
 

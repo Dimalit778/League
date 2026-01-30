@@ -7,7 +7,7 @@ import { useMemberStore } from '@/store/MemberStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 type PredictionFormProps = {
   prediction?: PredictionMemberType;
   matchId: number;
@@ -33,8 +33,8 @@ const ScoreInput = ({ value, onIncrement, onDecrement }: ScoreInputProps) => {
         <ArrowUpIcon size={30} color={colors.text} />
       </Pressable>
 
-      <View className="w-20 h-16 border-t border-b border-text bg-surface justify-center items-center">
-        <CText className=" text-text text-center font-nunito-black" style={{ fontSize: 30 }}>
+      <View className="w-20 h-16 border-t border-b border-muted bg-surface justify-center items-center">
+        <CText variant="h2" className=" text-text text-center ">
           {value === null ? 0 : value.toString()}
         </CText>
       </View>
@@ -121,9 +121,9 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
   const isSaveDisabled = prediction ? newHomeScore === homeScore && newAwayScore === awayScore : false;
 
   return (
-    <View className="flex-1 mt-4 p-5 bg-background rounded-t-3xl">
-      <View className="py-3 border-b border-border">
-        <CText className="text-text text-center text-2xl font-nunito-black">
+    <View className="flex-1 px-5 py-2">
+      <View className="py-3 border-b border-border ">
+        <CText variant="h2" className="text-text text-center ">
           {prediction ? t('My Prediction') : t('Enter your prediction')}
         </CText>
       </View>
@@ -131,23 +131,21 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
         {/* Score Inputs */}
         <View className="flex-row justify-center items-center mt-12">
           <ScoreInput value={homeScore} onIncrement={handleHomeIncrement} onDecrement={handleHomeDecrement} />
-          <CText className="text-lg font-bold text-primary mx-4">-</CText>
+          <Text className="text-4xl text-text mx-4">-</Text>
           <ScoreInput value={awayScore} onIncrement={handleAwayIncrement} onDecrement={handleAwayDecrement} />
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-1 justify-center">
-          <View className="flex-row gap-3">
-            <View className="flex-1">
-              <Button
-                title={prediction ? t('Save') : t('Save Prediction')}
-                onPress={handleSave}
-                loading={upsertPrediction.isPending}
-                disabled={upsertPrediction.isPending || isSaveDisabled}
-                variant="secondary"
-                size="md"
-              />
-            </View>
+        <View className="flex-1 justify-center px-4">
+          <View className="w-full md:w-[250px] md:mx-auto">
+            <Button
+              title={prediction ? t('Save') : t('Save Prediction')}
+              onPress={handleSave}
+              loading={upsertPrediction.isPending}
+              disabled={upsertPrediction.isPending || isSaveDisabled}
+              variant="secondary"
+              size="md"
+            />
           </View>
         </View>
       </View>

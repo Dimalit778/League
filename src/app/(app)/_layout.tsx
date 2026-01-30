@@ -19,6 +19,7 @@ export default function AppLayout() {
         headerShown: false,
         contentStyle: {
           backgroundColor: colors.background,
+      
         },
       }}
     >

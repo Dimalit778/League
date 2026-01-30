@@ -68,12 +68,19 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
 export default function PredictionRank({ predictions }: { predictions: PredictionMemberType[] }) {
   const memberId = useMemberStore((state) => state.memberId) ?? '';
   const { t } = useTranslation();
+
   return (
-    <View className="flex-1 bg-background p-4">
+    <View className="flex-1 p-4 md:px-10 ">
       <View className="flex-row px-1 gap-3 py-2  ">
-        <CText className="flex-1 text-sm text-text text-left  ">{t('Player')}</CText>
-        <CText className="text-sm text-text text-center">{t('Prediction')}</CText>
-        <CText className="text-sm text-text text-center">{t('Points')}</CText>
+        <CText variant="small" className="flex-1 text-text text-left  ">
+          {t('Player')}
+        </CText>
+        <CText variant="small" className="text-text text-center">
+          {t('Prediction')}
+        </CText>
+        <CText variant="small" className="text-text text-center">
+          {t('Points')}
+        </CText>
       </View>
       <FlatList
         data={predictions}
@@ -85,7 +92,9 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
         }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center mt-16">
-            <CText className="text-center font-nunito-bold text-2xl font-bold text-muted">{t('No predictions')}</CText>
+            <CText variant="bodyBold" className="text-center text-muted">
+              {t('No predictions')}
+            </CText>
           </View>
         }
         showsVerticalScrollIndicator={false}

@@ -34,10 +34,15 @@ const SendResetLink = () => {
     }
   };
   return (
-    <Screen>
+    <Screen withSafeArea>
       {(isLoading || isProcessingLink) && <LoadingOverlay />}
       <BackButton />
-      <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
+      <KeyboardAwareScrollView
+        bottomOffset={62}
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <View className="items-center py-16">
           <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
             Reset Password

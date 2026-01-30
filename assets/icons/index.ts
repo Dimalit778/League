@@ -8,6 +8,7 @@ import UserIcon from './UserIcon';
 import GoogleLogoMonoIcon from './GoogleLogoMonoIcon';
 import LeagueIcon from './LeagueIcon';
 import MatchesIcon from './MatchesIcon';
+import MenuIcon from './MenuIcon';
 import ProfileIcon from './ProfileIcon';
 import RankIcon from './RankIcon';
 import TrophyIcon from './TrophyIcon';
@@ -36,6 +37,7 @@ export {
   LeagueIcon,
   LockIcon,
   MatchesIcon,
+  MenuIcon,
   ProfileIcon,
   RankIcon,
   SettingsIcon,

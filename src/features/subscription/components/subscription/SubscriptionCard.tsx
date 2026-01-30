@@ -29,17 +29,20 @@ const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }:
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getTypeColor(type)} mr-2`} />
-          <CText className="font-bold text-lg">{t(type)}</CText>
+          <CText variant="body" bold>
+            {t(type)}
+          </CText>
         </View>
-        <CText className="text-primary font-bold text-xl">
+        <CText variant="body" bold className="text-primary">
           {t(price)}/{t('mo')}
         </CText>
       </View>
 
       <View className="mb-4">
         {features.map((feature, index) => (
-          <View key={index} className="flex-row items-center mb-2">
-            <CText className="text-sm">• {t(feature)}</CText>
+          <View key={index} className="flex-row items-center mb-2 gap-3">
+            <CText variant="caption">•</CText>
+            <CText variant="caption">{t(feature)}</CText>
           </View>
         ))}
       </View>
@@ -50,7 +53,9 @@ const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }:
         disabled={isActive}
       >
         <CText
-          className={`text-center ${isActive ? 'text-primary font-headBold text-2xl' : 'text-background font-medium text-lg'}`}
+          variant={isActive ? 'body' : 'caption'}
+          bold
+          className={`text-center ${isActive ? 'text-primary' : 'text-background'}`}
         >
           {isActive ? t('Current Plan') : t('Select Plan')}
         </CText>

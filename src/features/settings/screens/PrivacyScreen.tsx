@@ -1,8 +1,9 @@
+import { Screen } from '@/components/layout';
 import { BackButton } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PrivacyScreen = () => {
   const { t } = useTranslation();
@@ -66,11 +67,16 @@ const PrivacyScreen = () => {
       body: ['If you have any questions or concerns about these policy terms, contact us at support@league.app.'],
     },
   ];
+  const edges = useSafeAreaInsets();
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen withSafeArea className="">
       <BackButton title={t('Policy Terms')} />
-      <ScrollView className="flex-1 " contentContainerClassName="p-4">
+      <ScrollView
+        className="flex-1 px-2 "
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: edges.bottom + 10 }}
+      >
         {policySections.map((section) => (
           <View key={section.title} className="mb-6">
             <CText className="text-lg font-semibold text-text mb-3">{t(section.title)}</CText>
@@ -82,11 +88,11 @@ const PrivacyScreen = () => {
           </View>
         ))}
 
-        <CText className="mt-8 text-xs text-zinc-500">
+        <CText variant="small" className=" text-muted">
           {t('By continuing to use League you acknowledge that you have read and agree to these policy terms.')}
         </CText>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

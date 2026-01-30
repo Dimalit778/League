@@ -16,7 +16,7 @@ interface ButtonProps {
   accessibilityHint?: string;
 }
 
-const Button = ({
+export const Button = ({
   title,
   onPress,
   variant = 'primary',
@@ -80,7 +80,7 @@ const Button = ({
         sizeClasses[size],
         variantClasses[variant],
         (disabled || loading) && 'opacity-50',
-        className
+        className,
       )}
       onPress={handlePress}
       activeOpacity={0.8}
@@ -93,10 +93,10 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <CText className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}>{title}</CText>
+        <CText variant="body" className={cn(textSizeClasses[size], textVariantClasses[variant])}>
+          {title}
+        </CText>
       )}
     </TouchableOpacity>
   );
 };
-
-export default Button;

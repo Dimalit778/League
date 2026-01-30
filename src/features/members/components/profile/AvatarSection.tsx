@@ -1,12 +1,13 @@
 import { LoadingOverlay } from '@/components/layout';
 import { AvatarImage } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAlert } from '@/providers/AlertProvider';
 import { useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
 type AvatarSectionProps = {
@@ -16,6 +17,7 @@ type AvatarSectionProps = {
 
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   const { t } = useTranslation();
+  const { showAlert } = useAlert();
   const memberId = useMemberStore((s) => s.memberId);
   const leagueId = useMemberStore((s) => s.leagueId);
   const [image, setImage] = useState<string | null>(avatarUrl);
@@ -36,7 +38,12 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
       // Request permissions
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert(t('Permission required'), t('We need access to your photos.'));
+        showAlert({
+          title: t('Permission required'),
+          message: t('We need access to your photos.'),
+          type: 'warning',
+          buttons: [{ text: 'OK' }],
+        });
         return;
       }
 
@@ -55,7 +62,12 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         setPickedAsset(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert(t('Error'), t('Failed to pick image'));
+      showAlert({
+        title: t('Error'),
+        message: t('Failed to pick image'),
+        type: 'error',
+        buttons: [{ text: 'OK' }],
+      });
       console.error(error);
     }
   };
@@ -75,7 +87,12 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
       setPreviewImage(null);
       setPickedAsset(null);
     } catch (error) {
-      Alert.alert(t('Error'), t('Failed to upload image'));
+      showAlert({
+        title: t('Error'),
+        message: t('Failed to upload image'),
+        type: 'error',
+        buttons: [{ text: 'OK' }],
+      });
       setImage(previousImageRef.current);
       console.error(error);
     }
@@ -84,25 +101,34 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   const handleDeleteImage = async () => {
     if (!memberId || !image) return;
 
-    Alert.alert(t('Delete Profile Picture'), t('Are you sure you want to delete your profile picture?'), [
-      { text: t('Cancel'), style: 'cancel' },
-      {
-        text: t('Delete'),
-        style: 'destructive',
-        onPress: async () => {
-          previousImageRef.current = image;
-          setImage(null);
-          try {
-            await deleteImage.mutateAsync({ memberId, currentPath: image });
-          } catch (error) {
-            Alert.alert(t('Error'), t('Failed to delete image'));
-
-            setImage(previousImageRef.current);
-            console.error(error);
-          }
+    showAlert({
+      title: t('Delete Profile Picture'),
+      message: t('Are you sure you want to delete your profile picture?'),
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        {
+          text: t('Delete'),
+          style: 'destructive',
+          onPress: async () => {
+            previousImageRef.current = image;
+            setImage(null);
+            try {
+              await deleteImage.mutateAsync({ memberId, currentPath: image });
+            } catch (error) {
+              showAlert({
+                title: t('Error'),
+                message: t('Failed to delete image'),
+                type: 'error',
+                buttons: [{ text: 'OK' }],
+              });
+              setImage(previousImageRef.current);
+              console.error(error);
+            }
+          },
         },
-      },
-    ]);
+      ],
+    });
   };
 
   return (

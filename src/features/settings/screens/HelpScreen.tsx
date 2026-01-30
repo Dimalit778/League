@@ -1,9 +1,10 @@
+import { Screen } from '@/components/layout';
 import { BackButton, Card } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
 import { useTranslation } from '@/hooks/useTranslation';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
 import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const HelpScreen = () => {
   const handleEmailPress = () => {
     Linking.openURL('mailto:support@league.app?subject=Help Request');
@@ -137,10 +138,16 @@ const HelpScreen = () => {
     },
   ];
 
+  const edges = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen withSafeArea>
       <BackButton title={t('Help & Support')} />
-      <ScrollView className="flex-1 " contentContainerClassName="p-4">
+      <ScrollView
+        className="flex-1 px-2 "
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: edges.bottom + 10 }}
+      >
         {/* Welcome Section */}
         <Card className="mb-6 p-4">
           <CText className="text-xl font-semibold text-text mb-2">{t('Welcome to League Champion')}</CText>
@@ -197,11 +204,11 @@ const HelpScreen = () => {
           </Card>
         </View>
 
-        <CText className="mt-4 mb-8 text-xs text-zinc-500 text-center">
+        <CText variant="small" className=" text-muted">
           {t("Thank you for using League! We're constantly working to improve your experience.")}
         </CText>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

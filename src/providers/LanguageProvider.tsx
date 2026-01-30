@@ -2,7 +2,7 @@
 import { useLanguageStore } from '@/store/LanguageStore';
 import * as Updates from 'expo-updates';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { DevSettings, I18nManager } from 'react-native';
+import { DevSettings, I18nManager, Platform } from 'react-native';
 
 const LanguageContext = createContext<{ language: string; version: number; isRTL: boolean }>({
   language: 'en',
@@ -10,7 +10,14 @@ const LanguageContext = createContext<{ language: string; version: number; isRTL
   isRTL: false,
 });
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
+function setWebDirection(rtl: boolean) {
+  const doc = typeof document !== 'undefined' ? document : null;
+  if (doc?.documentElement) {
+    doc.documentElement.dir = rtl ? 'rtl' : 'ltr';
+  }
+}
+
+export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const language = useLanguageStore((state) => state.language);
   const [version, setVersion] = useState(0);
   const isRTL = language === 'he';
@@ -18,6 +25,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const applyRTL = async () => {
       const shouldBeRTL = isRTL;
+
+      if (Platform.OS === 'web') {
+        setWebDirection(shouldBeRTL);
+        setVersion((v) => v + 1);
+        return;
+      }
 
       if (I18nManager.isRTL !== shouldBeRTL) {
         I18nManager.allowRTL(shouldBeRTL);
@@ -31,6 +44,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (e) {
           console.warn('Failed to reload app after RTL change', e);
+
+          setVersion((v) => v + 1);
         }
       } else {
         setVersion((v) => v + 1);
@@ -47,17 +62,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       </LanguageWrapper>
     </LanguageContext.Provider>
   );
-}
+};
 
 function LanguageWrapper({ children }: { children: React.ReactNode; isRTL: boolean }) {
   return <>{children}</>;
 }
 
-export function useLanguageContext() {
+export const useLanguageContext = () => {
   return useContext(LanguageContext);
-}
+};
 
-export function useIsRTL() {
+export const useIsRTL = () => {
   const { isRTL } = useLanguageContext();
   return isRTL;
-}
+};

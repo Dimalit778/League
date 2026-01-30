@@ -22,7 +22,7 @@ interface ImageCProps {
   tintColor?: string;
 }
 
-const MyImage = ({
+export const MyImage = ({
   source,
   className,
   tintColor,
@@ -104,5 +104,3 @@ const MyImage = ({
     />
   );
 };
-
-export default MyImage;

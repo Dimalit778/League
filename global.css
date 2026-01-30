@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Disable focus outline on web */
+@media (min-width: 768px) {
+  * {
+    outline: none !important;
+  }
+  
+  /* Specifically target common focusable elements */
+  input:focus,
+  button:focus,
+  textarea:focus,
+  select:focus,
+  a:focus,
+  [role="button"]:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Remove focus ring from React Native Web elements */
+  div[role="button"]:focus,
+  div[role="textbox"]:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Auth screen specific no-focus class */
+@layer components {
+  .no-focus-web {
+    @apply focus:outline-none focus:ring-0;
+  }
+  
+  @media (min-width: 768px) {
+    .no-focus-web * {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  }
+}

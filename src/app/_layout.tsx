@@ -3,9 +3,17 @@ import '../../global.css';
 import '@/lib/i18n/autoTranslate';
 
 import { SplashScreen as AppSplashScreen, NetworkStatusBanner } from '@/components/layout';
-import { AuthProvider, QueryProvider, ThemeProvider, useAuth } from '@/providers';
-import { ErrorBoundaryProvider } from '@/providers/ErrorBoundaryProvider';
-import { LanguageProvider } from '@/providers/LanguageProvider';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import {
+  AlertProvider,
+  AuthProvider,
+  ErrorBoundaryProvider,
+  LanguageProvider,
+  QueryProvider,
+  ThemeProvider,
+  useAuth,
+} from '@/providers';
+
 import { useLanguageStore } from '@/store/LanguageStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useThemeStore } from '@/store/ThemeStore';
@@ -19,23 +27,26 @@ import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from 'react-native-toast-notifications';
-
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: true,
 });
 
 Sentry.init({
   dsn: 'https://014844ec8a09d0a4fac8a7fdbb0d17b1@o4510343122190336.ingest.de.sentry.io/4510343191265360',
+
+  enabled: !__DEV__ && Platform.OS !== 'web',
+
   attachScreenshot: true,
   sendDefaultPii: true,
-  enableLogs: true,
   tracesSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
+
   integrations: [
     Sentry.mobileReplayIntegration({
       maskAllText: false,
@@ -43,8 +54,6 @@ Sentry.init({
       maskAllVectors: false,
     }),
     navigationIntegration,
-    Sentry.spotlightIntegration(),
-    Sentry.feedbackIntegration(),
   ],
 });
 
@@ -56,7 +65,7 @@ const AppBootstrap = () => {
   const initializeMember = useMemberStore((s) => s.initializeMember);
   const initializeTheme = useThemeStore((s) => s.initializeTheme);
   const initializeLanguage = useLanguageStore((s) => s.initializeLanguage);
-
+  const { colors } = useThemeTokens();
   const [isReady, setIsReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
@@ -105,7 +114,7 @@ const AppBootstrap = () => {
   return (
     <>
       <NetworkStatusBanner />
-      <Stack>
+      <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack.Protected>
@@ -125,13 +134,15 @@ const RootLayout = () => (
         <AuthProvider>
           <ThemeProvider>
             <LanguageProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <SafeAreaProvider>
-                  <KeyboardProvider>
-                    <AppBootstrap />
-                  </KeyboardProvider>
-                </SafeAreaProvider>
-              </GestureHandlerRootView>
+              <AlertProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <SafeAreaProvider>
+                    <KeyboardProvider>
+                      <AppBootstrap />
+                    </KeyboardProvider>
+                  </SafeAreaProvider>
+                </GestureHandlerRootView>
+              </AlertProvider>
             </LanguageProvider>
           </ThemeProvider>
         </AuthProvider>

@@ -60,7 +60,9 @@ export default function LeagueSkeleton() {
 
   return (
     <Screen>
-      <TopThreeSkeleton />
+      <View style={{ paddingTop: 56 }}>
+        <TopThreeSkeleton />
+      </View>
       <View>
         {skeletonCards.map((_, index) => (
           <LeaderboardCardSkeleton key={`skeleton-card-${index}`} />

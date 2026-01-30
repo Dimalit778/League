@@ -9,6 +9,6 @@ export const useThemeTokens = () => {
     theme,
     colors: tokens.colors,
     fonts: tokens.fonts,
-    sizes: tokens.sizes,
+
   } as const;
 };

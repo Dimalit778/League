@@ -1,4 +1,3 @@
-import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
@@ -47,16 +46,17 @@ const SignInScreen = () => {
   };
 
   return (
-    <Screen>
-      {(isLoading || isGoogleLoading) && <LoadingOverlay />}
+    <Screen withSafeArea>
       <BackButton />
-      <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
+      <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className=" text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText variant="hero" className="text-secondary">
             Welcome Back
           </CText>
 
-          <CText className="text-muted font-nunito-bold ">Sign in to your account</CText>
+          <CText variant="body" className="text-muted ">
+            Sign in to your account
+          </CText>
         </View>
 
         {/* Form */}
@@ -90,35 +90,44 @@ const SignInScreen = () => {
           />
 
           {errorMessage && (
-            <View className="">
-              <CText className="text-error text-center">{errorMessage}</CText>
-            </View>
+            <CText variant="small" className="text-error text-center">
+              {errorMessage}
+            </CText>
           )}
 
           <Button
-            title="Log In"
+            title="Sign In"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
             disabled={!isValid || isLoading}
             variant="secondary"
             size="lg"
+            className="focus:outline-none focus:ring-0"
           />
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-gray-600" />
-            <CText className="text-gray-400 mx-2">OR</CText>
+            <CText variant="caption" className="text-gray-400 mx-2">
+              OR
+            </CText>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
 
           <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">
-              <CText className="text-muted text-center">Don't have an account?</CText>
+              <CText variant="caption" className="text-muted text-center">
+                Don't have an account?
+              </CText>
               <Link href="/signUp" replace>
-                <CText className="text-secondary font-bold">Sign Up</CText>
+                <CText variant="caption" className="text-secondary ">
+                  Sign Up
+                </CText>
               </Link>
             </View>
             <Link href="/sendResetLink" asChild>
-              <CText className="text-secondary font-bold text-center mt-5 ">Forgot Password</CText>
+              <CText variant="caption" className="text-secondary text-center mt-5 ">
+                Forgot Password
+              </CText>
             </Link>
           </View>
         </View>

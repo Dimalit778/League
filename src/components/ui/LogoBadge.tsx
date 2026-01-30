@@ -1,5 +1,5 @@
-import MyImage from '@/components/ui/MyImage';
 import { View } from 'react-native';
+import { MyImage } from './MyImage';
 
 type Src = string | number | { uri: string; headers?: Record<string, string> };
 

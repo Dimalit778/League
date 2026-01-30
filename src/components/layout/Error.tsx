@@ -5,14 +5,14 @@ type ErrorProps = {
   error: string | Error | { message: string };
 };
 
-const Error = ({ error }: ErrorProps) => {
+export const Error = ({ error }: ErrorProps) => {
   const errorMessage =
     typeof error === 'string'
       ? error
       : formatErrorForUser(
           error && typeof error === 'object' && 'message' in error
             ? error
-            : { message: String((error as Error)?.message ?? error ?? 'Unknown error') }
+            : { message: String((error as Error)?.message ?? error ?? 'Unknown error') },
         );
 
   return (
@@ -22,5 +22,3 @@ const Error = ({ error }: ErrorProps) => {
     </View>
   );
 };
-
-export default Error;

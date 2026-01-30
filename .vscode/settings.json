@@ -20,6 +20,7 @@
     "swipeable",
     "Teko",
     "viewability",
+    "XLARGE",
     "xmark"
   ],
   "deno.enablePaths": ["supabase/functions"],

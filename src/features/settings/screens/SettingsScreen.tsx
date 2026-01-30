@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
@@ -9,7 +9,6 @@ import { Tables } from '@/types/database.types';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
 import { Alert, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
@@ -32,7 +31,7 @@ const SettingsScreen = () => {
   if (!user || isLoading) return <LoadingOverlay />;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen withSafeArea>
       <BackButton title={t('Settings')} />
 
       <View className="flex-1 ">
@@ -65,7 +64,7 @@ const SettingsScreen = () => {
           disabled={isLoadingAuth}
         />
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

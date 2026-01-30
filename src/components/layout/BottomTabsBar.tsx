@@ -4,7 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 
-export function BottomTabsBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export const BottomTabsBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const { colors } = useThemeTokens();
 
   return (
@@ -98,7 +98,7 @@ export function BottomTabsBar({ state, descriptors, navigation }: BottomTabBarPr
       </LinearGradient>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   tabBar: {
@@ -161,5 +161,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
 });
-
-export default BottomTabsBar;

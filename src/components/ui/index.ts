@@ -1,9 +1,12 @@
-export { default as Screen } from '../layout/Screen';
-export { default as AvatarImage } from './AvatarImage';
-export { default as BackButton } from './BackButton';
-export { default as Button } from './Button';
-export { default as Card } from './Card';
+export { Screen } from '../layout/Screen';
+export { AvatarImage } from './AvatarImage';
+export { BackButton } from './BackButton';
+export { Button } from './Button';
+export { Card } from './Card';
+export { ConfirmDialog } from './ConfirmDialog';
 export { CText } from './CText';
-export { default as Icon } from './Icon';
-export { default as InputField } from './InputField';
-export { default as MyImage } from './MyImage';
+export { Icon } from './Icon';
+export { InputField } from './InputField';
+export { MyImage } from './MyImage';
+
+export { AlertDialog } from './AlertDialog';

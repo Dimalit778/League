@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@/components/layout';
+import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton } from '@/components/ui';
 
 import { CText } from '@/components/ui/CText';
@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
 
@@ -23,7 +23,7 @@ const SubscriptionScreen = () => {
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
 
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(subscriptionType || null);
-
+  const edges = useSafeAreaInsets();
   const handleSubscribe = () => {
     if (!selectedPlan) {
       Alert.alert(t('Error'), t('Please select a subscription plan'));
@@ -71,13 +71,19 @@ const SubscriptionScreen = () => {
   const isLoading = isLoadingSubscription || isCreatingSubscription;
 
   return (
-    <SafeAreaView className="flex-1 bg-background p-4">
+    <Screen withSafeArea>
       <BackButton title={t('Subscription')} />
 
       {isLoading && <LoadingOverlay />}
-      <ScrollView className="flex-1 ">
-        <CText className="text-2xl font-bold mb-2 ">{t('Choose Your Plan')}</CText>
-        <CText className="text-muted mb-6 ">
+      <ScrollView
+        className="flex-1 px-2 "
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: edges.bottom + 10 }}
+      >
+        <CText variant="body" className=" mb-2 ">
+          {t('Choose Your Plan')}
+        </CText>
+        <CText variant="caption" bold className="text-muted mb-6 ">
           {t('Upgrade your subscription to access more features and create larger leagues')}
         </CText>
 
@@ -94,20 +100,20 @@ const SubscriptionScreen = () => {
 
         {selectedPlan && selectedPlan !== subscriptionType && (
           <View className="mt-6">
-            <CText style={{ textAlign: 'right' }} className="text-xl font-bold mb-4">
+            <CText variant="body" bold style={{ textAlign: 'right' }} className=" mb-4">
               ('Selected Plan'): (selectedPlan)
             </CText>
             <SubscriptionFeatures subscriptionType={selectedPlan} />
 
             <View className="bg-primary py-3 px-4 rounded-lg">
-              <CText className="text-center text-white font-medium" onPress={handleSubscribe}>
+              <CText variant="caption" className="text-center " onPress={handleSubscribe}>
                 {isCreatingSubscription ? t('Processing...') : t('Confirm Subscription')}
               </CText>
             </View>
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

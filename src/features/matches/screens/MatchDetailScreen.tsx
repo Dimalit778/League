@@ -1,18 +1,20 @@
-import footballField from '@assets/images/footballField.png';
-
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { Error, LoadingOverlay } from '@/components/layout';
+import webFootballField from '@assets/images/webFootballField.png';
 import { AntDesign } from '@expo/vector-icons';
-import { ImageBackground, TouchableOpacity, View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
+import { Platform, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match/MatchContent';
 import MatchHeader from '../components/match/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
-
 const MatchDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isDesktop = width > 1024;
+  const topOffset = Platform.OS === 'web' ? 24 : insets.top;
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(id));
 
@@ -21,22 +23,27 @@ const MatchDetailScreen = () => {
   if (!matchData) return <Error error={{ message: 'No match data found' }} />;
 
   return (
-    <View className="flex-1 " style={{ backgroundColor: '#000' }}>
-      <ImageBackground
-        className="absolute top-0 left-0 right-0 w-full h-[350px] opacity-60"
-        resizeMode={'cover'}
-        source={footballField}
-      />
+    <View className="flex-1 w-full max-w-lg mx-auto bg-background">
+      <View style={{ position: 'absolute', width: '100%', height: 400 }}>
+        <ExpoImage source={webFootballField} contentFit="cover" style={{ width: '100%', height: '100%' }} />
+        <View
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 400, backgroundColor: 'rgba(0,0,0,0.4)' }}
+        ></View>
+      </View>
+
       <TouchableOpacity
-        className="absolute top-2 left-6"
-        style={{ paddingTop: insets.top }}
+        className="absolute z-20 left-6 "
+        style={{ paddingTop: topOffset }}
         onPress={() => router.dismiss()}
       >
-        <AntDesign name="close-circle" size={30} color="#fff" />
+        <AntDesign name="close-circle" size={isDesktop ? 40 : 30} color="#fff" />
       </TouchableOpacity>
       <MatchHeader match={matchData} />
+      {/* Scrollable Content */}
 
-      <MatchContent match={matchData} />
+      <View className="flex-1 bg-background border-t border-border rounded-t-3xl mt-16">
+        <MatchContent match={matchData} />
+      </View>
     </View>
   );
 };
