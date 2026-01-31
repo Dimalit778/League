@@ -80,7 +80,7 @@ export const Button = ({
         sizeClasses[size],
         variantClasses[variant],
         (disabled || loading) && 'opacity-50',
-        className,
+        className
       )}
       onPress={handlePress}
       activeOpacity={0.8}

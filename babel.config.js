@@ -1,9 +1,13 @@
 module.exports = function (api) {
   api.cache(true);
+  const isTest = process.env.NODE_ENV === 'test';
   return {
     presets: [
-      ["babel-preset-expo", {  unstable_transformImportMeta: true,jsxImportSource: "nativewind" }],
-      "nativewind/babel",
+      ["babel-preset-expo", {
+        unstable_transformImportMeta: true,
+        jsxImportSource: isTest ? undefined : "nativewind",
+      }],
+      ...(isTest ? [] : ["nativewind/babel"]),
     ],
   };
 };

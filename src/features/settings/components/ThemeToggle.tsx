@@ -7,6 +7,7 @@ import Animated, {
   interpolate,
   interpolateColor,
   SharedValue,
+  useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -39,7 +40,6 @@ const ThemeToggle = () => {
   };
 
   const animatedStyle = useAnimatedStyle(() => {
-    // For RTL, we need to invert the translation direction
     const x = isRTL ? -translateX.value : translateX.value;
     return {
       transform: [{ translateX: x }],
@@ -76,10 +76,14 @@ const Icon = memo(({ icon, progress }: { icon: 'sun' | 'moon'; progress: SharedV
       color,
     };
   });
+  const animatedIconProps = useAnimatedProps(() => {
+    const color = interpolateColor(progress.value, [0, 1], ['#000000', '#ffffff']);
+    return { color };
+  });
 
   return (
     <View className="w-8 h-8 relative z-50 rounded-full items-center justify-center">
-      <Animated.Text style={animatedIconStyle}>
+      <Animated.Text style={animatedIconStyle} animatedProps={animatedIconProps as any}>
         <Feather name={icon} size={20} color={animatedIconStyle.color} />
       </Animated.Text>
     </View>

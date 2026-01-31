@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { useForm, FieldError } from 'react-hook-form';
-import InputField from '../InputField';
+import { InputField } from '../InputField';
 
 type FormValues = {
   email: string;
