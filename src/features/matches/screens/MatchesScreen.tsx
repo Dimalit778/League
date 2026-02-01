@@ -8,7 +8,7 @@ import { useMemberStore } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import MatchesList from '../components/matches/MatchesList';
 import { useGetMatches } from '../hooks/useMatches';
 const MatchesScreen = () => {
@@ -128,15 +128,7 @@ const MatchesScreen = () => {
         />
       </View>
       <Screen>
-        <View className="flex-1 bg-background">
-          <ScrollView
-            className="flex-1"
-            refreshControl={<RefreshControl refreshing={false} onRefresh={matchesRefetch} />}
-            showsVerticalScrollIndicator={false}
-          >
-            <MatchesList matches={matches} />
-          </ScrollView>
-        </View>
+        <MatchesList matches={matches} onRefresh={matchesRefetch} />
       </Screen>
     </>
   );

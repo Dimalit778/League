@@ -35,8 +35,7 @@ export class PerformanceMonitor {
       // Log slow renders
       if (renderTime > 16) {
         // 60fps threshold
-        console.warn(
-          `Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms`
+        }ms`
         );
       }
     };
@@ -94,8 +93,7 @@ export const logMemoryUsage = () => {
   if (__DEV__) {
     const memoryInfo = (performance as any).memory;
     if (memoryInfo) {
-      console.log('Memory Usage:', {
-        used: `${Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024)}MB`,
+      }MB`,
         total: `${Math.round(memoryInfo.totalJSHeapSize / 1024 / 1024)}MB`,
         limit: `${Math.round(memoryInfo.jsHeapSizeLimit / 1024 / 1024)}MB`,
       });

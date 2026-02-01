@@ -127,7 +127,6 @@ export const subscriptionApi = {
 
       return { canCreate: true };
     } catch (error) {
-      console.error('canCreateLeague error', error);
       return {
         canCreate: false,
         reason: 'An error occurred while checking subscription status.',

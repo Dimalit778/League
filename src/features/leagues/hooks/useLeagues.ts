@@ -147,8 +147,7 @@ export const useJoinLeague = () => {
     },
 
     onError: (error) => {
-      console.error(error);
-    },
+      },
   });
 };
 export const useUpdateLeague = () => {

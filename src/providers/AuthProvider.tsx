@@ -31,10 +31,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
         if (data) {
+          // Only consider user authenticated if email is confirmed
+          const isEmailConfirmed = !!session.user.email_confirmed_at;
           useAuthStore.setState({
             user: data,
             session,
-            isAuthenticated: !!data.id,
+            isAuthenticated: !!data.id && isEmailConfirmed,
             isAuthLoading: false,
           });
         } else {
@@ -65,10 +67,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (session?.user?.id) {
           const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
           if (data) {
+            // Only consider user authenticated if email is confirmed
+            const isEmailConfirmed = !!session.user.email_confirmed_at;
             useAuthStore.setState({
               session,
               user: data,
-              isAuthenticated: !!data.id,
+              isAuthenticated: !!data.id && isEmailConfirmed,
               isAuthLoading: false,
             });
           } else {

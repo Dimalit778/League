@@ -1,4 +1,7 @@
 import '@testing-library/react-native/build/matchers/extend-expect';
+declare global {
+  var testFormValues: Record<string, any>;
+}
 
 jest.mock('nativewind', () => ({
   vars: (v: any) => v,
@@ -91,14 +94,14 @@ jest.mock('@/store/LanguageStore', () => ({
 }));
 
 jest.mock('react-native-mmkv', () => ({
-  createMMKV: () => ({
+  createMMKV: jest.fn(() => ({
     getString: jest.fn(),
     setString: jest.fn(),
     delete: jest.fn(),
     contains: jest.fn(),
     getAllKeys: jest.fn(() => []),
     clearAll: jest.fn(),
-  }),
+  })),
   MMKV: jest.fn().mockImplementation(() => ({
     getString: jest.fn(),
     set: jest.fn(),
@@ -107,6 +110,101 @@ jest.mock('react-native-mmkv', () => ({
     getAllKeys: jest.fn(() => []),
     clearAll: jest.fn(),
   })),
+}));
+
+// Mock react-native-nitro-modules to prevent the NitroModules error
+jest.mock('react-native-nitro-modules', () => ({
+  NitroModules: {},
+}));
+
+jest.mock('expo-image', () => {
+  const { Image } = require('react-native');
+  return {
+    Image: Image,
+  };
+});
+
+jest.mock('react-native-svg', () => ({
+  SvgUri: () => null,
+}));
+
+jest.mock('@assets/icons', () => {
+  const MockIcon = () => null;
+  return new Proxy(
+    {},
+    {
+      get: () => MockIcon,
+    }
+  );
+});
+
+jest.mock('@assets/app-icon.png', () => 1);
+
+jest.mock('expo-clipboard', () => ({
+  setStringAsync: jest.fn(),
+  getStringAsync: jest.fn(() => Promise.resolve('')),
+}));
+
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  notificationAsync: jest.fn(),
+  selectionAsync: jest.fn(),
+  ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
+  NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
+}));
+
+jest.mock('react-native-reanimated', () => {
+  const Reanimated = require('react-native-reanimated/mock');
+  Reanimated.default.call = () => {};
+  return {
+    ...Reanimated,
+    useSharedValue: jest.fn((init: any) => ({ value: init })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    withSpring: jest.fn((val: any) => val),
+    withTiming: jest.fn((val: any) => val),
+  };
+});
+
+jest.mock('@/providers/AlertProvider', () => ({
+  useAlert: () => ({
+    show: jest.fn(),
+    hide: jest.fn(),
+  }),
+}));
+
+jest.mock('@/hooks/useConfirmDialog', () => ({
+  useConfirmDialog: () => ({
+    visible: false,
+    show: jest.fn(),
+    hide: jest.fn(),
+    confirm: jest.fn(),
+    cancel: jest.fn(),
+  }),
+}));
+
+jest.mock('expo-auth-session', () => ({
+  makeRedirectUri: jest.fn(() => 'league://redirect'),
+}));
+
+jest.mock('expo-web-browser', () => ({
+  maybeCompleteAuthSession: jest.fn(),
+  openAuthSessionAsync: jest.fn(),
+}));
+
+jest.mock('base64-arraybuffer', () => ({
+  decode: jest.fn(() => new ArrayBuffer(0)),
+}));
+
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  launchCameraAsync: jest.fn(),
+  requestMediaLibraryPermissionsAsync: jest.fn(() =>
+    Promise.resolve({ granted: true })
+  ),
+  requestCameraPermissionsAsync: jest.fn(() =>
+    Promise.resolve({ granted: true })
+  ),
+  MediaTypeOptions: { Images: 'Images' },
 }));
 
 jest.mock('@react-native-google-signin/google-signin', () => ({
@@ -208,39 +306,86 @@ jest.mock('@react-native-community/netinfo', () => ({
 }));
 
 // Global form values storage for tests
-global.testFormValues = {};
+(global as any).testFormValues = {};
 
-jest.mock('react-hook-form', () => {
-  return {
-    useForm: jest.fn(() => ({
-      control: {
-        _formValues: global.testFormValues,
-      },
-      handleSubmit: jest.fn((fn) => (event?: any) => {
-        event?.preventDefault?.();
-        // Call the function with the current form values
-        fn(global.testFormValues);
-      }),
-      formState: { errors: {}, isValid: true },
-      watch: jest.fn(),
-      setValue: jest.fn((name, value) => {
-        global.testFormValues[name] = value;
-      }),
-      getValues: jest.fn(() => global.testFormValues),
-    })),
-    Controller: ({ render, name }: any) => {
-      const field = {
-        onChange: (value: any) => {
-          global.testFormValues[name] = value;
-        },
-        onBlur: jest.fn(),
-        value: global.testFormValues[name] || '',
-        name,
-      };
-      return render({
-        field,
-        fieldState: { error: null },
-      });
+jest.mock('react-hook-form', () => ({
+  useForm: jest.fn(() => ({
+    control: {
+      _formValues: (global as any).testFormValues,
+      _fields: {},
+      _defaultValues: {},
     },
-  };
+    handleSubmit: jest.fn((fn) => (event?: any) => {
+      event?.preventDefault?.();
+      // Call the function with the current form values
+      const formData = (global as any).testFormValues || {};
+      return fn(formData);
+    }),
+    formState: {
+      errors: {},
+      isValid: true,
+      isDirty: true,
+      isSubmitting: false,
+      isSubmitted: false,
+    },
+    watch: jest.fn(),
+    setValue: jest.fn((name: string, value: any) => {
+      (global as any).testFormValues[name] = value;
+    }),
+    getValues: jest.fn(() => (global as any).testFormValues),
+    reset: jest.fn(() => {
+      (global as any).testFormValues = {};
+    }),
+    trigger: jest.fn(() => Promise.resolve(true)),
+    register: jest.fn((name: string) => ({
+      onChange: jest.fn(),
+      onBlur: jest.fn(),
+      ref: jest.fn(),
+      name,
+    })),
+  })),
+  Controller: ({ render, name }: any) => {
+    const field = {
+      onChange: (value: any) => {
+        (global as any).testFormValues[name] = value;
+      },
+      onBlur: jest.fn(),
+      value: (global as any).testFormValues[name] || '',
+      name,
+      ref: jest.fn(),
+    };
+    return render({
+      field,
+      fieldState: { error: null, invalid: false, isDirty: false },
+      formState: { errors: {}, isValid: true },
+    });
+  },
+  useController: jest.fn(({ name }) => ({
+    field: {
+      onChange: (value: any) => {
+        (global as any).testFormValues[name] = value;
+      },
+      onBlur: jest.fn(),
+      value: (global as any).testFormValues[name] || '',
+      name,
+      ref: jest.fn(),
+    },
+    fieldState: { error: null, invalid: false, isDirty: false },
+    formState: { errors: {}, isValid: true },
+  })),
+  useFormContext: jest.fn(() => ({
+    control: {
+      _formValues: (global as any).testFormValues,
+    },
+    formState: { errors: {} },
+  })),
+}));
+beforeEach(() => {
+  // Clear form values between tests
+  (global as any).testFormValues = {};
+});
+
+afterEach(() => {
+  // Clear all mocks
+  jest.clearAllMocks();
 });

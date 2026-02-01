@@ -29,7 +29,6 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
     try {
       flatListRef.current?.scrollToIndex({ index, animated: true });
     } catch (error) {
-      console.warn('ScrollToIndex error:', error);
       // Fallback: scroll to offset
       flatListRef.current?.scrollToOffset({ offset: index * width, animated: true });
     }

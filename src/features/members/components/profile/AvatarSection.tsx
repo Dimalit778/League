@@ -68,8 +68,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         type: 'error',
         buttons: [{ text: 'OK' }],
       });
-      console.error(error);
-    }
+      }
   };
 
   const handleCancelPreview = () => {
@@ -94,8 +93,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         buttons: [{ text: 'OK' }],
       });
       setImage(previousImageRef.current);
-      console.error(error);
-    }
+      }
   };
 
   const handleDeleteImage = async () => {
@@ -123,8 +121,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
                 buttons: [{ text: 'OK' }],
               });
               setImage(previousImageRef.current);
-              console.error(error);
-            }
+              }
           },
         },
       ],

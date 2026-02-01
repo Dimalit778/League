@@ -33,8 +33,7 @@ const ResetPasswordScreen = () => {
       if (event === 'PASSWORD_RECOVERY') {
         const { error } = await supabase.auth.updateUser({ password: passwordForm.getValues('password') });
         if (error) {
-          console.error(error);
-        }
+          }
       }
     });
   }, [passwordForm]);

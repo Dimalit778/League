@@ -22,13 +22,11 @@ export const getSession = async (): Promise<Session | null> => {
     } = await supabase.auth.getSession();
 
     if (error) {
-      console.error('Error getting session:', error);
       return null;
     }
 
     return session;
   } catch (error) {
-    console.error('Unexpected error getting session:', error);
     return null;
   }
 };
@@ -42,12 +40,9 @@ export const setupSessionRefreshListener = () => {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'TOKEN_REFRESHED') {
-      console.log('Session token refreshed successfully');
-    } else if (event === 'SIGNED_OUT') {
-      console.log('User signed out');
-    } else if (event === 'SIGNED_IN') {
-      console.log('User signed in');
-    }
+      } else if (event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_IN') {
+      }
   });
 
   return subscription;

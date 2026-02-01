@@ -42,8 +42,7 @@ const PreviewLeague = () => {
         title: `Join ${leagueData?.name} League`,
       });
     } catch (error) {
-      console.error(error);
-    }
+      }
   };
   const handleStartLeague = async () => {
     router.replace('/(app)/(member)/(tabs)/League');

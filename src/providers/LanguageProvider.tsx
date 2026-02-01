@@ -43,8 +43,6 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
             DevSettings.reload();
           }
         } catch (e) {
-          console.warn('Failed to reload app after RTL change', e);
-
           setVersion((v) => v + 1);
         }
       } else {

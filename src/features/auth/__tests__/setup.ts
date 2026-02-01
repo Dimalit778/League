@@ -1,10 +1,12 @@
 // Shared mocks for auth screen tests
 
-export const mockSignIn = jest.fn().mockResolvedValue({ success: true });
-export const mockSignUp = jest.fn().mockResolvedValue({ success: true });
-export const mockVerifyOtp = jest.fn().mockResolvedValue({ success: true });
-export const mockResendOtp = jest.fn().mockResolvedValue({ success: true });
-export const mockSendResetPasswordLink = jest.fn().mockResolvedValue({ success: true });
+type AuthResponse = Promise<{ success: boolean }>;
+
+export const mockSignIn = jest.fn<AuthResponse, any[]>().mockResolvedValue({ success: true });
+export const mockSignUp = jest.fn<AuthResponse, any[]>().mockResolvedValue({ success: true });
+export const mockVerifyOtp = jest.fn<AuthResponse, any[]>().mockResolvedValue({ success: true });
+export const mockResendOtp = jest.fn<AuthResponse, any[]>().mockResolvedValue({ success: true });
+export const mockSendResetPasswordLink = jest.fn<AuthResponse, any[]>().mockResolvedValue({ success: true });
 export const mockClearError = jest.fn();
 
 export const mockAuthActions = {
@@ -23,7 +25,13 @@ export const mockAuthActions = {
 };
 
 jest.mock('@/features/auth/hooks/useAuthActions', () => ({
-  useAuthActions: () => mockAuthActions,
+  useAuthActions: () => ({
+    ...mockAuthActions,
+    // Return the current state of mockAuthActions
+    get errorMessage() { return mockAuthActions.errorMessage; },
+    get isLoading() { return mockAuthActions.isLoading; },
+    get isError() { return mockAuthActions.isError; },
+  }),
 }));
 
 jest.mock('@/features/auth/components/GoogleAuth', () => {

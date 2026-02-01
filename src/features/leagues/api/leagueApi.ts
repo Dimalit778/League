@@ -67,14 +67,13 @@ export const leagueApi = {
   },
 
   async removeMember(memberId: string) {
-    console.log('memberId', memberId);
     const { data: memberData, error: memberError } = await supabase
       .from('league_members')
       .select('*')
       .eq('id', memberId)
       .single();
-    console.log('memberError', JSON.stringify(memberError, null, 2));
-    console.log('memberData', JSON.stringify(memberData, null, 2));
+    );
+    );
 
     if (memberError) throw new Error(memberError.message);
     if (!memberData) throw new Error('Member not found');
@@ -83,8 +82,8 @@ export const leagueApi = {
 
     const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
     if (error) throw new Error(error.message);
-    console.log('data', JSON.stringify(data, null, 2));
-    console.log('error', JSON.stringify(error, null, 2));
+    );
+    );
     return { data, leagueId };
   },
   //  -- LEAGUE OPERATIONS
@@ -129,8 +128,8 @@ export const leagueApi = {
     const { data, error } = await supabase.rpc('leave_league', {
       p_league_id: leagueId,
     });
-    console.log('data', JSON.stringify(data, null, 2));
-    console.log('error', JSON.stringify(error, null, 2));
+    );
+    );
 
     if (error) {
       throw new Error(error.message || 'Failed to leave league');
@@ -152,8 +151,7 @@ export const leagueApi = {
 
     if (membersError) {
       // Log error but don't throw - deletion was successful
-      console.error('Error checking remaining members:', membersError);
-    } else if (remainingMembers && remainingMembers.length > 0) {
+      } else if (remainingMembers && remainingMembers.length > 0) {
       // First, unset all primary flags for this user
       const { error: unsetError } = await supabase
         .from('league_members')
@@ -161,8 +159,7 @@ export const leagueApi = {
         .eq('user_id', userId);
 
       if (unsetError) {
-        console.error('Error unsetting primary flags:', unsetError);
-      } else {
+        } else {
         // Then set the first remaining league member as primary
         const { error: updatePrimaryError } = await supabase
           .from('league_members')
@@ -170,8 +167,7 @@ export const leagueApi = {
           .eq('id', remainingMembers[0].id);
 
         if (updatePrimaryError) {
-          console.error('Error setting primary league:', updatePrimaryError);
-        }
+          }
       }
     }
 

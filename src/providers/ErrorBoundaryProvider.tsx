@@ -74,8 +74,7 @@ export const ErrorBoundaryProvider = ({ children }: ErrorBoundaryProviderProps) 
     }
 
     if (__DEV__) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
+      }
   };
 
   return (

@@ -32,7 +32,6 @@ export const useLanguageStore = create<LanguageState>()(
             }
           }
         } catch (error) {
-          console.warn('Failed to initialize language preference:', error);
           set({ language: 'en' });
         }
       },

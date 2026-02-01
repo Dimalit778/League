@@ -9,6 +9,7 @@ import { Tables } from '@/types/database.types';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
 import { Alert, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
@@ -34,7 +35,7 @@ const SettingsScreen = () => {
     <Screen withSafeArea>
       <BackButton title={t('Settings')} />
 
-      <View className="flex-1 ">
+      <ScrollView className="flex-1 px-2" showsVerticalScrollIndicator={false}>
         <View className="mt-8 mx-3  flex-row justify-between items-center p-4 bg-surface rounded-xl border border-border">
           <CText className="text-text text-3xl">{fullName}</CText>
         </View>
@@ -54,16 +55,16 @@ const SettingsScreen = () => {
             />
           </View>
         )}
-      </View>
-      <View className="pb-10">
-        <Button
-          title={t('Sign Out')}
-          color="red"
-          className="mx-auto w-1/3"
-          onPress={handleSignOut}
-          disabled={isLoadingAuth}
-        />
-      </View>
+        <View className="mt-10">
+          <Button
+            title={t('Sign Out')}
+            color="red"
+            className="mx-auto w-1/3"
+            onPress={handleSignOut}
+            disabled={isLoadingAuth}
+          />
+        </View>
+      </ScrollView>
     </Screen>
   );
 };

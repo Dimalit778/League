@@ -142,8 +142,7 @@ export const signOut = async (queryClient: QueryClient) => {
         throw error;
       }
     } catch (signOutError) {
-      console.error('Failed to sign out:', signOutError);
-    }
+      }
 
     // Clear member store
     useMemberStore.getState().clearMember();
@@ -154,7 +153,6 @@ export const signOut = async (queryClient: QueryClient) => {
 
     return { success: true };
   } catch (error: any) {
-    console.error('Sign out error:', error);
     return { success: false, error: error.message || 'Failed to sign out' };
   }
 };

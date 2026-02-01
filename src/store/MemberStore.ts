@@ -53,8 +53,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
       .maybeSingle();
 
     if (error) {
-      console.error('initializeMember error', error);
-    }
+      }
 
     const activeMember = data ?? null;
 

@@ -10,8 +10,7 @@
  *
  * // In your component or useEffect
  * testAdminAccess().then(results => {
- *   console.log('Admin test results:', results);
- * });
+ *   * });
  * ```
  */
 

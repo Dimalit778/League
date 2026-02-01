@@ -29,7 +29,6 @@ export const useUpdateUser = () => {
       });
     },
     onError: (error) => {
-      console.error('updateUser error', error);
-    },
+      },
   });
 };

@@ -90,8 +90,7 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
 
       router.back();
     } catch (error) {
-      console.error('Error saving prediction:', error);
-    }
+      }
   };
 
   const handleHomeIncrement = () => {
