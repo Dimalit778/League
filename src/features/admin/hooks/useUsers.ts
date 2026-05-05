@@ -4,6 +4,7 @@ import { userService } from '../queries/usersService';
 import { useMemberStore } from '@/store/MemberStore';
 import { TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Alert } from 'react-native';
 export const useGetUser = () => {
   return useQuery({
     queryKey: KEYS.users.all,
@@ -29,6 +30,7 @@ export const useUpdateUser = () => {
       });
     },
     onError: (error) => {
-      },
+      Alert.alert('Error', error.message);
+    },
   });
 };
