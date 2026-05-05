@@ -119,6 +119,10 @@ jest.mock('react-native-nitro-modules', () => ({
 
 jest.mock('expo-image', () => {
   const { Image } = require('react-native');
+  Object.defineProperty(Image, 'prefetch', {
+    value: jest.fn(() => Promise.resolve(true)),
+    configurable: true,
+  });
   return {
     Image: Image,
   };
