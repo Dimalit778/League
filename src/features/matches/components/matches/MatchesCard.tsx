@@ -5,12 +5,12 @@ import { cn } from '@/lib/nativeWind';
 import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { AddIcon } from '@assets/icons';
-import { Image as ExpoImage } from 'expo-image';
 import { Link } from 'expo-router';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
 import { getPredictionResultLabel } from '../../utils/pointsColor';
+import TeamBadge from '../TeamBadge';
 const TEAM_LOGO_SIZE = 32;
 
 type MatchesCardProps = {
@@ -42,16 +42,9 @@ type PredictionDisplayProps = {
 
 const TeamDisplay = ({ team, isDesktop }: TeamDisplayProps) => (
   <View className="flex-1  items-center ">
-    <ExpoImage
-      source={team.logo}
-      style={{ width: TEAM_LOGO_SIZE, height: TEAM_LOGO_SIZE }}
-      cachePolicy="memory-disk"
-      contentFit="contain"
-      transition={0}
-      priority="high"
-    />
+    <TeamBadge teamId={team.id} name={team.name} shortName={team.shortName} tla={team.tla} size={TEAM_LOGO_SIZE} />
     <CText variant="caption" className="text-center mt-2">
-      {isDesktop ? team.shortName : team.tla}
+      {isDesktop ? team.shortName || team.name : team.tla || team.shortName || team.name}
     </CText>
   </View>
 );

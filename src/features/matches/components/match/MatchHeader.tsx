@@ -2,26 +2,28 @@ import { CText } from '@/components/ui';
 import { MatchWithPredictions } from '@/features/matches/types';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
-import { Image as ExpoImage } from 'expo-image';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import TeamBadge from '../TeamBadge';
 
-function TeamCard({ logo, shortName }: { logo: string; shortName: string }) {
+function TeamCard({
+  teamId,
+  name,
+  shortName,
+  tla,
+  badgeSize,
+}: {
+  teamId: number;
+  name: string;
+  shortName: string;
+  tla?: string | null;
+  badgeSize: number;
+}) {
   return (
     <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40  max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
       <View className="relative">
         <View className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-primary/10 rounded-full items-center justify-center mb-3">
-          <ExpoImage
-            source={{ uri: logo }}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            cachePolicy="memory-disk"
-            contentFit="contain"
-            transition={0}
-            priority="high"
-          />
+          <TeamBadge teamId={teamId} name={name} shortName={shortName} tla={tla} size={badgeSize} />
         </View>
       </View>
       <CText variant="body" className="text-white text-center">
@@ -81,6 +83,8 @@ function ScoreCard({
 
 export default function MatchHeader({ match }: { match: MatchWithPredictions }) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
 
   return (
     <View style={{ paddingTop: insets.top }}>
@@ -107,14 +111,26 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
       {/* Teams and Score Section */}
 
       <View className="flex-row items-center justify-evenly w-full mx-auto">
-        <TeamCard logo={match.home_team.logo} shortName={match.home_team?.shortName || ''} />
+        <TeamCard
+          teamId={match.home_team.id}
+          name={match.home_team.name}
+          shortName={match.home_team?.shortName || match.home_team.name}
+          tla={match.home_team.tla}
+          badgeSize={badgeSize}
+        />
         <ScoreCard
           homeScore={match.score?.fullTime?.home || 0}
           awayScore={match.score?.fullTime?.away || 0}
           matchStatus={match.status || ''}
           kick_off={match.kick_off}
         />
-        <TeamCard logo={match.away_team.logo} shortName={match.away_team?.shortName || ''} />
+        <TeamCard
+          teamId={match.away_team.id}
+          name={match.away_team.name}
+          shortName={match.away_team?.shortName || match.away_team.name}
+          tla={match.away_team.tla}
+          badgeSize={badgeSize}
+        />
       </View>
     </View>
   );
