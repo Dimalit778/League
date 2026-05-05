@@ -12,9 +12,55 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  leagueName: yup.string().required('League name is required').min(2, 'League name must be at least 3 characters long'),
+  leagueName: yup.string().required('League name is required').min(2, 'League name must be at least 2 characters long'),
   nickname: yup.string().required('Nickname is required').min(2, 'Nickname must be at least 2 characters long'),
 });
+
+type MemberOptionProps = {
+  value: number;
+  label: string;
+  disabled?: boolean;
+  premium?: boolean;
+  membersCount: number | null;
+  onSelect: (value: number) => void;
+  t: (key: string) => string;
+};
+
+const MemberOption = ({ value, label, disabled, premium, membersCount, onSelect, t }: MemberOptionProps) => {
+  const isActive = membersCount === value;
+
+  return (
+    <Pressable
+      onPress={() => {
+        if (disabled && premium) {
+          router.push('/(app)/(public)/subscription');
+          return;
+        }
+        if (!disabled) onSelect(value);
+      }}
+      className={`relative flex-1 mx-1 rounded-2xl px-4 py-4 border-2
+        ${isActive ? 'border-secondary bg-surface' : 'border-border'}
+
+      `}
+    >
+      <View className={`${disabled ? 'opacity-30' : ''}`}>
+        <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+          {t(label)}
+        </CText>
+      </View>
+
+      {premium && (
+        <View className="absolute -top-3 left-0 right-0 items-center z-10">
+          <View className="bg-yellow-500 px-3 py-1 rounded-md shadow">
+            <CText variant="small" bold className="text-black">
+              PREMIUM
+            </CText>
+          </View>
+        </View>
+      )}
+    </Pressable>
+  );
+};
 
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
@@ -42,50 +88,6 @@ const CreateLeagueScreen = () => {
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
-  type MemberOptionProps = {
-    value: number;
-    label: string;
-    disabled?: boolean;
-    premium?: boolean;
-  };
-
-  const MemberOption = ({ value, label, disabled, premium }: MemberOptionProps) => {
-    const isActive = membersCount === value;
-
-    return (
-      <Pressable
-        onPress={() => {
-          if (disabled && premium) {
-            router.push('/(app)/(public)/subscription');
-            return;
-          }
-          if (!disabled) setMembersCount(value);
-        }}
-        className={`relative flex-1 mx-1 rounded-2xl px-4 py-4 border-2
-          ${isActive ? 'border-secondary bg-surface' : 'border-border'}
-        
-        `}
-      >
-        <View className={`${disabled ? 'opacity-30' : ''}`}>
-          <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
-            {t(label)}
-          </CText>
-        </View>
-
-        {/* BADGE (no opacity) */}
-        {premium && (
-          <View className="absolute -top-3 left-0 right-0 items-center z-10">
-            <View className="bg-yellow-500 px-3 py-1 rounded-md shadow">
-              <CText variant="small" bold className="text-black">
-                PREMIUM
-              </CText>
-            </View>
-          </View>
-        )}
-      </Pressable>
-    );
-  };
-
   const onSubmit = handleSubmit(async (data) => {
     await createLeague({
       league_name: data.leagueName,
@@ -149,9 +151,17 @@ const CreateLeagueScreen = () => {
             </CText>
 
             <View className="flex-row mt-4">
-              <MemberOption value={6} label={t('6 Members')} />
+              <MemberOption value={6} label="6 Members" membersCount={membersCount} onSelect={setMembersCount} t={t} />
 
-              <MemberOption value={10} label="10 Members" disabled={!canSelect10} premium />
+              <MemberOption
+                value={10}
+                label="10 Members"
+                disabled={!canSelect10}
+                premium
+                membersCount={membersCount}
+                onSelect={setMembersCount}
+                t={t}
+              />
             </View>
           </View>
         </KeyboardAwareScrollView>

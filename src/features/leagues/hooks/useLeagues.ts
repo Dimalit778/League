@@ -71,7 +71,7 @@ export const useUpdatePrimaryLeague = () => {
   const queryClient = useQueryClient();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
-    mutationFn: ({ leagueId }: { leagueId: string }) => leagueApi.updatePrimaryLeague(userId, leagueId),
+    mutationFn: ({ leagueId }: { leagueId: string }) => leagueApi.updatePrimaryLeague(leagueId),
     onSuccess: async (data, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({
@@ -92,10 +92,11 @@ export const useUpdatePrimaryLeague = () => {
   });
 };
 export const useFindLeagueByJoinCode = (joinCode: string) => {
+  const normalizedJoinCode = joinCode?.trim().toUpperCase() ?? '';
   return useQuery({
-    queryKey: ['leagues', 'joinCode', joinCode],
-    queryFn: () => leagueApi.findLeagueByJoinCode(joinCode),
-    enabled: !!joinCode,
+    queryKey: KEYS.leagues.byJoinCode(normalizedJoinCode),
+    queryFn: () => leagueApi.findLeagueByJoinCode(normalizedJoinCode),
+    enabled: normalizedJoinCode.length === 7,
   });
 };
 //  -- LEAGUE OPERATIONS
@@ -187,6 +188,7 @@ export const useUpdateLeague = () => {
 };
 export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? '');
 
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
@@ -195,15 +197,20 @@ export const useLeaveLeague = () => {
       return result;
     },
     onSuccess: async (result, leagueId) => {
-      queryClient.invalidateQueries({
-        queryKey: KEYS.leagues.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: KEYS.users.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: KEYS.members.all,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.members(leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.leaderboard(leagueId),
+        }),
+      ]);
       initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },
@@ -217,19 +224,27 @@ export const useDeleteLeague = () => {
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
     mutationFn: async ({ leagueId, userId }: { leagueId: string; userId: string }) => {
-      const result = await leagueApi.deleteLeague(leagueId, userId);
+      const result = await leagueApi.deleteLeague(leagueId);
       return result;
     },
     onSuccess: async (result, { leagueId, userId }) => {
-      queryClient.invalidateQueries({
-        queryKey: KEYS.leagues.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: KEYS.users.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: KEYS.members.all,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.detail(leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.members(leagueId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.leagues.leaderboard(leagueId),
+        }),
+      ]);
       initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },

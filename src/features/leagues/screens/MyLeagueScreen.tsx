@@ -35,8 +35,9 @@ const MyLeagues = () => {
   if (isLoading || !leagues || isLoadingSubscription) return <LoadingOverlay />;
   if (error) return <Error error={error as Error} />;
 
-  const reachedLimit = leagues.length >= (subscription?.limits.maxLeagues ?? 0);
   const limit = subscription?.limits.maxLeagues ?? 0;
+  const reachedLimit = limit > 0 && leagues.length >= limit;
+  const usagePercent = limit > 0 ? Math.min((leagues.length / limit) * 100, 100) : 0;
 
   return (
     <Screen>
@@ -101,7 +102,7 @@ const MyLeagues = () => {
           {/* Progress bar */}
           <View className="h-2 bg-border rounded-full overflow-hidden">
             <View
-              style={{ width: `${(leagues.length / limit) * 100}%` }}
+              style={{ width: `${usagePercent}%` }}
               className={`h-full ${reachedLimit ? 'bg-yellow-500' : 'bg-secondary'}`}
             />
           </View>

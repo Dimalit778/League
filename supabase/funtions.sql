@@ -2,6 +2,82 @@
 -- LEAGUE FUNCTIONS
 -- ============================================================================
 
+-- Create a new league and add the creator as a primary member.
+-- RPC used by the mobile client; returns the created league id.
+create or replace function public.create_new_league(
+  league_name text,
+  max_members int,
+  competition_id int,
+  nickname text,
+  avatar_url text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_join_code text;
+  v_league_id uuid;
+begin
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'User not authenticated';
+  end if;
+
+  loop
+    v_join_code := upper(substring(md5(random()::text || clock_timestamp()::text) from 1 for 7));
+    exit when not exists (
+      select 1
+      from public.leagues
+      where join_code = v_join_code
+    );
+  end loop;
+
+  update public.league_members
+  set is_primary = false
+  where user_id = v_user_id;
+
+  insert into public.leagues (
+    name,
+    max_members,
+    competition_id,
+    owner_id,
+    join_code
+  )
+  values (
+    league_name,
+    max_members,
+    competition_id,
+    v_user_id,
+    v_join_code
+  )
+  returning id into v_league_id;
+
+  insert into public.league_members (
+    league_id,
+    user_id,
+    nickname,
+    avatar_url,
+    is_primary
+  )
+  values (
+    v_league_id,
+    v_user_id,
+    nickname,
+    avatar_url,
+    true
+  );
+
+  return v_league_id;
+
+exception
+  when others then
+    raise exception 'Failed to create league: %', sqlerrm;
+end$$;
+
 -- Create a new league and add the creator as a member
 -- Returns the created league record directly, throws exception on error
 create or replace function public.f_create_new_league(
@@ -48,6 +124,10 @@ begin
   )
   returning * into v_league_record;
 
+  update public.league_members
+  set is_primary = false
+  where user_id = v_user_id;
+
   -- Add creator as league member
   insert into public.league_members (
     league_id,
@@ -70,6 +150,48 @@ begin
 exception
   when others then
     raise exception 'Failed to create league: %', sqlerrm;
+end$$;
+
+-- Set the authenticated user's primary league in a single transaction.
+create or replace function public.set_primary_league(
+  p_league_id uuid
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_member_id uuid;
+begin
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'User not authenticated';
+  end if;
+
+  select id into v_member_id
+  from public.league_members
+  where league_id = p_league_id and user_id = v_user_id;
+
+  if v_member_id is null then
+    raise exception 'User is not a member of this league';
+  end if;
+
+  update public.league_members
+  set is_primary = false
+  where user_id = v_user_id and is_primary = true;
+
+  update public.league_members
+  set is_primary = true
+  where id = v_member_id;
+
+  return json_build_object('success', true, 'member_id', v_member_id, 'league_id', p_league_id);
+
+exception
+  when others then
+    raise exception 'Failed to set primary league: %', sqlerrm;
 end$$;
 
 -- Join a league by join code
@@ -376,6 +498,62 @@ begin
 exception
   when others then
     raise exception 'Failed to leave league: %', sqlerrm;
+end$$;
+
+-- Delete a league owned by the authenticated user and set another primary league if needed.
+create or replace function public.delete_owned_league(
+  p_league_id uuid
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_deleted_count integer;
+  v_next_primary_member_id uuid;
+begin
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'User not authenticated';
+  end if;
+
+  delete from public.leagues
+  where id = p_league_id and owner_id = v_user_id;
+
+  get diagnostics v_deleted_count = row_count;
+
+  if v_deleted_count = 0 then
+    raise exception 'League not found or you are not the owner';
+  end if;
+
+  select id into v_next_primary_member_id
+  from public.league_members
+  where user_id = v_user_id
+  order by created_at asc
+  limit 1;
+
+  update public.league_members
+  set is_primary = false
+  where user_id = v_user_id and is_primary = true;
+
+  if v_next_primary_member_id is not null then
+    update public.league_members
+    set is_primary = true
+    where id = v_next_primary_member_id;
+  end if;
+
+  return json_build_object(
+    'success', true,
+    'league_id', p_league_id,
+    'next_primary_set', v_next_primary_member_id is not null
+  );
+
+exception
+  when others then
+    raise exception 'Failed to delete league: %', sqlerrm;
 end$$;
 
 -- ============================================================================

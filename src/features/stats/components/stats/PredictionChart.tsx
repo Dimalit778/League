@@ -3,7 +3,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
 import { StatsType } from '../../types';
 
-const PredictionChart = (stats: StatsType) => {
+type PredictionChartProps = StatsType | { stats: StatsType };
+
+const PredictionChart = (props: PredictionChartProps) => {
+  const stats = 'stats' in props ? props.stats : props;
   const { t } = useTranslation();
   const bingoPercentage = stats.totalPredictions > 0 ? (stats.bingoHits / stats.totalPredictions) * 100 : 0;
 

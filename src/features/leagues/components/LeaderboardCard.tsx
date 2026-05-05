@@ -4,9 +4,10 @@ import { Card } from '@/components/ui/Card';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
+import { LeaderboardRow } from '../types';
 
 interface LeaderboardCardProps {
-  item: any;
+  item: LeaderboardRow;
   index: number;
   isCurrentUser: boolean;
 }

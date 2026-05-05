@@ -2,6 +2,19 @@ import { supabase } from '@/lib/supabase';
 import { TablesInsert } from '@/types/database.types';
 
 export const predictionService = {
+  async getMyPredictionsView(leagueMemberId?: string) {
+    let query = supabase.from('my_predictions_view').select('*').order('prediction_created_at', { ascending: false });
+
+    if (leagueMemberId) {
+      query = query.eq('league_member_id', leagueMemberId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return data ?? [];
+  },
+
   // Get Predictions by League Fixture
   async getPredictionsByLeagueFixture(leagueId: string, fixture: number) {
     const { data, error } = await supabase

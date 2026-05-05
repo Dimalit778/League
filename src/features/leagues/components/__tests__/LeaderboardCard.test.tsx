@@ -2,7 +2,9 @@ import { render } from '@testing-library/react-native';
 import LeaderboardCard from '../LeaderboardCard';
 
 const mockItem = {
+  league_id: 'l1',
   member_id: 'm1',
+  user_id: 'u1',
   nickname: 'TestUser',
   avatar_url: null,
   total_points: 42,

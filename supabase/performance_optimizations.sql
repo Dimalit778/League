@@ -51,5 +51,19 @@ ON league_members (user_id);
 CREATE INDEX IF NOT EXISTS idx_league_members_league_id 
 ON league_members (league_id);
 
--- 5. Analyze table statistics for better query planning
+-- 5. Index league join-code lookup used by find_league_by_code/join_league.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_leagues_join_code_unique
+ON leagues (join_code);
+
+-- 6. Index primary-member lookups and updates for a user.
+CREATE INDEX IF NOT EXISTS idx_league_members_user_primary
+ON league_members (user_id, is_primary);
+
+-- 7. Enforce at most one primary league per user.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_league_members_one_primary_per_user
+ON league_members (user_id)
+WHERE is_primary = true;
+
+-- 8. Analyze table statistics for better query planning
 ANALYZE league_members;
+ANALYZE leagues;

@@ -1,6 +1,12 @@
 import { predictionService } from '../api/predictionService';
 type MyPredictionRow = Awaited<ReturnType<typeof predictionService.getMyPredictionsView>>[number];
 
+const isScoreObject = (score: unknown): score is Record<string, unknown> =>
+  !!score && typeof score === 'object' && !Array.isArray(score);
+
+const isFullTimeScore = (score: unknown): score is { home?: number | null; away?: number | null } =>
+  !!score && typeof score === 'object' && !Array.isArray(score);
+
 export function computePredictionStats(rows: MyPredictionRow[]) {
   let total = 0;
   let finished = 0;
@@ -14,7 +20,9 @@ export function computePredictionStats(rows: MyPredictionRow[]) {
     if (!row.is_finished) continue;
     finished += 1;
 
-    const ft = row.score?.fullTime ?? row.score?.fulltime;
+    const ft = isScoreObject(row.score) ? (row.score.fullTime ?? row.score.fulltime) : null;
+    if (!isFullTimeScore(ft)) continue;
+
     const ftHome = ft?.home;
     const ftAway = ft?.away;
 
@@ -22,6 +30,7 @@ export function computePredictionStats(rows: MyPredictionRow[]) {
 
     const ph = row.predicted_home_score;
     const pa = row.predicted_away_score;
+    if (ph == null || pa == null) continue;
 
     const predictedDiff = ph - pa;
     const actualDiff = ftHome - ftAway;

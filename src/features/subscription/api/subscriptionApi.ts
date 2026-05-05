@@ -3,6 +3,9 @@ import { SubscriptionDetailsWithLimits, SubscriptionType } from '../types';
 import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getSubscriptionLimits';
 
 export const subscriptionApi = {
+  getSubscriptionLimits,
+  getDefaultFreeSubscription,
+
   async getCurrentSubscription(userId: string): Promise<SubscriptionDetailsWithLimits | null> {
     const { data, error } = await supabase
       .from('subscription')

@@ -1,10 +1,11 @@
-import { act, render, waitFor } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import { Image as ExpoImage } from 'expo-image';
+import { LeaderboardRow } from '../../types';
 import LeagueScreen from '../../screens/LeagueScreen';
 
-let mockLeaderboard = [
-  { member_id: 'm1', nickname: 'Player1', avatar_url: null, total_points: 100 },
-  { member_id: 'm2', nickname: 'Player2', avatar_url: null, total_points: 80 },
+let mockLeaderboard: LeaderboardRow[] = [
+  { league_id: 'l1', member_id: 'm1', user_id: 'u1', nickname: 'Player1', avatar_url: null, total_points: 100 },
+  { league_id: 'l1', member_id: 'm2', user_id: 'u2', nickname: 'Player2', avatar_url: null, total_points: 80 },
 ];
 
 jest.mock('expo-image', () => {
@@ -73,8 +74,8 @@ jest.mock('@/utils/getProfileImage', () => ({
 describe('LeagueScreen', () => {
   beforeEach(() => {
     mockLeaderboard = [
-      { member_id: 'm1', nickname: 'Player1', avatar_url: null, total_points: 100 },
-      { member_id: 'm2', nickname: 'Player2', avatar_url: null, total_points: 80 },
+      { league_id: 'l1', member_id: 'm1', user_id: 'u1', nickname: 'Player1', avatar_url: null, total_points: 100 },
+      { league_id: 'l1', member_id: 'm2', user_id: 'u2', nickname: 'Player2', avatar_url: null, total_points: 80 },
     ];
     jest.mocked(ExpoImage.prefetch).mockClear();
   });
@@ -84,35 +85,33 @@ describe('LeagueScreen', () => {
     expect(getByText('TopThree')).toBeTruthy();
   });
 
-  it('keeps the skeleton visible until avatar images are prefetched', async () => {
+  it('renders the leaderboard immediately while avatar images prefetch in the background', () => {
     mockLeaderboard = [
-      { member_id: 'm1', nickname: 'Player1', avatar_url: 'player-1.jpg', total_points: 100 },
-      { member_id: 'm2', nickname: 'Player2', avatar_url: 'player-2.jpg', total_points: 80 },
+      { league_id: 'l1', member_id: 'm1', user_id: 'u1', nickname: 'Player1', avatar_url: 'player-1.jpg', total_points: 100 },
+      { league_id: 'l1', member_id: 'm2', user_id: 'u2', nickname: 'Player2', avatar_url: 'player-2.jpg', total_points: 80 },
     ];
 
-    let resolvePrefetch: (value: boolean) => void = () => {};
-    jest.mocked(ExpoImage.prefetch).mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          resolvePrefetch = resolve;
-        })
-    );
+    jest.mocked(ExpoImage.prefetch).mockImplementationOnce(() => new Promise(() => {}));
 
     const { getByText, queryByText } = render(<LeagueScreen />);
 
-    expect(getByText('LeagueSkeleton')).toBeTruthy();
-    expect(queryByText('TopThree')).toBeNull();
+    expect(getByText('TopThree')).toBeTruthy();
+    expect(queryByText('LeagueSkeleton')).toBeNull();
     expect(ExpoImage.prefetch).toHaveBeenCalledWith(
       ['https://example.com/player-1.jpg', 'https://example.com/player-2.jpg'],
       { cachePolicy: 'memory-disk' }
     );
+  });
 
-    act(() => {
-      resolvePrefetch(true);
-    });
+  it('still renders the leaderboard if avatar prefetch fails', () => {
+    mockLeaderboard = [
+      { league_id: 'l1', member_id: 'm1', user_id: 'u1', nickname: 'Player1', avatar_url: 'player-1.jpg', total_points: 100 },
+    ];
+    jest.mocked(ExpoImage.prefetch).mockRejectedValueOnce(new Error('prefetch failed'));
 
-    await waitFor(() => {
-      expect(getByText('TopThree')).toBeTruthy();
-    });
+    const { getByText } = render(<LeagueScreen />);
+
+    expect(getByText('TopThree')).toBeTruthy();
+    expect(getByText('Player1')).toBeTruthy();
   });
 });

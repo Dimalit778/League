@@ -2,8 +2,9 @@ import { CText } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { StarIcon } from '@assets/icons';
 import { TouchableOpacity, View } from 'react-native';
+import { MyLeagueType } from '../types';
 interface LeagueCardProps {
-  item: any;
+  item: MyLeagueType;
   handleSetPrimary: (leagueId: string, isPrimary: boolean) => void;
 }
 export default function MyLeagueCard({ item, handleSetPrimary }: LeagueCardProps) {

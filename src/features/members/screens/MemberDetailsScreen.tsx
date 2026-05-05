@@ -6,7 +6,7 @@ import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
 import MemberStats from '../components/memberStats';
 const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
@@ -18,6 +18,7 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
     data: allFinishedMatches,
     isLoading: matchesLoading,
     error: matchesError,
+    refetch: refetchMatches,
   } = useGetMemberFinishedMatches(memberId, competitionId);
 
   const fixturesWithFinishedMatches = useMemo(() => {
@@ -112,9 +113,13 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
               fixtureDateRanges={[]}
             />
           </View>
-          <ScrollView className="flex-1 mt-2" showsVerticalScrollIndicator={false}>
-            {matchesLoading ? <SkeletonMatches /> : <MatchesList matches={matches} />}
-          </ScrollView>
+          <View className="mt-2 min-h-0 flex-1">
+            {matchesLoading ? (
+              <SkeletonMatches />
+            ) : (
+              <MatchesList matches={matches} onRefresh={() => void refetchMatches()} />
+            )}
+          </View>
         </>
       )}
     </Screen>

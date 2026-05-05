@@ -11,7 +11,8 @@ describe('leagueApi', () => {
       const mockData = [{ member_id: 'm1', total_points: 100 }];
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
       });
 
       const result = await leagueApi.getLeaderboardView('l1');
@@ -22,7 +23,8 @@ describe('leagueApi', () => {
     it('throws on error', async () => {
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockResolvedValue({ data: null, error: { message: 'Error' } }),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: null, error: { message: 'Error' } }),
       });
 
       await expect(leagueApi.getLeaderboardView('l1')).rejects.toEqual({ message: 'Error' });
@@ -84,6 +86,48 @@ describe('leagueApi', () => {
       (supabase as any).rpc = mockRpc;
 
       await expect(leagueApi.joinLeague('ABC1234', 'TestUser')).rejects.toThrow('Failed to join league');
+    });
+  });
+
+  describe('updatePrimaryLeague', () => {
+    it('uses the atomic set_primary_league rpc', async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: { success: true }, error: null });
+      (supabase as any).rpc = mockRpc;
+
+      const result = await leagueApi.updatePrimaryLeague('l1');
+
+      expect(mockRpc).toHaveBeenCalledWith('set_primary_league', {
+        p_league_id: 'l1',
+      });
+      expect(result).toEqual({ success: true });
+    });
+
+    it('throws on rpc error', async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: null, error: { message: 'No membership' } });
+      (supabase as any).rpc = mockRpc;
+
+      await expect(leagueApi.updatePrimaryLeague('l1')).rejects.toThrow('No membership');
+    });
+  });
+
+  describe('deleteLeague', () => {
+    it('uses the atomic delete_owned_league rpc', async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: { success: true }, error: null });
+      (supabase as any).rpc = mockRpc;
+
+      const result = await leagueApi.deleteLeague('l1');
+
+      expect(mockRpc).toHaveBeenCalledWith('delete_owned_league', {
+        p_league_id: 'l1',
+      });
+      expect(result).toEqual({ success: true });
+    });
+
+    it('throws on rpc error', async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: null, error: { message: 'Not owner' } });
+      (supabase as any).rpc = mockRpc;
+
+      await expect(leagueApi.deleteLeague('l1')).rejects.toThrow('Not owner');
     });
   });
 
