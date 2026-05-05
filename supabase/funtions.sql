@@ -379,6 +379,46 @@ exception
 end$$;
 
 -- ============================================================================
+-- USER / SUBSCRIPTION TRIGGERS
+-- ============================================================================
+
+-- Create default FREE subscription when a new user is inserted into public.users
+create or replace function public.on_new_user_create_free_subscription()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.subscription (
+    user_id,
+    subscription_type,
+    start_date,
+    end_date,
+    access_advanced_stats,
+    can_add_members
+  )
+  values (
+    NEW.id,
+    'FREE'::public.subscription_type,
+    now(),
+    '2099-12-31'::date,
+    false,
+    false
+  );
+  return NEW;
+exception
+  when others then
+    raise exception 'Failed to create default free subscription: %', sqlerrm;
+end$$;
+
+drop trigger if exists trg_on_new_user_create_free_subscription on public.users;
+create trigger trg_on_new_user_create_free_subscription
+  after insert on public.users
+  for each row
+  execute function public.on_new_user_create_free_subscription();
+
+-- ============================================================================
 -- FIXTURE FUNCTIONS
 -- ============================================================================
 

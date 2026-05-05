@@ -13,7 +13,7 @@ export const Card = ({ children, className }: CardProps) => {
       className={`
         bg-surface 
         border border-border 
-        rounded-lg
+        rounded-xl
         
         ${className || ''}
       `}

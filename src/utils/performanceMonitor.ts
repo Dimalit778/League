@@ -35,8 +35,9 @@ export class PerformanceMonitor {
       // Log slow renders
       if (renderTime > 16) {
         // 60fps threshold
-        }ms`
-        );
+        if (__DEV__) {
+          console.warn(`[PerformanceMonitor] Slow render in "${componentName}": ${renderTime.toFixed(1)}ms`);
+        }
       }
     };
   }
@@ -51,7 +52,7 @@ export class PerformanceMonitor {
   getPerformanceReport(): Record<string, number> {
     const report: Record<string, number> = {};
 
-    for (const [componentName, times] of this.renderTimes.entries()) {
+    for (const [componentName] of this.renderTimes.entries()) {
       report[componentName] = this.getAverageRenderTime(componentName);
     }
 
@@ -93,7 +94,8 @@ export const logMemoryUsage = () => {
   if (__DEV__) {
     const memoryInfo = (performance as any).memory;
     if (memoryInfo) {
-      }MB`,
+      console.log('[PerformanceMonitor] Memory Usage', {
+        used: `${Math.round(memoryInfo.usedJSHeapSize / 1024 / 1024)}MB`,
         total: `${Math.round(memoryInfo.totalJSHeapSize / 1024 / 1024)}MB`,
         limit: `${Math.round(memoryInfo.jsHeapSizeLimit / 1024 / 1024)}MB`,
       });

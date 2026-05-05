@@ -85,7 +85,6 @@ export default function JoinLeague() {
               maxLength={7}
               autoCorrect={false}
               autoCapitalize="characters"
-              error={errors.inviteCode}
             />
             <CText variant="caption" className="mt-1 text-center text-muted">
               {t('Ask the league owner for the invite code')}
@@ -119,8 +118,8 @@ export default function JoinLeague() {
           )}
 
           {error && !foundLeague && !isLoading && inviteCodeValue?.length === 7 && (
-            <View className="mb-6 p-4 bg-error border border-error rounded-xl">
-              <CText variant="small" className="text-center text-error">
+            <View className="mb-6 p-2 bg-error border border-error rounded-xl">
+              <CText variant="small" className="text-center text-white">
                 {t('League not found')}
               </CText>
             </View>
@@ -140,7 +139,7 @@ export default function JoinLeague() {
                       </CText>
                     </View>
                     <CText variant="body" className="text-muted flex-1">
-                      {step}
+                      {t(step)}
                     </CText>
                   </View>
                 ))}

@@ -2,6 +2,7 @@ import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon, UserIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
@@ -18,6 +19,7 @@ const schema = yup.object().shape({
 type FormData = yup.InferType<typeof schema>;
 
 const SignUpScreen = () => {
+  const { t } = useTranslation();
   const { signUp, isLoading, errorMessage } = useAuthActions();
   const { colors } = useThemeTokens();
   const [showPassword, setShowPassword] = useState(false);
@@ -51,10 +53,10 @@ const SignUpScreen = () => {
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
           <CText variant="hero" className="text-secondary">
-            Create account
+            {t('Create account')}
           </CText>
           <CText variant="caption" className="text-muted ">
-            Sign up to get started
+            {t('Sign up to get started')}
           </CText>
         </View>
 
@@ -62,7 +64,7 @@ const SignUpScreen = () => {
           <InputField
             control={control}
             name="fullname"
-            placeholder="Full Name"
+            placeholder={t('Full Name')}
             icon={<UserIcon size={24} color={colors.muted} />}
             error={errors.fullname}
           />
@@ -70,14 +72,14 @@ const SignUpScreen = () => {
           <InputField
             control={control}
             name="email"
-            placeholder="Email"
+            placeholder={t('Email')}
             icon={<EmailIcon size={24} color={colors.muted} />}
             error={errors.email}
           />
           <InputField
             control={control}
             name="password"
-            placeholder="Password"
+            placeholder={t('Password')}
             secureTextEntry={!showPassword}
             icon={<LockIcon size={24} color={colors.muted} />}
             error={errors.password}
@@ -97,7 +99,7 @@ const SignUpScreen = () => {
           )}
 
           <Button
-            title="Sign Up"
+            title={t('Sign Up')}
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
             disabled={!isValid || isLoading}
@@ -107,18 +109,18 @@ const SignUpScreen = () => {
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-gray-600" />
             <CText variant="caption" className="text-gray-400 mx-2">
-              OR
+              {t('OR')}
             </CText>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
           <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
-            <CText variant="caption" className="text-muted text-center  ">
-              Already have an account?
+            <CText variant="caption" className="text-muted">
+              {t('Already have an account?')}
             </CText>
             <Link href="/signIn" replace>
               <CText variant="caption" className="text-secondary ">
-                Sign In
+                {t('Sign In')}
               </CText>
             </Link>
           </View>

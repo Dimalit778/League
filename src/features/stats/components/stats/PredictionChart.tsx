@@ -13,9 +13,11 @@ const PredictionChart = (stats: StatsType) => {
 
   return (
     <Card className="p-4 mb-4">
-      <CText className="text-text text-lg font-bold mb-4">Prediction Results</CText>
+      <CText variant="body" bold className="mb-2">
+        {t('Prediction Results')}
+      </CText>
 
-      <View className="h-6 flex-row rounded-md overflow-hidden mb-4">
+      <View className="h-6 flex-row rounded-md overflow-hidden mb-2">
         {stats.totalPredictions > 0 ? (
           <>
             <View style={{ width: `${bingoPercentage}%` }} className="bg-green-500 border-1 border-black" />
@@ -30,19 +32,19 @@ const PredictionChart = (stats: StatsType) => {
       <View className="flex-row justify-between">
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
-          <CText className="text-text">
+          <CText>
             {t('Bingo')} ({stats.bingoHits})
           </CText>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
-          <CText className="text-text">
+          <CText>
             {t('Regular')} ({stats.regularHits})
           </CText>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
-          <CText className="text-text">
+          <CText>
             {t('Missed')} ({stats.missedHits})
           </CText>
         </View>

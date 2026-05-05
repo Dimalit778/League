@@ -2,6 +2,7 @@ import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { EmailIcon, EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
@@ -20,6 +21,7 @@ const schema = yup.object().shape({
 
 const SignInScreen = () => {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const { signIn, isLoading, errorMessage, clearError, resendOtp } = useAuthActions();
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -51,20 +53,20 @@ const SignInScreen = () => {
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
           <CText variant="hero" className="text-secondary">
-            Welcome Back
+            {t('Welcome Back')}
           </CText>
 
           <CText variant="body" className="text-muted ">
-            Sign in to your account
+            {t('Sign in to your account')}
           </CText>
         </View>
 
         {/* Form */}
-        <View className=" px-5 gap-4">
+        <View className="px-5 gap-4">
           <InputField
             control={control}
             name="email"
-            placeholder="Email"
+            placeholder={t('Email')}
             secureTextEntry={false}
             error={errors.email}
             icon={<EmailIcon size={24} color={colors.muted} />}
@@ -74,7 +76,7 @@ const SignInScreen = () => {
           <InputField
             control={control}
             name="password"
-            placeholder="Password"
+            placeholder={t('Password')}
             secureTextEntry={!showPassword}
             icon={<LockIcon size={24} color={colors.muted} />}
             rightIcon={
@@ -96,7 +98,7 @@ const SignInScreen = () => {
           )}
 
           <Button
-            title="Sign In"
+            title={t('Sign In')}
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
             disabled={!isValid || isLoading}
@@ -107,7 +109,7 @@ const SignInScreen = () => {
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-gray-600" />
             <CText variant="caption" className="text-gray-400 mx-2">
-              OR
+              {t('OR')}
             </CText>
             <View className="flex-1 h-px bg-gray-600" />
           </View>
@@ -116,17 +118,17 @@ const SignInScreen = () => {
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">
               <CText variant="caption" className="text-muted text-center">
-                Don't have an account?
+                {t("Don't have an account?")}
               </CText>
               <Link href="/signUp" replace>
                 <CText variant="caption" className="text-secondary ">
-                  Sign Up
+                  {t('Sign Up')}
                 </CText>
               </Link>
             </View>
             <Link href="/sendResetLink" asChild>
               <CText variant="caption" className="text-secondary text-center mt-5 ">
-                Forgot Password
+                {t('Forgot Password')}
               </CText>
             </Link>
           </View>

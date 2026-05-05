@@ -25,7 +25,7 @@ const StatsScreen = () => {
 
   if (isLoading) return <SkeletonStats />;
   return (
-    <Screen className="px-2">
+    <Screen>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}

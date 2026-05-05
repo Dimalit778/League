@@ -61,7 +61,7 @@ ExpoSplashScreen.preventAutoHideAsync().catch(() => {});
 
 const AppBootstrap = () => {
   const ref = useNavigationContainerRef();
-  const { isLoggedIn, isAuthLoading } = useAuth();
+  const { isLoggedIn } = useAuth();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   const initializeTheme = useThemeStore((s) => s.initializeTheme);
   const initializeLanguage = useLanguageStore((s) => s.initializeLanguage);
@@ -81,7 +81,7 @@ const AppBootstrap = () => {
   }, [ref]);
 
   useEffect(() => {
-    if (!fontsLoaded || isAuthLoading) return;
+    if (!fontsLoaded) return;
 
     let cancelled = false;
 
@@ -104,7 +104,7 @@ const AppBootstrap = () => {
     return () => {
       cancelled = true;
     };
-  }, [fontsLoaded, isAuthLoading, initializeTheme, initializeLanguage, initializeMember]);
+  }, [fontsLoaded, initializeTheme, initializeLanguage, initializeMember]);
 
   if (!isReady) {
     return <AppSplashScreen />;

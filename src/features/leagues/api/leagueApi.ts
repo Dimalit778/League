@@ -72,8 +72,6 @@ export const leagueApi = {
       .select('*')
       .eq('id', memberId)
       .single();
-    );
-    );
 
     if (memberError) throw new Error(memberError.message);
     if (!memberData) throw new Error('Member not found');
@@ -82,8 +80,7 @@ export const leagueApi = {
 
     const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
     if (error) throw new Error(error.message);
-    );
-    );
+
     return { data, leagueId };
   },
   //  -- LEAGUE OPERATIONS
@@ -128,8 +125,6 @@ export const leagueApi = {
     const { data, error } = await supabase.rpc('leave_league', {
       p_league_id: leagueId,
     });
-    );
-    );
 
     if (error) {
       throw new Error(error.message || 'Failed to leave league');
@@ -151,7 +146,7 @@ export const leagueApi = {
 
     if (membersError) {
       // Log error but don't throw - deletion was successful
-      } else if (remainingMembers && remainingMembers.length > 0) {
+    } else if (remainingMembers && remainingMembers.length > 0) {
       // First, unset all primary flags for this user
       const { error: unsetError } = await supabase
         .from('league_members')
@@ -159,7 +154,7 @@ export const leagueApi = {
         .eq('user_id', userId);
 
       if (unsetError) {
-        } else {
+      } else {
         // Then set the first remaining league member as primary
         const { error: updatePrimaryError } = await supabase
           .from('league_members')
@@ -167,7 +162,7 @@ export const leagueApi = {
           .eq('id', remainingMembers[0].id);
 
         if (updatePrimaryError) {
-          }
+        }
       }
     }
 

@@ -3,13 +3,11 @@ import { BackButton } from '@/components/ui';
 
 import { CText } from '@/components/ui/CText';
 import SubscriptionCard from '@/features/subscription/components/subscription/SubscriptionCard';
-import SubscriptionFeatures from '@/features/subscription/components/subscription/SubscriptionFeatures';
 import { useCreateSubscription, useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/AuthStore';
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
@@ -24,49 +22,6 @@ const SubscriptionScreen = () => {
 
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(subscriptionType || null);
   const edges = useSafeAreaInsets();
-  const handleSubscribe = () => {
-    if (!selectedPlan) {
-      Alert.alert(t('Error'), t('Please select a subscription plan'));
-      return;
-    }
-
-    if (selectedPlan === subscriptionType) {
-      Alert.alert(t('Info'), t('You are already subscribed to this plan'));
-      return;
-    }
-
-    Alert.alert(
-      t('Confirm Subscription'),
-      t('Are you sure you want to subscribe to the {{plan}} plan?', { plan: selectedPlan }),
-      [
-        {
-          text: t('Cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('Subscribe'),
-          onPress: () => {
-            createSubscription(
-              { subscriptionType: selectedPlan },
-              {
-                onSuccess: () => {
-                  Alert.alert(t('Success'), t('Your subscription has been updated successfully'), [
-                    {
-                      text: 'OK',
-                      onPress: () => router.push('/(app)/(member)/(tabs)/League'),
-                    },
-                  ]);
-                },
-                onError: (error) => {
-                  Alert.alert(t('Error'), error.message || t('Failed to update subscription'));
-                },
-              }
-            );
-          },
-        },
-      ]
-    );
-  };
 
   const isLoading = isLoadingSubscription || isCreatingSubscription;
 
@@ -76,11 +31,11 @@ const SubscriptionScreen = () => {
 
       {isLoading && <LoadingOverlay />}
       <ScrollView
-        className="flex-1 px-2 "
+        className="flex-1 "
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 10 }}
+        contentContainerStyle={{ paddingBottom: edges.bottom + 10, paddingHorizontal: 10 }}
       >
-        <CText variant="body" className=" mb-2 ">
+        <CText variant="h2" className="my-2">
           {t('Choose Your Plan')}
         </CText>
         <CText variant="caption" bold className="text-muted mb-6 ">
@@ -97,21 +52,6 @@ const SubscriptionScreen = () => {
             onSelect={() => setSelectedPlan(p.type)}
           />
         ))}
-
-        {selectedPlan && selectedPlan !== subscriptionType && (
-          <View className="mt-6">
-            <CText variant="body" bold style={{ textAlign: 'right' }} className=" mb-4">
-              ('Selected Plan'): (selectedPlan)
-            </CText>
-            <SubscriptionFeatures subscriptionType={selectedPlan} />
-
-            <View className="bg-primary py-3 px-4 rounded-lg">
-              <CText variant="caption" className="text-center " onPress={handleSubscribe}>
-                {isCreatingSubscription ? t('Processing...') : t('Confirm Subscription')}
-              </CText>
-            </View>
-          </View>
-        )}
       </ScrollView>
     </Screen>
   );

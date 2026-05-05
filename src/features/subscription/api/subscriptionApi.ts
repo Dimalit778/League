@@ -1,41 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import { SubscriptionDetails, SubscriptionLimits, SubscriptionType } from '../types';
+import { SubscriptionDetailsWithLimits, SubscriptionType } from '../types';
+import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getSubscriptionLimits';
 
 export const subscriptionApi = {
-  getSubscriptionLimits(subscriptionType: SubscriptionType | null): SubscriptionLimits {
-    switch (subscriptionType) {
-      case 'PREMIUM':
-        return {
-          maxLeagues: 5,
-          maxMembersPerLeague: 10,
-        };
-      case 'BASIC':
-        return {
-          maxLeagues: 3,
-          maxMembersPerLeague: 8,
-        };
-      case 'FREE':
-      default:
-        return {
-          maxLeagues: 2,
-          maxMembersPerLeague: 6,
-        };
-    }
-  },
-  getDefaultFreeSubscription(userId: string): SubscriptionDetails {
-    // Create a virtual FREE subscription that isn't stored in the database
-    return {
-      id: 'free-' + userId,
-      user_id: userId,
-      subscription_type: 'FREE',
-      start_date: new Date().toISOString(),
-      end_date: new Date(2099, 11, 31).toISOString(), // Far future date
-      access_advanced_stats: false,
-      can_add_members: false,
-    };
-  },
-
-  async getCurrentSubscription(userId: string): Promise<SubscriptionDetails | null> {
+  async getCurrentSubscription(userId: string): Promise<SubscriptionDetailsWithLimits | null> {
     const { data, error } = await supabase
       .from('subscription')
       .select('*')
@@ -46,12 +14,12 @@ export const subscriptionApi = {
 
     if (error) throw new Error(error.message);
 
-    // If no subscription found in database, return default FREE subscription
     if (!data) {
-      return this.getDefaultFreeSubscription(userId);
+      const defaultSub = getDefaultFreeSubscription(userId);
+      return { ...defaultSub, limits: getSubscriptionLimits('FREE') };
     }
-
-    return data;
+    const limits = getSubscriptionLimits(data.subscription_type);
+    return { ...data, limits };
   },
 
   async createSubscription(
@@ -62,7 +30,7 @@ export const subscriptionApi = {
   ) {
     // For FREE subscription, just return the default virtual subscription without saving to database
     if (subscriptionType === 'FREE') {
-      return this.getDefaultFreeSubscription(userId);
+      return getDefaultFreeSubscription(userId);
     }
 
     // For paid subscriptions (BASIC, PREMIUM), save to database
@@ -115,7 +83,7 @@ export const subscriptionApi = {
 
       // This should never be null due to our default FREE subscription
       const subscriptionType = subscription?.subscription_type || 'FREE';
-      const limits = this.getSubscriptionLimits(subscriptionType);
+      const limits = getSubscriptionLimits(subscriptionType);
 
       const leagueCount = await this.getUserLeagueCount(userId);
       if (leagueCount >= limits.maxLeagues) {

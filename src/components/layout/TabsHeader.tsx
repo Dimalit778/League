@@ -8,7 +8,13 @@ import { Platform, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AvatarImage } from '../ui';
 
-export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
+export const TabsHeader = ({
+  tabsLayout = true,
+  isMyLeaguesPage = false,
+}: {
+  tabsLayout?: boolean;
+  isMyLeaguesPage?: boolean;
+}) => {
   const { colors } = useThemeTokens();
   const activeMember = useMemberStore((s) => s.activeMember);
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
@@ -58,8 +64,8 @@ export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
           </Link>
         )}
 
-        <Link href="/myLeagues" asChild>
-          <Pressable accessibilityRole="button">
+        <Link href="/myLeagues" asChild disabled={isMyLeaguesPage}>
+          <Pressable accessibilityRole="button" disabled={isMyLeaguesPage}>
             <TrophyIcon size={30} color={colors.primary} />
           </Pressable>
         </Link>

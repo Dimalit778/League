@@ -23,7 +23,7 @@ const ProfileScreen = () => {
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
 
-  const { show, DialogComponent } = useConfirmDialog();
+  const { DialogComponent } = useConfirmDialog();
   const { showAlert } = useAlert();
 
   const confirmLeaveLeague = () => {
@@ -54,21 +54,6 @@ const ProfileScreen = () => {
       ],
     });
   };
-  const handleDelete = () => {
-    if (!leagueId || !memberData?.user_id) return;
-    show(
-      {
-        title: t('Delete League'),
-        description: t('Are you sure you want to delete this league?'),
-        confirmLabel: t('Delete'),
-        cancelLabel: t('Cancel'),
-      },
-      () => {
-        deleteLeague.mutate({ leagueId, userId: memberData.user_id });
-      },
-      { message: t('League deleted!'), type: 'success' }
-    );
-  };
 
   if (memberLoading || leagueLoading) return <ProfileSkeleton />;
   if (memberError || leagueError)
@@ -87,7 +72,12 @@ const ProfileScreen = () => {
         <LeagueDetailsSection league={leagueData} memberUserId={memberData?.user_id} />
 
         <View className="px-6 mt-4">
-          <Button title={t('Leave League')} variant="error" onPress={handleDelete} disabled={leaveLeague.isPending} />
+          <Button
+            title={t('Leave League')}
+            variant="error"
+            onPress={confirmLeaveLeague}
+            disabled={leaveLeague.isPending}
+          />
           {leagueData.owner_id === memberData?.user_id && (
             <View className=" flex-row justify-center  items-center mt-4">
               <TouchableOpacity

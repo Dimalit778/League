@@ -17,4 +17,8 @@ type SubscriptionLimits = {
   maxMembersPerLeague: number;
 };
 
-export type { SubscriptionDetails, SubscriptionLimits, SubscriptionType };
+type SubscriptionDetailsWithLimits = SubscriptionDetails & {
+  limits: SubscriptionLimits;
+};
+
+export type { SubscriptionDetails, SubscriptionDetailsWithLimits, SubscriptionLimits, SubscriptionType };

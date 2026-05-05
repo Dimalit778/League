@@ -7,6 +7,7 @@ import {
 import { useState } from 'react';
 
 import { CText } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { Alert } from 'react-native';
@@ -22,6 +23,7 @@ const GoogleAuth = ({
   setIsLoading: (isLoading: boolean) => void;
   isLoading: boolean;
 }) => {
+  const { t } = useTranslation();
   GoogleSignin.configure({
     webClientId: WEB_CLIENT_ID,
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -95,7 +97,12 @@ const GoogleAuth = ({
 
   return (
     <>
-      <GoogleSignInButton onPress={handleGoogleSignIn} loading={isLoading} disabled={isLoading} />
+      <GoogleSignInButton
+        onPress={handleGoogleSignIn}
+        loading={isLoading}
+        disabled={isLoading}
+        label={t('Sign in with Google')}
+      />
       {errorMessage && <CText className="text-error text-sm text-center mt-2">{errorMessage}</CText>}
     </>
   );

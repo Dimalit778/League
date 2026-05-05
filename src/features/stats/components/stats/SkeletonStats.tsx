@@ -7,7 +7,8 @@ export default function SkeletonStats() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
-        className="flex-1 px-4 pt-4"
+        className="flex-1 "
+        contentContainerStyle={{ paddingHorizontal: 10 }}
       >
         {/* First row: Total Predictions & Total Points */}
         <View className="flex-row mb-4">

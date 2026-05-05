@@ -144,14 +144,16 @@ const HelpScreen = () => {
     <Screen withSafeArea>
       <BackButton title={t('Help & Support')} />
       <ScrollView
-        className="flex-1 px-2 "
+        className="flex-1 "
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 10 }}
+        contentContainerStyle={{ paddingBottom: edges.bottom + 10, paddingHorizontal: 10 }}
       >
         {/* Welcome Section */}
         <Card className="mb-6 p-4">
-          <CText className="text-xl font-semibold text-text mb-2">{t('Welcome to League Champion')}</CText>
-          <CText className="text-base leading-6 text-zinc-300">
+          <CText variant="h3" className=" mb-2">
+            {t('Welcome to League Champion')}
+          </CText>
+          <CText variant="body" className=" leading-6 ">
             {t(
               'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!'
             )}
@@ -161,11 +163,17 @@ const HelpScreen = () => {
         {/* Help Sections */}
         {helpSections.map((section) => (
           <View key={section.title} className="mb-6">
-            <CText className="text-lg font-semibold text-text mb-3">{t(section.title)}</CText>
+            <CText variant="h3" className=" mb-3">
+              {t(section.title)}
+            </CText>
             {section.items.map((item, index) => (
               <Card key={index} className="mb-3 p-4">
-                <CText className="text-base font-medium text-primary mb-2">{t(item.question)}</CText>
-                <CText className="text-sm leading-5 text-zinc-300">{t(item.answer)}</CText>
+                <CText variant="body" className=" mb-2">
+                  {t(item.question)}
+                </CText>
+                <CText variant="body" className=" leading-5 text-muted ">
+                  {t(item.answer)}
+                </CText>
               </Card>
             ))}
           </View>
@@ -173,8 +181,10 @@ const HelpScreen = () => {
 
         {/* Contact Support */}
         <Card className="mb-6 p-4">
-          <CText className="text-lg font-semibold text-text mb-3">{t('Contact Support')}</CText>
-          <CText className="text-base leading-6 text-zinc-300 mb-4">
+          <CText variant="h3" className=" mb-3">
+            {t('Contact Support')}
+          </CText>
+          <CText variant="body" className=" leading-6 text-muted mb-4">
             {t(
               "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible."
             )}
@@ -184,22 +194,36 @@ const HelpScreen = () => {
             className="flex-row items-center justify-center bg-primary rounded-lg py-3 px-4"
           >
             <FontAwesome6 name="envelope" size={16} color="white" />
-            <CText className="text-white font-medium ml-2">{t('Email Support')} </CText>
+            <CText variant="body" className=" text-white ml-2">
+              {t('Email Support')}{' '}
+            </CText>
           </TouchableOpacity>
-          <CText className="text-xs text-zinc-400 mt-2 text-center">{t('support@leaguechampion.app')}</CText>
+          <CText variant="small" className=" text-muted mt-2 text-center">
+            {t('support@leaguechampion.app')}
+          </CText>
         </Card>
 
         {/* App Information */}
         <View className="mb-6">
-          <CText className="text-lg font-semibold text-text mb-3">{t('App Information')}</CText>
+          <CText variant="h3" className=" mb-3">
+            {t('App Information')}
+          </CText>
           <Card className="p-4">
             <View className="flex-row justify-between items-center mb-2">
-              <CText className="text-base text-zinc-300">{t('Version')}</CText>
-              <CText className="text-base text-text">1.0.0</CText>
+              <CText variant="body" className=" text-muted">
+                {t('Version')}
+              </CText>
+              <CText variant="body" className=" text-text">
+                1.0.0
+              </CText>
             </View>
             <View className="flex-row justify-between items-center">
-              <CText className="text-base text-zinc-300">{t('Platform')}</CText>
-              <CText className="text-base text-text">{t('iOS & Android')}</CText>
+              <CText variant="body" className=" text-muted">
+                {t('Platform')}
+              </CText>
+              <CText variant="body" className=" text-text">
+                {t('iOS & Android')}
+              </CText>
             </View>
           </Card>
         </View>

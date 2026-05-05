@@ -8,10 +8,11 @@ import { AvatarImage, BackButton, Button, CText } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { MemberType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAlert } from '@/providers/AlertProvider';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, Pressable, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-
 type MemberCardProps = {
   member: MemberType;
   isOwner: boolean;
@@ -38,12 +39,9 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
         </View>
       </View>
       {!isOwner && (
-        <Button
-          title={t('Remove')}
-          size="sm"
-          variant="error"
-          onPress={() => handleRemoveMember(member.id, member.nickname)}
-        />
+        <Pressable onPress={() => handleRemoveMember(member.id, member.nickname)} className="bg-error rounded-lg p-2">
+          <FontAwesome6 name="trash" size={16} color="white" />
+        </Pressable>
       )}
     </View>
   );
@@ -54,6 +52,7 @@ export default function EditLeagueScreen() {
   const { t } = useTranslation();
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
 
+  const { showAlert } = useAlert();
   const removeMember = useRemoveMember();
   const updateLeague = useUpdateLeague();
 
@@ -77,16 +76,15 @@ export default function EditLeagueScreen() {
 
   const handleRemoveMember = async (memberId: string, nickname: string) => {
     if (!leagueId || primaryMember?.user_id !== league?.owner_id) return;
-    Alert.alert(t('Remove Member'), `${t('Remove')} ${nickname} ${t('from this league')}?`, [
-      { text: t('Cancel'), style: 'cancel' },
-      {
-        text: t('Remove'),
-        style: 'destructive',
-        onPress: async () => {
-          await removeMember.mutateAsync(memberId);
-        },
-      },
-    ]);
+    showAlert({
+      title: t('Remove Member'),
+      message: `${t('Remove')} ${nickname} ${t('from this league')}?`,
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        { text: t('Remove'), style: 'destructive', onPress: () => removeMember.mutate(memberId) },
+      ],
+    });
   };
   const trimmedLeagueName = editedLeagueName.trim();
   const canSaveLeagueName = league && trimmedLeagueName.length > 0 && trimmedLeagueName !== league.name;
@@ -104,7 +102,7 @@ export default function EditLeagueScreen() {
         onError: (error) => {
           Alert.alert(t('Error'), error.message);
         },
-      },
+      }
     );
   };
 

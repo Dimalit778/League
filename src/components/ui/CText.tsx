@@ -47,7 +47,7 @@ export const CText = ({
   const fontClass = bold ? 'font-nunito-bold' : variantFontClasses[variant];
 
   return (
-    <Text {...rest} className={cn('text-text', sizeClass, fontClass, className)} style={style}>
+    <Text {...rest} className={cn('text-text text-left', sizeClass, fontClass, className)} style={style}>
       {children}
     </Text>
   );

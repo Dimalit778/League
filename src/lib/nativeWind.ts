@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { vars } from 'nativewind';
 import { twMerge } from 'tailwind-merge';
 
-type ThemeTokens = {
+export type ThemeTokens = {
   colors: {
     primary: string;
     secondary: string;
@@ -27,11 +27,11 @@ const light: ThemeTokens = {
   colors: {
     primary: '#f97316',
     secondary: '#3b82f6',
-    background: '#ffffff',
-    surface: '#DEE4E7',
-    border: '#90A4AE',
-    text: '#111827',
-    muted: '#6b7280',
+    background: '#e2e8f0',
+    surface: '#cbd5e1',
+    border: '#94a3b8',
+    text: '#0f172a',
+    muted: '#64748b',
     error: '#ef4444',
     success: '#22c55e',
   },
@@ -42,7 +42,6 @@ const light: ThemeTokens = {
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
   },
-
 };
 
 const dark: ThemeTokens = {
@@ -64,7 +63,6 @@ const dark: ThemeTokens = {
     nunitoBold: 'Nunito_700Bold',
     nunitoBlack: 'Nunito_900Black',
   },
-  
 };
 
 const toNativeWindVars = (tokens: ThemeTokens) => ({

@@ -48,7 +48,6 @@
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.9",
     "expo-media-library": "~18.2.0",
-    "expo-modules-core": "^3.0.29",
     "expo-notifications": "~0.32.13",
     "expo-router": "~6.0.15",
     "expo-secure-store": "~15.0.7",
@@ -101,17 +100,7 @@
     "typescript": "~5.9.2"
   },
   "jest": {
-    "preset": "jest-expo",
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"],
-    "testMatch": ["**/__tests__/**/*.(test|spec).{js,jsx,ts,tsx}", "**/*.(test|spec).{js,jsx,ts,tsx}"],
-    "testPathIgnorePatterns": ["<rootDir>/src/features/auth/__tests__/setup.ts"],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1",
-      "^@assets/(.*)$": "<rootDir>/assets/$1"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|@react-native-community|expo(nent)?|expo-.*|@expo|@gorhom|react-native-reanimated|react-native-gesture-handler|react-native-mmkv|react-native-nitro-modules|@testing-library)"
-    ]
+    "preset": "jest-expo"
   },
   "expo": {
     "install": {

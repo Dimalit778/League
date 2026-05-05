@@ -8,18 +8,17 @@ import { useMemberStore } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
 import MatchesList from '../components/matches/MatchesList';
 import { useGetMatches } from '../hooks/useMatches';
 const MatchesScreen = () => {
   const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
-
   const memberId = useMemberStore((s) => s.memberId) ?? '';
   const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
   const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
+
   const currentFixture = fixturesData?.currentFixture ?? 0;
 
   const pathname = usePathname();
@@ -116,21 +115,18 @@ const MatchesScreen = () => {
   if (matchesError) return <Error error={matchesError} />;
 
   return (
-    <>
-      <View className="bg-background pt-2">
-        <FixturesList
-          fixtures={allFixtures}
-          selectedFixture={selectedFixture}
-          currentFixture={currentFixture}
-          handleFixturePress={handleFixturePress}
-          animateScroll={animateScroll}
-          fixtureDateRanges={fixtureDateRanges}
-        />
-      </View>
-      <Screen>
-        <MatchesList matches={matches} onRefresh={matchesRefetch} />
-      </Screen>
-    </>
+    <Screen>
+      <FixturesList
+        fixtures={allFixtures}
+        selectedFixture={selectedFixture}
+        currentFixture={currentFixture}
+        handleFixturePress={handleFixturePress}
+        animateScroll={animateScroll}
+        fixtureDateRanges={fixtureDateRanges}
+      />
+
+      <MatchesList matches={matches} onRefresh={matchesRefetch} />
+    </Screen>
   );
 };
 

@@ -1,12 +1,13 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
+import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -18,7 +19,12 @@ const schema = yup.object().shape({
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
   const { t } = useTranslation();
+
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
+  const { data: subscription } = useSubscription();
+  const limits = subscription?.limits ?? { maxMembersPerLeague: 6 };
+  const maxMembersPerLeague = limits.maxMembersPerLeague ?? 6;
+  const canSelect10 = maxMembersPerLeague >= 10;
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
   const {
@@ -36,36 +42,63 @@ const CreateLeagueScreen = () => {
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
+  type MemberOptionProps = {
+    value: number;
+    label: string;
+    disabled?: boolean;
+    premium?: boolean;
+  };
 
-  const MemberOption = ({ value, label }: { value: number; label: string }) => {
+  const MemberOption = ({ value, label, disabled, premium }: MemberOptionProps) => {
     const isActive = membersCount === value;
+
     return (
-      <TouchableOpacity
-        onPress={() => setMembersCount(value)}
-        className={`flex-1 mx-1 rounded-xl px-4 py-3 items-center border-2 ${
-          isActive ? 'border-secondary bg-surface' : 'border-border'
-        }`}
-        activeOpacity={0.8}
+      <Pressable
+        onPress={() => {
+          if (disabled && premium) {
+            router.push('/(app)/(public)/subscription');
+            return;
+          }
+          if (!disabled) setMembersCount(value);
+        }}
+        className={`relative flex-1 mx-1 rounded-2xl px-4 py-4 border-2
+          ${isActive ? 'border-secondary bg-surface' : 'border-border'}
+        
+        `}
       >
-        <CText variant="body" className={`${isActive ? 'text-secondary' : 'text-text'}`}>
-          {t(label)}
-        </CText>
-      </TouchableOpacity>
+        <View className={`${disabled ? 'opacity-30' : ''}`}>
+          <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+            {t(label)}
+          </CText>
+        </View>
+
+        {/* BADGE (no opacity) */}
+        {premium && (
+          <View className="absolute -top-3 left-0 right-0 items-center z-10">
+            <View className="bg-yellow-500 px-3 py-1 rounded-md shadow">
+              <CText variant="small" bold className="text-black">
+                PREMIUM
+              </CText>
+            </View>
+          </View>
+        )}
+      </Pressable>
     );
   };
+
   const onSubmit = handleSubmit(async (data) => {
     await createLeague({
       league_name: data.leagueName,
       nickname: data.nickname,
       competition_id: Number(competitionId),
-      max_members: membersCount ?? 6,
+      max_members: membersCount ?? maxMembersPerLeague,
     });
   });
   return (
     <Screen withSafeArea>
       {isPending && <LoadingOverlay />}
       <BackButton title={t('League Details')} />
-      <View className="flex-1 mt-4">
+      <View className="flex-1 ">
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="handled"
           bottomOffset={72}
@@ -117,7 +150,8 @@ const CreateLeagueScreen = () => {
 
             <View className="flex-row mt-4">
               <MemberOption value={6} label={t('6 Members')} />
-              <MemberOption value={10} label={t('10 Members')} />
+
+              <MemberOption value={10} label="10 Members" disabled={!canSelect10} premium />
             </View>
           </View>
         </KeyboardAwareScrollView>

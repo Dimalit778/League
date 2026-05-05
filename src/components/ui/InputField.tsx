@@ -1,4 +1,5 @@
 import { CText } from '@/components/ui/CText';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { Control, Controller, FieldError } from 'react-hook-form';
@@ -39,7 +40,7 @@ export const InputField = ({
 }: InputFieldProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
-
+  const { colors } = useThemeTokens();
   const getAccessibilityLabel = () => {
     if (accessibilityLabel) return accessibilityLabel;
     if (name === 'email') return t('Email address');
@@ -68,9 +69,9 @@ export const InputField = ({
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               placeholder={placeholder}
-              placeholderTextColor="#aaa"
+              placeholderTextColor={colors.muted}
               secureTextEntry={secureTextEntry}
-              className="flex-1 text-text py-4"
+              className="flex-1 text-text py-4 pl-2"
               style={{ textAlign: isRTL ? 'right' : 'left' }}
               onBlur={onBlur}
               onChangeText={(text) => {
@@ -111,7 +112,7 @@ export const InputField = ({
           accessibilityRole="text"
           accessibilityLiveRegion="assertive"
         >
-          {t(error.message ?? '')}
+          {error.message && t(error.message)}
         </CText>
       )}
     </View>

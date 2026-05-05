@@ -1,3 +1,4 @@
+// cspell:disable
 import { SupportedLanguage } from '@/store/LanguageStore';
 
 export type TranslationDictionary = Record<string, string>;
@@ -135,7 +136,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Start League': 'Start League',
       'League history': 'League history',
       'How to Join a League': 'How to Join a League',
-      '1. Get the 7-digit invite code from the league admin': '1. Get the 7-digit invite code from the league admin',
+      'Get the 7-digit invite code from the league owner.': 'Get the 7-digit invite code from the league owner.',
+      'Enter the code above to find the league.': 'Enter the code above to find the league.',
+      'Choose your nickname for the league.': 'Choose your nickname for the league.',
+      'Tap "Join League" to become a member.': 'Tap "Join League" to become a member.',
       '2. Enter the code above to find the league': '2. Enter the code above to find the league',
       '3. Choose your nickname for the league': '3. Choose your nickname for the league',
       '4. Tap "Join League" to become a member': '4. Tap "Join League" to become a member',
@@ -540,7 +544,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'recent predictions (latest 200 records).': 'recent predictions (latest 200 records).',
     },
   },
-
+  //@eslint-disable-next-line @typescript-eslint/ban-ts-comment
   he: {
     // Data
     data: {
@@ -593,17 +597,23 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
     // Auth screens
     auth: {
-      'Sign In': 'התחברות',
+      'Sign In': 'התתחבר',
       'Sign Up': 'הירשם',
       'Sign Out': 'התנתק',
       'Log In': 'כניסה',
+      OR: 'או',
       Logout: 'יציאה',
-      'Sign in to your account': 'התחברות לחשבון שלך',
+      'Create account': 'יצירת חשבון',
+      'Sign in to your account': 'התחבר לחשבון שלך',
+      'Forgot Password': 'שכחתי סיסמה',
+      'Sign in with Google': 'התחברות עם Google',
+      'Full Name': 'שם מלא',
+
       'Sign up to get started': 'הירשם כדי להתחיל',
       'Create an account': 'יצירת חשבון',
-      "Don't have an account?": 'אין לך חשבון? צור קשר עם נויר כדי ליצור חשבון',
-      'Already have an account?': 'יש לך חשבון? התחברו כאן',
-      'Welcome Back': 'ברוך שוב',
+      "Don't have an account?": 'אין לך חשבון?',
+      'Already have an account?': 'יש לך חשבון?',
+      'Welcome Back': 'ברוך הבא',
       'Welcome to League': 'ברוכים הבאים לליגה',
       'Your ultimate football companion. Track leagues, follow matches, and stay connected with the beautiful game.':
         'הליגה האולימפית המושלמת. עקוב אחר ליגות, עקוב אחר משחקים, והישאר מחובר למשחק היפה.',
@@ -673,14 +683,15 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Start League': 'התחל ליגה',
       'League history': 'היסטוריית ליגה',
       'How to Join a League': 'כיצד להצטרף לליגה',
-      '1. Get the 7-digit invite code from the league owner.': '1. קבלו את קוד ההזמנה מהמנהל של הליגה.',
-      '2. Enter the code above to find the league.': '2. הזינו את הקוד שלמעלה כדי למצוא את הליגה.',
-      '3. Choose your nickname for the league.': '3. בחרו שם משתמש לליגה.',
-      '4. Tap "Join League" to become a member.': '4. לחץ על "הצטרף לליגה" כדי להפוך לחבר.',
+      'Get the 7-digit invite code from the league owner.': 'קבלו את קוד ההזמנה מהמנהל של הליגה.',
+      'Enter the code above to find the league.': 'הזינו את הקוד שלמעלה כדי למצוא את הליגה.',
+      'Choose your nickname for the league.': 'בחרו שם משתמש לליגה.',
+      'Tap "Join League" to become a member.': 'לחץ על "הצטרף לליגה" כדי להפוך לחבר.',
       'Ask the league admin for the invite code': 'שולחו שאלה למנהל הליגה כדי לקבל קוד הזמנה',
       'Enter 7-digit invite code': 'הזן קוד הזמנה של 7 ספרות',
       'Invite Code': 'קוד הזמנה',
       'Join Code': 'קוד הצטרפות',
+      'Code must be 7 digits': 'קוד הזמנה חייב להיות 7 ספרות',
       'Invite code is required': 'קוד הזמנה נדרש',
       'No league found with this invite code': 'ליגה לא נמצאה עם קוד הזמנה זה',
       'Searching for league...': 'מחפש ליגה...',
@@ -803,6 +814,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Error sharing:': 'שגיאה בשיתוף:',
       'Profile Information: Details you provide such as your name, contact information, preferred teams, and profile photo.':
         'מידע פרופיל: פרטים שאתה מספק כגון השם שלך, פרטי יצירת קשר, קבוצות מועדפות ותמונת פרופיל.',
+      Theme: 'ערכת עיצוב',
+      Language: 'שפה',
     },
 
     // Help & Support
@@ -893,6 +906,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       BASIC: 'בסיסי',
       PREMIUM: 'פרימיום',
       mo: 'חודש',
+      'Selected Plan': 'תוכנית נבחרה',
       'Choose Your Plan': 'בחירת תוכנית',
       'Active Subscriptions': 'תשלומים פעילים',
       'Confirm Subscription': 'אימות תשלום',
@@ -969,6 +983,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Privacy Policy
     privacy: {
       'Policy Terms': 'תנאי שירות',
+      'Privacy & Data Protection': 'פרטיות ושמירת נתונים',
       'By continuing to use League you acknowledge that you have read and agree to these policy terms.':
         'על ידי המשך להשתמש בליגה אתה מסכים לפרטיות ולתנאי השירות.',
       'If you have any questions or concerns about these policy terms, contact us at support@league.app.':
@@ -1040,6 +1055,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Stats
     stats: {
       Statistics: 'סטטיסטיקה',
+
       Stats: 'סטטיסטיקה',
       Player: 'שחקן',
       Missed: 'פיספוסים',
@@ -1047,6 +1063,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Bingo: 'בינגו',
       'Minimum 6 characters': 'מינימום 6 תווים',
       Accuracy: 'ניחושים',
+      'Prediction Results': 'תוצאות ניחוש',
       'Correct predictions': 'תוצאות נכונות',
       'Correct outcome but not exact score (1 point)': 'תשובה נכונה אך לא נכונה בדיוק (1 נקודה)',
       'Exact score predictions (3 points)': 'צופיות נכונות בדיוק (3 נקודות)',
@@ -1073,7 +1090,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     legacy: {
       'John Doe': 'John Doe',
       Your: 'שלך',
-      OR: 'OR',
+      OR: 'או',
       'absolute inset-0 w-full h-full items-center justify-center':
         'absolute inset-0 w-full h-full items-center justify-center',
       animateScroll: 'animateScroll',
