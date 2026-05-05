@@ -6,6 +6,7 @@ import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { AddIcon } from '@assets/icons';
 import { Link } from 'expo-router';
+import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
@@ -159,7 +160,7 @@ const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayProps) =
     </View>
   );
 };
-export default function MatchesCard({ match }: MatchesCardProps) {
+export default memo(function MatchesCard({ match }: MatchesCardProps) {
   const { colors } = useThemeTokens();
   const isDesktop = useWindowDimensions().width > 768;
 
@@ -207,4 +208,4 @@ export default function MatchesCard({ match }: MatchesCardProps) {
       </Link>
     </View>
   );
-}
+});

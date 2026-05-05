@@ -22,7 +22,7 @@ export const useGetLeaderboard = (leagueId: string) => {
     queryKey: KEYS.leagues.leaderboard(leagueId),
     enabled: !!leagueId,
     queryFn: async () => await leagueApi.getLeaderboardView(leagueId),
-    staleTime: 5000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
@@ -44,7 +44,9 @@ export const useRemoveMember = () => {
         ]);
       }
     },
-    onError: (error) => {},
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };
 
@@ -125,7 +127,9 @@ export const useCreateLeague = () => {
         params: { leagueId },
       });
     },
-    onError: (error) => {},
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };
 export const useJoinLeague = () => {
@@ -147,7 +151,8 @@ export const useJoinLeague = () => {
     },
 
     onError: (error) => {
-      },
+      Alert.alert('Error', error.message);
+    },
   });
 };
 export const useUpdateLeague = () => {
@@ -175,7 +180,9 @@ export const useUpdateLeague = () => {
           }),
       ]);
     },
-    onError: (error) => {},
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };
 export const useLeaveLeague = () => {

@@ -2,6 +2,7 @@ import { KEYS } from '@/lib/queryClient';
 import { useMemberStore } from '@/store/MemberStore';
 import { TablesInsert } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Alert } from 'react-native';
 import { predictionService } from '../api/predictionService';
 // Get Predictions by League Fixture
 export const useGetPredictionsByLeagueFixture = (leagueId: string, fixture: number) => {
@@ -49,7 +50,9 @@ export const useUpsertPrediction = () => {
         queryKey: KEYS.matches.detail(data.match_id),
       });
     },
-    onError: (error) => {},
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };
 

@@ -4,6 +4,7 @@ import { useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect } from 'react';
+import { Alert } from 'react-native';
 import { memberApi } from '../api/membersApi';
 
 // Constants
@@ -50,7 +51,9 @@ export const useUpdateMember = () => {
         queryClient.invalidateQueries({ queryKey: KEYS.members.primary(userId) });
       }
     },
-    onError: (error) => {},
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
   });
 };
 
