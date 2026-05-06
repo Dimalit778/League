@@ -43,6 +43,7 @@ export default function JoinLeague() {
   const [foundLeague, setFoundLeague] = useState<typeof data | null>(null);
 
   const joinLeague = useJoinLeague();
+  const isLeagueFull = !!foundLeague && foundLeague.members_count >= foundLeague.max_members;
 
   useEffect(() => {
     if (data && inviteCodeValue?.length === 7) {
@@ -56,6 +57,11 @@ export default function JoinLeague() {
 
   const onClickJoinLeague = async (formData: { inviteCode: string; nickname: string }) => {
     if (!foundLeague) return;
+    if (isLeagueFull) {
+      router.push('/(app)/(public)/subscription');
+      return;
+    }
+
     try {
       await joinLeague.mutateAsync({
         join_code: inviteCodeValue,
@@ -63,6 +69,11 @@ export default function JoinLeague() {
       });
       router.replace('/(app)/(public)/myLeagues');
     } catch (error: any) {
+      if (error?.message?.includes('Upgrade to Pro')) {
+        router.push('/(app)/(public)/subscription');
+        return;
+      }
+
       setError('nickname', { type: 'manual', message: error?.message || t('Failed to join league') });
     }
   };
@@ -100,19 +111,34 @@ export default function JoinLeague() {
             <View className="gap-4">
               <FullLeagueCard league={foundLeague} />
               <View className="mx-4 gap-4">
-                <InputField
-                  control={control}
-                  name="nickname"
-                  placeholder={t('Enter your nickname')}
-                  error={errors.nickname}
-                />
-                <Button
-                  title={t('Join League')}
-                  variant="primary"
-                  loading={joinLeague.isPending}
-                  onPress={handleSubmit(onClickJoinLeague)}
-                  disabled={!isValid}
-                />
+                {isLeagueFull ? (
+                  <View className="gap-3">
+                    <CText variant="caption" className="text-center text-muted">
+                      {t('This league is full. Upgrade to Pro to create larger leagues.')}
+                    </CText>
+                    <Button
+                      title={t('Upgrade to Pro')}
+                      variant="primary"
+                      onPress={() => router.push('/(app)/(public)/subscription')}
+                    />
+                  </View>
+                ) : (
+                  <>
+                    <InputField
+                      control={control}
+                      name="nickname"
+                      placeholder={t('Enter your nickname')}
+                      error={errors.nickname}
+                    />
+                    <Button
+                      title={t('Join League')}
+                      variant="primary"
+                      loading={joinLeague.isPending}
+                      onPress={handleSubmit(onClickJoinLeague)}
+                      disabled={!isValid}
+                    />
+                  </>
+                )}
               </View>
             </View>
           )}

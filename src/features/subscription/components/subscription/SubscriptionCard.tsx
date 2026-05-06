@@ -22,19 +22,26 @@ const getTypeColor = (type: SubscriptionType) => {
   }
 };
 
+const getPlanTitle = (type: SubscriptionType) => {
+  if (type === 'BASIC') return 'PRO';
+  return type;
+};
+
 const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }: SubscriptionCardProps) => {
   const { t } = useTranslation();
+  const priceLabel = type === 'FREE' ? t(price) : `${t(price)}/${t('mo')}`;
+
   return (
     <View className={`rounded-lg border ${isActive ? 'border-primary border-2' : 'border-border'} p-4 mb-4 bg-surface`}>
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getTypeColor(type)} mr-2`} />
           <CText variant="body" bold>
-            {t(type)}
+            {t(getPlanTitle(type))}
           </CText>
         </View>
         <CText variant="body" bold className="text-primary">
-          {t(price)}/{t('mo')}
+          {priceLabel}
         </CText>
       </View>
 

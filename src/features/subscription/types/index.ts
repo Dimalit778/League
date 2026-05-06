@@ -15,6 +15,9 @@ type SubscriptionDetails = {
 type SubscriptionLimits = {
   maxLeagues: number;
   maxMembersPerLeague: number;
+  advancedStats: boolean;
+  leagueHistory: boolean;
+  customScoring: boolean;
 };
 
 type SubscriptionDetailsWithLimits = SubscriptionDetails & {

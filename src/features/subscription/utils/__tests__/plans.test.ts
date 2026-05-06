@@ -1,13 +1,13 @@
 import { plans } from '../plans';
 
 describe('subscription plans', () => {
-  it('has exactly 3 plans', () => {
-    expect(plans).toHaveLength(3);
+  it('has exactly 2 visible plans', () => {
+    expect(plans).toHaveLength(2);
   });
 
-  it('has FREE, BASIC, and PREMIUM types', () => {
+  it('has FREE and BASIC Pro types', () => {
     const types = plans.map((p) => p.type);
-    expect(types).toEqual(['FREE', 'BASIC', 'PREMIUM']);
+    expect(types).toEqual(['FREE', 'BASIC']);
   });
 
   it('FREE plan has correct price', () => {
@@ -15,14 +15,9 @@ describe('subscription plans', () => {
     expect(free?.price).toBe('Free');
   });
 
-  it('BASIC plan has correct price', () => {
+  it('BASIC Pro plan has correct price', () => {
     const basic = plans.find((p) => p.type === 'BASIC');
-    expect(basic?.price).toBe('$4.99');
-  });
-
-  it('PREMIUM plan has correct price', () => {
-    const premium = plans.find((p) => p.type === 'PREMIUM');
-    expect(premium?.price).toBe('$9.99');
+    expect(basic?.price).toBe('$3.99');
   });
 
   it('each plan has features array', () => {
@@ -32,9 +27,9 @@ describe('subscription plans', () => {
     });
   });
 
-  it('PREMIUM has more features than FREE', () => {
+  it('BASIC Pro has more features than FREE', () => {
     const free = plans.find((p) => p.type === 'FREE')!;
-    const premium = plans.find((p) => p.type === 'PREMIUM')!;
-    expect(premium.features.length).toBeGreaterThan(free.features.length);
+    const basic = plans.find((p) => p.type === 'BASIC')!;
+    expect(basic.features.length).toBeGreaterThan(free.features.length);
   });
 });

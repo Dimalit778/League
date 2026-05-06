@@ -45,7 +45,7 @@ export const subscriptionApi = {
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         access_advanced_stats: true,
-        can_add_members: subscriptionType === 'PREMIUM',
+        can_add_members: true,
       })
       .select()
       .single();
@@ -92,12 +92,12 @@ export const subscriptionApi = {
       if (leagueCount >= limits.maxLeagues) {
         return {
           canCreate: false,
-          reason: `You've reached your limit of ${limits.maxLeagues} leagues. Upgrade your subscription to create more leagues.`,
+          reason: `You've reached your limit of ${limits.maxLeagues} league${limits.maxLeagues === 1 ? '' : 's'}. Upgrade to Pro to create or join more leagues.`,
         };
       }
 
       return { canCreate: true };
-    } catch (error) {
+    } catch {
       return {
         canCreate: false,
         reason: 'An error occurred while checking subscription status.',

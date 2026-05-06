@@ -36,9 +36,8 @@ export const useCreateSubscription = (userId: string | null) => {
     },
     onSuccess: () => {
       if (!userId) return;
-      queryClient.invalidateQueries({
-        queryKey: KEYS.subscriptions.detail(userId),
-      });
+      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
     },
   });
 };

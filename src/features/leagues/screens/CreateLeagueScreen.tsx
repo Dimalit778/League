@@ -1,7 +1,7 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
-import { useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { useCanCreateLeague, useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -20,19 +20,19 @@ type MemberOptionProps = {
   value: number;
   label: string;
   disabled?: boolean;
-  premium?: boolean;
+  pro?: boolean;
   membersCount: number | null;
   onSelect: (value: number) => void;
   t: (key: string) => string;
 };
 
-const MemberOption = ({ value, label, disabled, premium, membersCount, onSelect, t }: MemberOptionProps) => {
+const MemberOption = ({ value, label, disabled, pro, membersCount, onSelect, t }: MemberOptionProps) => {
   const isActive = membersCount === value;
 
   return (
     <Pressable
       onPress={() => {
-        if (disabled && premium) {
+        if (disabled && pro) {
           router.push('/(app)/(public)/subscription');
           return;
         }
@@ -49,11 +49,11 @@ const MemberOption = ({ value, label, disabled, premium, membersCount, onSelect,
         </CText>
       </View>
 
-      {premium && (
+      {pro && (
         <View className="absolute -top-3 left-0 right-0 items-center z-10">
-          <View className="bg-yellow-500 px-3 py-1 rounded-md shadow">
+          <View className="bg-blue-500 px-3 py-1 rounded-md shadow">
             <CText variant="small" bold className="text-black">
-              PREMIUM
+              PRO
             </CText>
           </View>
         </View>
@@ -68,9 +68,11 @@ const CreateLeagueScreen = () => {
 
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
   const { data: subscription } = useSubscription();
+  const { data: createCapability, isLoading: isLoadingCreateCapability } = useCanCreateLeague();
   const limits = subscription?.limits ?? { maxMembersPerLeague: 6 };
   const maxMembersPerLeague = limits.maxMembersPerLeague ?? 6;
   const canSelect10 = maxMembersPerLeague >= 10;
+  const canSelect20 = maxMembersPerLeague >= 20;
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
   const {
@@ -89,6 +91,11 @@ const CreateLeagueScreen = () => {
     resolver: yupResolver(schema),
   });
   const onSubmit = handleSubmit(async (data) => {
+    if (createCapability && !createCapability.canCreate) {
+      router.push('/(app)/(public)/subscription');
+      return;
+    }
+
     await createLeague({
       league_name: data.leagueName,
       nickname: data.nickname,
@@ -157,7 +164,17 @@ const CreateLeagueScreen = () => {
                 value={10}
                 label="10 Members"
                 disabled={!canSelect10}
-                premium
+                pro
+                membersCount={membersCount}
+                onSelect={setMembersCount}
+                t={t}
+              />
+
+              <MemberOption
+                value={20}
+                label="20 Members"
+                disabled={!canSelect20}
+                pro
                 membersCount={membersCount}
                 onSelect={setMembersCount}
                 t={t}
@@ -173,7 +190,7 @@ const CreateLeagueScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending}
+            disabled={!isValid || isPending || isLoadingCreateCapability}
           />
         </View>
       </View>

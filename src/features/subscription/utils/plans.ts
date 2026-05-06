@@ -4,29 +4,23 @@ export const plans = [
   {
     type: 'FREE' as SubscriptionType,
     price: 'Free',
-    features: ['Join up to 2 leagues', 'Create leagues with up to 6 members', 'Basic prediction stats'],
-  },
-  {
-    type: 'BASIC' as SubscriptionType,
-    price: '$4.99',
-
     features: [
-      'Join up to 3 leagues',
-      'Create leagues with up to 8 members',
-      'Advanced prediction stats',
-      'League history',
+      'Create or join 1 league',
+      'Up to 6 members per league',
+      'Basic leaderboard',
+      'Full member management',
     ],
   },
   {
-    type: 'PREMIUM' as SubscriptionType,
-    price: '$9.99',
+    type: 'BASIC' as SubscriptionType,
+    price: '$3.99',
     features: [
-      'Join up to 5 leagues',
-      'Create leagues with up to 10 members',
+      'Create or join up to 5 leagues',
+      'Up to 20 members per league',
       'Advanced prediction stats',
-      'League history',
-      'Custom league settings',
-      'Priority support',
+      'League history and fixture archive',
+      'Custom scoring rules soon',
+      'Share league table highlights soon',
     ],
   },
 ];

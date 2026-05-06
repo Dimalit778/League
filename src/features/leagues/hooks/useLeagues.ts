@@ -2,6 +2,7 @@ import { KEYS } from '@/lib/queryClient';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { subscriptionApi } from '@/features/subscription/api/subscriptionApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
@@ -110,6 +111,19 @@ export const useCreateLeague = () => {
       competition_id: number;
       max_members: number;
     }) => {
+      if (!userId) throw new Error('User not authenticated');
+
+      const capability = await subscriptionApi.canCreateLeague(userId);
+      if (!capability.canCreate) {
+        throw new Error(capability.reason || 'Upgrade to Pro to create more leagues.');
+      }
+
+      const currentSubscription = await subscriptionApi.getCurrentSubscription(userId);
+      const limits = subscriptionApi.getSubscriptionLimits(currentSubscription?.subscription_type || 'FREE');
+      if (params.max_members > limits.maxMembersPerLeague) {
+        throw new Error(`Upgrade to Pro to create leagues with up to ${params.max_members} members.`);
+      }
+
       const leagueId = await leagueApi.createLeague(params);
       return leagueId;
     },
@@ -121,6 +135,9 @@ export const useCreateLeague = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.members.primary(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.subscriptions.canCreateLeague(userId),
         }),
       ]);
       router.replace({
@@ -138,8 +155,16 @@ export const useJoinLeague = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ join_code, nickname }: { join_code: string; nickname: string }) =>
-      leagueApi.joinLeague(join_code, nickname),
+    mutationFn: async ({ join_code, nickname }: { join_code: string; nickname: string }) => {
+      if (!userId) throw new Error('User not authenticated');
+
+      const capability = await subscriptionApi.canCreateLeague(userId);
+      if (!capability.canCreate) {
+        throw new Error(capability.reason || 'Upgrade to Pro to join more leagues.');
+      }
+
+      return leagueApi.joinLeague(join_code, nickname);
+    },
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({
@@ -147,6 +172,9 @@ export const useJoinLeague = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.members.primary(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.subscriptions.canCreateLeague(userId),
         }),
       ]);
     },

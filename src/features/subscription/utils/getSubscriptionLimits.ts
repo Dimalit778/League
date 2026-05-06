@@ -3,20 +3,22 @@ import { SubscriptionDetails, SubscriptionLimits, SubscriptionType } from '../ty
 export const getSubscriptionLimits = (subscriptionType: SubscriptionType | null): SubscriptionLimits => {
   switch (subscriptionType) {
     case 'PREMIUM':
-      return {
-        maxLeagues: 5,
-        maxMembersPerLeague: 10,
-      };
     case 'BASIC':
       return {
-        maxLeagues: 3,
-        maxMembersPerLeague: 8,
+        maxLeagues: 5,
+        maxMembersPerLeague: 20,
+        advancedStats: true,
+        leagueHistory: true,
+        customScoring: true,
       };
     case 'FREE':
     default:
       return {
-        maxLeagues: 2,
+        maxLeagues: 1,
         maxMembersPerLeague: 6,
+        advancedStats: false,
+        leagueHistory: false,
+        customScoring: false,
       };
   }
 };

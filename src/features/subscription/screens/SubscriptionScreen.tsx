@@ -7,11 +7,21 @@ import { useCreateSubscription, useSubscription } from '@/features/subscription/
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/AuthStore';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
+
+const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
+  if (type === 'PREMIUM') return 'BASIC';
+  return type;
+};
+
+const getPlanLabel = (type: SubscriptionType): string => {
+  if (type === 'BASIC') return 'PRO';
+  return type;
+};
 
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
@@ -20,23 +30,29 @@ const SubscriptionScreen = () => {
   const { mutate: createSubscription, isPending: isCreatingSubscription } = useCreateSubscription(userid);
 
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
+  const visibleSubscriptionType = getVisiblePlanType(subscriptionType);
 
-  const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(subscriptionType || null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(visibleSubscriptionType || null);
   const edges = useSafeAreaInsets();
+
+  useEffect(() => {
+    setSelectedPlan(visibleSubscriptionType);
+  }, [visibleSubscriptionType]);
+
   const handleSubscribe = () => {
     if (!selectedPlan) {
       Alert.alert(t('Error'), t('Please select a subscription plan'));
       return;
     }
 
-    if (selectedPlan === subscriptionType) {
+    if (selectedPlan === visibleSubscriptionType) {
       Alert.alert(t('Info'), t('You are already subscribed to this plan'));
       return;
     }
 
     Alert.alert(
       t('Confirm Subscription'),
-      t('Are you sure you want to subscribe to the {{plan}} plan?', { plan: selectedPlan }),
+      t('Are you sure you want to subscribe to the {{plan}} plan?', { plan: t(getPlanLabel(selectedPlan)) }),
       [
         {
           text: t('Cancel'),
@@ -92,15 +108,15 @@ const SubscriptionScreen = () => {
             type={p.type}
             price={p.price}
             features={p.features}
-            isActive={subscriptionType === p.type}
+            isActive={visibleSubscriptionType === p.type}
             onSelect={() => setSelectedPlan(p.type)}
           />
         ))}
 
-        {selectedPlan && selectedPlan !== subscriptionType && (
+        {selectedPlan && selectedPlan !== visibleSubscriptionType && (
           <View className="mt-6">
             <CText variant="body" bold className="mb-4">
-              {t('Selected Plan')}: {t(selectedPlan)}
+              {t('Selected Plan')}: {t(getPlanLabel(selectedPlan))}
             </CText>
 
             <View className="bg-primary py-3 px-4 rounded-lg">
