@@ -24,4 +24,9 @@ type SubscriptionDetailsWithLimits = SubscriptionDetails & {
   limits: SubscriptionLimits;
 };
 
-export type { SubscriptionDetails, SubscriptionDetailsWithLimits, SubscriptionLimits, SubscriptionType };
+type StripePaymentSetup = {
+  clientSecret: string;
+  subscriptionId: string;
+};
+
+export type { StripePaymentSetup, SubscriptionDetails, SubscriptionDetailsWithLimits, SubscriptionLimits, SubscriptionType };

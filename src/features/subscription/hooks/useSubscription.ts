@@ -60,6 +60,23 @@ export const useCancelSubscription = () => {
   });
 };
 
+export const useCreateStripeSubscription = () => {
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+
+  return useMutation({
+    mutationFn: () => {
+      if (!userId) throw new Error('Not authenticated');
+      return subscriptionApi.createStripeSubscription();
+    },
+    onSuccess: () => {
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
+    },
+  });
+};
+
 export const useCanCreateLeague = () => {
   const { user } = useAuth();
   const userId = user?.id ?? null;

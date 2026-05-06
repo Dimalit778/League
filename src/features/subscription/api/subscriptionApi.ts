@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { SubscriptionDetailsWithLimits, SubscriptionType } from '../types';
+import { StripePaymentSetup, SubscriptionDetailsWithLimits, SubscriptionType } from '../types';
 import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getSubscriptionLimits';
 
 export const subscriptionApi = {
@@ -52,6 +52,12 @@ export const subscriptionApi = {
 
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  async createStripeSubscription(): Promise<StripePaymentSetup> {
+    const { data, error } = await supabase.functions.invoke('create-stripe-subscription');
+    if (error) throw new Error(error.message);
+    return data as StripePaymentSetup;
   },
 
   async cancelSubscription(subscriptionId: string) {
