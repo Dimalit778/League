@@ -24,7 +24,7 @@ const SelectCompetitionScreen = () => {
   const handleContinue = () => {
     if (!selectedCompetition) return;
     if (selectedCompetition.id === WORLD_CUP_COMPETITION_ID) {
-      router.push('/(app)/(public)/myLeagues/world-cup-preview');
+      router.push('/(app)/(public)/myLeagues/world-cup-preview' as never);
       return;
     }
     router.push({
