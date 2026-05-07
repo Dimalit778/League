@@ -1,28 +1,15 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, CText } from '@/components/ui';
-import { Card } from '@/components/ui/Card';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView } from 'react-native';
+import { Alert, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
-import { useCreateStripeSubscription, useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../hooks/useSubscription';
+import { purchasesService } from '../services/purchases';
 import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
-
-// StripePaymentForm is web-only — lazy import to avoid bundling Stripe on native
-let StripePaymentForm: React.ComponentType<{
-  clientSecret: string;
-  onSuccess: () => void;
-  onError: (msg: string) => void;
-}> | null = null;
-
-if (Platform.OS === 'web') {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  StripePaymentForm = require('../components/payment/StripePaymentForm').default;
-}
 
 const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
   if (type === 'PREMIUM') return 'BASIC';
@@ -37,15 +24,15 @@ const getPlanLabel = (type: SubscriptionType): string => {
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const { data: currentSubscription, isLoading: isLoadingSubscription, refetch } = useSubscription();
-  const { mutate: createStripeSubscription, isPending: isCreatingSetup } = useCreateStripeSubscription();
+  const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
+  const edges = useSafeAreaInsets();
 
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
   const visibleSubscriptionType = getVisiblePlanType(subscriptionType);
 
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const edges = useSafeAreaInsets();
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
     setSelectedPlan(visibleSubscriptionType);
@@ -53,35 +40,45 @@ const SubscriptionScreen = () => {
 
   const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
 
-  const handleSubscribePress = () => {
+  // TODO: wire up purchasesService.configure() in AuthProvider on login
+  const handleSubscribePress = async () => {
     if (!canProceed) return;
-
-    if (Platform.OS === 'web') {
-      // Step 2 on web: create Stripe subscription and show payment form
-      createStripeSubscription(undefined, {
-        onSuccess: (data) => setClientSecret(data.clientSecret),
-        onError: (err) => Alert.alert(t('Error'), err.message || t('Failed to start payment')),
-      });
-    } else {
-      // Native placeholder — RevenueCat coming later
-      Alert.alert(
-        t('Coming soon'),
-        t('In-app purchases are available on the website. Visit our web app to subscribe.')
-      );
+    setIsPurchasing(true);
+    try {
+      // TODO: replace stub with real RevenueCat purchase
+      const success = await purchasesService.purchaseMonthly();
+      if (success) {
+        // TODO: invalidate React Query subscriptions cache after successful purchase
+        // queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+        Alert.alert(t('Success'), t('Your subscription is now active!'));
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('Something went wrong');
+      Alert.alert(t('Purchase failed'), message);
+    } finally {
+      setIsPurchasing(false);
     }
   };
 
-  const handlePaymentSuccess = async () => {
-    setClientSecret(null);
-    await refetch();
-    router.replace('/(app)/(member)/(tabs)/League');
+  const handleRestorePress = async () => {
+    setIsRestoring(true);
+    try {
+      // TODO: replace stub with real RevenueCat restore
+      const active = await purchasesService.restorePurchases();
+      if (active) {
+        Alert.alert(t('Restored'), t('Your subscription has been restored.'));
+      } else {
+        Alert.alert(t('Nothing to restore'), t('No active subscription found for this account.'));
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('Something went wrong');
+      Alert.alert(t('Restore failed'), message);
+    } finally {
+      setIsRestoring(false);
+    }
   };
 
-  const handlePaymentError = (msg: string) => {
-    Alert.alert(t('Payment failed'), msg);
-  };
-
-  const isLoading = isLoadingSubscription || isCreatingSetup;
+  const isLoading = isLoadingSubscription || isPurchasing || isRestoring;
 
   return (
     <Screen withSafeArea>
@@ -108,20 +105,16 @@ const SubscriptionScreen = () => {
             price={p.price}
             features={p.features}
             isActive={visibleSubscriptionType === p.type}
-            onSelect={() => {
-              setSelectedPlan(p.type);
-              setClientSecret(null); // reset payment form if plan changes
-            }}
+            onSelect={() => setSelectedPlan(p.type)}
           />
         ))}
 
-        {/* Subscribe button — shown when a different plan is selected */}
-        {canProceed && !clientSecret && (
+        {canProceed && (
           <Pressable
             onPress={handleSubscribePress}
-            disabled={isCreatingSetup}
+            disabled={isPurchasing}
             style={{
-              backgroundColor: isCreatingSetup ? colors.muted : colors.primary,
+              backgroundColor: isPurchasing ? colors.muted : colors.primary,
               borderRadius: 10,
               paddingVertical: 14,
               alignItems: 'center',
@@ -129,32 +122,22 @@ const SubscriptionScreen = () => {
             }}
           >
             <CText variant="bodyBold" className="text-background">
-              {isCreatingSetup ? t('Loading...') : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
+              {isPurchasing
+                ? t('Loading...')
+                : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
             </CText>
           </Pressable>
         )}
 
-        {/* Stripe Elements — web only, shown after clientSecret is ready */}
-        {clientSecret && StripePaymentForm && (
-          <Card className="p-4 mt-4">
-            <CText variant="bodyBold" className="mb-4">
-              {t('Enter payment details')}
-            </CText>
-            <StripePaymentForm
-              clientSecret={clientSecret}
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-            />
-            <Pressable
-              onPress={() => setClientSecret(null)}
-              style={{ marginTop: 12, alignItems: 'center' }}
-            >
-              <CText variant="caption" className="text-muted">
-                {t('Cancel')}
-              </CText>
-            </Pressable>
-          </Card>
-        )}
+        <Pressable
+          onPress={handleRestorePress}
+          disabled={isRestoring}
+          style={{ alignItems: 'center', marginTop: 20 }}
+        >
+          <CText variant="caption" className="text-muted">
+            {isRestoring ? t('Restoring...') : t('Restore purchases')}
+          </CText>
+        </Pressable>
       </ScrollView>
     </Screen>
   );

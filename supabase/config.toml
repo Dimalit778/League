@@ -315,10 +315,6 @@ deno_version = 1
 [functions.sync-current-matchday]
 verify_jwt = false
 
-# Stripe webhook is called by Stripe (no Supabase JWT)
-[functions.stripe-webhook]
-verify_jwt = false
-
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
