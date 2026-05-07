@@ -223,6 +223,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Accuracy: 'Accuracy',
       'Basic prediction stats': 'Basic prediction stats',
       'Advanced prediction stats': 'Advanced prediction stats',
+      'Premium stats only': 'Premium stats only',
+      'Upgrade to Pro to unlock match statistics': 'Upgrade to Pro to unlock match statistics',
       Submitted: 'Submitted',
       'Fixture ID': 'Fixture ID',
     },
@@ -801,6 +803,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
       'Basic prediction stats': 'סטטיסטיקת צופיות בסיסית',
       'Advanced prediction stats': 'סטטיסטיקת צופיות מתקדמת',
+      'Premium stats only': 'סטטיסטיקה למנויי פרו בלבד',
+      'Upgrade to Pro to unlock match statistics': 'שדרג לפרו כדי לפתוח סטטיסטיקות משחק',
       Submitted: 'נשלח',
       'Fixture ID': 'מזהה צופיות',
       'Coming Soon...': 'בקרוב ...',

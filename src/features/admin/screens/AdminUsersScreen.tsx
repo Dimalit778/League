@@ -3,28 +3,12 @@ import { BackButton } from '@/components/ui';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import TrashIcon from '@assets/icons/TrashIcon';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AdminUsersScreen = () => {
-  const {
-    data,
-    isLoading,
-    isRefetching,
-    refetch,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useAdminUsersInfinite();
+  const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useAdminUsersInfinite();
   const deleteUserMutation = useDeleteUser();
   const [refetching, setRefetching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,35 +45,28 @@ const AdminUsersScreen = () => {
 
   const handleDeleteUser = useCallback(
     (userId: string, userName: string) => {
-      Alert.alert(
-        'Delete User',
-        `Are you sure you want to delete ${userName}? This action cannot be undone.`,
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
+      Alert.alert('Delete User', `Are you sure you want to delete ${userName}? This action cannot be undone.`, [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteUserMutation.mutate(userId, {
+              onSuccess: () => {
+                Alert.alert('Success', 'User deleted successfully');
+              },
+              onError: (error) => {
+                Alert.alert('Error', `Failed to delete user: ${error.message}`);
+              },
+            });
           },
-          {
-            text: 'Delete',
-            style: 'destructive',
-            onPress: () => {
-              deleteUserMutation.mutate(userId, {
-                onSuccess: () => {
-                  Alert.alert('Success', 'User deleted successfully');
-                },
-                onError: (error) => {
-                  Alert.alert(
-                    'Error',
-                    `Failed to delete user: ${error.message}`
-                  );
-                },
-              });
-            },
-          },
-        ]
-      );
+        },
+      ]);
     },
-    [deleteUserMutation]
+    [deleteUserMutation],
   );
 
   if (isLoading && !data) {
@@ -111,8 +88,7 @@ const AdminUsersScreen = () => {
         />
         {filteredUsers.length > 0 && (
           <Text className="text-muted text-sm mt-2">
-            {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}{' '}
-            found
+            {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} found
           </Text>
         )}
       </View>
@@ -126,18 +102,14 @@ const AdminUsersScreen = () => {
           isFetchingNextPage ? (
             <View className="py-4 items-center">
               <ActivityIndicator color="#666" size="small" />
-              <Text className="text-muted text-sm mt-2">
-                Loading more users...
-              </Text>
+              <Text className="text-muted text-sm mt-2">Loading more users...</Text>
             </View>
           ) : null
         }
         ListEmptyComponent={
           <View className="items-center justify-center py-8">
             <Text className="text-muted text-center">
-              {searchQuery
-                ? 'No users found matching your search'
-                : 'No users found'}
+              {searchQuery ? 'No users found matching your search' : 'No users found'}
             </Text>
           </View>
         }
@@ -145,18 +117,11 @@ const AdminUsersScreen = () => {
           <View className="bg-surface border border-border rounded-2xl p-4 my-2">
             <View className="flex-row justify-between items-start mb-2">
               <View className="flex-1">
-                <Text className="text-text text-lg font-semibold mb-1">
-                  {user.full_name || 'Unnamed User'}
-                </Text>
+                <Text className="text-text text-lg font-semibold mb-1">{user.full_name || 'Unnamed User'}</Text>
                 <Text className="text-muted text-sm mb-4">{user.email}</Text>
               </View>
               <TouchableOpacity
-                onPress={() =>
-                  handleDeleteUser(
-                    user.id,
-                    user.full_name || user.email || 'this user'
-                  )
-                }
+                onPress={() => handleDeleteUser(user.id, user.full_name || user.email || 'this user')}
                 disabled={deleteUserMutation.isPending}
                 className="p-2 bg-red-500/10 rounded-lg"
               >
@@ -171,4 +136,3 @@ const AdminUsersScreen = () => {
 };
 
 export default AdminUsersScreen;
-

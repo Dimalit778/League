@@ -16,6 +16,7 @@ const MyLeagues = () => {
   const { data: leagues, isLoading, error, refetch } = useMyLeagues();
   const { mutate: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
+  console.log('subscription', JSON.stringify(subscription, null, 2));
 
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
   const { t } = useTranslation();
