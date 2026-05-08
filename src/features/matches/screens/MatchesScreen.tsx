@@ -16,7 +16,7 @@ const MatchesScreen = () => {
   const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
-
+  console.log('fixturesData', JSON.stringify(fixturesData, null, 2));
   const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
 
   const currentFixture = fixturesData?.currentFixture ?? 0;
@@ -62,7 +62,7 @@ const MatchesScreen = () => {
         setAnimateScroll(false);
         setSelectedFixture(currentFixture);
       }
-    }, [currentFixture])
+    }, [currentFixture]),
   );
 
   const handleFixturePress = useCallback((fixture: number) => {

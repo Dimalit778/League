@@ -1,0 +1,67 @@
+<h2>Final Design — Refined</h2>
+<p class="subtitle">No "GW" label — just the number, date, and accent bar. Here's the full look across states:</p>
+
+<div class="mockup" style="margin-bottom:24px">
+  <div class="mockup-header">Fixture Selector — All States</div>
+  <div class="mockup-body" style="background:#0f0f14;padding:20px 16px;overflow-x:auto;">
+    <div style="display:flex;gap:6px;width:max-content;align-items:stretch;">
+
+      <!-- Past (no date, faded) -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1a1a24;min-width:52px;opacity:0.38">
+        <span style="color:#ccc;font-size:20px;font-weight:900;line-height:1">23</span>
+        <span style="color:#555;font-size:8px;margin-top:4px;white-space:nowrap">Apr 5</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1a1a24;min-width:52px;opacity:0.38">
+        <span style="color:#ccc;font-size:20px;font-weight:900;line-height:1">24</span>
+        <span style="color:#555;font-size:8px;margin-top:4px;white-space:nowrap">Apr 12</span>
+      </div>
+
+      <!-- Past with no date range -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1a1a24;min-width:52px;opacity:0.38">
+        <span style="color:#ccc;font-size:20px;font-weight:900;line-height:1">25</span>
+        <span style="color:#555;font-size:8px;margin-top:4px;white-space:nowrap">Apr 19</span>
+      </div>
+
+      <!-- Today (current fixture, white border + top bar) -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1e1e2e;min-width:52px;border:1.5px solid rgba(220,220,220,0.6);position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:rgba(220,220,220,0.7);"></div>
+        <span style="color:#e8e8e8;font-size:20px;font-weight:900;line-height:1">26</span>
+        <span style="color:#bbb;font-size:8px;margin-top:4px;white-space:nowrap">Apr 26</span>
+      </div>
+
+      <!-- Selected (primary color) -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1e1a30;min-width:52px;border:1.5px solid #7c5cfc;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:#7c5cfc;"></div>
+        <span style="color:#fff;font-size:20px;font-weight:900;line-height:1">27</span>
+        <span style="color:#a08efc;font-size:8px;margin-top:4px;white-space:nowrap">May 3–4</span>
+      </div>
+
+      <!-- Future (faded) -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1a1a24;min-width:52px;opacity:0.32">
+        <span style="color:#ccc;font-size:20px;font-weight:900;line-height:1">28</span>
+        <span style="color:#555;font-size:8px;margin-top:4px;white-space:nowrap">May 10</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 10px;border-radius:10px;background:#1a1a24;min-width:52px;opacity:0.32">
+        <span style="color:#ccc;font-size:20px;font-weight:900;line-height:1">29</span>
+        <span style="color:#555;font-size:8px;margin-top:4px;white-space:nowrap">May 17</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>What changes from the current component</h3>
+  <ul>
+    <li><strong>Taller card</strong> — adds vertical padding so number + date breathe</li>
+    <li><strong>Larger number</strong> — font-size goes from ~14px to ~20px, weight 900</li>
+    <li><strong>Top accent bar</strong> — 2.5px strip at the top edge, purple for selected, white/grey for today</li>
+    <li><strong>Opacity fade</strong> — non-selected, non-current items at 38% opacity (past) / 32% (future)</li>
+    <li><strong>No "GW" label</strong> — clean number only</li>
+    <li><strong>Date color</strong> — muted grey normally, inherits accent color when selected</li>
+  </ul>
+</div>
+
+<p class="subtitle">Does this look right? Say "yes" to proceed, or tell me what to tweak.</p>

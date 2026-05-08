@@ -1,0 +1,147 @@
+<h2>FixturesList Design Directions</h2>
+<p class="subtitle">Three approaches to the horizontal fixture/gameweek selector</p>
+
+<div class="cards">
+
+  <!-- Option A: Pill with date badge -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f14;padding:20px 12px;overflow-x:auto;">
+      <div style="display:flex;gap:10px;width:max-content;align-items:flex-start;">
+        <!-- past fixtures -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.5">
+          <div style="width:52px;height:32px;border-radius:8px;background:#1e1e2a;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#888;font-size:14px;font-weight:700">24</span>
+          </div>
+          <span style="color:#555;font-size:9px;text-align:center">Apr 5–6</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.5">
+          <div style="width:52px;height:32px;border-radius:8px;background:#1e1e2a;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#888;font-size:14px;font-weight:700">25</span>
+          </div>
+          <span style="color:#555;font-size:9px;text-align:center">Apr 12</span>
+        </div>
+        <!-- current (today border) -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="width:52px;height:32px;border-radius:8px;background:#1e1e2a;border:1.5px solid #e0e0e0;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#e0e0e0;font-size:14px;font-weight:700">26</span>
+          </div>
+          <span style="color:#e0e0e0;font-size:9px;text-align:center;font-weight:600">Apr 19–20</span>
+        </div>
+        <!-- selected -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="width:52px;height:32px;border-radius:8px;background:#7c5cfc;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(124,92,252,0.5);">
+            <span style="color:#fff;font-size:14px;font-weight:700">27</span>
+          </div>
+          <span style="color:#7c5cfc;font-size:9px;text-align:center;font-weight:700">Apr 26–27</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.4">
+          <div style="width:52px;height:32px;border-radius:8px;background:#1e1e2a;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#888;font-size:14px;font-weight:700">28</span>
+          </div>
+          <span style="color:#555;font-size:9px;text-align:center">May 3</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.4">
+          <div style="width:52px;height:32px;border-radius:8px;background:#1e1e2a;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#888;font-size:14px;font-weight:700">29</span>
+          </div>
+          <span style="color:#555;font-size:9px;text-align:center">May 10</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Glow Pill</h3>
+      <p>Selected pill glows with a purple shadow. Date label inherits accent color when selected. Subtle opacity fade on distant items.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Underline tab -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f14;padding:20px 12px;overflow-x:auto;">
+      <div style="display:flex;gap:0;width:max-content;align-items:flex-end;border-bottom:1px solid #2a2a3a;">
+        <!-- past -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;opacity:0.45">
+          <span style="color:#888;font-size:13px;font-weight:700;margin-bottom:4px">24</span>
+          <span style="color:#555;font-size:9px">Apr 5</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;opacity:0.45">
+          <span style="color:#888;font-size:13px;font-weight:700;margin-bottom:4px">25</span>
+          <span style="color:#555;font-size:9px">Apr 12</span>
+        </div>
+        <!-- today dot -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;position:relative">
+          <span style="color:#e0e0e0;font-size:13px;font-weight:700;margin-bottom:4px">26</span>
+          <span style="color:#aaa;font-size:9px">Apr 19</span>
+          <div style="position:absolute;bottom:-4px;width:5px;height:5px;border-radius:50%;background:#e0e0e0;"></div>
+        </div>
+        <!-- selected underline -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;position:relative">
+          <span style="color:#fff;font-size:13px;font-weight:700;margin-bottom:4px">27</span>
+          <span style="color:#7c5cfc;font-size:9px;font-weight:700">Apr 26</span>
+          <div style="position:absolute;bottom:-1px;width:100%;height:2px;background:#7c5cfc;border-radius:2px 2px 0 0;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;opacity:0.35">
+          <span style="color:#888;font-size:13px;font-weight:700;margin-bottom:4px">28</span>
+          <span style="color:#555;font-size:9px">May 3</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 14px 8px;opacity:0.35">
+          <span style="color:#888;font-size:13px;font-weight:700;margin-bottom:4px">29</span>
+          <span style="color:#555;font-size:9px">May 10</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Underline Tab</h3>
+      <p>No box — just a bottom bar for the selected item. Current fixture has a dot indicator. Minimal, flat look. Works well at smaller heights.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Segmented vertical layout -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f14;padding:20px 12px;overflow-x:auto;">
+      <div style="display:flex;gap:6px;width:max-content;align-items:stretch;">
+        <!-- past -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1a1a24;opacity:0.45;min-width:52px">
+          <span style="color:#888;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#ccc;font-size:18px;font-weight:900;line-height:1">24</span>
+          <span style="color:#555;font-size:8px;margin-top:3px">Apr 5</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1a1a24;opacity:0.45;min-width:52px">
+          <span style="color:#888;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#ccc;font-size:18px;font-weight:900;line-height:1">25</span>
+          <span style="color:#555;font-size:8px;margin-top:3px">Apr 12</span>
+        </div>
+        <!-- today with top accent bar -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1e1e2e;min-width:52px;border:1.5px solid #555;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#888;"></div>
+          <span style="color:#aaa;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#e0e0e0;font-size:18px;font-weight:900;line-height:1">26</span>
+          <span style="color:#aaa;font-size:8px;margin-top:3px">Apr 19</span>
+        </div>
+        <!-- selected with top accent bar in primary -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1e1a30;min-width:52px;border:1.5px solid #7c5cfc;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#7c5cfc;"></div>
+          <span style="color:#a08efc;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#fff;font-size:18px;font-weight:900;line-height:1">27</span>
+          <span style="color:#a08efc;font-size:8px;margin-top:3px">Apr 26</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1a1a24;opacity:0.35;min-width:52px">
+          <span style="color:#888;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#ccc;font-size:18px;font-weight:900;line-height:1">28</span>
+          <span style="color:#555;font-size:8px;margin-top:3px">May 3</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:6px 8px;border-radius:10px;background:#1a1a24;opacity:0.35;min-width:52px">
+          <span style="color:#888;font-size:11px;margin-bottom:2px">GW</span>
+          <span style="color:#ccc;font-size:18px;font-weight:900;line-height:1">29</span>
+          <span style="color:#555;font-size:8px;margin-top:3px">May 10</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Card with "GW" label + top accent bar</h3>
+      <p>Taller cards showing "GW" label above the number + date below. A color bar along the top edge marks selected/current. Bolder number — more readable at a glance.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Click to select the direction you prefer, or describe what you like/dislike about each.</p>

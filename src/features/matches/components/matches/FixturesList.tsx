@@ -15,37 +15,51 @@ type FixturesListProps = {
 type FixtureItemProps = {
   fixture: number;
   selectedFixture: number;
-  isToday?: boolean;
+  currentFixture?: number;
   dateRange?: string;
   onPress: (fixture: number) => void;
 };
-const fixtureWidth = 55;
-const fixtureHeight = 30;
+
+const fixtureWidth = 68;
 const fixtureMargin = 7;
 const fixtureItemSpacing = fixtureWidth + fixtureMargin * 2;
-const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, onPress }: FixtureItemProps) => {
+
+const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPress }: FixtureItemProps) => {
   const isSelected = selectedFixture === fixture;
+  const isToday = currentFixture !== undefined && fixture === currentFixture;
+
+  const opacity =
+    isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.35;
 
   return (
-    <View className="items-center justify-center  ">
+    <View style={{ opacity }} className="items-center mx-2">
       <Pressable
         onPress={() => onPress(fixture)}
         style={
           {
             width: fixtureWidth,
-            height: fixtureHeight,
             transition: Platform.OS === 'web' ? 'transform 0.15s ease-in-out' : undefined,
           } as any
         }
         className={cn(
-          'rounded-lg justify-center items-center mx-2 overflow-hidden',
-          isSelected ? 'bg-primary text-text' : isToday ? 'border-[1px] border-text' : 'border-[0.5px] border-border',
+          'rounded-xl justify-center items-center overflow-hidden py-2',
+          isSelected
+            ? 'bg-surface border-[1.5px] border-primary'
+            : isToday
+            ? 'bg-surface border-[1.5px] border-text'
+            : 'bg-surface border-[0.5px] border-border',
           Platform.OS === 'web' && 'hover:scale-105 active:scale-95'
         )}
       >
+        {(isSelected || isToday) && (
+          <View
+            className={cn('absolute top-0 left-0 right-0', isSelected ? 'bg-primary' : 'bg-text')}
+            style={{ height: 2.5 }}
+          />
+        )}
         <CText
-          variant="bodyBold"
-          className={cn(isToday ? 'text-text' : 'text-text', isSelected ? 'text-background' : 'text-muted')}
+          variant="h3"
+          className={cn(isSelected || isToday ? 'text-text' : 'text-muted')}
           style={
             {
               transition: Platform.OS === 'web' ? 'color 0.1s ease-in-out' : undefined,
@@ -54,12 +68,16 @@ const FixtureItem = ({ fixture, selectedFixture, isToday, dateRange, onPress }: 
         >
           {fixture}
         </CText>
+        {dateRange && (
+          <CText
+            variant="small"
+            numberOfLines={1}
+            className={cn('mt-0.5', isSelected ? 'text-primary' : 'text-muted')}
+          >
+            {dateRange}
+          </CText>
+        )}
       </Pressable>
-      {dateRange && (
-        <CText variant="small" className="text-text text-xs ">
-          {dateRange}
-        </CText>
-      )}
     </View>
   );
 };
@@ -127,10 +145,9 @@ export default function FixturesList({
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => (
         <FixtureItem
-          key={item.toString()}
           fixture={item}
           selectedFixture={selectedFixture}
-          isToday={currentFixture !== undefined && item === currentFixture}
+          currentFixture={currentFixture}
           dateRange={fixtureDateRanges[item]}
           onPress={handleFixturePress}
         />
@@ -142,7 +159,6 @@ export default function FixturesList({
       })}
       initialScrollIndex={Math.max(0, fixtures.findIndex((f) => f === selectedFixture) || 0)}
       onScrollToIndexFailed={onScrollToIndexFailed}
-      // Web-specific optimizations
       {...(Platform.OS === 'web' && {
         scrollEventThrottle: 16,
         removeClippedSubviews: false,

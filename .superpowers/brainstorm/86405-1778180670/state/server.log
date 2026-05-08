@@ -1,0 +1,4 @@
+{"type":"server-started","port":53442,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:53442","screen_dir":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/86405-1778180670/content","state_dir":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/86405-1778180670/state"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/86405-1778180670/content/fixture-styles.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/86405-1778180670/content/fixture-final.html"}
+{"type":"server-stopped","reason":"idle timeout"}

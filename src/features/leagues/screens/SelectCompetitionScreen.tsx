@@ -16,8 +16,7 @@ type Competition = Tables<'competitions'>;
 const SelectCompetitionScreen = () => {
   const { data: competitions, isLoading, error } = useGetCompetitions();
   const { t } = useTranslation();
-  const [selectedCompetition, setSelectedCompetition] =
-    useState<Competition | null>(null);
+  const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const { colors } = useThemeTokens();
 
   const handleContinue = () => {
@@ -37,17 +36,11 @@ const SelectCompetitionScreen = () => {
   return (
     <Screen withSafeArea>
       <BackButton title={t('Select a Competition')} />
-      <ScrollView
-        className="flex-"
-        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}
-      >
+      <ScrollView className="flex-" contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}>
         {(competitions ?? []).map((comp) => {
           const isSelected = selectedCompetition?.id === comp.id;
           return (
-            <TouchableOpacity
-              key={comp.id}
-              onPress={() => setSelectedCompetition(comp)}
-            >
+            <TouchableOpacity key={comp.id} onPress={() => setSelectedCompetition(comp)}>
               <View
                 className="flex-row items-center mb-3 p-4 rounded-xl border-2 bg-surface "
                 style={{
