@@ -6,35 +6,60 @@ import { useMemberStore } from '@/store/MemberStore';
 
 import { CText } from '@/components/ui/CText';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { KEYS } from '@/lib/queryClient';
 import { router } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useQueryClient } from '@tanstack/react-query';
+import { leagueApi } from '../api/leagueApi';
 import MyLeagueCard from '../components/MyLeagueCard';
 import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
 
 const MyLeagues = () => {
   const { data: leagues, isLoading, error, refetch } = useMyLeagues();
-  const { mutate: updatePrimaryLeague } = useUpdatePrimaryLeague();
+  const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
+  const queryClient = useQueryClient();
 
+  const activeMember = useMemberStore((s) => s.activeMember);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
-  console.log('Active Member', JSON.stringify(setActiveMember, null, 2));
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
-    if (isPrimary) return router.replace('/(app)/(member)/(tabs)/Home');
-
     const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
 
-    if (selectedLeague) {
+    if (!selectedLeague) return;
+
+    const previousActiveMember = activeMember;
+
+    setActiveMember(selectedLeague);
+
+    await queryClient.prefetchQuery({
+      queryKey: KEYS.leagues.leaderboard(leagueId),
+      queryFn: () => leagueApi.getLeaderboardView(leagueId),
+      staleTime: 1000 * 60 * 5,
+    });
+
+    router.replace('/(app)/(member)/(tabs)/Home');
+
+    if (isPrimary) return;
+
+    try {
       await updatePrimaryLeague({ leagueId });
-      setActiveMember(selectedLeague);
-      router.replace('/(app)/(member)/(tabs)/Home');
+    } catch {
+      setActiveMember(previousActiveMember);
+      router.replace('/(app)/(public)/myLeagues');
     }
   };
 
-  if (isLoading || !leagues || isLoadingSubscription) return <LoadingOverlay />;
+  if (isLoading || !leagues || isLoadingSubscription) {
+    return (
+      <Screen>
+        <LoadingOverlay />
+      </Screen>
+    );
+  }
   if (error) return <Error error={error as Error} />;
 
   const limit = subscription?.limits.maxLeagues ?? 0;
