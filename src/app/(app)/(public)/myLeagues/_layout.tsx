@@ -18,7 +18,6 @@ export default function MyLeaguesLayout() {
       <Stack.Screen name="select-competition" options={{ headerShown: false }} />
       <Stack.Screen name="create-league" options={{ headerShown: false }} />
       <Stack.Screen name="preview-league" options={{ headerShown: false }} />
-      <Stack.Screen name="world-cup-preview" options={{ headerShown: false }} />
     </Stack>
   );
 }

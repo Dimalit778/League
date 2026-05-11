@@ -1,5 +1,5 @@
 import LeagueScreen from '@/features/leagues/screens/LeagueScreen';
 
-export default function League() {
+export default function Home() {
   return <LeagueScreen />;
 }

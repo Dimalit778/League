@@ -91,7 +91,7 @@ const AppBootstrap = () => {
 
         await Promise.all([initializeTheme(), initializeMember(), Asset.fromModule(footballBg).downloadAsync()]);
       } catch (e: any) {
-        } finally {
+      } finally {
         if (!cancelled) {
           setIsReady(true);
           await ExpoSplashScreen.hideAsync().catch(() => {});

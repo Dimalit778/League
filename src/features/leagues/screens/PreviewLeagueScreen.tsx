@@ -34,7 +34,7 @@ const PreviewLeague = () => {
           area: leagueData?.competition?.area || 'Football',
           name: leagueData?.name || '',
           join_code: leagueData?.join_code || '',
-        }
+        },
       )}`;
 
       await Share.share({
@@ -42,10 +42,11 @@ const PreviewLeague = () => {
         title: `Join ${leagueData?.name} League`,
       });
     } catch (error) {
-      }
+      console.error(error);
+    }
   };
   const handleStartLeague = async () => {
-    router.replace('/(app)/(member)/(tabs)/League');
+    router.replace('/(app)/(member)/(tabs)/Home');
   };
 
   return (

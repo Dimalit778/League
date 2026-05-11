@@ -14,7 +14,7 @@ export const getSubscriptionLimits = (subscriptionType: SubscriptionType | null)
     case 'FREE':
     default:
       return {
-        maxLeagues: 2,
+        maxLeagues: 3,
         maxMembersPerLeague: 6,
         advancedStats: false,
         leagueHistory: false,

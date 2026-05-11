@@ -21,9 +21,9 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
-          name="League"
+          name="Home"
           options={{
-            title: t('League'),
+            title: t('Home'),
             tabBarIcon: ({ color, size }) => <LeagueIcon size={size} color={color} />,
           }}
         />

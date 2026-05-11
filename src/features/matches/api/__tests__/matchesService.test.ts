@@ -8,7 +8,12 @@ describe('matchesApi', () => {
 
   describe('getMatchWithPredictions', () => {
     it('fetches match with predictions', async () => {
-      const mockMatch = { id: 1, home_team: {}, away_team: {}, predictions: [] };
+      const mockMatch = {
+        id: 1,
+        home_team: {},
+        away_team: {},
+        predictions: [],
+      };
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
@@ -46,6 +51,24 @@ describe('matchesApi', () => {
     });
   });
 
+  describe('getCompetitionMatchesWithMemberPredictions', () => {
+    it('fetches all competition matches for a member', async () => {
+      const mockMatches = [
+        { id: 1, stage: 'GROUP_STAGE' },
+        { id: 2, stage: 'FINAL' },
+      ];
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      });
+
+      const result = await matchesApi.getCompetitionMatchesWithMemberPredictions(100, 'm1');
+      expect(supabase.from).toHaveBeenCalledWith('matches');
+      expect(result).toEqual(mockMatches);
+    });
+  });
+
   describe('getMemberFinishedMatches', () => {
     it('returns empty array when no data', async () => {
       (supabase.from as jest.Mock).mockReturnValue({
@@ -68,6 +91,41 @@ describe('matchesApi', () => {
 
       const result = await matchesApi.getMemberFinishedMatches('m1', 100);
       expect(result).toEqual(mockMatches);
+    });
+  });
+
+  describe('getTournamentMatchesWithMemberPredictions', () => {
+    it('splits first phase and knockout stages', async () => {
+      const mockRows = [
+        { id: 1, stage: 'GROUP_STAGE', kick_off: '2026-06-01T12:00:00Z' },
+        { id: 2, stage: 'FINAL', kick_off: '2026-06-15T12:00:00Z' },
+        { id: 3, stage: 'LEAGUE_STAGE', kick_off: '2026-06-02T12:00:00Z' },
+      ];
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: mockRows, error: null }),
+      });
+
+      const result = await matchesApi.getTournamentMatchesWithMemberPredictions(100, 'm1');
+      expect(result).toEqual({
+        firstPhase: [
+          { id: 1, stage: 'GROUP_STAGE', kick_off: '2026-06-01T12:00:00Z' },
+          { id: 3, stage: 'LEAGUE_STAGE', kick_off: '2026-06-02T12:00:00Z' },
+        ],
+        knockoutStages: [{ id: 2, stage: 'FINAL', kick_off: '2026-06-15T12:00:00Z' }],
+      });
+    });
+
+    it('returns empty buckets when no data', async () => {
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: null, error: null }),
+      });
+
+      const result = await matchesApi.getTournamentMatchesWithMemberPredictions(100, 'm1');
+      expect(result).toEqual({ firstPhase: [], knockoutStages: [] });
     });
   });
 });

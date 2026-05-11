@@ -18,9 +18,7 @@ const LeagueScreen = () => {
   const avatarUrls = useMemo(() => {
     if (!leaderboard) return [];
 
-    const urls = leaderboard
-      .map((member) => getProfileImage(member.avatar_url))
-      .filter((url): url is string => !!url);
+    const urls = leaderboard.map((member) => getProfileImage(member.avatar_url)).filter((url): url is string => !!url);
 
     return [...new Set(urls)];
   }, [leaderboard]);

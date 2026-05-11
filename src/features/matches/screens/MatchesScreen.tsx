@@ -10,16 +10,19 @@ import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MatchesList from '../components/matches/MatchesList';
 import { useGetMatches } from '../hooks/useMatches';
+import { isLeagueCompetition } from '../utils/tournamentMatches';
 const MatchesScreen = () => {
   const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
+  console.log('fixturesData', JSON.stringify(fixturesData, null, 2));
   const memberId = useMemberStore((s) => s.memberId) ?? '';
   const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
-  console.log('fixturesData', JSON.stringify(fixturesData, null, 2));
+
   const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
 
-  const currentFixture = fixturesData?.currentFixture ?? 0;
+  const currentFixture = fixturesData?.currentFixture ?? 1;
+  const isLeague = isLeagueCompetition(fixturesData?.type);
 
   const pathname = usePathname();
   const [selectedFixture, setSelectedFixture] = useState<number>(currentFixture);
@@ -79,6 +82,7 @@ const MatchesScreen = () => {
     selectedFixture,
     competitionId,
     memberId: memberId,
+    enabled: !!fixturesData,
   });
 
   const fixtureDateRanges = useMemo(() => {
@@ -102,17 +106,16 @@ const MatchesScreen = () => {
     return ranges;
   }, [matches, allFixtures, locale]);
 
-  if (fixturesLoading || matchesLoading || !selectedFixture) {
+  if (fixturesError || matchesError) return <Error error={fixturesError || matchesError || ''} />;
+
+  if (fixturesLoading || !fixturesData || (isLeague && (matchesLoading || !selectedFixture))) {
     return (
       <Screen>
-        <SkeletonFixtures />
+        {isLeague && <SkeletonFixtures />}
         <SkeletonMatches />
       </Screen>
     );
   }
-
-  if (fixturesError) return <Error error={fixturesError} />;
-  if (matchesError) return <Error error={matchesError} />;
 
   return (
     <Screen>

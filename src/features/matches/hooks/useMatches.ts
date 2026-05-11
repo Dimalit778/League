@@ -28,15 +28,17 @@ export const useGetMatches = ({
   selectedFixture,
   competitionId,
   memberId,
+  enabled = true,
 }: {
   selectedFixture: number;
   competitionId: number;
   memberId: string;
+  enabled?: boolean;
 }) => {
   return useQuery({
     queryKey: KEYS.matches.byFixture(selectedFixture, competitionId as number, memberId as string),
     queryFn:
-      competitionId && memberId
+      enabled && selectedFixture && competitionId && memberId
         ? () => matchesApi.getMatchesByFixtureWithMemberPredictions(selectedFixture, competitionId, memberId)
         : skipToken,
     refetchOnMount: false,
@@ -44,6 +46,43 @@ export const useGetMatches = ({
   });
 };
 
+export const useGetCompetitionMatches = ({
+  competitionId,
+  memberId,
+  enabled = true,
+}: {
+  competitionId: number;
+  memberId: string;
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: KEYS.matches.byCompetition(competitionId, memberId),
+    queryFn:
+      enabled && competitionId && memberId
+        ? () => matchesApi.getCompetitionMatchesWithMemberPredictions(competitionId, memberId)
+        : skipToken,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
+  });
+};
+
+export const useGetTournamentMatches = ({
+  competitionId,
+  memberId,
+  enabled = true,
+}: {
+  competitionId: number;
+  memberId: string;
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: KEYS.matches.tournament(competitionId, memberId),
+    queryFn:
+      enabled && competitionId && memberId
+        ? () => matchesApi.getTournamentMatchesWithMemberPredictions(competitionId, memberId)
+        : skipToken,
+  });
+};
 export const useGetMemberFinishedMatches = (memberId: string, competitionId: number, fixture?: number) => {
   return useQuery({
     queryKey:

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
+import { MatchWithPredictions, MatchWithPredictionsType, TournamentMatchesSplit } from '../types';
+import { isFirstPhaseStage } from '../utils/tournamentMatches';
 
 export const matchesApi = {
   // Get One match with all Members predictions
@@ -22,7 +23,7 @@ export const matchesApi = {
             is_primary
           )
         )
-      `
+      `,
       )
       .eq('id', matchId)
       .eq('predictions.league_member.league_id', leagueId)
@@ -36,7 +37,7 @@ export const matchesApi = {
   async getMatchesByFixtureWithMemberPredictions(
     fixture: number,
     competitionId: number,
-    memberId: string
+    memberId: string,
   ): Promise<MatchWithPredictionsType[]> {
     const { data, error } = await supabase
       .from('matches')
@@ -46,10 +47,33 @@ export const matchesApi = {
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*),
         predictions:predictions!predictions_match_id_fkey(*)
-      `
+      `,
       )
       .eq('competition_id', competitionId)
       .eq('fixture', fixture)
+      .eq('predictions.league_member_id', memberId)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+
+    return data as MatchWithPredictionsType[];
+  },
+  // Get all competition matches with current Member predictions
+  async getCompetitionMatchesWithMemberPredictions(
+    competitionId: number,
+    memberId: string,
+  ): Promise<MatchWithPredictionsType[]> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select(
+        `
+        *,
+        home_team:teams!matches_home_team_id_fkey(*),
+        away_team:teams!matches_away_team_id_fkey(*),
+        predictions:predictions!predictions_match_id_fkey(*)
+      `,
+      )
+      .eq('competition_id', competitionId)
       .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: true });
 
@@ -61,7 +85,7 @@ export const matchesApi = {
   async getMemberFinishedMatches(
     memberId: string,
     competitionId: number,
-    fixture?: number
+    fixture?: number,
   ): Promise<MatchWithPredictionsType[]> {
     let query = supabase
       .from('matches')
@@ -71,7 +95,7 @@ export const matchesApi = {
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*),
         predictions:predictions!predictions_match_id_fkey(*)
-      `
+      `,
       )
       .eq('competition_id', competitionId)
       .eq('status', 'FINISHED')
@@ -87,5 +111,34 @@ export const matchesApi = {
     if (error) throw error;
     if (!data) return [];
     return data as MatchWithPredictionsType[];
+  },
+  // Get tournament matches with current Member predictions, split by first phase vs knockout stages
+  async getTournamentMatchesWithMemberPredictions(
+    competitionId: number,
+    memberId: string,
+  ): Promise<TournamentMatchesSplit> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select(
+        `
+        *,
+        home_team:teams!matches_home_team_id_fkey(*),
+        away_team:teams!matches_away_team_id_fkey(*),
+        predictions:predictions!predictions_match_id_fkey(*)
+      `,
+      )
+      .eq('competition_id', competitionId)
+      .eq('predictions.league_member_id', memberId)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+    const rows = (data ?? []) as MatchWithPredictionsType[];
+    const firstPhase: MatchWithPredictionsType[] = [];
+    const knockoutStages: MatchWithPredictionsType[] = [];
+    for (const row of rows) {
+      if (isFirstPhaseStage(row.stage)) firstPhase.push(row);
+      else knockoutStages.push(row);
+    }
+    return { firstPhase, knockoutStages };
   },
 };

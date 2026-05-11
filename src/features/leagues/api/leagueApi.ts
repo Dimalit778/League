@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { LeagueDetailsType, LeaderboardRow, LeagueWithCompetitionType, MyLeagueType } from '../types';
+import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MyLeagueType } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name, logo, area, flag';

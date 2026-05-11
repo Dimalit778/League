@@ -13,6 +13,7 @@ export const useGetCompetitions = () => {
 
 export const useGetCompetitionFixtures = () => {
   const competitionId = useMemberStore((s) => s.competitionId);
+
   return useQuery({
     queryKey: KEYS.competitions.fixtures(competitionId ?? 0),
     queryFn: competitionId ? () => competitionApi.getCompetitionFixtures(competitionId) : skipToken,

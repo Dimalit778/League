@@ -28,8 +28,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
   const isSelected = selectedFixture === fixture;
   const isToday = currentFixture !== undefined && fixture === currentFixture;
 
-  const opacity =
-    isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.35;
+  const opacity = isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.35;
 
   return (
     <View style={{ opacity }} className="items-center mx-2">
@@ -46,9 +45,9 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
           isSelected
             ? 'bg-surface border-[1.5px] border-primary'
             : isToday
-            ? 'bg-surface border-[1.5px] border-text'
-            : 'bg-surface border-[0.5px] border-border',
-          Platform.OS === 'web' && 'hover:scale-105 active:scale-95'
+              ? 'bg-surface border-[1.5px] border-text'
+              : 'bg-surface border-[0.5px] border-border',
+          Platform.OS === 'web' && 'hover:scale-105 active:scale-95',
         )}
       >
         {(isSelected || isToday) && (
@@ -68,15 +67,6 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
         >
           {fixture}
         </CText>
-        {dateRange && (
-          <CText
-            variant="small"
-            numberOfLines={1}
-            className={cn('mt-0.5', isSelected ? 'text-primary' : 'text-muted')}
-          >
-            {dateRange}
-          </CText>
-        )}
       </Pressable>
     </View>
   );
@@ -132,7 +122,7 @@ export default function FixturesList({
         });
       }, 50);
     },
-    [fixtures.length]
+    [fixtures.length],
   );
 
   return (
@@ -141,6 +131,7 @@ export default function FixturesList({
       data={fixtures}
       onLayout={onLayout}
       horizontal
+      contentContainerStyle={{ paddingBottom: 5, flexGrow: 1 }}
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => (

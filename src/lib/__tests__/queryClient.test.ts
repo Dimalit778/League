@@ -69,6 +69,16 @@ describe('KEYS', () => {
       const key = KEYS.matches.byFixture(5, 100);
       expect(key).toEqual(['matches', 100, 'fixture', 5]);
     });
+
+    it('generates byCompetition key', () => {
+      const key = KEYS.matches.byCompetition(100, 'm1');
+      expect(key).toEqual(['matches', 100, 'competition', 'member', 'm1']);
+    });
+
+    it('generates tournament key', () => {
+      const key = KEYS.matches.tournament(100, 'm1');
+      expect(key).toEqual(['matches', 100, 'tournament', 'member', 'm1']);
+    });
   });
 
   describe('predictions', () => {

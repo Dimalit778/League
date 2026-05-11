@@ -85,10 +85,10 @@ export const useUpdatePrimaryLeague = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
       ]);
-      initializeMember();
+      await initializeMember();
     },
     onError: (error) => {
-      initializeMember();
+      Alert.alert('Error', error.message);
     },
   });
 };

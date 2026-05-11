@@ -18,17 +18,19 @@ const MyLeagues = () => {
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
 
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
+  console.log('Active Member', JSON.stringify(setActiveMember, null, 2));
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
   const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
-    if (isPrimary) return router.replace('/(app)/(member)/(tabs)/League');
+    if (isPrimary) return router.replace('/(app)/(member)/(tabs)/Home');
 
     const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
 
     if (selectedLeague) {
+      await updatePrimaryLeague({ leagueId });
       setActiveMember(selectedLeague);
-      router.replace('/(app)/(member)/(tabs)/League');
-      updatePrimaryLeague({ leagueId });
+      router.replace('/(app)/(member)/(tabs)/Home');
     }
   };
 
@@ -47,7 +49,7 @@ const MyLeagues = () => {
           className="bg-yellow-500 py-2 m-4 rounded-md "
         >
           <CText variant="caption" bold className="text-black text-center">
-            {t('Max leagues reached. Upgrade to continue.')}
+            {t('Max leagues reached. Upgrade tlo continue.')}
           </CText>
         </Pressable>
       ) : (

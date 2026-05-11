@@ -18,6 +18,12 @@ export type MatchWithPredictionsType = MatchType & {
   predictions: Tables<'predictions'>[];
 };
 
+/** Tournament fetch: first phase (groups or league phase) vs knockout stages. */
+export type TournamentMatchesSplit = {
+  firstPhase: MatchWithPredictionsType[];
+  knockoutStages: MatchWithPredictionsType[];
+};
+
 export type MatchWithPredictions = MatchType & {
   predictions?: (PredictionType & {
     league_member: Tables<'league_members'>;
@@ -29,3 +35,6 @@ export type PredictionMemberType = Tables<'predictions'> & {
 };
 
 export type MatchStatusType = 'SCHEDULED' | 'LIVE' | 'FINISHED';
+export type TournamentMatchType = MatchType & {
+  predictions: PredictionMemberType[];
+};

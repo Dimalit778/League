@@ -41,6 +41,10 @@ export const KEYS = {
       memberId
         ? (['matches', competitionId, 'fixture', fixture, 'member', memberId] as const)
         : (['matches', competitionId, 'fixture', fixture] as const),
+    byCompetition: (competitionId: number, memberId: string) =>
+      ['matches', competitionId, 'competition', 'member', memberId] as const,
+    tournament: (competitionId: number, memberId: string) =>
+      ['matches', competitionId, 'tournament', 'member', memberId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
   },

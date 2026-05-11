@@ -1,15 +1,8 @@
-import { SplashScreen } from '@/components/layout';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useAuth } from '@/providers/AuthProvider';
 import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
-  const { isAuthLoading } = useAuth();
   const { colors } = useThemeTokens();
-
-  if (isAuthLoading) {
-    return <SplashScreen />;
-  }
 
   return (
     <Stack
