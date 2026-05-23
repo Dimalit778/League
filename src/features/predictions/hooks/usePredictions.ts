@@ -1,5 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectCompetitionId, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { TablesInsert } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
@@ -15,9 +15,9 @@ export const useGetPredictionsByLeagueFixture = (leagueId: string, fixture: numb
 // Upsert Prediction (Create or Update)
 export const useUpsertPrediction = () => {
   const queryClient = useQueryClient();
-  const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
-  const leagueId = useMemberStore((s) => s.leagueId) ?? '';
-  const memberId = useMemberStore((s) => s.memberId) ?? '';
+  const competitionId = useMemberStore(selectCompetitionId) ?? 0;
+  const leagueId = useMemberStore(selectLeagueId) ?? '';
+  const memberId = useMemberStore(selectMemberId) ?? '';
   return useMutation({
     mutationFn: (prediction: TablesInsert<'predictions'>) => {
       return predictionService.upsertPrediction(prediction);
@@ -28,16 +28,9 @@ export const useUpsertPrediction = () => {
         queryKey: ['predictions', 'league', leagueId],
       });
 
-      // Invalidate all matches queries that include this member or competition
-      // This ensures the matches list updates with the new prediction
+      // Invalidate competition matches for this member so the list reflects the new prediction
       queryClient.invalidateQueries({
-        queryKey: ['matches'],
-        predicate: (query) => {
-          const key = query.queryKey as any[];
-          return (
-            key.includes(memberId) || key.includes(competitionId) || key.includes('member') || key.includes('fixture')
-          );
-        },
+        queryKey: KEYS.matches.byCompetition(competitionId, memberId),
       });
 
       // Invalidate specific match detail with predictions

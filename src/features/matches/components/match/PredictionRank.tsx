@@ -1,6 +1,6 @@
 import { AvatarImage, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { FlatList, View } from 'react-native';
 import { PredictionMemberType } from '../../types';
 
@@ -66,7 +66,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
 };
 
 export default function PredictionRank({ predictions }: { predictions: PredictionMemberType[] }) {
-  const memberId = useMemberStore((state) => state.memberId) ?? '';
+  const memberId = useMemberStore(selectMemberId) ?? '';
   const { t } = useTranslation();
 
   return (

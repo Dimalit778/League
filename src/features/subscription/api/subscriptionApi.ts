@@ -81,14 +81,14 @@ export const subscriptionApi = {
 
   async canCreateLeague(userId: string): Promise<{ canCreate: boolean; reason?: string }> {
     try {
-      // Get current subscription (will return default FREE if none exists)
-      const subscription = await this.getCurrentSubscription(userId);
+      const [subscription, leagueCount] = await Promise.all([
+        this.getCurrentSubscription(userId),
+        this.getUserLeagueCount(userId),
+      ]);
 
-      // This should never be null due to our default FREE subscription
       const subscriptionType = subscription?.subscription_type || 'FREE';
       const limits = getSubscriptionLimits(subscriptionType);
 
-      const leagueCount = await this.getUserLeagueCount(userId);
       if (leagueCount >= limits.maxLeagues) {
         return {
           canCreate: false,

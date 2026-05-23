@@ -1,6 +1,22 @@
 import { supabase } from '@/lib/supabase';
-import { MatchWithPredictions, MatchWithPredictionsType, TournamentMatchesSplit } from '../types';
-import { isFirstPhaseStage } from '../utils/tournamentMatches';
+import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
+import { FIRST_PHASE_STAGES, KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
+
+const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
+  *,
+  home_team:teams!matches_home_team_id_fkey(*),
+  away_team:teams!matches_away_team_id_fkey(*),
+  predictions:predictions!predictions_match_id_fkey(*)
+`;
+
+const withMemberPredictions = (
+  matches: MatchWithPredictionsType[] | null,
+  memberId: string,
+): MatchWithPredictionsType[] =>
+  (matches ?? []).map((match) => ({
+    ...match,
+    predictions: (match.predictions ?? []).filter((prediction) => prediction.league_member_id === memberId),
+  }));
 
 export const matchesApi = {
   // Get One match with all Members predictions
@@ -34,29 +50,32 @@ export const matchesApi = {
     return data;
   },
   // Get matches by fixture with current Member predictions
-  async getMatchesByFixtureWithMemberPredictions(
-    fixture: number,
-    competitionId: number,
-    memberId: string,
-  ): Promise<MatchWithPredictionsType[]> {
-    const { data, error } = await supabase
+  async getFixtureMatchesWithMemberPrediction({
+    fixture,
+    competitionId,
+    memberId,
+    stage,
+  }: {
+    fixture: number;
+    competitionId: number;
+    memberId: string;
+    stage?: string;
+  }): Promise<MatchWithPredictionsType[]> {
+    let query = supabase
       .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*),
-        predictions:predictions!predictions_match_id_fkey(*)
-      `,
-      )
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
       .eq('competition_id', competitionId)
-      .eq('fixture', fixture)
-      .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
+      .eq('fixture', fixture);
+
+    if (stage) {
+      query = query.eq('stage', stage);
+    }
+
+    const { data, error } = await query.order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    return data as MatchWithPredictionsType[];
+    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
   },
   // Get all competition matches with current Member predictions
   async getCompetitionMatchesWithMemberPredictions(
@@ -65,21 +84,65 @@ export const matchesApi = {
   ): Promise<MatchWithPredictionsType[]> {
     const { data, error } = await supabase
       .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*),
-        predictions:predictions!predictions_match_id_fkey(*)
-      `,
-      )
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
       .eq('competition_id', competitionId)
-      .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    return data as MatchWithPredictionsType[];
+    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+  },
+
+  async getTournamentMatches(
+    competitionId: number,
+    memberId: string,
+    stage: string,
+  ): Promise<MatchWithPredictionsType[]> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .eq('competition_id', competitionId)
+      .eq('stage', stage)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+
+    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+  },
+
+  async getTournamentMatchesByView(
+    competitionId: number,
+    memberId: string,
+    view: TournamentView,
+  ): Promise<MatchWithPredictionsType[]> {
+    let query = supabase
+      .from('matches')
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .eq('competition_id', competitionId);
+
+    query = view === 'groups' ? query.in('stage', FIRST_PHASE_STAGES) : query.in('stage', KNOCKOUT_STAGE_VALUES);
+
+    const { data, error } = await query.order('kick_off', { ascending: true });
+
+    if (error) throw error;
+
+    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+  },
+  async getTournamentActiveStage(competitionId: number): Promise<{ activeStage: string | null }> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select('stage')
+      .eq('competition_id', competitionId)
+      .neq('status', 'FINISHED')
+      .order('kick_off', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return {
+      activeStage: data?.stage ?? null,
+    };
   },
   // Get member finished matches by fixture
   async getMemberFinishedMatches(
@@ -89,19 +152,10 @@ export const matchesApi = {
   ): Promise<MatchWithPredictionsType[]> {
     let query = supabase
       .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*),
-        predictions:predictions!predictions_match_id_fkey(*)
-      `,
-      )
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
       .eq('competition_id', competitionId)
-      .eq('status', 'FINISHED')
-      .eq('predictions.league_member_id', memberId);
+      .eq('status', 'FINISHED');
 
-    // Only filter by fixture if provided
     if (fixture !== undefined) {
       query = query.eq('fixture', fixture);
     }
@@ -110,35 +164,6 @@ export const matchesApi = {
 
     if (error) throw error;
     if (!data) return [];
-    return data as MatchWithPredictionsType[];
-  },
-  // Get tournament matches with current Member predictions, split by first phase vs knockout stages
-  async getTournamentMatchesWithMemberPredictions(
-    competitionId: number,
-    memberId: string,
-  ): Promise<TournamentMatchesSplit> {
-    const { data, error } = await supabase
-      .from('matches')
-      .select(
-        `
-        *,
-        home_team:teams!matches_home_team_id_fkey(*),
-        away_team:teams!matches_away_team_id_fkey(*),
-        predictions:predictions!predictions_match_id_fkey(*)
-      `,
-      )
-      .eq('competition_id', competitionId)
-      .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
-
-    if (error) throw error;
-    const rows = (data ?? []) as MatchWithPredictionsType[];
-    const firstPhase: MatchWithPredictionsType[] = [];
-    const knockoutStages: MatchWithPredictionsType[] = [];
-    for (const row of rows) {
-      if (isFirstPhaseStage(row.stage)) firstPhase.push(row);
-      else knockoutStages.push(row);
-    }
-    return { firstPhase, knockoutStages };
+    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
   },
 };

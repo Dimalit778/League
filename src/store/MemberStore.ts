@@ -5,43 +5,26 @@ import { useAuthStore } from './AuthStore';
 
 type MemberState = {
   activeMember: MemberLeagueType | null;
-  memberId?: string | null;
-  leagueId?: string | null;
-  userId?: string | null;
-  competitionId?: number | null;
-
   setActiveMember: (activeMember: MemberLeagueType | null) => void;
   initializeMember: () => Promise<void>;
   clearMember: () => void;
 };
 
+export const selectMemberId = (s: MemberState) => s.activeMember?.id ?? null;
+export const selectLeagueId = (s: MemberState) => s.activeMember?.league.id ?? null;
+export const selectCompetitionId = (s: MemberState) => s.activeMember?.league.competition.id ?? null;
+export const selectCompetition = (s: MemberState) => s.activeMember?.league.competition ?? null;
+export const selectMemberUserId = (s: MemberState) => s.activeMember?.user_id ?? null;
+
 export const useMemberStore = create<MemberState>()((set) => ({
   activeMember: null,
-  memberId: null,
-  leagueId: null,
-  userId: null,
-  competitionId: null,
 
-  setActiveMember: (activeMember) => {
-    set({
-      activeMember,
-      memberId: activeMember?.id,
-      leagueId: activeMember?.league.id,
-      userId: activeMember?.user_id,
-      competitionId: activeMember?.league.competition.id,
-    });
-  },
+  setActiveMember: (activeMember) => set({ activeMember }),
 
   initializeMember: async () => {
     const { user } = useAuthStore.getState();
     if (!user) {
-      set({
-        activeMember: null,
-        memberId: null,
-        leagueId: null,
-        userId: null,
-        competitionId: null,
-      });
+      set({ activeMember: null });
       return;
     }
 
@@ -53,25 +36,10 @@ export const useMemberStore = create<MemberState>()((set) => ({
       .maybeSingle();
 
     if (error) {
-      }
+    }
 
-    const activeMember = data ?? null;
-
-    set({
-      activeMember,
-      memberId: activeMember?.id,
-      leagueId: activeMember?.league.id,
-      userId: activeMember?.user_id,
-      competitionId: activeMember?.league.competition.id,
-    });
+    set({ activeMember: data ?? null });
   },
 
-  clearMember: () =>
-    set({
-      activeMember: null,
-      memberId: null,
-      leagueId: null,
-      userId: null,
-      competitionId: null,
-    }),
+  clearMember: () => set({ activeMember: null }),
 }));

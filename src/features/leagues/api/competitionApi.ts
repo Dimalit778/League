@@ -6,10 +6,10 @@ export const competitionApi = {
     if (error) throw new Error(error.message);
     return data;
   },
-  async getCompetitionFixtures(competitionId: number) {
+  async getCompetitionMatchMeta(competitionId: number) {
     const { data, error } = await supabase
       .from('competitions')
-      .select('current_fixture, total_fixtures, type')
+      .select('id, current_fixture, total_fixtures, type, current_stage, season_id')
       .eq('id', competitionId)
 
       .single();
@@ -23,6 +23,10 @@ export const competitionApi = {
       currentFixture,
       totalFixtures: data?.total_fixtures ?? 0,
       type: data?.type,
+      seasonId: data?.season_id ?? null,
     };
+  },
+  async getCompetitionFixtures(competitionId: number) {
+    return competitionApi.getCompetitionMatchMeta(competitionId);
   },
 };

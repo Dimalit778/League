@@ -1,11 +1,14 @@
+import { Image as ExpoImage } from 'expo-image';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
-
+import { TeamType } from '../types';
 type TeamBadgeProps = {
-  teamId: number | string;
+  teamId?: number | string;
   name?: string | null;
   shortName?: string | null;
+  logo?: string | null;
   tla?: string | null;
   size?: number;
+  isWorldCup?: boolean;
 };
 
 type BadgeShape = 'shield' | 'circle' | 'hexagon' | 'diamond';
@@ -26,16 +29,7 @@ const COLORS = [
   '#B45309',
 ];
 
-const SECONDARY_COLORS = [
-  '#F8FAFC',
-  '#FEF3C7',
-  '#DBEAFE',
-  '#DCFCE7',
-  '#FCE7F3',
-  '#E0E7FF',
-  '#CCFBF1',
-  '#FEE2E2',
-];
+const SECONDARY_COLORS = ['#F8FAFC', '#FEF3C7', '#DBEAFE', '#DCFCE7', '#FCE7F3', '#E0E7FF', '#CCFBF1', '#FEE2E2'];
 
 const SHAPES: BadgeShape[] = ['shield', 'circle', 'hexagon', 'diamond'];
 const PATTERNS: BadgePattern[] = ['stripes', 'dots', 'diagonal', 'centerStripe'];
@@ -72,9 +66,14 @@ export function getTeamInitials({ tla, shortName, name }: Pick<TeamBadgeProps, '
     .toUpperCase();
 }
 
-export function getTeamBadgeConfig({ teamId, name, shortName, tla }: TeamBadgeProps) {
+export function getTeamBadgeConfig({
+  teamId,
+  name,
+  shortName,
+  tla,
+}: Pick<TeamBadgeProps, 'teamId' | 'name' | 'shortName' | 'tla'>) {
   const initials = getTeamInitials({ tla, shortName, name });
-  const seed = `${teamId}-${tla ?? ''}-${shortName ?? ''}-${name ?? ''}`;
+  const seed = `${teamId ?? 'unknown'}-${tla ?? ''}-${shortName ?? ''}-${name ?? ''}`;
   const hash = hashTeamSeed(seed);
   const primary = COLORS[hash % COLORS.length];
   const secondary = SECONDARY_COLORS[Math.floor(hash / COLORS.length) % SECONDARY_COLORS.length];
@@ -129,12 +128,57 @@ const Pattern = ({ pattern, color }: { pattern: BadgePattern; color: string }) =
   );
 };
 
-export default function TeamBadge({ teamId, name, shortName, tla, size = 40 }: TeamBadgeProps) {
-  const { initials, primary, secondary, shape, pattern } = getTeamBadgeConfig({ teamId, name, shortName, tla, size });
-  const fontSize = initials.length > 2 ? 26 : 31;
+export default function TeamBadge({
+  team,
+  teamId,
+  name,
+  shortName,
+  tla,
+  logo,
+  size = 34,
+  isWorldCup = false,
+}: TeamBadgeProps & {
+  team?: TeamType | null;
+}) {
+  const resolvedTeam: TeamType | null =
+    team ??
+    (teamId != null
+      ? ({
+          id: Number(teamId),
+          name: name ?? '',
+          shortName: shortName ?? null,
+          tla: tla ?? null,
+          logo: logo ?? '',
+          venue: null,
+          created_at: '',
+          updated_at: '',
+        } satisfies TeamType)
+      : null);
 
+  if (!resolvedTeam?.id) return null;
+
+  const { initials, primary, secondary, shape, pattern } = getTeamBadgeConfig({
+    teamId: resolvedTeam.id,
+    name: resolvedTeam.name,
+    shortName: resolvedTeam.shortName,
+    tla: resolvedTeam.tla,
+  });
+  const fontSize = initials.length > 2 ? 26 : 31;
+  const { name: teamName, shortName: teamShortName } = resolvedTeam;
+
+  if (isWorldCup && resolvedTeam.logo) {
+    return (
+      <ExpoImage source={{ uri: resolvedTeam.logo }} style={{ width: size, height: size, resizeMode: 'contain' }} />
+    );
+  }
   return (
-    <Svg width={size} height={size} viewBox="0 0 100 100" accessibilityRole="image" accessibilityLabel={`${name || shortName || initials} badge`}>
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      accessibilityRole="image"
+      accessibilityLabel={`${teamName || teamShortName || initials} badge`}
+    >
       <Shape shape={shape} fill={primary} stroke={secondary} />
       <Pattern pattern={pattern} color={secondary} />
       <Circle cx="50" cy="50" r="26" fill="#0F172A" opacity="0.2" />

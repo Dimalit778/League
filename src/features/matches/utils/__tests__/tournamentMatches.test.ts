@@ -1,5 +1,7 @@
 import { MatchWithPredictionsType } from '../../types';
 import {
+  filterMatchesByGroup,
+  getGroupStageMatches,
   getKnockoutStages,
   getStageLabel,
   getTournamentGroups,
@@ -8,6 +10,8 @@ import {
   groupMatchesByFixture,
   isLeagueCompetition,
   normalizedGroupLetter,
+  selectKnockoutMatches,
+  splitTournamentMatches,
 } from '../tournamentMatches';
 
 const match = (id: number, overrides: Partial<MatchWithPredictionsType> = {}): MatchWithPredictionsType =>
@@ -34,8 +38,8 @@ describe('tournamentMatches utils', () => {
       match(1, { stage: 'GROUP_STAGE', group: 'B' }),
       match(2, { stage: 'GROUP_STAGE', group: 'A' }),
       match(3, { stage: 'FINAL', group: 'C' }),
-      match(4, { stage: 'GROUP_STAGE', group: 'A' }),
-      match(5, { stage: 'LEAGUE_STAGE', group: 'League' }),
+      match(4, { stage: 'GROUP_STAGE', group: 'GROUP_A' }),
+      match(5, { stage: 'REGULAR_SEASON', group: 'League' }),
     ];
 
     expect(getTournamentGroups(matches)).toEqual(['A', 'B']);
@@ -43,9 +47,9 @@ describe('tournamentMatches utils', () => {
 
   it('detects first phase stages and league phase matches', () => {
     expect(isFirstPhaseStage('GROUP_STAGE')).toBe(true);
-    expect(isFirstPhaseStage('LEAGUE_STAGE')).toBe(true);
+    expect(isFirstPhaseStage('REGULAR_SEASON')).toBe(true);
     expect(isFirstPhaseStage('FINAL')).toBe(false);
-    expect(hasLeagueStage([match(1, { stage: 'LEAGUE_STAGE' })])).toBe(true);
+    expect(hasLeagueStage([match(1, { stage: 'REGULAR_SEASON' })])).toBe(true);
     expect(hasLeagueStage([match(1, { stage: 'GROUP_STAGE' })])).toBe(false);
   });
 
@@ -66,11 +70,11 @@ describe('tournamentMatches utils', () => {
       match(1, { stage: 'FINAL' }),
       match(2, { stage: 'ROUND_OF_16' }),
       match(3, { stage: 'PLAYOFF' }),
-      match(4, { stage: 'QUARTER_FINAL' }),
+      match(4, { stage: 'QUARTER_FINALS' }),
       match(5, { stage: 'GROUP_STAGE' }),
       match(6, { stage: 'LAST_32' }),
-      match(7, { stage: 'THIRD_FOURTH' }),
-      match(8, { stage: 'SEMI_FINAL' }),
+      match(7, { stage: 'THIRD_PLACE' }),
+      match(8, { stage: 'SEMI_FINALS' }),
       match(9, { stage: 'LAST_4' }),
       match(10, { stage: 'LAST_8' }),
       match(11, { stage: 'LAST_16' }),
@@ -81,12 +85,11 @@ describe('tournamentMatches utils', () => {
       'LAST_16',
       'ROUND_OF_16',
       'LAST_8',
-      'QUARTER_FINAL',
+      'QUARTER_FINALS',
       'LAST_4',
-      'SEMI_FINAL',
-      'THIRD_FOURTH',
+      'SEMI_FINALS',
+      'THIRD_PLACE',
       'FINAL',
-      'PLAYOFF',
     ]);
   });
 
@@ -103,13 +106,39 @@ describe('tournamentMatches utils', () => {
   });
 
   it('maps known stage labels and prettifies unknown labels', () => {
-    expect(getStageLabel('LEAGUE_STAGE')).toBe('League Phase');
+    expect(getStageLabel('REGULAR_SEASON')).toBe('League Phase');
     expect(getStageLabel('ROUND_OF_16')).toBe('Round of 16');
     expect(getStageLabel('LAST_32')).toBe('Last 32');
     expect(getStageLabel('LAST_16')).toBe('Last 16');
     expect(getStageLabel('LAST_8')).toBe('Last 8');
-    expect(getStageLabel('LAST_4')).toBe('Last 4');
+    expect(getStageLabel('QUARTER_FINALS')).toBe('Quarter Finals');
+    expect(getStageLabel('SEMI_FINALS')).toBe('Semi Finals');
     expect(getStageLabel('THIRD_PLACE')).toBe('Third-Fourth');
     expect(getStageLabel('UNKNOWN_STAGE')).toBe('UNKNOWN STAGE');
+  });
+
+  it('splits tournament matches into first phase and knockout buckets', () => {
+    const matches = [
+      match(1, { stage: 'GROUP_STAGE' }),
+      match(2, { stage: 'FINAL' }),
+      match(3, { stage: 'REGULAR_SEASON' }),
+    ];
+
+    expect(splitTournamentMatches(matches)).toEqual({
+      firstPhase: [matches[0], matches[2]],
+      knockoutStages: [matches[1]],
+    });
+  });
+
+  it('filters group stage and knockout matches from a full competition list', () => {
+    const matches = [
+      match(1, { stage: 'GROUP_STAGE', group: 'A' }),
+      match(2, { stage: 'FINAL' }),
+      match(3, { stage: 'REGULAR_SEASON' }),
+    ];
+
+    expect(getGroupStageMatches(matches)).toEqual([matches[0]]);
+    expect(selectKnockoutMatches(matches)).toEqual([matches[1]]);
+    expect(filterMatchesByGroup(matches, 'A')).toEqual([matches[0]]);
   });
 });

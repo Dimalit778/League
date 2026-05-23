@@ -106,6 +106,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Failed to sign out': 'Failed to sign out',
       'Failed to update password': 'Failed to update password',
       'Error updating password:': 'Error updating password:',
+      'Sign in with Apple': 'Sign in with Apple',
+      'Sign up with Apple': 'Sign up with Apple',
     },
 
     // Leagues screens
@@ -578,6 +580,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       L: 'L',
       GD: 'GD',
       Pts: 'Pts',
+      'No standings found': 'No standings found',
       Predict: 'Predict',
       Leaderboard: 'Leaderboard',
       'View all': 'View all',
@@ -648,6 +651,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Sign in to your account': 'התחבר לחשבון שלך',
       'Forgot Password': 'שכחתי סיסמה',
       'Sign in with Google': 'התחברות עם Google',
+      'Sign in with Apple': 'התחברות עם Apple',
+      'Sign up with Apple': 'הרשמה עם Apple',
       'Full Name': 'שם מלא',
 
       'Sign up to get started': 'הירשם כדי להתחיל',
@@ -1186,6 +1191,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       L: 'ה',
       GD: 'הפרש',
       Pts: 'נק',
+      'No standings found': 'לא נמצאה טבלה',
       Predict: 'נחש',
       Leaderboard: 'טבלת חברים',
       'View all': 'הצג הכל',

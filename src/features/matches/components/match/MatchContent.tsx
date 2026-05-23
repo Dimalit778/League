@@ -1,6 +1,6 @@
 import { MatchWithPredictions } from '@/features/matches/types';
 import PredictionForm from '@/features/predictions/components/PredictionForm';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import TabsContent from './TabsContent';
 
 interface MatchContentProps {
@@ -10,7 +10,7 @@ interface MatchContentProps {
 type MatchStatus = 'SCHEDULED' | 'LIVE' | 'TIMED' | 'IN_PLAY' | 'FINISHED';
 
 export default function MatchContent({ match }: MatchContentProps) {
-  const memberId = useMemberStore((state) => state.memberId) ?? '';
+  const memberId = useMemberStore(selectMemberId) ?? '';
   const status = (match.status ?? 'SCHEDULED') as MatchStatus;
 
   const now = new Date();

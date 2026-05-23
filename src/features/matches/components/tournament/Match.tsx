@@ -1,7 +1,6 @@
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatTime } from '@/utils/formats';
-import { Image as ExpoImage } from 'expo-image';
 import { Link } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
@@ -9,45 +8,19 @@ import { MatchWithPredictionsType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
 import TeamBadge from '../TeamBadge';
 
-/** Tournament list row card — dense dark sheet, RTL-aware via RN layout direction. */
 const CARD = {
   bg: '#161b22',
   border: 'rgba(255,255,255,0.06)',
   badgeBg: '#2d333b',
-  venue: '#a0a0a0',
+  headerBg: 'rgba(0,0,0,0.18)',
+  divider: 'rgba(255,255,255,0.05)',
 } as const;
 
-const LOGO_SIZE = 40;
-const TEAM_NAME_LINE_HEIGHT = 22;
+type Props = { match: MatchWithPredictionsType };
 
-type Props = {
-  match: MatchWithPredictionsType;
-};
+type Prediction = MatchWithPredictionsType['predictions'][number];
 
-type TeamRow = MatchWithPredictionsType['home_team'] | null | undefined;
-
-function TeamCrest({ team }: { team: TeamRow }) {
-  if (!team) {
-    return <View className="rounded-full bg-white/10" style={{ width: LOGO_SIZE, height: LOGO_SIZE }} />;
-  }
-  const logo = team.logo?.trim();
-  if (logo?.length) {
-    return (
-      <ExpoImage
-        source={logo}
-        style={{ width: LOGO_SIZE, height: LOGO_SIZE, borderRadius: LOGO_SIZE / 2 }}
-        cachePolicy="memory-disk"
-        contentFit="contain"
-      />
-    );
-  }
-  return (
-    <View className="overflow-hidden rounded-full" style={{ width: LOGO_SIZE, height: LOGO_SIZE }}>
-      <TeamBadge teamId={team.id} name={team.name} shortName={team.shortName} tla={team.tla} size={LOGO_SIZE} />
-    </View>
-  );
-}
-
+/* ─── Score / time block ──────────────────────────────────────── */
 function ScoreBlock({
   isFinished,
   isLive,
@@ -107,53 +80,181 @@ function ScoreBlock({
   );
 }
 
-function StatusSlot({ isFinished }: { isFinished: boolean }) {
+/* ─── Card header row (status badge) ─────────────────────────── */
+function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boolean }) {
   const { t } = useTranslation();
-  if (!isFinished) return null;
+
+  if (isFinished) {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 10,
+          paddingVertical: 5,
+          backgroundColor: CARD.headerBg,
+          borderBottomWidth: 1,
+          borderBottomColor: CARD.divider,
+        }}
+      >
+        <View
+          style={{
+            borderRadius: 4,
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+            backgroundColor: 'rgba(255,255,255,0.07)',
+          }}
+        >
+          <CText variant="small" bold style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, letterSpacing: 0.5 }}>
+            FT
+          </CText>
+        </View>
+      </View>
+    );
+  }
+
+  if (isLive) {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5,
+          paddingHorizontal: 10,
+          paddingVertical: 5,
+          backgroundColor: CARD.headerBg,
+          borderBottomWidth: 1,
+          borderBottomColor: CARD.divider,
+        }}
+      >
+        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+        <CText variant="small" bold style={{ color: '#4ade80', fontSize: 10, letterSpacing: 0.5 }}>
+          {t('Live')}
+        </CText>
+      </View>
+    );
+  }
+
+  return null;
+}
+
+/* ─── Prediction footer ───────────────────────────────────────── */
+function PredictionFooter({
+  prediction,
+  isMatchFinished: finished,
+}: {
+  prediction: Prediction | undefined;
+  isMatchFinished: boolean;
+}) {
+  const { t } = useTranslation();
+
+  if (!prediction) {
+    // No prediction made — show a subtle placeholder only for unplayed matches
+    if (finished) return null;
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 6,
+          borderTopWidth: 1,
+          borderTopColor: CARD.divider,
+          gap: 4,
+        }}
+      >
+        <CText variant="small" style={{ color: 'rgba(255,255,255,0.22)', fontSize: 11 }}>
+          {t('No prediction')}
+        </CText>
+      </View>
+    );
+  }
+
+  const scored = prediction.is_finished && finished;
+  const won = scored && prediction.points > 0;
+  const lost = scored && !won;
+
+  const bgColor = won ? 'rgba(74,222,128,0.09)' : lost ? 'rgba(248,113,113,0.07)' : 'transparent';
+
+  const textColor = won ? '#4ade80' : lost ? '#f87171' : 'rgba(255,255,255,0.5)';
+
   return (
-    <View className="rounded-full px-3 py-0.5" style={{ backgroundColor: CARD.badgeBg }}>
-      <CText variant="small" bold className="text-white">
-        {t('Finished')}
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        gap: 8,
+        backgroundColor: bgColor,
+        borderTopWidth: 1,
+        borderTopColor: CARD.divider,
+      }}
+    >
+      {/* Label */}
+      <CText variant="small" style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11 }}>
+        {t('Prediction')}:
       </CText>
+
+      {/* Predicted score */}
+      <CText variant="small" bold style={{ color: textColor, fontSize: 12 }}>
+        {prediction.home_score} – {prediction.away_score}
+      </CText>
+
+      {/* Points badge — only when scored */}
+      {scored && (
+        <View
+          style={{
+            borderRadius: 5,
+            paddingHorizontal: 7,
+            paddingVertical: 2,
+            backgroundColor: won ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.14)',
+          }}
+        >
+          <CText variant="small" bold style={{ color: textColor, fontSize: 11 }}>
+            {won ? `+${prediction.points}` : '0'} {t('pts')}
+          </CText>
+        </View>
+      )}
     </View>
   );
 }
 
-function TeamName({ name }: { name: string }) {
-  return (
-    <CText variant="bodyBold" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.85} className="text-center">
-      {name}
-    </CText>
-  );
-}
-
+/* ─── Match card ──────────────────────────────────────────────── */
 export default memo(function Match({ match }: Props) {
   const matchStatus = getMatchStatus(match.status);
   const isFinished = isMatchFinished(matchStatus);
   const isLive = isMatchLive(matchStatus);
   const isScheduled = isMatchScheduled(matchStatus);
+  const isWorldCup = match.competition_id === 2000;
 
   const homeScore = match.score?.fullTime?.home ?? null;
   const awayScore = match.score?.fullTime?.away ?? null;
 
   const homeName = match.home_team?.name ?? '—';
   const awayName = match.away_team?.name ?? '—';
-  const accessibilityLabel = `${homeName}, ${homeScore}-${awayScore}, ${awayName}`;
+  const prediction = match.predictions?.[0];
 
   return (
     <View className="mb-2">
       <Link href={`/(app)/(member)/match/${match.id}`} asChild>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={accessibilityLabel}
-          className=" rounded-2xl overflow-hidden border "
+          accessibilityLabel={`${homeName}, ${homeScore}-${awayScore}, ${awayName}`}
+          className="rounded-2xl overflow-hidden border"
           style={{ backgroundColor: CARD.bg, borderColor: CARD.border }}
         >
-          <StatusSlot isFinished={isFinished} />
-          <View className="flex-1 flex-row items-center">
+          {/* Status header */}
+          <CardHeader isFinished={isFinished} isLive={isLive} />
+
+          {/* Teams + score */}
+          <View className="flex-1 flex-row items-center py-2 px-2">
             <View className="flex-1 flex-row items-center gap-2 min-w-0 justify-end">
-              <TeamName name={homeName} />
-              <TeamCrest team={match.home_team} />
+              <CText variant="caption" numberOfLines={2} className="text-center">
+                {match.home_team?.shortName}
+              </CText>
+              <TeamBadge team={match.home_team} isWorldCup={isWorldCup} />
             </View>
 
             <ScoreBlock
@@ -165,11 +266,16 @@ export default memo(function Match({ match }: Props) {
               kickOff={match.kick_off}
             />
 
-            <View className="flex-1 flex-row items-center gap-2 min-w-0 justify-start">
-              <TeamCrest team={match.away_team} />
-              <TeamName name={awayName} />
+            <View className="flex-1 flex-row items-center gap-2 min-w-0 justify-start ">
+              <TeamBadge team={match.away_team} isWorldCup={isWorldCup} />
+              <CText variant="caption" numberOfLines={2} className="text-center">
+                {match.away_team?.shortName}
+              </CText>
             </View>
           </View>
+
+          {/* Prediction footer */}
+          <PredictionFooter prediction={prediction} isMatchFinished={isFinished} />
         </Pressable>
       </Link>
     </View>

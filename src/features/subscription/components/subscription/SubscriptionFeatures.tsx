@@ -10,36 +10,26 @@ interface SubscriptionFeaturesProps {
 const SubscriptionFeatures = ({ subscriptionType }: SubscriptionFeaturesProps) => {
   const { t } = useTranslation();
   const getFeatures = () => {
-    const baseFeatures = [
-      t('Join up to 2 leagues'),
+    const freeFeatures = [
+      t('Create or join 1 league'),
       t('Create leagues with up to 6 members'),
       t('Basic prediction stats'),
     ];
 
     const basicFeatures = [
-      t('Join up to 3 leagues'),
-      t('Create leagues with up to 8 members'),
+      t('Create or join up to 5 leagues'),
+      t('Create leagues with up to 20 members'),
       t('Advanced prediction stats'),
-      t('League history'),
-    ];
-
-    const premiumFeatures = [
-      t('Join up to 5 leagues'),
-      t('Create leagues with up to 10 members'),
-      t('Advanced prediction stats'),
-      t('League history'),
-      t('Custom league settings'),
-      t('Priority support'),
+      t('League history and fixture archive'),
     ];
 
     switch (subscriptionType) {
       case 'PREMIUM':
-        return premiumFeatures;
       case 'BASIC':
         return basicFeatures;
       case 'FREE':
       default:
-        return baseFeatures;
+        return freeFeatures;
     }
   };
 

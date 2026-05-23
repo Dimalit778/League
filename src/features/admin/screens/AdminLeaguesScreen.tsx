@@ -54,7 +54,7 @@ const AdminLeaguesScreen = () => {
                 <View className="flex-1">
                   <CText className="text-text/50 text-xs uppercase tracking-wide">Competition</CText>
                   <CText className="text-text text-sm">{league.competition?.name ?? 'Not assigned'}</CText>
-                  <CText className="text-text/70 text-xs">{league.competition?.country ?? ''}</CText>
+                  <CText className="text-text/70 text-xs">{league.competition?.area ?? ''}</CText>
                 </View>
               </View>
 

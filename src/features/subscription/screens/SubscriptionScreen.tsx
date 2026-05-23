@@ -3,7 +3,7 @@ import { BackButton, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
 import { useSubscription } from '../hooks/useSubscription';
@@ -12,8 +12,8 @@ import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
 
 const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
-  if (type === 'PREMIUM') return 'BASIC';
-  return type;
+  if (type === 'BASIC' || type === 'PREMIUM') return 'BASIC';
+  return 'FREE';
 };
 
 const getPlanLabel = (type: SubscriptionType): string => {
@@ -38,6 +38,7 @@ const SubscriptionScreen = () => {
     setSelectedPlan(visibleSubscriptionType);
   }, [visibleSubscriptionType]);
 
+  const isPro = visibleSubscriptionType === 'BASIC';
   const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
 
   // TODO: wire up purchasesService.configure() in AuthProvider on login
@@ -58,6 +59,10 @@ const SubscriptionScreen = () => {
     } finally {
       setIsPurchasing(false);
     }
+  };
+
+  const handleManageSubscription = () => {
+    Linking.openURL('https://apps.apple.com/account/subscriptions');
   };
 
   const handleRestorePress = async () => {
@@ -122,22 +127,31 @@ const SubscriptionScreen = () => {
             }}
           >
             <CText variant="bodyBold" className="text-background">
-              {isPurchasing
-                ? t('Loading...')
-                : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
+              {isPurchasing ? t('Loading...') : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
             </CText>
           </Pressable>
         )}
 
-        <Pressable
-          onPress={handleRestorePress}
-          disabled={isRestoring}
-          style={{ alignItems: 'center', marginTop: 20 }}
-        >
-          <CText variant="caption" className="text-muted">
-            {isRestoring ? t('Restoring...') : t('Restore purchases')}
-          </CText>
-        </Pressable>
+        {isPro ? (
+          <Pressable
+            onPress={handleManageSubscription}
+            style={{ alignItems: 'center', marginTop: 20 }}
+          >
+            <CText variant="caption" className="text-muted">
+              {t('Manage subscription')}
+            </CText>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={handleRestorePress}
+            disabled={isRestoring}
+            style={{ alignItems: 'center', marginTop: 20 }}
+          >
+            <CText variant="caption" className="text-muted">
+              {isRestoring ? t('Restoring...') : t('Restore purchases')}
+            </CText>
+          </Pressable>
+        )}
       </ScrollView>
     </Screen>
   );

@@ -1,4 +1,5 @@
 import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
+import AppleAuth from '@/features/auth/components/AppleAuth';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -25,6 +26,7 @@ const SignInScreen = () => {
   const { signIn, isLoading, errorMessage, clearError, resendOtp } = useAuthActions();
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
 
   const {
     control,
@@ -114,7 +116,14 @@ const SignInScreen = () => {
             <View className="flex-1 h-px bg-gray-600" />
           </View>
 
-          <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
+          <View className="gap-3">
+            <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
+            <AppleAuth
+              isLoading={isAppleLoading}
+              setIsLoading={setIsAppleLoading}
+              labelKey="Sign in with Apple"
+            />
+          </View>
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">
               <CText variant="caption" className="text-muted text-center">

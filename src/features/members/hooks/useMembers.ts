@@ -1,6 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
 import { useAuth } from '@/providers/AuthProvider';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect } from 'react';
@@ -34,8 +34,8 @@ export const useMemberStats = (memberId?: string) => {
 };
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const memberId = useMemberStore((s) => s.memberId);
+  const leagueId = useMemberStore(selectLeagueId);
+  const memberId = useMemberStore(selectMemberId);
   const { user } = useAuth();
   const userId = user?.id ?? null;
 

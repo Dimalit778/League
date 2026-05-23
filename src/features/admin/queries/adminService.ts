@@ -138,7 +138,9 @@ export const adminService = {
 
     if (error) throw error;
 
-    return (data?.map((prediction) => ({
+    const rows = (data ?? []) as any[];
+
+    return rows.map((prediction) => ({
       ...prediction,
       league: prediction.league
         ? { id: prediction.league.id, name: prediction.league.name }
@@ -156,7 +158,7 @@ export const adminService = {
             full_name: prediction.user.full_name,
           }
         : null,
-    })) ?? []) as PredictionWithRelations[];
+    })) as PredictionWithRelations[];
   },
 
   async getCompetitions() {

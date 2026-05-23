@@ -1,11 +1,12 @@
 import { KEYS } from '@/lib/queryClient';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { matchesApi } from '../api/matchesService';
+import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
 export const useGetMatchDetail = (matchId: number) => {
-  const leagueId = useMemberStore((s) => s.leagueId);
+  const leagueId = useMemberStore(selectLeagueId);
   return useQuery({
     queryKey: KEYS.matches.withPredictions(leagueId as string, matchId),
     queryFn: leagueId && matchId ? () => matchesApi.getMatchWithPredictions(leagueId, matchId) : skipToken,
@@ -24,23 +25,32 @@ export const useGetMatchDetail = (matchId: number) => {
 };
 
 // Get matches by fixture with current Member predictions
-export const useGetMatches = ({
+export const useGetMatchesByFixture = ({
   selectedFixture,
   competitionId,
   memberId,
   enabled = true,
+  stage,
 }: {
   selectedFixture: number;
   competitionId: number;
   memberId: string;
   enabled?: boolean;
+  stage?: string;
 }) => {
   return useQuery({
-    queryKey: KEYS.matches.byFixture(selectedFixture, competitionId as number, memberId as string),
+    queryKey: KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage),
     queryFn:
       enabled && selectedFixture && competitionId && memberId
-        ? () => matchesApi.getMatchesByFixtureWithMemberPredictions(selectedFixture, competitionId, memberId)
+        ? () =>
+            matchesApi.getFixtureMatchesWithMemberPrediction({
+              fixture: selectedFixture,
+              competitionId,
+              memberId,
+              stage,
+            })
         : skipToken,
+    staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
@@ -49,38 +59,42 @@ export const useGetMatches = ({
 export const useGetCompetitionMatches = ({
   competitionId,
   memberId,
-  enabled = true,
+  stage,
+  view,
 }: {
-  competitionId: number;
-  memberId: string;
-  enabled?: boolean;
+  competitionId: number | null;
+  memberId: string | null;
+  stage?: string;
+  view?: TournamentView;
 }) => {
   return useQuery({
-    queryKey: KEYS.matches.byCompetition(competitionId, memberId),
+    queryKey:
+      competitionId && memberId
+        ? view
+          ? [...KEYS.matches.byCompetition(competitionId, memberId), 'view', view]
+          : stage
+            ? [...KEYS.matches.byCompetition(competitionId, memberId), stage]
+            : KEYS.matches.byCompetition(competitionId, memberId)
+        : ['matches', 'disabled'],
     queryFn:
-      enabled && competitionId && memberId
-        ? () => matchesApi.getCompetitionMatchesWithMemberPredictions(competitionId, memberId)
+      competitionId && memberId
+        ? () => {
+            if (view) return matchesApi.getTournamentMatchesByView(competitionId, memberId, view);
+            if (stage) return matchesApi.getTournamentMatches(competitionId, memberId, stage);
+            return matchesApi.getCompetitionMatchesWithMemberPredictions(competitionId, memberId);
+          }
         : skipToken,
+    staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
 };
 
-export const useGetTournamentMatches = ({
-  competitionId,
-  memberId,
-  enabled = true,
-}: {
-  competitionId: number;
-  memberId: string;
-  enabled?: boolean;
-}) => {
+export const useGetTournamentActiveStage = ({ competitionId }: { competitionId: number | null }) => {
   return useQuery({
-    queryKey: KEYS.matches.tournament(competitionId, memberId),
-    queryFn:
-      enabled && competitionId && memberId
-        ? () => matchesApi.getTournamentMatchesWithMemberPredictions(competitionId, memberId)
-        : skipToken,
+    queryKey: competitionId ? ['matches', competitionId, 'active-stage'] : ['matches', 'disabled'],
+    queryFn: competitionId ? () => matchesApi.getTournamentActiveStage(competitionId) : skipToken,
+    staleTime: 1000 * 60 * 5,
   });
 };
 export const useGetMemberFinishedMatches = (memberId: string, competitionId: number, fixture?: number) => {

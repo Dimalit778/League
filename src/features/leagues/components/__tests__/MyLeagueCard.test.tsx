@@ -22,6 +22,7 @@ const mockItem = {
       code: 'PL',
       created_at: '2026-01-01',
       current_fixture: 1,
+      current_stage: 'LEAGUE',
       flag: 'https://example.com/flag.png',
       id: 1,
       logo: 'https://example.com/logo.png',

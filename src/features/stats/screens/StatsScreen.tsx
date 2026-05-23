@@ -4,14 +4,14 @@ import PredictionChart from '@/features/stats/components/stats/PredictionChart';
 import SkeletonStats from '@/features/stats/components/stats/SkeletonStats';
 import StatsCard from '@/features/stats/components/stats/StatsCard';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import { StatsType } from '../types';
 const StatsScreen = () => {
-  const memberId = useMemberStore((s) => s.memberId) as string;
+  const memberId = useMemberStore(selectMemberId) as string;
   const isFocused = useIsFocused();
   const { t } = useTranslation();
 

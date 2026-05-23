@@ -2,7 +2,7 @@ import { LoadingOverlay } from '@/components/layout';
 import { AvatarImage } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -18,8 +18,8 @@ type AvatarSectionProps = {
 export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
-  const memberId = useMemberStore((s) => s.memberId);
-  const leagueId = useMemberStore((s) => s.leagueId);
+  const memberId = useMemberStore(selectMemberId);
+  const leagueId = useMemberStore(selectLeagueId);
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);

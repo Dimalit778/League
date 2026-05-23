@@ -20,6 +20,7 @@ export type Database = {
           code: string
           created_at: string
           current_fixture: number | null
+          current_stage: string | null
           flag: string
           id: number
           logo: string
@@ -36,6 +37,7 @@ export type Database = {
           code: string
           created_at?: string
           current_fixture?: number | null
+          current_stage?: string | null
           flag: string
           id: number
           logo: string
@@ -52,6 +54,7 @@ export type Database = {
           code?: string
           created_at?: string
           current_fixture?: number | null
+          current_stage?: string | null
           flag?: string
           id?: number
           logo?: string
@@ -225,6 +228,78 @@ export type Database = {
           {
             foreignKeyName: "matches_home_team_id_fkey"
             columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_group_standings: {
+        Row: {
+          competition_id: number
+          created_at: string
+          drawn: number
+          fixtures_played: number
+          goals_against: number
+          goals_difference: number
+          goals_for: number
+          group: string
+          id: number
+          lost: number
+          points: number
+          position: number
+          season_id: number | null
+          team_id: number
+          updated_at: string
+          won: number
+        }
+        Insert: {
+          competition_id: number
+          created_at?: string
+          drawn?: number
+          fixtures_played?: number
+          goals_against?: number
+          goals_difference?: number
+          goals_for?: number
+          group: string
+          id?: number
+          lost?: number
+          points?: number
+          position: number
+          season_id?: number | null
+          team_id: number
+          updated_at?: string
+          won?: number
+        }
+        Update: {
+          competition_id?: number
+          created_at?: string
+          drawn?: number
+          fixtures_played?: number
+          goals_against?: number
+          goals_difference?: number
+          goals_for?: number
+          group?: string
+          id?: number
+          lost?: number
+          points?: number
+          position?: number
+          season_id?: number | null
+          team_id?: number
+          updated_at?: string
+          won?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_group_standings_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_group_standings_team_id_fkey"
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]

@@ -27,22 +27,24 @@ describe('competitionApi', () => {
     });
   });
 
-  describe('getCompetitionFixtures', () => {
+  describe('getCompetitionMatchMeta', () => {
     it('returns fixtures array and current fixture', async () => {
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
-          data: { current_fixture: 5, total_fixtures: 38, type: 'league' },
+          data: { id: 1, current_fixture: 5, total_fixtures: 38, type: 'league', current_stage: 'LEAGUE', season_id: 2026 },
           error: null,
         }),
       });
 
-      const result = await competitionApi.getCompetitionFixtures(1);
+      const result = await competitionApi.getCompetitionMatchMeta(1);
       expect(result.id).toBe(1);
       expect(result.currentFixture).toBe(5);
       expect(result.totalFixtures).toBe(38);
       expect(result.type).toBe('league');
+      expect(result.displayType).toBe('LEAGUE');
+      expect(result.seasonId).toBe(2026);
       expect(result.allFixtures).toHaveLength(38);
       expect(result.allFixtures[0]).toBe(1);
       expect(result.allFixtures[37]).toBe(38);

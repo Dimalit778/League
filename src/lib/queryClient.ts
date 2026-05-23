@@ -41,10 +41,10 @@ export const KEYS = {
       memberId
         ? (['matches', competitionId, 'fixture', fixture, 'member', memberId] as const)
         : (['matches', competitionId, 'fixture', fixture] as const),
+    fixture: (competitionId: number, fixture: number, memberId: string, stage?: string) =>
+      ['matches', competitionId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
     byCompetition: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'competition', 'member', memberId] as const,
-    tournament: (competitionId: number, memberId: string) =>
-      ['matches', competitionId, 'tournament', 'member', memberId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
   },
@@ -66,6 +66,13 @@ export const KEYS = {
   competitions: {
     all: ['competitions'] as const,
     fixtures: (competitionId: number) => ['competitions', competitionId.toString(), 'fixtures'] as const,
+    matchMeta: (competitionId: number) => ['competitions', competitionId.toString(), 'match-meta'] as const,
+  },
+
+  // ==================== STANDINGS ====================
+  standings: {
+    group: (competitionId: number, seasonId: number | null | undefined, group: string) =>
+      ['standings', competitionId, seasonId ?? 'current', 'group', group] as const,
   },
 
   // ==================== SUBSCRIPTIONS ====================
@@ -80,6 +87,7 @@ export const KEYS = {
     users: ['admin', 'users'] as const,
     leagues: ['admin', 'leagues'] as const,
     members: ['admin', 'members'] as const,
+    leagueMembers: ['admin', 'members'] as const,
     predictions: ['admin', 'predictions'] as const,
     competitions: ['admin', 'competitions'] as const,
   },

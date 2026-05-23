@@ -1,7 +1,7 @@
 import { KEYS } from '@/lib/queryClient';
 import { userService } from '../queries/usersService';
 
-import { useMemberStore } from '@/store/MemberStore';
+import { useAuthStore } from '@/store/AuthStore';
 import { TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
@@ -17,7 +17,7 @@ export const useGetUser = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
-  const userId = useMemberStore((s) => s.userId) ?? '';
+  const userId = useAuthStore((s) => s.user?.id) ?? '';
   return useMutation({
     mutationFn: ({ updates }: { updates: TablesUpdate<'users'> }) => {
       return userService.updateUserProfile(userId, updates);

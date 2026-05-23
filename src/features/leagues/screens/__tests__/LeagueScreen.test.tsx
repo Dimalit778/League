@@ -19,12 +19,23 @@ jest.mock('expo-image', () => {
   };
 });
 
-jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: () => ({
-    leagueId: 'l1',
-    memberId: 'm1',
-  }),
-}));
+jest.mock('@/store/MemberStore', () => {
+  const actual = jest.requireActual('@/store/MemberStore');
+  const mockState = {
+    activeMember: {
+      id: 'm1',
+      league: { id: 'l1' },
+    },
+    setActiveMember: jest.fn(),
+    initializeMember: jest.fn(),
+    clearMember: jest.fn(),
+  };
+
+  return {
+    ...actual,
+    useMemberStore: (selector: any) => selector(mockState),
+  };
+});
 
 jest.mock('@/components/layout', () => {
   const { Text, View } = require('react-native');

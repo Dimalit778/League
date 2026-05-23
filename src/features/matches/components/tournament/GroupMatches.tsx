@@ -1,15 +1,19 @@
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
-import { getTournamentGroups, GROUP_STAGE, normalizedGroupLetter } from '../../utils/tournamentMatches';
+import { isGroupPhaseStage } from '../../types/footballStages';
+import { getTournamentGroups, normalizedGroupLetter } from '../../utils/tournamentMatches';
 import Match from './Match';
+import { GroupTabs } from './TournametTabs';
 
 type GroupMatchesProps = {
   matches: MatchWithPredictionsType[];
   onRefresh: () => void;
+  selectedGroup?: string;
+  onSelectGroup?: (group: string) => void;
+  showGroupTabs?: boolean;
 };
 
 type MatchDaySection = {
@@ -17,13 +21,6 @@ type MatchDaySection = {
   label: string;
   timestamp: number;
   matches: MatchWithPredictionsType[];
-};
-
-type SelectionTabsProps = {
-  items: string[];
-  selected: string;
-  labelFor: (item: string) => string;
-  onSelect: (item: string) => void;
 };
 
 const getLocalDayKey = (date: string) => {
@@ -48,50 +45,35 @@ const formatMatchDayLabel = (date: string, locale: string) => {
   return `${weekday} ${day}.${month}`;
 };
 
-const SelectionTabs = ({ items, selected, labelFor, onSelect }: SelectionTabsProps) => {
-  const { t } = useTranslation();
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 8 }}
-    >
-      {items.map((item) => {
-        const active = selected === item;
-        return (
-          <Pressable
-            key={item}
-            onPress={() => onSelect(item)}
-            className={cn(
-              'rounded-lg justify-center items-center mx-1 px-4 py-1.5 min-w-[60px]',
-              active ? 'bg-primary' : 'border border-border',
-            )}
-          >
-            <CText variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
-              {t('Group')} {labelFor(item)}
-            </CText>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
-  );
-};
-export default function GroupMatches({ matches, onRefresh }: GroupMatchesProps) {
+export default function GroupMatches({
+  matches,
+  onRefresh,
+  selectedGroup: controlledSelectedGroup,
+  onSelectGroup,
+  showGroupTabs = true,
+}: GroupMatchesProps) {
   const { t, language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
   const groups = useMemo(() => getTournamentGroups(matches), [matches]);
-  const [selectedGroup, setSelectedGroup] = useState(groups[0] ?? '');
+  const [internalSelectedGroup, setInternalSelectedGroup] = useState(groups[0] ?? '');
+  const selectedGroup = controlledSelectedGroup ?? internalSelectedGroup;
+  const setSelectedGroup = useCallback(
+    (group: string) => {
+      if (onSelectGroup) onSelectGroup(group);
+      else setInternalSelectedGroup(group);
+    },
+    [onSelectGroup],
+  );
 
   useEffect(() => {
-    setSelectedGroup((prev) => (groups.includes(prev) ? prev : (groups[0] ?? '')));
-  }, [groups]);
+    if (!groups.includes(selectedGroup)) {
+      setSelectedGroup(groups[0] ?? '');
+    }
+  }, [groups, selectedGroup, setSelectedGroup]);
 
   const filteredMatches = useMemo(() => {
     if (!selectedGroup) return [];
-    return matches.filter((m) => {
-      if (m.stage !== GROUP_STAGE) return false;
-      return normalizedGroupLetter(m.group) === selectedGroup;
-    });
+    return matches.filter((m) => isGroupPhaseStage(m.stage) && normalizedGroupLetter(m.group) === selectedGroup);
   }, [matches, selectedGroup]);
 
   const matchDaySections = useMemo(() => {
@@ -119,8 +101,8 @@ export default function GroupMatches({ matches, onRefresh }: GroupMatchesProps) 
   }, [filteredMatches, locale]);
 
   return (
-    <View>
-      <SelectionTabs items={groups} selected={selectedGroup} labelFor={(group) => group} onSelect={setSelectedGroup} />
+    <View className="flex-1">
+      <GroupTabs groups={groups} selectedGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}

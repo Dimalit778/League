@@ -75,9 +75,27 @@ describe('KEYS', () => {
       expect(key).toEqual(['matches', 100, 'competition', 'member', 'm1']);
     });
 
-    it('generates tournament key', () => {
-      const key = KEYS.matches.tournament(100, 'm1');
-      expect(key).toEqual(['matches', 100, 'tournament', 'member', 'm1']);
+    it('generates phase-specific keys', () => {
+      expect(KEYS.matches.fixture(100, 5, 'm1')).toEqual([
+        'matches',
+        100,
+        'phase',
+        'fixture',
+        5,
+        'member',
+        'm1',
+        'all',
+      ]);
+      expect(KEYS.matches.fixture(100, 5, 'm1', 'LEAGUE_STAGE')).toEqual([
+        'matches',
+        100,
+        'phase',
+        'fixture',
+        5,
+        'member',
+        'm1',
+        'LEAGUE_STAGE',
+      ]);
     });
   });
 
@@ -102,6 +120,17 @@ describe('KEYS', () => {
 
     it('generates fixtures key', () => {
       expect(KEYS.competitions.fixtures(100)).toEqual(['competitions', '100', 'fixtures']);
+    });
+
+    it('generates match meta key', () => {
+      expect(KEYS.competitions.matchMeta(100)).toEqual(['competitions', '100', 'match-meta']);
+    });
+  });
+
+  describe('standings', () => {
+    it('generates group standings key', () => {
+      expect(KEYS.standings.group(100, 2026, 'A')).toEqual(['standings', 100, 2026, 'group', 'A']);
+      expect(KEYS.standings.group(100, null, 'A')).toEqual(['standings', 100, 'current', 'group', 'A']);
     });
   });
 

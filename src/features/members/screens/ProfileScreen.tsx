@@ -8,15 +8,15 @@ import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useMemberProfile } from '../hooks/useMembers';
 
 const ProfileScreen = () => {
-  const leagueId = useMemberStore((s) => s.leagueId);
-  const memberId = useMemberStore((s) => s.memberId) as string;
+  const leagueId = useMemberStore(selectLeagueId);
+  const memberId = useMemberStore(selectMemberId) as string;
   const { t } = useTranslation();
   const { data: memberData, isLoading: memberLoading, error: memberError } = useMemberProfile(memberId);
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId as string);

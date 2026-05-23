@@ -10,11 +10,10 @@ export const useSubscription = () => {
   const userId = user?.id ?? null;
 
   return useQuery({
-    queryKey: ['subscriptions', userId],
-    queryFn: () => {
-      return subscriptionApi.getCurrentSubscription(userId as string);
-    },
+    queryKey: userId ? KEYS.subscriptions.detail(userId) : (['subscriptions', 'unknown'] as const),
+    queryFn: () => subscriptionApi.getCurrentSubscription(userId as string),
     enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
   });
 };
 

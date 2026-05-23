@@ -1,7 +1,7 @@
 import { Error, Screen } from '@/components/layout';
 import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
@@ -10,8 +10,8 @@ import LeaderboardCard from '../components/LeaderboardCard';
 import TopThree from '../components/TopThree';
 
 const LeagueScreen = () => {
-  const leagueId = useMemberStore((s) => s.leagueId ?? '');
-  const memberId = useMemberStore((s) => s.memberId ?? '');
+  const leagueId = useMemberStore(selectLeagueId) ?? '';
+  const memberId = useMemberStore(selectMemberId) ?? '';
 
   const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
 

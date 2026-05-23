@@ -186,6 +186,15 @@ jest.mock('@/hooks/useConfirmDialog', () => ({
   }),
 }));
 
+jest.mock('@/features/auth/components/AppleAuth', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: () => React.createElement(View, null),
+  };
+});
+
 jest.mock('expo-auth-session', () => ({
   makeRedirectUri: jest.fn(() => 'league://redirect'),
 }));
@@ -209,6 +218,25 @@ jest.mock('expo-image-picker', () => ({
     Promise.resolve({ granted: true })
   ),
   MediaTypeOptions: { Images: 'Images' },
+}));
+
+jest.mock('expo-apple-authentication', () => ({
+  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+  signInAsync: jest.fn(() =>
+    Promise.resolve({
+      identityToken: 'mock-apple-id-token',
+      authorizationCode: 'mock-auth-code',
+      fullName: null,
+      email: null,
+      user: 'mock-apple-user',
+      state: null,
+      realUserStatus: 1,
+    })
+  ),
+  AppleAuthenticationScope: {
+    FULL_NAME: 0,
+    EMAIL: 1,
+  },
 }));
 
 jest.mock('@react-native-google-signin/google-signin', () => ({
@@ -252,6 +280,12 @@ jest.mock('@/lib/supabase', () => ({
     auth: {
       signUp: jest.fn(),
       signInWithPassword: jest.fn(),
+      signInWithIdToken: jest.fn(() =>
+        Promise.resolve({
+          data: { session: { user: { id: 'test-user-id' } } },
+          error: null,
+        })
+      ),
       signOut: jest.fn(),
       resetPasswordForEmail: jest.fn(),
       updateUser: jest.fn(),

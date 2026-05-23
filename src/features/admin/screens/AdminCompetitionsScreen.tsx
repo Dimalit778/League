@@ -9,10 +9,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const initialFormState = {
   id: '',
   name: '',
-  country: '',
+  area: '',
+  code: '',
   flag: '',
   logo: '',
   type: '',
+  displayType: 'LEAGUE',
   season: '',
 };
 
@@ -41,8 +43,8 @@ const AdminCompetitionsScreen = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (!form.id || !form.name || !form.country || !form.flag || !form.logo) {
-      setValidationError('ID, name, country, flag and logo are required.');
+    if (!form.id || !form.name || !form.area || !form.code || !form.flag || !form.logo) {
+      setValidationError('ID, name, area, code, flag and logo are required.');
       return;
     }
 
@@ -64,11 +66,13 @@ const AdminCompetitionsScreen = () => {
       {
         id: idAsNumber,
         name: form.name.trim(),
-        country: form.country.trim(),
+        area: form.area.trim(),
+        code: form.code.trim(),
         flag: form.flag.trim(),
         logo: form.logo.trim(),
-        type: form.type ? form.type.trim() : undefined,
-        season: seasonAsNumber ?? undefined,
+        type: form.type.trim() || 'league',
+        current_stage: form.displayType.trim() || null,
+        season_id: seasonAsNumber ?? undefined,
       },
       {
         onSuccess: () => {
@@ -79,7 +83,19 @@ const AdminCompetitionsScreen = () => {
         },
       }
     );
-  }, [addCompetition, form.country, form.flag, form.id, form.logo, form.name, form.season, form.type, resetForm]);
+  }, [
+    addCompetition,
+    form.area,
+    form.code,
+    form.displayType,
+    form.flag,
+    form.id,
+    form.logo,
+    form.name,
+    form.season,
+    form.type,
+    resetForm,
+  ]);
 
   const handleRemove = useCallback(
     (id: number, name: string) => {
@@ -119,10 +135,12 @@ const AdminCompetitionsScreen = () => {
             {[
               { key: 'id', label: 'Competition ID', keyboardType: 'numeric' },
               { key: 'name', label: 'Name' },
-              { key: 'country', label: 'Country' },
+              { key: 'area', label: 'Area' },
+              { key: 'code', label: 'Code' },
               { key: 'flag', label: 'Flag URL' },
               { key: 'logo', label: 'Logo URL' },
               { key: 'type', label: 'Type (optional)' },
+              { key: 'displayType', label: 'Display Type' },
               {
                 key: 'season',
                 label: 'Season (optional)',
@@ -134,7 +152,7 @@ const AdminCompetitionsScreen = () => {
                 <TextInput
                   value={form[field.key as keyof FormState]}
                   onChangeText={(value) => handleChange(field.key as keyof FormState, value)}
-                  keyboardType={field.keyboardType ? field.keyboardType : 'default'}
+                  keyboardType={field.keyboardType === 'numeric' ? 'numeric' : 'default'}
                   className="bg-background border border-border rounded-xl px-3 py-3 text-text"
                   placeholder={field.label}
                   placeholderTextColor="#888"
@@ -168,7 +186,7 @@ const AdminCompetitionsScreen = () => {
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1 mr-4">
                   <CText className="text-text text-lg font-semibold">{competition.name}</CText>
-                  <CText className="text-text/70 text-sm">{competition.country}</CText>
+                  <CText className="text-text/70 text-sm">{competition.area}</CText>
                   <CText className="text-text/50 text-xs">ID: {competition.id}</CText>
                 </View>
                 <Button
@@ -200,9 +218,13 @@ const AdminCompetitionsScreen = () => {
                   <CText className="text-text/50 text-xs uppercase tracking-wide">Type</CText>
                   <CText className="text-text text-sm">{competition.type ?? 'N/A'}</CText>
                 </View>
+                <View>
+                  <CText className="text-text/50 text-xs uppercase tracking-wide">Display</CText>
+                  <CText className="text-text text-sm">{competition.current_stage ?? 'LEAGUE'}</CText>
+                </View>
                 <View className="items-end">
                   <CText className="text-text/50 text-xs uppercase tracking-wide">Season</CText>
-                  <CText className="text-text text-sm">{competition.season ?? 'N/A'}</CText>
+                  <CText className="text-text text-sm">{competition.season_id ?? 'N/A'}</CText>
                 </View>
               </View>
             </View>

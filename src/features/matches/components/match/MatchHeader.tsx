@@ -33,6 +33,22 @@ function TeamCard({
   );
 }
 
+function TBDCard({ badgeSize }: { badgeSize: number }) {
+  return (
+    <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40 max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
+      <View
+        className="bg-white/10 rounded-full items-center justify-center mb-3"
+        style={{ width: badgeSize, height: badgeSize }}
+      >
+        <Ionicons name="help" size={badgeSize * 0.45} color="rgba(255,255,255,0.4)" />
+      </View>
+      <CText variant="body" className="text-white/50 text-center">
+        TBD
+      </CText>
+    </View>
+  );
+}
+
 function ScoreCard({
   homeScore,
   awayScore,
@@ -86,6 +102,11 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
   const { width } = useWindowDimensions();
   const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
 
+  // Teams can be null for future knockout matches where opponents aren't decided yet
+  const homeTeam = match.home_team ?? null;
+  const awayTeam = match.away_team ?? null;
+  const venue = homeTeam?.venue;
+
   return (
     <View style={{ paddingTop: insets.top }}>
       {/* Match Info Section */}
@@ -97,40 +118,47 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
               {dateFormat(match.kick_off)}
             </CText>
           </View>
-          {match.home_team.venue && (
+          {venue ? (
             <View className="flex-row items-center mt-2 justify-center">
               <Ionicons name="location-outline" size={20} color="#fff" />
               <CText variant="caption" className="text-white">
-                {match.home_team.venue}
+                {venue}
               </CText>
             </View>
-          )}
+          ) : null}
         </View>
       </View>
 
       {/* Teams and Score Section */}
-
       <View className="flex-row items-center justify-evenly w-full mx-auto">
-        <TeamCard
-          teamId={match.home_team.id}
-          name={match.home_team.name}
-          shortName={match.home_team?.shortName || match.home_team.name}
-          tla={match.home_team.tla}
-          badgeSize={badgeSize}
-        />
+        {homeTeam ? (
+          <TeamCard
+            teamId={homeTeam.id}
+            name={homeTeam.name}
+            shortName={homeTeam.shortName || homeTeam.name}
+            tla={homeTeam.tla}
+            badgeSize={badgeSize}
+          />
+        ) : (
+          <TBDCard badgeSize={badgeSize} />
+        )}
         <ScoreCard
           homeScore={match.score?.fullTime?.home || 0}
           awayScore={match.score?.fullTime?.away || 0}
           matchStatus={match.status || ''}
           kick_off={match.kick_off}
         />
-        <TeamCard
-          teamId={match.away_team.id}
-          name={match.away_team.name}
-          shortName={match.away_team?.shortName || match.away_team.name}
-          tla={match.away_team.tla}
-          badgeSize={badgeSize}
-        />
+        {awayTeam ? (
+          <TeamCard
+            teamId={awayTeam.id}
+            name={awayTeam.name}
+            shortName={awayTeam.shortName || awayTeam.name}
+            tla={awayTeam.tla}
+            badgeSize={badgeSize}
+          />
+        ) : (
+          <TBDCard badgeSize={badgeSize} />
+        )}
       </View>
     </View>
   );

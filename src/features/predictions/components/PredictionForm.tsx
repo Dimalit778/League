@@ -3,7 +3,7 @@ import { PredictionMemberType } from '@/features/matches/types';
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -53,7 +53,7 @@ const ScoreInput = ({ value, onIncrement, onDecrement }: ScoreInputProps) => {
 
 export default function PredictionForm({ prediction, matchId }: PredictionFormProps) {
   const { t } = useTranslation();
-  const memberId = useMemberStore((s) => s.memberId);
+  const memberId = useMemberStore(selectMemberId);
   const router = useRouter();
   const [homeScore, setHomeScore] = useState<number | 0>(0);
   const [awayScore, setAwayScore] = useState<number | 0>(0);

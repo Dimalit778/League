@@ -1,7 +1,7 @@
 import { Error, LoadingOverlay } from '@/components/layout';
 import { useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
-import { useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 
 import { Screen } from '@/components/layout';
 import { AvatarImage, BackButton, Button, CText } from '@/components/ui';
@@ -48,7 +48,7 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
 };
 export default function EditLeagueScreen() {
   const { data: primaryMember } = usePrimaryMember();
-  const leagueId = useMemberStore((s) => s.leagueId);
+  const leagueId = useMemberStore(selectLeagueId);
   const { t } = useTranslation();
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
 

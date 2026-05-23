@@ -1,28 +1,29 @@
 import { Error, Screen } from '@/components/layout';
-import { useGetCompetitionFixtures } from '@/features/leagues/hooks/useCompetition';
+import { useGetCompetitionMatchMeta } from '@/features/leagues/hooks/useCompetition';
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemberStore } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MatchesList from '../components/matches/MatchesList';
-import { useGetMatches } from '../hooks/useMatches';
-import { isLeagueCompetition } from '../utils/tournamentMatches';
-const MatchesScreen = () => {
-  const { data: fixturesData, isLoading: fixturesLoading, error: fixturesError } = useGetCompetitionFixtures();
-  console.log('fixturesData', JSON.stringify(fixturesData, null, 2));
-  const memberId = useMemberStore((s) => s.memberId) ?? '';
-  const competitionId = useMemberStore((s) => s.competitionId) ?? 0;
+import { useGetMatchesByFixture } from '../hooks/useMatches';
+
+type LeagueMatchesViewProps = {
+  competitionId: number;
+  memberId: string;
+  stage?: string;
+  withScreen?: boolean;
+};
+
+export default function LeagueMatches({ competitionId, memberId, stage, withScreen = true }: LeagueMatchesViewProps) {
+  const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionMatchMeta();
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
-  const allFixtures = useMemo(() => fixturesData?.allFixtures ?? [], [fixturesData?.allFixtures]);
-
-  const currentFixture = fixturesData?.currentFixture ?? 1;
-  const isLeague = isLeagueCompetition(fixturesData?.type);
+  const allFixtures = useMemo(() => matchMeta?.allFixtures ?? [], [matchMeta?.allFixtures]);
+  const currentFixture = matchMeta?.currentFixture ?? 1;
 
   const pathname = usePathname();
   const [selectedFixture, setSelectedFixture] = useState<number>(currentFixture);
@@ -78,11 +79,12 @@ const MatchesScreen = () => {
     isLoading: matchesLoading,
     refetch: matchesRefetch,
     error: matchesError,
-  } = useGetMatches({
+  } = useGetMatchesByFixture({
     selectedFixture,
     competitionId,
-    memberId: memberId,
-    enabled: !!fixturesData,
+    memberId,
+    stage,
+    enabled: !!matchMeta,
   });
 
   const fixtureDateRanges = useMemo(() => {
@@ -94,7 +96,6 @@ const MatchesScreen = () => {
       if (fixtureMatches.length === 0) return;
 
       const dates = fixtureMatches.map((m) => new Date(m.kick_off)).sort((a, b) => a.getTime() - b.getTime());
-
       const startDate = dates[0];
       const endDate = dates[dates.length - 1];
 
@@ -106,19 +107,21 @@ const MatchesScreen = () => {
     return ranges;
   }, [matches, allFixtures, locale]);
 
-  if (fixturesError || matchesError) return <Error error={fixturesError || matchesError || ''} />;
+  if (metaError || matchesError) return <Error error={metaError || matchesError || ''} />;
 
-  if (fixturesLoading || !fixturesData || (isLeague && (matchesLoading || !selectedFixture))) {
-    return (
-      <Screen>
-        {isLeague && <SkeletonFixtures />}
+  if (metaLoading || !matchMeta || matchesLoading || !selectedFixture) {
+    const content = (
+      <>
+        <SkeletonFixtures />
         <SkeletonMatches />
-      </Screen>
+      </>
     );
+
+    return withScreen ? <Screen>{content}</Screen> : content;
   }
 
-  return (
-    <Screen>
+  const content = (
+    <>
       <FixturesList
         fixtures={allFixtures}
         selectedFixture={selectedFixture}
@@ -129,8 +132,8 @@ const MatchesScreen = () => {
       />
 
       <MatchesList matches={matches} onRefresh={matchesRefetch} />
-    </Screen>
+    </>
   );
-};
 
-export default MatchesScreen;
+  return withScreen ? <Screen>{content}</Screen> : content;
+}

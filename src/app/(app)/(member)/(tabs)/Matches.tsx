@@ -1,14 +1,16 @@
-import MatchesScreen from '@/features/matches/screens/MatchesScreen';
+import { Error } from '@/components/layout';
+import LeagueMatches from '@/features/matches/screens/LeagueMatches';
 import TournamentScreen from '@/features/matches/screens/TournamentScreen';
-import { useMemberStore } from '@/store/MemberStore';
-
+import { selectCompetition, selectMemberId, useMemberStore } from '@/store/MemberStore';
 export default function Matches() {
-  const data = useMemberStore((s) => s.activeMember);
+  const memberId = useMemberStore(selectMemberId);
+  const competition = useMemberStore(selectCompetition);
 
-  const isLeague = data?.league?.competition?.type?.toLowerCase() === 'league';
+  if (!memberId || !competition?.id) return <Error error="No active league selected" />;
 
-  if (isLeague) {
-    return <MatchesScreen />;
+  if (competition?.type?.toUpperCase() === 'CUP') {
+    return <TournamentScreen />;
   }
-  return <TournamentScreen />;
+
+  return <LeagueMatches competitionId={competition?.id} memberId={memberId} />;
 }
