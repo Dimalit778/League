@@ -29,7 +29,7 @@ export default memo(function MatchesCard({ match }: MatchesCardProps) {
   const predictionResult = getPredictionResultLabel(prediction?.points, prediction?.is_finished, isFinished);
 
   return (
-    <View className="w-1/2">
+    <View className="w-full">
       <Link href={`/(app)/(member)/match/${match.id}`} asChild>
         <Pressable
           className="m-1.5 rounded-md border "

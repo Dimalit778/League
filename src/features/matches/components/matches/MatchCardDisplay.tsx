@@ -45,7 +45,7 @@ export const PredictionDisplay = ({ prediction, isFinished }: PredictionDisplayP
   const predictionResult = getPredictionResultLabel(prediction?.points, isPredictionFinished, isFinished);
   const predictionResultTitle = predictionResult?.title ?? '';
   return (
-    <View className="flex-row items-center justify-between ">
+    <View className="flex-row items-center justify-between  border-t border-border p-1">
       {isPredictionFinished && isFinished && (
         <View className="w-1/3 flex-row items-center">
           <CText variant="caption" className="text-text" style={{ color: predictionResult?.color }}>
@@ -99,7 +99,7 @@ export const TeamDisplay = ({ team, isDesktop }: TeamDisplayProps) => {
     <View className="flex-1  items-center ">
       <TeamBadge teamId={team.id} name={team.name} shortName={team.shortName} tla={team.tla} size={TEAM_LOGO_SIZE} />
       <CText variant="caption" className="text-center mt-2">
-        {isDesktop ? team.shortName || team.name : team.tla || team.shortName || team.name}
+        {isDesktop ? team.shortName || team.name : team.shortName || team.name || team.tla}
       </CText>
     </View>
   );

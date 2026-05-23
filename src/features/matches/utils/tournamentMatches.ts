@@ -1,5 +1,5 @@
 import { MatchWithPredictionsType, TeamType } from '../types';
-import { isDomesticLeagueStage, isGroupPhaseStage, isKnockoutOnlyStage } from '../types/footballStages';
+import { isDomesticLeagueStage, isGroupPhaseStage } from '../types/footballStages';
 
 export type ComputedStandingRow = {
   position: number;
@@ -29,32 +29,51 @@ export const computeLeagueStandings = (matches: MatchWithPredictionsType[]): Com
     if (!teamMap.has(homeId)) {
       teamMap.set(homeId, {
         team: match.home_team,
-        played: 0, won: 0, drawn: 0, lost: 0,
-        goalsFor: 0, goalsAgainst: 0, points: 0,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        points: 0,
       });
     }
     if (!teamMap.has(awayId)) {
       teamMap.set(awayId, {
         team: match.away_team,
-        played: 0, won: 0, drawn: 0, lost: 0,
-        goalsFor: 0, goalsAgainst: 0, points: 0,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        points: 0,
       });
     }
 
     const home = teamMap.get(homeId)!;
     const away = teamMap.get(awayId)!;
 
-    home.played++; away.played++;
-    home.goalsFor += homeGoals; home.goalsAgainst += awayGoals;
-    away.goalsFor += awayGoals; away.goalsAgainst += homeGoals;
+    home.played++;
+    away.played++;
+    home.goalsFor += homeGoals;
+    home.goalsAgainst += awayGoals;
+    away.goalsFor += awayGoals;
+    away.goalsAgainst += homeGoals;
 
     if (homeGoals > awayGoals) {
-      home.won++; home.points += 3; away.lost++;
+      home.won++;
+      home.points += 3;
+      away.lost++;
     } else if (awayGoals > homeGoals) {
-      away.won++; away.points += 3; home.lost++;
+      away.won++;
+      away.points += 3;
+      home.lost++;
     } else {
-      home.drawn++; home.points++;
-      away.drawn++; away.points++;
+      home.drawn++;
+      home.points++;
+      away.drawn++;
+      away.points++;
     }
   }
 
@@ -75,7 +94,9 @@ export const getLeagueFixtures = (matches: MatchWithPredictionsType[]): number[]
   Array.from(new Set(matches.map((m) => m.fixture).filter((f): f is number => f != null))).sort((a, b) => a - b);
 
 export const getMatchesByFixture = (matches: MatchWithPredictionsType[], fixture: number): MatchWithPredictionsType[] =>
-  matches.filter((m) => m.fixture === fixture).sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime());
+  matches
+    .filter((m) => m.fixture === fixture)
+    .sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime());
 
 export const GROUP_STAGE = 'GROUP_STAGE';
 export const LEAGUE_STAGE = 'LEAGUE_STAGE';
@@ -215,9 +236,7 @@ export const selectKnockoutMatches = (matches: MatchWithPredictionsType[]) =>
   matches.filter((match) => isKnockoutStage(match.stage));
 
 export const filterMatchesByGroup = (matches: MatchWithPredictionsType[], group: string) =>
-  matches.filter(
-    (match) => isGroupPhaseStage(match.stage) && normalizedGroupLetter(match.group) === group,
-  );
+  matches.filter((match) => isGroupPhaseStage(match.stage) && normalizedGroupLetter(match.group) === group);
 
 export const getStageLabel = (stage: string) => {
   const labels: Record<string, string> = {

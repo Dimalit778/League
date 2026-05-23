@@ -1,12 +1,12 @@
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
-import { Modal, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Modal, Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { computeLeagueStandings, getLeagueFixtures, getMatchesByFixture } from '../../utils/tournamentMatches';
+import MatchesList from '../matches/MatchesList';
+import { HorizontalTabs } from '../tournament/TournametTabs';
 import LeagueStandingsTable from './LeagueStandingsTable';
-import Match from './Match';
-import { HorizontalTabs } from './TournametTabs';
 
 type ChampionLeagueViewProps = {
   matches: MatchWithPredictionsType[];
@@ -31,7 +31,6 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
 
   return (
     <View className="flex-1">
-      {/* Fixtures row + Standings button */}
       <View className="flex-row items-center">
         <Pressable
           onPress={() => setShowStandings(true)}
@@ -50,18 +49,7 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
         </View>
       </View>
 
-      {/* Matches list */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 20 }}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
-      >
-        {fixtureMatches.length > 0 ? (
-          fixtureMatches.map((match) => <Match key={match.id} match={match} />)
-        ) : (
-          <CText className="text-muted text-center mt-6">{t('No matches found')}</CText>
-        )}
-      </ScrollView>
+      <MatchesList matches={fixtureMatches} onRefresh={onRefresh} />
 
       {/* Standings modal */}
       <Modal visible={showStandings} animationType="slide" presentationStyle="pageSheet">

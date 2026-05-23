@@ -229,6 +229,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Upgrade to Pro to unlock match statistics': 'Upgrade to Pro to unlock match statistics',
       Submitted: 'Submitted',
       'Fixture ID': 'Fixture ID',
+      'Enter prediction': 'Enter prediction',
     },
 
     // Profile and Settings
@@ -704,9 +705,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Create League': 'יצירת ליגה',
       'Edit League': 'עריכת ליגה',
       'Join League': 'הצטרפות לליגה',
-      'Leave League': 'יציאה מליגה',
+      'Leave League': 'עזוב ליגה',
       'League Details': 'פרטי ליגה',
-      Leave: 'יציאה מליגה',
+      Leave: 'עזוב ליגה',
       'League Name': 'שם הליגה',
       'League Created Successfully!': 'ליגה נוצרה בהצלחה!',
       'League name': 'שם הליגה',
@@ -795,6 +796,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Edit Prediction': 'עריכת צופיות',
       'My Prediction': 'הניחוש שלי',
       'Enter your prediction': 'הכנס תוצאה למשחק',
+      'Enter prediction': 'הוסף תוצאה ',
       'Save Prediction': 'שמור תוצאה',
       'Predicted Score': 'ניקוד צופיות',
       'Prediction Results': 'תוצאות ניחוש ',
@@ -820,7 +822,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     profile: {
       Profile: 'פרופיל',
       Settings: 'הגדרות',
-      'Leave League': 'יציאה מליגה',
+      'Leave League': 'עזוב ליגה',
       'Are you sure you want to leave this league?': 'האם אתה בטוח שברצונך לצאת מהליגה ?',
       'Delete League': 'מחיקת ליגה',
       'Permission required': 'הרשאה נדרשת',

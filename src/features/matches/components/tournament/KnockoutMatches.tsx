@@ -385,12 +385,14 @@ export default function KnockoutMatches({
 
   return (
     <View className="flex-1">
-      <KnockoutStageTabs
-        stages={stages}
-        selectedStage={selectedStage}
-        onSelectStage={setSelectedStage}
-        getLabel={getStageLabel}
-      />
+      {showStageTabs && (
+        <KnockoutStageTabs
+          stages={stages}
+          selectedStage={selectedStage}
+          onSelectStage={setSelectedStage}
+          getLabel={getStageLabel}
+        />
+      )}
 
       <FlatList
         ref={flatListRef}

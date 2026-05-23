@@ -1,5 +1,6 @@
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { formatMatchdayDate } from '@/utils/formats';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
@@ -23,36 +24,35 @@ type MatchDaySection = {
   matches: MatchWithPredictionsType[];
 };
 
-const getLocalDayKey = (date: string) => {
-  const dateObj = new Date(date);
-  if (Number.isNaN(dateObj.getTime())) return date;
+// const getLocalDayKey = (date: string) => {
+//   const dateObj = new Date(date);
+//   if (Number.isNaN(dateObj.getTime())) return date;
 
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
+//   const year = dateObj.getFullYear();
+//   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+//   const day = String(dateObj.getDate()).padStart(2, '0');
 
-  return `${year}-${month}-${day}`;
-};
+//   return `${year}-${month}-${day}`;
+// };
 
-const formatMatchDayLabel = (date: string, locale: string) => {
-  const dateObj = new Date(date);
-  if (Number.isNaN(dateObj.getTime())) return date;
+// const formatMatchDayLabel = (date: string, locale: string) => {
+//   const dateObj = new Date(date);
+//   if (Number.isNaN(dateObj.getTime())) return date;
 
-  const weekday = dateObj.toLocaleDateString(locale, { weekday: 'long' }).replace(/^יום\s+/, '');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+//   const weekday = dateObj.toLocaleDateString(locale, { weekday: 'long' }).replace(/^יום\s+/, '');
+//   const day = String(dateObj.getDate()).padStart(2, '0');
+//   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
 
-  return `${weekday} ${day}.${month}`;
-};
+//   return `${weekday} ${day}.${month}`;
+// };
 
 export default function GroupMatches({
   matches,
   onRefresh,
   selectedGroup: controlledSelectedGroup,
   onSelectGroup,
-  showGroupTabs = true,
 }: GroupMatchesProps) {
-  const { t, language } = useTranslation();
+  const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
   const groups = useMemo(() => getTournamentGroups(matches), [matches]);
   const [internalSelectedGroup, setInternalSelectedGroup] = useState(groups[0] ?? '');
@@ -78,12 +78,12 @@ export default function GroupMatches({
 
   const matchDaySections = useMemo(() => {
     const sections = filteredMatches.reduce<Record<string, MatchDaySection>>((acc, match) => {
-      const key = getLocalDayKey(match.kick_off);
+      const key = formatMatchdayDate(match.kick_off);
       const timestamp = new Date(match.kick_off).getTime();
 
       acc[key] = acc[key] ?? {
         key,
-        label: formatMatchDayLabel(match.kick_off, locale),
+        label: formatMatchdayDate(match.kick_off, locale),
         timestamp: Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp,
         matches: [],
       };
@@ -109,22 +109,18 @@ export default function GroupMatches({
         refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
       >
         <View>
-          {matchDaySections.length > 0 ? (
-            matchDaySections.map((section) => (
-              <View key={section.key} className="mb-2">
-                <View className="mb-1 px-2">
-                  <CText variant="caption" className="text-white/90 ">
-                    {section.label}
-                  </CText>
-                </View>
-                {section.matches.map((match) => (
-                  <Match key={match.id} match={match} />
-                ))}
+          {matchDaySections.map((section) => (
+            <View key={section.key} className="mb-2">
+              <View className="mb-1 px-2">
+                <CText variant="caption" className="text-white/90 ">
+                  {section.label}
+                </CText>
               </View>
-            ))
-          ) : (
-            <CText className="text-text text-center mt-6">{t('No matches found')}</CText>
-          )}
+              {section.matches.map((match) => (
+                <Match key={match.id} match={match} />
+              ))}
+            </View>
+          ))}
         </View>
       </ScrollView>
     </View>

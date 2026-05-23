@@ -19,7 +19,6 @@ export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
     <FlatList
       ref={flatListRef}
       data={matches}
-      numColumns={2}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}

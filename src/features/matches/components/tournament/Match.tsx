@@ -1,24 +1,18 @@
 import { CText } from '@/components/ui';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatTime } from '@/utils/formats';
 import { Link } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
+import { getPredictionResultLabel } from '../../utils/pointsColor';
+import { PredictionDisplay } from '../matches/MatchCardDisplay';
 import TeamBadge from '../TeamBadge';
 
-const CARD = {
-  bg: '#161b22',
-  border: 'rgba(255,255,255,0.06)',
-  badgeBg: '#2d333b',
-  headerBg: 'rgba(0,0,0,0.18)',
-  divider: 'rgba(255,255,255,0.05)',
-} as const;
-
 type Props = { match: MatchWithPredictionsType };
-
-type Prediction = MatchWithPredictionsType['predictions'][number];
 
 /* ─── Score / time block ──────────────────────────────────────── */
 function ScoreBlock({
@@ -51,10 +45,10 @@ function ScoreBlock({
   if (isLive) {
     return (
       <View className="px-2 items-center justify-center min-w-[72px] gap-1">
-        <CText variant="small" bold className="text-emerald-400">
+        <CText variant="small" bold className="text-success">
           {t('Live')}
         </CText>
-        <CText variant="h3" bold className="text-white">
+        <CText variant="h3" bold className="text-text">
           {`${homeScore ?? 0} - ${awayScore ?? 0}`}
         </CText>
       </View>
@@ -64,7 +58,7 @@ function ScoreBlock({
   if (isScheduled) {
     return (
       <View className="px-2 items-center justify-center min-w-[72px]">
-        <CText variant="h3" bold className="text-white">
+        <CText variant="h3" bold className="text-text">
           {formatTime(kickOff)}
         </CText>
       </View>
@@ -73,7 +67,7 @@ function ScoreBlock({
 
   return (
     <View className="px-2 min-w-[72px] items-center">
-      <CText variant="h3" className="text-white/80">
+      <CText variant="h3" className="text-text/80">
         —
       </CText>
     </View>
@@ -86,26 +80,9 @@ function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boole
 
   if (isFinished) {
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 10,
-          paddingVertical: 5,
-          backgroundColor: CARD.headerBg,
-          borderBottomWidth: 1,
-          borderBottomColor: CARD.divider,
-        }}
-      >
-        <View
-          style={{
-            borderRadius: 4,
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            backgroundColor: 'rgba(255,255,255,0.07)',
-          }}
-        >
-          <CText variant="small" bold style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, letterSpacing: 0.5 }}>
+      <View className="flex-row items-center px-2 py-1 bg-surface/18 border-b border-border">
+        <View className="rounded-md px-2 py-1 bg-surface/7">
+          <CText variant="small" bold className="text-text/40">
             FT
           </CText>
         </View>
@@ -115,20 +92,9 @@ function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boole
 
   if (isLive) {
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 5,
-          paddingHorizontal: 10,
-          paddingVertical: 5,
-          backgroundColor: CARD.headerBg,
-          borderBottomWidth: 1,
-          borderBottomColor: CARD.divider,
-        }}
-      >
-        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
-        <CText variant="small" bold style={{ color: '#4ade80', fontSize: 10, letterSpacing: 0.5 }}>
+      <View className="flex-row items-center gap-2 px-2 py-1 bg-surface/18 border-b border-border">
+        <View className="w-2 h-2 rounded-sm bg-success" />
+        <CText variant="small" bold className="text-success">
           {t('Live')}
         </CText>
       </View>
@@ -138,91 +104,9 @@ function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boole
   return null;
 }
 
-/* ─── Prediction footer ───────────────────────────────────────── */
-function PredictionFooter({
-  prediction,
-  isMatchFinished: finished,
-}: {
-  prediction: Prediction | undefined;
-  isMatchFinished: boolean;
-}) {
-  const { t } = useTranslation();
-
-  if (!prediction) {
-    // No prediction made — show a subtle placeholder only for unplayed matches
-    if (finished) return null;
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingVertical: 6,
-          borderTopWidth: 1,
-          borderTopColor: CARD.divider,
-          gap: 4,
-        }}
-      >
-        <CText variant="small" style={{ color: 'rgba(255,255,255,0.22)', fontSize: 11 }}>
-          {t('No prediction')}
-        </CText>
-      </View>
-    );
-  }
-
-  const scored = prediction.is_finished && finished;
-  const won = scored && prediction.points > 0;
-  const lost = scored && !won;
-
-  const bgColor = won ? 'rgba(74,222,128,0.09)' : lost ? 'rgba(248,113,113,0.07)' : 'transparent';
-
-  const textColor = won ? '#4ade80' : lost ? '#f87171' : 'rgba(255,255,255,0.5)';
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        gap: 8,
-        backgroundColor: bgColor,
-        borderTopWidth: 1,
-        borderTopColor: CARD.divider,
-      }}
-    >
-      {/* Label */}
-      <CText variant="small" style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11 }}>
-        {t('Prediction')}:
-      </CText>
-
-      {/* Predicted score */}
-      <CText variant="small" bold style={{ color: textColor, fontSize: 12 }}>
-        {prediction.home_score} – {prediction.away_score}
-      </CText>
-
-      {/* Points badge — only when scored */}
-      {scored && (
-        <View
-          style={{
-            borderRadius: 5,
-            paddingHorizontal: 7,
-            paddingVertical: 2,
-            backgroundColor: won ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.14)',
-          }}
-        >
-          <CText variant="small" bold style={{ color: textColor, fontSize: 11 }}>
-            {won ? `+${prediction.points}` : '0'} {t('pts')}
-          </CText>
-        </View>
-      )}
-    </View>
-  );
-}
-
 /* ─── Match card ──────────────────────────────────────────────── */
 export default memo(function Match({ match }: Props) {
+  const { colors } = useThemeTokens();
   const matchStatus = getMatchStatus(match.status);
   const isFinished = isMatchFinished(matchStatus);
   const isLive = isMatchLive(matchStatus);
@@ -236,20 +120,25 @@ export default memo(function Match({ match }: Props) {
   const awayName = match.away_team?.name ?? '—';
   const prediction = match.predictions?.[0];
 
+  const predictionResult = getPredictionResultLabel(prediction?.points, prediction?.is_finished, isFinished);
+
   return (
-    <View className="mb-2">
+    <View className="mb-2 w-full">
       <Link href={`/(app)/(member)/match/${match.id}`} asChild>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${homeName}, ${homeScore}-${awayScore}, ${awayName}`}
-          className="rounded-2xl overflow-hidden border"
-          style={{ backgroundColor: CARD.bg, borderColor: CARD.border }}
+          className="w-full rounded-2xl overflow-hidden border border-border bg-surface "
+          style={{
+            ...(isFinished && { backgroundColor: hexToRgba(colors.surface, 0.4) }),
+            ...(predictionResult ? { borderColor: predictionResult?.color } : { borderColor: colors.surface }),
+          }}
         >
           {/* Status header */}
           <CardHeader isFinished={isFinished} isLive={isLive} />
 
           {/* Teams + score */}
-          <View className="flex-1 flex-row items-center py-2 px-2">
+          <View className="w-full flex-row items-center py-2 px-2">
             <View className="flex-1 flex-row items-center gap-2 min-w-0 justify-end">
               <CText variant="caption" numberOfLines={2} className="text-center">
                 {match.home_team?.shortName}
@@ -275,7 +164,7 @@ export default memo(function Match({ match }: Props) {
           </View>
 
           {/* Prediction footer */}
-          <PredictionFooter prediction={prediction} isMatchFinished={isFinished} />
+          <PredictionDisplay prediction={prediction} isFinished={isFinished} />
         </Pressable>
       </Link>
     </View>

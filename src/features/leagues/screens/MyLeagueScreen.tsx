@@ -7,10 +7,10 @@ import { useMemberStore } from '@/store/MemberStore';
 import { CText } from '@/components/ui/CText';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { KEYS } from '@/lib/queryClient';
+import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useQueryClient } from '@tanstack/react-query';
 import { leagueApi } from '../api/leagueApi';
 import MyLeagueCard from '../components/MyLeagueCard';
 import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
@@ -61,6 +61,8 @@ const MyLeagues = () => {
     );
   }
   if (error) return <Error error={error as Error} />;
+  // console.log('leagues', leagues);
+  console.log('subscription', JSON.stringify(subscription, null, 2));
 
   const limit = subscription?.limits.maxLeagues ?? 0;
   const reachedLimit = limit > 0 && leagues.length >= limit;

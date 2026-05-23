@@ -187,14 +187,7 @@ export const leagueApi = {
 
     return data;
   },
-  async deleteLeague(leagueId: string) {
-    const { data, error } = await supabase.rpc('delete_owned_league', {
-      p_league_id: leagueId,
-    });
 
-    if (error) throw new Error(error.message || 'Failed to delete league');
-    return data;
-  },
   async findLeagueByJoinCode(joinCode: string) {
     const { data, error } = await supabase.rpc('find_league_by_code', {
       p_join_code: joinCode,

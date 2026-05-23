@@ -1,5 +1,5 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { Button, CText } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { AvatarSection } from '@/features/members/components/profile/AvatarSection';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
@@ -9,8 +9,7 @@ import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useMemberProfile } from '../hooks/useMembers';
 
@@ -38,22 +37,6 @@ const ProfileScreen = () => {
       ],
     });
   };
-  const confirmDeleteLeague = () => {
-    if (!leagueId || !memberData?.user_id) return;
-    showAlert({
-      title: t('Delete League'),
-      message: t('Are you sure you want to delete this league?'),
-      type: 'warning',
-      buttons: [
-        { text: t('Cancel'), style: 'cancel' },
-        {
-          text: t('Delete'),
-          style: 'destructive',
-          onPress: () => deleteLeague.mutate({ leagueId, userId: memberData.user_id }),
-        },
-      ],
-    });
-  };
 
   if (memberLoading || leagueLoading) return <ProfileSkeleton />;
   if (memberError || leagueError)
@@ -78,18 +61,6 @@ const ProfileScreen = () => {
             onPress={confirmLeaveLeague}
             disabled={leaveLeague.isPending}
           />
-          {leagueData.owner_id === memberData?.user_id && (
-            <View className=" flex-row justify-center  items-center mt-4">
-              <TouchableOpacity
-                onPress={confirmDeleteLeague}
-                disabled={deleteLeague.isPending}
-                className="flex-row items-center gap-2 bg-red-800 rounded-lg p-3"
-              >
-                <CText className="text-white text-sm font-semibold">{t('Delete League')}</CText>
-                <FontAwesome6 name="trash" size={16} color="white" />
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </KeyboardAwareScrollView>
       <DialogComponent />
