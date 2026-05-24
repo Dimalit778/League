@@ -1,3 +1,4 @@
+import { purchasesService } from '@/features/subscription/services/purchases';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/AuthStore';
 import type { Session } from '@supabase/supabase-js';
@@ -42,11 +43,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let isMounted = true;
 
+    try {
+      purchasesService.configure(null);
+    } catch {
+      // RevenueCat keys may be missing in local/dev environments.
+    }
+
     supabase.auth
       .getSession()
       .then(async ({ data: { session } }) => {
         if (!isMounted) return;
         await syncSessionUser(session, () => isMounted);
+        try {
+          await purchasesService.setUser(session?.user?.id ?? null);
+        } catch {
+          // Ignore RevenueCat login errors during auth bootstrap.
+        }
       })
       .catch(() => {
         if (!isMounted) return;
@@ -64,7 +76,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         await syncSessionUser(session, () => isMounted);
+        try {
+          await purchasesService.setUser(session?.user?.id ?? null);
+        } catch {
+          // Ignore RevenueCat login errors during auth state changes.
+        }
       } else if (event === 'SIGNED_OUT') {
+        try {
+          await purchasesService.setUser(null);
+        } catch {
+          // Ignore RevenueCat logout errors during sign out.
+        }
         setSignedOut();
       } else {
         useAuthStore.setState({ isAuthLoading: false });

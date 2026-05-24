@@ -24,14 +24,13 @@ export const getSubscriptionLimits = (subscriptionType: SubscriptionType | null)
 };
 
 export const getDefaultFreeSubscription = (userId: string): SubscriptionDetails => {
-  // Create a virtual FREE subscription that isn't stored in the database
   return {
     id: 'free-' + userId,
     user_id: userId,
     subscription_type: 'FREE',
     start_date: new Date().toISOString(),
-    end_date: new Date(2099, 11, 31).toISOString(), // Far future date
-    access_advanced_stats: false,
-    can_add_members: false,
+    end_date: new Date(2099, 11, 31).toISOString(),
+    product_id: null,
+    transaction_id: null,
   };
 };

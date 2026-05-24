@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { SubscriptionDetailsWithLimits, SubscriptionType } from '../types';
+import { SubscriptionDetailsWithLimits } from '../types';
 import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getSubscriptionLimits';
 
 export const subscriptionApi = {
@@ -23,50 +23,6 @@ export const subscriptionApi = {
     }
     const limits = getSubscriptionLimits(data.subscription_type);
     return { ...data, limits };
-  },
-
-  async createSubscription(
-    userId: string,
-    subscriptionType: SubscriptionType,
-    startDate: Date = new Date(),
-    endDate: Date = new Date(new Date().setMonth(new Date().getMonth() + 1))
-  ) {
-    // For FREE subscription, just return the default virtual subscription without saving to database
-    if (subscriptionType === 'FREE') {
-      return getDefaultFreeSubscription(userId);
-    }
-
-    // For paid subscriptions (BASIC, PREMIUM), save to database
-    const { data, error } = await supabase
-      .from('subscription')
-      .insert({
-        user_id: userId,
-        subscription_type: subscriptionType,
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        access_advanced_stats: true,
-        can_add_members: true,
-      })
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-    return data;
-  },
-
-  async cancelSubscription(subscriptionId: string) {
-    // Set end date to current date to effectively cancel the subscription
-    const { data, error } = await supabase
-      .from('subscription')
-      .update({
-        end_date: new Date().toISOString(),
-      })
-      .eq('id', subscriptionId)
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-    return data;
   },
 
   async getUserLeagueCount(userId: string): Promise<number> {

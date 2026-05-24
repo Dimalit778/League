@@ -53,8 +53,8 @@ describe('subscriptionApi', () => {
       expect(sub.user_id).toBe('user-123');
       expect(sub.subscription_type).toBe('FREE');
       expect(sub.id).toBe('free-user-123');
-      expect(sub.access_advanced_stats).toBe(false);
-      expect(sub.can_add_members).toBe(false);
+      expect(sub.product_id).toBeNull();
+      expect(sub.transaction_id).toBeNull();
     });
 
     it('sets a far future end date', () => {

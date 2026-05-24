@@ -315,6 +315,9 @@ deno_version = 1
 [functions.sync-current-matchday]
 verify_jwt = false
 
+[functions.revenuecat-webhook]
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 

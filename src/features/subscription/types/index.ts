@@ -8,8 +8,8 @@ type SubscriptionDetails = {
   subscription_type: SubscriptionType;
   start_date: string;
   end_date: string;
-  access_advanced_stats: boolean;
-  can_add_members: boolean;
+  product_id?: string | null;
+  transaction_id?: string | null;
 };
 
 type SubscriptionLimits = {

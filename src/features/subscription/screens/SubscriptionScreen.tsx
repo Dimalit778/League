@@ -2,6 +2,9 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { KEYS } from '@/lib/queryClient';
+import { useAuthStore } from '@/store/AuthStore';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,6 +27,8 @@ const getPlanLabel = (type: SubscriptionType): string => {
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((s) => s.user?.id ?? null);
   const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
   const edges = useSafeAreaInsets();
 
@@ -41,16 +46,19 @@ const SubscriptionScreen = () => {
   const isPro = visibleSubscriptionType === 'BASIC';
   const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
 
-  // TODO: wire up purchasesService.configure() in AuthProvider on login
+  const invalidateSubscription = async () => {
+    if (!userId) return;
+    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
+  };
+
   const handleSubscribePress = async () => {
     if (!canProceed) return;
     setIsPurchasing(true);
     try {
-      // TODO: replace stub with real RevenueCat purchase
       const success = await purchasesService.purchaseMonthly();
       if (success) {
-        // TODO: invalidate React Query subscriptions cache after successful purchase
-        // queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+        await invalidateSubscription();
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
     } catch (err: unknown) {
@@ -68,9 +76,9 @@ const SubscriptionScreen = () => {
   const handleRestorePress = async () => {
     setIsRestoring(true);
     try {
-      // TODO: replace stub with real RevenueCat restore
       const active = await purchasesService.restorePurchases();
       if (active) {
+        await invalidateSubscription();
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {
         Alert.alert(t('Nothing to restore'), t('No active subscription found for this account.'));

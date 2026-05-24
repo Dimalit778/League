@@ -2,64 +2,76 @@
  * RevenueCat integration service.
  *
  * Setup:
- *   1. Install SDK:  npx expo install react-native-purchases
- *   2. Run prebuild: npx expo prebuild
- *   3. Add API keys to .env:
+ *   1. Add API keys to .env:
  *        EXPO_PUBLIC_REVENUECAT_IOS_KEY=appl_xxxxx
  *        EXPO_PUBLIC_REVENUECAT_ANDROID_KEY=goog_xxxxx
- *   4. Call `purchasesService.configure()` once on app startup (e.g. in AuthProvider).
- *   5. Replace every TODO stub below with the real SDK call.
+ *   2. Run prebuild: npx expo prebuild
  *
- * RevenueCat docs: https://www.revenuecat.com/docs/getting-started/installation/react-native
- *
- * Identifier conventions used here:
+ * Identifier conventions:
  *   - Offering identifier: "default"
- *   - Package identifier: "$rc_monthly"   (RevenueCat built-in monthly alias)
+ *   - Package identifier: "$rc_monthly"
  *   - Entitlement identifier: "pro"
  */
 
-// TODO: uncomment after installing react-native-purchases
-// import Purchases, { LOG_LEVEL, PurchasesPackage } from 'react-native-purchases';
+import Purchases, { LOG_LEVEL, PurchasesPackage } from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
 const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? '';
+const PRO_ENTITLEMENT = 'pro';
+
+let isConfigured = false;
+
+const getApiKey = (): string => {
+  const apiKey = Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
+  if (!apiKey) {
+    throw new Error('RevenueCat API key is not configured for this platform');
+  }
+  return apiKey;
+};
+
+const hasProEntitlement = (customerInfo: { entitlements: { active: Record<string, unknown> } }): boolean =>
+  Boolean(customerInfo.entitlements.active[PRO_ENTITLEMENT]);
+
+const isUserCancelledError = (error: unknown): boolean =>
+  typeof error === 'object' &&
+  error !== null &&
+  'userCancelled' in error &&
+  Boolean((error as { userCancelled?: boolean }).userCancelled);
 
 export const purchasesService = {
   /**
    * Call once at app startup after the user session is ready.
    */
   configure(userId: string | null): void {
-    // TODO:
-    // const apiKey = Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
-    // Purchases.setLogLevel(LOG_LEVEL.DEBUG);      // remove in production
-    // Purchases.configure({ apiKey });
-    // if (userId) Purchases.logIn(userId);
-    void IOS_KEY;
-    void ANDROID_KEY;
-    void userId;
+    if (isConfigured) return;
+
+    const apiKey = getApiKey();
+    if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    Purchases.configure({ apiKey, appUserID: userId ?? undefined });
+    isConfigured = true;
   },
 
   /**
    * Switch the RevenueCat user when the Supabase user changes.
    */
   async setUser(userId: string | null): Promise<void> {
-    // TODO:
-    // if (userId) {
-    //   await Purchases.logIn(userId);
-    // } else {
-    //   await Purchases.logOut();
-    // }
-    void userId;
+    if (!isConfigured) return;
+
+    if (userId) {
+      await Purchases.logIn(userId);
+      return;
+    }
+
+    await Purchases.logOut();
   },
 
   /**
-   * Returns the monthly package from the "default" offering, or null if unavailable.
+   * Returns the monthly package from the current offering, or null if unavailable.
    */
-  async getMonthlyPackage(): Promise<null> {
-    // TODO:
-    // const offerings = await Purchases.getOfferings();
-    // return offerings.current?.monthly ?? null;
-    return null;
+  async getMonthlyPackage(): Promise<PurchasesPackage | null> {
+    const offerings = await Purchases.getOfferings();
+    return offerings.current?.monthly ?? null;
   },
 
   /**
@@ -68,12 +80,16 @@ export const purchasesService = {
    * Throws on network/store errors.
    */
   async purchaseMonthly(): Promise<boolean> {
-    // TODO:
-    // const pkg = await this.getMonthlyPackage();
-    // if (!pkg) throw new Error('No package available');
-    // const { customerInfo } = await Purchases.purchasePackage(pkg);
-    // return !!customerInfo.entitlements.active['pro'];
-    return false;
+    const pkg = await this.getMonthlyPackage();
+    if (!pkg) throw new Error('No package available');
+
+    try {
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
+      return hasProEntitlement(customerInfo);
+    } catch (error) {
+      if (isUserCancelledError(error)) return false;
+      throw error;
+    }
   },
 
   /**
@@ -81,19 +97,15 @@ export const purchasesService = {
    * Returns true if the "pro" entitlement is now active.
    */
   async restorePurchases(): Promise<boolean> {
-    // TODO:
-    // const customerInfo = await Purchases.restorePurchases();
-    // return !!customerInfo.entitlements.active['pro'];
-    return false;
+    const customerInfo = await Purchases.restorePurchases();
+    return hasProEntitlement(customerInfo);
   },
 
   /**
-   * Check current entitlement status without a network call (uses cache).
+   * Check current entitlement status (uses RevenueCat cache when available).
    */
   async isProActive(): Promise<boolean> {
-    // TODO:
-    // const info = await Purchases.getCustomerInfo();
-    // return !!info.entitlements.active['pro'];
-    return false;
+    const info = await Purchases.getCustomerInfo();
+    return hasProEntitlement(info);
   },
 };

@@ -1,9 +1,7 @@
 import { KEYS } from '@/lib/queryClient';
-import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { subscriptionApi } from '../api/subscriptionApi';
-import type { SubscriptionType } from '../types';
 
 export const useSubscription = () => {
   const user = useAuthStore((s) => s.user);
@@ -17,50 +15,8 @@ export const useSubscription = () => {
   });
 };
 
-export const useCreateSubscription = (userId: string | null) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      subscriptionType,
-      startDate,
-      endDate,
-    }: {
-      subscriptionType: SubscriptionType;
-      startDate?: Date;
-      endDate?: Date;
-    }) => {
-      if (!userId) throw new Error('User not authenticated');
-      return subscriptionApi.createSubscription(userId, subscriptionType, startDate, endDate);
-    },
-    onSuccess: () => {
-      if (!userId) return;
-      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
-      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
-    },
-  });
-};
-
-export const useCancelSubscription = () => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
-
-  return useMutation({
-    mutationFn: (subscriptionId: string) => {
-      return subscriptionApi.cancelSubscription(subscriptionId);
-    },
-    onSuccess: () => {
-      if (!userId) return;
-      queryClient.invalidateQueries({
-        queryKey: KEYS.subscriptions.detail(userId),
-      });
-    },
-  });
-};
-
 export const useCanCreateLeague = () => {
-  const { user } = useAuth();
+  const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? null;
 
   return useQuery({
@@ -74,6 +30,6 @@ export const useCanCreateLeague = () => {
       return subscriptionApi.canCreateLeague(userId);
     },
     enabled: !!userId,
-    staleTime: 60 * 1000 * 5, // 5 minutes
+    staleTime: 60 * 1000 * 5,
   });
 };

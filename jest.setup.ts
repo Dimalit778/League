@@ -343,6 +343,39 @@ jest.mock('@react-native-community/netinfo', () => ({
   useNetInfo: jest.fn(() => ({ isConnected: true, isInternetReachable: true })),
 }));
 
+jest.mock('react-native-purchases', () => ({
+  __esModule: true,
+  default: {
+    configure: jest.fn(),
+    setLogLevel: jest.fn(),
+    logIn: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
+    logOut: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
+    getOfferings: jest.fn(() =>
+      Promise.resolve({
+        current: {
+          monthly: { identifier: '$rc_monthly' },
+        },
+      })
+    ),
+    purchasePackage: jest.fn(() =>
+      Promise.resolve({
+        customerInfo: { entitlements: { active: { pro: {} } } },
+      })
+    ),
+    restorePurchases: jest.fn(() =>
+      Promise.resolve({
+        entitlements: { active: { pro: {} } },
+      })
+    ),
+    getCustomerInfo: jest.fn(() =>
+      Promise.resolve({
+        entitlements: { active: {} },
+      })
+    ),
+  },
+  LOG_LEVEL: { DEBUG: 'DEBUG' },
+}));
+
 // Global form values storage for tests
 (global as any).testFormValues = {};
 
