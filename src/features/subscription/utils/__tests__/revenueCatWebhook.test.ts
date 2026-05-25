@@ -61,29 +61,23 @@ describe('revenueCatWebhook', () => {
   });
 });
 
-describe('mapRevenueCatEventToAction - CANCELLATION as expire', () => {
-  it('returns expire action for CANCELLATION event', () => {
+describe('mapRevenueCatEventToAction - CANCELLATION as noop', () => {
+  it('returns noop action for CANCELLATION event (access continues until expiration_at_ms)', () => {
     const event: RevenueCatWebhookEvent = {
       type: 'CANCELLATION',
       app_user_id: 'user-1',
     };
     const result = mapRevenueCatEventToAction(event, new Date('2026-01-01T00:00:00Z'));
-    expect(result.action).toBe('expire');
-    if (result.action === 'expire') {
-      expect(result.userId).toBe('user-1');
-    }
+    expect(result).toEqual({ action: 'noop', reason: 'cancellation_pending_expiration' });
   });
 
-  it('uses expiration_at_ms for CANCELLATION end date when provided', () => {
+  it('returns noop even when expiration_at_ms is provided (EXPIRATION event handles actual downgrade)', () => {
     const event: RevenueCatWebhookEvent = {
       type: 'CANCELLATION',
       app_user_id: 'user-1',
       expiration_at_ms: new Date('2026-03-01T00:00:00Z').getTime(),
     };
     const result = mapRevenueCatEventToAction(event, new Date('2026-01-01T00:00:00Z'));
-    expect(result.action).toBe('expire');
-    if (result.action === 'expire') {
-      expect(result.endDate).toBe('2026-03-01T00:00:00.000Z');
-    }
+    expect(result).toEqual({ action: 'noop', reason: 'cancellation_pending_expiration' });
   });
 });

@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMyLeagues } from '@/features/leagues/hooks/useLeagues';
-import { leagueApi } from '@/features/leagues/api/leagueApi';
+import { supabase } from '@/lib/supabase';
 import { KEYS } from '@/lib/queryClient';
 
 export const ChooseActiveLeagueScreen = () => {
@@ -22,13 +22,9 @@ export const ChooseActiveLeagueScreen = () => {
   const handleChoose = async (leagueId: string) => {
     setSaving(true);
     try {
-      await Promise.all(
-        ownedLeagues.map((l) =>
-          l.league_id === leagueId
-            ? leagueApi.unlockLeague(l.league_id)
-            : leagueApi.lockLeague(l.league_id, 'FREE_LIMIT_EXCEEDED')
-        )
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any).rpc('choose_active_league', { p_league_id: leagueId });
+      if (error) throw new Error(error.message);
       await queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
       router.replace('/(app)/(public)/myLeagues');
     } catch {

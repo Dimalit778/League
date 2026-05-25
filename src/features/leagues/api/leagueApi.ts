@@ -206,29 +206,6 @@ export const leagueApi = {
     return league;
   },
 
-  async lockLeague(
-    leagueId: string,
-    reason: 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED'
-  ): Promise<void> {
-    const { data, error } = await supabase
-      .from('leagues')
-      .update({ status: 'LOCKED', locked_reason: reason })
-      .eq('id', leagueId)
-      .select('id');
-    if (error) throw new Error(error.message);
-    if (!data || data.length === 0) throw new Error(`League ${leagueId} not found`);
-  },
-
-  async unlockLeague(leagueId: string): Promise<void> {
-    const { data, error } = await supabase
-      .from('leagues')
-      .update({ status: 'ACTIVE', locked_reason: null })
-      .eq('id', leagueId)
-      .select('id');
-    if (error) throw new Error(error.message);
-    if (!data || data.length === 0) throw new Error(`League ${leagueId} not found`);
-  },
-
   async getOwnedLeagues(userId: string) {
     const { data, error } = await supabase
       .from('leagues')

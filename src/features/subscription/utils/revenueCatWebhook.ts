@@ -75,13 +75,7 @@ export const mapRevenueCatEventToAction = (
   }
 
   if (event.type === 'CANCELLATION') {
-    return {
-      action: 'expire',
-      userId: event.app_user_id,
-      endDate: event.expiration_at_ms
-        ? new Date(event.expiration_at_ms).toISOString()
-        : now.toISOString(),
-    };
+    return { action: 'noop', reason: 'cancellation_pending_expiration' };
   }
 
   if (event.type === 'BILLING_ISSUE') {
