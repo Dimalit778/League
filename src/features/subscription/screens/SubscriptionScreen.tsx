@@ -15,7 +15,7 @@ import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
 
 const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
-  if (type === 'BASIC' || type === 'PREMIUM') return 'BASIC';
+  if (type === 'PRO' || type === 'BASIC' || type === 'PREMIUM') return 'PRO';
   return 'FREE';
 };
 

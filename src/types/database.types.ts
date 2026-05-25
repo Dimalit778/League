@@ -490,7 +490,8 @@ export type Database = {
         | "POSTPONED"
         | "PAUSED"
       role: "USER" | "ADMIN"
-      subscription_type: "FREE" | "BASIC" | "PREMIUM"
+      // TODO: remove manual addition after running npm run sync-types post-migration
+      subscription_type: "FREE" | "BASIC" | "PREMIUM" | "PRO"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -628,7 +629,8 @@ export const Constants = {
         "PAUSED",
       ],
       role: ["USER", "ADMIN"],
-      subscription_type: ["FREE", "BASIC", "PREMIUM"],
+      // TODO: remove manual addition after running npm run sync-types post-migration
+      subscription_type: ["FREE", "BASIC", "PREMIUM", "PRO"],
     },
   },
 } as const
