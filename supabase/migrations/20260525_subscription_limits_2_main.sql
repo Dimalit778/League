@@ -1,8 +1,12 @@
 -- ============================================================================
 -- Migration: subscription_limits
 -- Part 2 of 2: Column additions, indexes, and RLS policies
--- Depends on 20260525_subscription_limits_enums.sql being applied first.
+-- Depends on 20260525_subscription_limits_1_enums.sql being applied first.
 -- ============================================================================
+
+-- Depends on 20260525_subscription_limits_1_enums.sql being applied first
+-- Migrates BASIC subscription rows to PRO (safe now that 'PRO' enum value is committed)
+UPDATE public.subscription SET subscription_type = 'PRO' WHERE subscription_type = 'BASIC';
 
 -- 5. Add status and locked_reason to leagues
 ALTER TABLE public.leagues
