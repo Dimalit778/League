@@ -10,6 +10,7 @@ const COMPETITION_FULL_SELECT = `
   current_fixture,
   flag,
   id,
+  is_free,
   logo,
   name,
   season_end,
@@ -209,19 +210,23 @@ export const leagueApi = {
     leagueId: string,
     reason: 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED'
   ): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('leagues')
       .update({ status: 'LOCKED', locked_reason: reason })
-      .eq('id', leagueId);
+      .eq('id', leagueId)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data || data.length === 0) throw new Error(`League ${leagueId} not found`);
   },
 
   async unlockLeague(leagueId: string): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('leagues')
       .update({ status: 'ACTIVE', locked_reason: null })
-      .eq('id', leagueId);
+      .eq('id', leagueId)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data || data.length === 0) throw new Error(`League ${leagueId} not found`);
   },
 
   async getOwnedLeagues(userId: string) {

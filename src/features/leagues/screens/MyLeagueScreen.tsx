@@ -20,7 +20,6 @@ const MyLeagues = () => {
   const { data: leagues, isLoading, error, refetch } = useMyLeagues();
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
-  console.log('subscription', JSON.stringify(subscription, null, 2));
   const queryClient = useQueryClient();
 
   const activeMember = useMemberStore((s) => s.activeMember);
@@ -74,8 +73,6 @@ const MyLeagues = () => {
     );
   }
   if (error) return <Error error={error as Error} />;
-  // console.log('leagues', leagues);
-  console.log('subscription', JSON.stringify(subscription, null, 2));
 
   const limit = subscription?.limits.ownedLeagues ?? 0;
   const reachedLimit = limit > 0 && leagues.length >= limit;
@@ -86,7 +83,7 @@ const MyLeagues = () => {
       {reachedLimit ? (
         <Pressable onPress={handleOpenPaywall} className="bg-yellow-500 py-2 m-4 rounded-md ">
           <CText variant="caption" bold className="text-black text-center">
-            {t('Max leagues reached. Upgrade tlo continue.')}
+            {t('Max leagues reached. Upgrade to continue.')}
           </CText>
         </Pressable>
       ) : (
