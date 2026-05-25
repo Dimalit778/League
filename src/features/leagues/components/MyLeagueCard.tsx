@@ -13,7 +13,7 @@ export default function MyLeagueCard({ item, handleSetPrimary }: LeagueCardProps
     <View className="bg-surface rounded-xl">
       <TouchableOpacity onPress={() => handleSetPrimary(item.league.id, item.is_primary)} activeOpacity={0.8}>
         <View className="flex-row items-center">
-          <LogoBadge source={{ uri: item.league.competition.logo }} width={70} height={70} />
+          <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
           <View className="flex-1 ps-4 ">
             <CText className="text-2xl font-headBold text-text" numberOfLines={1}>
               {item.league.name}
