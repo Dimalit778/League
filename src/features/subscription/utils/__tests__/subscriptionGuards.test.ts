@@ -51,7 +51,7 @@ describe('canCreateLeague', () => {
       return {};
     });
     const result = await canCreateLeague('user-1');
-    expect(result.canCreate).toBe(false);
+    expect(result.allowed).toBe(false);
     expect(result.reason).toContain('limit');
   });
 
@@ -62,7 +62,7 @@ describe('canCreateLeague', () => {
       return {};
     });
     const result = await canCreateLeague('user-1');
-    expect(result.canCreate).toBe(true);
+    expect(result.allowed).toBe(true);
   });
 
   it('returns true for pro user with 2 owned leagues', async () => {
@@ -72,7 +72,7 @@ describe('canCreateLeague', () => {
       return {};
     });
     const result = await canCreateLeague('user-1');
-    expect(result.canCreate).toBe(true);
+    expect(result.allowed).toBe(true);
   });
 
   it('returns false for pro user with 3 owned leagues', async () => {
@@ -82,7 +82,7 @@ describe('canCreateLeague', () => {
       return {};
     });
     const result = await canCreateLeague('user-1');
-    expect(result.canCreate).toBe(false);
+    expect(result.allowed).toBe(false);
   });
 });
 
@@ -90,19 +90,19 @@ describe('canCreateLeagueWithSize', () => {
   it('returns false for free user requesting 12 members', async () => {
     mockFrom.mockImplementation(() => buildSubMock(null));
     const result = await canCreateLeagueWithSize('user-1', 12);
-    expect(result.canCreate).toBe(false);
+    expect(result.allowed).toBe(false);
   });
 
   it('returns true for pro user requesting 12 members', async () => {
     mockFrom.mockImplementation(() => buildSubMock('PRO'));
     const result = await canCreateLeagueWithSize('user-1', 12);
-    expect(result.canCreate).toBe(true);
+    expect(result.allowed).toBe(true);
   });
 
   it('returns true for free user requesting 6 members', async () => {
     mockFrom.mockImplementation(() => buildSubMock(null));
     const result = await canCreateLeagueWithSize('user-1', 6);
-    expect(result.canCreate).toBe(true);
+    expect(result.allowed).toBe(true);
   });
 });
 
@@ -110,12 +110,12 @@ describe('canSubmitPrediction', () => {
   it('returns false for locked league', async () => {
     mockFrom.mockImplementation(() => buildLeagueStatusMock('LOCKED'));
     const result = await canSubmitPrediction('user-1', 'league-1');
-    expect(result.canCreate).toBe(false);
+    expect(result.allowed).toBe(false);
   });
 
   it('returns true for active league', async () => {
     mockFrom.mockImplementation(() => buildLeagueStatusMock('ACTIVE'));
     const result = await canSubmitPrediction('user-1', 'league-1');
-    expect(result.canCreate).toBe(true);
+    expect(result.allowed).toBe(true);
   });
 });

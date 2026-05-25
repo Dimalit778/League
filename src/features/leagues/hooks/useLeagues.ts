@@ -2,7 +2,6 @@ import { KEYS } from '@/lib/queryClient';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { subscriptionApi } from '@/features/subscription/api/subscriptionApi';
 import { canCreateLeague, canCreateLeagueWithSize } from '@/features/subscription/utils/subscriptionGuards';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
@@ -119,8 +118,8 @@ export const useCreateLeague = () => {
         canCreateLeagueWithSize(userId, params.max_members),
       ]);
 
-      if (!leagueCheck.canCreate) throw new Error(leagueCheck.reason || 'Upgrade to Pro to create more leagues.');
-      if (!sizeCheck.canCreate) throw new Error(sizeCheck.reason || 'Upgrade to Pro for this league size.');
+      if (!leagueCheck.allowed) throw new Error(leagueCheck.reason || 'Upgrade to Pro to create more leagues.');
+      if (!sizeCheck.allowed) throw new Error(sizeCheck.reason || 'Upgrade to Pro for this league size.');
 
       return leagueApi.createLeague(params);
     },
@@ -154,12 +153,6 @@ export const useJoinLeague = () => {
   return useMutation({
     mutationFn: async ({ join_code, nickname }: { join_code: string; nickname: string }) => {
       if (!userId) throw new Error('User not authenticated');
-
-      const capability = await subscriptionApi.canCreateLeague(userId);
-      if (!capability.canCreate) {
-        throw new Error(capability.reason || 'Upgrade to Pro to join more leagues.');
-      }
-
       return leagueApi.joinLeague(join_code, nickname);
     },
     onSuccess: async () => {

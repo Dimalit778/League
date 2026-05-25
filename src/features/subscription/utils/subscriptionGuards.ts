@@ -1,16 +1,17 @@
 import { supabase } from '@/lib/supabase';
 import { getSubscriptionLimits, isProPlan } from './getSubscriptionLimits';
 
-type GuardResult = { canCreate: boolean; reason?: string };
+type GuardResult = { allowed: boolean; reason?: string };
 
 async function getUserSubscriptionType(userId: string) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('subscription')
     .select('subscription_type')
     .eq('user_id', userId)
     .gte('end_date', new Date().toISOString())
     .order('end_date', { ascending: false })
     .maybeSingle();
+  if (error) throw new Error(error.message);
   return data?.subscription_type ?? 'FREE';
 }
 
@@ -24,6 +25,16 @@ async function getOwnedActiveLeagueCount(userId: string): Promise<number> {
   return data?.length ?? 0;
 }
 
+async function getLeagueStatus(leagueId: string): Promise<'ACTIVE' | 'LOCKED' | null> {
+  const { data, error } = await supabase
+    .from('leagues')
+    .select('status')
+    .eq('id', leagueId)
+    .single();
+  if (error || !data) return null;
+  return data.status as 'ACTIVE' | 'LOCKED';
+}
+
 export async function canCreateLeague(userId: string): Promise<GuardResult> {
   try {
     const [subType, ownedCount] = await Promise.all([
@@ -33,13 +44,13 @@ export async function canCreateLeague(userId: string): Promise<GuardResult> {
     const limits = getSubscriptionLimits(subType);
     if (ownedCount >= limits.ownedLeagues) {
       return {
-        canCreate: false,
+        allowed: false,
         reason: `You've reached your limit of ${limits.ownedLeagues} custom league${limits.ownedLeagues === 1 ? '' : 's'}. Upgrade to Pro to create more.`,
       };
     }
-    return { canCreate: true };
+    return { allowed: true };
   } catch {
-    return { canCreate: false, reason: 'Could not verify subscription status.' };
+    return { allowed: false, reason: 'Could not verify subscription status.' };
   }
 }
 
@@ -49,45 +60,33 @@ export async function canCreateLeagueWithSize(userId: string, maxMembers: number
     const limits = getSubscriptionLimits(subType);
     if (!(limits.allowedLeagueSizes as readonly number[]).includes(maxMembers)) {
       return {
-        canCreate: false,
+        allowed: false,
         reason: `League size ${maxMembers} requires a Pro subscription.`,
       };
     }
-    return { canCreate: true };
+    return { allowed: true };
   } catch {
-    return { canCreate: false, reason: 'Could not verify subscription status.' };
+    return { allowed: false, reason: 'Could not verify subscription status.' };
   }
 }
 
-export async function canInviteMember(userId: string, leagueId: string): Promise<GuardResult> {
-  const { data: league, error } = await supabase
-    .from('leagues')
-    .select('status, owner_id')
-    .eq('id', leagueId)
-    .single();
-  if (error || !league) return { canCreate: false, reason: 'League not found.' };
-  if (league.status === 'LOCKED') {
-    return { canCreate: false, reason: 'This league is locked. Upgrade to Pro to continue.' };
-  }
-  return { canCreate: true };
+export async function canInviteMember(_userId: string, leagueId: string): Promise<GuardResult> {
+  const status = await getLeagueStatus(leagueId);
+  if (status === null) return { allowed: false, reason: 'League not found.' };
+  if (status === 'LOCKED') return { allowed: false, reason: 'This league is locked. Upgrade to Pro to continue.' };
+  return { allowed: true };
 }
 
-export async function canSubmitPrediction(userId: string, leagueId: string): Promise<GuardResult> {
-  const { data: league, error } = await supabase
-    .from('leagues')
-    .select('status')
-    .eq('id', leagueId)
-    .single();
-  if (error || !league) return { canCreate: false, reason: 'League not found.' };
-  if (league.status === 'LOCKED') {
-    return { canCreate: false, reason: 'This league is locked. Upgrade to Pro to continue.' };
-  }
-  return { canCreate: true };
+export async function canSubmitPrediction(_userId: string, leagueId: string): Promise<GuardResult> {
+  const status = await getLeagueStatus(leagueId);
+  if (status === null) return { allowed: false, reason: 'League not found.' };
+  if (status === 'LOCKED') return { allowed: false, reason: 'This league is locked. Upgrade to Pro to continue.' };
+  return { allowed: true };
 }
 
 export async function canViewAiTip(_userId: string): Promise<GuardResult> {
-  // Placeholder — AI tips enforcement to be implemented separately
-  return { canCreate: true };
+  // TODO: implement weekly AI tip limit when AI tips feature is built
+  return { allowed: true };
 }
 
 export async function getUserPlan(userId: string): Promise<'FREE' | 'PRO'> {
