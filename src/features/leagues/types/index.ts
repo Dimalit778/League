@@ -18,7 +18,7 @@ type MyLeagueType = Pick<
 
 type LeagueDetailsType = Pick<
   Tables<'leagues'>,
-  'competition_id' | 'created_at' | 'id' | 'join_code' | 'max_members' | 'name' | 'owner_id' | 'updated_at'
+  'competition_id' | 'created_at' | 'id' | 'join_code' | 'locked_reason' | 'max_members' | 'name' | 'owner_id' | 'status' | 'updated_at'
 > & {
   competition: CompetitionSummary;
   league_members: Pick<

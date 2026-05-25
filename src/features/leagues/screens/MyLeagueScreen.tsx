@@ -10,6 +10,7 @@ import { KEYS } from '@/lib/queryClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import RevenueCatUI from 'react-native-purchases-ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { leagueApi } from '../api/leagueApi';
 import MyLeagueCard from '../components/MyLeagueCard';
@@ -19,13 +20,25 @@ const MyLeagues = () => {
   const { data: leagues, isLoading, error, refetch } = useMyLeagues();
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
+  console.log('subscription', JSON.stringify(subscription, null, 2));
   const queryClient = useQueryClient();
 
   const activeMember = useMemberStore((s) => s.activeMember);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const handleOpenPaywall = async () => {
+    try {
+      await RevenueCatUI.presentPaywall();
 
+      // אחרי שהמשתמש קנה/סגר את הפייוול — נרענן את הסטטוס
+      await queryClient.invalidateQueries({
+        queryKey: KEYS.subscriptions.detail(activeMember?.user_id ?? ''),
+      });
+    } catch (error) {
+      console.log('Failed to open paywall:', error);
+    }
+  };
   const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
     const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
 
@@ -64,17 +77,14 @@ const MyLeagues = () => {
   // console.log('leagues', leagues);
   console.log('subscription', JSON.stringify(subscription, null, 2));
 
-  const limit = subscription?.limits.maxLeagues ?? 0;
+  const limit = subscription?.limits.ownedLeagues ?? 0;
   const reachedLimit = limit > 0 && leagues.length >= limit;
   const usagePercent = limit > 0 ? Math.min((leagues.length / limit) * 100, 100) : 0;
 
   return (
     <Screen>
       {reachedLimit ? (
-        <Pressable
-          onPress={() => router.push('/(app)/(public)/subscription')}
-          className="bg-yellow-500 py-2 m-4 rounded-md "
-        >
+        <Pressable onPress={handleOpenPaywall} className="bg-yellow-500 py-2 m-4 rounded-md ">
           <CText variant="caption" bold className="text-black text-center">
             {t('Max leagues reached. Upgrade tlo continue.')}
           </CText>

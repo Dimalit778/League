@@ -15,6 +15,7 @@ export type Database = {
   public: {
     Tables: {
       competitions: {
+        // TODO: regenerate via npm run sync-types after applying migration
         Row: {
           area: string
           code: string
@@ -23,6 +24,7 @@ export type Database = {
           current_stage: string | null
           flag: string | null
           id: number
+          is_free: boolean
           logo: string
           name: string
           season_end: string | null
@@ -40,6 +42,7 @@ export type Database = {
           current_stage?: string | null
           flag?: string | null
           id: number
+          is_free?: boolean
           logo: string
           name: string
           season_end?: string | null
@@ -57,6 +60,7 @@ export type Database = {
           current_stage?: string | null
           flag?: string | null
           id?: number
+          is_free?: boolean
           logo?: string
           name?: string
           season_end?: string | null
@@ -117,14 +121,17 @@ export type Database = {
         ]
       }
       leagues: {
+        // TODO: regenerate via npm run sync-types after applying migration
         Row: {
           competition_id: number
           created_at: string
           id: string
           join_code: string
+          locked_reason: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
           max_members: number
           name: string
           owner_id: string
+          status: "ACTIVE" | "LOCKED"
           updated_at: string
         }
         Insert: {
@@ -132,9 +139,11 @@ export type Database = {
           created_at?: string
           id?: string
           join_code: string
+          locked_reason?: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
           max_members?: number
           name: string
           owner_id: string
+          status?: "ACTIVE" | "LOCKED"
           updated_at?: string
         }
         Update: {
@@ -142,9 +151,11 @@ export type Database = {
           created_at?: string
           id?: string
           join_code?: string
+          locked_reason?: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
           max_members?: number
           name?: string
           owner_id?: string
+          status?: "ACTIVE" | "LOCKED"
           updated_at?: string
         }
         Relationships: [

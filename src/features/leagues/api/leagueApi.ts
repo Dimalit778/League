@@ -33,9 +33,11 @@ const MY_LEAGUES_SELECT = `
     created_at,
     id,
     join_code,
+    locked_reason,
     max_members,
     name,
     owner_id,
+    status,
     updated_at,
     competition:competitions(${COMPETITION_FULL_SELECT})
   )
@@ -45,9 +47,11 @@ const LEAGUE_WITH_COMPETITION_SELECT = `
   created_at,
   id,
   join_code,
+  locked_reason,
   max_members,
   name,
   owner_id,
+  status,
   updated_at,
   competition:competitions(${COMPETITION_SELECT})
 `;
@@ -199,5 +203,34 @@ export const leagueApi = {
     const league = data[0];
 
     return league;
+  },
+
+  async lockLeague(
+    leagueId: string,
+    reason: 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED'
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('leagues')
+      .update({ status: 'LOCKED', locked_reason: reason })
+      .eq('id', leagueId);
+    if (error) throw new Error(error.message);
+  },
+
+  async unlockLeague(leagueId: string): Promise<void> {
+    const { error } = await supabase
+      .from('leagues')
+      .update({ status: 'ACTIVE', locked_reason: null })
+      .eq('id', leagueId);
+    if (error) throw new Error(error.message);
+  },
+
+  async getOwnedLeagues(userId: string) {
+    const { data, error } = await supabase
+      .from('leagues')
+      .select('id, name, status, locked_reason, updated_at, competition:competitions(id, name, logo)')
+      .eq('owner_id', userId)
+      .order('updated_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
   },
 };
