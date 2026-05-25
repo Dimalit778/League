@@ -5,44 +5,40 @@ describe('subscriptionApi', () => {
     it('returns FREE limits by default', () => {
       const limits = subscriptionApi.getSubscriptionLimits(null);
       expect(limits).toEqual({
-        maxLeagues: 1,
+        ownedLeagues: 1,
         maxMembersPerLeague: 6,
-        advancedStats: false,
-        leagueHistory: false,
-        customScoring: false,
+        allowedLeagueSizes: [6],
+        aiTipsPerWeek: 3,
       });
     });
 
     it('returns FREE limits for FREE type', () => {
       const limits = subscriptionApi.getSubscriptionLimits('FREE' as any);
       expect(limits).toEqual({
-        maxLeagues: 1,
+        ownedLeagues: 1,
         maxMembersPerLeague: 6,
-        advancedStats: false,
-        leagueHistory: false,
-        customScoring: false,
+        allowedLeagueSizes: [6],
+        aiTipsPerWeek: 3,
       });
     });
 
-    it('returns BASIC Pro limits', () => {
-      const limits = subscriptionApi.getSubscriptionLimits('BASIC' as any);
+    it('returns PRO limits for PRO type', () => {
+      const limits = subscriptionApi.getSubscriptionLimits('PRO' as any);
       expect(limits).toEqual({
-        maxLeagues: 5,
-        maxMembersPerLeague: 20,
-        advancedStats: true,
-        leagueHistory: true,
-        customScoring: true,
+        ownedLeagues: 3,
+        maxMembersPerLeague: 12,
+        allowedLeagueSizes: [6, 12],
+        aiTipsPerWeek: Infinity,
       });
     });
 
     it('keeps PREMIUM users on Pro limits', () => {
       const limits = subscriptionApi.getSubscriptionLimits('PREMIUM' as any);
       expect(limits).toEqual({
-        maxLeagues: 5,
-        maxMembersPerLeague: 20,
-        advancedStats: true,
-        leagueHistory: true,
-        customScoring: true,
+        ownedLeagues: 3,
+        maxMembersPerLeague: 12,
+        allowedLeagueSizes: [6, 12],
+        aiTipsPerWeek: Infinity,
       });
     });
   });

@@ -4,7 +4,7 @@ import {
 } from '../revenueCatWebhook';
 
 describe('revenueCatWebhook', () => {
-  it('maps active purchase events to BASIC upsert', () => {
+  it('maps active purchase events to PRO upsert', () => {
     const action = mapRevenueCatEventToAction(
       {
         type: 'INITIAL_PURCHASE',
@@ -22,7 +22,7 @@ describe('revenueCatWebhook', () => {
 
     expect(action.payload).toEqual({
       user_id: 'user-1',
-      subscription_type: 'BASIC',
+      subscription_type: 'PRO',
       start_date: '2026-05-01T00:00:00.000Z',
       end_date: '2026-06-01T00:00:00.000Z',
       product_id: 'pro_monthly',

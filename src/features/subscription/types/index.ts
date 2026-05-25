@@ -2,6 +2,10 @@ import { Database } from '@/types/database.types';
 
 type SubscriptionType = Database['public']['Enums']['subscription_type'];
 
+// These will be generated from DB once migration is applied; defined manually for now
+type LeagueStatus = 'ACTIVE' | 'LOCKED';
+type LockedReason = 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED';
+
 type SubscriptionDetails = {
   id: string;
   user_id: string;
@@ -13,15 +17,21 @@ type SubscriptionDetails = {
 };
 
 type SubscriptionLimits = {
-  maxLeagues: number;
+  ownedLeagues: number;
   maxMembersPerLeague: number;
-  advancedStats: boolean;
-  leagueHistory: boolean;
-  customScoring: boolean;
+  allowedLeagueSizes: readonly number[];
+  aiTipsPerWeek: number;
 };
 
 type SubscriptionDetailsWithLimits = SubscriptionDetails & {
   limits: SubscriptionLimits;
 };
 
-export type { SubscriptionDetails, SubscriptionDetailsWithLimits, SubscriptionLimits, SubscriptionType };
+export type {
+  SubscriptionDetails,
+  SubscriptionDetailsWithLimits,
+  SubscriptionLimits,
+  SubscriptionType,
+  LeagueStatus,
+  LockedReason,
+};

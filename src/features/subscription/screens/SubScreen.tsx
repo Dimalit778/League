@@ -6,7 +6,7 @@ import { KEYS } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/AuthStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Alert, Linking, Pressable, ScrollView } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { purchasesService } from '../../../lib/revenuecat/purchases';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
@@ -19,18 +19,23 @@ const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
   return 'FREE';
 };
 
-const getPlanLabel = (type: SubscriptionType): string => {
-  if (type === 'BASIC') return 'PRO';
-  return type;
+const getManageSubscriptionUrl = () => {
+  if (Platform.OS === 'ios') {
+    return 'https://apps.apple.com/account/subscriptions';
+  }
+
+  return 'https://play.google.com/store/account/subscriptions';
 };
 
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const queryClient = useQueryClient();
-  const userId = useAuthStore((s) => s.user?.id ?? null);
-  const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
   const edges = useSafeAreaInsets();
+
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+
+  const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
 
   const subscriptionType = currentSubscription?.subscription_type || 'FREE';
   const visibleSubscriptionType = getVisiblePlanType(subscriptionType);
@@ -44,54 +49,74 @@ const SubscriptionScreen = () => {
   }, [visibleSubscriptionType]);
 
   const isPro = visibleSubscriptionType === 'BASIC';
-  const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
+  const isLoading = isLoadingSubscription || isPurchasing || isRestoring;
 
   const invalidateSubscription = async () => {
     if (!userId) return;
-    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
-    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
+
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: KEYS.subscriptions.detail(userId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: KEYS.subscriptions.canCreateLeague(userId),
+      }),
+    ]);
   };
 
   const handleSubscribePress = async () => {
-    if (!canProceed) return;
     setIsPurchasing(true);
+
     try {
-      const success = await purchasesService.purchaseMonthly();
+      const success = await purchasesService.presentPaywall();
+
       if (success) {
         await invalidateSubscription();
+
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t('Something went wrong');
+
       Alert.alert(t('Purchase failed'), message);
     } finally {
       setIsPurchasing(false);
     }
   };
 
-  const handleManageSubscription = () => {
-    Linking.openURL('https://apps.apple.com/account/subscriptions');
-  };
-
   const handleRestorePress = async () => {
     setIsRestoring(true);
+
     try {
       const active = await purchasesService.restorePurchases();
+
       if (active) {
         await invalidateSubscription();
+
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {
         Alert.alert(t('Nothing to restore'), t('No active subscription found for this account.'));
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t('Something went wrong');
+
       Alert.alert(t('Restore failed'), message);
     } finally {
       setIsRestoring(false);
     }
   };
 
-  const isLoading = isLoadingSubscription || isPurchasing || isRestoring;
+  const handleManageSubscription = async () => {
+    const url = getManageSubscriptionUrl();
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (!canOpen) {
+      Alert.alert(t('Error'), t('Could not open subscription settings'));
+      return;
+    }
+
+    await Linking.openURL(url);
+  };
 
   return (
     <Screen withSafeArea>
@@ -102,11 +127,15 @@ const SubscriptionScreen = () => {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 24, paddingHorizontal: 12 }}
+        contentContainerStyle={{
+          paddingBottom: edges.bottom + 24,
+          paddingHorizontal: 12,
+        }}
       >
         <CText variant="h2" className="my-2">
           {t('Choose Your Plan')}
         </CText>
+
         <CText variant="caption" bold className="text-muted mb-6">
           {t('Upgrade your subscription to access more features and create larger leagues')}
         </CText>
@@ -122,7 +151,7 @@ const SubscriptionScreen = () => {
           />
         ))}
 
-        {canProceed && (
+        {!isPro && (
           <Pressable
             onPress={handleSubscribePress}
             disabled={isPurchasing}
@@ -132,18 +161,23 @@ const SubscriptionScreen = () => {
               paddingVertical: 14,
               alignItems: 'center',
               marginTop: 8,
+              opacity: isPurchasing ? 0.7 : 1,
             }}
           >
             <CText variant="bodyBold" className="text-background">
-              {isPurchasing
-                ? t('Loading...')
-                : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
+              {isPurchasing ? t('Loading...') : t('Upgrade to Pro')}
             </CText>
           </Pressable>
         )}
 
         {isPro ? (
-          <Pressable onPress={handleManageSubscription} style={{ alignItems: 'center', marginTop: 20 }}>
+          <Pressable
+            onPress={handleManageSubscription}
+            style={{
+              alignItems: 'center',
+              marginTop: 20,
+            }}
+          >
             <CText variant="caption" className="text-muted">
               {t('Manage subscription')}
             </CText>
@@ -152,7 +186,11 @@ const SubscriptionScreen = () => {
           <Pressable
             onPress={handleRestorePress}
             disabled={isRestoring}
-            style={{ alignItems: 'center', marginTop: 20 }}
+            style={{
+              alignItems: 'center',
+              marginTop: 20,
+              opacity: isRestoring ? 0.7 : 1,
+            }}
           >
             <CText variant="caption" className="text-muted">
               {isRestoring ? t('Restoring...') : t('Restore purchases')}
