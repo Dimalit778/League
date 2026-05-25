@@ -5,10 +5,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberStore } from '@/store/MemberStore';
 
 import { CText } from '@/components/ui/CText';
+import { DowngradeModal } from '@/features/subscription/components/DowngradeModal';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { KEYS } from '@/lib/queryClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import RevenueCatUI from 'react-native-purchases-ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +23,7 @@ const MyLeagues = () => {
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
   const queryClient = useQueryClient();
+  const [modalDismissed, setModalDismissed] = useState(false);
 
   const activeMember = useMemberStore((s) => s.activeMember);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
@@ -78,8 +81,19 @@ const MyLeagues = () => {
   const reachedLimit = limit > 0 && leagues.length >= limit;
   const usagePercent = limit > 0 ? Math.min((leagues.length / limit) * 100, 100) : 0;
 
+  const hasLockedDueToExpiry = leagues.some((l) => l.league.locked_reason === 'SUBSCRIPTION_EXPIRED');
+  const showDowngradeModal = hasLockedDueToExpiry && !modalDismissed;
+
   return (
     <Screen>
+      <DowngradeModal
+        visible={showDowngradeModal}
+        onChooseLeague={() => {
+          setModalDismissed(true);
+          router.push('/(app)/(public)/choose-active-league');
+        }}
+        onDismiss={() => setModalDismissed(true)}
+      />
       {reachedLimit ? (
         <Pressable onPress={handleOpenPaywall} className="bg-yellow-500 py-2 m-4 rounded-md ">
           <CText variant="caption" bold className="text-black text-center">
