@@ -35,20 +35,35 @@ export const subscriptionApi = {
     return count || 0;
   },
 
+  async getUserOwnedLeagueCount(userId: string): Promise<number> {
+    const { data, error } = await supabase
+      .from('leagues')
+      .select('id')
+      .eq('owner_id', userId)
+      .eq('status', 'ACTIVE');
+    if (error) throw new Error(error.message);
+    return data?.length ?? 0;
+  },
+
   async canCreateLeague(userId: string): Promise<{ canCreate: boolean; reason?: string }> {
     try {
-      const [subscription, leagueCount] = await Promise.all([
-        this.getCurrentSubscription(userId),
-        this.getUserLeagueCount(userId),
-      ]);
-
+      const subscription = await this.getCurrentSubscription(userId);
       const subscriptionType = subscription?.subscription_type || 'FREE';
       const limits = getSubscriptionLimits(subscriptionType);
 
-      if (leagueCount >= limits.maxLeagues) {
+      const { data: ownedLeagues, error: leagueError } = await supabase
+        .from('leagues')
+        .select('id')
+        .eq('owner_id', userId)
+        .eq('status', 'ACTIVE');
+
+      if (leagueError) throw new Error(leagueError.message);
+      const leagueCount = ownedLeagues?.length ?? 0;
+
+      if (leagueCount >= limits.ownedLeagues) {
         return {
           canCreate: false,
-          reason: `You've reached your limit of ${limits.maxLeagues} league${limits.maxLeagues === 1 ? '' : 's'}. Upgrade to Pro to create or join more leagues.`,
+          reason: `You've reached your limit of ${limits.ownedLeagues} custom league${limits.ownedLeagues === 1 ? '' : 's'}. Upgrade to Pro to create or join more leagues.`,
         };
       }
 

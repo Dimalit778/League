@@ -3,6 +3,7 @@ import { KEYS } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { subscriptionApi } from '@/features/subscription/api/subscriptionApi';
+import { canCreateLeague, canCreateLeagueWithSize } from '@/features/subscription/utils/subscriptionGuards';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
@@ -113,19 +114,15 @@ export const useCreateLeague = () => {
     }) => {
       if (!userId) throw new Error('User not authenticated');
 
-      const capability = await subscriptionApi.canCreateLeague(userId);
-      if (!capability.canCreate) {
-        throw new Error(capability.reason || 'Upgrade to Pro to create more leagues.');
-      }
+      const [leagueCheck, sizeCheck] = await Promise.all([
+        canCreateLeague(userId),
+        canCreateLeagueWithSize(userId, params.max_members),
+      ]);
 
-      const currentSubscription = await subscriptionApi.getCurrentSubscription(userId);
-      const limits = subscriptionApi.getSubscriptionLimits(currentSubscription?.subscription_type || 'FREE');
-      if (params.max_members > limits.maxMembersPerLeague) {
-        throw new Error(`Upgrade to Pro to create leagues with up to ${params.max_members} members.`);
-      }
+      if (!leagueCheck.canCreate) throw new Error(leagueCheck.reason || 'Upgrade to Pro to create more leagues.');
+      if (!sizeCheck.canCreate) throw new Error(sizeCheck.reason || 'Upgrade to Pro for this league size.');
 
-      const leagueId = await leagueApi.createLeague(params);
-      return leagueId;
+      return leagueApi.createLeague(params);
     },
 
     onSuccess: async (leagueId) => {

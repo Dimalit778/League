@@ -79,6 +79,7 @@ export const KEYS = {
   subscriptions: {
     detail: (userId: string) => ['subscriptions', userId] as const,
     canCreateLeague: (userId: string) => ['subscriptions', userId, 'can-create'] as const,
+    ownedLeagueCount: (userId: string) => ['subscriptions', 'ownedLeagueCount', userId] as const,
   },
 
   // ==================== ADMIN ====================
