@@ -1,6 +1,8 @@
 import { SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 
+/** Maximum number of custom leagues a FREE user may own and keep active. */
 const FREE_OWNED_LEAGUES_LIMIT = 1;
+/** Maximum number of custom leagues a PRO user may own and keep active. */
 const PRO_OWNED_LEAGUES_LIMIT = 3;
 
 export type LockReason = 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED';
@@ -46,25 +48,37 @@ export async function applyDowngradeRules(
   const toKeep = ownedLeagues[0];
   const toLock = ownedLeagues.slice(1);
 
-  for (const league of toLock) {
-    if (league.status !== 'LOCKED') {
-      await lockLeague(supabase, league.id, 'SUBSCRIPTION_EXPIRED');
-    }
+  // Ensure the chosen league is ACTIVE (it may have been locked by a previous run)
+  if (toKeep.status === 'LOCKED') {
+    await unlockLeague(supabase, toKeep.id);
   }
 
-  console.log(`Downgrade: kept league ${toKeep.id} active, locked ${toLock.length} leagues for user ${userId}`);
+  const toLockIds = toLock
+    .filter((l) => l.status !== 'LOCKED')
+    .map((l) => l.id);
+
+  if (toLockIds.length > 0) {
+    const { error: lockError } = await supabase
+      .from('leagues')
+      .update({ status: 'LOCKED', locked_reason: 'SUBSCRIPTION_EXPIRED' as const })
+      .in('id', toLockIds);
+    if (lockError) throw new Error(`Failed to lock leagues: ${lockError.message}`);
+  }
+
+  console.log(`Downgrade: kept league ${toKeep.id} active, locked ${toLockIds.length} leagues for user ${userId}`);
 }
 
 export async function applyUpgradeRules(
   supabase: SupabaseClient,
   userId: string
 ): Promise<void> {
-  // Unlock previously locked leagues up to PRO limit (3)
+  // Unlock previously subscription-locked leagues up to PRO limit (3)
   const { data: lockedLeagues, error } = await supabase
     .from('leagues')
-    .select('id')
+    .select('id, updated_at')
     .eq('owner_id', userId)
     .eq('status', 'LOCKED')
+    .in('locked_reason', ['SUBSCRIPTION_EXPIRED', 'FREE_LIMIT_EXCEEDED'])
     .order('updated_at', { ascending: false });
 
   if (error) throw new Error(`Failed to fetch locked leagues for user ${userId}: ${error.message}`);
@@ -85,8 +99,13 @@ export async function applyUpgradeRules(
   if (slotsAvailable <= 0) return;
 
   const toUnlock = lockedLeagues.slice(0, slotsAvailable);
-  for (const league of toUnlock) {
-    await unlockLeague(supabase, league.id);
+  const toUnlockIds = toUnlock.map((l) => l.id);
+  if (toUnlockIds.length > 0) {
+    const { error: unlockError } = await supabase
+      .from('leagues')
+      .update({ status: 'ACTIVE', locked_reason: null })
+      .in('id', toUnlockIds);
+    if (unlockError) throw new Error(`Failed to unlock leagues: ${unlockError.message}`);
   }
 
   console.log(`Upgrade: unlocked ${toUnlock.length} leagues for user ${userId}`);
