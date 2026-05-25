@@ -18,7 +18,7 @@ export type RevenueCatWebhookEvent = {
 
 export type SubscriptionUpsertPayload = {
   user_id: string;
-  subscription_type: 'BASIC' | 'FREE';
+  subscription_type: 'PRO' | 'FREE';
   start_date: string;
   end_date: string;
   product_id?: string | null;
@@ -57,7 +57,7 @@ export const mapRevenueCatEventToAction = (
       action: 'upsert',
       payload: {
         user_id: event.app_user_id,
-        subscription_type: 'BASIC',
+        subscription_type: 'PRO',
         start_date: startDate,
         end_date: endDate,
         product_id: event.product_id ?? null,
