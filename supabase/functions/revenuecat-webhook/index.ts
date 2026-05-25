@@ -5,20 +5,19 @@ import {
   mapRevenueCatEventToAction,
   type RevenueCatWebhookEvent,
 } from './handler.ts';
+import { applyDowngradeRules, applyUpgradeRules } from '../_shared/leagueLock.ts';
 
 type RevenueCatWebhookBody = {
   event?: RevenueCatWebhookEvent;
 };
 
+const ACTIVE_EVENTS = new Set<string>(['INITIAL_PURCHASE', 'RENEWAL', 'PRODUCT_CHANGE', 'UNCANCELLATION']);
+
 Deno.serve(async (req) => {
-  if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
-  }
+  if (req.method !== 'POST') return new Response('Method Not Allowed', { status: 405 });
 
   const webhookSecret = Deno.env.get('RC_WEBHOOK_SECRET');
-  const authorizationHeader = req.headers.get('Authorization');
-
-  if (!isAuthorizedWebhookRequest(authorizationHeader, webhookSecret)) {
+  if (!isAuthorizedWebhookRequest(req.headers.get('Authorization'), webhookSecret)) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -45,10 +44,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return new Response('Server misconfigured', { status: 500 });
-  }
+  if (!supabaseUrl || !serviceRoleKey) return new Response('Server misconfigured', { status: 500 });
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
@@ -56,22 +52,36 @@ Deno.serve(async (req) => {
     const { error } = await supabase.from('subscription').upsert(action.payload, {
       onConflict: 'user_id',
     });
-
     if (error) {
       console.error('RevenueCat webhook upsert failed', error);
       return new Response(error.message, { status: 500 });
+    }
+    // Unlock leagues when subscription activates
+    if (ACTIVE_EVENTS.has(event.type)) {
+      try {
+        await applyUpgradeRules(supabase, event.app_user_id);
+      } catch (upgradeErr) {
+        console.error('applyUpgradeRules failed (non-fatal):', upgradeErr);
+        // Don't fail the webhook — subscription was already saved
+      }
     }
   }
 
   if (action.action === 'expire') {
     const { error } = await supabase
       .from('subscription')
-      .update({ end_date: action.endDate })
+      .update({ end_date: action.endDate, subscription_type: 'FREE' })
       .eq('user_id', action.userId);
-
     if (error) {
       console.error('RevenueCat webhook expire failed', error);
       return new Response(error.message, { status: 500 });
+    }
+    // Lock excess leagues when subscription expires/cancels
+    try {
+      await applyDowngradeRules(supabase, action.userId);
+    } catch (downgradeErr) {
+      console.error('applyDowngradeRules failed (non-fatal):', downgradeErr);
+      // Don't fail the webhook — subscription status was already saved
     }
   }
 

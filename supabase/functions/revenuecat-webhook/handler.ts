@@ -74,8 +74,18 @@ export const mapRevenueCatEventToAction = (
     };
   }
 
-  if (event.type === 'CANCELLATION' || event.type === 'BILLING_ISSUE') {
-    return { action: 'noop', reason: event.type.toLowerCase() };
+  if (event.type === 'CANCELLATION') {
+    return {
+      action: 'expire',
+      userId: event.app_user_id,
+      endDate: event.expiration_at_ms
+        ? new Date(event.expiration_at_ms).toISOString()
+        : now.toISOString(),
+    };
+  }
+
+  if (event.type === 'BILLING_ISSUE') {
+    return { action: 'noop', reason: 'billing_issue' };
   }
 
   return { action: 'noop', reason: 'unsupported_event' };

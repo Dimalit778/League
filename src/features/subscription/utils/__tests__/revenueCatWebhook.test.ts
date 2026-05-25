@@ -1,6 +1,7 @@
 import {
   isAuthorizedWebhookRequest,
   mapRevenueCatEventToAction,
+  type RevenueCatWebhookEvent,
 } from '../revenueCatWebhook';
 
 describe('revenueCatWebhook', () => {
@@ -44,18 +45,45 @@ describe('revenueCatWebhook', () => {
     });
   });
 
-  it('ignores cancellation events', () => {
+  it('ignores billing issue events', () => {
     const action = mapRevenueCatEventToAction({
-      type: 'CANCELLATION',
+      type: 'BILLING_ISSUE',
       app_user_id: 'user-1',
     });
 
-    expect(action).toEqual({ action: 'noop', reason: 'cancellation' });
+    expect(action).toEqual({ action: 'noop', reason: 'billing_issue' });
   });
 
   it('validates webhook authorization header', () => {
     expect(isAuthorizedWebhookRequest('Bearer secret-123', 'secret-123')).toBe(true);
     expect(isAuthorizedWebhookRequest('Bearer wrong', 'secret-123')).toBe(false);
     expect(isAuthorizedWebhookRequest(null, 'secret-123')).toBe(false);
+  });
+});
+
+describe('mapRevenueCatEventToAction - CANCELLATION as expire', () => {
+  it('returns expire action for CANCELLATION event', () => {
+    const event: RevenueCatWebhookEvent = {
+      type: 'CANCELLATION',
+      app_user_id: 'user-1',
+    };
+    const result = mapRevenueCatEventToAction(event, new Date('2026-01-01T00:00:00Z'));
+    expect(result.action).toBe('expire');
+    if (result.action === 'expire') {
+      expect(result.userId).toBe('user-1');
+    }
+  });
+
+  it('uses expiration_at_ms for CANCELLATION end date when provided', () => {
+    const event: RevenueCatWebhookEvent = {
+      type: 'CANCELLATION',
+      app_user_id: 'user-1',
+      expiration_at_ms: new Date('2026-03-01T00:00:00Z').getTime(),
+    };
+    const result = mapRevenueCatEventToAction(event, new Date('2026-01-01T00:00:00Z'));
+    expect(result.action).toBe('expire');
+    if (result.action === 'expire') {
+      expect(result.endDate).toBe('2026-03-01T00:00:00.000Z');
+    }
   });
 });
