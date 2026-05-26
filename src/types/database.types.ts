@@ -15,7 +15,6 @@ export type Database = {
   public: {
     Tables: {
       competitions: {
-        // TODO: regenerate via npm run sync-types after applying migration
         Row: {
           area: string
           code: string
@@ -121,17 +120,18 @@ export type Database = {
         ]
       }
       leagues: {
-        // TODO: regenerate via npm run sync-types after applying migration
         Row: {
           competition_id: number
           created_at: string
           id: string
           join_code: string
-          locked_reason: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
+          locked_reason:
+            | Database["public"]["Enums"]["league_locked_reason"]
+            | null
           max_members: number
           name: string
           owner_id: string
-          status: "ACTIVE" | "LOCKED"
+          status: Database["public"]["Enums"]["league_status"]
           updated_at: string
         }
         Insert: {
@@ -139,11 +139,13 @@ export type Database = {
           created_at?: string
           id?: string
           join_code: string
-          locked_reason?: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
+          locked_reason?:
+            | Database["public"]["Enums"]["league_locked_reason"]
+            | null
           max_members?: number
           name: string
           owner_id: string
-          status?: "ACTIVE" | "LOCKED"
+          status?: Database["public"]["Enums"]["league_status"]
           updated_at?: string
         }
         Update: {
@@ -151,11 +153,13 @@ export type Database = {
           created_at?: string
           id?: string
           join_code?: string
-          locked_reason?: "SUBSCRIPTION_EXPIRED" | "FREE_LIMIT_EXCEEDED" | "PRO_REQUIRED" | null
+          locked_reason?:
+            | Database["public"]["Enums"]["league_locked_reason"]
+            | null
           max_members?: number
           name?: string
           owner_id?: string
-          status?: "ACTIVE" | "LOCKED"
+          status?: Database["public"]["Enums"]["league_status"]
           updated_at?: string
         }
         Relationships: [
@@ -305,35 +309,35 @@ export type Database = {
       }
       subscription: {
         Row: {
+          access_advanced_stats: boolean
+          can_add_members: boolean
           created_at: string
           end_date: string
           id: string
-          product_id: string | null
           start_date: string
           subscription_type: Database["public"]["Enums"]["subscription_type"]
-          transaction_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          access_advanced_stats?: boolean
+          can_add_members?: boolean
           created_at?: string
           end_date: string
           id?: string
-          product_id?: string | null
           start_date: string
           subscription_type: Database["public"]["Enums"]["subscription_type"]
-          transaction_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          access_advanced_stats?: boolean
+          can_add_members?: boolean
           created_at?: string
           end_date?: string
           id?: string
-          product_id?: string | null
           start_date?: string
           subscription_type?: Database["public"]["Enums"]["subscription_type"]
-          transaction_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -443,6 +447,10 @@ export type Database = {
       }
     }
     Functions: {
+      choose_active_league: {
+        Args: { p_league_id: string }
+        Returns: undefined
+      }
       create_new_league: {
         Args: {
           competition_id: number
@@ -492,6 +500,11 @@ export type Database = {
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
     }
     Enums: {
+      league_locked_reason:
+        | "SUBSCRIPTION_EXPIRED"
+        | "FREE_LIMIT_EXCEEDED"
+        | "PRO_REQUIRED"
+      league_status: "ACTIVE" | "LOCKED"
       match_status:
         | "TIMED"
         | "SCHEDULED"
@@ -501,7 +514,6 @@ export type Database = {
         | "POSTPONED"
         | "PAUSED"
       role: "USER" | "ADMIN"
-      // TODO: remove manual addition after running npm run sync-types post-migration
       subscription_type: "FREE" | "BASIC" | "PREMIUM" | "PRO"
     }
     CompositeTypes: {
@@ -630,6 +642,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      league_locked_reason: [
+        "SUBSCRIPTION_EXPIRED",
+        "FREE_LIMIT_EXCEEDED",
+        "PRO_REQUIRED",
+      ],
+      league_status: ["ACTIVE", "LOCKED"],
       match_status: [
         "TIMED",
         "SCHEDULED",
@@ -640,7 +658,6 @@ export const Constants = {
         "PAUSED",
       ],
       role: ["USER", "ADMIN"],
-      // TODO: remove manual addition after running npm run sync-types post-migration
       subscription_type: ["FREE", "BASIC", "PREMIUM", "PRO"],
     },
   },
