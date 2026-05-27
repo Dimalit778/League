@@ -4,12 +4,13 @@
 
 -- Create a new league and add the creator as a primary member.
 -- RPC used by the mobile client; returns the created league id.
+-- Enforces subscription limits (FREE: 1 league, PRO: 3) and is_free gate.
 create or replace function public.create_new_league(
-  league_name text,
-  max_members int,
+  league_name   text,
+  max_members   int,
   competition_id int,
-  nickname text,
-  avatar_url text default null
+  nickname      text,
+  avatar_url    text default null
 )
 returns uuid
 language plpgsql
@@ -17,14 +18,52 @@ security definer
 set search_path = public
 as $$
 declare
-  v_user_id uuid;
-  v_join_code text;
-  v_league_id uuid;
+  v_user_id             uuid;
+  v_join_code           text;
+  v_league_id           uuid;
+  v_owned_count         int;
+  v_sub_type            text;
+  v_is_free_competition boolean;
+  v_free_limit constant int := 1;
+  v_pro_limit  constant int := 3;
 begin
   v_user_id := auth.uid();
 
   if v_user_id is null then
     raise exception 'User not authenticated';
+  end if;
+
+  -- Resolve caller's subscription plan
+  select subscription_type into v_sub_type
+  from public.subscription
+  where user_id = v_user_id
+  order by end_date desc
+  limit 1;
+  v_sub_type := coalesce(v_sub_type, 'FREE');
+
+  -- Count ACTIVE owned leagues
+  select count(*) into v_owned_count
+  from public.leagues
+  where owner_id = v_user_id and status = 'ACTIVE';
+
+  -- Enforce per-plan ownership limit
+  if v_sub_type = 'FREE' and v_owned_count >= v_free_limit then
+    raise exception 'Free plan is limited to % owned league', v_free_limit;
+  elsif v_sub_type <> 'FREE' and v_owned_count >= v_pro_limit then
+    raise exception 'Pro plan is limited to % owned leagues', v_pro_limit;
+  end if;
+
+  -- Enforce is_free competition gate
+  select c.is_free into v_is_free_competition
+  from public.competitions c
+  where c.id = competition_id;
+
+  if v_is_free_competition is null then
+    raise exception 'Competition not found';
+  end if;
+
+  if v_sub_type = 'FREE' and not v_is_free_competition then
+    raise exception 'This competition requires a Pro subscription';
   end if;
 
   loop
@@ -40,42 +79,18 @@ begin
   set is_primary = false
   where user_id = v_user_id;
 
-  insert into public.leagues (
-    name,
-    max_members,
-    competition_id,
-    owner_id,
-    join_code
-  )
-  values (
-    league_name,
-    max_members,
-    competition_id,
-    v_user_id,
-    v_join_code
-  )
+  insert into public.leagues (name, max_members, competition_id, owner_id, join_code)
+  values (league_name, max_members, competition_id, v_user_id, v_join_code)
   returning id into v_league_id;
 
-  insert into public.league_members (
-    league_id,
-    user_id,
-    nickname,
-    avatar_url,
-    is_primary
-  )
-  values (
-    v_league_id,
-    v_user_id,
-    nickname,
-    avatar_url,
-    true
-  );
+  insert into public.league_members (league_id, user_id, nickname, avatar_url, is_primary)
+  values (v_league_id, v_user_id, nickname, avatar_url, true);
 
   return v_league_id;
 
 exception
   when others then
-    raise exception 'Failed to create league: %', sqlerrm;
+    raise exception '%', sqlerrm;
 end$$;
 
 -- Create a new league and add the creator as a member
@@ -226,6 +241,11 @@ begin
 
   if v_league_record.id is null then
     raise exception 'League not found';
+  end if;
+
+  -- Block joins to locked leagues (SECURITY DEFINER bypasses the RLS policy)
+  if v_league_record.status <> 'ACTIVE' then
+    raise exception 'This league is currently locked and not accepting new members';
   end if;
 
   v_league_id := v_league_record.id;

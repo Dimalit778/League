@@ -10,7 +10,6 @@ import { RelativePathString, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { subscriptionApi } from '../api/subscriptionApi';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
 import { useSubscription } from '../hooks/useSubscription';
 import { SubscriptionType } from '../types';
@@ -60,7 +59,9 @@ const SubscriptionScreen = () => {
     try {
       const payload = await purchasesService.purchaseMonthly();
       if (payload) {
-        await subscriptionApi.syncAfterPurchase(userId, payload);
+        // Subscription row is updated by the RevenueCat webhook (server-side).
+        // Invalidate so the next fetch reflects the updated status once the
+        // webhook fires (typically within a few seconds).
         await invalidateSubscription();
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
@@ -82,7 +83,6 @@ const SubscriptionScreen = () => {
     try {
       const payload = await purchasesService.restorePurchases();
       if (payload) {
-        await subscriptionApi.syncAfterPurchase(userId, payload);
         await invalidateSubscription();
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {

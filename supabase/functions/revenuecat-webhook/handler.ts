@@ -70,7 +70,11 @@ export const mapRevenueCatEventToAction = (
     return {
       action: 'expire',
       userId: event.app_user_id,
-      endDate: now.toISOString(),
+      // Use RevenueCat's canonical expiry timestamp so retried deliveries are
+      // idempotent and don't advance end_date on each retry.
+      endDate: event.expiration_at_ms
+        ? new Date(event.expiration_at_ms).toISOString()
+        : now.toISOString(),
     };
   }
 

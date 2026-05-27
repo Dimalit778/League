@@ -1,4 +1,3 @@
-import { PurchaseSyncPayload } from '@/lib/revenuecat/purchases';
 import { supabase } from '@/lib/supabase';
 import { SubscriptionDetailsWithLimits } from '../types';
 import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getSubscriptionLimits';
@@ -6,13 +5,6 @@ import { getDefaultFreeSubscription, getSubscriptionLimits } from '../utils/getS
 export const subscriptionApi = {
   getSubscriptionLimits,
   getDefaultFreeSubscription,
-
-  async syncAfterPurchase(userId: string, payload: PurchaseSyncPayload): Promise<void> {
-    const { error } = await supabase
-      .from('subscription')
-      .upsert({ ...payload, user_id: userId }, { onConflict: 'user_id' });
-    if (error) throw new Error(error.message);
-  },
 
   async getCurrentSubscription(userId: string): Promise<SubscriptionDetailsWithLimits | null> {
     const { data, error } = await supabase
