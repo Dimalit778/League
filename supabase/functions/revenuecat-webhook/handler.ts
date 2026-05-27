@@ -18,12 +18,15 @@ export type RevenueCatWebhookEvent = {
 
 export type SubscriptionUpsertPayload = {
   user_id: string;
-  subscription_type: 'PRO' | 'FREE';
+  subscription_type: 'BASIC' | 'PREMIUM' | 'FREE';
   start_date: string;
   end_date: string;
   product_id?: string | null;
   transaction_id?: string | null;
 };
+
+const getSubscriptionTypeFromProductId = (productId?: string | null): 'BASIC' | 'PREMIUM' =>
+  productId?.toLowerCase().includes('premium') ? 'PREMIUM' : 'BASIC';
 
 export type WebhookAction =
   | { action: 'upsert'; payload: SubscriptionUpsertPayload }
@@ -57,7 +60,7 @@ export const mapRevenueCatEventToAction = (
       action: 'upsert',
       payload: {
         user_id: event.app_user_id,
-        subscription_type: 'PRO',
+        subscription_type: getSubscriptionTypeFromProductId(event.product_id),
         start_date: startDate,
         end_date: endDate,
         product_id: event.product_id ?? null,
