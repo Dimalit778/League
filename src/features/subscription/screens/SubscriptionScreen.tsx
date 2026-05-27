@@ -3,12 +3,14 @@ import { BackButton, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
+import { purchasesService } from '@/lib/revenuecat/purchases';
 import { useAuthStore } from '@/store/AuthStore';
 import { useQueryClient } from '@tanstack/react-query';
+import { RelativePathString, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Linking, Pressable, ScrollView } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { purchasesService } from '../../../lib/revenuecat/purchases';
+import { subscriptionApi } from '../api/subscriptionApi';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
 import { useSubscription } from '../hooks/useSubscription';
 import { SubscriptionType } from '../types';
@@ -43,7 +45,7 @@ const SubscriptionScreen = () => {
     setSelectedPlan(visibleSubscriptionType);
   }, [visibleSubscriptionType]);
 
-  const isPro = visibleSubscriptionType === 'BASIC';
+  const isPro = visibleSubscriptionType === 'PRO';
   const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
 
   const invalidateSubscription = async () => {
@@ -53,11 +55,12 @@ const SubscriptionScreen = () => {
   };
 
   const handleSubscribePress = async () => {
-    if (!canProceed) return;
+    if (!canProceed || !userId) return;
     setIsPurchasing(true);
     try {
-      const success = await purchasesService.purchaseMonthly();
-      if (success) {
+      const payload = await purchasesService.purchaseMonthly();
+      if (payload) {
+        await subscriptionApi.syncAfterPurchase(userId, payload);
         await invalidateSubscription();
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
@@ -74,10 +77,12 @@ const SubscriptionScreen = () => {
   };
 
   const handleRestorePress = async () => {
+    if (!userId) return;
     setIsRestoring(true);
     try {
-      const active = await purchasesService.restorePurchases();
-      if (active) {
+      const payload = await purchasesService.restorePurchases();
+      if (payload) {
+        await subscriptionApi.syncAfterPurchase(userId, payload);
         await invalidateSubscription();
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {
@@ -159,6 +164,22 @@ const SubscriptionScreen = () => {
             </CText>
           </Pressable>
         )}
+
+        <View className="mt-6 flex-row flex-wrap justify-center">
+          <Pressable onPress={() => router.push('/settings/privacy' as RelativePathString)}>
+            <CText variant="caption" className="text-muted underline">
+              {t('Privacy Policy')}
+            </CText>
+          </Pressable>
+          <CText variant="caption" className="px-2 text-muted">
+            |
+          </CText>
+          <Pressable onPress={() => router.push('/settings/terms' as RelativePathString)}>
+            <CText variant="caption" className="text-muted underline">
+              {t('Terms of Service')}
+            </CText>
+          </Pressable>
+        </View>
       </ScrollView>
     </Screen>
   );

@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { Tables } from '@/types/database.types';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
-import { Alert, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsScreen = () => {
@@ -29,6 +29,23 @@ const SettingsScreen = () => {
       Alert.alert(t('Error'), result.error || t('Failed to sign out'));
     }
   };
+  const handleDeleteAccountPress = () => {
+    Alert.alert('Delete Account', 'Are you sure you want to delete your account? This action cannot be undone.', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: deleteAccount,
+      },
+    ]);
+  };
+
+  const deleteAccount = async () => {
+    console.log('deleteAccount');
+  };
   if (!user || isLoading) return <LoadingOverlay />;
 
   return (
@@ -46,6 +63,7 @@ const SettingsScreen = () => {
             email={user?.email}
           />
         </View>
+
         {user?.role === 'ADMIN' && (
           <View className="mt-8 px-6">
             <Button
@@ -55,14 +73,26 @@ const SettingsScreen = () => {
             />
           </View>
         )}
-        <View className="mt-10">
-          <Button
-            title={t('Sign Out')}
-            color="red"
-            className="mx-auto w-1/3"
-            onPress={handleSignOut}
-            disabled={isLoadingAuth}
-          />
+        <Pressable
+          onPress={handleSignOut}
+          className="mt-6 flex-row items-center justify-between border-b border-border py-4"
+        >
+          <CText variant="body" className="text-orange-400">
+            {t('Sign Out')}
+          </CText>
+        </Pressable>
+
+        <View className="mt-8">
+          <CText className="mb-3 text-xs font-bold tracking-widest text-red-400">DANGER ZONE</CText>
+
+          <Pressable
+            onPress={handleDeleteAccountPress}
+            className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4"
+          >
+            <CText className="text-red-400 font-bold text-base">Delete Account</CText>
+
+            <CText className="mt-1 text-muted text-sm">Permanently delete your account and personal data.</CText>
+          </Pressable>
         </View>
       </ScrollView>
     </Screen>

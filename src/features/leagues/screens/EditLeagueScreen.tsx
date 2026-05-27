@@ -1,5 +1,5 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
+import { useDeleteLeague, useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 
@@ -55,6 +55,8 @@ export default function EditLeagueScreen() {
   const { showAlert } = useAlert();
   const removeMember = useRemoveMember();
   const updateLeague = useUpdateLeague();
+  const deleteLeague = useDeleteLeague();
+  const isOwner = primaryMember?.user_id === league?.owner_id;
 
   const sortedMembers = useMemo(() => {
     return [...(league?.league_members ?? [])].sort((a, b) => {
@@ -88,6 +90,23 @@ export default function EditLeagueScreen() {
   };
   const trimmedLeagueName = editedLeagueName.trim();
   const canSaveLeagueName = league && trimmedLeagueName.length > 0 && trimmedLeagueName !== league.name;
+
+  const confirmDeleteLeague = () => {
+    if (!leagueId || !league) return;
+    showAlert({
+      title: t('Delete League'),
+      message: t('Are you sure you want to delete this league?'),
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        {
+          text: t('Delete'),
+          style: 'destructive',
+          onPress: () => deleteLeague.mutate({ leagueId, ownerId: league.owner_id }),
+        },
+      ],
+    });
+  };
 
   const handleSaveLeague = () => {
     const trimmedName = editedLeagueName.trim();
@@ -162,6 +181,17 @@ export default function EditLeagueScreen() {
             className="flex-1 "
           />
         </View>
+        {isOwner && (
+          <View className="px-4 mt-4 mb-6">
+            <Button
+              title={t('Delete League')}
+              variant="error"
+              onPress={confirmDeleteLeague}
+              disabled={deleteLeague.isPending}
+              loading={deleteLeague.isPending}
+            />
+          </View>
+        )}
       </KeyboardAwareScrollView>
     </Screen>
   );

@@ -215,4 +215,15 @@ export const leagueApi = {
     if (error) throw new Error(error.message);
     return data ?? [];
   },
+
+  async deleteLeague(leagueId: string) {
+    const { data, error } = await supabase.rpc('delete_owned_league', {
+      p_league_id: leagueId,
+    });
+
+    if (error) throw new Error(error.message || 'Failed to delete league');
+    if (!data) throw new Error('Failed to delete league');
+
+    return data;
+  },
 };

@@ -32,8 +32,8 @@ jest.mock('@/features/settings/components/Settings/SettingsContent', () => {
 
 describe('SettingsScreen', () => {
   it('renders Sign Out button', () => {
-    const { getByText } = render(<SettingsScreen />);
-    expect(getByText('Sign Out')).toBeTruthy();
+    const { getAllByText } = render(<SettingsScreen />);
+    expect(getAllByText('Sign Out').length).toBeGreaterThan(0);
   });
 
   it('renders settings content', () => {

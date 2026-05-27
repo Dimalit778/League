@@ -239,13 +239,17 @@ export const useLeaveLeague = () => {
 };
 export const useDeleteLeague = () => {
   const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? '');
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
-    mutationFn: async ({ leagueId, userId }: { leagueId: string; userId: string }) => {
-      const result = await leagueApi.deleteLeague(leagueId);
-      return result;
+    mutationFn: async ({ leagueId, ownerId }: { leagueId: string; ownerId: string }) => {
+      if (!userId) throw new Error('User not authenticated');
+      if (ownerId !== userId) {
+        throw new Error('Only the league owner can delete this league');
+      }
+      return leagueApi.deleteLeague(leagueId);
     },
-    onSuccess: async (result, { leagueId, userId }) => {
+    onSuccess: async (_result, { leagueId }) => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
@@ -262,8 +266,11 @@ export const useDeleteLeague = () => {
         queryClient.invalidateQueries({
           queryKey: KEYS.leagues.leaderboard(leagueId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.subscriptions.canCreateLeague(userId),
+        }),
       ]);
-      initializeMember();
+      await initializeMember();
       router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {

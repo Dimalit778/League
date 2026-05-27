@@ -73,8 +73,7 @@ const AppleAuth = ({
         return;
       }
 
-      const userMessage =
-        formatErrorForUser(error) || 'Apple sign in failed. Please try again.';
+      const userMessage = formatErrorForUser(error) || 'Apple sign in failed. Please try again.';
       setErrorMessage(userMessage);
       Alert.alert('Sign In Error', userMessage);
     } finally {
@@ -88,15 +87,8 @@ const AppleAuth = ({
 
   return (
     <View className="gap-2">
-      <AppleSignInButton
-        onPress={handleAppleSignIn}
-        loading={isLoading}
-        disabled={isLoading}
-        label={t(labelKey)}
-      />
-      {errorMessage && (
-        <CText className="text-error text-sm text-center mt-1">{errorMessage}</CText>
-      )}
+      <AppleSignInButton onPress={handleAppleSignIn} loading={isLoading} disabled={isLoading} label={t(labelKey)} />
+      {errorMessage && <CText className="text-error text-sm text-center mt-1">{errorMessage}</CText>}
     </View>
   );
 };

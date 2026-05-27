@@ -3,6 +3,7 @@ import '../../global.css';
 import '@/lib/i18n/autoTranslate';
 
 import { SplashScreen as AppSplashScreen, NetworkStatusBanner } from '@/components/layout';
+import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -15,7 +16,6 @@ import {
 } from '@/providers';
 
 import { useLanguageStore } from '@/store/LanguageStore';
-import { useMemberStore } from '@/store/MemberStore';
 import { useThemeStore } from '@/store/ThemeStore';
 
 import footballBg from '@assets/images/football-bg.png';
@@ -62,11 +62,13 @@ ExpoSplashScreen.preventAutoHideAsync().catch(() => {});
 const AppBootstrap = () => {
   const ref = useNavigationContainerRef();
   const { isLoggedIn, isAuthLoading } = useAuth();
-  const initializeMember = useMemberStore((s) => s.initializeMember);
   const initializeTheme = useThemeStore((s) => s.initializeTheme);
   const initializeLanguage = useLanguageStore((s) => s.initializeLanguage);
   const { colors } = useThemeTokens();
   const [isReady, setIsReady] = useState(false);
+
+  const { status: memberStatus } = usePrimaryMember();
+  const isMemberSettled = !isLoggedIn || memberStatus === 'success' || memberStatus === 'error';
 
   const [fontsLoaded] = useFonts({
     Teko_700Bold,
@@ -81,15 +83,14 @@ const AppBootstrap = () => {
   }, [ref]);
 
   useEffect(() => {
-    if (!fontsLoaded || isAuthLoading) return;
+    if (!fontsLoaded || isAuthLoading || !isMemberSettled) return;
 
     let cancelled = false;
 
     const prepare = async () => {
       try {
         await initializeLanguage();
-
-        await Promise.all([initializeTheme(), initializeMember(), Asset.fromModule(footballBg).downloadAsync()]);
+        await Promise.all([initializeTheme(), Asset.fromModule(footballBg).downloadAsync()]);
       } catch (e: any) {
       } finally {
         if (!cancelled) {
@@ -104,7 +105,7 @@ const AppBootstrap = () => {
     return () => {
       cancelled = true;
     };
-  }, [fontsLoaded, isAuthLoading, initializeTheme, initializeLanguage, initializeMember]);
+  }, [fontsLoaded, isAuthLoading, isMemberSettled, initializeTheme, initializeLanguage]);
 
   if (!isReady) {
     return <AppSplashScreen />;

@@ -1,27 +1,31 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { Button } from '@/components/ui';
-
-import { useTranslation } from '@/hooks/useTranslation';
-import { useMemberStore } from '@/store/MemberStore';
-
 import { CText } from '@/components/ui/CText';
+import { subscriptionApi } from '@/features/subscription/api/subscriptionApi';
 import { DowngradeModal } from '@/features/subscription/components/DowngradeModal';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
+import { purchasesService } from '@/lib/revenuecat/purchases';
+import { useAuthStore } from '@/store/AuthStore';
+import { useMemberStore } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
-import RevenueCatUI from 'react-native-purchases-ui';
+import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { leagueApi } from '../api/leagueApi';
 import MyLeagueCard from '../components/MyLeagueCard';
 import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
 
 const MyLeagues = () => {
-  const { data: leagues, isLoading, error, refetch } = useMyLeagues();
+  const userId = useAuthStore((s) => s.user?.id);
+  const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
+  const { data: leagues, isPending: isLeaguesPending, isFetching: isLeaguesFetching, error, refetch } = useMyLeagues();
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
-  const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
+  const { data: subscription } = useSubscription();
+  console.log('subscription', JSON.stringify(subscription, null, 2));
+
   const queryClient = useQueryClient();
   const [modalDismissed, setModalDismissed] = useState(false);
 
@@ -31,18 +35,20 @@ const MyLeagues = () => {
   const insets = useSafeAreaInsets();
   const handleOpenPaywall = async () => {
     try {
-      await RevenueCatUI.presentPaywall();
-
-      // אחרי שהמשתמש קנה/סגר את הפייוול — נרענן את הסטטוס
-      await queryClient.invalidateQueries({
-        queryKey: KEYS.subscriptions.detail(activeMember?.user_id ?? ''),
-      });
+      const payload = await purchasesService.presentPaywall();
+      if (payload && userId) {
+        await subscriptionApi.syncAfterPurchase(userId, payload);
+        await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
+      }
     } catch (error) {
-      console.log('Failed to open paywall:', error);
+      Alert.alert(t('Error'), t('Something went wrong'));
     }
   };
+
+  const isLeaguesLoading = !!userId && (isLeaguesPending || isLeaguesFetching);
+  const leaguesList = leagues ?? [];
   const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
-    const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
+    const selectedLeague = leaguesList.find((l) => l.league.id === leagueId);
 
     if (!selectedLeague) return;
 
@@ -68,7 +74,7 @@ const MyLeagues = () => {
     }
   };
 
-  if (isLoading || !leagues || isLoadingSubscription) {
+  if (isAuthLoading || isLeaguesLoading) {
     return (
       <Screen>
         <LoadingOverlay />
@@ -78,10 +84,10 @@ const MyLeagues = () => {
   if (error) return <Error error={error as Error} />;
 
   const limit = subscription?.limits.ownedLeagues ?? 0;
-  const reachedLimit = limit > 0 && leagues.length >= limit;
-  const usagePercent = limit > 0 ? Math.min((leagues.length / limit) * 100, 100) : 0;
+  const reachedLimit = limit > 0 && leaguesList.length >= limit;
+  const usagePercent = limit > 0 ? Math.min((leaguesList.length / limit) * 100, 100) : 0;
 
-  const hasLockedDueToExpiry = leagues.some((l) => l.league.locked_reason === 'SUBSCRIPTION_EXPIRED');
+  const hasLockedDueToExpiry = leaguesList.some((l) => l.league.locked_reason === 'SUBSCRIPTION_EXPIRED');
   const showDowngradeModal = hasLockedDueToExpiry && !modalDismissed;
 
   return (
@@ -118,18 +124,18 @@ const MyLeagues = () => {
       )}
 
       <ScrollView
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
+        refreshControl={<RefreshControl refreshing={isLeaguesFetching} onRefresh={refetch} />}
         showsVerticalScrollIndicator={false}
         contentContainerClassName="flex-1 gap-3 p-2 mt-4"
       >
-        {leagues.map((league) => (
+        {leaguesList.map((league) => (
           <MyLeagueCard
             key={league.league.id}
             item={league}
             handleSetPrimary={() => handleSetPrimary(league.league.id, league.is_primary)}
           />
         ))}
-        {leagues.length === 0 && (
+        {leaguesList.length === 0 && (
           <View className="flex-1 pt-10">
             <CText className="text-center text-muted font-nunito-bold text-lg">
               Create or join a league to get started
@@ -145,7 +151,7 @@ const MyLeagues = () => {
             </CText>
 
             <CText variant="body" bold className={reachedLimit ? 'text-yellow-500 font-bold' : 'text-muted'}>
-              {leagues.length}/{limit}
+              {leaguesList.length}/{limit}
             </CText>
           </View>
 

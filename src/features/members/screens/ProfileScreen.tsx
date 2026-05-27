@@ -25,6 +25,8 @@ const ProfileScreen = () => {
   const { DialogComponent } = useConfirmDialog();
   const { showAlert } = useAlert();
 
+  const isOwner = memberData?.user_id === leagueData?.owner_id;
+
   const confirmLeaveLeague = () => {
     if (!leagueId) return;
     showAlert({
@@ -34,6 +36,23 @@ const ProfileScreen = () => {
       buttons: [
         { text: t('Cancel'), style: 'cancel' },
         { text: t('Leave'), style: 'destructive', onPress: () => leaveLeague.mutate(leagueId) },
+      ],
+    });
+  };
+
+  const confirmDeleteLeague = () => {
+    if (!leagueId || !leagueData) return;
+    showAlert({
+      title: t('Delete League'),
+      message: t('Are you sure you want to delete this league?'),
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        {
+          text: t('Delete'),
+          style: 'destructive',
+          onPress: () => deleteLeague.mutate({ leagueId, ownerId: leagueData.owner_id }),
+        },
       ],
     });
   };
@@ -55,12 +74,21 @@ const ProfileScreen = () => {
         <LeagueDetailsSection league={leagueData} memberUserId={memberData?.user_id} />
 
         <View className="px-6 mt-4">
-          <Button
-            title={t('Leave League')}
-            variant="error"
-            onPress={confirmLeaveLeague}
-            disabled={leaveLeague.isPending}
-          />
+          {isOwner ? (
+            <Button
+              title={t('Delete League')}
+              variant="error"
+              onPress={confirmDeleteLeague}
+              disabled={deleteLeague.isPending}
+            />
+          ) : (
+            <Button
+              title={t('Leave League')}
+              variant="error"
+              onPress={confirmLeaveLeague}
+              disabled={leaveLeague.isPending}
+            />
+          )}
         </View>
       </KeyboardAwareScrollView>
       <DialogComponent />

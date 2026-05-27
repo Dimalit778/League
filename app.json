@@ -9,8 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "privacy": "public",
-    "privacyPolicy": "https://yourdomain.com/privacy-policy",
-    "termsOfService": "https://yourdomain.com/terms-of-service",
+    "privacyPolicy": "https://leaguechampion.app/privacy-policy/",
+    "termsOfService": "https://leaguechampion.app/terms-of-service/",
     "splash": {
       "image": "./assets/app-icon.png",
       "resizeMode": "contain",
@@ -21,6 +21,7 @@
       "bundleIdentifier": "com.dimalit778.league",
       "userInterfaceStyle": "dark",
       "buildNumber": "1",
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
       }

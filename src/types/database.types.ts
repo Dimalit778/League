@@ -460,6 +460,7 @@ export type Database = {
         }
         Returns: string
       }
+      delete_owned_league: { Args: { p_league_id: string }; Returns: Json }
       find_league_by_code: {
         Args: { p_join_code: string }
         Returns: {

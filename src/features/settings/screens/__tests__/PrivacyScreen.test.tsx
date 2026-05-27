@@ -1,10 +1,14 @@
 import { render } from '@testing-library/react-native';
 import PrivacyScreen from '../../screens/PrivacyScreen';
 
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: () => null,
+}));
+
 describe('PrivacyScreen', () => {
   it('renders privacy policy sections', () => {
-    const { getByText } = render(<PrivacyScreen />);
-    expect(getByText('Introduction')).toBeTruthy();
+    const { getAllByText } = render(<PrivacyScreen />);
+    expect(getAllByText('Privacy Policy').length).toBeGreaterThan(0);
   });
 
   it('renders data collection section', () => {

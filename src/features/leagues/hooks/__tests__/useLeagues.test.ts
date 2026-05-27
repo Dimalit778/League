@@ -86,8 +86,8 @@ describe('useLeagues hooks', () => {
 
     useDeleteLeague();
 
-    await mutationConfig.mutationFn({ leagueId: 'l1', userId: 'u1' });
-    await mutationConfig.onSuccess({}, { leagueId: 'l1', userId: 'u1' });
+    await mutationConfig.mutationFn({ leagueId: 'l1', ownerId: 'u1' });
+    await mutationConfig.onSuccess({}, { leagueId: 'l1', ownerId: 'u1' });
 
     expect(leagueApi.deleteLeague).toHaveBeenCalledWith('l1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });

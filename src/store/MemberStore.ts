@@ -28,17 +28,19 @@ export const useMemberStore = create<MemberState>()((set) => ({
       return;
     }
 
-    const { data, error } = await supabase
-      .from('league_members')
-      .select('*, league:leagues!league_id(*, competition:competitions(*))')
-      .eq('user_id', user.id)
-      .eq('is_primary', true)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('league_members')
+        .select('*, league:leagues!league_id(*, competition:competitions(*))')
+        .eq('user_id', user.id)
+        .eq('is_primary', true)
+        .maybeSingle();
 
-    if (error) {
+      if (error) throw error;
+      set({ activeMember: data ?? null });
+    } catch {
+      // Network errors on bootstrap are expected — usePrimaryMember query will retry.
     }
-
-    set({ activeMember: data ?? null });
   },
 
   clearMember: () => set({ activeMember: null }),

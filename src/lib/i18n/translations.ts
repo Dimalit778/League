@@ -55,6 +55,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Validation: 'Validation',
       'from this league': 'from this league',
       Leave: 'Leave',
+      'Privacy Policy': 'Privacy Policy',
+      'Terms of Service': 'Terms of Service',
       'Member or league data not found': 'Member or league data not found',
     },
 
@@ -189,6 +191,11 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Joined On': 'Joined On',
       Created: 'Created',
       'Created at': 'Created at',
+      'Leave League': 'Leave League',
+      'Are you sure you want to leave this league?': 'Are you sure you want to leave this league?',
+      'Delete League': 'Delete League',
+      'Are you sure you want to delete this league?':
+        'This will permanently delete the league, all members, and all predictions. Are you sure?',
     },
 
     // Matches and Predictions
@@ -282,6 +289,11 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Failed to pick image': 'Failed to pick image',
       'Failed to upload image': 'Failed to upload image',
       'Error sharing:': 'Error sharing:',
+      'Leave League': 'Leave League',
+      'Are you sure you want to leave this league?': 'Are you sure you want to leave this league?',
+      'Delete League': 'Delete League',
+      'Are you sure you want to delete this league?':
+        'This will permanently delete the league, all members, and all predictions. Are you sure?',
     },
 
     // Help & Support
@@ -638,6 +650,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Toggle password visibility': 'החלף תצוגת סיסמה',
       'from this league': 'מהליגה הזאת',
       Validation: 'אימות',
+      'Privacy Policy': 'מדיניות פרטיות',
+      'Terms of Service': 'תנאי שימוש',
     },
 
     // Auth screens
@@ -836,7 +850,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Cancel: 'ביטול',
       'Failed to delete image': 'שגיאה במחיקת תמונה',
       'Delete Profile Picture': 'מחיקת תמונת פרופיל',
-      'Are you sure you want to delete this league?': 'האם אתה בטוח שברצונך למחוק את הליגה ?',
+      'Are you sure you want to delete this league?':
+        'פעולה זו תמחק לצמיתות את הליגה, את כל החברים ואת כל הניחושים. האם אתה בטוח?',
       'Are you sure you want to delete your profile picture?': 'האם אתה בטוח שברצונך למחוק את תמונת הפרופיל שלך?',
       'Language: {{language}}': 'שפה: {{language}}',
       'Switch to {{language}}': 'החלף ל {{language}}',

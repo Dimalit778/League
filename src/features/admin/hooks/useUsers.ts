@@ -6,9 +6,13 @@ import { TablesUpdate } from '@/types/database.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 export const useGetUser = () => {
+  const userId = useAuthStore((s) => s.user?.id);
+  const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
+
   return useQuery({
     queryKey: KEYS.users.all,
     queryFn: () => userService.getUser(),
+    enabled: !isAuthLoading && !!userId,
     retry: 2,
     staleTime: 60 * 1000, // 1 minute
   });

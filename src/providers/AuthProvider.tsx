@@ -1,4 +1,4 @@
-import { purchasesService } from '@/features/subscription/services/purchases';
+import { purchasesService } from '@/lib/revenuecat/purchases';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/AuthStore';
 import type { Session } from '@supabase/supabase-js';
@@ -21,6 +21,11 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     return;
   }
 
+  // Unblock splash immediately — session confirms auth state
+  if (shouldApply()) {
+    useAuthStore.setState({ isAuthLoading: false });
+  }
+
   const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
 
   if (!shouldApply()) return;
@@ -35,7 +40,6 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     user: data,
     session,
     isAuthenticated: !!data.id && isEmailConfirmed,
-    isAuthLoading: false,
   });
 };
 
@@ -60,9 +64,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // Ignore RevenueCat login errors during auth bootstrap.
         }
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!isMounted) return;
-        setSignedOut();
+        const isNetworkError =
+          error instanceof TypeError || (error instanceof Error && error.message === 'Network request failed');
+        if (isNetworkError) {
+          useAuthStore.setState({ isAuthLoading: false });
+        } else {
+          setSignedOut();
+        }
       });
 
     const {

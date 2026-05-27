@@ -1,11 +1,6 @@
-import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import {
-  isAuthorizedWebhookRequest,
-  mapRevenueCatEventToAction,
-  type RevenueCatWebhookEvent,
-} from './handler.ts';
 import { applyDowngradeRules, applyUpgradeRules } from '../_shared/leagueLock.ts';
+import { isAuthorizedWebhookRequest, mapRevenueCatEventToAction, type RevenueCatWebhookEvent } from './handler.ts';
 
 type RevenueCatWebhookBody = {
   event?: RevenueCatWebhookEvent;
@@ -35,7 +30,6 @@ Deno.serve(async (req) => {
 
   const action = mapRevenueCatEventToAction(event);
   if (action.action === 'noop') {
-    console.log(`RevenueCat webhook noop: ${action.reason}`);
     return new Response(JSON.stringify({ ok: true, action: action.action }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

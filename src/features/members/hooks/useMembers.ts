@@ -14,7 +14,7 @@ const RETRY_COUNT = 2;
 const invalidateMemberQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   memberId: string,
-  leagueId?: string
+  leagueId?: string,
 ) => {
   queryClient.invalidateQueries({ queryKey: KEYS.members.byId(memberId) });
   queryClient.invalidateQueries({ queryKey: KEYS.members.stats(memberId) });
@@ -119,24 +119,23 @@ export const useMemberProfile = (memberId: string) => {
 };
 
 export const usePrimaryMember = () => {
-  const { user } = useAuth();
+  const { user, isAuthLoading } = useAuth();
   const userId = user?.id ?? null;
   const { setActiveMember } = useMemberStore();
 
   const query = useQuery({
-    queryKey: KEYS.members.primary(userId as string),
-    queryFn: async () => {
-      if (!userId) return null;
-      return memberApi.getPrimaryMember(userId);
-    },
-    enabled: !!userId,
+    queryKey: KEYS.members.primary(userId ?? 'anonymous'),
+    queryFn: () => memberApi.getPrimaryMember(userId!),
+    enabled: !isAuthLoading && !!userId,
     staleTime: STALE_TIME,
+    retry: RETRY_COUNT,
   });
+
   useEffect(() => {
-    if (query.data !== undefined) {
-      setActiveMember(query.data);
+    if (query.isSuccess) {
+      setActiveMember(query.data ?? null);
     }
-  }, [query.data, setActiveMember]);
+  }, [query.isSuccess, query.data, setActiveMember]);
 
   return query;
 };
