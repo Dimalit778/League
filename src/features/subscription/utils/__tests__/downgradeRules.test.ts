@@ -74,9 +74,9 @@ describe('downgrade rules — canCreateLeague', () => {
     expect(result.reason).toBeUndefined();
   });
 
-  it('pro user with 3 owned leagues cannot create more (allowed: false)', async () => {
+  it('paid user with 3 owned leagues cannot create more (allowed: false)', async () => {
     mockFrom.mockImplementation((table: string) => {
-      if (table === 'subscription') return buildSubMock('PRO');
+      if (table === 'subscription') return buildSubMock('BASIC');
       if (table === 'leagues')
         return buildLeaguesMock([{ id: 'l1' }, { id: 'l2' }, { id: 'l3' }]);
       return {};
@@ -90,19 +90,19 @@ describe('downgrade rules — canCreateLeague', () => {
 });
 
 describe('downgrade rules — canCreateLeagueWithSize', () => {
-  it('free user cannot create a 12-member league (allowed: false)', async () => {
+  it('free user cannot create a 10-member league (allowed: false)', async () => {
     mockFrom.mockImplementation(() => buildSubMock(null)); // null → FREE
 
-    const result = await canCreateLeagueWithSize('user-free', 12);
+    const result = await canCreateLeagueWithSize('user-free', 10);
 
     expect(result.allowed).toBe(false);
-    expect(result.reason).toContain('12');
+    expect(result.reason).toContain('10');
   });
 
-  it('pro user can create a 12-member league (allowed: true)', async () => {
-    mockFrom.mockImplementation(() => buildSubMock('PRO'));
+  it('paid user can create a 10-member league (allowed: true)', async () => {
+    mockFrom.mockImplementation(() => buildSubMock('BASIC'));
 
-    const result = await canCreateLeagueWithSize('user-pro', 12);
+    const result = await canCreateLeagueWithSize('user-paid', 10);
 
     expect(result.allowed).toBe(true);
   });

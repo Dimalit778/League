@@ -22,11 +22,6 @@ const getTypeColor = (type: SubscriptionType) => {
   }
 };
 
-const getPlanTitle = (type: SubscriptionType) => {
-  if (type === 'BASIC') return 'PRO';
-  return type;
-};
-
 const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }: SubscriptionCardProps) => {
   const { t } = useTranslation();
   const priceLabel = type === 'FREE' ? t(price) : `${t(price)}/${t('mo')}`;
@@ -37,7 +32,7 @@ const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }:
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getTypeColor(type)} mr-2`} />
           <CText variant="body" bold>
-            {t(getPlanTitle(type))}
+            {t(type)}
           </CText>
         </View>
         <CText variant="body" bold className="text-primary">

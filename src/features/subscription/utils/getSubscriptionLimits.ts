@@ -1,20 +1,20 @@
-import { FREE_LIMITS, PRO_LIMITS } from '../config/limits';
+import { FREE_LIMITS, PAID_LIMITS } from '../config/limits';
 import { SubscriptionDetails, SubscriptionLimits, SubscriptionType } from '../types';
 
 export const getSubscriptionLimits = (subscriptionType: SubscriptionType | null): SubscriptionLimits => {
   switch (subscriptionType) {
-    case 'PRO':
-    case 'PREMIUM':
     case 'BASIC':
-      return { ...PRO_LIMITS };
+    case 'PREMIUM':
+    case 'PRO': // backwards compat for existing DB records
+      return { ...PAID_LIMITS };
     case 'FREE':
     default:
       return { ...FREE_LIMITS };
   }
 };
 
-export const isProPlan = (subscriptionType: SubscriptionType | null): boolean =>
-  subscriptionType === 'PRO' || subscriptionType === 'BASIC' || subscriptionType === 'PREMIUM';
+export const isPaidPlan = (subscriptionType: SubscriptionType | null): boolean =>
+  subscriptionType === 'BASIC' || subscriptionType === 'PREMIUM' || subscriptionType === 'PRO';
 
 export const getDefaultFreeSubscription = (userId: string): SubscriptionDetails => ({
   id: 'free-' + userId,

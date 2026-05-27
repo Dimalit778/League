@@ -5,11 +5,11 @@ export const FREE_LIMITS = {
   aiTipsPerWeek: 3,
 } as const;
 
-export const PRO_LIMITS = {
+export const PAID_LIMITS = {
   ownedLeagues: 3,
-  maxMembersPerLeague: 12,
-  allowedLeagueSizes: [6, 12] as const,
+  maxMembersPerLeague: 20,
+  allowedLeagueSizes: [6, 10, 20] as const,
   aiTipsPerWeek: Infinity,
 } as const;
 
-export type PlanLimits = typeof FREE_LIMITS | typeof PRO_LIMITS;
+export type PlanLimits = typeof FREE_LIMITS | typeof PAID_LIMITS;

@@ -113,7 +113,9 @@
       "**/*.(test|spec).{js,jsx,ts,tsx}"
     ],
     "testPathIgnorePatterns": [
-      "<rootDir>/src/features/auth/__tests__/setup.ts"
+      "<rootDir>/src/features/auth/__tests__/setup.ts",
+      "<rootDir>/.claude/worktrees",
+      "<rootDir>/.worktrees"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",

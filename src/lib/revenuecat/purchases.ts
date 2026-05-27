@@ -9,7 +9,7 @@ const PRO_ENTITLEMENT = 'pro';
 let isConfigured = false;
 
 export type PurchaseSyncPayload = {
-  subscription_type: 'PRO';
+  subscription_type: 'BASIC' | 'PREMIUM';
   start_date: string;
   end_date: string;
   product_id: string | null;
@@ -37,7 +37,7 @@ const extractSyncPayload = (customerInfo: CustomerInfo): PurchaseSyncPayload | n
   if (!entitlement) return null;
 
   return {
-    subscription_type: 'PRO',
+    subscription_type: entitlement.productIdentifier?.toLowerCase().includes('premium') ? 'PREMIUM' : 'BASIC',
     start_date: entitlement.latestPurchaseDate,
     end_date:
       entitlement.expirationDate ??

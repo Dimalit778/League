@@ -4,6 +4,7 @@
 node_modules/
 .claude/worktrees/
 supabase/.temp/
+.worktrees/
 .env
 .env.local
 # Keep .env.example in version control for documentation

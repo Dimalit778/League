@@ -5,12 +5,12 @@ import {
 } from '../revenueCatWebhook';
 
 describe('revenueCatWebhook', () => {
-  it('maps active purchase events to PRO upsert', () => {
+  it('maps active purchase events to BASIC upsert for non-premium product', () => {
     const action = mapRevenueCatEventToAction(
       {
         type: 'INITIAL_PURCHASE',
         app_user_id: 'user-1',
-        product_id: 'pro_monthly',
+        product_id: 'basic_monthly',
         transaction_id: 'txn-1',
         purchased_at_ms: Date.parse('2026-05-01T00:00:00.000Z'),
         expiration_at_ms: Date.parse('2026-06-01T00:00:00.000Z'),
@@ -23,12 +23,31 @@ describe('revenueCatWebhook', () => {
 
     expect(action.payload).toEqual({
       user_id: 'user-1',
-      subscription_type: 'PRO',
+      subscription_type: 'BASIC',
       start_date: '2026-05-01T00:00:00.000Z',
       end_date: '2026-06-01T00:00:00.000Z',
-      product_id: 'pro_monthly',
+      product_id: 'basic_monthly',
       transaction_id: 'txn-1',
     });
+  });
+
+  it('maps active purchase events to PREMIUM upsert for premium product', () => {
+    const action = mapRevenueCatEventToAction(
+      {
+        type: 'INITIAL_PURCHASE',
+        app_user_id: 'user-1',
+        product_id: 'premium_monthly',
+        transaction_id: 'txn-2',
+        purchased_at_ms: Date.parse('2026-05-01T00:00:00.000Z'),
+        expiration_at_ms: Date.parse('2026-06-01T00:00:00.000Z'),
+      },
+      new Date('2026-05-24T00:00:00.000Z')
+    );
+
+    expect(action.action).toBe('upsert');
+    if (action.action !== 'upsert') return;
+
+    expect(action.payload.subscription_type).toBe('PREMIUM');
   });
 
   it('maps expiration to expire action', () => {
