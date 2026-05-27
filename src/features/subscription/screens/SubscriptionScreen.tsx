@@ -10,21 +10,10 @@ import { RelativePathString, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { subscriptionApi } from '../api/subscriptionApi';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
 import { useSubscription } from '../hooks/useSubscription';
 import { SubscriptionType } from '../types';
 import plans from '../utils/plans';
-
-const getVisiblePlanType = (type: SubscriptionType): SubscriptionType => {
-  if (type === 'PRO' || type === 'BASIC' || type === 'PREMIUM') return 'PRO';
-  return 'FREE';
-};
-
-const getPlanLabel = (type: SubscriptionType): string => {
-  if (type === 'BASIC') return 'PRO';
-  return type;
-};
 
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
@@ -34,19 +23,20 @@ const SubscriptionScreen = () => {
   const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
   const edges = useSafeAreaInsets();
 
-  const subscriptionType = currentSubscription?.subscription_type || 'FREE';
-  const visibleSubscriptionType = getVisiblePlanType(subscriptionType);
+  const rawType = currentSubscription?.subscription_type || 'FREE';
+  // Treat legacy PRO subscriptions as BASIC
+  const subscriptionType: SubscriptionType = rawType === 'PRO' ? 'BASIC' : rawType;
 
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
-    setSelectedPlan(visibleSubscriptionType);
-  }, [visibleSubscriptionType]);
+    setSelectedPlan(subscriptionType);
+  }, [subscriptionType]);
 
-  const isPro = visibleSubscriptionType === 'PRO';
-  const canProceed = selectedPlan !== null && selectedPlan !== visibleSubscriptionType;
+  const isPaid = subscriptionType !== 'FREE';
+  const canProceed = selectedPlan !== null && selectedPlan !== 'FREE' && selectedPlan !== subscriptionType;
 
   const invalidateSubscription = async () => {
     if (!userId) return;
@@ -60,7 +50,9 @@ const SubscriptionScreen = () => {
     try {
       const payload = await purchasesService.purchaseMonthly();
       if (payload) {
-        await subscriptionApi.syncAfterPurchase(userId, payload);
+        // Subscription row is updated by the RevenueCat webhook (server-side).
+        // Invalidate so the next fetch reflects the updated status once the
+        // webhook fires (typically within a few seconds).
         await invalidateSubscription();
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
@@ -82,7 +74,6 @@ const SubscriptionScreen = () => {
     try {
       const payload = await purchasesService.restorePurchases();
       if (payload) {
-        await subscriptionApi.syncAfterPurchase(userId, payload);
         await invalidateSubscription();
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {
@@ -122,7 +113,7 @@ const SubscriptionScreen = () => {
             type={p.type}
             price={p.price}
             features={p.features}
-            isActive={visibleSubscriptionType === p.type}
+            isActive={subscriptionType === p.type}
             onSelect={() => setSelectedPlan(p.type)}
           />
         ))}
@@ -142,12 +133,12 @@ const SubscriptionScreen = () => {
             <CText variant="bodyBold" className="text-background">
               {isPurchasing
                 ? t('Loading...')
-                : `${t('Subscribe to')} ${t(getPlanLabel(selectedPlan!))} — $3.99/${t('mo')}`}
+                : `${t('Subscribe to')} ${t(selectedPlan!)} — ${plans.find((p) => p.type === selectedPlan)?.price}/${t('mo')}`}
             </CText>
           </Pressable>
         )}
 
-        {isPro ? (
+        {isPaid ? (
           <Pressable onPress={handleManageSubscription} style={{ alignItems: 'center', marginTop: 20 }}>
             <CText variant="caption" className="text-muted">
               {t('Manage subscription')}

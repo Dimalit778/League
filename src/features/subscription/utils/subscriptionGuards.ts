@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { getSubscriptionLimits, isProPlan } from './getSubscriptionLimits';
+import { getSubscriptionLimits, isPaidPlan } from './getSubscriptionLimits';
 
 type GuardResult = { allowed: boolean; reason?: string };
 
@@ -89,7 +89,7 @@ export async function canViewAiTip(_userId: string): Promise<GuardResult> {
   return { allowed: true };
 }
 
-export async function getUserPlan(userId: string): Promise<'FREE' | 'PRO'> {
+export async function getUserPlan(userId: string): Promise<'FREE' | 'PAID'> {
   const subType = await getUserSubscriptionType(userId);
-  return isProPlan(subType) ? 'PRO' : 'FREE';
+  return isPaidPlan(subType) ? 'PAID' : 'FREE';
 }

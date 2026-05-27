@@ -65,9 +65,9 @@ describe('canCreateLeague', () => {
     expect(result.allowed).toBe(true);
   });
 
-  it('returns true for pro user with 2 owned leagues', async () => {
+  it('returns true for paid user with 2 owned leagues', async () => {
     mockFrom.mockImplementation((table: string) => {
-      if (table === 'subscription') return buildSubMock('PRO');
+      if (table === 'subscription') return buildSubMock('BASIC');
       if (table === 'leagues') return buildLeaguesMock([{ id: '1' }, { id: '2' }]);
       return {};
     });
@@ -75,9 +75,9 @@ describe('canCreateLeague', () => {
     expect(result.allowed).toBe(true);
   });
 
-  it('returns false for pro user with 3 owned leagues', async () => {
+  it('returns false for paid user with 3 owned leagues', async () => {
     mockFrom.mockImplementation((table: string) => {
-      if (table === 'subscription') return buildSubMock('PRO');
+      if (table === 'subscription') return buildSubMock('BASIC');
       if (table === 'leagues') return buildLeaguesMock([{ id: '1' }, { id: '2' }, { id: '3' }]);
       return {};
     });
@@ -87,15 +87,15 @@ describe('canCreateLeague', () => {
 });
 
 describe('canCreateLeagueWithSize', () => {
-  it('returns false for free user requesting 12 members', async () => {
+  it('returns false for free user requesting 10 members', async () => {
     mockFrom.mockImplementation(() => buildSubMock(null));
-    const result = await canCreateLeagueWithSize('user-1', 12);
+    const result = await canCreateLeagueWithSize('user-1', 10);
     expect(result.allowed).toBe(false);
   });
 
-  it('returns true for pro user requesting 12 members', async () => {
-    mockFrom.mockImplementation(() => buildSubMock('PRO'));
-    const result = await canCreateLeagueWithSize('user-1', 12);
+  it('returns true for paid user requesting 10 members', async () => {
+    mockFrom.mockImplementation(() => buildSubMock('BASIC'));
+    const result = await canCreateLeagueWithSize('user-1', 10);
     expect(result.allowed).toBe(true);
   });
 

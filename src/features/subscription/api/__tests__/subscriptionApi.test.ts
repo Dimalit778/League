@@ -1,5 +1,12 @@
 import { subscriptionApi } from '../subscriptionApi';
 
+const PAID_LIMITS_EXPECTED = {
+  ownedLeagues: 3,
+  maxMembersPerLeague: 20,
+  allowedLeagueSizes: [6, 10, 20],
+  aiTipsPerWeek: Infinity,
+};
+
 describe('subscriptionApi', () => {
   describe('getSubscriptionLimits', () => {
     it('returns FREE limits by default', () => {
@@ -22,24 +29,19 @@ describe('subscriptionApi', () => {
       });
     });
 
-    it('returns PRO limits for PRO type', () => {
-      const limits = subscriptionApi.getSubscriptionLimits('PRO' as any);
-      expect(limits).toEqual({
-        ownedLeagues: 3,
-        maxMembersPerLeague: 12,
-        allowedLeagueSizes: [6, 12],
-        aiTipsPerWeek: Infinity,
-      });
+    it('returns PAID limits for BASIC type', () => {
+      const limits = subscriptionApi.getSubscriptionLimits('BASIC' as any);
+      expect(limits).toEqual(PAID_LIMITS_EXPECTED);
     });
 
-    it('keeps PREMIUM users on Pro limits', () => {
+    it('returns PAID limits for PREMIUM type', () => {
       const limits = subscriptionApi.getSubscriptionLimits('PREMIUM' as any);
-      expect(limits).toEqual({
-        ownedLeagues: 3,
-        maxMembersPerLeague: 12,
-        allowedLeagueSizes: [6, 12],
-        aiTipsPerWeek: Infinity,
-      });
+      expect(limits).toEqual(PAID_LIMITS_EXPECTED);
+    });
+
+    it('returns PAID limits for legacy PRO type', () => {
+      const limits = subscriptionApi.getSubscriptionLimits('PRO' as any);
+      expect(limits).toEqual(PAID_LIMITS_EXPECTED);
     });
   });
 
