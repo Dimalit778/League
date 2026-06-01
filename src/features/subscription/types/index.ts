@@ -1,15 +1,13 @@
 import { Database } from '@/types/database.types';
+import { SubscriptionPlan } from '../config/plans';
 
-type SubscriptionType = Database['public']['Enums']['subscription_type'];
-
-// These will be generated from DB once migration is applied; defined manually for now
-type LeagueStatus = 'ACTIVE' | 'LOCKED';
-type LockedReason = 'SUBSCRIPTION_EXPIRED' | 'FREE_LIMIT_EXCEEDED' | 'PRO_REQUIRED';
+type DbSubscriptionType = Database['public']['Enums']['subscription_type'];
+type SubscriptionType = SubscriptionPlan;
 
 type SubscriptionDetails = {
   id: string;
   user_id: string;
-  subscription_type: SubscriptionType;
+  type: SubscriptionType | DbSubscriptionType;
   start_date: string;
   end_date: string;
   product_id?: string | null;
@@ -17,21 +15,28 @@ type SubscriptionDetails = {
 };
 
 type SubscriptionLimits = {
-  ownedLeagues: number;
-  maxMembersPerLeague: number;
-  allowedLeagueSizes: readonly number[];
-  aiTipsPerWeek: number;
+  maxLeagues: number;
+  maxMembersPerLeague: readonly number[];
+  weeklyAiTips: number | null;
+  advancedStats: boolean;
 };
 
-type SubscriptionDetailsWithLimits = SubscriptionDetails & {
-  limits: SubscriptionLimits;
+type CurrentSubscription = {
+  type: SubscriptionPlan;
+  start_date: string | null;
+  end_date: string | null;
+  product_id: string | null;
+  transaction_id: string | null;
+  limits: {
+    maxLeagues: number;
+    maxMembersPerLeague: readonly number[];
+    weeklyAiTips: number | null;
+    advancedStats: boolean;
+  };
 };
-
 export type {
+  CurrentSubscription,
   SubscriptionDetails,
-  SubscriptionDetailsWithLimits,
   SubscriptionLimits,
   SubscriptionType,
-  LeagueStatus,
-  LockedReason,
 };

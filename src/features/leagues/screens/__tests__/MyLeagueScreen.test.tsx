@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import MyLeagueScreen from '../../screens/MyLeagueScreen';
+import MyLeagueScreen from '../MyLeaguesScreen';
 
 type TestNode = {
   props: {
@@ -10,10 +10,21 @@ type TestNode = {
 };
 
 let mockLeagues: any[] = [];
-let mockSubscription: any = { limits: { maxLeagues: 0 } };
+let mockLimitState = {
+  limit: 1,
+  reachedLimit: false,
+  usagePercent: 0,
+  ownedLeaguesCount: 0,
+};
+
+jest.mock('@/store/AuthStore', () => ({
+  useAuthStore: (selector: (state: { user?: { id: string }; isAuthLoading: boolean }) => unknown) =>
+    selector({ user: { id: 'user-1' }, isAuthLoading: false }),
+}));
 
 jest.mock('@/store/MemberStore', () => ({
   useMemberStore: () => ({
+    activeMember: null,
     setActiveMember: jest.fn(),
   }),
 }));
@@ -21,27 +32,34 @@ jest.mock('@/store/MemberStore', () => ({
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useMyLeagues: () => ({
     data: mockLeagues,
-    isLoading: false,
+    isPending: false,
+    isFetching: false,
     error: null,
     refetch: jest.fn(),
   }),
   useUpdatePrimaryLeague: () => ({
-    mutate: jest.fn(),
+    mutateAsync: jest.fn(),
     isPending: false,
   }),
 }));
 
 jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useSubscription: () => ({
-    data: mockSubscription,
-    isLoading: false,
+  useCheckSubscriptionLeaguesLimit: () => mockLimitState,
+  usePurchaseAndSyncSubscription: () => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
   }),
 }));
 
 describe('MyLeagueScreen', () => {
   beforeEach(() => {
     mockLeagues = [];
-    mockSubscription = { limits: { maxLeagues: 0 } };
+    mockLimitState = {
+      limit: 1,
+      reachedLimit: false,
+      usagePercent: 0,
+      ownedLeaguesCount: 0,
+    };
   });
 
   it('renders Create League button', () => {
@@ -60,6 +78,13 @@ describe('MyLeagueScreen', () => {
   });
 
   it('does not render an infinite progress width when subscription limit is zero', () => {
+    mockLimitState = {
+      limit: 0,
+      reachedLimit: false,
+      usagePercent: 0,
+      ownedLeaguesCount: 0,
+    };
+
     const { UNSAFE_root } = render(<MyLeagueScreen />);
     const progressViews = UNSAFE_root.findAll((node: TestNode) => node.props?.style?.width !== undefined);
 

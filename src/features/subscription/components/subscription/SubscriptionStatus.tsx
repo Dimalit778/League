@@ -11,10 +11,8 @@ interface SubscriptionStatusProps {
 const SubscriptionStatus = ({ subscriptionType = 'FREE', expiresAt = null }: SubscriptionStatusProps) => {
   const getStatusColor = () => {
     switch (subscriptionType) {
-      case 'PREMIUM':
+      case 'PRO':
         return 'bg-yellow-500';
-      case 'BASIC':
-        return 'bg-blue-500';
       case 'FREE':
       default:
         return 'bg-gray-500';

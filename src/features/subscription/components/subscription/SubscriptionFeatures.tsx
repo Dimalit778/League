@@ -7,26 +7,27 @@ interface SubscriptionFeaturesProps {
   subscriptionType: SubscriptionType;
 }
 
-const SubscriptionFeatures = ({ subscriptionType }: SubscriptionFeaturesProps) => {
+const SubscriptionFeatures = ({
+  subscriptionType,
+}: SubscriptionFeaturesProps) => {
   const { t } = useTranslation();
   const getFeatures = () => {
     const freeFeatures = [
-      t('Create or join 1 league'),
+      t('Join or create up to 2 leagues'),
       t('Create leagues with up to 6 members'),
-      t('Basic prediction stats'),
+      t('English & Italian leagues only'),
     ];
 
-    const basicFeatures = [
-      t('Create or join up to 5 leagues'),
-      t('Create leagues with up to 20 members'),
+    const proFeatures = [
+      t('Join or create up to 5 leagues'),
+      t('Create leagues with up to 12 members'),
+      t('All competitions'),
       t('Advanced prediction stats'),
-      t('League history and fixture archive'),
     ];
 
     switch (subscriptionType) {
-      case 'PREMIUM':
-      case 'BASIC':
-        return basicFeatures;
+      case 'PRO':
+        return proFeatures;
       case 'FREE':
       default:
         return freeFeatures;
@@ -37,7 +38,9 @@ const SubscriptionFeatures = ({ subscriptionType }: SubscriptionFeaturesProps) =
 
   return (
     <View className="mb-4">
-      <CText className="text-text font-bold text-lg mb-2">{t('Features')}</CText>
+      <CText className="text-text font-bold text-lg mb-2">
+        {t('Features')}
+      </CText>
       {features.map((feature, index) => (
         <View key={index} className="flex-row items-center mb-2">
           <View className="w-2 h-2 rounded-full bg-primary mr-2" />

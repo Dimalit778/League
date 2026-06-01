@@ -9,7 +9,7 @@ type LeaderboardRow = Pick<
 
 type MyLeagueType = Pick<
   Tables<'league_members'>,
-  'avatar_url' | 'created_at' | 'id' | 'is_primary' | 'league_id' | 'nickname' | 'updated_at' | 'user_id'
+  'active' | 'avatar_url' | 'created_at' | 'id' | 'is_primary' | 'league_id' | 'nickname' | 'updated_at' | 'user_id'
 > & {
   league: Tables<'leagues'> & {
     competition: Tables<'competitions'>;
@@ -18,12 +18,12 @@ type MyLeagueType = Pick<
 
 type LeagueDetailsType = Pick<
   Tables<'leagues'>,
-  'competition_id' | 'created_at' | 'id' | 'join_code' | 'locked_reason' | 'max_members' | 'name' | 'owner_id' | 'status' | 'updated_at'
+  'competition_id' | 'created_at' | 'id' | 'join_code' | 'max_members' | 'name' | 'owner_id' | 'updated_at'
 > & {
   competition: CompetitionSummary;
   league_members: Pick<
     Tables<'league_members'>,
-    'avatar_url' | 'created_at' | 'id' | 'is_primary' | 'league_id' | 'nickname' | 'updated_at' | 'user_id'
+    'active' | 'avatar_url' | 'created_at' | 'id' | 'is_primary' | 'league_id' | 'nickname' | 'updated_at' | 'user_id'
   >[];
 };
 

@@ -21,6 +21,7 @@ const COMPETITION_FULL_SELECT = `
   updated_at
 `;
 const MY_LEAGUES_SELECT = `
+  active,
   avatar_url,
   created_at,
   id,
@@ -34,11 +35,9 @@ const MY_LEAGUES_SELECT = `
     created_at,
     id,
     join_code,
-    locked_reason,
     max_members,
     name,
     owner_id,
-    status,
     updated_at,
     competition:competitions(${COMPETITION_FULL_SELECT})
   )
@@ -48,17 +47,16 @@ const LEAGUE_WITH_COMPETITION_SELECT = `
   created_at,
   id,
   join_code,
-  locked_reason,
   max_members,
   name,
   owner_id,
-  status,
   updated_at,
   competition:competitions(${COMPETITION_SELECT})
 `;
 const LEAGUE_WITH_MEMBERS_SELECT = `
   ${LEAGUE_WITH_COMPETITION_SELECT},
   league_members(
+    active,
     avatar_url,
     created_at,
     id,
@@ -209,7 +207,7 @@ export const leagueApi = {
   async getOwnedLeagues(userId: string) {
     const { data, error } = await supabase
       .from('leagues')
-      .select('id, name, status, locked_reason, updated_at, competition:competitions(id, name, logo)')
+      .select('id, name, updated_at, competition:competitions(id, name, logo)')
       .eq('owner_id', userId)
       .order('updated_at', { ascending: false });
     if (error) throw new Error(error.message);

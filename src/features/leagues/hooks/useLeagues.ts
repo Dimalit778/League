@@ -2,7 +2,10 @@ import { KEYS } from '@/lib/queryClient';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { canCreateLeague, canCreateLeagueWithSize } from '@/features/subscription/utils/subscriptionGuards';
+import {
+  canCreateLeague,
+  canCreateLeagueWithSize,
+} from '@/features/subscription/utils/subscriptionGuards';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
@@ -53,7 +56,9 @@ export const useRemoveMember = () => {
 
 export const useGetLeagueWithCompetition = (leagueId?: string) => {
   return useQuery({
-    queryKey: leagueId ? KEYS.leagues.detail(leagueId) : (['leagues', 'unknown', 'withCompetition'] as const),
+    queryKey: leagueId
+      ? KEYS.leagues.detail(leagueId)
+      : (['leagues', 'unknown', 'withCompetition'] as const),
     enabled: !!leagueId,
     queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
   });
@@ -61,7 +66,9 @@ export const useGetLeagueWithCompetition = (leagueId?: string) => {
 
 export const useGetLeagueAndMembers = (leagueId?: string) => {
   return useQuery({
-    queryKey: leagueId ? KEYS.leagues.members(leagueId) : (['leagues', 'unknown', 'full'] as const),
+    queryKey: leagueId
+      ? KEYS.leagues.members(leagueId)
+      : (['leagues', 'unknown', 'full'] as const),
     enabled: !!leagueId,
     queryFn: () => leagueApi.getLeagueAndMembers(leagueId!),
   });
@@ -72,7 +79,8 @@ export const useUpdatePrimaryLeague = () => {
   const queryClient = useQueryClient();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
-    mutationFn: ({ leagueId }: { leagueId: string }) => leagueApi.updatePrimaryLeague(leagueId),
+    mutationFn: ({ leagueId }: { leagueId: string }) =>
+      leagueApi.updatePrimaryLeague(leagueId),
     onSuccess: async (data, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({
@@ -118,8 +126,12 @@ export const useCreateLeague = () => {
         canCreateLeagueWithSize(userId, params.max_members),
       ]);
 
-      if (!leagueCheck.allowed) throw new Error(leagueCheck.reason || 'Upgrade to Pro to create more leagues.');
-      if (!sizeCheck.allowed) throw new Error(sizeCheck.reason || 'Upgrade to Pro for this league size.');
+      if (!leagueCheck.allowed)
+        throw new Error(
+          leagueCheck.reason || 'Upgrade to create more leagues.',
+        );
+      if (!sizeCheck.allowed)
+        throw new Error(sizeCheck.reason || 'Upgrade for this league size.');
 
       return leagueApi.createLeague(params);
     },
@@ -151,7 +163,13 @@ export const useJoinLeague = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ join_code, nickname }: { join_code: string; nickname: string }) => {
+    mutationFn: async ({
+      join_code,
+      nickname,
+    }: {
+      join_code: string;
+      nickname: string;
+    }) => {
       if (!userId) throw new Error('User not authenticated');
       return leagueApi.joinLeague(join_code, nickname);
     },
@@ -242,7 +260,13 @@ export const useDeleteLeague = () => {
   const userId = useAuthStore((state) => state.user?.id ?? '');
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
-    mutationFn: async ({ leagueId, ownerId }: { leagueId: string; ownerId: string }) => {
+    mutationFn: async ({
+      leagueId,
+      ownerId,
+    }: {
+      leagueId: string;
+      ownerId: string;
+    }) => {
       if (!userId) throw new Error('User not authenticated');
       if (ownerId !== userId) {
         throw new Error('Only the league owner can delete this league');

@@ -73,6 +73,7 @@ export type Database = {
       }
       league_members: {
         Row: {
+          active: boolean
           avatar_url: string | null
           created_at: string
           id: string
@@ -83,6 +84,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active?: boolean
           avatar_url?: string | null
           created_at?: string
           id?: string
@@ -93,6 +95,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active?: boolean
           avatar_url?: string | null
           created_at?: string
           id?: string
@@ -125,13 +128,9 @@ export type Database = {
           created_at: string
           id: string
           join_code: string
-          locked_reason:
-            | Database["public"]["Enums"]["league_locked_reason"]
-            | null
           max_members: number
           name: string
           owner_id: string
-          status: Database["public"]["Enums"]["league_status"]
           updated_at: string
         }
         Insert: {
@@ -139,13 +138,9 @@ export type Database = {
           created_at?: string
           id?: string
           join_code: string
-          locked_reason?:
-            | Database["public"]["Enums"]["league_locked_reason"]
-            | null
           max_members?: number
           name: string
           owner_id: string
-          status?: Database["public"]["Enums"]["league_status"]
           updated_at?: string
         }
         Update: {
@@ -153,13 +148,9 @@ export type Database = {
           created_at?: string
           id?: string
           join_code?: string
-          locked_reason?:
-            | Database["public"]["Enums"]["league_locked_reason"]
-            | null
           max_members?: number
           name?: string
           owner_id?: string
-          status?: Database["public"]["Enums"]["league_status"]
           updated_at?: string
         }
         Relationships: [
@@ -314,8 +305,10 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          product_id: string | null
           start_date: string
-          subscription_type: Database["public"]["Enums"]["subscription_type"]
+          type: Database["public"]["Enums"]["subscription_type"]
+          transaction_id: string | null
           updated_at: string
           user_id: string
         }
@@ -325,8 +318,10 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          product_id?: string | null
           start_date: string
-          subscription_type: Database["public"]["Enums"]["subscription_type"]
+          type: Database["public"]["Enums"]["subscription_type"]
+          transaction_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -336,8 +331,10 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          product_id?: string | null
           start_date?: string
-          subscription_type?: Database["public"]["Enums"]["subscription_type"]
+          type?: Database["public"]["Enums"]["subscription_type"]
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -453,6 +450,7 @@ export type Database = {
       }
       create_new_league: {
         Args: {
+          avatar_url?: string
           competition_id: number
           league_name: string
           max_members: number
@@ -489,11 +487,22 @@ export type Database = {
           user_nickname: string
         }
         Returns: {
+          active: boolean
+          avatar_url: string | null
+          created_at: string
+          id: string
+          is_primary: boolean
           league_id: string
-          league_name: string
-          message: string
-          success: boolean
-        }[]
+          nickname: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "league_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       leave_league: { Args: { p_league_id: string }; Returns: Json }
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
@@ -501,11 +510,6 @@ export type Database = {
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
     }
     Enums: {
-      league_locked_reason:
-        | "SUBSCRIPTION_EXPIRED"
-        | "FREE_LIMIT_EXCEEDED"
-        | "PRO_REQUIRED"
-      league_status: "ACTIVE" | "LOCKED"
       match_status:
         | "TIMED"
         | "SCHEDULED"
@@ -643,12 +647,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      league_locked_reason: [
-        "SUBSCRIPTION_EXPIRED",
-        "FREE_LIMIT_EXCEEDED",
-        "PRO_REQUIRED",
-      ],
-      league_status: ["ACTIVE", "LOCKED"],
       match_status: [
         "TIMED",
         "SCHEDULED",

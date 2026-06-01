@@ -6,6 +6,7 @@ const mockItem = {
   created_at: '2026-01-01',
   id: 'm1',
   league_id: 'l1',
+  active: true,
   updated_at: '2026-01-01',
   user_id: 'u1',
   league: {
@@ -13,11 +14,9 @@ const mockItem = {
     created_at: '2026-01-01',
     id: 'l1',
     join_code: 'ABC1234',
-    locked_reason: null,
     max_members: 6,
     name: 'My Test League',
     owner_id: 'u1',
-    status: 'ACTIVE' as const,
     updated_at: '2026-01-01',
     competition: {
       area: 'England',

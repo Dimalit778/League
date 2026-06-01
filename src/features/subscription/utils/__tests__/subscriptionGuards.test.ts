@@ -1,4 +1,8 @@
-import { canCreateLeague, canCreateLeagueWithSize, canSubmitPrediction } from '../subscriptionGuards';
+import {
+  canCreateLeague,
+  canCreateLeagueWithSize,
+  canSubmitPrediction,
+} from '../subscriptionGuards';
 
 // Mock the Supabase client
 jest.mock('@/lib/supabase', () => ({
@@ -33,11 +37,14 @@ function buildLeaguesMock(leagues: { id: string }[]) {
   return { select };
 }
 
-// Helper: build a single-league status mock
-function buildLeagueStatusMock(status: 'ACTIVE' | 'LOCKED') {
-  const single = jest.fn().mockResolvedValue({ data: { status }, error: null });
-  const eq = jest.fn().mockReturnValue({ single });
-  const select = jest.fn().mockReturnValue({ eq });
+// Helper: build a membership active-state mock
+function buildMemberActiveMock(active: boolean) {
+  const maybeSingle = jest
+    .fn()
+    .mockResolvedValue({ data: { active }, error: null });
+  const secondEq = jest.fn().mockReturnValue({ maybeSingle });
+  const firstEq = jest.fn().mockReturnValue({ eq: secondEq });
+  const select = jest.fn().mockReturnValue({ eq: firstEq });
   return { select };
 }
 
@@ -68,7 +75,8 @@ describe('canCreateLeague', () => {
   it('returns true for paid user with 2 owned leagues', async () => {
     mockFrom.mockImplementation((table: string) => {
       if (table === 'subscription') return buildSubMock('BASIC');
-      if (table === 'leagues') return buildLeaguesMock([{ id: '1' }, { id: '2' }]);
+      if (table === 'leagues')
+        return buildLeaguesMock([{ id: '1' }, { id: '2' }]);
       return {};
     });
     const result = await canCreateLeague('user-1');
@@ -78,7 +86,8 @@ describe('canCreateLeague', () => {
   it('returns false for paid user with 3 owned leagues', async () => {
     mockFrom.mockImplementation((table: string) => {
       if (table === 'subscription') return buildSubMock('BASIC');
-      if (table === 'leagues') return buildLeaguesMock([{ id: '1' }, { id: '2' }, { id: '3' }]);
+      if (table === 'leagues')
+        return buildLeaguesMock([{ id: '1' }, { id: '2' }, { id: '3' }]);
       return {};
     });
     const result = await canCreateLeague('user-1');
@@ -107,14 +116,14 @@ describe('canCreateLeagueWithSize', () => {
 });
 
 describe('canSubmitPrediction', () => {
-  it('returns false for locked league', async () => {
-    mockFrom.mockImplementation(() => buildLeagueStatusMock('LOCKED'));
+  it('returns false for inactive membership', async () => {
+    mockFrom.mockImplementation(() => buildMemberActiveMock(false));
     const result = await canSubmitPrediction('user-1', 'league-1');
     expect(result.allowed).toBe(false);
   });
 
-  it('returns true for active league', async () => {
-    mockFrom.mockImplementation(() => buildLeagueStatusMock('ACTIVE'));
+  it('returns true for active membership', async () => {
+    mockFrom.mockImplementation(() => buildMemberActiveMock(true));
     const result = await canSubmitPrediction('user-1', 'league-1');
     expect(result.allowed).toBe(true);
   });

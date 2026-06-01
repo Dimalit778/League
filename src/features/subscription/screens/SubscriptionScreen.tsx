@@ -11,9 +11,9 @@ import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SubscriptionCard from '../components/subscription/SubscriptionCard';
+import plans from '../config/plans';
 import { useSubscription } from '../hooks/useSubscription';
 import { SubscriptionType } from '../types';
-import plans from '../utils/plans';
 
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
@@ -23,9 +23,7 @@ const SubscriptionScreen = () => {
   const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
   const edges = useSafeAreaInsets();
 
-  const rawType = currentSubscription?.subscription_type || 'FREE';
-  // Treat legacy PRO subscriptions as BASIC
-  const subscriptionType: SubscriptionType = rawType === 'PRO' ? 'BASIC' : rawType;
+  const subscriptionType: SubscriptionType = currentSubscription?.type ?? 'FREE';
 
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionType | null>(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -40,8 +38,12 @@ const SubscriptionScreen = () => {
 
   const invalidateSubscription = async () => {
     if (!userId) return;
-    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
-    await queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
+    await queryClient.invalidateQueries({
+      queryKey: KEYS.subscriptions.detail(userId),
+    });
+    await queryClient.invalidateQueries({
+      queryKey: KEYS.subscriptions.canCreateLeague(userId),
+    });
   };
 
   const handleSubscribePress = async () => {
@@ -98,7 +100,10 @@ const SubscriptionScreen = () => {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 24, paddingHorizontal: 12 }}
+        contentContainerStyle={{
+          paddingBottom: edges.bottom + 24,
+          paddingHorizontal: 12,
+        }}
       >
         <CText variant="h2" className="my-2">
           {t('Choose Your Plan')}

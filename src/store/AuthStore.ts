@@ -11,10 +11,12 @@ type AuthStore = {
   session: Session | null;
   isAuthLoading: boolean;
   isAuthenticated: boolean;
+  isSubscribed: boolean;
 
   setUser: (user: UserType | null) => void;
   setSession: (session: Session | null) => void;
   setIsAuthLoading: (loading: boolean) => void;
+  setIsSubscribed: (subscribed: boolean) => void;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -24,10 +26,11 @@ export const useAuthStore = create<AuthStore>()(
       session: null,
       isAuthLoading: true,
       isAuthenticated: false,
-
+      isSubscribed: false,
       setUser: (user) => set({ user, isAuthenticated: !!user?.id }),
       setSession: (session) => set({ session }),
       setIsAuthLoading: (isAuthLoading) => set({ isAuthLoading }),
+      setIsSubscribed: (isSubscribed) => set({ isSubscribed }),
     }),
     {
       name: 'auth-store',
@@ -49,7 +52,8 @@ export const useAuthStore = create<AuthStore>()(
           user: state.user,
           session: state.session,
           isAuthenticated: state.isAuthenticated,
+          isSubscribed: state.isSubscribed,
         }) as AuthStore,
-    }
-  )
+    },
+  ),
 );

@@ -57,9 +57,16 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: 'theme-storage',
       storage: createJSONStorage(() => mmkvStorage),
-      skipHydration: false,
-    }
-  )
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        if (Platform.OS === 'web') {
+          document.documentElement.classList.toggle('dark', state.theme === 'dark');
+        } else {
+          colorScheme.set(state.theme);
+        }
+      },
+    },
+  ),
 );
 
 // Selectors - use these in components for derived state

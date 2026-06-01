@@ -24,7 +24,7 @@ const SettingsContent = ({
   const isRTL = useIsRTL();
   const ArrowIcon = isRTL ? 'left' : 'right';
   const createdAtDateString = new Date(created_at).toLocaleDateString();
-  const subscriptionType = subscription?.subscription_type || t('Free');
+  const subscriptionType = subscription?.type || t('Free');
 
   const renderAccountActions = (title: string, path?: RelativePathString) => {
     const handlePress = () => {

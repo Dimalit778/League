@@ -69,7 +69,7 @@ export default function JoinLeague() {
       });
       router.replace('/(app)/(public)/myLeagues');
     } catch (error: any) {
-      if (error?.message?.includes('Upgrade to Pro')) {
+      if (error?.message?.includes('Upgrade')) {
         router.push('/(app)/(public)/subscription');
         return;
       }
@@ -114,10 +114,10 @@ export default function JoinLeague() {
                 {isLeagueFull ? (
                   <View className="gap-3">
                     <CText variant="caption" className="text-center text-muted">
-                      {t('This league is full. Upgrade to Pro to create larger leagues.')}
+                      {t('This league is full. Upgrade to create larger leagues.')}
                     </CText>
                     <Button
-                      title={t('Upgrade to Pro')}
+                      title={t('Upgrade')}
                       variant="primary"
                       onPress={() => router.push('/(app)/(public)/subscription')}
                     />

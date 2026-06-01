@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { router } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '@/store/AuthStore';
 import { useMyLeagues } from '@/features/leagues/hooks/useLeagues';
-import { supabase } from '@/lib/supabase';
 import { KEYS } from '@/lib/queryClient';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/AuthStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 export const ChooseActiveLeagueScreen = () => {
   const userId = useAuthStore((s) => s.user?.id ?? '');
@@ -22,7 +22,6 @@ export const ChooseActiveLeagueScreen = () => {
   const handleChoose = async (leagueId: string) => {
     setSaving(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any).rpc('choose_active_league', { p_league_id: leagueId });
       if (error) throw new Error(error.message);
       await queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
@@ -65,9 +64,7 @@ export const ChooseActiveLeagueScreen = () => {
             <Text className={`text-blue-600 font-medium text-sm${saving ? ' opacity-50' : ''}`}>Keep active</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={
-          <Text className="text-center text-gray-500 mt-8">No owned leagues found.</Text>
-        }
+        ListEmptyComponent={<Text className="text-center text-gray-500 mt-8">No owned leagues found.</Text>}
       />
     </View>
   );

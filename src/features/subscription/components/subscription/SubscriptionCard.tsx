@@ -6,28 +6,33 @@ interface SubscriptionCardProps {
   type: SubscriptionType;
   price: string;
   isActive?: boolean;
-  features: string[];
+  features: readonly string[];
   onSelect: () => void;
 }
 const getTypeColor = (type: SubscriptionType) => {
   switch (type) {
-    case 'FREE':
-      return 'bg-gray-500';
-    case 'BASIC':
-      return 'bg-blue-500';
-    case 'PREMIUM':
+    case 'PRO':
       return 'bg-yellow-500';
+    case 'FREE':
     default:
       return 'bg-gray-500';
   }
 };
 
-const SubscriptionCard = ({ type, price, features, isActive = false, onSelect }: SubscriptionCardProps) => {
+const SubscriptionCard = ({
+  type,
+  price,
+  features,
+  isActive = false,
+  onSelect,
+}: SubscriptionCardProps) => {
   const { t } = useTranslation();
   const priceLabel = type === 'FREE' ? t(price) : `${t(price)}/${t('mo')}`;
 
   return (
-    <View className={`rounded-lg border ${isActive ? 'border-primary border-2' : 'border-border'} p-4 mb-4 bg-surface`}>
+    <View
+      className={`rounded-lg border ${isActive ? 'border-primary border-2' : 'border-border'} p-4 mb-4 bg-surface`}
+    >
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center">
           <View className={`w-3 h-3 rounded-full ${getTypeColor(type)} mr-2`} />

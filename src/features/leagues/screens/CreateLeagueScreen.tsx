@@ -1,7 +1,10 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
-import { useCanCreateLeague, useSubscription } from '@/features/subscription/hooks/useSubscription';
+import {
+  useCanCreateLeague,
+  useSubscription,
+} from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -12,8 +15,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  leagueName: yup.string().required('League name is required').min(2, 'League name must be at least 2 characters long'),
-  nickname: yup.string().required('Nickname is required').min(2, 'Nickname must be at least 2 characters long'),
+  leagueName: yup
+    .string()
+    .required('League name is required')
+    .min(2, 'League name must be at least 2 characters long'),
+  nickname: yup
+    .string()
+    .required('Nickname is required')
+    .min(2, 'Nickname must be at least 2 characters long'),
 });
 
 type MemberOptionProps = {
@@ -26,7 +35,15 @@ type MemberOptionProps = {
   t: (key: string) => string;
 };
 
-const MemberOption = ({ value, label, disabled, pro, membersCount, onSelect, t }: MemberOptionProps) => {
+const MemberOption = ({
+  value,
+  label,
+  disabled,
+  pro,
+  membersCount,
+  onSelect,
+  t,
+}: MemberOptionProps) => {
   const isActive = membersCount === value;
 
   return (
@@ -44,7 +61,10 @@ const MemberOption = ({ value, label, disabled, pro, membersCount, onSelect, t }
       `}
     >
       <View className={`${disabled ? 'opacity-30' : ''}`}>
-        <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+        <CText
+          variant="body"
+          className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}
+        >
           {t(label)}
         </CText>
       </View>
@@ -53,7 +73,7 @@ const MemberOption = ({ value, label, disabled, pro, membersCount, onSelect, t }
         <View className="absolute -top-3 left-0 right-0 items-center z-10">
           <View className="bg-blue-500 px-3 py-1 rounded-md shadow">
             <CText variant="small" bold className="text-black">
-              PRO
+              UPGRADE
             </CText>
           </View>
         </View>
@@ -68,11 +88,12 @@ const CreateLeagueScreen = () => {
 
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
   const { data: subscription } = useSubscription();
-  const { data: createCapability, isLoading: isLoadingCreateCapability } = useCanCreateLeague();
-  const limits = subscription?.limits ?? { maxMembersPerLeague: 6 };
-  const maxMembersPerLeague = limits.maxMembersPerLeague ?? 6;
-  const canSelect10 = maxMembersPerLeague >= 10;
-  const canSelect20 = maxMembersPerLeague >= 20;
+  const { data: createCapability, isLoading: isLoadingCreateCapability } =
+    useCanCreateLeague();
+  const allowedLeagueSizes = subscription?.limits.maxMembersPerLeague ?? [6];
+  const maxMembersPerLeague = Math.max(...allowedLeagueSizes);
+  const canSelect10 = allowedLeagueSizes.includes(10);
+  const canSelect20 = allowedLeagueSizes.includes(20);
   const [membersCount, setMembersCount] = useState<number | null>(null);
 
   const {
@@ -158,7 +179,13 @@ const CreateLeagueScreen = () => {
             </CText>
 
             <View className="flex-row mt-4">
-              <MemberOption value={6} label="6 Members" membersCount={membersCount} onSelect={setMembersCount} t={t} />
+              <MemberOption
+                value={6}
+                label="6 Members"
+                membersCount={membersCount}
+                onSelect={setMembersCount}
+                t={t}
+              />
 
               <MemberOption
                 value={10}

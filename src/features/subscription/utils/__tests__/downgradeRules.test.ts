@@ -1,4 +1,8 @@
-import { canCreateLeague, canCreateLeagueWithSize, canSubmitPrediction } from '../subscriptionGuards';
+import {
+  canCreateLeague,
+  canCreateLeagueWithSize,
+  canSubmitPrediction,
+} from '../subscriptionGuards';
 
 // Mock the Supabase client at the module level so it takes precedence over jest.setup.ts
 jest.mock('@/lib/supabase', () => ({
@@ -35,12 +39,15 @@ function buildLeaguesMock(leagues: { id: string }[]) {
   return { select };
 }
 
-// Helper: build a single-league status mock
-// Matches: .from('leagues').select(...).eq('id', ...).single()
-function buildLeagueStatusMock(status: 'ACTIVE' | 'LOCKED') {
-  const single = jest.fn().mockResolvedValue({ data: { status }, error: null });
-  const eq = jest.fn().mockReturnValue({ single });
-  const select = jest.fn().mockReturnValue({ eq });
+// Helper: build a membership active-state mock
+// Matches: .from('league_members').select(...).eq(...).eq(...).maybeSingle()
+function buildMemberActiveMock(active: boolean) {
+  const maybeSingle = jest
+    .fn()
+    .mockResolvedValue({ data: { active }, error: null });
+  const secondEq = jest.fn().mockReturnValue({ maybeSingle });
+  const firstEq = jest.fn().mockReturnValue({ eq: secondEq });
+  const select = jest.fn().mockReturnValue({ eq: firstEq });
   return { select };
 }
 
@@ -109,17 +116,17 @@ describe('downgrade rules — canCreateLeagueWithSize', () => {
 });
 
 describe('downgrade rules — canSubmitPrediction', () => {
-  it('returns allowed: false for a locked league', async () => {
-    mockFrom.mockImplementation(() => buildLeagueStatusMock('LOCKED'));
+  it('returns allowed: false for inactive membership', async () => {
+    mockFrom.mockImplementation(() => buildMemberActiveMock(false));
 
     const result = await canSubmitPrediction('user-1', 'league-locked');
 
     expect(result.allowed).toBe(false);
-    expect(result.reason).toContain('locked');
+    expect(result.reason).toContain('inactive');
   });
 
-  it('returns allowed: true for an active league', async () => {
-    mockFrom.mockImplementation(() => buildLeagueStatusMock('ACTIVE'));
+  it('returns allowed: true for active membership', async () => {
+    mockFrom.mockImplementation(() => buildMemberActiveMock(true));
 
     const result = await canSubmitPrediction('user-1', 'league-active');
 

@@ -10,13 +10,11 @@ import {
   AuthProvider,
   ErrorBoundaryProvider,
   LanguageProvider,
+  PurchasesProvider,
   QueryProvider,
   ThemeProvider,
   useAuth,
 } from '@/providers';
-
-import { useLanguageStore } from '@/store/LanguageStore';
-import { useThemeStore } from '@/store/ThemeStore';
 
 import footballBg from '@assets/images/football-bg.png';
 import { Nunito_400Regular, Nunito_700Bold, Nunito_900Black } from '@expo-google-fonts/nunito';
@@ -62,8 +60,7 @@ ExpoSplashScreen.preventAutoHideAsync().catch(() => {});
 const AppBootstrap = () => {
   const ref = useNavigationContainerRef();
   const { isLoggedIn, isAuthLoading } = useAuth();
-  const initializeTheme = useThemeStore((s) => s.initializeTheme);
-  const initializeLanguage = useLanguageStore((s) => s.initializeLanguage);
+
   const { colors } = useThemeTokens();
   const [isReady, setIsReady] = useState(false);
 
@@ -89,9 +86,9 @@ const AppBootstrap = () => {
 
     const prepare = async () => {
       try {
-        await initializeLanguage();
-        await Promise.all([initializeTheme(), Asset.fromModule(footballBg).downloadAsync()]);
+        await Asset.fromModule(footballBg).downloadAsync();
       } catch (e: any) {
+        console.error('[AppBootstrap] Error preparing app:', e);
       } finally {
         if (!cancelled) {
           setIsReady(true);
@@ -105,7 +102,7 @@ const AppBootstrap = () => {
     return () => {
       cancelled = true;
     };
-  }, [fontsLoaded, isAuthLoading, isMemberSettled, initializeTheme, initializeLanguage]);
+  }, [fontsLoaded, isAuthLoading, isMemberSettled]);
 
   if (!isReady) {
     return <AppSplashScreen />;
@@ -132,19 +129,21 @@ const RootLayout = () => (
     <ErrorBoundaryProvider>
       <QueryProvider>
         <AuthProvider>
-          <ThemeProvider>
-            <LanguageProvider>
-              <AlertProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <SafeAreaProvider>
-                    <KeyboardProvider>
-                      <AppBootstrap />
-                    </KeyboardProvider>
-                  </SafeAreaProvider>
-                </GestureHandlerRootView>
-              </AlertProvider>
-            </LanguageProvider>
-          </ThemeProvider>
+          <PurchasesProvider>
+            <ThemeProvider>
+              <LanguageProvider>
+                <AlertProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <SafeAreaProvider>
+                      <KeyboardProvider>
+                        <AppBootstrap />
+                      </KeyboardProvider>
+                    </SafeAreaProvider>
+                  </GestureHandlerRootView>
+                </AlertProvider>
+              </LanguageProvider>
+            </ThemeProvider>
+          </PurchasesProvider>
         </AuthProvider>
       </QueryProvider>
     </ErrorBoundaryProvider>

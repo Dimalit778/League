@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
+
 export default function PublicLayout() {
   const { colors } = useThemeTokens();
 

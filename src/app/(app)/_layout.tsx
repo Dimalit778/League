@@ -1,4 +1,5 @@
 import { useGetUser } from '@/features/admin/hooks/useUsers';
+import { SubscriptionSync } from '@/features/subscription/components/SubscriptionSync';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';
@@ -14,7 +15,9 @@ export default function AppLayout() {
   const { colors } = useThemeTokens();
 
   return (
-    <Stack
+    <>
+      {isLoggedIn ? <SubscriptionSync /> : null}
+      <Stack
       screenOptions={{
         headerShown: false,
         contentStyle: {
@@ -30,5 +33,6 @@ export default function AppLayout() {
         <Stack.Screen name="(admin)" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
+    </>
   );
 }

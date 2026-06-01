@@ -9,7 +9,7 @@ const PRO_ENTITLEMENT = 'pro';
 let isConfigured = false;
 
 export type PurchaseSyncPayload = {
-  subscription_type: 'BASIC' | 'PREMIUM';
+  type: 'PRO';
   start_date: string;
   end_date: string;
   product_id: string | null;
@@ -23,9 +23,6 @@ const getApiKey = (): string => {
   return apiKey;
 };
 
-const hasProEntitlement = (customerInfo: { entitlements: { active: Record<string, unknown> } }): boolean =>
-  Boolean(customerInfo.entitlements.active[PRO_ENTITLEMENT]);
-
 const isUserCancelledError = (error: unknown): boolean =>
   typeof error === 'object' &&
   error !== null &&
@@ -37,11 +34,9 @@ const extractSyncPayload = (customerInfo: CustomerInfo): PurchaseSyncPayload | n
   if (!entitlement) return null;
 
   return {
-    subscription_type: entitlement.productIdentifier?.toLowerCase().includes('premium') ? 'PREMIUM' : 'BASIC',
+    type: 'PRO',
     start_date: entitlement.latestPurchaseDate,
-    end_date:
-      entitlement.expirationDate ??
-      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    end_date: entitlement.expirationDate ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     product_id: entitlement.productIdentifier ?? null,
   };
 };
@@ -70,6 +65,7 @@ export const purchasesService = {
   async presentPaywall(): Promise<PurchaseSyncPayload | null> {
     const offerings = await Purchases.getOfferings();
     const mainOffering = offerings.current;
+
     if (!mainOffering || mainOffering.availablePackages.length === 0) {
       throw new Error('No packages available for main offering');
     }
@@ -110,8 +106,8 @@ export const purchasesService = {
     return extractSyncPayload(customerInfo);
   },
 
-  async isProActive(): Promise<boolean> {
-    const info = await Purchases.getCustomerInfo();
-    return hasProEntitlement(info);
+  async getActiveSyncPayload(): Promise<PurchaseSyncPayload | null> {
+    const customerInfo = await Purchases.getCustomerInfo();
+    return extractSyncPayload(customerInfo);
   },
 };

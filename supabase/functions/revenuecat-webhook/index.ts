@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
   if (action.action === 'expire') {
     const { error } = await supabase
       .from('subscription')
-      .update({ end_date: action.endDate, subscription_type: 'FREE' })
+      .update({ end_date: action.endDate, type: 'FREE' })
       .eq('user_id', action.userId);
     if (error) {
       console.error('RevenueCat webhook expire failed', error);
