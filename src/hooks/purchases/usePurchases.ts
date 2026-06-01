@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  getSubscriptionSummary,
+  hasActiveEntitlement as checkActiveEntitlement,
+  type SubscriptionSummary,
+} from '@/lib/revenuecat/customerInfoSummary';
+import { usePurchasesContext } from '@/providers/PurchasesProvider';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Purchases, {
   CustomerInfo,
   PURCHASES_ERROR_CODE,
@@ -18,27 +24,26 @@ export interface PurchasesHookError {
 export interface UsePurchasesResult {
   availablePackages: readonly PurchasesPackage[];
   customerInfo: CustomerInfo | null;
+  subscription: SubscriptionSummary;
+  isSubscribed: boolean;
   isLoading: boolean;
   isProcessing: boolean;
   error: PurchasesHookError | null;
   purchasePackage: (pkg: PurchasesPackage) => Promise<CustomerInfo>;
   restorePurchases: () => Promise<CustomerInfo>;
-  hasActiveEntitlement: (info: CustomerInfo, entitlementId?: string) => boolean;
+  hasActiveEntitlement: (info: CustomerInfo | null, entitlementId?: string) => boolean;
 }
 
 export function usePurchases(): UsePurchasesResult {
-  // List of available purchase packages (products)
+  const { customerInfo, isReady, isUserSynced, refreshCustomerInfo } = usePurchasesContext();
   const [availablePackages, setAvailablePackages] = useState<readonly PurchasesPackage[]>([]);
-  // RevenueCat customer info (entitlements, etc.)
-  const [currentCustomerInfo, setCurrentCustomerInfo] = useState<CustomerInfo | null>(null);
-  // Loading state for initial fetch
-  const [isLoading, setIsLoading] = useState(true);
-  // Processing state for purchase/restore actions
+  const [isOfferingsLoading, setIsOfferingsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  // Structured error object for UI consumption
   const [error, setError] = useState<PurchasesHookError | null>(null);
-  // Tracks if the component has mounted to prevent state updates on unmounted components during async operations
   const hasMounted = useRef(true);
+
+  const subscription = useMemo(() => getSubscriptionSummary(customerInfo), [customerInfo]);
+  const isSubscribed = isUserSynced && subscription.isActive;
 
   const handlePurchasesError = useCallback((error: unknown) => {
     if (isPurchasesError(error) && error.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
@@ -56,33 +61,36 @@ export function usePurchases(): UsePurchasesResult {
   useEffect(() => {
     hasMounted.current = true;
 
-    const fetchPurchasesData = async () => {
+    const fetchOfferings = async () => {
+      if (!isReady) return;
+
       setError(null);
+      setIsOfferingsLoading(true);
+
       try {
         const isConfigured = await Purchases.isConfigured();
         if (!isConfigured) {
           setError({ message: 'Purchases SDK is not initialized.', code: 'NOT_INITIALIZED' });
-          setIsLoading(false);
           return;
         }
-        const [offerings, info] = await Promise.all([Purchases.getOfferings(), Purchases.getCustomerInfo()]);
+
+        const offerings = await Purchases.getOfferings();
         if (hasMounted.current) {
           setAvailablePackages(offerings.current?.availablePackages ?? []);
-          setCurrentCustomerInfo(info);
         }
-      } catch (error) {
-        handlePurchasesError(error);
+      } catch (fetchError) {
+        handlePurchasesError(fetchError);
       } finally {
-        if (hasMounted.current) setIsLoading(false);
+        if (hasMounted.current) setIsOfferingsLoading(false);
       }
     };
 
-    fetchPurchasesData();
+    fetchOfferings();
 
     return () => {
       hasMounted.current = false;
     };
-  }, [handlePurchasesError]);
+  }, [handlePurchasesError, isReady]);
 
   const purchasePackage = useCallback(
     async (pkg: PurchasesPackage) => {
@@ -98,17 +106,17 @@ export function usePurchases(): UsePurchasesResult {
           setError(notInitError);
           throw notInitError;
         }
-        const { customerInfo } = await Purchases.purchasePackage(pkg);
-        setCurrentCustomerInfo(customerInfo);
-        return customerInfo;
-      } catch (error) {
-        handlePurchasesError(error);
-        throw error;
+        const { customerInfo: purchasedCustomerInfo } = await Purchases.purchasePackage(pkg);
+        await refreshCustomerInfo();
+        return purchasedCustomerInfo;
+      } catch (purchaseError) {
+        handlePurchasesError(purchaseError);
+        throw purchaseError;
       } finally {
         setIsProcessing(false);
       }
     },
-    [handlePurchasesError],
+    [handlePurchasesError, refreshCustomerInfo],
   );
 
   const restorePurchases = useCallback(async () => {
@@ -124,36 +132,31 @@ export function usePurchases(): UsePurchasesResult {
         setError(notInitError);
         throw notInitError;
       }
-      const info = await Purchases.restorePurchases();
-      setCurrentCustomerInfo(info);
-      return info;
-    } catch (error) {
-      handlePurchasesError(error);
-      throw error;
+      const restoredCustomerInfo = await Purchases.restorePurchases();
+      await refreshCustomerInfo();
+      return restoredCustomerInfo;
+    } catch (restoreError) {
+      handlePurchasesError(restoreError);
+      throw restoreError;
     } finally {
       setIsProcessing(false);
     }
-  }, [handlePurchasesError]);
-
-  const hasActiveEntitlement = useCallback((info: CustomerInfo, entitlementId?: string): boolean => {
-    if (!info?.entitlements?.active) return false;
-    const activeEntitlements = info.entitlements.active;
-    if (!entitlementId) {
-      return Object.keys(activeEntitlements).length > 0;
-    }
-    return activeEntitlements[entitlementId] !== undefined;
-  }, []);
+  }, [handlePurchasesError, refreshCustomerInfo]);
 
   return {
     availablePackages,
-    customerInfo: currentCustomerInfo,
-    isLoading,
+    customerInfo,
+    subscription,
+    isSubscribed,
+    isLoading: !isReady || !isUserSynced || isOfferingsLoading,
     isProcessing,
     error,
     purchasePackage,
     restorePurchases,
-    hasActiveEntitlement,
+    hasActiveEntitlement: checkActiveEntitlement,
   };
 }
+
+export { getSubscriptionSummary, type SubscriptionSummary } from '@/lib/revenuecat/customerInfoSummary';
 
 export default usePurchases;

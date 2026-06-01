@@ -1,12 +1,13 @@
 import { useMyLeagues } from '@/features/leagues/hooks/useLeagues';
-import { MyLeagueType } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { purchasesService } from '@/lib/revenuecat/purchases';
+import { usePurchasesContext } from '@/providers/PurchasesProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 import { subscriptionApi } from '../api/subscriptionApi';
+import { SubscriptionLimits } from '../types';
 import { getSubscriptionLimits, isPaidPlan } from '../utils/getSubscriptionLimits';
 
 export const useSubscription = () => {
@@ -39,17 +40,35 @@ export const useCanCreateLeague = () => {
     staleTime: 60 * 1000 * 5,
   });
 };
+export const useSubscriptionLimit = (): SubscriptionLimits => {
+  const subscription = useSubscription();
+  const leagues = useMyLeagues();
+
+  const limits = subscription.data?.limits ?? getSubscriptionLimits('FREE');
+  const leaguesCount = leagues.data?.length ?? 0;
+
+  const reachedLimit = leaguesCount >= limits.maxLeagues;
+  const usagePercent = limits.maxLeagues > 0 ? Math.min(100, (leaguesCount / limits.maxLeagues) * 100) : 0;
+
+  return {
+    limit: limits.maxLeagues,
+    leaguesCount,
+    reachedLimit,
+    usagePercent,
+  };
+};
 
 /** Reconcile RevenueCat billing state into Supabase once per session. */
 export const useSyncSubscriptionFromRevenueCat = () => {
   const userId = useAuthStore((s) => s.user?.id ?? null);
+  const { isReady, isUserSynced } = usePurchasesContext();
   const queryClient = useQueryClient();
 
   return useQuery({
     queryKey: userId
       ? KEYS.subscriptions.revenueCatSync(userId)
       : (['subscriptions', 'unknown', 'revenuecat-sync'] as const),
-    enabled: !!userId,
+    enabled: !!userId && isReady && isUserSynced,
     staleTime: 1000 * 60 * 5,
     retry: false,
     queryFn: async () => {
@@ -89,50 +108,6 @@ export const useSyncSubscriptionFromRevenueCat = () => {
   });
 };
 
-export type SubscriptionLeaguesLimitState = {
-  limit: number;
-  ownedLeagues: MyLeagueType[];
-  ownedLeaguesCount: number;
-  leaguesList: MyLeagueType[];
-  leaguesCount: number;
-  hasLockedMembership: boolean;
-  hasSubscriptionExpiredLock: boolean;
-  reachedLimit: boolean;
-  needsResolution: boolean;
-  usagePercent: number;
-  isLoading: boolean;
-  isFetching: boolean;
-};
-
-export const useCheckSubscriptionLeaguesLimit = (): SubscriptionLeaguesLimitState => {
-  const userId = useAuthStore((s) => s.user?.id ?? null);
-  const subscription = useSubscription();
-  const leagues = useMyLeagues();
-  const leaguesList = leagues.data ?? [];
-  const ownedLeagues = userId ? leaguesList.filter((item) => item.league.owner_id === userId) : [];
-  const limits = subscription.data?.limits ?? getSubscriptionLimits('FREE');
-  const activeOwnedLeaguesCount = ownedLeagues.filter((item) => item.active).length;
-  const hasLockedMembership = leaguesList.some((item) => !item.active);
-  const hasSubscriptionExpiredLock = !isPaidPlan(subscription.data?.type ?? 'FREE') && hasLockedMembership;
-  const reachedLimit = activeOwnedLeaguesCount >= limits.maxLeagues;
-  const needsResolution = !isPaidPlan(subscription.data?.type ?? 'FREE') && ownedLeagues.length > limits.maxLeagues;
-
-  return {
-    limit: limits.maxLeagues,
-    ownedLeagues,
-    ownedLeaguesCount: ownedLeagues.length,
-    leaguesList,
-    leaguesCount: activeOwnedLeaguesCount,
-    hasLockedMembership,
-    hasSubscriptionExpiredLock,
-    reachedLimit,
-    needsResolution,
-    usagePercent: limits.maxLeagues > 0 ? Math.min(100, (activeOwnedLeaguesCount / limits.maxLeagues) * 100) : 0,
-    isLoading: subscription.isLoading || leagues.isLoading,
-    isFetching: subscription.isFetching || leagues.isFetching,
-  };
-};
-
 export const usePurchaseAndSyncSubscription = () => {
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const queryClient = useQueryClient();
@@ -140,19 +115,26 @@ export const usePurchaseAndSyncSubscription = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const payload = await purchasesService.presentPaywall();
-      if (payload && userId) {
-        await subscriptionApi.syncAfterPurchase(userId, payload);
+      const paywallPayload = await purchasesService.presentPaywall();
+      let syncPayload = paywallPayload;
+
+      if (!syncPayload) {
+        syncPayload = await purchasesService.getActiveSyncPayload();
       }
-      return payload;
+
+      if (syncPayload && userId) {
+        await subscriptionApi.syncAfterPurchase(userId, syncPayload);
+      }
+
+      return syncPayload;
     },
-    onSuccess: async () => {
-      if (!userId) return;
+    onSuccess: async (payload) => {
+      if (!userId || !payload) return;
+
+      const subscription = await subscriptionApi.getCurrentSubscription(userId);
+      queryClient.setQueryData(KEYS.subscriptions.detail(userId), subscription);
 
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: KEYS.subscriptions.detail(userId),
-        }),
         queryClient.invalidateQueries({
           queryKey: KEYS.subscriptions.revenueCatSync(userId),
         }),

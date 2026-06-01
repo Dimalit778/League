@@ -1,5 +1,6 @@
 import { Button, CText } from '@/components/ui';
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
+import { isPaidPlan } from '@/features/subscription/utils/getSubscriptionLimits';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Feather } from '@expo/vector-icons';
@@ -52,7 +53,7 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
   const { colors } = useThemeTokens();
   const { width } = useWindowDimensions();
   const [containerWidth, setContainerWidth] = useState(0);
-  const canViewStats = subscription?.limits.advancedStats === true;
+  const canViewStats = isPaidPlan(subscription?.type);
 
   const onTabPress = (index: number) => {
     isScrollingProgrammatically.current = true;

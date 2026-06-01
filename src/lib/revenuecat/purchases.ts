@@ -1,26 +1,13 @@
-import { Platform } from 'react-native';
 import Purchases, { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
-const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? '';
-const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? '';
 const PRO_ENTITLEMENT = 'pro';
-
-let isConfigured = false;
 
 export type PurchaseSyncPayload = {
   type: 'PRO';
   start_date: string;
   end_date: string;
   product_id: string | null;
-};
-
-const getApiKey = (): string => {
-  const apiKey = Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
-  if (!apiKey) {
-    throw new Error('RevenueCat API key is not configured for this platform');
-  }
-  return apiKey;
 };
 
 const isUserCancelledError = (error: unknown): boolean =>
@@ -42,36 +29,16 @@ const extractSyncPayload = (customerInfo: CustomerInfo): PurchaseSyncPayload | n
 };
 
 export const purchasesService = {
-  configure(userId: string | null): void {
-    if (isConfigured) return;
-
-    const apiKey = getApiKey();
-    // if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-    Purchases.configure({ apiKey, appUserID: userId ?? undefined });
-    isConfigured = true;
-  },
-
-  async setUser(userId: string | null): Promise<void> {
-    if (!isConfigured) return;
-
-    if (userId) {
-      await Purchases.logIn(userId);
-      return;
-    }
-
-    await Purchases.logOut();
-  },
-
   async presentPaywall(): Promise<PurchaseSyncPayload | null> {
     const offerings = await Purchases.getOfferings();
+
     const mainOffering = offerings.current;
 
     if (!mainOffering || mainOffering.availablePackages.length === 0) {
       throw new Error('No packages available for main offering');
     }
 
-    const result = await RevenueCatUI.presentPaywallIfNeeded({
-      requiredEntitlementIdentifier: PRO_ENTITLEMENT,
+    const result = await RevenueCatUI.presentPaywall({
       offering: mainOffering,
     });
 
@@ -79,6 +46,7 @@ export const purchasesService = {
       return null;
     }
 
+    await Purchases.invalidateCustomerInfoCache();
     const customerInfo = await Purchases.getCustomerInfo();
     return extractSyncPayload(customerInfo);
   },
@@ -109,5 +77,56 @@ export const purchasesService = {
   async getActiveSyncPayload(): Promise<PurchaseSyncPayload | null> {
     const customerInfo = await Purchases.getCustomerInfo();
     return extractSyncPayload(customerInfo);
+  },
+};
+export const paywallService = {
+  async presentIfNeeded() {
+    try {
+      const result = await RevenueCatUI.presentPaywallIfNeeded({
+        requiredEntitlementIdentifier: PRO_ENTITLEMENT,
+      });
+
+      const purchased = result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
+
+      if (purchased) {
+        await Purchases.invalidateCustomerInfoCache();
+      }
+
+      return {
+        purchased,
+        result,
+      };
+    } catch (error) {
+      console.error('Failed to present paywall:', error);
+
+      return {
+        purchased: false,
+        result: PAYWALL_RESULT.ERROR,
+      };
+    }
+  },
+
+  async present() {
+    try {
+      const result = await RevenueCatUI.presentPaywall();
+
+      const purchased = result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
+
+      if (purchased) {
+        await Purchases.invalidateCustomerInfoCache();
+      }
+
+      return {
+        purchased,
+        result,
+      };
+    } catch (error) {
+      console.error('Failed to present paywall:', error);
+
+      return {
+        purchased: false,
+        result: PAYWALL_RESULT.ERROR,
+      };
+    }
   },
 };

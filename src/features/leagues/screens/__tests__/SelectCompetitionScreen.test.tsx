@@ -13,6 +13,7 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
         logo: 'https://example.com/pl.png',
         flag: 'https://example.com/gb.png',
         area: 'England',
+        is_free: true,
       },
       {
         id: 2,
@@ -20,6 +21,7 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
         logo: 'https://example.com/ll.png',
         flag: 'https://example.com/es.png',
         area: 'Spain',
+        is_free: false,
       },
       {
         id: 1_000,
@@ -27,10 +29,18 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
         logo: 'https://example.com/wc.png',
         flag: 'https://example.com/un.png',
         area: 'World',
+        is_free: true,
       },
     ],
     isLoading: false,
     error: null,
+  }),
+}));
+
+jest.mock('@/features/subscription/hooks/useSubscription', () => ({
+  useSubscription: () => ({ data: { type: 'FREE' } }),
+  usePurchaseAndSyncSubscription: () => ({
+    mutateAsync: jest.fn().mockResolvedValue(null),
   }),
 }));
 

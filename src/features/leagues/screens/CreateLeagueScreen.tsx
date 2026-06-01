@@ -1,13 +1,15 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
+import { UpgradeSubscriptionOverlay } from '@/features/subscription/components/UpgradeSubscriptionOverlay';
 import {
   useCanCreateLeague,
+  usePurchaseAndSyncSubscription,
   useSubscription,
 } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
@@ -15,69 +17,44 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  leagueName: yup
-    .string()
-    .required('League name is required')
-    .min(2, 'League name must be at least 2 characters long'),
-  nickname: yup
-    .string()
-    .required('Nickname is required')
-    .min(2, 'Nickname must be at least 2 characters long'),
+  leagueName: yup.string().required('League name is required').min(2, 'League name must be at least 2 characters long'),
+  nickname: yup.string().required('Nickname is required').min(2, 'Nickname must be at least 2 characters long'),
 });
 
 type MemberOptionProps = {
   value: number;
   label: string;
-  disabled?: boolean;
-  pro?: boolean;
+  locked: boolean;
   membersCount: number | null;
   onSelect: (value: number) => void;
   t: (key: string) => string;
+  openPaywall: () => Promise<void>;
 };
 
-const MemberOption = ({
-  value,
-  label,
-  disabled,
-  pro,
-  membersCount,
-  onSelect,
-  t,
-}: MemberOptionProps) => {
+const MemberOption = ({ value, label, locked, membersCount, onSelect, t, openPaywall }: MemberOptionProps) => {
   const isActive = membersCount === value;
 
   return (
     <Pressable
-      onPress={() => {
-        if (disabled && pro) {
-          router.push('/(app)/(public)/subscription');
+      onPress={async () => {
+        if (locked) {
+          await openPaywall();
           return;
         }
-        if (!disabled) onSelect(value);
+        onSelect(value);
       }}
-      className={`relative flex-1 mx-1 rounded-2xl px-4 py-4 border-2
-        ${isActive ? 'border-secondary bg-surface' : 'border-border'}
-
-      `}
+      className="flex-1 mx-1"
     >
-      <View className={`${disabled ? 'opacity-30' : ''}`}>
-        <CText
-          variant="body"
-          className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}
+      <View className="relative overflow-hidden rounded-2xl">
+        <View
+          className={`rounded-2xl border-2 px-4 py-4 ${isActive ? 'border-secondary bg-surface' : 'border-border bg-background'}`}
         >
-          {t(label)}
-        </CText>
-      </View>
-
-      {pro && (
-        <View className="absolute -top-3 left-0 right-0 items-center z-10">
-          <View className="bg-blue-500 px-3 py-1 rounded-md shadow">
-            <CText variant="small" bold className="text-black">
-              UPGRADE
-            </CText>
-          </View>
+          <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+            {t(label)}
+          </CText>
         </View>
-      )}
+        <UpgradeSubscriptionOverlay visible={locked} />
+      </View>
     </Pressable>
   );
 };
@@ -88,13 +65,17 @@ const CreateLeagueScreen = () => {
 
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
   const { data: subscription } = useSubscription();
-  const { data: createCapability, isLoading: isLoadingCreateCapability } =
-    useCanCreateLeague();
-  const allowedLeagueSizes = subscription?.limits.maxMembersPerLeague ?? [6];
-  const maxMembersPerLeague = Math.max(...allowedLeagueSizes);
-  const canSelect10 = allowedLeagueSizes.includes(10);
-  const canSelect20 = allowedLeagueSizes.includes(20);
-  const [membersCount, setMembersCount] = useState<number | null>(null);
+  const { data: createCapability, isLoading: isLoadingCreateCapability } = useCanCreateLeague();
+  const { mutateAsync: openPaywall } = usePurchaseAndSyncSubscription();
+  const hasPaidSubscription = subscription?.type === 'PRO';
+  const [membersCount, setMembersCount] = useState<number | null>(6);
+
+  const handleOpenPaywall = async () => {
+    const payload = await openPaywall();
+    if (payload) {
+      setMembersCount(12);
+    }
+  };
 
   const {
     control,
@@ -113,7 +94,7 @@ const CreateLeagueScreen = () => {
   });
   const onSubmit = handleSubmit(async (data) => {
     if (createCapability && !createCapability.canCreate) {
-      router.push('/(app)/(public)/subscription');
+      await openPaywall();
       return;
     }
 
@@ -121,7 +102,7 @@ const CreateLeagueScreen = () => {
       league_name: data.leagueName,
       nickname: data.nickname,
       competition_id: Number(competitionId),
-      max_members: membersCount ?? maxMembersPerLeague,
+      max_members: membersCount ?? 6,
     });
   });
   return (
@@ -182,29 +163,21 @@ const CreateLeagueScreen = () => {
               <MemberOption
                 value={6}
                 label="6 Members"
+                locked={false}
                 membersCount={membersCount}
                 onSelect={setMembersCount}
                 t={t}
+                openPaywall={handleOpenPaywall}
               />
 
               <MemberOption
-                value={10}
-                label="10 Members"
-                disabled={!canSelect10}
-                pro
+                value={12}
+                label="12 Members"
+                locked={!hasPaidSubscription}
                 membersCount={membersCount}
                 onSelect={setMembersCount}
                 t={t}
-              />
-
-              <MemberOption
-                value={20}
-                label="20 Members"
-                disabled={!canSelect20}
-                pro
-                membersCount={membersCount}
-                onSelect={setMembersCount}
-                t={t}
+                openPaywall={handleOpenPaywall}
               />
             </View>
           </View>
@@ -217,7 +190,7 @@ const CreateLeagueScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending || isLoadingCreateCapability}
+            disabled={!isValid || isPending || isLoadingCreateCapability || membersCount === null}
           />
         </View>
       </View>

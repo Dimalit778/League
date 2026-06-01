@@ -11,7 +11,6 @@ interface ThemeState {
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
   toggleTheme: () => void;
-  initializeTheme: () => Promise<void>;
 }
 
 export const useThemeStore = create<ThemeState>()(
@@ -38,20 +37,6 @@ export const useThemeStore = create<ThemeState>()(
         const currentTheme = get().theme;
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         get().setTheme(newTheme);
-      },
-
-      initializeTheme: async () => {
-        // Sync theme with platform-specific implementation
-        const currentTheme = get().theme;
-        if (Platform.OS === 'web') {
-          if (currentTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        } else {
-          colorScheme.set(currentTheme);
-        }
       },
     }),
     {

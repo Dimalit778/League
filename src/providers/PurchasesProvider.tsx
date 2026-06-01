@@ -7,6 +7,7 @@ import Purchases, { CustomerInfo } from 'react-native-purchases';
 
 type PurchasesContextValue = {
   isReady: boolean;
+  isUserSynced: boolean;
   customerInfo: CustomerInfo | null;
   error: Error | null;
   refreshCustomerInfo: () => Promise<CustomerInfo | null>;
@@ -40,8 +41,10 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   const queryClient = useQueryClient();
   const isConfiguredRef = useRef(false);
   const customerInfoRef = useRef<CustomerInfo | null>(null);
+  const isUserSyncedRef = useRef(false);
 
   const [isReady, setIsReady] = useState(false);
+  const [isUserSynced, setIsUserSynced] = useState(Platform.OS === 'web');
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -49,15 +52,31 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     (nextCustomerInfo: CustomerInfo | null) => {
       customerInfoRef.current = nextCustomerInfo;
       setCustomerInfo(nextCustomerInfo);
-      setIsSubscribed(hasActiveEntitlement(nextCustomerInfo));
 
-      if (!userId) return;
+      const trusted = isUserSyncedRef.current;
+      setIsSubscribed(!!userId && trusted ? hasActiveEntitlement(nextCustomerInfo) : false);
+
+      if (!userId || !trusted) return;
 
       queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
       queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
       queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.revenueCatSync(userId) });
     },
     [queryClient, setIsSubscribed, userId],
+  );
+
+  const markUserSynced = useCallback(
+    (synced: boolean) => {
+      isUserSyncedRef.current = synced;
+      setIsUserSynced(synced);
+
+      if (synced && customerInfoRef.current) {
+        setIsSubscribed(!!userId && hasActiveEntitlement(customerInfoRef.current));
+      } else if (!synced) {
+        setIsSubscribed(false);
+      }
+    },
+    [setIsSubscribed, userId],
   );
 
   const refreshCustomerInfo = useCallback(async (): Promise<CustomerInfo | null> => {
@@ -82,6 +101,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
     const configurePurchases = async () => {
       if (Platform.OS === 'web') {
+        markUserSynced(true);
         setIsReady(true);
         return;
       }
@@ -121,7 +141,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     return () => {
       cancelled = true;
     };
-  }, [applyCustomerInfo]);
+  }, [applyCustomerInfo, markUserSynced]);
 
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
@@ -129,13 +149,16 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     let cancelled = false;
 
     const syncRevenueCatUser = async () => {
+      markUserSynced(false);
+
       try {
         let nextCustomerInfo: CustomerInfo | null = null;
 
         if (userId) {
-          const currentCustomerInfo = customerInfoRef.current ?? (await Purchases.getCustomerInfo());
-          if (currentCustomerInfo.originalAppUserId === userId) {
-            nextCustomerInfo = currentCustomerInfo;
+          const currentAppUserId = await Purchases.getAppUserID();
+
+          if (currentAppUserId === userId) {
+            nextCustomerInfo = await Purchases.getCustomerInfo();
           } else {
             const logInResult = await Purchases.logIn(userId);
             nextCustomerInfo = logInResult.customerInfo;
@@ -148,11 +171,17 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
         }
 
         if (!cancelled) {
+          markUserSynced(true);
           applyCustomerInfo(nextCustomerInfo);
           setError(null);
+
+          if (userId) {
+            queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.revenueCatSync(userId) });
+          }
         }
       } catch (syncError) {
         if (!cancelled) {
+          markUserSynced(false);
           const nextError = syncError instanceof Error ? syncError : new Error(String(syncError));
           setError(nextError);
         }
@@ -164,7 +193,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     return () => {
       cancelled = true;
     };
-  }, [applyCustomerInfo, isReady, userId]);
+  }, [applyCustomerInfo, isReady, markUserSynced, queryClient, userId]);
 
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
@@ -187,11 +216,12 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   const value = useMemo(
     () => ({
       isReady,
+      isUserSynced,
       customerInfo,
       error,
       refreshCustomerInfo,
     }),
-    [customerInfo, error, isReady, refreshCustomerInfo],
+    [customerInfo, error, isReady, isUserSynced, refreshCustomerInfo],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;

@@ -15,10 +15,10 @@ type SubscriptionDetails = {
 };
 
 type SubscriptionLimits = {
-  maxLeagues: number;
-  maxMembersPerLeague: readonly number[];
-  weeklyAiTips: number | null;
-  advancedStats: boolean;
+  limit: number;
+  leaguesCount: number;
+  reachedLimit: boolean;
+  usagePercent: number;
 };
 
 type CurrentSubscription = {
@@ -27,16 +27,12 @@ type CurrentSubscription = {
   end_date: string | null;
   product_id: string | null;
   transaction_id: string | null;
-  limits: {
-    maxLeagues: number;
-    maxMembersPerLeague: readonly number[];
-    weeklyAiTips: number | null;
-    advancedStats: boolean;
-  };
+  limits: plansLimits;
 };
-export type {
-  CurrentSubscription,
-  SubscriptionDetails,
-  SubscriptionLimits,
-  SubscriptionType,
+type plansLimits = {
+  maxLeagues: number;
+  maxMembersPerLeague: readonly number[];
+  competitions: readonly string[];
+  weeklyAiTips: number | null;
 };
+export type { CurrentSubscription, plansLimits, SubscriptionDetails, SubscriptionLimits, SubscriptionType };

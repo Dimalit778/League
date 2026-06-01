@@ -508,6 +508,15 @@ export type Database = {
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
       rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
+      sync_subscription_from_revenuecat: {
+        Args: {
+          p_end_date: string
+          p_product_id?: string
+          p_start_date: string
+          p_transaction_id?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       match_status:

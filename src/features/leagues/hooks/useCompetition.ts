@@ -11,14 +11,14 @@ export const useGetCompetitions = () => {
   });
 };
 
-export const useGetCompetitionMatchMeta = () => {
+export const useGetCompetitionsDetails = () => {
   const competitionId = useMemberStore(selectCompetitionId);
 
   return useQuery({
     queryKey: KEYS.competitions.matchMeta(competitionId ?? 0),
-    queryFn: competitionId ? () => competitionApi.getCompetitionMatchMeta(competitionId) : skipToken,
+    queryFn: competitionId ? () => competitionApi.getCompetitionsDetails(competitionId) : skipToken,
     staleTime: 1000 * 60 * 60 * 24,
   });
 };
 
-export const useGetCompetitionFixtures = useGetCompetitionMatchMeta;
+export const useGetCompetitionFixtures = useGetCompetitionsDetails;

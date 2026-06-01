@@ -1,7 +1,12 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
-import { usePurchaseAndSyncSubscription } from '@/features/subscription/hooks/useSubscription';
+import {
+  usePurchaseAndSyncSubscription,
+  useSubscription,
+  useSubscriptionLimit,
+} from '@/features/subscription/hooks/useSubscription';
+import { isPaidPlan } from '@/features/subscription/utils/getSubscriptionLimits';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/AuthStore';
@@ -16,6 +21,10 @@ import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
 
 const MyLeagues = () => {
   const userId = useAuthStore((s) => s.user?.id);
+  const { leaguesCount, reachedLimit, limit, usagePercent } = useSubscriptionLimit();
+  const { data: subscription } = useSubscription();
+  const isPro = isPaidPlan(subscription?.type);
+
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
@@ -27,14 +36,9 @@ const MyLeagues = () => {
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
 
   const isLeaguesLoading = !!userId && (isLeaguesPending || isLeaguesFetching);
-  const leaguesList = leagues ?? [];
-
-  const leaguesCount = leaguesList.length;
-  const reachedLimit = false;
-  const usagePercent = 0;
 
   const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
-    const selectedLeague = leaguesList.find((l) => l.league.id === leagueId);
+    const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
 
     if (!selectedLeague) return;
 
@@ -65,6 +69,11 @@ const MyLeagues = () => {
     }
   };
 
+  const handleUpgrade = async () => {
+    const payload = await openPaywall();
+    if (!payload) return;
+  };
+
   if (isAuthLoading || isLeaguesLoading) {
     return (
       <Screen>
@@ -76,8 +85,8 @@ const MyLeagues = () => {
 
   return (
     <Screen>
-      {true ? (
-        <Pressable onPress={() => openPaywall()} className="bg-yellow-500 py-2 m-4 rounded-md ">
+      {reachedLimit && !isPro ? (
+        <Pressable onPress={handleUpgrade} className="bg-yellow-500 py-2 m-4 rounded-md ">
           <CText variant="caption" bold className="text-black text-center">
             {t('Max leagues reached. Upgrade to continue.')}
           </CText>
@@ -104,14 +113,14 @@ const MyLeagues = () => {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="flex-1 gap-3 p-2 mt-4"
       >
-        {leaguesList.map((league) => (
+        {leagues?.map((league) => (
           <MyLeagueCard
             key={league.league.id}
             item={league}
             handleSetPrimary={() => handleSetPrimary(league.league.id, league.is_primary)}
           />
         ))}
-        {leaguesList.length === 0 && (
+        {leagues?.length === 0 && (
           <View className="flex-1 pt-10">
             <CText className="text-center text-muted font-nunito-bold text-lg">
               Create or join a league to get started
@@ -127,7 +136,7 @@ const MyLeagues = () => {
             </CText>
 
             <CText variant="body" bold className={reachedLimit ? 'text-yellow-500 font-bold' : 'text-muted'}>
-              {leaguesCount}/{1}
+              {leaguesCount}/{limit}
             </CText>
           </View>
 

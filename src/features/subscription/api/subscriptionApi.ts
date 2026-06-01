@@ -1,14 +1,13 @@
-import { supabase } from '@/lib/supabase';
 import type { PurchaseSyncPayload } from '@/lib/revenuecat/purchases';
+import { supabase } from '@/lib/supabase';
 import {
   getSubscriptionLimits,
   normalizeSubscriptionPlan,
   type SubscriptionPlan,
+  type SubscriptionPlanInput,
 } from '../config/plans';
-import { canCreateLeague as canCreateLeagueGuard } from '../utils/subscriptionGuards';
 import type { CurrentSubscription } from '../types';
-
-const DEFAULT_PLAN: SubscriptionPlan = 'FREE';
+import { canCreateLeague as canCreateLeagueGuard } from '../utils/subscriptionGuards';
 
 export const subscriptionApi = {
   getSubscriptionLimits,
@@ -16,9 +15,7 @@ export const subscriptionApi = {
   async getCurrentSubscription(userId: string): Promise<CurrentSubscription> {
     const { data, error } = await supabase
       .from('subscription')
-      .select(
-        'type, start_date, end_date, product_id, transaction_id',
-      )
+      .select('type, start_date, end_date, product_id, transaction_id')
       .eq('user_id', userId)
       .gte('end_date', new Date().toISOString())
       .order('end_date', { ascending: false })
@@ -28,10 +25,7 @@ export const subscriptionApi = {
       throw new Error(error.message);
     }
 
-    const plan = data?.type
-      ? normalizeSubscriptionPlan(data.type)
-      : DEFAULT_PLAN;
-    const limits = getSubscriptionLimits(plan);
+    const plan = normalizeSubscriptionPlan(data?.type as SubscriptionPlanInput);
 
     return {
       type: plan,
@@ -39,7 +33,7 @@ export const subscriptionApi = {
       end_date: data?.end_date ?? null,
       product_id: data?.product_id ?? null,
       transaction_id: data?.transaction_id ?? null,
-      limits,
+      limits: getSubscriptionLimits(plan),
     };
   },
 
@@ -62,30 +56,23 @@ export const subscriptionApi = {
     return subscription.type;
   },
 
-  async canCreateLeague(
-    userId: string,
-  ): Promise<{ canCreate: boolean; reason?: string }> {
+  async canCreateLeague(userId: string): Promise<{ canCreate: boolean; reason?: string }> {
     const result = await canCreateLeagueGuard(userId);
     return { canCreate: result.allowed, reason: result.reason };
   },
 
-  async syncAfterPurchase(
-    userId: string,
-    payload: PurchaseSyncPayload,
-  ): Promise<void> {
-    const { error } = await supabase.from('subscription').upsert(
-      {
-        user_id: userId,
-        type: payload.type,
-        start_date: payload.start_date,
-        end_date: payload.end_date,
-        product_id: payload.product_id,
-      },
-      { onConflict: 'user_id' },
-    );
+  async syncAfterPurchase(userId: string, payload: PurchaseSyncPayload): Promise<void> {
+    const { error } = await supabase.rpc('sync_subscription_from_revenuecat', {
+      p_start_date: payload.start_date,
+      p_end_date: payload.end_date,
+      p_product_id: payload.product_id ?? undefined,
+      p_transaction_id: undefined,
+    });
 
     if (error) {
       throw new Error(error.message);
     }
+
+    if (!userId) return;
   },
 };
