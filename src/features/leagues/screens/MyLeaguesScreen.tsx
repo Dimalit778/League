@@ -6,7 +6,6 @@ import {
   useSubscription,
   useSubscriptionLimit,
 } from '@/features/subscription/hooks/useSubscription';
-import { isPaidPlan } from '@/features/subscription/utils/getSubscriptionLimits';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/AuthStore';
@@ -23,7 +22,7 @@ const MyLeagues = () => {
   const userId = useAuthStore((s) => s.user?.id);
   const { leaguesCount, reachedLimit, limit, usagePercent } = useSubscriptionLimit();
   const { data: subscription } = useSubscription();
-  const isPro = isPaidPlan(subscription?.type);
+  const isPro = subscription.type === 'PRO';
 
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();

@@ -1,5 +1,4 @@
 import { useGetUser } from '@/features/admin/hooks/useUsers';
-import { SubscriptionSync } from '@/features/subscription/components/SubscriptionSync';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';
@@ -16,7 +15,6 @@ export default function AppLayout() {
 
   return (
     <>
-      {isLoggedIn ? <SubscriptionSync /> : null}
       <Stack
       screenOptions={{
         headerShown: false,

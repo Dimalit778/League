@@ -2,7 +2,6 @@ import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useThemeStore } from '@/store/ThemeStore';
-import { Tables } from '@/types/database.types';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { RelativePathString, useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
@@ -11,11 +10,11 @@ import ThemeToggle from '../ThemeToggle';
 
 const SettingsContent = ({
   created_at = 'N/A',
-  subscription,
+  subscriptionType,
   email,
 }: {
   created_at?: string;
-  subscription: Tables<'subscription'> | undefined;
+  subscriptionType?: string;
   email?: string;
 }) => {
   const { theme } = useThemeStore();
@@ -24,7 +23,7 @@ const SettingsContent = ({
   const isRTL = useIsRTL();
   const ArrowIcon = isRTL ? 'left' : 'right';
   const createdAtDateString = new Date(created_at).toLocaleDateString();
-  const subscriptionType = subscription?.type || t('Free');
+  const displayType = subscriptionType || t('Free');
 
   const renderAccountActions = (title: string, path?: RelativePathString) => {
     const handlePress = () => {
@@ -60,7 +59,7 @@ const SettingsContent = ({
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
           <CText className="text-text text-base">{t('Subscription')}</CText>
 
-          <CText className="text-primary text-sm font-medium ">{subscriptionType}</CText>
+          <CText className="text-primary text-sm font-medium ">{displayType}</CText>
         </View>
         {/* Email */}
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">

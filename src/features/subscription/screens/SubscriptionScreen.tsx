@@ -2,10 +2,7 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { KEYS } from '@/lib/queryClient';
 import { purchasesService } from '@/lib/revenuecat/purchases';
-import { useAuthStore } from '@/store/AuthStore';
-import { useQueryClient } from '@tanstack/react-query';
 import { RelativePathString, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
@@ -18,9 +15,7 @@ import { SubscriptionType } from '../types';
 const SubscriptionScreen = () => {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const queryClient = useQueryClient();
-  const userId = useAuthStore((s) => s.user?.id ?? null);
-  const { data: currentSubscription, isLoading: isLoadingSubscription } = useSubscription();
+  const { data: currentSubscription } = useSubscription();
   const edges = useSafeAreaInsets();
 
   const subscriptionType: SubscriptionType = currentSubscription?.type ?? 'FREE';
@@ -36,26 +31,12 @@ const SubscriptionScreen = () => {
   const isPaid = subscriptionType !== 'FREE';
   const canProceed = selectedPlan !== null && selectedPlan !== 'FREE' && selectedPlan !== subscriptionType;
 
-  const invalidateSubscription = async () => {
-    if (!userId) return;
-    await queryClient.invalidateQueries({
-      queryKey: KEYS.subscriptions.detail(userId),
-    });
-    await queryClient.invalidateQueries({
-      queryKey: KEYS.subscriptions.canCreateLeague(userId),
-    });
-  };
-
   const handleSubscribePress = async () => {
-    if (!canProceed || !userId) return;
+    if (!canProceed) return;
     setIsPurchasing(true);
     try {
       const payload = await purchasesService.purchaseMonthly();
       if (payload) {
-        // Subscription row is updated by the RevenueCat webhook (server-side).
-        // Invalidate so the next fetch reflects the updated status once the
-        // webhook fires (typically within a few seconds).
-        await invalidateSubscription();
         Alert.alert(t('Success'), t('Your subscription is now active!'));
       }
     } catch (err: unknown) {
@@ -71,12 +52,10 @@ const SubscriptionScreen = () => {
   };
 
   const handleRestorePress = async () => {
-    if (!userId) return;
     setIsRestoring(true);
     try {
       const payload = await purchasesService.restorePurchases();
       if (payload) {
-        await invalidateSubscription();
         Alert.alert(t('Restored'), t('Your subscription has been restored.'));
       } else {
         Alert.alert(t('Nothing to restore'), t('No active subscription found for this account.'));
@@ -89,7 +68,7 @@ const SubscriptionScreen = () => {
     }
   };
 
-  const isLoading = isLoadingSubscription || isPurchasing || isRestoring;
+  const isLoading = isPurchasing || isRestoring;
 
   return (
     <Screen withSafeArea>

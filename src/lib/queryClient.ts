@@ -75,13 +75,6 @@ export const KEYS = {
       ['standings', competitionId, seasonId ?? 'current', 'group', group] as const,
   },
 
-  // ==================== SUBSCRIPTIONS ====================
-  subscriptions: {
-    detail: (userId: string) => ['subscriptions', userId] as const,
-    canCreateLeague: (userId: string) => ['subscriptions', userId, 'can-create'] as const,
-    ownedLeagueCount: (userId: string) => ['subscriptions', 'ownedLeagueCount', userId] as const,
-    revenueCatSync: (userId: string) => ['subscriptions', userId, 'revenuecat-sync'] as const,
-  },
 
   // ==================== ADMIN ====================
   admin: {

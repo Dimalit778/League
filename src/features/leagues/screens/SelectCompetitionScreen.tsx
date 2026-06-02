@@ -4,7 +4,6 @@ import { BackButton, Button } from '@/components/ui';
 import { CText } from '@/components/ui';
 import { UpgradeSubscriptionOverlay } from '@/features/subscription/components/UpgradeSubscriptionOverlay';
 import { usePurchaseAndSyncSubscription, useSubscription } from '@/features/subscription/hooks/useSubscription';
-import { isPaidPlan } from '@/features/subscription/utils/getSubscriptionLimits';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
@@ -24,7 +23,7 @@ const SelectCompetitionScreen = () => {
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const { colors } = useThemeTokens();
 
-  const hasPaidSubscription = isPaidPlan(subscription?.type);
+  const hasPaidSubscription = subscription.type === 'PRO';
 
   const requiresUpgrade = (comp: Competition) => !comp.is_free && !hasPaidSubscription;
 

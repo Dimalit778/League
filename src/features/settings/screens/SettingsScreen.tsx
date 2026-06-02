@@ -5,7 +5,6 @@ import SettingsContent from '@/features/settings/components/Settings/SettingsCon
 import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/AuthStore';
-import { Tables } from '@/types/database.types';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
 import { Alert, Pressable, View } from 'react-native';
@@ -15,7 +14,7 @@ const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
   const fullName = formatNameCapitalize(user?.full_name);
 
-  const { data: subscription, isLoading } = useSubscription();
+  const { data: subscription } = useSubscription();
 
   const { signOut, isLoading: isLoadingAuth } = useAuthActions();
   const { t } = useTranslation();
@@ -46,7 +45,7 @@ const SettingsScreen = () => {
   const deleteAccount = async () => {
     console.log('deleteAccount');
   };
-  if (!user || isLoading) return <LoadingOverlay />;
+  if (!user) return <LoadingOverlay />;
 
   return (
     <Screen withSafeArea>
@@ -59,7 +58,7 @@ const SettingsScreen = () => {
         <View className=" mt-12">
           <SettingsContent
             created_at={user?.created_at}
-            subscription={subscription as Tables<'subscription'> | undefined}
+            subscriptionType={subscription.type}
             email={user?.email}
           />
         </View>

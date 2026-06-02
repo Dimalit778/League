@@ -44,7 +44,8 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
 }));
 
 jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useCheckSubscriptionLeaguesLimit: () => mockLimitState,
+  useSubscriptionLimit: () => mockLimitState,
+  useSubscription: () => ({ data: { type: 'FREE', limits: {} } }),
   usePurchaseAndSyncSubscription: () => ({
     mutateAsync: jest.fn(),
     isPending: false,

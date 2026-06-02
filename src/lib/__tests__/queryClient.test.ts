@@ -134,16 +134,6 @@ describe('KEYS', () => {
     });
   });
 
-  describe('subscriptions', () => {
-    it('generates detail key', () => {
-      expect(KEYS.subscriptions.detail('u1')).toEqual(['subscriptions', 'u1']);
-    });
-
-    it('generates canCreateLeague key', () => {
-      expect(KEYS.subscriptions.canCreateLeague('u1')).toEqual(['subscriptions', 'u1', 'can-create']);
-    });
-  });
-
   describe('admin', () => {
     it('has dashboard key', () => {
       expect(KEYS.admin.dashboard).toEqual(['admin', 'dashboard']);

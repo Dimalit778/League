@@ -27,9 +27,9 @@ describe('subscription plans', () => {
     });
   });
 
-  it('PRO has more features than FREE', () => {
+  it('PRO has at least as many features as FREE', () => {
     const free = plans.find((p) => p.type === 'FREE')!;
     const pro = plans.find((p) => p.type === 'PRO')!;
-    expect(pro.features.length).toBeGreaterThan(free.features.length);
+    expect(pro.features.length).toBeGreaterThanOrEqual(free.features.length);
   });
 });

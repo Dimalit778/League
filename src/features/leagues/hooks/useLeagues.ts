@@ -2,10 +2,6 @@ import { KEYS } from '@/lib/queryClient';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  canCreateLeague,
-  canCreateLeagueWithSize,
-} from '@/features/subscription/utils/subscriptionGuards';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
@@ -120,19 +116,6 @@ export const useCreateLeague = () => {
       max_members: number;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-
-      const [leagueCheck, sizeCheck] = await Promise.all([
-        canCreateLeague(userId),
-        canCreateLeagueWithSize(userId, params.max_members),
-      ]);
-
-      if (!leagueCheck.allowed)
-        throw new Error(
-          leagueCheck.reason || 'Upgrade to create more leagues.',
-        );
-      if (!sizeCheck.allowed)
-        throw new Error(sizeCheck.reason || 'Upgrade for this league size.');
-
       return leagueApi.createLeague(params);
     },
 
@@ -143,9 +126,6 @@ export const useCreateLeague = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.members.primary(userId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.subscriptions.canCreateLeague(userId),
         }),
       ]);
       router.replace({
@@ -180,9 +160,6 @@ export const useJoinLeague = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.members.primary(userId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.subscriptions.canCreateLeague(userId),
         }),
       ]);
     },
@@ -289,9 +266,6 @@ export const useDeleteLeague = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.leagues.leaderboard(leagueId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.subscriptions.canCreateLeague(userId),
         }),
       ]);
       await initializeMember();

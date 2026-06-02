@@ -298,56 +298,6 @@ export type Database = {
           },
         ]
       }
-      subscription: {
-        Row: {
-          access_advanced_stats: boolean
-          can_add_members: boolean
-          created_at: string
-          end_date: string
-          id: string
-          product_id: string | null
-          start_date: string
-          type: Database["public"]["Enums"]["subscription_type"]
-          transaction_id: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          access_advanced_stats?: boolean
-          can_add_members?: boolean
-          created_at?: string
-          end_date: string
-          id?: string
-          product_id?: string | null
-          start_date: string
-          type: Database["public"]["Enums"]["subscription_type"]
-          transaction_id?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          access_advanced_stats?: boolean
-          can_add_members?: boolean
-          created_at?: string
-          end_date?: string
-          id?: string
-          product_id?: string | null
-          start_date?: string
-          type?: Database["public"]["Enums"]["subscription_type"]
-          transaction_id?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subscription_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       teams: {
         Row: {
           created_at: string
@@ -444,10 +394,6 @@ export type Database = {
       }
     }
     Functions: {
-      choose_active_league: {
-        Args: { p_league_id: string }
-        Returns: undefined
-      }
       create_new_league: {
         Args: {
           avatar_url?: string
@@ -508,15 +454,6 @@ export type Database = {
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
       rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
-      sync_subscription_from_revenuecat: {
-        Args: {
-          p_end_date: string
-          p_product_id?: string
-          p_start_date: string
-          p_transaction_id?: string
-        }
-        Returns: undefined
-      }
     }
     Enums: {
       match_status:
@@ -528,7 +465,6 @@ export type Database = {
         | "POSTPONED"
         | "PAUSED"
       role: "USER" | "ADMIN"
-      subscription_type: "FREE" | "BASIC" | "PREMIUM" | "PRO"
     }
     CompositeTypes: {
       [_ in never]: never

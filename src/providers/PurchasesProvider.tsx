@@ -58,9 +58,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
       if (!userId || !trusted) return;
 
-      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.detail(userId) });
-      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.canCreateLeague(userId) });
-      queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.revenueCatSync(userId) });
+      queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
     },
     [queryClient, setIsSubscribed, userId],
   );
@@ -176,7 +174,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           setError(null);
 
           if (userId) {
-            queryClient.invalidateQueries({ queryKey: KEYS.subscriptions.revenueCatSync(userId) });
+            queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
           }
         }
       } catch (syncError) {

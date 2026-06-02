@@ -7,6 +7,7 @@ import {
   usePurchaseAndSyncSubscription,
   useSubscription,
 } from '@/features/subscription/hooks/useSubscription';
+
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
@@ -67,7 +68,7 @@ const CreateLeagueScreen = () => {
   const { data: subscription } = useSubscription();
   const { data: createCapability, isLoading: isLoadingCreateCapability } = useCanCreateLeague();
   const { mutateAsync: openPaywall } = usePurchaseAndSyncSubscription();
-  const hasPaidSubscription = subscription?.type === 'PRO';
+  const hasPaidSubscription = subscription.type === 'PRO';
   const [membersCount, setMembersCount] = useState<number | null>(6);
 
   const handleOpenPaywall = async () => {
