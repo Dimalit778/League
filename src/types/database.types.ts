@@ -404,6 +404,16 @@ export type Database = {
         }
         Returns: string
       }
+      create_new_league_v3: {
+        Args: {
+          avatar_url?: string
+          competition_id: number
+          league_name: string
+          max_members: number
+          nickname: string
+        }
+        Returns: string
+      }
       delete_owned_league: { Args: { p_league_id: string }; Returns: Json }
       find_league_by_code: {
         Args: { p_join_code: string }
@@ -427,6 +437,30 @@ export type Database = {
         Returns: boolean
       }
       join_league: {
+        Args: {
+          league_join_code: string
+          user_avatar_url?: string
+          user_nickname: string
+        }
+        Returns: {
+          active: boolean
+          avatar_url: string | null
+          created_at: string
+          id: string
+          is_primary: boolean
+          league_id: string
+          nickname: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "league_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      join_league_v3: {
         Args: {
           league_join_code: string
           user_avatar_url?: string
@@ -602,7 +636,6 @@ export const Constants = {
         "PAUSED",
       ],
       role: ["USER", "ADMIN"],
-      subscription_type: ["FREE", "BASIC", "PREMIUM", "PRO"],
     },
   },
 } as const

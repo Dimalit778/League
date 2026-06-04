@@ -6,14 +6,14 @@ import { TouchableOpacity, View } from 'react-native';
 import { MyLeagueType } from '../types';
 interface LeagueCardProps {
   item: MyLeagueType;
-  handleSetPrimary: (leagueId: string, isPrimary: boolean) => void;
+  onPress: () => void;
 }
-export default function MyLeagueCard({ item, handleSetPrimary }: LeagueCardProps) {
+export default function MyLeagueCard({ item, onPress }: LeagueCardProps) {
   const isLocked = !item.active;
   return (
     <View className={`bg-surface rounded-xl${isLocked ? ' opacity-50' : ''}`}>
       <TouchableOpacity
-        onPress={() => !isLocked && handleSetPrimary(item.league.id, item.is_primary)}
+        onPress={onPress}
         activeOpacity={isLocked ? 1 : 0.8}
         disabled={isLocked}
       >

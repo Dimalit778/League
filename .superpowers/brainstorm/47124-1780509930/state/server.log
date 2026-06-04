@@ -1,0 +1,11 @@
+{"type":"server-started","port":59400,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:59400","screen_dir":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content","state_dir":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/state"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/native-direction.html"}
+{"source":"user-event","type":"click","text":"C\n    \n      Platform-split design (iOS looks iOS, Android looks Android)\n      Explicit platform branching: iOS gets large titles, sheet modals, SF Symbols-style icons, spring animations. Android gets Material 3 design, ripple effects, FAB patterns, Roboto.\n      Most \"native\" result, but more code to maintain. Each platform feels fully at home.","choice":"c","id":null,"timestamp":1780509997688}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/waiting-1.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/tabs-comparison.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/header-comparison.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/waiting-2.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/typography-direction.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/buttons-inputs.html"}
+{"type":"screen-added","file":"/Users/dimalitvinov/Mac/Dev/Projects/league/.superpowers/brainstorm/47124-1780509930/content/transitions.html"}
+{"type":"server-stopped","reason":"idle timeout"}

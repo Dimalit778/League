@@ -73,6 +73,6 @@ League Champion transforms the way friends, families, and communities engage wit
 - React Hook Form + Yup for validation
 
 
-![image](https://github.com/Dimalit778/League/blob/main/appImages/leaderboard.PNG?raw=true)
-![image](https://github.com/Dimalit778/League/blob/main/appImages/matches.PNG?raw=true)
-![image](https://github.com/Dimalit778/League/blob/main/appImages/match-details.PNG?raw=true)
+![image](https://github.com/Dimalit778/League/blob/main/src/assets/appImages/leaderboard.PNG?raw=true)
+![image](https://github.com/Dimalit778/League/blob/main/src/assets/appImages/matches.PNG?raw=true)
+![image](https://github.com/Dimalit778/League/blob/main/src/assets/appImages/match-details.PNG?raw=true)

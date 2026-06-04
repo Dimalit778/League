@@ -189,7 +189,7 @@ export default function TeamBadge({
         fontSize={fontSize}
         fontWeight="800"
         textAnchor="middle"
-        fontFamily="Nunito_900Black"
+        fontFamily="System"
       >
         {initials}
       </SvgText>

@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
 export const useMyLeagues = () => {
+  
   const userId = useAuthStore((state) => state.user?.id ?? '');
   return useQuery({
     queryKey: KEYS.users.leagues(userId),
@@ -133,9 +134,6 @@ export const useCreateLeague = () => {
         params: { leagueId },
       });
     },
-    onError: (error) => {
-      Alert.alert('Error', error.message);
-    },
   });
 };
 export const useJoinLeague = () => {
@@ -203,29 +201,21 @@ export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');
 
-  const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
     mutationFn: async (leagueId: string) => {
       const result = await leagueApi.leaveLeague(leagueId);
       return result;
     },
-    onSuccess: async (result, leagueId) => {
+    onSuccess: async (_result, leagueId) => {
+      router.replace('/(app)/(public)/myLeagues');
+      useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.members(leagueId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.leaderboard(leagueId),
-        }),
+        queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
+        queryClient.removeQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
       ]);
-      initializeMember();
-      router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
@@ -235,7 +225,6 @@ export const useLeaveLeague = () => {
 export const useDeleteLeague = () => {
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');
-  const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
     mutationFn: async ({
       leagueId,
@@ -251,25 +240,16 @@ export const useDeleteLeague = () => {
       return leagueApi.deleteLeague(leagueId);
     },
     onSuccess: async (_result, { leagueId }) => {
+      router.replace('/(app)/(public)/myLeagues');
+      useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.detail(leagueId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.members(leagueId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.leaderboard(leagueId),
-        }),
+        queryClient.removeQueries({ queryKey: KEYS.leagues.detail(leagueId) }),
+        queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
+        queryClient.removeQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
       ]);
-      await initializeMember();
-      router.replace('/(app)/(public)/myLeagues');
     },
     onError: (error) => {
       Alert.alert('Error', error.message);

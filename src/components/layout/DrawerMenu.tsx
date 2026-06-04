@@ -1,6 +1,6 @@
+import { LeagueIcon, MatchesIcon, MenuIcon, ProfileIcon, RankIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LeagueIcon, MatchesIcon, MenuIcon, ProfileIcon, RankIcon } from '@assets/icons';
 import { Link, RelativePathString } from 'expo-router';
 import React from 'react';
 import { Modal, Platform, Pressable, TouchableOpacity, View } from 'react-native';
@@ -72,7 +72,7 @@ export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
               {DRAWER_ROUTES.map((route) => {
                 const IconComponent = route.icon;
                 return (
-                  <Link key={route.route} href={route.route as RelativePathString} asChild>
+                  <Link key={route.route} href={route.route as RelativePathString} asChild prefetch onPress={onClose}>
                     <TouchableOpacity
                       className="flex-row items-center gap-4 px-4 py-3 hover:bg-border"
                       onPress={onClose}

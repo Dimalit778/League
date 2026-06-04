@@ -1,4 +1,5 @@
 export { Screen } from '../layout/Screen';
+export { AlertDialog } from './AlertDialog';
 export { AvatarImage } from './AvatarImage';
 export { BackButton } from './BackButton';
 export { Button } from './Button';
@@ -8,5 +9,5 @@ export { CText } from './CText';
 export { Icon } from './Icon';
 export { InputField } from './InputField';
 export { MyImage } from './MyImage';
+export { UpgardeBadge } from './UpgardeBadge';
 
-export { AlertDialog } from './AlertDialog';

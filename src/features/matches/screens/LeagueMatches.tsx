@@ -1,5 +1,5 @@
 import { Error, Screen } from '@/components/layout';
-import { useGetCompetitionMatchMeta } from '@/features/leagues/hooks/useCompetition';
+import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import FixturesList from '@/features/matches/components/matches/FixturesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
@@ -18,7 +18,7 @@ type LeagueMatchesViewProps = {
 };
 
 export default function LeagueMatches({ competitionId, memberId, stage, withScreen = true }: LeagueMatchesViewProps) {
-  const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionMatchMeta();
+  const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
 

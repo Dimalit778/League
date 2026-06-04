@@ -1,0 +1,71 @@
+<h2>Screen Transitions</h2>
+<p class="subtitle">Currently no transitions are configured — expo-router uses its default. Here's what we'd set per screen type.</p>
+
+<div style="margin-top:20px;display:flex;flex-direction:column;gap:16px">
+
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <p class="label" style="margin-bottom:10px">DETAIL SCREENS — match, member profile, edit-league</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#fb923c;font-size:13px;font-weight:600;margin:0 0 4px">iOS</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>slide_from_right</code></p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">Swipe back from left edge to dismiss. Standard push navigation — same as Settings.app, Mail, etc.</p>
+      </div>
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#4285F4;font-size:13px;font-weight:600;margin:0 0 4px">Android</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>slide_from_right</code></p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">Predictive back gesture support. Material 3 uses right-to-left push for navigation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <p class="label" style="margin-bottom:10px">OVERLAY SCREENS — Settings, My Leagues (picker/config UI)</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#fb923c;font-size:13px;font-weight:600;margin:0 0 4px">iOS</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>presentation: modal</code></p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">Slides up from bottom. Swipe down to dismiss. Feels like a sheet — same as iOS Share Sheet, App Store product pages.</p>
+      </div>
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#4285F4;font-size:13px;font-weight:600;margin:0 0 4px">Android</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>slide_from_bottom</code></p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">Slides up from bottom. Standard for secondary/overlay flows in Material 3.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <p class="label" style="margin-bottom:10px">AUTH SCREENS — sign in, sign up, verify, reset</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#fb923c;font-size:13px;font-weight:600;margin:0 0 4px">iOS</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>fade</code> within flow, <code>slide_from_right</code> for steps</p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">No swipe-back between auth steps. Steps inside auth flow slide right (sign in → verify email).</p>
+      </div>
+      <div style="background:#0f172a;border-radius:8px;padding:12px">
+        <p style="color:#4285F4;font-size:13px;font-weight:600;margin:0 0 4px">Android</p>
+        <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>fade</code> within flow, <code>slide_from_right</code> for steps</p>
+        <p style="color:#94a3b8;font-size:12px;margin:0">Same pattern. No history-based gestures within auth.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <p class="label" style="margin-bottom:10px">TAB ROOT SCREEN — (tabs)</p>
+    <div style="background:#0f172a;border-radius:8px;padding:12px">
+      <p style="color:#f1f5f9;font-size:13px;margin:0 0 4px"><code>animation: none</code> on both platforms</p>
+      <p style="color:#94a3b8;font-size:12px;margin:0">The tab bar handles its own switching. The stack entry for the tab root should never animate.</p>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:16px;padding:14px;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);border-radius:8px">
+  <p style="font-size:13px;color:#fb923c;font-weight:600;margin:0 0 4px">Files to change</p>
+  <p style="font-size:12px;color:#94a3b8;margin:0;line-height:1.8">
+    • <code>(member)/_layout.tsx</code> — push for match/member/edit-league, none for tabs<br>
+    • <code>(public)/_layout.tsx</code> — modal for settings + myLeagues<br>
+    • <code>(auth)/_layout.tsx</code> — fade for landing, slide for steps
+  </p>
+</div>

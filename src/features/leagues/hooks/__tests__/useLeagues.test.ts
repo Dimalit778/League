@@ -8,10 +8,17 @@ jest.mock('@/store/AuthStore', () => ({
 }));
 
 jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: (selector: any) =>
-    selector({
-      initializeMember: jest.fn(),
-    }),
+  useMemberStore: Object.assign(
+    (selector: any) =>
+      selector({
+        initializeMember: jest.fn(),
+      }),
+    {
+      getState: () => ({
+        clearMember: jest.fn(),
+      }),
+    },
+  ),
 }));
 
 jest.mock('@/providers/AuthProvider', () => ({
@@ -81,7 +88,7 @@ describe('useLeagues hooks', () => {
       return { mutate: jest.fn(), mutateAsync: jest.fn(), isPending: false } as any;
     });
 
-    const queryClient = { invalidateQueries: jest.fn() };
+    const queryClient = { invalidateQueries: jest.fn(), removeQueries: jest.fn() };
     jest.mocked(useQueryClient).mockReturnValueOnce(queryClient as any);
 
     useDeleteLeague();
@@ -91,9 +98,8 @@ describe('useLeagues hooks', () => {
 
     expect(leagueApi.deleteLeague).toHaveBeenCalledWith('l1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
-    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.members.primary('u1') });
-    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.detail('l1') });
-    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.members('l1') });
-    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
+    expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.detail('l1') });
+    expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.members('l1') });
+    expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
   });
 });

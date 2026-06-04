@@ -2,8 +2,9 @@ import { CText } from '@/components/ui/CText';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
+import { useState } from 'react';
 import { Control, Controller, FieldError } from 'react-hook-form';
-import { Pressable, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 type InputFieldProps = {
   control: Control<any>;
@@ -21,6 +22,8 @@ type InputFieldProps = {
   accessibilityLabel?: string;
   accessibilityHint?: string;
 };
+
+const isIOS = Platform.OS === 'ios';
 
 export const InputField = ({
   control,
@@ -41,6 +44,8 @@ export const InputField = ({
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const { colors } = useThemeTokens();
+  const [isFocused, setIsFocused] = useState(false);
+
   const getAccessibilityLabel = () => {
     if (accessibilityLabel) return accessibilityLabel;
     if (name === 'email') return t('Email address');
@@ -55,9 +60,18 @@ export const InputField = ({
     return t('Enter {{placeholder}}', { placeholder: placeholder.toLowerCase() });
   };
 
+  const containerStyle = [
+    isIOS ? styles.iosContainer : styles.androidContainer,
+    { backgroundColor: isIOS ? colors.background : 'transparent' },
+    {
+      borderWidth: isFocused ? 2 : 1,
+      borderColor: isFocused ? colors.primary : colors.border,
+    },
+  ];
+
   return (
     <View>
-      <View className="bg-surface flex-row items-center border border-text rounded-lg px-2 ">
+      <View style={containerStyle} className="flex-row items-center px-2">
         {icon && (
           <View className={isRTL ? 'ml-2' : 'mr-2'} accessible={false}>
             {icon}
@@ -73,7 +87,11 @@ export const InputField = ({
               secureTextEntry={secureTextEntry}
               className="flex-1 text-text py-4 pl-2"
               style={{ textAlign: isRTL ? 'right' : 'left' }}
-              onBlur={onBlur}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => {
+                onBlur();
+                setIsFocused(false);
+              }}
               onChangeText={(text) => {
                 onChange(text);
                 if (name === 'email' || name === 'password') {
@@ -84,7 +102,7 @@ export const InputField = ({
               maxLength={maxLength}
               autoCorrect={autoCorrect}
               autoCapitalize={autoCapitalize}
-              accessible={true}
+              accessible
               accessibilityRole="text"
               accessibilityLabel={getAccessibilityLabel()}
               accessibilityHint={getAccessibilityHint()}
@@ -96,7 +114,7 @@ export const InputField = ({
           <Pressable
             onPress={onRightIconPress}
             className={isRTL ? 'mr-2 p-1' : 'ml-2 p-1'}
-            accessible={true}
+            accessible
             accessibilityRole="button"
             accessibilityLabel={t('Toggle password visibility')}
           >
@@ -108,7 +126,7 @@ export const InputField = ({
         <CText
           variant="small"
           className="text-error mt-1 text-center"
-          accessible={true}
+          accessible
           accessibilityRole="text"
           accessibilityLiveRegion="assertive"
         >
@@ -118,3 +136,12 @@ export const InputField = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  iosContainer: {
+    borderRadius: 10,
+  },
+  androidContainer: {
+    borderRadius: 8,
+  },
+});

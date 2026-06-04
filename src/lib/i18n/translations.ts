@@ -33,7 +33,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Remove: 'Remove',
       Name: 'Name',
       Email: 'Email',
-      'Email address': 'Email address',
+      'Email address': 'Email address', 
       Password: 'Password',
       Country: 'Country',
       Status: 'Status',
@@ -62,6 +62,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
     // Auth screens
     auth: {
+      'Delete Account': 'Delete Account',
+      'Permanently delete your account and all your data.': 'Permanently delete your account and all your data.',
       'Sign In': 'Sign In',
       'Sign Up': 'Sign Up',
       'Sign Out': 'Sign Out',
@@ -196,6 +198,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete League': 'Delete League',
       'Are you sure you want to delete this league?':
         'This will permanently delete the league, all members, and all predictions. Are you sure?',
+      tooManyLeagues: 'You have reached your league limit. Upgrade to PRO for more leagues.',
+      tooManyMembers: 'Too many members for your plan. Upgrade to PRO for more members.',
+      proRequired: 'This competition requires a PRO subscription.',
     },
 
     // Matches and Predictions
@@ -294,6 +299,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete League': 'Delete League',
       'Are you sure you want to delete this league?':
         'This will permanently delete the league, all members, and all predictions. Are you sure?',
+   
     },
 
     // Help & Support
@@ -793,6 +799,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Joined On': 'הצטרפות בתאריך',
       Created: 'נוצר',
       'Created at': 'נוצר בתאריך',
+      tooManyLeagues: 'הגעת למגבלת הליגות שלך. שדרג ל-PRO לליגות נוספות.',
+      tooManyMembers: 'יותר מדי חברים עבור התוכנית שלך. שדרג ל-PRO לחברים נוספים.',
+      proRequired: 'תחרות זו דורשת מנוי PRO.',
     },
 
     // Matches and Predictions
@@ -881,6 +890,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'מידע פרופיל: פרטים שאתה מספק כגון השם שלך, פרטי יצירת קשר, קבוצות מועדפות ותמונת פרופיל.',
       Theme: 'ערכת עיצוב',
       Language: 'שפה',
+      'Delete Account': 'מחיקת חשבון',
+      'Permanently delete your account and all your data.': 'מחיקת חשבון וכל הנתונים שלך.',
     },
 
     // Help & Support

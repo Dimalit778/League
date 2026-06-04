@@ -1,4 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
+import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
+import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,6 +10,7 @@ import Purchases, { CustomerInfo } from 'react-native-purchases';
 type PurchasesContextValue = {
   isReady: boolean;
   isUserSynced: boolean;
+  isOffline: boolean;
   customerInfo: CustomerInfo | null;
   error: Error | null;
   refreshCustomerInfo: () => Promise<CustomerInfo | null>;
@@ -21,7 +24,7 @@ const getRevenueCatApiKey = (): string | null => {
   }
 
   if (Platform.OS === 'android') {
-    return process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
+    return process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
   }
 
   return null;
@@ -45,6 +48,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
   const [isReady, setIsReady] = useState(false);
   const [isUserSynced, setIsUserSynced] = useState(Platform.OS === 'web');
+  const [isOffline, setIsOffline] = useState(false);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -77,6 +81,17 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     [setIsSubscribed, userId],
   );
 
+  const handleNetworkFailure = useCallback(() => {
+    setIsOffline(true);
+    setError(null);
+    setIsReady(true);
+    markUserSynced(true);
+
+    if (customerInfoRef.current) {
+      setIsSubscribed(!!userId && hasActiveEntitlement(customerInfoRef.current));
+    }
+  }, [markUserSynced, setIsSubscribed, userId]);
+
   const refreshCustomerInfo = useCallback(async (): Promise<CustomerInfo | null> => {
     if (!isConfiguredRef.current || Platform.OS === 'web') {
       return null;
@@ -84,15 +99,21 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
     try {
       const nextCustomerInfo = await Purchases.getCustomerInfo();
+      setIsOffline(false);
       applyCustomerInfo(nextCustomerInfo);
       setError(null);
       return nextCustomerInfo;
     } catch (refreshError) {
+      if (isRevenueCatNetworkError(refreshError)) {
+        handleNetworkFailure();
+        return customerInfoRef.current;
+      }
+
       const nextError = refreshError instanceof Error ? refreshError : new Error(String(refreshError));
       setError(nextError);
       return null;
     }
-  }, [applyCustomerInfo]);
+  }, [applyCustomerInfo, handleNetworkFailure]);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,21 +133,40 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
       }
 
       try {
+        configureRevenueCatLogging();
+
         const isConfigured = await Purchases.isConfigured();
         if (!isConfigured) {
           Purchases.configure({ apiKey });
         }
 
         isConfiguredRef.current = true;
-        const initialCustomerInfo = await Purchases.getCustomerInfo();
 
-        if (!cancelled) {
-          applyCustomerInfo(initialCustomerInfo);
-          setError(null);
-          setIsReady(true);
+        try {
+          const initialCustomerInfo = await Purchases.getCustomerInfo();
+
+          if (!cancelled) {
+            setIsOffline(false);
+            applyCustomerInfo(initialCustomerInfo);
+            markUserSynced(true);
+            setError(null);
+            setIsReady(true);
+          }
+        } catch (customerInfoError) {
+          if (!cancelled && isRevenueCatNetworkError(customerInfoError)) {
+            handleNetworkFailure();
+            return;
+          }
+
+          throw customerInfoError;
         }
       } catch (configureError) {
         if (!cancelled) {
+          if (isRevenueCatNetworkError(configureError) && isConfiguredRef.current) {
+            handleNetworkFailure();
+            return;
+          }
+
           const nextError = configureError instanceof Error ? configureError : new Error(String(configureError));
           setError(nextError);
           setIsReady(false);
@@ -139,7 +179,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     return () => {
       cancelled = true;
     };
-  }, [applyCustomerInfo, markUserSynced]);
+  }, [applyCustomerInfo, handleNetworkFailure, markUserSynced]);
 
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
@@ -163,12 +203,19 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           }
         } else {
           const currentCustomerInfo = customerInfoRef.current ?? (await Purchases.getCustomerInfo());
-          nextCustomerInfo = isAnonymousRevenueCatUser(currentCustomerInfo)
-            ? currentCustomerInfo
-            : await Purchases.logOut();
+          if (isAnonymousRevenueCatUser(currentCustomerInfo)) {
+            nextCustomerInfo = currentCustomerInfo;
+          } else {
+            try {
+              nextCustomerInfo = await Purchases.logOut();
+            } catch {
+              nextCustomerInfo = null;
+            }
+          }
         }
 
         if (!cancelled) {
+          setIsOffline(false);
           markUserSynced(true);
           applyCustomerInfo(nextCustomerInfo);
           setError(null);
@@ -179,6 +226,11 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
         }
       } catch (syncError) {
         if (!cancelled) {
+          if (isRevenueCatNetworkError(syncError)) {
+            handleNetworkFailure();
+            return;
+          }
+
           markUserSynced(false);
           const nextError = syncError instanceof Error ? syncError : new Error(String(syncError));
           setError(nextError);
@@ -191,7 +243,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     return () => {
       cancelled = true;
     };
-  }, [applyCustomerInfo, isReady, markUserSynced, queryClient, userId]);
+  }, [applyCustomerInfo, handleNetworkFailure, isReady, markUserSynced, queryClient, userId]);
 
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
@@ -215,11 +267,12 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     () => ({
       isReady,
       isUserSynced,
+      isOffline,
       customerInfo,
       error,
       refreshCustomerInfo,
     }),
-    [customerInfo, error, isReady, isUserSynced, refreshCustomerInfo],
+    [customerInfo, error, isOffline, isReady, isUserSynced, refreshCustomerInfo],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;

@@ -20,15 +20,10 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   }),
 }));
 
-jest.mock('@/features/subscription/components/UpgradeSubscriptionOverlay', () => ({
-  UpgradeSubscriptionOverlay: () => null,
-}));
-
-jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useSubscription: () => ({ data: { type: 'FREE', limits: { maxMembersPerLeague: [6] } } }),
-  useCanCreateLeague: () => ({ data: { canCreate: true }, isLoading: false }),
-  usePurchaseAndSyncSubscription: () => ({
-    mutateAsync: mockOpenPaywall,
+jest.mock('@/lib/revenuecat/purchases', () => ({
+  usePaywall: () => mockOpenPaywall,
+  useRevenueCatSubscription: () => ({
+    subscription: { isActive: false },
   }),
 }));
 

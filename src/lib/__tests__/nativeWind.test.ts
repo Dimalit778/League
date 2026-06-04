@@ -62,11 +62,9 @@ describe('themeTokens', () => {
     expect(themeTokens.light.colors.background).not.toBe(themeTokens.dark.colors.background);
   });
 
-  it('both themes have font definitions', () => {
-    expect(themeTokens.light.fonts).toHaveProperty('nunito');
-    expect(themeTokens.light.fonts).toHaveProperty('nunitoBold');
-    expect(themeTokens.dark.fonts).toHaveProperty('nunito');
-    expect(themeTokens.dark.fonts).toHaveProperty('nunitoBold');
+  it('both themes have color definitions', () => {
+    expect(themeTokens.light.colors).toHaveProperty('primary');
+    expect(themeTokens.dark.colors).toHaveProperty('primary');
   });
 });
 

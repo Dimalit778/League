@@ -1,0 +1,72 @@
+<h2>iOS Button & Dialog — Before vs After</h2>
+<p class="subtitle">The two fixes applied: button corner radius 9999→14, dialog background using real iOS system colors.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:24px">
+
+  <!-- BUTTONS -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:14px">BUTTON</p>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <p style="font-size:11px;color:#ef4444;margin:0 0 8px;text-align:center">❌ Before — borderRadius 9999 (full capsule)</p>
+        <div style="background:#1e293b;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="background:#fb923c;border-radius:9999px;padding:14px;text-align:center;color:white;font-size:15px;font-weight:600">Sign In</div>
+          <div style="border:1.5px solid rgba(241,245,249,0.5);border-radius:9999px;padding:14px;text-align:center;color:#f1f5f9;font-size:15px;font-weight:600">Create Account</div>
+          <div style="background:#ef4444;border-radius:9999px;padding:12px;text-align:center;color:white;font-size:14px;font-weight:600">Delete</div>
+        </div>
+      </div>
+
+      <div>
+        <p style="font-size:11px;color:#4ade80;margin:0 0 8px;text-align:center">✓ After — borderRadius 14 (iOS standard)</p>
+        <div style="background:#1e293b;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="background:#fb923c;border-radius:14px;padding:14px;text-align:center;color:white;font-size:15px;font-weight:600">Sign In</div>
+          <div style="border:1.5px solid rgba(241,245,249,0.5);border-radius:14px;padding:14px;text-align:center;color:#f1f5f9;font-size:15px;font-weight:600">Create Account</div>
+          <div style="background:#ef4444;border-radius:14px;padding:12px;text-align:center;color:white;font-size:14px;font-weight:600">Delete</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIALOGS -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:14px">DIALOG (dark mode)</p>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <p style="font-size:11px;color:#ef4444;margin:0 0 8px;text-align:center">❌ Before — colors.surface (#1e293b)</p>
+        <div style="background:#1e293b;border-radius:14px;overflow:hidden;width:220px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+          <div style="padding:18px 16px 12px;text-align:center">
+            <div style="color:#f1f5f9;font-size:15px;font-weight:700;margin-bottom:5px">Delete League</div>
+            <div style="color:#94a3b8;font-size:12px;line-height:1.5">This cannot be undone. All members will lose access.</div>
+          </div>
+          <div style="border-top:0.5px solid #334155;display:flex;min-height:44px">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#f1f5f9;font-size:15px">Cancel</div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#f87171;font-weight:600;font-size:15px;border-left:0.5px solid #334155">Delete</div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;text-align:center">Blue-gray tint — looks custom, not system</p>
+      </div>
+
+      <div>
+        <p style="font-size:11px;color:#4ade80;margin:0 0 8px;text-align:center">✓ After — iOS #2c2c2e, system red/white</p>
+        <div style="background:#2c2c2e;border-radius:14px;overflow:hidden;width:220px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,0.5)">
+          <div style="padding:18px 16px 12px;text-align:center">
+            <div style="color:#ffffff;font-size:15px;font-weight:700;margin-bottom:5px">Delete League</div>
+            <div style="color:rgba(235,235,245,0.6);font-size:12px;line-height:1.5">This cannot be undone. All members will lose access.</div>
+          </div>
+          <div style="border-top:0.5px solid rgba(84,84,88,0.65);display:flex;min-height:44px">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:15px">Cancel</div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#ff453a;font-weight:600;font-size:15px;border-left:0.5px solid rgba(84,84,88,0.65)">Delete</div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;text-align:center">UIKit secondarySystemBackground — identical to native alerts</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:24px;padding:14px 16px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:8px;font-size:12px;color:#94a3b8">
+  <strong style="color:#4ade80">Both changes are already applied to the code.</strong> Run <code>npm run ios</code> to see them live.
+</div>

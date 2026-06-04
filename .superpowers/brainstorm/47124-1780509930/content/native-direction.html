@@ -1,0 +1,29 @@
+<h2>What does "native" mean to you?</h2>
+<p class="subtitle">The app currently uses custom fonts (Nunito/Teko), a fully custom tab bar, and app-specific colors. "Native" can mean different things — pick the direction that resonates most.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>System fonts + platform conventions</h3>
+      <p>Switch to SF Pro on iOS and Roboto on Android. Use native-style navigation bars, large titles, proper bottom tabs. The app feels like it was built with Apple/Google's HIG in mind.</p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.6;">Highest impact on "feel". Most changes are in typography and nav chrome.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Keep custom fonts, improve native patterns</h3>
+      <p>Keep the Nunito font personality but fix the things that feel off: better shadows, proper safe areas, haptic feedback, platform-specific button shapes, native alerts/action sheets.</p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.6;">Preserves brand identity. Targets subtle UX issues that break the native illusion.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Platform-split design (iOS looks iOS, Android looks Android)</h3>
+      <p>Explicit platform branching: iOS gets large titles, sheet modals, SF Symbols-style icons, spring animations. Android gets Material 3 design, ripple effects, FAB patterns, Roboto.</p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.6;">Most "native" result, but more code to maintain. Each platform feels fully at home.</p>
+    </div>
+  </div>
+</div>

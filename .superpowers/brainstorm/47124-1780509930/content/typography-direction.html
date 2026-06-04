@@ -1,0 +1,46 @@
+<h2>Typography: How far native?</h2>
+<p class="subtitle">Currently the app uses Nunito (body) and Teko (display/scores). System fonts are SF Pro on iOS and Roboto on Android — both are already on-device, no download needed.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Full system font — replace everything</h3>
+      <p>Nunito and Teko are removed. All text uses the platform system font (SF Pro / Roboto). The <code>CText</code> component switches to <code>fontFamily: undefined</code> per platform.</p>
+      <div style="margin-top:12px;background:#1e293b;border-radius:8px;padding:14px 16px">
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#f1f5f9;font-size:28px;font-weight:700;margin-bottom:4px">Home</div>
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#94a3b8;font-size:14px;margin-bottom:8px">Matchday 24 · Premier League</div>
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#f1f5f9;font-size:17px;font-weight:600">Arsenal  <span style="color:#fb923c">2 – 1</span>  Chelsea</div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin-top:8px">Most native feel. App loses its current font personality entirely.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>System font for body, keep Teko for scores/numbers</h3>
+      <p>Nunito is replaced with the system font for all UI text. Teko stays for big numbers — match scores, stat values — where its condensed style adds visual punch.</p>
+      <div style="margin-top:12px;background:#1e293b;border-radius:8px;padding:14px 16px">
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#f1f5f9;font-size:28px;font-weight:700;margin-bottom:4px">Home</div>
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#94a3b8;font-size:14px;margin-bottom:8px">Matchday 24 · Premier League</div>
+        <div style="font-family:'Arial Narrow',sans-serif;color:#f1f5f9;font-size:22px;font-weight:700;letter-spacing:1px">Arsenal  <span style="color:#fb923c">2 – 1</span>  Chelsea</div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin-top:8px">Best of both — native UI feel, distinctive score display. Recommended.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>System font for body, drop Teko too</h3>
+      <p>Same as B but scores/numbers also use system font (SF Pro Mono / Roboto Mono or just system bold). Simpler — one less font to manage.</p>
+      <div style="margin-top:12px;background:#1e293b;border-radius:8px;padding:14px 16px">
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#f1f5f9;font-size:28px;font-weight:700;margin-bottom:4px">Home</div>
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#94a3b8;font-size:14px;margin-bottom:8px">Matchday 24 · Premier League</div>
+        <div style="font-family:-apple-system,Roboto,sans-serif;color:#f1f5f9;font-size:20px;font-weight:700">Arsenal  <span style="color:#fb923c">2–1</span>  Chelsea</div>
+      </div>
+      <p style="font-size:12px;color:#94a3b8;margin-top:8px">Cleanest solution. Scores look less "scoreboard-y" but fully native.</p>
+    </div>
+  </div>
+</div>

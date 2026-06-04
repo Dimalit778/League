@@ -8,17 +8,17 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
+        contentStyle: { backgroundColor: colors.background },
+        animation: 'slide_from_right',
+        gestureEnabled: false,
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="signIn" options={{ headerShown: false }} />
-      <Stack.Screen name="signUp" options={{ headerShown: false }} />
-      <Stack.Screen name="verifyEmail" options={{ headerShown: false }} />
-      <Stack.Screen name="resetPassword" options={{ headerShown: false }} />
-      <Stack.Screen name="sendResetLink" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ animation: 'none' }} />
+      <Stack.Screen name="signIn" />
+      <Stack.Screen name="signUp" />
+      <Stack.Screen name="verifyEmail" />
+      <Stack.Screen name="resetPassword" />
+      <Stack.Screen name="sendResetLink" />
     </Stack>
   );
 }

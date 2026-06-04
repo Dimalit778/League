@@ -1,0 +1,86 @@
+<h2>Buttons & Inputs: Current vs Native</h2>
+<p class="subtitle">Current: same pill shape + TouchableOpacity on both platforms, no ripple, no focus states. Native splits by platform.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px">
+
+  <!-- CURRENT -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:12px">CURRENT (both)</p>
+    <div style="background:#1e293b;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fb923c;border-radius:17px;padding:14px;text-align:center;color:white;font-weight:600;font-size:15px">Sign In</div>
+      <div style="background:transparent;border:1px solid #f1f5f9;border-radius:17px;padding:14px;text-align:center;color:#f1f5f9;font-weight:600;font-size:15px">Create Account</div>
+      <div style="background:#1e293b;border:1px solid #f1f5f9;border-radius:8px;padding:14px 12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">✉️</span>
+        <span style="color:#64748b;font-size:15px">Email address</span>
+      </div>
+      <div style="background:#1e293b;border:1px solid #f1f5f9;border-radius:8px;padding:14px 12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">🔒</span>
+        <span style="color:#64748b;font-size:15px">Password</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#ef4444;margin-top:8px;text-align:center">Same on iOS & Android<br>TouchableOpacity, no ripple, no focus</p>
+  </div>
+
+  <!-- iOS NATIVE -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:12px">iOS TARGET</p>
+    <div style="background:#1e293b;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <!-- iOS: fully rounded pill, solid fill, 50pt height -->
+      <div style="background:#fb923c;border-radius:100px;padding:15px;text-align:center;color:white;font-weight:600;font-size:16px">Sign In</div>
+      <!-- iOS: outline pill -->
+      <div style="background:transparent;border:1.5px solid #fb923c;border-radius:100px;padding:14px;text-align:center;color:#fb923c;font-weight:600;font-size:16px">Create Account</div>
+      <!-- iOS input: filled bg, no border, rounded-xl -->
+      <div style="background:#0f172a;border-radius:10px;padding:14px 12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px;opacity:0.5">✉️</span>
+        <span style="color:#64748b;font-size:15px">Email address</span>
+      </div>
+      <!-- iOS input focused: subtle tint border -->
+      <div style="background:#0f172a;border-radius:10px;padding:14px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 0 0 2px rgba(251,146,60,0.4)">
+        <span style="font-size:16px;opacity:0.5">🔒</span>
+        <span style="color:#64748b;font-size:15px">Password</span>
+        <span style="color:#fb923c;font-size:13px;margin-left:auto">focused ↑</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#4ade80;margin-top:8px;text-align:center">Full pill, haptic on press<br>Filled input bg, focus ring on active</p>
+  </div>
+
+  <!-- ANDROID NATIVE -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:12px">ANDROID TARGET</p>
+    <div style="background:#1e293b;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <!-- Android: Material 3 filled button, moderate corner radius -->
+      <div style="background:#fb923c;border-radius:12px;padding:13px;text-align:center;color:white;font-weight:600;font-size:15px;letter-spacing:0.3px">SIGN IN</div>
+      <!-- Android: outlined button -->
+      <div style="background:transparent;border:1.5px solid #fb923c;border-radius:12px;padding:12px;text-align:center;color:#fb923c;font-weight:600;font-size:15px;letter-spacing:0.3px">CREATE ACCOUNT</div>
+      <!-- Android input: outlined style, rounded -->
+      <div style="border:1px solid #334155;border-radius:8px;padding:14px 12px;display:flex;align-items:center;gap:8px;position:relative">
+        <span style="font-size:16px;opacity:0.5">✉️</span>
+        <span style="color:#64748b;font-size:15px">Email address</span>
+      </div>
+      <!-- Android input focused: colored border all around -->
+      <div style="border:2px solid #fb923c;border-radius:8px;padding:13px 12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px;opacity:0.5">🔒</span>
+        <span style="color:#64748b;font-size:15px">Password</span>
+        <span style="color:#fb923c;font-size:13px;margin-left:auto">focused ↑</span>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#4ade80;margin-top:8px;text-align:center">Moderate corners, ripple on press<br>Outlined input, colored border on focus</p>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;padding:14px;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);border-radius:8px">
+  <p style="font-size:13px;color:#fb923c;font-weight:600;margin:0 0 6px">Changes summary</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#94a3b8">
+    <div><strong style="color:#f1f5f9">Button</strong><br>
+      iOS: rounded-full, Pressable + haptic<br>
+      Android: rounded-xl, Pressable + ripple<br>
+      Both: drop TouchableOpacity
+    </div>
+    <div><strong style="color:#f1f5f9">InputField</strong><br>
+      iOS: darker bg, no border, focus ring (outline shadow)<br>
+      Android: border on all sides, 2px primary color on focus<br>
+      Both: animated focus state via onFocus/onBlur
+    </div>
+  </div>
+</div>

@@ -2,8 +2,8 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
-import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useAuthStore } from '@/store/AuthStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
@@ -14,7 +14,7 @@ const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
   const fullName = formatNameCapitalize(user?.full_name);
 
-  const { data: subscription } = useSubscription();
+  const { subscription } = useRevenueCatSubscription();
 
   const { signOut, isLoading: isLoadingAuth } = useAuthActions();
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ const SettingsScreen = () => {
         <View className=" mt-12">
           <SettingsContent
             created_at={user?.created_at}
-            subscriptionType={subscription.type}
+            subscriptionType={subscription.isActive ? 'PRO' : 'FREE'}
             email={user?.email}
           />
         </View>
@@ -82,15 +82,13 @@ const SettingsScreen = () => {
         </Pressable>
 
         <View className="mt-8">
-          <CText className="mb-3 text-xs font-bold tracking-widest text-red-400">DANGER ZONE</CText>
-
           <Pressable
             onPress={handleDeleteAccountPress}
-            className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4"
+            className="items-center rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4"
           >
-            <CText className="text-red-400 font-bold text-base">Delete Account</CText>
+            <CText className="text-red-400 font-bold text-base">{t('Delete Account')}</CText>
 
-            <CText className="mt-1 text-muted text-sm">Permanently delete your account and personal data.</CText>
+            <CText className="mt-1 text-muted text-sm">{t('Permanently delete your account and all your data.')}</CText>
           </Pressable>
         </View>
       </ScrollView>

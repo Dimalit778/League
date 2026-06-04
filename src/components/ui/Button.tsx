@@ -1,6 +1,7 @@
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
-import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { ActivityIndicator, Platform, Pressable } from 'react-native';
 import { CText } from './CText';
 
 interface ButtonProps {
@@ -16,6 +17,18 @@ interface ButtonProps {
   accessibilityHint?: string;
 }
 
+const isIOS = Platform.OS === 'ios';
+
+const BORDER_RADIUS = isIOS ? 12 : 10;
+
+const RIPPLE_COLORS: Record<NonNullable<ButtonProps['variant']>, string> = {
+  primary: 'rgba(0,0,0,0.18)',
+  secondary: 'rgba(0,0,0,0.18)',
+  error: 'rgba(0,0,0,0.18)',
+  border: 'rgba(0,0,0,0.18)',
+  outline: 'rgba(255,255,255,0.12)',
+};
+
 export const Button = ({
   title,
   onPress,
@@ -30,9 +43,9 @@ export const Button = ({
   const { t } = useTranslation();
 
   const handlePress = () => {
-    if (!loading && !disabled) {
-      onPress();
-    }
+    if (loading || disabled) return;
+    if (isIOS) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
   };
 
   const label = accessibilityLabel || title;
@@ -73,18 +86,21 @@ export const Button = ({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       testID="button"
       className={cn(
-        'rounded-[17px] items-center justify-center flex-row',
+        'items-center justify-center flex-row overflow-hidden',
         sizeClasses[size],
         variantClasses[variant],
         (disabled || loading) && 'opacity-50',
-        className
+        isIOS && 'active:opacity-50',
+        className,
       )}
+      style={{ borderRadius: BORDER_RADIUS }}
       onPress={handlePress}
-      activeOpacity={0.8}
-      accessible={true}
+      disabled={disabled || loading}
+      android_ripple={!isIOS ? { color: RIPPLE_COLORS[variant], borderless: false } : undefined}
+      accessible
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={hint}
@@ -93,10 +109,14 @@ export const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <CText variant="body" className={cn(textSizeClasses[size], textVariantClasses[variant])}>
+        <CText
+          variant="body"
+          className={cn(textSizeClasses[size], textVariantClasses[variant])}
+          style={!isIOS ? { textTransform: 'uppercase', letterSpacing: 0.5 } : undefined}
+        >
           {title}
         </CText>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };

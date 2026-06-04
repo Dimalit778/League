@@ -8,7 +8,5 @@ export const useThemeTokens = () => {
   return {
     theme,
     colors: tokens.colors,
-    fonts: tokens.fonts,
-
   } as const;
 };

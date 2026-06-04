@@ -1,13 +1,10 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
-import {
-  usePurchaseAndSyncSubscription,
-  useSubscription,
-  useSubscriptionLimit,
-} from '@/features/subscription/hooks/useSubscription';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
+import { usePaywall } from '@/lib/revenuecat/purchases';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,28 +14,134 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { leagueApi } from '../api/leagueApi';
 import MyLeagueCard from '../components/MyLeagueCard';
 import { useMyLeagues, useUpdatePrimaryLeague } from '../hooks/useLeagues';
+import { MyLeagueType } from '../types';
+
+// --- Sub-components ---
+
+type LeagueActionsHeaderProps = {
+  reachedLimit: boolean;
+  isPro: boolean;
+  onUpgrade: () => void;
+};
+
+function LeagueActionsHeader({ reachedLimit, isPro, onUpgrade }: LeagueActionsHeaderProps) {
+  const { t } = useTranslation();
+
+  if (reachedLimit && !isPro) {
+    return (
+      <Pressable onPress={onUpgrade} className="bg-yellow-500 py-2 m-4 rounded-md">
+        <CText variant="caption" bold className="text-black text-center">
+          {t('Max leagues reached. Upgrade to continue.')}
+        </CText>
+      </Pressable>
+    );
+  }
+
+  return (
+    <View className="flex-row justify-between px-2">
+      <Button
+        title={t('Create League')}
+        variant="outline"
+        size="md"
+        onPress={() => router.navigate('/myLeagues/select-competition')}
+      />
+      <Button
+        title={t('Join League')}
+        variant="outline"
+        size="md"
+        onPress={() => router.navigate('/myLeagues/join-league')}
+      />
+    </View>
+  );
+}
+
+type LeaguesUsageCardProps = {
+  leaguesCount: number;
+  maxLeagues: number;
+  reachedLimit: boolean;
+  usagePercent: number;
+  paddingBottom: number;
+};
+
+function LeaguesUsageCard({
+  leaguesCount,
+  maxLeagues,
+  reachedLimit,
+  usagePercent,
+  paddingBottom,
+}: LeaguesUsageCardProps) {
+  return (
+    <View className="mb-4" style={{ paddingBottom }}>
+      <View className="mt-4 rounded-2xl border border-border bg-surface p-4">
+        <View className="flex-row justify-between items-center mb-2">
+          <CText variant="body" bold>
+            Leagues
+          </CText>
+          <CText variant="body" bold className={reachedLimit ? 'text-yellow-500 font-bold' : 'text-muted'}>
+            {leaguesCount}/{maxLeagues}
+          </CText>
+        </View>
+        <View className="h-2 bg-border rounded-full overflow-hidden">
+          <View
+            style={{ width: `${usagePercent}%` }}
+            className={`h-full ${reachedLimit ? 'bg-yellow-500' : 'bg-secondary'}`}
+          />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+type LeaguesListProps = {
+  leagues: MyLeagueType[];
+  isFetching: boolean;
+  onRefresh: () => void;
+  onSelectLeague: (leagueId: string, isPrimary: boolean) => void;
+};
+
+function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: LeaguesListProps) {
+  return (
+    <ScrollView
+      refreshControl={<RefreshControl refreshing={isFetching} onRefresh={onRefresh} />}
+      showsVerticalScrollIndicator={false}
+      contentContainerClassName="flex-1 gap-3 p-2 mt-4"
+    >
+      {leagues.length === 0 ? (
+        <View className="flex-1 pt-10">
+          <CText className="text-center text-muted font-bold text-lg">Create or join a league to get started</CText>
+        </View>
+      ) : (
+        leagues.map((league) => (
+          <MyLeagueCard
+            key={league.league.id}
+            item={league}
+            onPress={() => onSelectLeague(league.league.id, league.is_primary)}
+          />
+        ))
+      )}
+    </ScrollView>
+  );
+}
+
+// --- Screen ---
 
 const MyLeagues = () => {
   const userId = useAuthStore((s) => s.user?.id);
-  const { leaguesCount, reachedLimit, limit, usagePercent } = useSubscriptionLimit();
-  const { data: subscription } = useSubscription();
-  const isPro = subscription.type === 'PRO';
-
-  const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const { data: leagues, isPending: isLeaguesPending, isFetching: isLeaguesFetching, error, refetch } = useMyLeagues();
+
+  const { data: leagues, isPending, isFetching, error, refetch } = useMyLeagues();
+  const { isPro, leaguesCount, maxLeagues, reachedLimit, usagePercent } = useSubscriptionLimits();
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
-  const { mutateAsync: openPaywall } = usePurchaseAndSyncSubscription();
   const activeMember = useMemberStore((s) => s.activeMember);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
+  const openPaywall = usePaywall();
 
-  const isLeaguesLoading = !!userId && (isLeaguesPending || isLeaguesFetching);
+  const isLoading = !!userId && (isPending || isFetching);
 
-  const handleSetPrimary = async (leagueId: string, isPrimary: boolean) => {
+  const handleSelectLeague = async (leagueId: string, isPrimary: boolean) => {
     const selectedLeague = leagues?.find((l) => l.league.id === leagueId);
-
     if (!selectedLeague) return;
 
     if (!selectedLeague.active) {
@@ -47,7 +150,6 @@ const MyLeagues = () => {
     }
 
     const previousActiveMember = activeMember;
-
     setActiveMember(selectedLeague);
 
     await queryClient.prefetchQuery({
@@ -68,86 +170,32 @@ const MyLeagues = () => {
     }
   };
 
-  const handleUpgrade = async () => {
-    const payload = await openPaywall();
-    if (!payload) return;
-  };
-
-  if (isAuthLoading || isLeaguesLoading) {
+  if (isAuthLoading || isLoading) {
     return (
       <Screen>
         <LoadingOverlay />
       </Screen>
     );
   }
+
   if (error) return <Error error={error as Error} />;
 
   return (
     <Screen>
-      {reachedLimit && !isPro ? (
-        <Pressable onPress={handleUpgrade} className="bg-yellow-500 py-2 m-4 rounded-md ">
-          <CText variant="caption" bold className="text-black text-center">
-            {t('Max leagues reached. Upgrade to continue.')}
-          </CText>
-        </Pressable>
-      ) : (
-        <View className="flex-row justify-between px-2">
-          <Button
-            title={t('Create League')}
-            variant="outline"
-            size="md"
-            onPress={() => router.push('/myLeagues/select-competition')}
-          />
-          <Button
-            title={t('Join League')}
-            variant="outline"
-            size="md"
-            onPress={() => router.push('/myLeagues/join-league')}
-          />
-        </View>
-      )}
-
-      <ScrollView
-        refreshControl={<RefreshControl refreshing={isLeaguesFetching} onRefresh={refetch} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerClassName="flex-1 gap-3 p-2 mt-4"
-      >
-        {leagues?.map((league) => (
-          <MyLeagueCard
-            key={league.league.id}
-            item={league}
-            handleSetPrimary={() => handleSetPrimary(league.league.id, league.is_primary)}
-          />
-        ))}
-        {leagues?.length === 0 && (
-          <View className="flex-1 pt-10">
-            <CText className="text-center text-muted font-nunito-bold text-lg">
-              Create or join a league to get started
-            </CText>
-          </View>
-        )}
-      </ScrollView>
-      <View className="mb-4" style={{ paddingBottom: insets.bottom }}>
-        <View className="mt-4 rounded-2xl border border-border bg-surface p-4">
-          <View className="flex-row justify-between items-center mb-2">
-            <CText variant="body" bold>
-              Leagues
-            </CText>
-
-            <CText variant="body" bold className={reachedLimit ? 'text-yellow-500 font-bold' : 'text-muted'}>
-              {leaguesCount}/{limit}
-            </CText>
-          </View>
-
-          {/* Progress bar */}
-          <View className="h-2 bg-border rounded-full overflow-hidden">
-            <View
-              style={{ width: `${usagePercent}%` }}
-              className={`h-full ${reachedLimit ? 'bg-yellow-500' : 'bg-secondary'}`}
-            />
-          </View>
-        </View>
-      </View>
+      <LeagueActionsHeader reachedLimit={reachedLimit} isPro={isPro} onUpgrade={openPaywall} />
+      <LeaguesList
+        leagues={leagues ?? []}
+        isFetching={isFetching}
+        onRefresh={refetch}
+        onSelectLeague={handleSelectLeague}
+      />
+      <LeaguesUsageCard
+        leaguesCount={leaguesCount}
+        maxLeagues={maxLeagues}
+        reachedLimit={reachedLimit}
+        usagePercent={usagePercent}
+        paddingBottom={insets.bottom}
+      />
     </Screen>
   );
 };

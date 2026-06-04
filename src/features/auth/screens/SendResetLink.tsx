@@ -44,10 +44,10 @@ const SendResetLink = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View className="items-center py-16">
-          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
             Reset Password
           </CText>
-          <CText className="text-muted font-nunito-bold text-center mt-2">
+          <CText className="text-muted font-bold text-center mt-2">
             Enter your email address and we'll send you a reset link
           </CText>
         </View>

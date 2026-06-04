@@ -42,10 +42,10 @@ const ResetPasswordScreen = () => {
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
             New Password
           </CText>
-          <CText className="text-muted font-nunito-bold text-center mt-2">Enter your new password</CText>
+          <CText className="text-muted font-bold text-center mt-2">Enter your new password</CText>
         </View>
 
         <View className="px-5 gap-4">

@@ -22,8 +22,8 @@ export default function LandingScreen() {
       />
 
       <View className="flex-1 justify-center mt-10">
-        <Text className="text-center text-black text-7xl font-nunito-black leading-tight">League</Text>
-        <Text className="text-center  text-black text-7xl font-nunito-black leading-tight">Champion</Text>
+        <Text className="text-center text-black text-7xl font-black leading-tight">League</Text>
+        <Text className="text-center  text-black text-7xl font-black leading-tight">Champion</Text>
         <CText variant="body" className="text-center text-stone-800">
           Predict. Compete. Win.
         </CText>
@@ -32,7 +32,7 @@ export default function LandingScreen() {
       <View className="flex-1 justify-end px-5 pb-16">
         <Link href="/(auth)/signIn" asChild>
           <Pressable className="bg-blue-500/80 p-4 rounded-full">
-            <CText className="text-white text-center text-2xl font-nunito-bold">Get Started</CText>
+            <CText className="text-white text-center text-2xl font-bold">Get Started</CText>
           </Pressable>
         </Link>
       </View>

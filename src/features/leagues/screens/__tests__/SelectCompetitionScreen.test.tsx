@@ -39,9 +39,7 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
 
 jest.mock('@/features/subscription/hooks/useSubscription', () => ({
   useSubscription: () => ({ data: { type: 'FREE' } }),
-  usePurchaseAndSyncSubscription: () => ({
-    mutateAsync: jest.fn().mockResolvedValue(null),
-  }),
+  usePurchaseAndSyncSubscription: () => jest.fn().mockResolvedValue(null),
 }));
 
 describe('SelectCompetitionScreen', () => {

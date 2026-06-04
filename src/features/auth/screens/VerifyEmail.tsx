@@ -130,11 +130,11 @@ const VerifyEmailScreen = () => {
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className="text-secondary font-nunito-black text-center" style={{ fontSize: 42 }}>
+          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
             Verify Email
           </CText>
-          <CText className="text-center text-muted font-nunito-bold mt-2">We've sent a 6-digit code to</CText>
-          <CText className="text-center text-secondary font-nunito-bold mt-1">{email}</CText>
+          <CText className="text-center text-muted font-bold mt-2">We've sent a 6-digit code to</CText>
+          <CText className="text-center text-secondary font-bold mt-1">{email}</CText>
         </View>
 
         <View className="px-5 gap-4">
@@ -150,7 +150,7 @@ const VerifyEmailScreen = () => {
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 keyboardType="number-pad"
                 maxLength={1}
-                className="bg-surface border border-text rounded-lg text-center text-secondary font-nunito-bold"
+                className="bg-surface border border-text rounded-lg text-center text-secondary font-bold"
                 style={{
                   width: 50,
                   height: 60,
@@ -174,7 +174,7 @@ const VerifyEmailScreen = () => {
 
           {successMessage && (
             <View className="">
-              <CText className="text-green-500 text-center font-nunito-bold">Email verified successfully!</CText>
+              <CText className="text-green-500 text-center font-bold">Email verified successfully!</CText>
             </View>
           )}
 

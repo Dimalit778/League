@@ -16,12 +16,9 @@ import {
   useAuth,
 } from '@/providers';
 
-import footballBg from '@assets/images/football-bg.png';
-import { Nunito_400Regular, Nunito_700Bold, Nunito_900Black } from '@expo-google-fonts/nunito';
-import { Teko_400Regular, Teko_700Bold } from '@expo-google-fonts/teko';
+import footballBg from '@/assets/images/football-bg.png';
 import * as Sentry from '@sentry/react-native';
 import { Asset } from 'expo-asset';
-import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -67,20 +64,12 @@ const AppBootstrap = () => {
   const { status: memberStatus } = usePrimaryMember();
   const isMemberSettled = !isLoggedIn || memberStatus === 'success' || memberStatus === 'error';
 
-  const [fontsLoaded] = useFonts({
-    Teko_700Bold,
-    Teko_400Regular,
-    Nunito_400Regular,
-    Nunito_700Bold,
-    Nunito_900Black,
-  });
-
   useEffect(() => {
     navigationIntegration.registerNavigationContainer(ref);
   }, [ref]);
 
   useEffect(() => {
-    if (!fontsLoaded || isAuthLoading || !isMemberSettled) return;
+    if (isAuthLoading || !isMemberSettled) return;
 
     let cancelled = false;
 
@@ -102,7 +91,7 @@ const AppBootstrap = () => {
     return () => {
       cancelled = true;
     };
-  }, [fontsLoaded, isAuthLoading, isMemberSettled]);
+  }, [isAuthLoading, isMemberSettled]);
 
   if (!isReady) {
     return <AppSplashScreen />;

@@ -1,6 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface AlertButton {
   text: string;
@@ -19,158 +19,144 @@ interface AlertDialogProps {
 }
 
 const { width: screenWidth } = Dimensions.get('window');
+const isIOS = Platform.OS === 'ios';
 
-const getIconForType = (type: string) => {
-  switch (type) {
-    case 'error':
-      return '❌';
-    case 'warning':
-      return '⚠️';
-    case 'success':
-      return '✅';
-    case 'info':
-    default:
-      return 'ℹ️';
-  }
+// iOS system alert colors — these are fixed UIKit values, not theme tokens
+const IOS_COLORS = {
+  dark: {
+    bg: '#2c2c2e',
+    title: '#ffffff',
+    message: 'rgba(235,235,245,0.6)',
+    divider: 'rgba(84,84,88,0.65)',
+    blue: '#0a84ff',
+    red: '#ff453a',
+    cancel: '#ffffff',
+  },
+  light: {
+    bg: '#ffffff',
+    title: '#000000',
+    message: 'rgba(60,60,67,0.6)',
+    divider: 'rgba(60,60,67,0.36)',
+    blue: '#007aff',
+    red: '#ff3b30',
+    cancel: '#000000',
+  },
 };
 
 const getColorForType = (type: string, colors: any) => {
   switch (type) {
-    case 'error':
-      return colors.error;
-    case 'warning':
-      return '#f59e0b'; // amber-500
-    case 'success':
-      return colors.success;
+    case 'error': return colors.error;
+    case 'warning': return '#f59e0b';
+    case 'success': return colors.success;
     case 'info':
-    default:
-      return colors.secondary;
+    default: return colors.secondary;
   }
 };
 
 export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPress, onDismiss }: AlertDialogProps) => {
-  const { colors, fonts } = useThemeTokens();
-  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const { colors, theme } = useThemeTokens();
+  const ios = IOS_COLORS[theme];
+  const scaleAnim = useRef(new Animated.Value(isIOS ? 0.93 : 0.95)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       Animated.parallel([
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 8,
-        }),
-        Animated.timing(opacityAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
+        Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }),
+        Animated.timing(opacityAnim, { toValue: 1, duration: 180, useNativeDriver: true }),
       ]).start();
     } else {
-      Animated.parallel([
-        Animated.timing(scaleAnim, {
-          toValue: 0,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacityAnim, {
-          toValue: 0,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      scaleAnim.setValue(isIOS ? 0.93 : 0.95);
+      opacityAnim.setValue(0);
     }
   }, [visible, scaleAnim, opacityAnim]);
 
   const typeColor = getColorForType(type, colors);
-  const icon = getIconForType(type);
 
-  // Handle single button case (just dismiss on backdrop tap)
   const handleBackdropPress = () => {
-    if (buttons.length <= 1) {
-      onDismiss();
-    }
+    if (buttons.length <= 1) onDismiss();
   };
+
+  const getIOSButtonColor = (button: AlertButton, isPrimary: boolean) => {
+    if (button.style === 'destructive') return ios.red;
+    if (button.style === 'cancel') return ios.cancel;
+    if (isPrimary) return ios.blue;
+    return ios.blue;
+  };
+
+  const getAndroidButtonColor = (button: AlertButton, isPrimary: boolean) => {
+    if (button.style === 'destructive') return colors.error;
+    if (button.style === 'cancel') return colors.muted;
+    if (isPrimary) return typeColor;
+    return colors.text;
+  };
+
+  const dialogBg = isIOS ? ios.bg : colors.surface;
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onDismiss}>
       <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
-        <TouchableOpacity style={StyleSheet.absoluteFillObject} activeOpacity={1} onPress={handleBackdropPress} />
+        <Pressable style={StyleSheet.absoluteFillObject} onPress={handleBackdropPress} />
         <Animated.View
           style={[
             styles.dialog,
-            {
-              backgroundColor: colors.background,
-              borderColor: colors.border,
-              transform: [{ scale: scaleAnim }],
-            },
+            isIOS ? styles.iosDialog : styles.androidDialog,
+            { backgroundColor: dialogBg, transform: [{ scale: scaleAnim }] },
           ]}
         >
-          {/* Header with icon */}
-          <View style={styles.header}>
-            <View style={[styles.iconContainer, { backgroundColor: typeColor + '15' }]}>
-              <View style={[styles.iconInner, { backgroundColor: typeColor + '25' }]}>
-                <Text style={[styles.icon, { color: typeColor }]}>{icon}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Content */}
           <View style={styles.content}>
-            <Text style={[styles.title, { color: colors.text, fontFamily: fonts.nunitoBold }]}>{title}</Text>
+            <Text style={[styles.title, { color: isIOS ? ios.title : colors.text }]}>{title}</Text>
             {message && (
-              <Text style={[styles.message, { color: colors.muted, fontFamily: fonts.nunito }]}>{message}</Text>
+              <Text style={[styles.message, { color: isIOS ? ios.message : colors.muted }]}>{message}</Text>
             )}
           </View>
 
-          {/* Buttons */}
-          <View
-            style={[
-              styles.buttonContainer,
-              buttons.length === 1 ? styles.singleButtonContainer : styles.multiButtonContainer,
-            ]}
-          >
-            {buttons.map((button, index) => {
-              const isDestructive = button.style === 'destructive';
-              const isCancel = button.style === 'cancel';
-              const isPrimary = !isCancel && (buttons.length === 1 || index === buttons.length - 1);
-
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.button,
-                    buttons.length === 1 ? styles.singleButton : styles.multiButton,
-                    isCancel && styles.cancelButton,
-                    isPrimary &&
-                      !isCancel && [
-                        styles.primaryButton,
-                        { backgroundColor: isDestructive ? colors.error : typeColor },
-                      ],
-                    isCancel && {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                  onPress={() => onButtonPress(button)}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      { fontFamily: fonts.nunitoBold },
-                      isPrimary && !isCancel && styles.primaryButtonText,
-                      isCancel && { color: colors.text },
+          {isIOS ? (
+            <View style={[styles.iosButtonContainer, { borderTopColor: ios.divider }]}>
+              {buttons.map((button, index) => {
+                const isPrimary = !button.style || button.style === 'default';
+                return (
+                  <Pressable
+                    key={index}
+                    style={({ pressed }) => [
+                      styles.iosButton,
+                      index > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: ios.divider },
+                      { opacity: pressed ? 0.4 : 1 },
                     ]}
+                    onPress={() => onButtonPress(button)}
                   >
-                    {button.text}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+                    <Text
+                      style={[
+                        styles.iosButtonText,
+                        { color: getIOSButtonColor(button, isPrimary) },
+                        (isPrimary || button.style === 'destructive') && styles.iosButtonTextBold,
+                      ]}
+                    >
+                      {button.text}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : (
+            <View style={styles.androidButtonContainer}>
+              {buttons.map((button, index) => {
+                const isPrimary = !button.style || button.style === 'default';
+                return (
+                  <Pressable
+                    key={index}
+                    style={styles.androidButton}
+                    android_ripple={{ color: colors.border, borderless: true }}
+                    onPress={() => onButtonPress(button)}
+                  >
+                    <Text style={[styles.androidButtonText, { color: getAndroidButtonColor(button, isPrimary) }]}>
+                      {button.text.toUpperCase()}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -180,131 +166,84 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: 40,
   },
   dialog: {
-    borderRadius: 20,
-    minWidth: Math.min(320, screenWidth - 48),
+    width: Math.min(270, screenWidth - 80),
+  },
+  iosDialog: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+      },
+    }),
+  },
+  androidDialog: {
+    borderRadius: 28,
+    minWidth: Math.min(280, screenWidth - 80),
     maxWidth: 400,
     width: '100%',
-    borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 8,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 20,
-      },
-      android: {
-        elevation: 12,
-      },
-      web: {
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-      },
-    }),
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: 24,
-    paddingBottom: 8,
-  },
-  iconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  iconInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    fontSize: 24,
+    elevation: 6,
   },
   content: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+    alignItems: isIOS ? 'center' : 'flex-start',
   },
   title: {
-    fontSize: 20,
+    fontSize: isIOS ? 17 : 20,
     fontWeight: '700',
-    marginBottom: 12,
-    textAlign: 'center',
-    lineHeight: 26,
+    marginBottom: 6,
+    textAlign: isIOS ? 'center' : 'left',
+    lineHeight: 22,
   },
   message: {
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-    opacity: 0.8,
+    fontSize: isIOS ? 13 : 14,
+    lineHeight: 18,
+    textAlign: isIOS ? 'center' : 'left',
   },
-  buttonContainer: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  singleButtonContainer: {
-    alignItems: 'center',
-  },
-  multiButtonContainer: {
+  iosButtonContainer: {
     flexDirection: 'row',
-    gap: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    minHeight: 44,
   },
-  button: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+  iosButton: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    minHeight: 48,
+    paddingVertical: 12,
   },
-  singleButton: {
-    minWidth: 120,
+  iosButtonText: {
+    fontSize: 17,
+    fontWeight: '400',
   },
-  multiButton: {
-    flex: 1,
-  },
-  cancelButton: {
-    backgroundColor: 'transparent',
-  },
-  primaryButton: {
-    borderColor: 'transparent',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-      web: {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      },
-    }),
-  },
-  buttonText: {
-    fontSize: 16,
+  iosButtonTextBold: {
     fontWeight: '600',
-    textAlign: 'center',
   },
-  primaryButtonText: {
-    color: 'white',
+  androidButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    gap: 4,
+  },
+  androidButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  androidButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.4,
   },
 });

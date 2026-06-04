@@ -11,7 +11,7 @@ export default function MatchStats({
   return (
     <View className="flex-1 bg-background items-center ">
       <View className=" mt-14 items-center justify-center">
-        <CText className="text-text text-center text-3xl font-nunito-black">{t('Coming Soon...')}</CText>
+        <CText className="text-text text-center text-3xl font-black">{t('Coming Soon...')}</CText>
       </View>
     </View>
   );

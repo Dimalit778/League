@@ -1,132 +1,67 @@
-import Purchases, { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
+import { usePurchasesContext } from '@/providers/PurchasesProvider';
+import { useCallback, useMemo } from 'react';
+import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
-
+import { getSubscriptionSummary } from './customerInfoSummary';
+import { PLAN_LIMITS } from './plans';
 const PRO_ENTITLEMENT = 'pro';
 
-export type PurchaseSyncPayload = {
-  type: 'PRO';
-  start_date: string;
-  end_date: string;
-  product_id: string | null;
-};
-
-const isUserCancelledError = (error: unknown): boolean =>
-  typeof error === 'object' &&
-  error !== null &&
-  'userCancelled' in error &&
-  Boolean((error as { userCancelled?: boolean }).userCancelled);
-
-const extractSyncPayload = (customerInfo: CustomerInfo): PurchaseSyncPayload | null => {
-  const entitlement = customerInfo.entitlements.active[PRO_ENTITLEMENT];
-  if (!entitlement) return null;
-
-  return {
-    type: 'PRO',
-    start_date: entitlement.latestPurchaseDate,
-    end_date: entitlement.expirationDate ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    product_id: entitlement.productIdentifier ?? null,
-  };
-};
-
-export const purchasesService = {
-  async presentPaywall(): Promise<PurchaseSyncPayload | null> {
-    const offerings = await Purchases.getOfferings();
-
-    const mainOffering = offerings.current;
-
-    if (!mainOffering || mainOffering.availablePackages.length === 0) {
-      throw new Error('No packages available for main offering');
-    }
-
-    const result = await RevenueCatUI.presentPaywall({
-      offering: mainOffering,
+ const purchasesService = {
+  async openPaywall(): Promise<boolean> {
+    const result = await RevenueCatUI.presentPaywallIfNeeded({
+      requiredEntitlementIdentifier: PRO_ENTITLEMENT,
     });
 
-    if (result !== PAYWALL_RESULT.PURCHASED && result !== PAYWALL_RESULT.RESTORED) {
-      return null;
+    const purchased =
+      result === PAYWALL_RESULT.PURCHASED ||
+      result === PAYWALL_RESULT.RESTORED;
+
+    if (purchased) {
+      await Purchases.invalidateCustomerInfoCache();
     }
 
-    await Purchases.invalidateCustomerInfoCache();
-    const customerInfo = await Purchases.getCustomerInfo();
-    return extractSyncPayload(customerInfo);
-  },
-
-  async getMonthlyPackage(): Promise<PurchasesPackage | null> {
-    const offerings = await Purchases.getOfferings();
-    return offerings.current?.monthly ?? null;
-  },
-
-  async purchaseMonthly(): Promise<PurchaseSyncPayload | null> {
-    const pkg = await this.getMonthlyPackage();
-    if (!pkg) throw new Error('No package available');
-
-    try {
-      const { customerInfo } = await Purchases.purchasePackage(pkg);
-      return extractSyncPayload(customerInfo);
-    } catch (error) {
-      if (isUserCancelledError(error)) return null;
-      throw error;
-    }
-  },
-
-  async restorePurchases(): Promise<PurchaseSyncPayload | null> {
-    const customerInfo = await Purchases.restorePurchases();
-    return extractSyncPayload(customerInfo);
-  },
-
-  async getActiveSyncPayload(): Promise<PurchaseSyncPayload | null> {
-    const customerInfo = await Purchases.getCustomerInfo();
-    return extractSyncPayload(customerInfo);
+    return purchased;
   },
 };
-export const paywallService = {
-  async presentIfNeeded() {
-    try {
-      const result = await RevenueCatUI.presentPaywallIfNeeded({
-        requiredEntitlementIdentifier: PRO_ENTITLEMENT,
-      });
+export const usePaywall = () => {
+  const { refreshCustomerInfo } = usePurchasesContext();
 
-      const purchased = result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
+  return useCallback(async () => {
+    const upgraded = await purchasesService.openPaywall();
 
-      if (purchased) {
-        await Purchases.invalidateCustomerInfoCache();
-      }
-
-      return {
-        purchased,
-        result,
-      };
-    } catch (error) {
-      console.error('Failed to present paywall:', error);
-
-      return {
-        purchased: false,
-        result: PAYWALL_RESULT.ERROR,
-      };
+    if (upgraded) {
+      await refreshCustomerInfo();
     }
-  },
 
-  async present() {
-    try {
-      const result = await RevenueCatUI.presentPaywall();
+    return upgraded;
+  }, [refreshCustomerInfo]);
+};
 
-      const purchased = result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED;
 
-      if (purchased) {
-        await Purchases.invalidateCustomerInfoCache();
-      }
+export const useRevenueCatSubscription = () => {
+  const { customerInfo, isReady, isUserSynced, isOffline, error, refreshCustomerInfo } =
+    usePurchasesContext();
 
-      return {
-        purchased,
-        result,
-      };
-    } catch (error) {
-      console.error('Failed to present paywall:', error);
+  const subscription = useMemo(
+    () => getSubscriptionSummary(customerInfo),
+    [customerInfo],
+  );
 
-      return {
-        purchased: false,
-        result: PAYWALL_RESULT.ERROR,
-      };
-    }
-  },
+  const isSubscriptionKnown = isUserSynced && (!isOffline || customerInfo !== null);
+
+  return {
+    customerInfo,
+    subscription,
+    isSubscribed: isUserSynced && subscription.isActive,
+    isOffline,
+    isSubscriptionKnown,
+    isLoading: !isReady || (!isUserSynced && !isOffline),
+    error,
+    refreshCustomerInfo,
+  };
+};
+export const useSubscriptionLimits = () => {
+  const { subscription } = useRevenueCatSubscription();
+  if (!subscription.isActive) return PLAN_LIMITS.FREE;
+  return PLAN_LIMITS.PRO;
 };

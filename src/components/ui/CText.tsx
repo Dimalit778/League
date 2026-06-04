@@ -19,15 +19,15 @@ const variantClasses: Record<Variant, string> = {
   small: 'text-xs lg:text-xs leading-normal',
 };
 
-const variantFontClasses: Record<Variant, string> = {
-  hero: 'font-nunito-black',
-  h1: 'font-nunito-bold',
-  h2: 'font-nunito-bold',
-  h3: 'font-nunito-bold',
-  body: 'font-nunito',
-  bodyBold: 'font-nunito-bold',
-  caption: 'font-nunito',
-  small: 'font-nunito',
+const variantWeightClasses: Record<Variant, string> = {
+  hero: 'font-black',
+  h1: 'font-bold',
+  h2: 'font-bold',
+  h3: 'font-bold',
+  body: 'font-normal',
+  bodyBold: 'font-bold',
+  caption: 'font-normal',
+  small: 'font-normal',
 };
 
 export const CText = ({
@@ -44,10 +44,10 @@ export const CText = ({
   className?: string;
 }) => {
   const sizeClass = variantClasses[variant];
-  const fontClass = bold ? 'font-nunito-bold' : variantFontClasses[variant];
+  const weightClass = bold ? 'font-bold' : variantWeightClasses[variant];
 
   return (
-    <Text {...rest} className={cn('text-text text-left', sizeClass, fontClass, className)} style={style}>
+    <Text {...rest} className={cn('text-text text-left', sizeClass, weightClass, className)} style={style}>
       {children}
     </Text>
   );

@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function PublicLayout() {
   const { colors } = useThemeTokens();
@@ -8,15 +9,14 @@ export default function PublicLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
+        contentStyle: { backgroundColor: colors.background },
+        animation: 'slide_from_right',
+        gestureEnabled: true,
+        fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
-      <Stack.Screen name="myLeagues" options={{ headerShown: false }} />
-      <Stack.Screen name="settings" options={{ headerShown: false }} />
-      <Stack.Screen name="subscription/index" options={{ headerShown: false }} />
-      <Stack.Screen name="choose-active-league" options={{ headerShown: false }} />
+      <Stack.Screen name="myLeagues" />
+      <Stack.Screen name="settings" />
     </Stack>
   );
 }

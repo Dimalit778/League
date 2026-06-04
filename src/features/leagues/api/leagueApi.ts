@@ -80,6 +80,7 @@ export const leagueApi = {
     return (data ?? []) as LeaderboardRow[];
   },
   async getMyLeagues(userId: string) {
+    
     const { data, error } = await supabase
       .from('league_members')
       .select(MY_LEAGUES_SELECT)
@@ -90,6 +91,7 @@ export const leagueApi = {
 
     return (data ?? []) as MyLeagueType[];
   },
+  
 
   async getLeagueAndMembers(leagueId: string) {
     const { data: leagueData, error: leagueError } = await supabase
@@ -142,15 +144,23 @@ export const leagueApi = {
     return { data, leagueId };
   },
   //  -- LEAGUE OPERATIONS
-  async createLeague(params: { league_name: string; max_members: number; competition_id: number; nickname: string }) {
+  async createLeague(params: {
+    league_name: string;
+    max_members: number;
+    competition_id: number;
+    nickname: string;
+    avatar_url?: string;
+  }) {
     const { data, error } = await supabase.rpc('create_new_league', {
       league_name: params.league_name,
       max_members: params.max_members,
       competition_id: params.competition_id,
       nickname: params.nickname,
+      avatar_url: params.avatar_url,
     });
 
-    if (error) throw error;
+    if (error) throw new Error(error.message || 'Failed to create league');
+
     return data;
   },
   async joinLeague(joinCode: string, nickname: string) {

@@ -31,13 +31,13 @@ export const LeagueDetailsSection = ({
   }, [league.league_members, league.owner_id]);
 
   return (
-    <View className="flex-grow justify-center px-4 mt-4">
+    <View className=" px-4 mt-4">
       <View className="bg-surface rounded-2xl border border-border py-2 px-3">
         <View className="flex-row justify-between items-center ">
           <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={50} height={50} />
 
           <CText
-            className="text-primary font-nunito-bold text-2xl text-center uppercase tracking-widest"
+            className="text-primary font-bold text-2xl text-center uppercase tracking-widest"
             style={{
               textShadowRadius: 2,
               letterSpacing: 4,
@@ -99,7 +99,7 @@ export const LeagueDetailsSection = ({
             <CText className="text-text">{t('Country')}</CText>
             <View className="flex-row items-center">
               <CText className="text-text font-semibold mr-2">{league.competition.area}</CText>
-              <MyImage source={{ uri: league.competition.flag }} width={18} height={18} resizeMode="contain" />
+              <MyImage source={{ uri: league.competition.flag || '' }} width={18} height={18} resizeMode="contain" />
             </View>
           </View>
 

@@ -46,10 +46,7 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
 jest.mock('@/features/subscription/hooks/useSubscription', () => ({
   useSubscriptionLimit: () => mockLimitState,
   useSubscription: () => ({ data: { type: 'FREE', limits: {} } }),
-  usePurchaseAndSyncSubscription: () => ({
-    mutateAsync: jest.fn(),
-    isPending: false,
-  }),
+  usePurchaseAndSyncSubscription: () => jest.fn(),
 }));
 
 describe('MyLeagueScreen', () => {

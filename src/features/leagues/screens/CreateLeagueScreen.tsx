@@ -1,19 +1,13 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, CText, InputField } from '@/components/ui';
+import { BackButton, Button, CText, InputField, UpgardeBadge } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
-import { UpgradeSubscriptionOverlay } from '@/features/subscription/components/UpgradeSubscriptionOverlay';
-import {
-  useCanCreateLeague,
-  usePurchaseAndSyncSubscription,
-  useSubscription,
-} from '@/features/subscription/hooks/useSubscription';
-
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
@@ -22,11 +16,13 @@ const schema = yup.object().shape({
   nickname: yup.string().required('Nickname is required').min(2, 'Nickname must be at least 2 characters long'),
 });
 
+const DEFAULT_MEMBERS_COUNT = 6;
+
 type MemberOptionProps = {
   value: number;
   label: string;
   locked: boolean;
-  membersCount: number | null;
+  membersCount: number;
   onSelect: (value: number) => void;
   t: (key: string) => string;
   openPaywall: () => Promise<void>;
@@ -54,7 +50,7 @@ const MemberOption = ({ value, label, locked, membersCount, onSelect, t, openPay
             {t(label)}
           </CText>
         </View>
-        <UpgradeSubscriptionOverlay visible={locked} />
+        <UpgardeBadge visible={locked} />
       </View>
     </Pressable>
   );
@@ -63,17 +59,16 @@ const MemberOption = ({ value, label, locked, membersCount, onSelect, t, openPay
 const CreateLeagueScreen = () => {
   const { competitionId } = useLocalSearchParams();
   const { t } = useTranslation();
-
+  const openPaywall = usePaywall();
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
-  const { data: subscription } = useSubscription();
-  const { data: createCapability, isLoading: isLoadingCreateCapability } = useCanCreateLeague();
-  const { mutateAsync: openPaywall } = usePurchaseAndSyncSubscription();
-  const hasPaidSubscription = subscription.type === 'PRO';
-  const [membersCount, setMembersCount] = useState<number | null>(6);
+  const { subscription } = useRevenueCatSubscription();
+
+  const isPro = !!subscription.isActive;
+  const [membersCount, setMembersCount] = useState(DEFAULT_MEMBERS_COUNT);
 
   const handleOpenPaywall = async () => {
-    const payload = await openPaywall();
-    if (payload) {
+    const purchased = await openPaywall();
+    if (purchased) {
       setMembersCount(12);
     }
   };
@@ -94,17 +89,22 @@ const CreateLeagueScreen = () => {
     resolver: yupResolver(schema),
   });
   const onSubmit = handleSubmit(async (data) => {
-    if (createCapability && !createCapability.canCreate) {
+    if (membersCount === 12 && !isPro) {
       await openPaywall();
       return;
     }
 
-    await createLeague({
-      league_name: data.leagueName,
-      nickname: data.nickname,
-      competition_id: Number(competitionId),
-      max_members: membersCount ?? 6,
-    });
+    try {
+      await createLeague({
+        league_name: data.leagueName,
+        nickname: data.nickname,
+        competition_id: Number(competitionId),
+        max_members: membersCount,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('Failed to create league');
+      Alert.alert(t('Error'), message);
+    }
   });
   return (
     <Screen withSafeArea>
@@ -174,7 +174,7 @@ const CreateLeagueScreen = () => {
               <MemberOption
                 value={12}
                 label="12 Members"
-                locked={!hasPaidSubscription}
+                locked={!isPro}
                 membersCount={membersCount}
                 onSelect={setMembersCount}
                 t={t}
@@ -191,7 +191,7 @@ const CreateLeagueScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending || isLoadingCreateCapability || membersCount === null}
+            disabled={!isValid || isPending}
           />
         </View>
       </View>

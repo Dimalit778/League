@@ -1,5 +1,5 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { Button } from '@/components/ui';
+import { Button, CText } from '@/components/ui';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { AvatarSection } from '@/features/members/components/profile/AvatarSection';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
@@ -9,7 +9,8 @@ import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
-import { View } from 'react-native';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { Pressable, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useMemberProfile } from '../hooks/useMembers';
 
@@ -64,7 +65,12 @@ const ProfileScreen = () => {
 
   return (
     <Screen>
-      <KeyboardAwareScrollView bottomOffset={62} className="flex-1 bg-background">
+      <KeyboardAwareScrollView
+        className="flex-1 bg-background"
+        showsVerticalScrollIndicator={false}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
+      >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
         <AvatarSection nickname={memberData?.nickname} avatarUrl={memberData?.avatar_url} />
@@ -74,22 +80,26 @@ const ProfileScreen = () => {
         <LeagueDetailsSection league={leagueData} memberUserId={memberData?.user_id} />
 
         <View className="px-6 mt-4">
-          {isOwner ? (
-            <Button
-              title={t('Delete League')}
-              variant="error"
-              onPress={confirmDeleteLeague}
-              disabled={deleteLeague.isPending}
-            />
-          ) : (
-            <Button
-              title={t('Leave League')}
-              variant="error"
-              onPress={confirmLeaveLeague}
-              disabled={leaveLeague.isPending}
-            />
-          )}
+          <Button
+            title={t('Leave League')}
+            variant="error"
+            onPress={confirmLeaveLeague}
+            disabled={leaveLeague.isPending}
+          />
         </View>
+        {isOwner && (
+          <View className="mx-auto mt-6">
+            <Pressable
+              onPress={confirmDeleteLeague}
+              className="flex-row items-center gap-2 bg-gray-300 rounded-lg px-4 py-2"
+            >
+              <FontAwesome6 name="trash" size={24} color="red" />
+              <CText variant="body" bold className="text-red-500">
+                {t('Delete League')}
+              </CText>
+            </Pressable>
+          </View>
+        )}
       </KeyboardAwareScrollView>
       <DialogComponent />
     </Screen>

@@ -10,7 +10,7 @@ export default function FullLeagueCard({ league }: { league: FullLeagueType }) {
         <LogoBadge source={league.competition_logo} width={80} height={80} />
 
         <CText
-          className="text-primary font-nunito-bold text-2xl text-center uppercase"
+          className="text-primary font-bold text-2xl text-center uppercase"
           style={{
             letterSpacing: 1,
           }}

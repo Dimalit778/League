@@ -4,7 +4,7 @@
     "slug": "leaguechampion",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app-icon.png",
+    "icon": "./src/assets/app-icon.png",
     "scheme": "league",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,7 +12,7 @@
     "privacyPolicy": "https://leaguechampion.app/privacy-policy/",
     "termsOfService": "https://leaguechampion.app/terms-of-service/",
     "splash": {
-      "image": "./assets/app-icon.png",
+      "image": "./src/assets/app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
@@ -29,7 +29,7 @@
     "android": {
       "backgroundColor": "#0f172a",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/app-icon.png",
+        "foregroundImage": "./src/assets/app-icon.png",
         "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
@@ -38,7 +38,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/app-icon.png"
+      "favicon": "./src/assets/images/app-icon.png"
     },
     "plugins": [
       "expo-router",
@@ -70,7 +70,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/app-icon.png",
+          "image": "./src/assets/app-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#0f172a"
@@ -128,7 +128,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/app-icon.png",
+          "icon": "./src/assets/app-icon.png",
           "color": "#0f172a",
           "sounds": []
         }

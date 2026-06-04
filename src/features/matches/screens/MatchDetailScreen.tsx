@@ -1,20 +1,18 @@
 import { router, useLocalSearchParams } from 'expo-router';
 
+import fieldImage from '@/assets/images/fieldImage.jpg';
 import { Error, LoadingOverlay } from '@/components/layout';
-import webFootballField from '@assets/images/webFootballField.png';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
-import { Platform, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import MatchContent from '../components/match/MatchContent';
 import MatchHeader from '../components/match/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
+
 const MatchDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
-  const topOffset = Platform.OS === 'web' ? 24 : insets.top;
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(id));
 
@@ -25,17 +23,20 @@ const MatchDetailScreen = () => {
   return (
     <View className="flex-1 w-full max-w-lg mx-auto bg-background">
       <View style={{ position: 'absolute', width: '100%', height: 400 }}>
-        <ExpoImage source={webFootballField} contentFit="cover" style={{ width: '100%', height: '100%' }} />
+        <ExpoImage
+          source={fieldImage}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          priority="high"
+          transition={0}
+          style={{ width: '100%', height: '100%' }}
+        />
         <View
           style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 400, backgroundColor: 'rgba(0,0,0,0.4)' }}
         ></View>
       </View>
 
-      <TouchableOpacity
-        className="absolute z-20 left-6 "
-        style={{ paddingTop: topOffset }}
-        onPress={() => router.dismiss()}
-      >
+      <TouchableOpacity className="absolute z-20 left-6 top-6 " onPress={() => router.dismiss()}>
         <AntDesign name="close-circle" size={isDesktop ? 40 : 30} color="#fff" />
       </TouchableOpacity>
       <MatchHeader match={matchData} />

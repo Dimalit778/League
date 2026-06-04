@@ -16,21 +16,20 @@ export default function AppLayout() {
   return (
     <>
       <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
-      }}
-    >
-      <Stack.Screen name="(public)" options={{ headerShown: false }} />
-      <Stack.Protected guard={hasMember}>
-        <Stack.Screen name="(member)" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!!admin}>
-        <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-      </Stack.Protected>
-    </Stack>
+        screenOptions={{
+          headerShown: false,
+          animation: 'none',
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
+        <Stack.Screen name="(public)" />
+        <Stack.Protected guard={hasMember}>
+          <Stack.Screen name="(member)" />
+        </Stack.Protected>
+        <Stack.Protected guard={!!admin}>
+          <Stack.Screen name="(admin)" />
+        </Stack.Protected>
+      </Stack>
     </>
   );
 }

@@ -1,11 +1,10 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button } from '@/components/ui';
+import { BackButton, Button, UpgardeBadge } from '@/components/ui';
 
 import { CText } from '@/components/ui';
-import { UpgradeSubscriptionOverlay } from '@/features/subscription/components/UpgradeSubscriptionOverlay';
-import { usePurchaseAndSyncSubscription, useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { Tables } from '@/types/database.types';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
@@ -17,15 +16,15 @@ type Competition = Tables<'competitions'>;
 
 const SelectCompetitionScreen = () => {
   const { data: competitions, isLoading, error } = useGetCompetitions();
-  const { mutateAsync: openPaywall } = usePurchaseAndSyncSubscription();
-  const { data: subscription } = useSubscription();
+  const openPaywall = usePaywall();
+  const { subscription } = useRevenueCatSubscription();
   const { t } = useTranslation();
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const { colors } = useThemeTokens();
 
-  const hasPaidSubscription = subscription.type === 'PRO';
+  const isPro = !!subscription.isActive;
 
-  const requiresUpgrade = (comp: Competition) => !comp.is_free && !hasPaidSubscription;
+  const requiresUpgrade = (comp: Competition) => !comp.is_free && !isPro;
 
   const handleSelectCompetition = async (comp: Competition) => {
     if (requiresUpgrade(comp)) {
@@ -44,7 +43,7 @@ const SelectCompetitionScreen = () => {
       if (!payload) return;
     }
 
-    router.push({
+    router.navigate({
       pathname: '/(app)/(public)/myLeagues/create-league',
       params: {
         competitionId: selectedCompetition.id,
@@ -112,7 +111,7 @@ const SelectCompetitionScreen = () => {
                   />
                 </View>
 
-                <UpgradeSubscriptionOverlay visible={isLocked} />
+                <UpgardeBadge visible={isLocked} />
               </View>
             </TouchableOpacity>
           );

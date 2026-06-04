@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function MemberLayout() {
   const { colors } = useThemeTokens();
@@ -8,25 +9,26 @@ export default function MemberLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
+        contentStyle: { backgroundColor: colors.background },
+        animation: 'slide_from_right',
+        gestureEnabled: true,
+        fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
       <Stack.Screen
         name="(tabs)"
-        options={{
-          headerShown: false,
-        }}
+        options={{ animation: 'none' }}
       />
       <Stack.Screen
         name="match/[id]"
         options={{
-          headerShown: false,
+          presentation: 'modal',
+          gestureEnabled: true,
+          animation: 'slide_from_bottom',
         }}
       />
-      <Stack.Screen name="member/id" options={{ headerShown: false }} />
-      <Stack.Screen name="profile/edit-league" options={{ headerShown: false }} />
+      <Stack.Screen name="member/id" />
+      <Stack.Screen name="profile/edit-league" />
     </Stack>
   );
 }

@@ -96,4 +96,4 @@ The global `testFormValues` object is the bridge between `react-hook-form` mock'
 
 ### Path aliases
 
-`@/` maps to `src/` and `@assets/` maps to `assets/`. Defined in tsconfig and jest `moduleNameMapper`.
+`@/` maps to `src/` and `@assets/` maps to `src/assets/`. Defined in tsconfig and jest `moduleNameMapper`.

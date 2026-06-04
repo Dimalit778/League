@@ -1,7 +1,7 @@
 import { Button, CText } from '@/components/ui';
-import { useSubscription } from '@/features/subscription/hooks/useSubscription';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -35,7 +35,7 @@ const LockedStats = () => {
 
         <Button
           title={t('Upgrade to Pro')}
-          onPress={() => router.push('/(app)/(public)/subscription')}
+          onPress={() => router.push('/(app)/(public)/settings')}
           className="mt-6 w-full"
         />
       </View>
@@ -45,14 +45,14 @@ const LockedStats = () => {
 
 export default function TabsContent({ predictions }: { predictions: PredictionMemberType[] }) {
   const { t } = useTranslation();
-  const { data: subscription } = useSubscription();
+  const { subscription } = useRevenueCatSubscription();
   const [activeTab, setActiveTab] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const isScrollingProgrammatically = useRef(false);
   const { colors } = useThemeTokens();
   const { width } = useWindowDimensions();
   const [containerWidth, setContainerWidth] = useState(0);
-  const canViewStats = subscription.type === 'PRO';
+  const canViewStats = subscription.isActive;
 
   const onTabPress = (index: number) => {
     isScrollingProgrammatically.current = true;
