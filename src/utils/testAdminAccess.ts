@@ -230,8 +230,8 @@ export async function testAdminAccess(): Promise<AdminTestResults> {
     // Test 9: Test read access to subscriptions table
     const { data: subscriptionsData, error: subscriptionsError } =
       await supabase
-        .from('subscription')
-        .select('id, user_id, subscription_type')
+        .from('user_subscriptions')
+        .select('user_id, plan, status')
         .limit(10);
 
     if (subscriptionsError) {

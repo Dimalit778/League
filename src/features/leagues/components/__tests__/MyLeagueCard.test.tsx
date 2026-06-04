@@ -44,24 +44,24 @@ const mockItem = {
 describe('MyLeagueCard', () => {
   it('renders league name', () => {
     const { getByText } = render(
-      <MyLeagueCard item={mockItem} handleSetPrimary={jest.fn()} />
+      <MyLeagueCard item={mockItem} onPress={jest.fn()} />
     );
     expect(getByText('My Test League')).toBeTruthy();
   });
 
   it('renders nickname', () => {
     const { getByText } = render(
-      <MyLeagueCard item={mockItem} handleSetPrimary={jest.fn()} />
+      <MyLeagueCard item={mockItem} onPress={jest.fn()} />
     );
     expect(getByText('TestPlayer')).toBeTruthy();
   });
 
-  it('calls handleSetPrimary when pressed', () => {
-    const handleSetPrimary = jest.fn();
+  it('calls onPress when pressed', () => {
+    const onPress = jest.fn();
     const { getByText } = render(
-      <MyLeagueCard item={mockItem} handleSetPrimary={handleSetPrimary} />
+      <MyLeagueCard item={mockItem} onPress={onPress} />
     );
     fireEvent.press(getByText('My Test League'));
-    expect(handleSetPrimary).toHaveBeenCalledWith('l1', false);
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 });

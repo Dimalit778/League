@@ -117,6 +117,35 @@ jest.mock('react-native-nitro-modules', () => ({
   NitroModules: {},
 }));
 
+jest.mock('react-native-purchases', () => ({
+  __esModule: true,
+  default: {
+    invalidateCustomerInfoCache: jest.fn(() => Promise.resolve()),
+    getCustomerInfo: jest.fn(() => Promise.resolve(null)),
+    isConfigured: jest.fn(() => Promise.resolve(true)),
+    configure: jest.fn(),
+    getAppUserID: jest.fn(() => Promise.resolve('user-1')),
+    logIn: jest.fn(() => Promise.resolve({ customerInfo: null })),
+    logOut: jest.fn(() => Promise.resolve(null)),
+    addCustomerInfoUpdateListener: jest.fn(),
+    removeCustomerInfoUpdateListener: jest.fn(),
+  },
+}));
+
+jest.mock('react-native-purchases-ui', () => ({
+  __esModule: true,
+  default: {
+    presentPaywallIfNeeded: jest.fn(() => Promise.resolve('NOT_PRESENTED')),
+  },
+  PAYWALL_RESULT: {
+    PURCHASED: 'PURCHASED',
+    RESTORED: 'RESTORED',
+    NOT_PRESENTED: 'NOT_PRESENTED',
+    CANCELLED: 'CANCELLED',
+    ERROR: 'ERROR',
+  },
+}));
+
 jest.mock('expo-image', () => {
   const { Image } = require('react-native');
   Object.defineProperty(Image, 'prefetch', {

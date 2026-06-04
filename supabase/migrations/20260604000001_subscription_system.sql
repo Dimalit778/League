@@ -58,8 +58,9 @@ BEGIN
 END;
 $$;
 
--- 5. create_new_league_v3 — uses user_subscriptions + get_plan_limits
-CREATE OR REPLACE FUNCTION public.create_new_league_v3(
+-- 5. create_new_league — uses user_subscriptions + get_plan_limits
+-- Keep the existing RPC name so current clients get server-side plan enforcement.
+CREATE OR REPLACE FUNCTION public.create_new_league(
   league_name    text,
   max_members    int,
   competition_id int,

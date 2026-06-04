@@ -31,7 +31,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     await supabase
       .from('users')
       .update({
-        expo_notification_token: token,
+        notification_token: token,
       })
       .eq('id', session.user.id);
   };

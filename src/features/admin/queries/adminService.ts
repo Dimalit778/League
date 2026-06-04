@@ -36,7 +36,7 @@ export const adminService = {
         | 'leagues'
         | 'league_members'
         | 'predictions'
-        | 'subscription'
+        | 'user_subscriptions'
     ) => {
       const { count, error } = await supabase
         .from(table)
@@ -52,7 +52,7 @@ export const adminService = {
         countTable('leagues'),
         countTable('league_members'),
         countTable('predictions'),
-        countTable('subscription'),
+        countTable('user_subscriptions'),
       ]);
 
     return { users, leagues, leagueMembers, predictions, subscriptions };

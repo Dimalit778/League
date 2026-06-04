@@ -200,6 +200,7 @@ export const getKnockoutStages = (matches: MatchWithPredictionsType[]) => {
 
 export const groupMatchesByFixture = (matches: MatchWithPredictionsType[]) => {
   const grouped = matches.reduce<Record<number, MatchWithPredictionsType[]>>((acc, match) => {
+    if (match.fixture == null) return acc;
     acc[match.fixture] = acc[match.fixture] ?? [];
     acc[match.fixture].push(match);
     return acc;

@@ -14,6 +14,12 @@ export type ThemeTokens = {
     error: string;
     success: string;
   };
+  fonts: {
+    body: string;
+    bodyBold: string;
+    heading: string;
+    headingBold: string;
+  };
 };
 
 const light: ThemeTokens = {
@@ -28,6 +34,12 @@ const light: ThemeTokens = {
     error: '#ef4444',
     success: '#22c55e',
   },
+  fonts: {
+    body: 'Nunito_400Regular',
+    bodyBold: 'Nunito_700Bold',
+    heading: 'Teko-Regular',
+    headingBold: 'Teko-Bold',
+  },
 };
 
 const dark: ThemeTokens = {
@@ -41,6 +53,12 @@ const dark: ThemeTokens = {
     muted: '#94a3b8',
     error: '#f87171',
     success: '#4ade80',
+  },
+  fonts: {
+    body: 'Nunito_400Regular',
+    bodyBold: 'Nunito_700Bold',
+    heading: 'Teko-Regular',
+    headingBold: 'Teko-Bold',
   },
 };
 

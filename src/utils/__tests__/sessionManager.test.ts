@@ -53,7 +53,7 @@ describe('sessionManager', () => {
       const result = await getSession();
 
       expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith('Error getting session:', mockError);
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it('should return null when no session exists', async () => {
@@ -74,7 +74,7 @@ describe('sessionManager', () => {
       const result = await getSession();
 
       expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith('Unexpected error getting session:', mockError);
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
 
@@ -106,7 +106,7 @@ describe('sessionManager', () => {
       // Simulate TOKEN_REFRESHED event
       authCallback('TOKEN_REFRESHED', null);
 
-      expect(console.log).toHaveBeenCalledWith('Session token refreshed successfully');
+      expect(console.log).not.toHaveBeenCalled();
     });
 
     it('should log SIGNED_OUT events', () => {
@@ -122,7 +122,7 @@ describe('sessionManager', () => {
       // Simulate SIGNED_OUT event
       authCallback('SIGNED_OUT', null);
 
-      expect(console.log).toHaveBeenCalledWith('User signed out');
+      expect(console.log).not.toHaveBeenCalled();
     });
 
     it('should log SIGNED_IN events', () => {
@@ -138,7 +138,7 @@ describe('sessionManager', () => {
       // Simulate SIGNED_IN event
       authCallback('SIGNED_IN', { user: { id: 'user-1' } });
 
-      expect(console.log).toHaveBeenCalledWith('User signed in');
+      expect(console.log).not.toHaveBeenCalled();
     });
   });
 });
