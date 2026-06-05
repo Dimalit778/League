@@ -40,6 +40,7 @@ export default function JoinLeague() {
   });
   const inviteCodeValue = watch('inviteCode');
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
+  console.log('data', JSON.stringify(data, null, 2));
   const [foundLeague, setFoundLeague] = useState<typeof data | null>(null);
 
   const joinLeague = useJoinLeague();

@@ -50,7 +50,9 @@ export default function FullLeagueCard({ league }: { league: FullLeagueType }) {
           <CText className="text-text">Country</CText>
           <View className="flex-row items-center">
             <CText className="text-text font-semibold mr-2">{league.competition_area}</CText>
-            <MyImage source={league.competition_flag} width={18} height={18} resizeMode="contain" />
+            {league.competition_flag && (
+              <MyImage source={league.competition_flag} width={18} height={18} contentFit="contain" />
+            )}
           </View>
         </View>
       </View>

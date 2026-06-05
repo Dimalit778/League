@@ -1,3 +1,4 @@
+import { ImageContentFit } from 'expo-image';
 import { View } from 'react-native';
 import { MyImage } from './MyImage';
 
@@ -9,7 +10,7 @@ interface LogoBadgeProps {
   height: number;
   backgroundColor?: string;
   className?: string;
-  resizeMode?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  contentFit?: ImageContentFit;
 }
 
 export const LogoBadge = ({
@@ -17,7 +18,7 @@ export const LogoBadge = ({
   width = 40,
   height = 40,
   className = '',
-  resizeMode = 'cover',
+  contentFit = 'cover',
 }: LogoBadgeProps) => {
   const bgColor = '#E0E7FF';
 
@@ -26,7 +27,7 @@ export const LogoBadge = ({
       className={` rounded-md items-center justify-center ${className}`}
       style={{ backgroundColor: bgColor, width, height }}
     >
-      <MyImage source={source} width={width * 0.9} height={height * 0.9} resizeMode={resizeMode} />
+      <MyImage source={source} width={width * 0.9} height={height * 0.9} contentFit={contentFit} />
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import PredictionRank from '../match/PredictionRank';
+import PredictionRank from '../match-details/PredictionRank';
 
 jest.mock('@/store/MemberStore', () => {
   const actual = jest.requireActual('@/store/MemberStore');

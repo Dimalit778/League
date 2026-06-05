@@ -3,11 +3,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { formatMatchdayDate } from '@/utils/formats';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { MatchWithPredictionsType } from '../../types';
-import { isGroupPhaseStage } from '../../types/footballStages';
-import { getTournamentGroups, normalizedGroupLetter } from '../../utils/tournamentMatches';
-import Match from './Match';
-import { GroupTabs } from './TournametTabs';
+import { MatchWithPredictionsType } from '../../../types';
+import { isGroupPhaseStage } from '../../../types/footballStages';
+import { getTournamentGroups, normalizedGroupLetter } from '../../../utils/tournamentMatches';
+import { GroupTabs } from '../TournametTabs';
+import GroupMatchCard from './GroupMatchCard';
 
 type GroupMatchesProps = {
   matches: MatchWithPredictionsType[];
@@ -23,28 +23,6 @@ type MatchDaySection = {
   timestamp: number;
   matches: MatchWithPredictionsType[];
 };
-
-// const getLocalDayKey = (date: string) => {
-//   const dateObj = new Date(date);
-//   if (Number.isNaN(dateObj.getTime())) return date;
-
-//   const year = dateObj.getFullYear();
-//   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-//   const day = String(dateObj.getDate()).padStart(2, '0');
-
-//   return `${year}-${month}-${day}`;
-// };
-
-// const formatMatchDayLabel = (date: string, locale: string) => {
-//   const dateObj = new Date(date);
-//   if (Number.isNaN(dateObj.getTime())) return date;
-
-//   const weekday = dateObj.toLocaleDateString(locale, { weekday: 'long' }).replace(/^יום\s+/, '');
-//   const day = String(dateObj.getDate()).padStart(2, '0');
-//   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-
-//   return `${weekday} ${day}.${month}`;
-// };
 
 export default function GroupMatches({
   matches,
@@ -117,7 +95,7 @@ export default function GroupMatches({
                 </CText>
               </View>
               {section.matches.map((match) => (
-                <Match key={match.id} match={match} />
+                <GroupMatchCard key={match.id} match={match} />
               ))}
             </View>
           ))}

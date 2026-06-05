@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react';
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { getSubscriptionSummary } from './customerInfoSummary';
-import { PLAN_LIMITS } from './plans';
 const PRO_ENTITLEMENT = 'pro';
 
  const purchasesService = {
@@ -59,9 +58,4 @@ export const useRevenueCatSubscription = () => {
     error,
     refreshCustomerInfo,
   };
-};
-export const useSubscriptionLimits = () => {
-  const { subscription } = useRevenueCatSubscription();
-  if (!subscription.isActive) return PLAN_LIMITS.FREE;
-  return PLAN_LIMITS.PRO;
 };

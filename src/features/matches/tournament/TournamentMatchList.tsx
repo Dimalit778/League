@@ -12,10 +12,17 @@ type TournamentMatchListProps = {
   onRefresh: () => void;
 };
 
+const EmptyMatches = () => {
+  const { t } = useTranslation();
+  return <CText className="text-text text-center mt-6">{t('No matches found')}</CText>;
+};
+
 export default function TournamentMatchList({ view, matches, onRefresh }: TournamentMatchListProps) {
   const { t } = useTranslation();
   const groupSections = useMemo(() => groupMatchesByFixture(matches), [matches]);
-  // group matches
+
+  if (matches.length === 0) return <EmptyMatches />;
+
   if (view === 'groups') {
     return (
       <>
@@ -37,7 +44,6 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
     );
   }
 
-  // knockout matches
   return (
     <View className="flex-row flex-wrap px-2 mt-2">
       {matches.map((match) => (

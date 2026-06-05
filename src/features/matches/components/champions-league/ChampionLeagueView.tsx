@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { computeLeagueStandings, getLeagueFixtures, getMatchesByFixture } from '../../utils/tournamentMatches';
-import MatchesList from '../matches/MatchesList';
+import MatchesList from '../regular-league/MatchesList';
 import { HorizontalTabs } from '../tournament/TournametTabs';
 import LeagueStandingsTable from './LeagueStandingsTable';
 

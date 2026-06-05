@@ -101,6 +101,7 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
+  const isWorldCup = match.competition_id === 2000;
 
   // Teams can be null for future knockout matches where opponents aren't decided yet
   const homeTeam = match.home_team ?? null;

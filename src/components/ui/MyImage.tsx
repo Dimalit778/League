@@ -10,7 +10,7 @@ type Src = string | number | { uri: string; headers?: Record<string, string> }; 
 interface ImageCProps {
   source: Src;
   className?: string;
-  resizeMode?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  contentFit?: ImageContentFit;
   width?: DimensionValue;
   height?: DimensionValue;
   transition?: number;
@@ -26,7 +26,7 @@ export const MyImage = ({
   source,
   className,
   tintColor,
-  resizeMode = 'contain',
+  contentFit = 'contain',
   width = '100%',
   height = '100%',
   transition = 120,
@@ -37,19 +37,6 @@ export const MyImage = ({
   fallbackSource,
 }: ImageCProps) => {
   const [failed, setFailed] = useState(false);
-
-  const contentFit: ImageContentFit = useMemo(() => {
-    switch (resizeMode) {
-      case 'contain':
-      case 'cover':
-      case 'fill':
-      case 'none':
-      case 'scale-down':
-        return resizeMode;
-      default:
-        return 'cover';
-    }
-  }, [resizeMode]);
 
   // Normalize to a URI string when available
   const uri =

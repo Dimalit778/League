@@ -1,9 +1,50 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { useGetTournamentActiveStage } from '@/features/matches/hooks/useMatches';
+import { Error, LoadingOverlay, Screen } from '@/components/layout';
+import { useGetCompetitionMatches, useGetTournamentActiveStage } from '@/features/matches/hooks/useMatches';
 import { selectCompetition, selectCompetitionId, selectMemberId, useMemberStore } from '@/store/MemberStore';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import GroupMatches from '../components/tournament/group/GroupMatches';
+import KnockoutMatches from '../components/tournament/knockout/KnockoutMatches';
+import { TournamentViewTabs } from '../components/tournament/TournametTabs';
 import { isKnockoutOnlyStage } from '../types/footballStages';
-import TournamentMatches from './TournamentMatches';
+import { isLeaguePhase, TournamentView } from '../utils/tournamentMatches';
+
+type TournamentMatchesProps = {
+  competitionId: number;
+  memberId: string;
+  defaultView?: TournamentView;
+};
+
+const TournamentMatches = ({ competitionId, memberId, defaultView = 'groups' }: TournamentMatchesProps) => {
+  const [view, setView] = useState<TournamentView>(defaultView);
+
+  useEffect(() => {
+    setView(defaultView);
+  }, [defaultView]);
+
+  const {
+    data: matches = [],
+    isLoading,
+    error,
+    refetch,
+  } = useGetCompetitionMatches({
+    competitionId,
+    memberId,
+    view,
+  });
+
+  if (error) return <Error error={error} />;
+  if (isLoading) return <LoadingOverlay />;
+
+  return (
+    <>
+      <TournamentViewTabs value={view} onChange={setView} />
+
+      {view === 'groups' && !isLeaguePhase(matches) && <GroupMatches matches={matches} onRefresh={refetch} />}
+
+      {view === 'knockout' && <KnockoutMatches matches={matches} onRefresh={refetch} />}
+    </>
+  );
+};
 
 export default function TournamentScreen() {
   const memberId = useMemberStore(selectMemberId);

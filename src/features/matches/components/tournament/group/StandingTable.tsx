@@ -87,7 +87,10 @@ export default function GroupStandingsTable({ rows }: Props) {
             <Cell value={row.won} width={colW} />
             <Cell value={row.drawn} width={colW} />
             <Cell value={row.lost} width={colW} />
-            <Cell value={row.goals_difference > 0 ? `+${row.goals_difference}` : row.goals_difference} width={colW + 4} />
+            <Cell
+              value={row.goals_difference > 0 ? `+${row.goals_difference}` : row.goals_difference}
+              width={colW + 4}
+            />
             <Cell value={row.points} width={ptsW} bold />
           </View>
         );

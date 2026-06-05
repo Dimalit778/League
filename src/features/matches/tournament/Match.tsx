@@ -9,7 +9,7 @@ import { Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
 import { getPredictionResultLabel } from '../../utils/pointsColor';
-import { PredictionDisplay } from '../matches/MatchCardDisplay';
+import { PredictionDisplay } from '../regular-league/MatchCardDisplay';
 import TeamBadge from '../TeamBadge';
 
 type Props = { match: MatchWithPredictionsType };
@@ -164,7 +164,7 @@ export default memo(function Match({ match }: Props) {
           </View>
 
           {/* Prediction footer */}
-          <PredictionDisplay prediction={prediction} isFinished={isFinished} />
+          {prediction && <PredictionDisplay prediction={prediction} isFinished={isFinished} />}
         </Pressable>
       </Link>
     </View>

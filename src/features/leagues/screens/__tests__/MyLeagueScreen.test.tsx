@@ -11,10 +11,13 @@ type TestNode = {
 
 let mockLeagues: any[] = [];
 let mockLimitState = {
-  limit: 1,
+  isPro: false,
+  leaguesCount: 0,
+  maxLeagues: 1,
   reachedLimit: false,
   usagePercent: 0,
-  ownedLeaguesCount: 0,
+  remainingLeagues: 1,
+  isLoading: false,
 };
 
 jest.mock('@/store/AuthStore', () => ({
@@ -43,20 +46,25 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   }),
 }));
 
-jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useSubscriptionLimit: () => mockLimitState,
-  useSubscription: () => ({ data: { type: 'FREE', limits: {} } }),
-  usePurchaseAndSyncSubscription: () => jest.fn(),
+jest.mock('@/hooks/useSubscriptionLimits', () => ({
+  useSubscriptionLimits: () => mockLimitState,
+}));
+
+jest.mock('@/lib/revenuecat/purchases', () => ({
+  usePaywall: () => jest.fn(),
 }));
 
 describe('MyLeagueScreen', () => {
   beforeEach(() => {
     mockLeagues = [];
     mockLimitState = {
-      limit: 1,
+      isPro: false,
+      leaguesCount: 0,
+      maxLeagues: 1,
       reachedLimit: false,
       usagePercent: 0,
-      ownedLeaguesCount: 0,
+      remainingLeagues: 1,
+      isLoading: false,
     };
   });
 
@@ -77,10 +85,13 @@ describe('MyLeagueScreen', () => {
 
   it('does not render an infinite progress width when subscription limit is zero', () => {
     mockLimitState = {
-      limit: 0,
+      isPro: false,
+      leaguesCount: 0,
+      maxLeagues: 0,
       reachedLimit: false,
       usagePercent: 0,
-      ownedLeaguesCount: 0,
+      remainingLeagues: 0,
+      isLoading: false,
     };
 
     const { UNSAFE_root } = render(<MyLeagueScreen />);

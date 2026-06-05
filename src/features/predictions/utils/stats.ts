@@ -1,5 +1,5 @@
 import { predictionService } from '../api/predictionService';
-type MyPredictionRow = Awaited<ReturnType<typeof predictionService.getMyPredictionsView>>[number];
+type MyPredictionRow = Awaited<ReturnType<typeof predictionService.getPredictionsByLeagueFixture>>[number];
 
 const isScoreObject = (score: unknown): score is Record<string, unknown> =>
   !!score && typeof score === 'object' && !Array.isArray(score);

@@ -1,10 +1,11 @@
 export { BottomTabsBar } from './BottomTabsBar';
 export { DrawerMenu } from './DrawerMenu';
 export { Error } from './Error';
+export { LoadingBall } from './LoadingBall';
 export { LoadingLogo } from './LoadingLogo';
 export { LoadingOverlay } from './LoadingOverlay';
 export { NetworkStatusBanner } from './NetworkStatusBanner';
 export { Screen } from './Screen';
 export { SidebarMenu } from './SidebarMenu';
-export { SplashScreen } from './SplashScreen';
 export { TabsHeader } from './TabsHeader';
+

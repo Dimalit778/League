@@ -9,6 +9,13 @@
       "@assets/*": ["./src/assets/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts",
+    "src/components/layout/LoadingBouncingBall.tsx"
+  ],
   "exclude": ["node_modules", "supabase/functions"]
 }

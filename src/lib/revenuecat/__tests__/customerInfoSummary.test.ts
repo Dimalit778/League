@@ -34,7 +34,7 @@ describe('getSubscriptionSummary', () => {
         },
         all: {},
       },
-    } as Partial<CustomerInfo>);
+    } as unknown as Partial<CustomerInfo>);
 
     expect(getSubscriptionSummary(info)).toEqual({
       isActive: true,
@@ -57,7 +57,7 @@ describe('getSubscriptionSummary', () => {
           },
         },
       },
-    } as Partial<CustomerInfo>);
+    } as unknown as Partial<CustomerInfo>);
 
     expect(getSubscriptionSummary(info)).toEqual({
       isActive: false,
@@ -81,7 +81,7 @@ describe('hasActiveEntitlement', () => {
         active: { pro: {} },
         all: {},
       },
-    } as Partial<CustomerInfo>);
+    } as unknown as Partial<CustomerInfo>);
 
     expect(hasActiveEntitlement(info)).toBe(true);
     expect(hasActiveEntitlement(info, 'pro')).toBe(true);

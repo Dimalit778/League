@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import MatchStats from '../match/MatchStats';
+import MatchStats from '../match-details/MatchStats';
 
 describe('MatchStats', () => {
   it('renders Coming Soon message', () => {

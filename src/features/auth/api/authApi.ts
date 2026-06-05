@@ -59,7 +59,7 @@ export const signUp = async (email: string, password: string, fullname: string) 
       throw new Error('No internet connection. Please check your network and try again.');
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
       options: {
@@ -68,6 +68,10 @@ export const signUp = async (email: string, password: string, fullname: string) 
     });
 
     if (error) throw error;
+
+    if (data.user && data.user.identities?.length === 0) {
+      throw new Error('Email already registered');
+    }
 
     return { success: true };
   } catch (error: any) {

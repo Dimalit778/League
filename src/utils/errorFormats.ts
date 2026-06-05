@@ -140,7 +140,7 @@ export const getErrorInfo = (error: any): ErrorInfo => {
       userMessage = 'Your session has expired. Please sign in again.';
     } else if (message.includes('user not found')) {
       userMessage = 'No account found with this email. Please sign up instead.';
-    } else if (message.includes('email already in use')) {
+    } else if (message.includes('email already in use') || message.includes('Email already registered')) {
       userMessage = 'Email already in use. Please use a different email.';
     }
 

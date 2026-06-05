@@ -18,7 +18,7 @@ describe('testAdminAccess', () => {
   });
 
   it('should return failure when no session exists', async () => {
-    mockSupabase.auth.getSession.mockResolvedValue({
+    (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: { session: null },
       error: null,
     });
@@ -36,7 +36,7 @@ describe('testAdminAccess', () => {
       user: { id: 'user-1', email: 'test@example.com' },
     };
 
-    mockSupabase.auth.getSession.mockResolvedValue({
+    (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: { session: mockSession },
       error: null,
     });
@@ -52,7 +52,7 @@ describe('testAdminAccess', () => {
       }),
     });
 
-    mockSupabase.from.mockImplementation(mockFrom);
+    (mockSupabase.from as jest.Mock).mockImplementation(mockFrom);
 
     const result = await testAdminAccess();
 
@@ -66,7 +66,7 @@ describe('testAdminAccess', () => {
       user: { id: 'admin-1', email: 'admin@example.com' },
     };
 
-    mockSupabase.auth.getSession.mockResolvedValue({
+    (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: { session: mockSession },
       error: null,
     });
@@ -87,7 +87,7 @@ describe('testAdminAccess', () => {
       }),
     }));
 
-    mockSupabase.from.mockImplementation(mockFrom);
+    (mockSupabase.from as jest.Mock).mockImplementation(mockFrom);
 
     const result = await testAdminAccess();
 
@@ -100,7 +100,7 @@ describe('testAdminAccess', () => {
 
 describe('quickAdminCheck', () => {
   it('should return boolean result from testAdminAccess', async () => {
-    mockSupabase.auth.getSession.mockResolvedValue({
+    (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: { session: null },
       error: null,
     });

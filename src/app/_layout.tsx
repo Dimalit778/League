@@ -2,7 +2,7 @@ import '../../global.css';
 
 import '@/lib/i18n/autoTranslate';
 
-import { SplashScreen as AppSplashScreen, NetworkStatusBanner } from '@/components/layout';
+import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
@@ -94,7 +94,7 @@ const AppBootstrap = () => {
   }, [isAuthLoading, isMemberSettled]);
 
   if (!isReady) {
-    return <AppSplashScreen />;
+    return <LoadingBall />;
   }
 
   return (

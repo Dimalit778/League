@@ -99,7 +99,7 @@ export const LeagueDetailsSection = ({
             <CText className="text-text">{t('Country')}</CText>
             <View className="flex-row items-center">
               <CText className="text-text font-semibold mr-2">{league.competition.area}</CText>
-              <MyImage source={{ uri: league.competition.flag || '' }} width={18} height={18} resizeMode="contain" />
+              <MyImage source={{ uri: league.competition.flag || '' }} width={18} height={18} contentFit="contain" />
             </View>
           </View>
 

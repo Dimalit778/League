@@ -1,8 +1,8 @@
 import { Error, Screen } from '@/components/layout';
 import { AvatarImage, BackButton, Card, CText } from '@/components/ui';
-import FixturesList from '@/features/matches/components/matches/FixturesList';
-import MatchesList from '@/features/matches/components/matches/MatchesList';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
+import FixturesList from '@/features/matches/components/regular-league/FixturesList';
+import MatchesList from '@/features/matches/components/regular-league/MatchesList';
 import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { useEffect, useMemo, useState } from 'react';
@@ -24,7 +24,7 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
   const fixturesWithFinishedMatches = useMemo(() => {
     if (!allFinishedMatches) return [];
     const fixtureSet = new Set(
-      allFinishedMatches.map((match) => match.fixture).filter((f): f is number => f !== null && f !== undefined)
+      allFinishedMatches.map((match) => match.fixture).filter((f): f is number => f !== null && f !== undefined),
     );
     return Array.from(fixtureSet).sort((a, b) => a - b);
   }, [allFinishedMatches]);

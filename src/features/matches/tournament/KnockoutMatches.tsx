@@ -9,7 +9,7 @@ import { MatchWithPredictionsType } from '../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
 import { getKnockoutStages, getStageLabel } from '../../utils/tournamentMatches';
 import TeamBadge from '../TeamBadge';
-import { MatchCardHeader, PredictionDisplay } from '../matches/MatchCardDisplay';
+import { MatchCardHeader, PredictionDisplay } from '../regular-league/MatchCardDisplay';
 import { KnockoutStageTabs } from './TournametTabs';
 
 const getStageIndexFromOffset = (offset: number, pageWidth: number, stageCount: number, isRTL: boolean) => {

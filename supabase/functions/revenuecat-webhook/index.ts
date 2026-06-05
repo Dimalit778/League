@@ -4,6 +4,11 @@ const REVENUECAT_WEBHOOK_SECRET = Deno.env.get('REVENUECAT_WEBHOOK_SECRET')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+const HANDLED_EVENTS = new Set([
+  'INITIAL_PURCHASE', 'RENEWAL', 'PRODUCT_CHANGE', 'UNCANCELLATION',
+  'CANCELLATION', 'EXPIRATION', 'BILLING_ISSUE',
+]);
+
 const PRO_EVENTS = new Set([
   'INITIAL_PURCHASE',
   'RENEWAL',
@@ -65,17 +70,12 @@ Deno.serve(async (req: Request) => {
     return new Response('Missing app_user_id', { status: 400 });
   }
 
-  const newPlan = PRO_EVENTS.has(eventType) ? 'pro' : 'free';
-  const newStatus = getStatusFromEvent(eventType);
-
-  // Ignore events we don't care about
-  const HANDLED_EVENTS = new Set([
-    'INITIAL_PURCHASE', 'RENEWAL', 'PRODUCT_CHANGE', 'UNCANCELLATION',
-    'CANCELLATION', 'EXPIRATION', 'BILLING_ISSUE',
-  ]);
   if (!HANDLED_EVENTS.has(eventType)) {
     return new Response('Event ignored', { status: 200 });
   }
+
+  const newPlan = PRO_EVENTS.has(eventType) ? 'pro' : 'free';
+  const newStatus = getStatusFromEvent(eventType);
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 

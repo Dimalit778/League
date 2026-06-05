@@ -29,11 +29,13 @@ jest.mock('react-native-safe-area-context', () => {
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
+    navigate: jest.fn(),
     replace: jest.fn(),
     back: jest.fn(),
   },
   useRouter: () => ({
     push: jest.fn(),
+    navigate: jest.fn(),
     replace: jest.fn(),
     back: jest.fn(),
   }),
@@ -144,6 +146,32 @@ jest.mock('react-native-purchases-ui', () => ({
     CANCELLED: 'CANCELLED',
     ERROR: 'ERROR',
   },
+}));
+
+jest.mock('@/lib/revenuecat/purchases', () => ({
+  usePaywall: () => jest.fn(() => Promise.resolve(false)),
+  useRevenueCatSubscription: () => ({
+    customerInfo: null,
+    subscription: {
+      isActive: false,
+      expiresAt: null,
+      productId: null,
+      willRenew: null,
+      isAnonymous: true,
+    },
+    isSubscribed: false,
+    isOffline: false,
+    isSubscriptionKnown: true,
+    isLoading: false,
+    error: null,
+    refreshCustomerInfo: jest.fn(() => Promise.resolve(null)),
+  }),
+  useSubscriptionLimits: () => ({
+    maxLeagues: 2,
+    maxMembersPerLeague: [6],
+    competitions: ['ENGLISH', 'ITALIAN'],
+    weeklyAiTips: 3,
+  }),
 }));
 
 jest.mock('expo-image', () => {

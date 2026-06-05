@@ -231,7 +231,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
             return;
           }
 
-          markUserSynced(false);
+          markUserSynced(true);
           const nextError = syncError instanceof Error ? syncError : new Error(String(syncError));
           setError(nextError);
         }

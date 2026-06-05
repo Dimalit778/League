@@ -1,4 +1,3 @@
-import { Image as ExpoImage } from 'expo-image';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { TeamType } from '../types';
 type TeamBadgeProps = {
@@ -136,7 +135,6 @@ export default function TeamBadge({
   tla,
   logo,
   size = 34,
-  isWorldCup = false,
 }: TeamBadgeProps & {
   team?: TeamType | null;
 }) {
@@ -166,11 +164,6 @@ export default function TeamBadge({
   const fontSize = initials.length > 2 ? 26 : 31;
   const { name: teamName, shortName: teamShortName } = resolvedTeam;
 
-  if (isWorldCup && resolvedTeam.logo) {
-    return (
-      <ExpoImage source={{ uri: resolvedTeam.logo }} style={{ width: size, height: size, resizeMode: 'contain' }} />
-    );
-  }
   return (
     <Svg
       width={size}

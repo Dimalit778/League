@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import SelectCompetitionScreen from '../../screens/SelectCompetitionScreen';
 
 const mockPush = router.push as jest.Mock;
+const mockNavigate = router.navigate as jest.Mock;
 
 jest.mock('@/features/leagues/hooks/useCompetition', () => ({
   useGetCompetitions: () => ({
@@ -37,14 +38,15 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
   }),
 }));
 
-jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useSubscription: () => ({ data: { type: 'FREE' } }),
-  usePurchaseAndSyncSubscription: () => jest.fn().mockResolvedValue(null),
+jest.mock('@/lib/revenuecat/purchases', () => ({
+  useRevenueCatSubscription: () => ({ subscription: { isActive: false } }),
+  usePaywall: () => jest.fn().mockResolvedValue(false),
 }));
 
 describe('SelectCompetitionScreen', () => {
   beforeEach(() => {
     mockPush.mockClear();
+    mockNavigate.mockClear();
   });
 
   it('renders Continue button', () => {
@@ -65,7 +67,7 @@ describe('SelectCompetitionScreen', () => {
     fireEvent.press(getByText('World Cup'));
     fireEvent.press(getByText('Continue'));
 
-    expect(mockPush).toHaveBeenCalledWith({
+    expect(mockNavigate).toHaveBeenCalledWith({
       pathname: '/(app)/(public)/myLeagues/create-league',
       params: {
         competitionId: 1_000,

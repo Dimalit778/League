@@ -5,8 +5,8 @@ import { Error, LoadingOverlay } from '@/components/layout';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import MatchContent from '../components/match/MatchContent';
-import MatchHeader from '../components/match/MatchHeader';
+import MatchContent from '../components/match-details/MatchContent';
+import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
 
 const MatchDetailScreen = () => {

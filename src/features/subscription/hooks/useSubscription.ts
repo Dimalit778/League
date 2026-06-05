@@ -1,15 +1,17 @@
 import { useSubscriptionLimits as useAppSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 
 export const useSubscription = () => {
   const state = useRevenueCatSubscription();
+  const plan = state.subscription.isActive ? 'PRO' : 'FREE';
 
   return {
     ...state,
     data: {
-      type: state.subscription.isActive ? 'PRO' : 'FREE',
-      subscription_type: state.subscription.isActive ? 'PRO' : 'FREE',
-      limits: state.subscription.isActive ? 'PRO' : 'FREE',
+      type: plan,
+      subscription_type: plan,
+      limits: PLAN_LIMITS[plan],
     },
   };
 };

@@ -31,7 +31,7 @@ describe('sessionManager', () => {
         access_token: 'token',
       };
 
-      mockSupabase.auth.getSession.mockResolvedValue({
+      (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
         data: { session: mockSession },
         error: null,
       });
@@ -45,7 +45,7 @@ describe('sessionManager', () => {
     it('should return null when session error occurs', async () => {
       const mockError = new Error('Session error');
 
-      mockSupabase.auth.getSession.mockResolvedValue({
+      (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
         data: { session: null },
         error: mockError,
       });
@@ -57,7 +57,7 @@ describe('sessionManager', () => {
     });
 
     it('should return null when no session exists', async () => {
-      mockSupabase.auth.getSession.mockResolvedValue({
+      (mockSupabase.auth.getSession as jest.Mock).mockResolvedValue({
         data: { session: null },
         error: null,
       });
@@ -69,7 +69,7 @@ describe('sessionManager', () => {
 
     it('should handle unexpected errors', async () => {
       const mockError = new Error('Unexpected error');
-      mockSupabase.auth.getSession.mockRejectedValue(mockError);
+      (mockSupabase.auth.getSession as jest.Mock).mockRejectedValue(mockError);
 
       const result = await getSession();
 
@@ -83,7 +83,7 @@ describe('sessionManager', () => {
       const mockUnsubscribe = jest.fn();
       const mockSubscription = { unsubscribe: mockUnsubscribe };
 
-      mockSupabase.auth.onAuthStateChange.mockReturnValue({
+      (mockSupabase.auth.onAuthStateChange as jest.Mock).mockReturnValue({
         data: { subscription: mockSubscription },
       });
 
@@ -94,9 +94,9 @@ describe('sessionManager', () => {
     });
 
     it('should log TOKEN_REFRESHED events', () => {
-      let authCallback: (event: string, session: any) => void;
+      let authCallback: (event: string, session: any) => void = jest.fn();
 
-      mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockSupabase.auth.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
         authCallback = callback;
         return { data: { subscription: { unsubscribe: jest.fn() } } };
       });
@@ -110,9 +110,9 @@ describe('sessionManager', () => {
     });
 
     it('should log SIGNED_OUT events', () => {
-      let authCallback: (event: string, session: any) => void;
+      let authCallback: (event: string, session: any) => void = jest.fn();
 
-      mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockSupabase.auth.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
         authCallback = callback;
         return { data: { subscription: { unsubscribe: jest.fn() } } };
       });
@@ -126,9 +126,9 @@ describe('sessionManager', () => {
     });
 
     it('should log SIGNED_IN events', () => {
-      let authCallback: (event: string, session: any) => void;
+      let authCallback: (event: string, session: any) => void = jest.fn();
 
-      mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockSupabase.auth.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
         authCallback = callback;
         return { data: { subscription: { unsubscribe: jest.fn() } } };
       });
