@@ -10,14 +10,15 @@ export const useAdminDashboard = () => {
     staleTime: 60 * 1000,
   });
 };
+export const useIsAdmin = () => {
 
-export const useAdminUsers = (page = 0, limit = 50) => {
+
   return useQuery({
-    queryKey: [...KEYS.admin.users, page, limit],
-    queryFn: () => adminService.getUsers(page, limit),
+    queryKey: KEYS.admin.isAdmin,
+    queryFn: () => adminService.isAdmin(),
+    staleTime: 60 * 1000,
   });
 };
-
 export const useAdminUsersInfinite = () => {
   return useInfiniteQuery({
     queryKey: KEYS.admin.users,

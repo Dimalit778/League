@@ -116,11 +116,10 @@ function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: Leagues
           <CText className="text-center text-muted font-bold text-lg">Create or join a league to get started</CText>
         </View>
       ) : (
-        leagues.map((league, index) => (
+        leagues.map((league) => (
           <MyLeagueCard
             key={league.league.id}
             item={league}
-            index={index}
             onPress={() => onSelectLeague(league.league.id, league.is_primary)}
           />
         ))

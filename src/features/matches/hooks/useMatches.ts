@@ -1,9 +1,9 @@
 import { KEYS } from '@/lib/queryClient';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { matchesApi } from '../api/matchesService';
-import { prefetchMatchTeamLogos, prefetchTeamLogos } from '../utils/prefetchTeamLogos';
 import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
@@ -64,7 +64,7 @@ export const useGetMatchesByFixture = ({
   });
 
   useEffect(() => {
-    if (query.data) prefetchTeamLogos(query.data);
+    if (query.data) prefetchMatchTeamLogos(query.data);
   }, [query.data]);
 
   return query;
@@ -80,7 +80,7 @@ export const useGetCompetitionMatches = ({
   memberId: string | null;
   stage?: string;
   view?: TournamentView;
-}) => {
+}) => { 
   const query = useQuery({
     queryKey:
       competitionId && memberId
@@ -104,7 +104,7 @@ export const useGetCompetitionMatches = ({
   });
 
   useEffect(() => {
-    if (query.data) prefetchTeamLogos(query.data);
+    if (query.data) prefetchMatchTeamLogos(query.data);
   }, [query.data]);
 
   return query;

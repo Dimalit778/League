@@ -29,6 +29,11 @@ type PredictionWithRelations = Tables<'predictions'> & {
 };
 
 export const adminService = {
+  async isAdmin() {
+    const { data, error } = await supabase.from('admin_users').select('user_id').maybeSingle();
+    if (error) throw error;
+    return !!data;
+  },
   async getDashboardCounts(): Promise<DashboardCounts> {
     const countTable = async (
       table:
@@ -198,9 +203,11 @@ export const adminService = {
   },
 };
 
+
 export type {
   DashboardCounts,
   LeagueMemberWithRelations,
   LeagueWithRelations,
-  PredictionWithRelations,
+  PredictionWithRelations
 };
+

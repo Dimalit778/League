@@ -78,6 +78,7 @@ export const KEYS = {
 
   // ==================== ADMIN ====================
   admin: {
+    isAdmin: ['admin', 'isAdmin'] as const,
     dashboard: ['admin', 'dashboard'] as const,
     users: ['admin', 'users'] as const,
     leagues: ['admin', 'leagues'] as const,

@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
 import { FIRST_PHASE_STAGES } from '../types/footballStages';
-import { prefetchMatchTeamLogos, prefetchTeamLogos } from '../utils/prefetchTeamLogos';
+import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
 
 const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
@@ -79,7 +79,7 @@ export const matchesApi = {
     if (error) throw error;
 
     const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
-    void prefetchTeamLogos(matches);
+    void prefetchMatchTeamLogos(matches);
 
     return matches;
   },
@@ -97,7 +97,7 @@ export const matchesApi = {
     if (error) throw error;
 
     const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
-    void prefetchTeamLogos(matches);
+    void prefetchMatchTeamLogos(matches);
 
     return matches;
   },
@@ -117,7 +117,7 @@ export const matchesApi = {
     if (error) throw error;
 
     const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
-    void prefetchTeamLogos(matches);
+    void prefetchMatchTeamLogos(matches);
 
     return matches;
   },
@@ -139,7 +139,7 @@ export const matchesApi = {
     if (error) throw error;
 
     const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
-    void prefetchTeamLogos(matches);
+    void prefetchMatchTeamLogos(matches);
 
     return matches;
   },

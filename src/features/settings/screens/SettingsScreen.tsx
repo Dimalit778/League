@@ -1,7 +1,7 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText } from '@/components/ui';
+import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
-import { useIsAdmin } from '@/features/admin/hooks/useIsAdmin';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';

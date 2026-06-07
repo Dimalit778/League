@@ -1,4 +1,4 @@
-import { useIsAdmin } from '@/features/admin/hooks/useIsAdmin';
+import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';

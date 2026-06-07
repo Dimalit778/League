@@ -1,8 +1,8 @@
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
-import { GroupStandingType } from '../../types';
-import TeamBadge from '../TeamBadge';
+import { GroupStandingType } from '../../../types';
+import TeamBadge from '../../TeamBadge';
 
 type Props = {
   rows: GroupStandingType[];
