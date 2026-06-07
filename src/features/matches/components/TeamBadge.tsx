@@ -1,3 +1,4 @@
+import { Image as ExpoImage } from 'expo-image';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { TeamType } from '../types';
 type TeamBadgeProps = {
@@ -163,6 +164,23 @@ export default function TeamBadge({
   });
   const fontSize = initials.length > 2 ? 26 : 31;
   const { name: teamName, shortName: teamShortName } = resolvedTeam;
+  const logoUri = resolvedTeam.logo?.trim();
+
+  if (logoUri) {
+    return (
+      <ExpoImage
+        source={{ uri: logoUri }}
+        contentFit="contain"
+        cachePolicy="memory-disk"
+        transition={0}
+        priority="high"
+        recyclingKey={logoUri}
+        style={{ width: size, height: size }}
+        accessibilityRole="image"
+        accessibilityLabel={`${teamName || teamShortName || initials} logo`}
+      />
+    );
+  }
 
   return (
     <Svg

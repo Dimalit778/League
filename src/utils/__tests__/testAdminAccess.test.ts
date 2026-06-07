@@ -41,16 +41,20 @@ describe('testAdminAccess', () => {
       error: null,
     });
 
-    const mockFrom = jest.fn().mockReturnValue({
+    const mockFrom = jest.fn().mockImplementation((table: string) => ({
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
-            data: { id: 'user-1', role: 'USER' },
+            data: table === 'users' ? { id: 'user-1', email: 'test@example.com', full_name: 'Test' } : null,
+            error: null,
+          }),
+          maybeSingle: jest.fn().mockResolvedValue({
+            data: null, // not in admin_users
             error: null,
           }),
         }),
       }),
-    });
+    }));
 
     (mockSupabase.from as jest.Mock).mockImplementation(mockFrom);
 
@@ -71,12 +75,15 @@ describe('testAdminAccess', () => {
       error: null,
     });
 
-    // Mock all database calls to return success
     const mockFrom = jest.fn().mockImplementation((table: string) => ({
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
-            data: table === 'users' ? { id: 'admin-1', role: 'ADMIN' } : null,
+            data: table === 'users' ? { id: 'admin-1', email: 'admin@example.com', full_name: 'Admin' } : null,
+            error: null,
+          }),
+          maybeSingle: jest.fn().mockResolvedValue({
+            data: table === 'admin_users' ? { user_id: 'admin-1' } : null,
             error: null,
           }),
         }),
@@ -93,7 +100,7 @@ describe('testAdminAccess', () => {
 
     expect(result.success).toBe(true);
     expect(result.currentUser.role).toBe('ADMIN');
-    expect(result.tests.length).toBeGreaterThan(5); // Should have multiple tests
+    expect(result.tests.length).toBeGreaterThan(5);
     expect(result.tests.every((test) => test.status === 'pass')).toBe(true);
   });
 });

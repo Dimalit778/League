@@ -35,12 +35,11 @@ const SignUpScreen = () => {
     mode: 'onChange',
   });
   const onSubmit = async (form: FormData) => {
-    const email = form.email.trim();
-    const password = form.password.trim();
-    const fullname = form.fullname.trim();
+    const email = form.email.trim().toLowerCase();
+    const password = form.password;
+    const fullname = form.fullname.trim().replace(/\s+/g, ' ');
 
     const result = await signUp(email, password, fullname);
-    console.log('result', JSON.stringify(result, null, 2));
 
     if (result.success) {
       router.push({

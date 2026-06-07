@@ -1,4 +1,9 @@
 import { CText } from '@/components/ui';
+import TeamShirt from '@/features/matches/components/TeamShirt';
+import { PredictionDisplay } from '@/features/matches/components/regular-league/MatchCardDisplay';
+import { MatchWithPredictionsType } from '@/features/matches/types';
+import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '@/features/matches/utils/matchStatus';
+import { getPredictionResultLabel } from '@/features/matches/utils/pointsColor';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { hexToRgba } from '@/utils/colorHexToRgba';
@@ -6,12 +11,7 @@ import { formatTime } from '@/utils/formats';
 import { Link } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
-import { MatchWithPredictionsType } from '../../types';
-import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
-import { getPredictionResultLabel } from '../../utils/pointsColor';
-import { PredictionDisplay } from '../regular-league/MatchCardDisplay';
-import TeamBadge from '../TeamBadge';
-
+const TEAM_SHIRT_SIZE = 52;
 type Props = { match: MatchWithPredictionsType };
 
 /* ─── Score / time block ──────────────────────────────────────── */
@@ -143,7 +143,7 @@ export default memo(function Match({ match }: Props) {
               <CText variant="caption" numberOfLines={2} className="text-center">
                 {match.home_team?.shortName}
               </CText>
-              <TeamBadge team={match.home_team} isWorldCup={isWorldCup} />
+              <TeamShirt team={match.home_team} size={TEAM_SHIRT_SIZE} />
             </View>
 
             <ScoreBlock
@@ -156,7 +156,7 @@ export default memo(function Match({ match }: Props) {
             />
 
             <View className="flex-1 flex-row items-center gap-2 min-w-0 justify-start ">
-              <TeamBadge team={match.away_team} isWorldCup={isWorldCup} />
+              <TeamShirt team={match.away_team} size={TEAM_SHIRT_SIZE} />
               <CText variant="caption" numberOfLines={2} className="text-center">
                 {match.away_team?.shortName}
               </CText>

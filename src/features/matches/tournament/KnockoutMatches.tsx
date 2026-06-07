@@ -1,16 +1,16 @@
 import { CText } from '@/components/ui';
+import TeamShirt from '@/features/matches/components/TeamShirt';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { formatTime } from '@/utils/formats';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, ScrollView, useWindowDimensions, View } from 'react-native';
-import { MatchWithPredictionsType } from '../../types';
-import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../utils/matchStatus';
-import { getKnockoutStages, getStageLabel } from '../../utils/tournamentMatches';
-import TeamBadge from '../TeamBadge';
-import { MatchCardHeader, PredictionDisplay } from '../regular-league/MatchCardDisplay';
-import { KnockoutStageTabs } from './TournametTabs';
+import { MatchCardHeader, PredictionDisplay } from '../components/regular-league/MatchCardDisplay';
+import { KnockoutStageTabs } from '../components/tournament/TournametTabs';
+import { MatchWithPredictionsType } from '../types';
+import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../utils/matchStatus';
+import { getKnockoutStages, getStageLabel } from '../utils/tournamentMatches';
 
 const getStageIndexFromOffset = (offset: number, pageWidth: number, stageCount: number, isRTL: boolean) => {
   const pageIndex = Math.round(offset / pageWidth);
@@ -149,7 +149,7 @@ function TeamRowItem({
         />
       )}
 
-      <TeamBadge team={team} size={BADGE_SIZE} />
+      <TeamShirt team={team} size={BADGE_SIZE} />
 
       <CText
         variant="bodyBold"

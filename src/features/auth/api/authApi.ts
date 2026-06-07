@@ -31,7 +31,7 @@ export const signIn = async (email: string, password: string, queryClient: Query
 
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
-      password: password.trim(),
+      password: password,
     });
 
     if (error) throw error;
@@ -63,7 +63,7 @@ export const signUp = async (email: string, password: string, fullname: string) 
       email: email.trim().toLowerCase(),
       password,
       options: {
-        data: { full_name: fullname, provider: 'email', role: 'USER' },
+        data: { full_name: fullname, provider: 'email' },
       },
     });
 

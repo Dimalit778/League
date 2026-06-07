@@ -3,7 +3,6 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { hexToRgba } from '@/utils/colorHexToRgba';
 import { formatTime } from '@/utils/formats';
-import { Image as ExpoImage } from 'expo-image';
 import { Link } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
@@ -11,6 +10,7 @@ import { MatchWithPredictionsType } from '../../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../../utils/matchStatus';
 import { getPredictionResultLabel } from '../../../utils/pointsColor';
 import { PredictionDisplay } from '../../regular-league/MatchCardDisplay';
+import TeamShirt from '../../TeamShirt';
 type Props = { match: MatchWithPredictionsType };
 
 /* ─── Score / time block ──────────────────────────────────────── */
@@ -103,13 +103,12 @@ function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boole
   return null;
 }
 function TeamRow({
+  team,
   name,
-  logo,
   isHome,
 }: {
+  team?: MatchWithPredictionsType['home_team'];
   name?: string | null;
-  shortName?: string | null;
-  logo?: string | null;
   isHome: boolean;
 }) {
   return (
@@ -119,11 +118,11 @@ function TeamRow({
           <CText variant="caption" numberOfLines={2} className="text-center">
             {name}
           </CText>
-          <ExpoImage source={{ uri: logo ?? undefined }} contentFit="contain" style={{ width: 34, height: 34 }} />
+          <TeamShirt team={team} size={34} />
         </>
       ) : (
         <>
-          <ExpoImage source={{ uri: logo ?? undefined }} contentFit="contain" style={{ width: 34, height: 34 }} />
+          <TeamShirt team={team} size={34} />
           <CText variant="caption" numberOfLines={2} className="text-center">
             {name}
           </CText>
@@ -166,7 +165,7 @@ export default memo(function GroupMatchCard({ match }: Props) {
 
           {/* Teams + score */}
           <View className="w-full flex-row items-center py-2 px-2">
-            <TeamRow name={match.home_team?.name} logo={match.home_team?.logo} isHome />
+            <TeamRow team={match.home_team} name={match.home_team?.name} isHome />
 
             <ScoreBlock
               isFinished={isFinished}
@@ -177,7 +176,7 @@ export default memo(function GroupMatchCard({ match }: Props) {
               kickOff={match.kick_off}
             />
 
-            <TeamRow name={match.away_team?.name} logo={match.away_team?.logo} isHome={false} />
+            <TeamRow team={match.away_team} name={match.away_team?.name} isHome={false} />
           </View>
 
           {/* Prediction footer */}

@@ -10,7 +10,7 @@ export type ComputedStandingRow = {
   lost: number;
   goalsFor: number;
   goalsAgainst: number;
-  goalsDiff: number;
+  goalsDiff: number;  
   points: number;
 };
 
@@ -101,15 +101,7 @@ export const getMatchesByFixture = (matches: MatchWithPredictionsType[], fixture
 export const GROUP_STAGE = 'GROUP_STAGE';
 export const LEAGUE_STAGE = 'LEAGUE_STAGE';
 export type TournamentView = 'groups' | 'knockout';
-export const FIRST_PHASE_STAGES = [
-  GROUP_STAGE,
-  LEAGUE_STAGE,
-  'REGULAR_SEASON',
-  'CLAUSURA',
-  'APERTURA',
-  'CHAMPIONSHIP_ROUND',
-  'RELEGATION_ROUND',
-] as const;
+
 
 const KNOCKOUT_STAGE_ORDER = [
   'ROUND_1',

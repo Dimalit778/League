@@ -38,13 +38,16 @@ const SignInScreen = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    const result = await signIn(data.email, data.password);
+    const email = data.email.trim().toLowerCase();
+    const password = data.password;
 
-    if (result.error && result.error.includes('Email not confirmed')) {
-      resendOtp(data.email);
+    const result = await signIn(email, password);
+
+    if (result.error && result.error?.toLowerCase().includes('email not confirmed')) {
+      resendOtp(email);
       router.push({
         pathname: '/verifyEmail',
-        params: { email: data.email },
+        params: { email },
       });
     }
   };
@@ -118,11 +121,7 @@ const SignInScreen = () => {
 
           <View className="gap-3">
             <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
-            <AppleAuth
-              isLoading={isAppleLoading}
-              setIsLoading={setIsAppleLoading}
-              labelKey="Sign in with Apple"
-            />
+            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} labelKey="Sign in with Apple" />
           </View>
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">

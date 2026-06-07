@@ -23,9 +23,9 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     useAuthStore.setState({ isAuthLoading: false });
   }
 
-  const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
-
   if (!shouldApply()) return;
+
+  const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
 
   if (!data) {
     setSignedOut();
@@ -52,13 +52,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error: unknown) => {
         if (!isMounted) return;
-        const isNetworkError =
-          error instanceof TypeError || (error instanceof Error && error.message === 'Network request failed');
-        if (isNetworkError) {
-          useAuthStore.setState({ isAuthLoading: false });
-        } else {
-          setSignedOut();
-        }
+
+        console.error('Failed to get session:', error);
+
+        setSignedOut();
       });
 
     const {

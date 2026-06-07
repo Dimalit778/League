@@ -21,6 +21,7 @@ export const TOURNAMENT_STAGES = [
   'PLAYOFF_ROUND_2',
   'PLAYOFFS',
   'REGULAR_SEASON',
+  'LEAGUE_STAGE',
   'CLAUSURA',
   'APERTURA',
   'CHAMPIONSHIP_ROUND',
@@ -49,17 +50,17 @@ export type TournamentGroup = (typeof TOURNAMENT_GROUPS)[number];
 const TOURNAMENT_STAGE_SET = new Set<string>(TOURNAMENT_STAGES);
 
 /** Domestic league calendar — fixture list (round-robin) UI. */
-const DOMESTIC_LEAGUE_STAGES = new Set<string>([
+export const DOMESTIC_LEAGUE_STAGES = [
   'REGULAR_SEASON',
   'LEAGUE_STAGE',
   'CLAUSURA',
   'APERTURA',
   'CHAMPIONSHIP_ROUND',
   'RELEGATION_ROUND',
-]);
+] as const;
 
 /** Cup-style group / qualification / play-in — groups + knockout shell. */
-const GROUP_PHASE_STAGES = new Set<string>([
+export const GROUP_PHASE_STAGES = [
   'GROUP_STAGE',
   'PRELIMINARY_ROUND',
   'QUALIFICATION',
@@ -69,10 +70,16 @@ const GROUP_PHASE_STAGES = new Set<string>([
   'PLAYOFF_ROUND_1',
   'PLAYOFF_ROUND_2',
   'PLAYOFFS',
-]);
+] as const;
+
+/** First phase = league style + group/qualification style. */
+export const FIRST_PHASE_STAGES = [
+  ...DOMESTIC_LEAGUE_STAGES,
+  ...GROUP_PHASE_STAGES,
+] as const;
 
 /** Knockout bracket rounds (no group table). */
-const KNOCKOUT_ONLY_STAGES = new Set<string>([
+export const KNOCKOUT_ONLY_STAGES = [
   'FINAL',
   'THIRD_PLACE',
   'SEMI_FINALS',
@@ -84,7 +91,11 @@ const KNOCKOUT_ONLY_STAGES = new Set<string>([
   'ROUND_3',
   'ROUND_2',
   'ROUND_1',
-]);
+] as const;
+
+const DOMESTIC_LEAGUE_STAGE_SET = new Set<string>(DOMESTIC_LEAGUE_STAGES);
+const GROUP_PHASE_STAGE_SET = new Set<string>(GROUP_PHASE_STAGES);
+const KNOCKOUT_ONLY_STAGE_SET = new Set<string>(KNOCKOUT_ONLY_STAGES);
 
 export function parseTournamentStage(value: string | null | undefined): TournamentStage | null {
   const key = value?.trim().toUpperCase();
@@ -100,15 +111,15 @@ export function parseTournamentGroup(value: string | null | undefined): Tourname
 
 export function isDomesticLeagueStage(stage: string | null | undefined): boolean {
   const key = stage?.trim().toUpperCase();
-  return key != null && DOMESTIC_LEAGUE_STAGES.has(key);
+  return key != null && DOMESTIC_LEAGUE_STAGE_SET.has(key);
 }
 
 export function isGroupPhaseStage(stage: string | null | undefined): boolean {
   const key = stage?.trim().toUpperCase();
-  return key != null && GROUP_PHASE_STAGES.has(key);
+  return key != null && GROUP_PHASE_STAGE_SET.has(key);
 }
 
 export function isKnockoutOnlyStage(stage: string | null | undefined): boolean {
   const key = stage?.trim().toUpperCase();
-  return key != null && KNOCKOUT_ONLY_STAGES.has(key);
+  return key != null && KNOCKOUT_ONLY_STAGE_SET.has(key);
 }

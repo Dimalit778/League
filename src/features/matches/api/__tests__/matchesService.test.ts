@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { FIRST_PHASE_STAGES } from '../../types/footballStages';
+import { KNOCKOUT_STAGE_VALUES } from '../../utils/tournamentMatches';
 import { matchesApi } from '../matchesService';
 
 describe('matchesApi', () => {
@@ -153,7 +155,7 @@ describe('matchesApi', () => {
 
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'groups');
 
-      expect(inFilter).toHaveBeenCalled();
+      expect(inFilter).toHaveBeenCalledWith('stage', [...FIRST_PHASE_STAGES]);
       expect(result).toEqual([{ id: 1, stage: 'GROUP_STAGE', predictions: [] }]);
     });
 
@@ -169,7 +171,7 @@ describe('matchesApi', () => {
 
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'knockout');
 
-      expect(inFilter).toHaveBeenCalled();
+      expect(inFilter).toHaveBeenCalledWith('stage', KNOCKOUT_STAGE_VALUES);
       expect(result).toEqual([{ id: 2, stage: 'LAST_16', predictions: [] }]);
     });
   });

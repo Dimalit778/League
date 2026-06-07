@@ -1,4 +1,4 @@
-import { useGetUser } from '@/features/admin/hooks/useUsers';
+import { useIsAdmin } from '@/features/admin/hooks/useIsAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';
@@ -6,10 +6,9 @@ import { Stack } from 'expo-router';
 
 export default function AppLayout() {
   const { isLoggedIn } = useAuth();
-  const { data: userData } = useGetUser();
-  const role = userData?.role ?? null;
+  const { data: isAdminUser } = useIsAdmin();
   const activeMember = useMemberStore((s) => s.activeMember);
-  const admin = isLoggedIn && role === 'ADMIN';
+  const admin = isLoggedIn && !!isAdminUser;
   const hasMember = !!activeMember;
   const { colors } = useThemeTokens();
 

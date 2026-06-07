@@ -14,6 +14,29 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       competitions: {
         Row: {
           area: string
@@ -435,7 +458,6 @@ export type Database = {
           id: string
           notification_token: string | null
           provider: string
-          role: string
           updated_at: string
         }
         Insert: {
@@ -455,7 +477,6 @@ export type Database = {
           id?: string
           notification_token?: string | null
           provider?: string
-          role?: string
           updated_at?: string
         }
         Relationships: []
@@ -607,7 +628,7 @@ export type Database = {
         | "FINISHED"
         | "POSTPONED"
         | "PAUSED"
-      role: "USER" | "ADMIN"
+
     }
     CompositeTypes: {
       [_ in never]: never

@@ -8,8 +8,8 @@ import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchase
 import { Tables } from '@/types/database.types';
 import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, Pressable, View } from 'react-native';
 import { useGetCompetitions } from '../hooks/useCompetition';
 
 type Competition = Tables<'competitions'>;
@@ -23,17 +23,20 @@ const SelectCompetitionScreen = () => {
   const { colors } = useThemeTokens();
 
   const isPro = !!subscription.isActive;
+  console.log('isPro', isPro);
 
-  const requiresUpgrade = (comp: Competition) => !comp.is_free && !isPro;
+  const requiresUpgrade = useCallback((comp: Competition) => !comp.is_free && !isPro, [isPro]);
 
-  const handleSelectCompetition = async (comp: Competition) => {
-    if (requiresUpgrade(comp)) {
-      const payload = await openPaywall();
-      if (!payload) return;
-    }
-
-    setSelectedCompetition(comp);
-  };
+  const handleSelectCompetition = useCallback(
+    async (comp: Competition) => {
+      if (requiresUpgrade(comp)) {
+        const payload = await openPaywall();
+        if (!payload) return;
+      }
+      setSelectedCompetition(comp);
+    },
+    [requiresUpgrade, openPaywall],
+  );
 
   const handleContinue = async () => {
     if (!selectedCompetition) return;
@@ -51,6 +54,59 @@ const SelectCompetitionScreen = () => {
     });
   };
 
+  const renderItem = useCallback(
+    ({ item: comp }: { item: Competition }) => {
+      const isSelected = selectedCompetition?.id === comp.id;
+      const isLocked = requiresUpgrade(comp);
+      return (
+        <Pressable
+          onPress={() => handleSelectCompetition(comp)}
+          style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+          className="mb-3"
+        >
+          <View className="relative overflow-hidden rounded-xl">
+            <View
+              className="flex-row items-center p-4 border-2 bg-surface rounded-xl"
+              style={{ borderColor: isSelected ? colors.primary : colors.border }}
+            >
+              <ExpoImage
+                source={comp.flag}
+                style={{ width: 48, height: 48 }}
+                cachePolicy="memory-disk"
+                contentFit="contain"
+                transition={120}
+                priority="high"
+              />
+              <View className="flex-1 items-center">
+                <CText variant="caption" className="text-muted">
+                  {t(comp.area)}
+                </CText>
+                <CText
+                  variant="body"
+                  bold
+                  className="text-center"
+                  style={{ color: isSelected ? colors.primary : colors.text }}
+                >
+                  {t(comp.name)}
+                </CText>
+              </View>
+              <ExpoImage
+                source={comp.logo}
+                style={{ width: 52, height: 52 }}
+                cachePolicy="memory-disk"
+                contentFit="contain"
+                transition={120}
+                priority="high"
+              />
+            </View>
+            <UpgardeBadge visible={isLocked} />
+          </View>
+        </Pressable>
+      );
+    },
+    [selectedCompetition, requiresUpgrade, handleSelectCompetition, colors, t],
+  );
+
   if (error) return <Error error={error} />;
 
   if (isLoading) return <LoadingOverlay />;
@@ -58,65 +114,14 @@ const SelectCompetitionScreen = () => {
   return (
     <Screen withSafeArea>
       <BackButton title={t('Select a Competition')} />
-      <ScrollView className="flex-" contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}>
-        {(competitions ?? []).map((comp) => {
-          const isSelected = selectedCompetition?.id === comp.id;
-          const isLocked = requiresUpgrade(comp);
-
-          return (
-            <TouchableOpacity
-              key={comp.id}
-              onPress={() => handleSelectCompetition(comp)}
-              activeOpacity={0.85}
-              className="mb-3"
-            >
-              <View className="relative overflow-hidden rounded-xl">
-                <View
-                  className="flex-row items-center p-4 border-2 bg-surface rounded-xl"
-                  style={{
-                    borderColor: isSelected ? colors.primary : colors.border,
-                  }}
-                >
-                  <ExpoImage
-                    source={comp.flag}
-                    style={{ width: 48, height: 48 }}
-                    cachePolicy="memory-disk"
-                    contentFit="contain"
-                    transition={120}
-                    priority="high"
-                  />
-                  <View className="flex-1 items-center">
-                    <CText variant="caption" className="text-muted">
-                      {t(comp.area)}
-                    </CText>
-                    <CText
-                      variant="body"
-                      bold
-                      className="text-center"
-                      style={{
-                        color: isSelected ? colors.primary : colors.text,
-                      }}
-                    >
-                      {t(comp.name)}
-                    </CText>
-                  </View>
-
-                  <ExpoImage
-                    source={comp.logo}
-                    style={{ width: 52, height: 52 }}
-                    cachePolicy="memory-disk"
-                    contentFit="contain"
-                    transition={120}
-                    priority="high"
-                  />
-                </View>
-
-                <UpgardeBadge visible={isLocked} />
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <FlatList
+        data={competitions ?? []}
+        keyExtractor={(comp) => String(comp.id)}
+        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
+      />
       <View className="p-3">
         <Button
           title={t('Continue')}

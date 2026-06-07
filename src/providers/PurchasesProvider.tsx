@@ -3,7 +3,7 @@ import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
 import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
 
@@ -30,67 +30,87 @@ const getRevenueCatApiKey = (): string | null => {
   return null;
 };
 
-const hasActiveEntitlement = (customerInfo: CustomerInfo | null): boolean => {
-  if (!customerInfo?.entitlements?.active) return false;
-  return Object.keys(customerInfo.entitlements.active).length > 0;
+const hasProEntitlement = (customerInfo: CustomerInfo | null): boolean => {
+  return !!customerInfo?.entitlements?.active?.pro;
 };
 
 const isAnonymousRevenueCatUser = (customerInfo: CustomerInfo | null): boolean =>
   customerInfo?.originalAppUserId?.startsWith('$RCAnonymousID:') ?? true;
 
+type PurchasesState = {
+  isReady: boolean;
+  isUserSynced: boolean;
+  isOffline: boolean;
+  customerInfo: CustomerInfo | null;
+  error: Error | null;
+};
+
+type PurchasesAction =
+  | { type: 'setReady'; value: boolean }
+  | { type: 'setUserSynced'; value: boolean }
+  | { type: 'setOffline'; value: boolean }
+  | { type: 'setCustomerInfo'; value: CustomerInfo | null }
+  | { type: 'setError'; value: Error | null };
+
+function purchasesReducer(state: PurchasesState, action: PurchasesAction): PurchasesState {
+  switch (action.type) {
+    case 'setReady':
+      return { ...state, isReady: action.value };
+    case 'setUserSynced':
+      return { ...state, isUserSynced: action.value };
+    case 'setOffline':
+      return { ...state, isOffline: action.value };
+    case 'setCustomerInfo':
+      return { ...state, customerInfo: action.value };
+    case 'setError':
+      return { ...state, error: action.value };
+  }
+}
+
 export const PurchasesProvider = ({ children }: { children: React.ReactNode }) => {
   const userId = useAuthStore((s) => s.user?.id ?? null);
-  const setIsSubscribed = useAuthStore((s) => s.setIsSubscribed);
+
   const queryClient = useQueryClient();
   const isConfiguredRef = useRef(false);
   const customerInfoRef = useRef<CustomerInfo | null>(null);
   const isUserSyncedRef = useRef(false);
 
-  const [isReady, setIsReady] = useState(false);
-  const [isUserSynced, setIsUserSynced] = useState(Platform.OS === 'web');
-  const [isOffline, setIsOffline] = useState(false);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
-  const [error, setError] = useState<Error | null>(null);
+  const [{ isReady, isUserSynced, isOffline, customerInfo, error }, dispatch] = useReducer(purchasesReducer, {
+    isReady: false,
+    isUserSynced: Platform.OS === 'web',
+    isOffline: false,
+    customerInfo: null,
+    error: null,
+  });
 
   const applyCustomerInfo = useCallback(
     (nextCustomerInfo: CustomerInfo | null) => {
       customerInfoRef.current = nextCustomerInfo;
-      setCustomerInfo(nextCustomerInfo);
+      dispatch({ type: 'setCustomerInfo', value: nextCustomerInfo });
 
       const trusted = isUserSyncedRef.current;
-      setIsSubscribed(!!userId && trusted ? hasActiveEntitlement(nextCustomerInfo) : false);
 
       if (!userId || !trusted) return;
 
       queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
     },
-    [queryClient, setIsSubscribed, userId],
+    [queryClient, userId],
   );
 
-  const markUserSynced = useCallback(
-    (synced: boolean) => {
-      isUserSyncedRef.current = synced;
-      setIsUserSynced(synced);
-
-      if (synced && customerInfoRef.current) {
-        setIsSubscribed(!!userId && hasActiveEntitlement(customerInfoRef.current));
-      } else if (!synced) {
-        setIsSubscribed(false);
-      }
-    },
-    [setIsSubscribed, userId],
-  );
+  const markUserSynced = useCallback((synced: boolean) => {
+    isUserSyncedRef.current = synced;
+    dispatch({ type: 'setUserSynced', value: synced });
+  }, []);
 
   const handleNetworkFailure = useCallback(() => {
-    setIsOffline(true);
-    setError(null);
-    setIsReady(true);
+    dispatch({ type: 'setOffline', value: true });
+    dispatch({ type: 'setError', value: null });
+    dispatch({ type: 'setReady', value: true });
     markUserSynced(true);
 
     if (customerInfoRef.current) {
-      setIsSubscribed(!!userId && hasActiveEntitlement(customerInfoRef.current));
     }
-  }, [markUserSynced, setIsSubscribed, userId]);
+  }, [markUserSynced]);
 
   const refreshCustomerInfo = useCallback(async (): Promise<CustomerInfo | null> => {
     if (!isConfiguredRef.current || Platform.OS === 'web') {
@@ -99,9 +119,9 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
     try {
       const nextCustomerInfo = await Purchases.getCustomerInfo();
-      setIsOffline(false);
+      dispatch({ type: 'setOffline', value: false });
       applyCustomerInfo(nextCustomerInfo);
-      setError(null);
+      dispatch({ type: 'setError', value: null });
       return nextCustomerInfo;
     } catch (refreshError) {
       if (isRevenueCatNetworkError(refreshError)) {
@@ -110,7 +130,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
       }
 
       const nextError = refreshError instanceof Error ? refreshError : new Error(String(refreshError));
-      setError(nextError);
+      dispatch({ type: 'setError', value: nextError });
       return null;
     }
   }, [applyCustomerInfo, handleNetworkFailure]);
@@ -121,14 +141,14 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     const configurePurchases = async () => {
       if (Platform.OS === 'web') {
         markUserSynced(true);
-        setIsReady(true);
+        dispatch({ type: 'setReady', value: true });
         return;
       }
 
       const apiKey = getRevenueCatApiKey();
       if (!apiKey) {
-        setError(new Error('RevenueCat API key is not configured for this platform'));
-        setIsReady(false);
+        dispatch({ type: 'setError', value: new Error('RevenueCat API key is not configured for this platform') });
+        dispatch({ type: 'setReady', value: false });
         return;
       }
 
@@ -146,11 +166,11 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           const initialCustomerInfo = await Purchases.getCustomerInfo();
 
           if (!cancelled) {
-            setIsOffline(false);
+            dispatch({ type: 'setOffline', value: false });
             applyCustomerInfo(initialCustomerInfo);
             markUserSynced(true);
-            setError(null);
-            setIsReady(true);
+            dispatch({ type: 'setError', value: null });
+            dispatch({ type: 'setReady', value: true });
           }
         } catch (customerInfoError) {
           if (!cancelled && isRevenueCatNetworkError(customerInfoError)) {
@@ -168,8 +188,8 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           }
 
           const nextError = configureError instanceof Error ? configureError : new Error(String(configureError));
-          setError(nextError);
-          setIsReady(false);
+          dispatch({ type: 'setError', value: nextError });
+          dispatch({ type: 'setReady', value: false });
         }
       }
     };
@@ -215,10 +235,10 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
         }
 
         if (!cancelled) {
-          setIsOffline(false);
+          dispatch({ type: 'setOffline', value: false });
           markUserSynced(true);
           applyCustomerInfo(nextCustomerInfo);
-          setError(null);
+          dispatch({ type: 'setError', value: null });
 
           if (userId) {
             queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) });
@@ -233,7 +253,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
           markUserSynced(true);
           const nextError = syncError instanceof Error ? syncError : new Error(String(syncError));
-          setError(nextError);
+          dispatch({ type: 'setError', value: nextError });
         }
       }
     };
@@ -245,12 +265,15 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     };
   }, [applyCustomerInfo, handleNetworkFailure, isReady, markUserSynced, queryClient, userId]);
 
+  const refreshCustomerInfoRef = useRef(refreshCustomerInfo);
+  refreshCustomerInfoRef.current = refreshCustomerInfo;
+
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active') {
-        refreshCustomerInfo();
+        refreshCustomerInfoRef.current();
       }
     };
 
@@ -261,7 +284,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
       appStateListener.remove();
       Purchases.removeCustomerInfoUpdateListener(applyCustomerInfo);
     };
-  }, [applyCustomerInfo, isReady, refreshCustomerInfo]);
+  }, [applyCustomerInfo, isReady]);
 
   const value = useMemo(
     () => ({
@@ -279,7 +302,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 };
 
 export const usePurchasesContext = () => {
-  const context = useContext(PurchasesContext);
+  const context = use(PurchasesContext);
 
   if (!context) {
     throw new Error('usePurchasesContext must be used within PurchasesProvider');

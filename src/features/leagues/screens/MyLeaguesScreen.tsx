@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { leagueApi } from '../api/leagueApi';
@@ -100,9 +101,13 @@ type LeaguesListProps = {
 };
 
 function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: LeaguesListProps) {
+  const refreshControl = useMemo(
+    () => <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />,
+    [isFetching, onRefresh],
+  );
   return (
     <ScrollView
-      refreshControl={<RefreshControl refreshing={isFetching} onRefresh={onRefresh} />}
+      refreshControl={refreshControl}
       showsVerticalScrollIndicator={false}
       contentContainerClassName="flex-1 gap-3 p-2 mt-4"
     >
@@ -111,10 +116,11 @@ function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: Leagues
           <CText className="text-center text-muted font-bold text-lg">Create or join a league to get started</CText>
         </View>
       ) : (
-        leagues.map((league) => (
+        leagues.map((league, index) => (
           <MyLeagueCard
             key={league.league.id}
             item={league}
+            index={index}
             onPress={() => onSelectLeague(league.league.id, league.is_primary)}
           />
         ))

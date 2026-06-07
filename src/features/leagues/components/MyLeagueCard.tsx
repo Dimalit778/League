@@ -12,11 +12,7 @@ export default function MyLeagueCard({ item, onPress }: LeagueCardProps) {
   const isLocked = !item.active;
   return (
     <View className={`bg-surface rounded-xl${isLocked ? ' opacity-50' : ''}`}>
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={isLocked ? 1 : 0.8}
-        disabled={isLocked}
-      >
+      <TouchableOpacity onPress={onPress} activeOpacity={isLocked ? 1 : 0.8} disabled={isLocked}>
         <View className="flex-row items-center">
           <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
           <View className="flex-1 ps-4 ">

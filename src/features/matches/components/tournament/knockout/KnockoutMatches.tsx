@@ -8,7 +8,7 @@ import { FlatList, Pressable, RefreshControl, ScrollView, useWindowDimensions, V
 import { MatchWithPredictionsType } from '../../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../../utils/matchStatus';
 import { getKnockoutStages, getStageLabel } from '../../../utils/tournamentMatches';
-import TeamBadge from '../../TeamBadge';
+import TeamShirt from '../../TeamShirt';
 import { MatchCardHeader, PredictionDisplay } from '../../regular-league/MatchCardDisplay';
 import { KnockoutStageTabs } from '../TournametTabs';
 
@@ -149,7 +149,7 @@ function TeamRowItem({
         />
       )}
 
-      <TeamBadge team={team} size={BADGE_SIZE} />
+      <TeamShirt team={team} size={BADGE_SIZE} />
 
       <CText
         variant="bodyBold"

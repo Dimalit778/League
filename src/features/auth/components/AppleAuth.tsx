@@ -1,13 +1,11 @@
-import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { useQueryClient } from '@tanstack/react-query';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
-import AppleSignInButton from './AppleSignInButton';
 
 const AppleAuth = ({
   setIsLoading,
@@ -22,7 +20,7 @@ const AppleAuth = ({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [available, setAvailable] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const errorMessageRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
@@ -38,7 +36,7 @@ const AppleAuth = ({
   const handleAppleSignIn = useCallback(async () => {
     try {
       setIsLoading(true);
-      setErrorMessage(null);
+      errorMessageRef.current = null;
 
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -74,7 +72,7 @@ const AppleAuth = ({
       }
 
       const userMessage = formatErrorForUser(error) || 'Apple sign in failed. Please try again.';
-      setErrorMessage(userMessage);
+      errorMessageRef.current = userMessage;
       Alert.alert('Sign In Error', userMessage);
     } finally {
       setIsLoading(false);
@@ -87,8 +85,15 @@ const AppleAuth = ({
 
   return (
     <View className="gap-2">
-      <AppleSignInButton onPress={handleAppleSignIn} loading={isLoading} disabled={isLoading} label={t(labelKey)} />
-      {errorMessage && <CText className="text-error text-sm text-center mt-1">{errorMessage}</CText>}
+      {/* <AppleSignInButton onPress={handleAppleSignIn} loading={isLoading} disabled={isLoading} label={t(labelKey)} />
+      {errorMessage && <CText className="text-error text-sm text-center mt-1">{errorMessage}</CText>} */}
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={8}
+        style={{ width: 200, height: 44 }}
+        onPress={handleAppleSignIn}
+      />
     </View>
   );
 };

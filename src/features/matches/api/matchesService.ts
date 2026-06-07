@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase';
 import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
-import { FIRST_PHASE_STAGES, KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
+import { FIRST_PHASE_STAGES } from '../types/footballStages';
+import { prefetchMatchTeamLogos, prefetchTeamLogos } from '../utils/prefetchTeamLogos';
+import { KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
 
 const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
   *,
@@ -47,6 +49,7 @@ export const matchesApi = {
 
     if (error) throw error;
     if (!data) throw new Error('Match not found');
+    void prefetchMatchTeamLogos(data);
     return data;
   },
   // Get matches by fixture with current Member predictions
@@ -75,7 +78,10 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    void prefetchTeamLogos(matches);
+
+    return matches;
   },
   // Get all competition matches with current Member predictions
   async getCompetitionMatchesWithMemberPredictions(
@@ -90,7 +96,10 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    void prefetchTeamLogos(matches);
+
+    return matches;
   },
 
   async getTournamentMatches(
@@ -107,7 +116,10 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    void prefetchTeamLogos(matches);
+
+    return matches;
   },
 
   async getTournamentMatchesByView(
@@ -126,7 +138,10 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    void prefetchTeamLogos(matches);
+
+    return matches;
   },
   async getTournamentActiveStage(competitionId: number): Promise<{ activeStage: string | null }> {
     const { data, error } = await supabase

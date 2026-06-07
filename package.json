@@ -10,7 +10,8 @@
     "vercel-build": "expo export",
     "lint": "expo lint",
     "test": "jest --watchAll",
-    "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts"
+    "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.4.2",

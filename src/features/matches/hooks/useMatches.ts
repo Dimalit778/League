@@ -1,13 +1,15 @@
 import { KEYS } from '@/lib/queryClient';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { matchesApi } from '../api/matchesService';
+import { prefetchMatchTeamLogos, prefetchTeamLogos } from '../utils/prefetchTeamLogos';
 import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
 export const useGetMatchDetail = (matchId: number) => {
   const leagueId = useMemberStore(selectLeagueId);
-  return useQuery({
+  const query = useQuery({
     queryKey: KEYS.matches.withPredictions(leagueId as string, matchId),
     queryFn: leagueId && matchId ? () => matchesApi.getMatchWithPredictions(leagueId, matchId) : skipToken,
     select: (data) => {
@@ -22,6 +24,12 @@ export const useGetMatchDetail = (matchId: number) => {
 
     staleTime: 1000 * 60 * 5,
   });
+
+  useEffect(() => {
+    if (query.data) prefetchMatchTeamLogos(query.data);
+  }, [query.data]);
+
+  return query;
 };
 
 // Get matches by fixture with current Member predictions
@@ -38,7 +46,7 @@ export const useGetMatchesByFixture = ({
   enabled?: boolean;
   stage?: string;
 }) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage),
     queryFn:
       enabled && selectedFixture && competitionId && memberId
@@ -54,6 +62,12 @@ export const useGetMatchesByFixture = ({
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
+
+  useEffect(() => {
+    if (query.data) prefetchTeamLogos(query.data);
+  }, [query.data]);
+
+  return query;
 };
 
 export const useGetCompetitionMatches = ({
@@ -67,7 +81,7 @@ export const useGetCompetitionMatches = ({
   stage?: string;
   view?: TournamentView;
 }) => {
-  return useQuery({
+  const query = useQuery({
     queryKey:
       competitionId && memberId
         ? view
@@ -88,6 +102,12 @@ export const useGetCompetitionMatches = ({
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
+
+  useEffect(() => {
+    if (query.data) prefetchTeamLogos(query.data);
+  }, [query.data]);
+
+  return query;
 };
 
 export const useGetTournamentActiveStage = ({ competitionId }: { competitionId: number | null }) => {

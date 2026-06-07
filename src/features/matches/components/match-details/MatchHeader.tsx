@@ -1,29 +1,19 @@
 import { CText } from '@/components/ui';
-import { MatchWithPredictions } from '@/features/matches/types';
+import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TeamBadge from '../TeamBadge';
 
-function TeamCard({
-  teamId,
-  name,
-  shortName,
-  tla,
-  badgeSize,
-}: {
-  teamId: number;
-  name: string;
-  shortName: string;
-  tla?: string | null;
-  badgeSize: number;
-}) {
+function TeamCard({ team, badgeSize }: { team: TeamType; badgeSize: number }) {
+  const shortName = team.shortName || team.name;
+
   return (
     <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40  max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
       <View className="relative">
         <View className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-primary/10 rounded-full items-center justify-center mb-3">
-          <TeamBadge teamId={teamId} name={name} shortName={shortName} tla={tla} size={badgeSize} />
+          <TeamBadge team={team} size={badgeSize} />
         </View>
       </View>
       <CText variant="body" className="text-white text-center">
@@ -133,13 +123,7 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
       {/* Teams and Score Section */}
       <View className="flex-row items-center justify-evenly w-full mx-auto">
         {homeTeam ? (
-          <TeamCard
-            teamId={homeTeam.id}
-            name={homeTeam.name}
-            shortName={homeTeam.shortName || homeTeam.name}
-            tla={homeTeam.tla}
-            badgeSize={badgeSize}
-          />
+          <TeamCard team={homeTeam} badgeSize={badgeSize} />
         ) : (
           <TBDCard badgeSize={badgeSize} />
         )}
@@ -150,13 +134,7 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
           kick_off={match.kick_off}
         />
         {awayTeam ? (
-          <TeamCard
-            teamId={awayTeam.id}
-            name={awayTeam.name}
-            shortName={awayTeam.shortName || awayTeam.name}
-            tla={awayTeam.tla}
-            badgeSize={badgeSize}
-          />
+          <TeamCard team={awayTeam} badgeSize={badgeSize} />
         ) : (
           <TBDCard badgeSize={badgeSize} />
         )}

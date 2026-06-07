@@ -75,10 +75,10 @@ export async function testAdminAccess(): Promise<AdminTestResults> {
       },
     });
 
-    // Test 2: Get user profile with role
+    // Test 2: Get user profile
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, email, full_name, role')
+      .select('id, email, full_name')
       .eq('id', session.user.id)
       .single();
 
@@ -90,23 +90,30 @@ export async function testAdminAccess(): Promise<AdminTestResults> {
         error: userError,
       });
     } else {
-      results.currentUser.role = userData?.role;
       results.tests.push({
         name: 'User Profile Check',
         status: 'pass',
-        message: `User role: ${userData?.role || 'Not set'}`,
+        message: 'User profile fetched',
         data: userData,
       });
     }
 
-    // Test 3: Check if user is admin
-    const isAdmin = userData?.role === 'ADMIN';
+    // Test 3: Check admin_users table
+    const { data: adminData, error: adminError } = await supabase
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    const isAdmin = !adminError && !!adminData;
+    results.currentUser.role = isAdmin ? 'ADMIN' : 'USER';
 
     if (!isAdmin) {
       results.tests.push({
         name: 'Admin Role Check',
         status: 'fail',
-        message: 'User does not have ADMIN role',
+        message: 'User is not in admin_users table',
+        error: adminError,
       });
       return results;
     }
@@ -114,13 +121,13 @@ export async function testAdminAccess(): Promise<AdminTestResults> {
     results.tests.push({
       name: 'Admin Role Check',
       status: 'pass',
-      message: 'User has ADMIN role',
+      message: 'User is in admin_users table',
     });
 
     // Test 4: Test read access to users table
     const { data: usersData, error: usersError } = await supabase
       .from('users')
-      .select('id, email, role')
+      .select('id, email')
       .limit(10);
 
     if (usersError) {

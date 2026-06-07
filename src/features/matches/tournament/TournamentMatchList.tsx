@@ -2,10 +2,9 @@ import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import { MatchWithPredictionsType } from '../../types';
-import { groupMatchesByFixture } from '../../utils/tournamentMatches';
-import MatchesCard from '../regular-league/MatchesCard';
-
+import { MatchWithPredictionsType } from '../types';
+import { groupMatchesByFixture } from '../utils/tournamentMatches';
+import Match from './Match';
 type TournamentMatchListProps = {
   view: 'groups' | 'knockout';
   matches: MatchWithPredictionsType[];
@@ -35,7 +34,7 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
             </View>
             <View className="flex-row flex-wrap">
               {section.matches.map((match) => (
-                <MatchesCard key={match.id} match={match} />
+                <Match key={match.id} match={match} />
               ))}
             </View>
           </View>
@@ -47,7 +46,7 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
   return (
     <View className="flex-row flex-wrap px-2 mt-2">
       {matches.map((match) => (
-        <MatchesCard key={match.id} match={match} />
+        <Match key={match.id} match={match} />
       ))}
     </View>
   );

@@ -36,6 +36,39 @@ function getStatusFromEvent(eventType: string): SubscriptionStatus {
   }
 }
 
+/**
+ * Resolve the Supabase user_id from a RevenueCat app_user_id.
+ *
+ * The app calls Purchases.logIn(supabaseUserId) so normally app_user_id IS
+ * the Supabase UUID. But edge cases exist (anonymous purchase, old RC account,
+ * test purchases) where they differ. Strategy:
+ *   1. Check users table directly — if app_user_id is a valid Supabase UUID, use it.
+ *   2. Fall back to user_subscriptions.revenuecat_app_user_id — handles cases
+ *      where we stored the RC id from a previous event on the correct row.
+ */
+async function resolveUserId(
+  supabase: ReturnType<typeof createClient>,
+  appUserId: string,
+): Promise<string | null> {
+  // 1. Direct match: app_user_id is the Supabase user UUID
+  const { data: userRow } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', appUserId)
+    .maybeSingle();
+
+  if (userRow) return userRow.id;
+
+  // 2. Fallback: look up by stored revenuecat_app_user_id
+  const { data: subRow } = await supabase
+    .from('user_subscriptions')
+    .select('user_id')
+    .eq('revenuecat_app_user_id', appUserId)
+    .maybeSingle();
+
+  return subRow?.user_id ?? null;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
@@ -79,10 +112,19 @@ Deno.serve(async (req: Request) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  // Resolve the actual Supabase user_id
+  const userId = await resolveUserId(supabase, appUserId);
+
+  if (!userId) {
+    // No matching Supabase user — return 200 so RevenueCat doesn't keep retrying
+    console.warn(`No Supabase user found for RC app_user_id: ${appUserId} (event: ${eventType}). Skipping.`);
+    return new Response('User not found, skipped', { status: 200 });
+  }
+
   const { error } = await supabase
     .from('user_subscriptions')
     .upsert({
-      user_id: appUserId,
+      user_id: userId,
       plan: newPlan,
       status: newStatus,
       entitlement_id: entitlementId ?? null,
@@ -93,10 +135,10 @@ Deno.serve(async (req: Request) => {
     }, { onConflict: 'user_id' });
 
   if (error) {
-    console.error('Failed to update user_subscriptions:', error);
+    console.error(`Failed to update user_subscriptions for user ${userId}:`, error);
     return new Response('Database error', { status: 500 });
   }
 
-  console.log(`Updated user ${appUserId} → plan: ${newPlan}, status: ${newStatus} (event: ${eventType})`);
+  console.log(`Updated user ${userId} (RC: ${appUserId}) → plan: ${newPlan}, status: ${newStatus} (event: ${eventType})`);
   return new Response('OK', { status: 200 });
 });

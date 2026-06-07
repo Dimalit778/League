@@ -7,7 +7,7 @@ import { AddIcon } from '@assets/icons';
 import { View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getPredictionResultLabel } from '../../utils/pointsColor';
-import TeamBadge from '../TeamBadge';
+import TeamShirt from '../TeamShirt';
 const TEAM_LOGO_SIZE = 32;
 
 type ScoreDisplayProps = {
@@ -97,7 +97,7 @@ export const MatchCardHeader = ({ kickOff, isScheduled, isLive, isFinished }: Ma
 export const TeamDisplay = ({ team, isDesktop }: TeamDisplayProps) => {
   return (
     <View className="flex-1  items-center ">
-      <TeamBadge teamId={team.id} name={team.name} shortName={team.shortName} tla={team.tla} size={TEAM_LOGO_SIZE} />
+      <TeamShirt team={team} size={TEAM_LOGO_SIZE} />
       <CText variant="caption" className="text-center mt-2">
         {isDesktop ? team.shortName || team.name : team.shortName || team.name || team.tla}
       </CText>
