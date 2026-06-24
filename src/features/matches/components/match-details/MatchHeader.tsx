@@ -1,19 +1,21 @@
+import LeftJersey from '@/components/LeftJersey';
 import { CText } from '@/components/ui';
 import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { dateFormat, formatTime } from '@/utils/formats';
+import { getTeamJersey } from '@/utils/teamColors';
 import { Ionicons } from '@expo/vector-icons';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import TeamBadge from '../TeamBadge';
 
 function TeamCard({ team, badgeSize }: { team: TeamType; badgeSize: number }) {
   const shortName = team.shortName || team.name;
-
+  const teamName = team.tla ?? shortName ?? team.name;
+  const jerseyData = getTeamJersey(team.name);
   return (
     <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40  max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
       <View className="relative">
         <View className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-primary/10 rounded-full items-center justify-center mb-3">
-          <TeamBadge team={team} size={badgeSize} />
+          <LeftJersey teamName={teamName} jerseyColors={jerseyData} size={200} />
         </View>
       </View>
       <CText variant="body" className="text-white text-center">
@@ -91,7 +93,6 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
-  const isWorldCup = match.competition_id === 2000;
 
   // Teams can be null for future knockout matches where opponents aren't decided yet
   const homeTeam = match.home_team ?? null;
@@ -122,22 +123,14 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
 
       {/* Teams and Score Section */}
       <View className="flex-row items-center justify-evenly w-full mx-auto">
-        {homeTeam ? (
-          <TeamCard team={homeTeam} badgeSize={badgeSize} />
-        ) : (
-          <TBDCard badgeSize={badgeSize} />
-        )}
+        {homeTeam ? <TeamCard team={homeTeam} badgeSize={badgeSize} /> : <TBDCard badgeSize={badgeSize} />}
         <ScoreCard
           homeScore={match.score?.fullTime?.home || 0}
           awayScore={match.score?.fullTime?.away || 0}
           matchStatus={match.status || ''}
           kick_off={match.kick_off}
         />
-        {awayTeam ? (
-          <TeamCard team={awayTeam} badgeSize={badgeSize} />
-        ) : (
-          <TBDCard badgeSize={badgeSize} />
-        )}
+        {awayTeam ? <TeamCard team={awayTeam} badgeSize={badgeSize} /> : <TBDCard badgeSize={badgeSize} />}
       </View>
     </View>
   );

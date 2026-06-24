@@ -1,3 +1,4 @@
+import Jersey from '@/components/Jersey';
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
@@ -8,7 +9,6 @@ import { FlatList, Pressable, RefreshControl, ScrollView, useWindowDimensions, V
 import { MatchWithPredictionsType } from '../../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../../utils/matchStatus';
 import { getKnockoutStages, getStageLabel } from '../../../utils/tournamentMatches';
-import TeamShirt from '../../TeamShirt';
 import { MatchCardHeader, PredictionDisplay } from '../../regular-league/MatchCardDisplay';
 import { KnockoutStageTabs } from '../TournametTabs';
 
@@ -149,7 +149,7 @@ function TeamRowItem({
         />
       )}
 
-      <TeamShirt team={team} size={BADGE_SIZE} />
+      <Jersey teamCode={team?.tla ?? ''} number={'9'} color={'#EF233C'} accentColor={'#FFFFFF'} />
 
       <CText
         variant="bodyBold"

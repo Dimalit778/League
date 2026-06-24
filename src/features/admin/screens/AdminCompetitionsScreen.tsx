@@ -81,7 +81,7 @@ const AdminCompetitionsScreen = () => {
         onError: (mutationError) => {
           setValidationError(mutationError instanceof Error ? mutationError.message : 'Failed to add competition.');
         },
-      }
+      },
     );
   }, [
     addCompetition,
@@ -110,12 +110,12 @@ const AdminCompetitionsScreen = () => {
         },
       ]);
     },
-    [removeCompetition]
+    [removeCompetition],
   );
 
   const isBusy = useMemo(
     () => addCompetition.isPending || removeCompetition.isPending,
-    [addCompetition.isPending, removeCompetition.isPending]
+    [addCompetition.isPending, removeCompetition.isPending],
   );
 
   if (isLoading && !data) {

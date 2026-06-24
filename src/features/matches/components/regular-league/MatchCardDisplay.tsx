@@ -1,15 +1,14 @@
+import LeftJersey from '@/components/LeftJersey';
 import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
+import { getTeamJersey } from '@/utils/teamColors';
 import { AddIcon } from '@assets/icons';
 import { View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
 import { getPredictionResultLabel } from '../../utils/pointsColor';
-import TeamShirt from '../TeamShirt';
-const TEAM_LOGO_SIZE = 32;
-
 type ScoreDisplayProps = {
   isFinished: boolean;
   isLive: boolean;
@@ -95,9 +94,11 @@ export const MatchCardHeader = ({ kickOff, isScheduled, isLive, isFinished }: Ma
   );
 };
 export const TeamDisplay = ({ team, isDesktop }: TeamDisplayProps) => {
+  const jerseyData = getTeamJersey(team.name);
   return (
     <View className="flex-1  items-center ">
-      <TeamShirt team={team} size={TEAM_LOGO_SIZE} />
+      <LeftJersey teamName={team.tla ?? team.shortName ?? team.name} jerseyColors={jerseyData} size={50} />
+
       <CText variant="caption" className="text-center mt-2">
         {isDesktop ? team.shortName || team.name : team.shortName || team.name || team.tla}
       </CText>

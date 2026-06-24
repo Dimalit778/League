@@ -1,3 +1,4 @@
+import Jersey from '@/components/Jersey';
 import { CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -10,7 +11,7 @@ import { MatchWithPredictionsType } from '../../../types';
 import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled } from '../../../utils/matchStatus';
 import { getPredictionResultLabel } from '../../../utils/pointsColor';
 import { PredictionDisplay } from '../../regular-league/MatchCardDisplay';
-import TeamShirt from '../../TeamShirt';
+
 type Props = { match: MatchWithPredictionsType };
 
 /* ─── Score / time block ──────────────────────────────────────── */
@@ -118,11 +119,11 @@ function TeamRow({
           <CText variant="caption" numberOfLines={2} className="text-center">
             {name}
           </CText>
-          <TeamShirt team={team} size={34} />
+          <Jersey teamCode={team?.tla ?? ''} number={'9'} color={'#EF233C'} accentColor={'#FFFFFF'} />
         </>
       ) : (
         <>
-          <TeamShirt team={team} size={34} />
+          <Jersey teamCode={team?.tla ?? ''} number={'9'} color={'#004D98'} accentColor={'#FFFFFF'} />
           <CText variant="caption" numberOfLines={2} className="text-center">
             {name}
           </CText>

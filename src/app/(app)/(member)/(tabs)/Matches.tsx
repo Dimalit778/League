@@ -7,7 +7,7 @@ export default function Matches() {
   const competition = useMemberStore(selectCompetition);
 
   if (!memberId || !competition?.id) return <Error error="No active league selected" />;
-
+  console.log('competition', competition);
   if (competition?.type?.toUpperCase() === 'CUP') {
     return <TournamentScreen />;
   }
