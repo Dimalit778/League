@@ -5,8 +5,8 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!;
 
-const GEMINI_URL =
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_BASE_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 type AnalysisResult = {
   summary_en: string;
@@ -14,6 +14,17 @@ type AnalysisResult = {
   predicted_home_score: number;
   predicted_away_score: number;
 };
+
+function isAnalysisResult(v: unknown): v is AnalysisResult {
+  if (typeof v !== 'object' || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r.summary_en === 'string' &&
+    typeof r.summary_he === 'string' &&
+    typeof r.predicted_home_score === 'number' &&
+    typeof r.predicted_away_score === 'number'
+  );
+}
 
 async function analyzeMatch(homeName: string, awayName: string): Promise<AnalysisResult> {
   const prompt = `You are a football analyst. The upcoming match is ${homeName} vs ${awayName}.
@@ -26,14 +37,26 @@ Respond ONLY with valid JSON in exactly this format, no markdown, no extra text:
   "predicted_away_score": <integer>
 }`;
 
-  const response = await fetch(GEMINI_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      tools: [{ googleSearch: {} }],
-    }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30_000);
+
+  let response: Response;
+  try {
+    response = await fetch(GEMINI_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': GEMINI_API_KEY,
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ googleSearch: {} }],
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!response.ok) {
     const err = await response.text();
@@ -52,7 +75,11 @@ Respond ONLY with valid JSON in exactly this format, no markdown, no extra text:
     throw new Error(`No JSON found in Gemini response. Raw text: ${rawText.slice(0, 500)}`);
   }
   const jsonText = jsonMatch[0];
-  return JSON.parse(jsonText) as AnalysisResult;
+  const parsed = JSON.parse(jsonText);
+  if (!isAnalysisResult(parsed)) {
+    throw new Error(`Unexpected shape from Gemini: ${JSON.stringify(parsed).slice(0, 200)}`);
+  }
+  return parsed;
 }
 
 Deno.serve(async (_req) => {
@@ -71,7 +98,10 @@ Deno.serve(async (_req) => {
 
     if (error) throw error;
     if (!matches || matches.length === 0) {
-      return new Response(JSON.stringify({ message: 'No matches to analyse' }), { status: 200 });
+      return new Response(JSON.stringify({ message: 'No matches to analyse' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     const results: { matchId: number; status: string }[] = [];
@@ -88,8 +118,8 @@ Deno.serve(async (_req) => {
           .update({
             ai_summary_en: analysis.summary_en,
             ai_summary_he: analysis.summary_he,
-            ai_predicted_home_score: analysis.predicted_home_score,
-            ai_predicted_away_score: analysis.predicted_away_score,
+            ai_predicted_home_score: Math.round(Number(analysis.predicted_home_score)),
+            ai_predicted_away_score: Math.round(Number(analysis.predicted_away_score)),
             ai_generated_at: new Date().toISOString(),
           })
           .eq('id', match.id);
@@ -105,9 +135,15 @@ Deno.serve(async (_req) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    return new Response(JSON.stringify({ processed: results }), { status: 200 });
+    return new Response(JSON.stringify({ processed: results }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
     console.error('generate-match-analysis fatal error:', err);
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 });
