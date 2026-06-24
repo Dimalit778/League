@@ -1,6 +1,5 @@
+import AiAnalysisCard from '@/features/matches/components/match-details/AiAnalysisCard';
 import { MatchWithPredictions } from '@/features/matches/types';
-import PredictionForm from '@/features/predictions/components/PredictionForm';
-import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import TabsContent from './TabsContent';
 
 interface MatchContentProps {
@@ -10,19 +9,29 @@ interface MatchContentProps {
 type MatchStatus = 'SCHEDULED' | 'LIVE' | 'TIMED' | 'IN_PLAY' | 'FINISHED';
 
 export default function MatchContent({ match }: MatchContentProps) {
-  const memberId = useMemberStore(selectMemberId) ?? '';
   const status = (match.status ?? 'SCHEDULED') as MatchStatus;
 
   const now = new Date();
   const kickOff = new Date(match.kick_off);
-
   const isScheduled = ['SCHEDULED', 'TIMED'].includes(status) && kickOff > now;
 
-  const predictions = match.predictions ?? [];
-  const memberPrediction = predictions.find((prediction) => prediction.league_member?.id === memberId);
-
   if (isScheduled) {
-    return <PredictionForm prediction={memberPrediction} matchId={match.id} />;
+    if (match.ai_summary_en && match.ai_summary_he) {
+      return (
+        <AiAnalysisCard
+          summaryEn={match.ai_summary_en}
+          summaryHe={match.ai_summary_he}
+          predictedHomeScore={match.ai_predicted_home_score ?? 0}
+          predictedAwayScore={match.ai_predicted_away_score ?? 0}
+          homeTeamName={match.home_team?.shortName ?? match.home_team?.name ?? 'Home'}
+          awayTeamName={match.away_team?.shortName ?? match.away_team?.name ?? 'Away'}
+        />
+      );
+    }
+    // No AI analysis yet — render nothing (analysis runs at 08:00 UTC)
+    return null;
   }
+
+  const predictions = match.predictions ?? [];
   return <TabsContent predictions={predictions} />;
 }

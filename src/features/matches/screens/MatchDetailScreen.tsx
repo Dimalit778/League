@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import fieldImage from '@/assets/images/fieldImage.jpg';
 import { Error, LoadingOverlay } from '@/components/layout';
+import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
@@ -13,12 +14,16 @@ const MatchDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
+  const memberId = useMemberStore(selectMemberId) ?? '';
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(id));
 
   if (isLoading) return <LoadingOverlay />;
   if (error) return <Error error={error} />;
   if (!matchData) return <Error error={{ message: 'No match data found' }} />;
+
+  const predictions = matchData.predictions ?? [];
+  const memberPrediction = predictions.find((p) => p.league_member?.id === memberId);
 
   return (
     <View className="flex-1 w-full max-w-lg mx-auto bg-background">
@@ -39,7 +44,7 @@ const MatchDetailScreen = () => {
       <TouchableOpacity className="absolute z-20 left-6 top-6 " onPress={() => router.dismiss()}>
         <AntDesign name="close-circle" size={isDesktop ? 40 : 30} color="#fff" />
       </TouchableOpacity>
-      <MatchHeader match={matchData} />
+      <MatchHeader match={matchData} memberPrediction={memberPrediction} />
       {/* Scrollable Content */}
 
       <View className="flex-1 bg-background border-t border-border rounded-t-3xl mt-16">
