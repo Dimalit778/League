@@ -195,6 +195,11 @@ export type Database = {
       }
       matches: {
         Row: {
+          ai_generated_at: string | null
+          ai_predicted_away_score: number | null
+          ai_predicted_home_score: number | null
+          ai_summary_en: string | null
+          ai_summary_he: string | null
           away_team_id: number | null
           competition_id: number | null
           created_at: string
@@ -210,6 +215,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_generated_at?: string | null
+          ai_predicted_away_score?: number | null
+          ai_predicted_home_score?: number | null
+          ai_summary_en?: string | null
+          ai_summary_he?: string | null
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
@@ -225,6 +235,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_generated_at?: string | null
+          ai_predicted_away_score?: number | null
+          ai_predicted_home_score?: number | null
+          ai_summary_en?: string | null
+          ai_summary_he?: string | null
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
