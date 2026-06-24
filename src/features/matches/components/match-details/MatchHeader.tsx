@@ -1,6 +1,7 @@
 import LeftJersey from '@/components/LeftJersey';
 import { CText } from '@/components/ui';
-import { MatchWithPredictions, TeamType } from '@/features/matches/types';
+import { MatchWithPredictions, PredictionMemberType, TeamType } from '@/features/matches/types';
+import PredictionForm from '@/features/predictions/components/PredictionForm';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { getTeamJersey } from '@/utils/teamColors';
 import { Ionicons } from '@expo/vector-icons';
@@ -89,10 +90,19 @@ function ScoreCard({
   );
 }
 
-export default function MatchHeader({ match }: { match: MatchWithPredictions }) {
+type MatchHeaderProps = {
+  match: MatchWithPredictions;
+  memberPrediction?: PredictionMemberType;
+};
+
+export default function MatchHeader({ match, memberPrediction }: MatchHeaderProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
+
+  const now = new Date();
+  const kickOff = new Date(match.kick_off);
+  const isScheduled = ['SCHEDULED', 'TIMED'].includes(match.status ?? '') && kickOff > now;
 
   // Teams can be null for future knockout matches where opponents aren't decided yet
   const homeTeam = match.home_team ?? null;
@@ -132,6 +142,9 @@ export default function MatchHeader({ match }: { match: MatchWithPredictions }) 
         />
         {awayTeam ? <TeamCard team={awayTeam} badgeSize={badgeSize} /> : <TBDCard badgeSize={badgeSize} />}
       </View>
+      {isScheduled && (
+        <PredictionForm prediction={memberPrediction} matchId={match.id} />
+      )}
     </View>
   );
 }
