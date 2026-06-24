@@ -242,6 +242,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Submitted: 'Submitted',
       'Fixture ID': 'Fixture ID',
       'Enter prediction': 'Enter prediction',
+      'AI Preview': 'AI Preview',
+      'Prediction:': 'Prediction:',
     },
 
     // Profile and Settings
@@ -839,6 +841,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Submitted: 'נשלח',
       'Fixture ID': 'מזהה צופיות',
       'Coming Soon...': 'בקרוב ...',
+      'AI Preview': 'תצוגה מקדימה של AI',
+      'Prediction:': 'ניחוש:',
     },
 
     // Profile and Settings

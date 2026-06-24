@@ -4,16 +4,10 @@ import TabsContent from './TabsContent';
 
 interface MatchContentProps {
   match: MatchWithPredictions;
+  isScheduled: boolean;
 }
 
-type MatchStatus = 'SCHEDULED' | 'LIVE' | 'TIMED' | 'IN_PLAY' | 'FINISHED';
-
-export default function MatchContent({ match }: MatchContentProps) {
-  const status = (match.status ?? 'SCHEDULED') as MatchStatus;
-
-  const now = new Date();
-  const kickOff = new Date(match.kick_off);
-  const isScheduled = ['SCHEDULED', 'TIMED'].includes(status) && kickOff > now;
+export default function MatchContent({ match, isScheduled }: MatchContentProps) {
 
   if (isScheduled) {
     if (match.ai_summary_en && match.ai_summary_he) {

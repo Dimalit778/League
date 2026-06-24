@@ -25,6 +25,10 @@ const MatchDetailScreen = () => {
   const predictions = matchData.predictions ?? [];
   const memberPrediction = predictions.find((p) => p.league_member?.id === memberId);
 
+  const now = new Date();
+  const kickOff = new Date(matchData.kick_off);
+  const isScheduled = ['SCHEDULED', 'TIMED'].includes(matchData.status ?? '') && kickOff > now;
+
   return (
     <View className="flex-1 w-full max-w-lg mx-auto bg-background">
       <View style={{ position: 'absolute', width: '100%', height: 400 }}>
@@ -44,11 +48,11 @@ const MatchDetailScreen = () => {
       <TouchableOpacity className="absolute z-20 left-6 top-6 " onPress={() => router.dismiss()}>
         <AntDesign name="close-circle" size={isDesktop ? 40 : 30} color="#fff" />
       </TouchableOpacity>
-      <MatchHeader match={matchData} memberPrediction={memberPrediction} />
+      <MatchHeader match={matchData} memberPrediction={memberPrediction} isScheduled={isScheduled} />
       {/* Scrollable Content */}
 
       <View className="flex-1 bg-background border-t border-border rounded-t-3xl mt-16">
-        <MatchContent match={matchData} />
+        <MatchContent match={matchData} isScheduled={isScheduled} />
       </View>
     </View>
   );

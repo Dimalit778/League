@@ -1,4 +1,5 @@
 import { CText } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguageStore } from '@/store/LanguageStore';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
@@ -20,6 +21,7 @@ export default function AiAnalysisCard({
   homeTeamName,
   awayTeamName,
 }: AiAnalysisCardProps) {
+  const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
   const summary = language === 'he' ? summaryHe : summaryEn;
 
@@ -29,7 +31,7 @@ export default function AiAnalysisCard({
       <View className="flex-row items-center gap-2">
         <Ionicons name="sparkles" size={18} color="#a78bfa" />
         <CText variant="bodyBold" className="text-primary">
-          AI Preview
+          {t('AI Preview')}
         </CText>
       </View>
 
@@ -41,7 +43,7 @@ export default function AiAnalysisCard({
       {/* Predicted score chip */}
       <View className="flex-row items-center gap-2 mt-1">
         <CText variant="caption" className="text-muted">
-          Prediction:
+          {t('Prediction:')}
         </CText>
         <View className="flex-row items-center bg-primary/10 rounded-lg px-3 py-1 gap-1">
           <CText variant="bodyBold" className="text-primary">
