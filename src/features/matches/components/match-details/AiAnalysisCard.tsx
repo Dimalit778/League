@@ -1,0 +1,54 @@
+import { CText } from '@/components/ui';
+import { useLanguageStore } from '@/store/LanguageStore';
+import { Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
+
+type AiAnalysisCardProps = {
+  summaryEn: string;
+  summaryHe: string;
+  predictedHomeScore: number;
+  predictedAwayScore: number;
+  homeTeamName: string;
+  awayTeamName: string;
+};
+
+export default function AiAnalysisCard({
+  summaryEn,
+  summaryHe,
+  predictedHomeScore,
+  predictedAwayScore,
+  homeTeamName,
+  awayTeamName,
+}: AiAnalysisCardProps) {
+  const language = useLanguageStore((s) => s.language);
+  const summary = language === 'he' ? summaryHe : summaryEn;
+
+  return (
+    <View className="mx-4 mt-4 rounded-2xl bg-surface border border-border p-4 gap-3">
+      {/* Header */}
+      <View className="flex-row items-center gap-2">
+        <Ionicons name="sparkles" size={18} color="#a78bfa" />
+        <CText variant="bodyBold" className="text-primary">
+          AI Preview
+        </CText>
+      </View>
+
+      {/* Summary */}
+      <CText variant="body" className="text-text leading-6">
+        {summary}
+      </CText>
+
+      {/* Predicted score chip */}
+      <View className="flex-row items-center gap-2 mt-1">
+        <CText variant="caption" className="text-muted">
+          Prediction:
+        </CText>
+        <View className="flex-row items-center bg-primary/10 rounded-lg px-3 py-1 gap-1">
+          <CText variant="bodyBold" className="text-primary">
+            {homeTeamName} {predictedHomeScore} – {predictedAwayScore} {awayTeamName}
+          </CText>
+        </View>
+      </View>
+    </View>
+  );
+}
