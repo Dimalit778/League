@@ -8,9 +8,6 @@
     "scheme": "league",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "privacy": "public",
-    "privacyPolicy": "https://leaguechampion.app/privacy-policy/",
-    "termsOfService": "https://leaguechampion.app/terms-of-service/",
     "splash": {
       "image": "./src/assets/app-icon.png",
       "resizeMode": "contain",
