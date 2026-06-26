@@ -118,9 +118,15 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagues: {
       League: 'League',
       Leagues: 'Leagues',
+      'Active leagues': 'Active leagues',
       'Create League': 'Create League',
       'Edit League': 'Edit League',
       'Join League': 'Join League',
+      'Choose active leagues': 'Choose active leagues',
+      'Save active leagues': 'Save active leagues',
+      'Your free plan allows {{count}} active leagues. Choose which leagues stay active to continue.':
+        'Your free plan allows {{count}} active leagues. Choose which leagues stay active to continue.',
+      '{{count}} inactive leagues kept in your account': '{{count}} inactive leagues kept in your account',
 
       'League Name': 'League Name',
       'League name': 'League name',
@@ -724,9 +730,15 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagues: {
       League: 'ליגה',
       Leagues: 'ליגות',
+      'Active leagues': 'ליגות פעילות',
       'Create League': 'יצירת ליגה',
       'Edit League': 'עריכת ליגה',
       'Join League': 'הצטרפות לליגה',
+      'Choose active leagues': 'בחר ליגות פעילות',
+      'Save active leagues': 'שמור ליגות פעילות',
+      'Your free plan allows {{count}} active leagues. Choose which leagues stay active to continue.':
+        'התוכנית החינמית מאפשרת {{count}} ליגות פעילות. בחר אילו ליגות יישארו פעילות כדי להמשיך.',
+      '{{count}} inactive leagues kept in your account': '{{count}} ליגות לא פעילות נשמרות בחשבון שלך',
       'Leave League': 'עזוב ליגה',
       'League Details': 'פרטי ליגה',
       Leave: 'עזוב ליגה',

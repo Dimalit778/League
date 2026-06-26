@@ -20,13 +20,8 @@ export const LogoBadge = ({
   className = '',
   contentFit = 'cover',
 }: LogoBadgeProps) => {
-  const bgColor = '#E0E7FF';
-
   return (
-    <View
-      className={` rounded-md items-center justify-center ${className}`}
-      style={{ backgroundColor: bgColor, width, height }}
-    >
+    <View className={` rounded-md items-center justify-center ${className}`} style={{ width, height }}>
       <MyImage source={source} width={width * 0.9} height={height * 0.9} contentFit={contentFit} />
     </View>
   );

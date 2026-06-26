@@ -26,7 +26,7 @@ export const MyImage = ({
   source,
   className,
   tintColor,
-  contentFit = 'contain',
+  contentFit,
   width = '100%',
   height = '100%',
   transition = 120,

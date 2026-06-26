@@ -10,9 +10,11 @@ export const useSubscriptionLimits = () => {
   const plan = isPro ? 'PRO' : 'FREE';
   const limits = PLAN_LIMITS[plan];
 
-  const leaguesCount = leaguesQuery.data?.length ?? 0;
+  const leaguesCount = leaguesQuery.data?.filter((league) => league.active).length ?? 0;
+  const totalLeaguesCount = leaguesQuery.data?.length ?? 0;
   const maxLeagues = limits.maxLeagues;
   const reachedLimit = leaguesCount >= maxLeagues;
+  const exceededLimit = leaguesCount > maxLeagues;
   const remainingLeagues = Math.max(0, maxLeagues - leaguesCount);
   const usagePercent =
     maxLeagues > 0 ? Math.min(100, (leaguesCount / maxLeagues) * 100) : 0;
@@ -23,8 +25,10 @@ export const useSubscriptionLimits = () => {
     subscription: subscriptionState.subscription,
     limits,
     leaguesCount,
+    totalLeaguesCount,
     maxLeagues,
     reachedLimit,
+    exceededLimit,
     remainingLeagues,
     usagePercent,
     isLoading: leaguesQuery.isPending || subscriptionState.isLoading,

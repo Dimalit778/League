@@ -1,9 +1,12 @@
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
 import { Platform } from 'react-native';
 
 export default function PublicLayout() {
   const { colors } = useThemeTokens();
+  const { isPro, exceededLimit } = useSubscriptionLimits();
+  const requiresLeagueActivation = !isPro && exceededLimit;
 
   return (
     <Stack
@@ -16,7 +19,9 @@ export default function PublicLayout() {
       }}
     >
       <Stack.Screen name="myLeagues" />
-      <Stack.Screen name="settings" />
+      <Stack.Protected guard={!requiresLeagueActivation}>
+        <Stack.Screen name="settings" />
+      </Stack.Protected>
     </Stack>
   );
 }

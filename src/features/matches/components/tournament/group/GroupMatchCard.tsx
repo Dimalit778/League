@@ -1,5 +1,4 @@
-import Jersey from '@/components/Jersey';
-import { CText } from '@/components/ui';
+import { CText, MyImage } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { hexToRgba } from '@/utils/colorHexToRgba';
@@ -74,61 +73,13 @@ function ScoreBlock({
   );
 }
 
-/* ─── Card header row (status badge) ─────────────────────────── */
-function CardHeader({ isFinished, isLive }: { isFinished: boolean; isLive: boolean }) {
-  const { t } = useTranslation();
-
-  if (isFinished) {
-    return (
-      <View className="flex-row items-center px-2 py-1 bg-surface/18 border-b border-border">
-        <View className="rounded-md px-2 py-1 bg-surface/7">
-          <CText variant="small" bold className="text-text/40">
-            FT
-          </CText>
-        </View>
-      </View>
-    );
-  }
-
-  if (isLive) {
-    return (
-      <View className="flex-row items-center gap-2 px-2 py-1 bg-surface/18 border-b border-border">
-        <View className="w-2 h-2 rounded-sm bg-success" />
-        <CText variant="small" bold className="text-success">
-          {t('Live')}
-        </CText>
-      </View>
-    );
-  }
-
-  return null;
-}
-function TeamRow({
-  team,
-  name,
-  isHome,
-}: {
-  team?: MatchWithPredictionsType['home_team'];
-  name?: string | null;
-  isHome: boolean;
-}) {
+function TeamRow({ name, logo }: { name: string; logo: string }) {
   return (
-    <View className={`flex-1 flex-row items-center gap-2 min-w-0 ${isHome ? 'justify-end' : 'justify-start'}`}>
-      {isHome ? (
-        <>
-          <CText variant="caption" numberOfLines={2} className="text-center">
-            {name}
-          </CText>
-          <Jersey teamCode={team?.tla ?? ''} number={'9'} color={'#EF233C'} accentColor={'#FFFFFF'} />
-        </>
-      ) : (
-        <>
-          <Jersey teamCode={team?.tla ?? ''} number={'9'} color={'#004D98'} accentColor={'#FFFFFF'} />
-          <CText variant="caption" numberOfLines={2} className="text-center">
-            {name}
-          </CText>
-        </>
-      )}
+    <View className="min-w-0 flex-1 items-center px-1">
+      <MyImage source={logo} width={40} height={40} contentFit="contain" />
+      <CText variant="caption" numberOfLines={2} className="mt-1 text-center">
+        {name}
+      </CText>
     </View>
   );
 }
@@ -145,6 +96,8 @@ export default memo(function GroupMatchCard({ match }: Props) {
 
   const homeName = match.home_team?.name ?? '—';
   const awayName = match.away_team?.name ?? '—';
+  const homeLogo = match.home_team?.logo ?? '—';
+  const awayLogo = match.away_team?.logo ?? '—';
   const prediction = match.predictions?.[0];
 
   const predictionResult = getPredictionResultLabel(prediction?.points, prediction?.is_finished, isFinished);
@@ -161,12 +114,9 @@ export default memo(function GroupMatchCard({ match }: Props) {
             ...(predictionResult ? { borderColor: predictionResult?.color } : { borderColor: colors.surface }),
           }}
         >
-          {/* Status header */}
-          <CardHeader isFinished={isFinished} isLive={isLive} />
-
           {/* Teams + score */}
           <View className="w-full flex-row items-center py-2 px-2">
-            <TeamRow team={match.home_team} name={match.home_team?.name} isHome />
+            <TeamRow name={homeName} logo={homeLogo} />
 
             <ScoreBlock
               isFinished={isFinished}
@@ -177,7 +127,7 @@ export default memo(function GroupMatchCard({ match }: Props) {
               kickOff={match.kick_off}
             />
 
-            <TeamRow team={match.away_team} name={match.away_team?.name} isHome={false} />
+            <TeamRow name={awayName} logo={awayLogo} />
           </View>
 
           {/* Prediction footer */}

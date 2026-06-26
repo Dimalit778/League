@@ -11,6 +11,7 @@ export const usePrimaryMember = (userId: string) => {
         .select('*, league:leagues!league_id(id, competition_id)')
         .eq('user_id', userId)
         .eq('is_primary', true)
+        .eq('active', true)
         .maybeSingle();
       return data;
     },

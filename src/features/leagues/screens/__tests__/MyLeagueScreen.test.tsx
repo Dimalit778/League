@@ -13,8 +13,10 @@ let mockLeagues: any[] = [];
 let mockLimitState = {
   isPro: false,
   leaguesCount: 0,
+  totalLeaguesCount: 0,
   maxLeagues: 1,
   reachedLimit: false,
+  exceededLimit: false,
   usagePercent: 0,
   remainingLeagues: 1,
   isLoading: false,
@@ -26,7 +28,7 @@ jest.mock('@/store/AuthStore', () => ({
 }));
 
 jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: () => ({
+  useMemberStore: (selector: (state: { activeMember: null; setActiveMember: jest.Mock }) => unknown) => selector({
     activeMember: null,
     setActiveMember: jest.fn(),
   }),
@@ -41,6 +43,10 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
     refetch: jest.fn(),
   }),
   useUpdatePrimaryLeague: () => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
+  }),
+  useUpdateLeagueActivation: () => ({
     mutateAsync: jest.fn(),
     isPending: false,
   }),
@@ -60,8 +66,10 @@ describe('MyLeagueScreen', () => {
     mockLimitState = {
       isPro: false,
       leaguesCount: 0,
+      totalLeaguesCount: 0,
       maxLeagues: 1,
       reachedLimit: false,
+      exceededLimit: false,
       usagePercent: 0,
       remainingLeagues: 1,
       isLoading: false,
@@ -87,8 +95,10 @@ describe('MyLeagueScreen', () => {
     mockLimitState = {
       isPro: false,
       leaguesCount: 0,
+      totalLeaguesCount: 0,
       maxLeagues: 0,
       reachedLimit: false,
+      exceededLimit: false,
       usagePercent: 0,
       remainingLeagues: 0,
       isLoading: false,

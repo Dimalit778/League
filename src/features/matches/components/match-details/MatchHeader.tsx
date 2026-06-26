@@ -1,42 +1,19 @@
-import LeftJersey from '@/components/LeftJersey';
-import { CText } from '@/components/ui';
+import { CText, TeamBadge } from '@/components/ui';
 import { MatchWithPredictions, PredictionMemberType, TeamType } from '@/features/matches/types';
 import PredictionForm from '@/features/predictions/components/PredictionForm';
 import { dateFormat, formatTime } from '@/utils/formats';
-import { getTeamJersey } from '@/utils/teamColors';
 import { Ionicons } from '@expo/vector-icons';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function TeamCard({ team, badgeSize }: { team: TeamType; badgeSize: number }) {
+function TeamCard({ team, width, height }: { team: TeamType; width: number; height: number }) {
   const shortName = team.shortName || team.name;
-  const teamName = team.tla ?? shortName ?? team.name;
-  const jerseyData = getTeamJersey(team.name);
-  return (
-    <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40  max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
-      <View className="relative">
-        <View className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-primary/10 rounded-full items-center justify-center mb-3">
-          <LeftJersey teamName={teamName} jerseyColors={jerseyData} size={200} />
-        </View>
-      </View>
-      <CText variant="body" className="text-white text-center">
-        {shortName}
-      </CText>
-    </View>
-  );
-}
-
-function TBDCard({ badgeSize }: { badgeSize: number }) {
   return (
     <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40 max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
-      <View
-        className="bg-white/10 rounded-full items-center justify-center mb-3"
-        style={{ width: badgeSize, height: badgeSize }}
-      >
-        <Ionicons name="help" size={badgeSize * 0.45} color="rgba(255,255,255,0.4)" />
-      </View>
-      <CText variant="body" className="text-white/50 text-center">
-        TBD
+      <TeamBadge source={team.logo} width={width} height={height} />
+
+      <CText variant="body" className="text-white text-center">
+        {shortName}
       </CText>
     </View>
   );
@@ -130,18 +107,19 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
 
       {/* Teams and Score Section */}
       <View className="flex-row items-center justify-evenly w-full mx-auto">
-        {homeTeam ? <TeamCard team={homeTeam} badgeSize={badgeSize} /> : <TBDCard badgeSize={badgeSize} />}
-        <ScoreCard
-          homeScore={match.score?.fullTime?.home || 0}
-          awayScore={match.score?.fullTime?.away || 0}
-          matchStatus={match.status || ''}
-          kick_off={match.kick_off}
-        />
-        {awayTeam ? <TeamCard team={awayTeam} badgeSize={badgeSize} /> : <TBDCard badgeSize={badgeSize} />}
+        <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
+        {isScheduled ? (
+          <PredictionForm prediction={memberPrediction} matchId={match.id} />
+        ) : (
+          <ScoreCard
+            homeScore={match.score?.fullTime?.home || 0}
+            awayScore={match.score?.fullTime?.away || 0}
+            matchStatus={match.status || ''}
+            kick_off={match.kick_off}
+          />
+        )}
+        <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />
       </View>
-      {isScheduled && (
-        <PredictionForm prediction={memberPrediction} matchId={match.id} />
-      )}
     </View>
   );
 }

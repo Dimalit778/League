@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Match Detail — iOS Native Design Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg:      #0b1120;
+    --surface: #1e293b;
+    --border:  #334155;
+    --text:    #f1f5f9;
+    --muted:   #94a3b8;
+    --primary: #fb923c;
+    --success: #4ade80;
+    --error:   #f87171;
+    --warning: #fcd34d;
+    --purple:  #a78bfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #060d1a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    color: var(--text);
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  h2.section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    align-self: flex-start;
+    margin-bottom: -32px;
+  }
+
+  /* ── PHONE SHELL ── */
+  .phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 52px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 40px 80px rgba(0,0,0,0.7),
+      0 0 120px rgba(251,146,60,0.08);
+  }
+
+  /* ── FIELD HERO ── */
+  .hero {
+    position: relative;
+    height: 340px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .field-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      /* Subtle field lines */
+      radial-gradient(ellipse 70% 60% at 50% 80%, rgba(255,255,255,0.04) 0%, transparent 70%),
+      /* Center circle */
+      radial-gradient(circle 60px at 50% 78%, transparent 58px, rgba(255,255,255,0.06) 59px, transparent 61px),
+      /* Penalty arcs */
+      radial-gradient(circle 80px at 50% 15%, transparent 78px, rgba(255,255,255,0.05) 79px, transparent 81px),
+      radial-gradient(circle 80px at 50% 100%, transparent 78px, rgba(255,255,255,0.05) 79px, transparent 81px),
+      /* Field stripes */
+      repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 28px,
+        rgba(255,255,255,0.032) 28px, rgba(255,255,255,0.032) 56px
+      ),
+      /* Base field color */
+      linear-gradient(180deg, #0d2b1a 0%, #0a1f14 50%, #081810 100%);
+  }
+  /* Gradient fade from field to dark background */
+  .hero-fade {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 180px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+  }
+  /* Dark overlay for readability */
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+  }
+
+  /* Status bar over hero */
+  .status-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px 0;
+    font-size: 13px; font-weight: 600;
+    color: #fff;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+
+  /* Close button */
+  .close-btn {
+    position: absolute;
+    top: 52px;
+    left: 20px;
+    z-index: 20;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    border: 0.5px solid rgba(255,255,255,0.18);
+    cursor: pointer;
+    font-weight: 300;
+  }
+
+  /* Match info (date / venue) */
+  .match-info {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-top: 28px;
+    padding: 0 20px;
+  }
+  .match-info .info-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.2px;
+  }
+  .match-info .info-row .icon { opacity: 0.6; font-size: 13px; }
+
+  /* ── TEAMS + SCORE ROW ── */
+  .teams-score {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 16px 16px 0;
+  }
+
+  .team-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 14px 12px;
+    min-width: 110px;
+    max-width: 120px;
+  }
+  .team-logo {
+    width: 64px; height: 64px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    overflow: hidden;
+  }
+  .team-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    letter-spacing: -0.2px;
+  }
+
+  /* Score block */
+  .score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 4px;
+    min-width: 90px;
+  }
+
+  /* Scheduled: time */
+  .score-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 14px 18px;
+  }
+  .score-time .clock-icon { font-size: 20px; opacity: 0.6; }
+  .score-time .time-text { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+
+  /* Finished: large score */
+  .score-finished {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .score-num {
+    font-size: 48px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -3px;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    line-height: 1;
+  }
+  .score-sep {
+    font-size: 28px;
+    font-weight: 200;
+    color: rgba(255,255,255,0.3);
+    margin: 0 2px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .score-duration {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Live score */
+  .score-live-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(74,222,128,0.15);
+    border-radius: 100px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--success);
+    letter-spacing: 0.5px;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ── CONTENT SHEET ── */
+  .content-sheet {
+    background: var(--bg);
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    border-top: 0.5px solid rgba(51,65,85,0.5);
+    margin-top: 28px;
+    padding-bottom: 40px;
+    min-height: 360px;
+  }
+
+  /* Sheet handle */
+  .sheet-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: rgba(148,163,184,0.3);
+    margin: 12px auto 0;
+  }
+
+  /* ── PREDICTION FORM ── */
+  .pred-form {
+    margin: 16px 16px 0;
+    background: var(--surface);
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    padding: 14px 16px;
+  }
+  .pred-form-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pred-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .pred-input {
+    width: 60px; height: 52px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.25);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .pred-input.active { border-color: var(--primary); background: rgba(251,146,60,0.08); color: var(--primary); }
+  .pred-sep { font-size: 22px; font-weight: 200; color: var(--muted); }
+  .pred-submit {
+    margin-top: 14px;
+    width: 100%;
+    height: 46px;
+    border-radius: 14px;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(251,146,60,0.3);
+  }
+
+  /* ── AI ANALYSIS CARD ── */
+  .ai-card {
+    margin: 16px 16px 0;
+    background: var(--surface);
+    border-radius: 20px;
+    border: 0.5px solid rgba(167,139,250,0.25);
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(167,139,250,0.06) 0%, rgba(30,41,59,1) 50%);
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
+  }
+  .ai-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .ai-icon { font-size: 16px; }
+  .ai-title { font-size: 14px; font-weight: 700; color: var(--purple); }
+  .ai-body {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(241,245,249,0.85);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .ai-pred-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(251,146,60,0.1);
+    border: 0.5px solid rgba(251,146,60,0.25);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* ── TABS ── */
+  .tabs-header {
+    display: flex;
+    border-bottom: 0.5px solid rgba(51,65,85,0.4);
+    margin-top: 16px;
+  }
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  /* ── PREDICTION LIST ── */
+  .pred-list { padding: 8px 16px 16px; }
+  .pred-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    margin-bottom: 4px;
+    transition: background 0.1s ease;
+  }
+  .pred-row:nth-child(1) { background: rgba(252,211,77,0.08); }
+  .pred-rank {
+    width: 22px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--muted);
+    text-align: center;
+  }
+  .pred-rank.gold   { color: #f59e0b; }
+  .pred-rank.silver { color: #94a3b8; }
+  .pred-rank.bronze { color: #b45309; }
+  .pred-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .pred-member { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+  .pred-member-score {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .pred-pts-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .pred-pts-badge.bingo { background: rgba(252,211,77,0.12); color: var(--warning); }
+  .pred-pts-badge.hit   { background: rgba(16,185,129,0.12); color: var(--hit,#10B981); }
+  .pred-pts-badge.miss  { background: rgba(248,113,113,0.12); color: var(--error); }
+
+  /* ─── Comparison ─── */
+  .comparison-strip {
+    width: 390px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .comp-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 0 8px;
+    opacity: 0.7;
+  }
+  .old-phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 52px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .old-hero {
+    height: 260px;
+    background: linear-gradient(180deg, #0d2b1a 0%, rgba(11,17,32,0.95) 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+  }
+  .old-close {
+    position: absolute; top: 56px; left: 20px;
+    font-size: 24px; color: #fff; opacity: 0.8;
+  }
+  .old-match-info {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin-bottom: 16px;
+    font-size: 12px; color: rgba(255,255,255,0.6);
+  }
+  .old-teams-row {
+    display: flex; align-items: center; justify-content: space-evenly;
+    width: 100%; padding: 0 16px;
+  }
+  .old-team-card {
+    background: rgba(107,114,128,0.4);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    min-width: 100px;
+  }
+  .old-score-box {
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(107,114,128,0.6);
+    border-radius: 8px;
+    padding: 10px 14px;
+    gap: 6px;
+    font-size: 24px; font-weight: 700; color: #fff;
+  }
+  .old-content {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 16px;
+    min-height: 200px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     1. SCHEDULED MATCH  (with AI analysis)
+     ══════════════════════════════════════ -->
+<h2 class="section-title">1 of 3 — Scheduled match · AI analysis</h2>
+
+<div class="phone">
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="white" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="white" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1" fill="white" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="white"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="white"/><path d="M23 4.5V7.5C23.8 7.2 24.5 6.5 24.5 6C24.5 5.5 23.8 4.8 23 4.5Z" fill="white" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="field-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-fade"></div>
+
+    <div class="close-btn">✕</div>
+
+    <!-- Match info -->
+    <div class="match-info">
+      <div class="info-row"><span class="icon">📅</span> Sat, 21 Jun 2025</div>
+      <div class="info-row"><span class="icon">📍</span> Anfield, Liverpool</div>
+    </div>
+
+    <!-- Teams + score -->
+    <div class="teams-score">
+      <div class="team-card">
+        <div class="team-logo">🔴</div>
+        <span class="team-name">Liverpool</span>
+      </div>
+
+      <div class="score-card">
+        <div class="score-time">
+          <span class="clock-icon">🕐</span>
+          <span class="time-text">20:45</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-logo">🔵</div>
+        <span class="team-name">Man City</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content sheet -->
+  <div class="content-sheet">
+    <div class="sheet-handle"></div>
+
+    <!-- Prediction form -->
+    <div class="pred-form">
+      <div class="pred-form-label">Your prediction</div>
+      <div class="pred-form-row">
+        <div class="pred-input active">2</div>
+        <span class="pred-sep">—</span>
+        <div class="pred-input">1</div>
+      </div>
+      <div class="pred-submit">Save Prediction</div>
+    </div>
+
+    <!-- AI Analysis card -->
+    <div class="ai-card">
+      <div class="ai-card-header">
+        <span class="ai-icon">✨</span>
+        <span class="ai-title">AI Preview</span>
+      </div>
+      <div class="ai-body">
+        Liverpool host Man City in a crucial Premier League clash at Anfield. The Reds have been in exceptional form, winning 5 of their last 6 home games. City's attack remains lethal but their defensive record away from home has shown vulnerability this season. Expect a high-intensity tactical battle with both sides looking to press high and exploit transitions.
+      </div>
+      <div class="ai-pred-chip">🤖 &nbsp;Predicted: LIV&nbsp;<strong>2</strong>&nbsp;–&nbsp;<strong>1</strong>&nbsp;MCI</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     2. FINISHED MATCH  (predictions tab)
+     ══════════════════════════════════════ -->
+<h2 class="section-title">2 of 3 — Finished match · predictions</h2>
+
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="white" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="white" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1" fill="white" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="white"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="white"/><path d="M23 4.5V7.5C23.8 7.2 24.5 6.5 24.5 6C24.5 5.5 23.8 4.8 23 4.5Z" fill="white" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="field-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-fade"></div>
+    <div class="close-btn">✕</div>
+    <div class="match-info">
+      <div class="info-row"><span class="icon">📅</span> Fri, 20 Jun 2025</div>
+      <div class="info-row"><span class="icon">📍</span> Stamford Bridge</div>
+    </div>
+    <div class="teams-score">
+      <div class="team-card">
+        <div class="team-logo">🔵</div>
+        <span class="team-name">Chelsea</span>
+      </div>
+      <div class="score-card">
+        <div class="score-finished">
+          <span class="score-num">2</span>
+          <span class="score-sep">:</span>
+          <span class="score-num">1</span>
+        </div>
+        <div class="score-duration">Full Time</div>
+      </div>
+      <div class="team-card">
+        <div class="team-logo">🟡</div>
+        <span class="team-name">Arsenal</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-sheet">
+    <div class="sheet-handle"></div>
+    <!-- Tabs -->
+    <div class="tabs-header">
+      <div class="tab-btn active">👥 &nbsp;PREDICTIONS</div>
+      <div class="tab-btn">📊 &nbsp;STATS</div>
+    </div>
+
+    <!-- Prediction list -->
+    <div class="pred-list">
+      <div class="pred-row">
+        <span class="pred-rank gold">1</span>
+        <div class="pred-avatar">D</div>
+        <span class="pred-member">Dima</span>
+        <span class="pred-member-score">2 – 1</span>
+        <span class="pred-pts-badge bingo">5 pts</span>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank silver">2</span>
+        <div class="pred-avatar">A</div>
+        <span class="pred-member">Alex</span>
+        <span class="pred-member-score">1 – 0</span>
+        <span class="pred-pts-badge hit">3 pts</span>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank silver">2</span>
+        <div class="pred-avatar">S</div>
+        <span class="pred-member">Sara</span>
+        <span class="pred-member-score">3 – 1</span>
+        <span class="pred-pts-badge hit">3 pts</span>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank bronze">4</span>
+        <div class="pred-avatar">M</div>
+        <span class="pred-member">Mike</span>
+        <span class="pred-member-score">0 – 0</span>
+        <span class="pred-pts-badge miss">0 pts</span>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank" style="color:var(--border)">5</span>
+        <div class="pred-avatar" style="opacity:0.4">J</div>
+        <span class="pred-member" style="color:var(--muted)">Jake</span>
+        <span class="pred-member-score" style="color:var(--border)">—</span>
+        <span class="pred-pts-badge miss" style="opacity:0.45">0 pts</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     3. LIVE MATCH
+     ══════════════════════════════════════ -->
+<h2 class="section-title">3 of 3 — Live match</h2>
+
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="white" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="white" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1" fill="white" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="white"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="white"/><path d="M23 4.5V7.5C23.8 7.2 24.5 6.5 24.5 6C24.5 5.5 23.8 4.8 23 4.5Z" fill="white" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="field-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-fade"></div>
+    <div class="close-btn">✕</div>
+    <div class="match-info">
+      <div class="info-row"><span class="icon">📅</span> Sat, 21 Jun 2025</div>
+    </div>
+    <div class="teams-score">
+      <div class="team-card">
+        <div class="team-logo">🔴</div>
+        <span class="team-name">Man Utd</span>
+      </div>
+      <div class="score-card">
+        <div class="score-live-wrap">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="score-finished" style="margin-top:6px">
+            <span class="score-num">1</span>
+            <span class="score-sep">:</span>
+            <span class="score-num">1</span>
+          </div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-logo">🤍</div>
+        <span class="team-name">Tottenham</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-sheet">
+    <div class="sheet-handle"></div>
+    <div class="tabs-header">
+      <div class="tab-btn active">👥 &nbsp;PREDICTIONS</div>
+      <div class="tab-btn">📊 &nbsp;STATS</div>
+    </div>
+    <div class="pred-list">
+      <div class="pred-row">
+        <span class="pred-rank gold">1</span>
+        <div class="pred-avatar">D</div>
+        <span class="pred-member">Dima</span>
+        <span class="pred-member-score">1 – 1</span>
+        <div style="font-size:11px;color:var(--muted);font-style:italic">in play…</div>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank silver">—</span>
+        <div class="pred-avatar">A</div>
+        <span class="pred-member">Alex</span>
+        <span class="pred-member-score">2 – 0</span>
+        <div style="font-size:11px;color:var(--muted);font-style:italic">in play…</div>
+      </div>
+      <div class="pred-row">
+        <span class="pred-rank silver">—</span>
+        <div class="pred-avatar">S</div>
+        <span class="pred-member">Sara</span>
+        <span class="pred-member-score">0 – 2</span>
+        <div style="font-size:11px;color:var(--muted);font-style:italic">in play…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     COMPARISON: OLD design
+     ══════════════════════════════════════ -->
+<h2 class="section-title">Before (current design)</h2>
+<div class="old-phone">
+  <div class="status-bar" style="position:relative;z-index:10;padding-top:16px">
+    <span class="time">9:41</span>
+  </div>
+  <div class="old-hero">
+    <div class="old-close">✕</div>
+    <div class="old-match-info">
+      <div>📅 Fri, 20 Jun 2025</div>
+      <div>📍 Stamford Bridge</div>
+    </div>
+    <div class="old-teams-row">
+      <div class="old-team-card">
+        <div style="width:48px;height:48px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">🔵</div>
+        <span style="font-size:12px;color:#fff;font-weight:600">Chelsea</span>
+      </div>
+      <div class="old-score-box">
+        <span>2</span><span style="color:rgba(255,255,255,0.3)">:</span><span>1</span>
+      </div>
+      <div class="old-team-card">
+        <div style="width:48px;height:48px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">🟡</div>
+        <span style="font-size:12px;color:#fff;font-weight:600">Arsenal</span>
+      </div>
+    </div>
+  </div>
+  <div class="old-content">
+    <div style="display:flex;justify-content:space-around;padding-bottom:12px;border-bottom:2px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:6px;padding-bottom:12px;border-bottom:2px solid var(--primary);color:var(--primary);font-size:12px;font-weight:700">👥 PREDICTIONS</div>
+      <div style="display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;font-weight:700">📊 STATS</div>
+    </div>
+    <div style="padding-top:12px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:13px;font-weight:700;color:var(--muted);width:20px">1</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">D</div>
+        <span style="flex:1;font-size:13px">Dima</span>
+        <span style="font-size:12px;color:var(--muted)">2–1</span>
+        <span style="font-size:12px;font-weight:700;color:var(--warning)">5 pts</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:13px;font-weight:700;color:var(--muted);width:20px">2</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">A</div>
+        <span style="flex:1;font-size:13px">Alex</span>
+        <span style="font-size:12px;color:var(--muted)">1–0</span>
+        <span style="font-size:12px;font-weight:700;color:#10B981">3 pts</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

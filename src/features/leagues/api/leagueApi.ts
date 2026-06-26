@@ -126,6 +126,57 @@ export const leagueApi = {
     return data;
   },
 
+  async updateMyLeagueActivation(userId: string, activeMemberIds: string[]) {
+    const { data: memberships, error: membershipsError } = await supabase
+      .from('league_members')
+      .select('id, league_id, active, is_primary')
+      .eq('user_id', userId);
+
+    if (membershipsError) throw new Error(membershipsError.message);
+
+    const selectedIds = new Set(activeMemberIds);
+    const invalidSelection = activeMemberIds.some((memberId) => !memberships?.some((member) => member.id === memberId));
+    if (invalidSelection) throw new Error('Invalid league selection');
+
+    const idsToActivate = (memberships ?? [])
+      .filter((member) => selectedIds.has(member.id) && !member.active)
+      .map((member) => member.id);
+    const idsToDeactivate = (memberships ?? [])
+      .filter((member) => !selectedIds.has(member.id) && member.active)
+      .map((member) => member.id);
+
+    if (idsToDeactivate.length > 0) {
+      const { error } = await supabase
+        .from('league_members')
+        .update({ active: false, is_primary: false })
+        .eq('user_id', userId)
+        .in('id', idsToDeactivate);
+
+      if (error) throw new Error(error.message);
+    }
+
+    if (idsToActivate.length > 0) {
+      const { error } = await supabase
+        .from('league_members')
+        .update({ active: true })
+        .eq('user_id', userId)
+        .in('id', idsToActivate);
+
+      if (error) throw new Error(error.message);
+    }
+
+    const selectedPrimary = (memberships ?? []).find((member) => member.is_primary && selectedIds.has(member.id));
+    const fallbackPrimary = (memberships ?? []).find((member) => selectedIds.has(member.id));
+
+    if (!selectedPrimary && fallbackPrimary) {
+      await this.updatePrimaryLeague(fallbackPrimary.league_id);
+    }
+
+    return {
+      primaryLeagueId: selectedPrimary?.league_id ?? fallbackPrimary?.league_id ?? null,
+    };
+  },
+
   async removeMember(memberId: string) {
     const { data: memberData, error: memberError } = await supabase
       .from('league_members')

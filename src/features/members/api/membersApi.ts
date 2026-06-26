@@ -194,6 +194,7 @@ export const memberApi = {
       .select('*, league:leagues!league_id(*, competition:competitions(*))')
       .eq('user_id', userId)
       .eq('is_primary', true)
+      .eq('active', true)
       .maybeSingle();
 
     if (error) throw error;

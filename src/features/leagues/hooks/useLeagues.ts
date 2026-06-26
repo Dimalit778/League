@@ -97,6 +97,34 @@ export const useUpdatePrimaryLeague = () => {
     },
   });
 };
+
+export const useUpdateLeagueActivation = () => {
+  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const queryClient = useQueryClient();
+  const initializeMember = useMemberStore((s) => s.initializeMember);
+
+  return useMutation({
+    mutationFn: (activeMemberIds: string[]) => {
+      if (!userId) throw new Error('User not authenticated');
+      return leagueApi.updateMyLeagueActivation(userId, activeMemberIds);
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
+      ]);
+      await initializeMember();
+    },
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
+  });
+};
+
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   const normalizedJoinCode = joinCode?.trim().toUpperCase() ?? '';
   return useQuery({

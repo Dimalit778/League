@@ -34,6 +34,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
         .select('*, league:leagues!league_id(*, competition:competitions(*))')
         .eq('user_id', user.id)
         .eq('is_primary', true)
+        .eq('active', true)
         .maybeSingle();
 
       if (error) throw error;

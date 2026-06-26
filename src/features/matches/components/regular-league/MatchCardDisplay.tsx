@@ -1,10 +1,8 @@
-import LeftJersey from '@/components/LeftJersey';
-import { CText } from '@/components/ui';
+import { CText, LogoBadge } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
-import { getTeamJersey } from '@/utils/teamColors';
 import { AddIcon } from '@assets/icons';
 import { View } from 'react-native';
 import { MatchWithPredictionsType, PredictionType } from '../../types';
@@ -94,11 +92,9 @@ export const MatchCardHeader = ({ kickOff, isScheduled, isLive, isFinished }: Ma
   );
 };
 export const TeamDisplay = ({ team, isDesktop }: TeamDisplayProps) => {
-  const jerseyData = getTeamJersey(team.name);
   return (
     <View className="flex-1  items-center ">
-      <LeftJersey teamName={team.tla ?? team.shortName ?? team.name} jerseyColors={jerseyData} size={50} />
-
+      <LogoBadge source={{ uri: team.logo }} width={50} height={50} />
       <CText variant="caption" className="text-center mt-2">
         {isDesktop ? team.shortName || team.name : team.shortName || team.name || team.tla}
       </CText>
