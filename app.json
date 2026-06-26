@@ -17,7 +17,6 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.league",
       "userInterfaceStyle": "dark",
-      "buildNumber": "1",
       "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
@@ -30,7 +29,8 @@
         "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dimalit778.league"
+      "package": "com.dimalit778.league",
+      "permissions": ["android.permission.RECORD_AUDIO", "android.permission.CAMERA"]
     },
     "web": {
       "bundler": "metro",
@@ -77,6 +77,12 @@
         "expo-build-properties",
         {
           "ios": {
+            "extraPods": [
+              {
+                "name": "AppCheckCore",
+                "version": "11.2.0"
+              }
+            ],
             "infoPlist": {
               "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
               "NSLocalNetworkUsageDescription": "Allow local network for development",
@@ -138,13 +144,10 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0730f614-1c6a-437b-b74b-508698797f3e"
+        "projectId": "ae460131-1d9e-4bfe-9dae-4953f64f9dc2"
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/0730f614-1c6a-437b-b74b-508698797f3e"
-    },
     "runtimeVersion": "1.0.0",
-    "owner": "dimalit778"
+    "owner": "dima.dev"
   }
 }
