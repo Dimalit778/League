@@ -41,15 +41,18 @@ export const useGetMatchesByFixture = ({
   stage,
 }: {
   selectedFixture: number;
-  competitionId: number;
-  memberId: string;
+  competitionId: number | null;
+  memberId: string | null;
   enabled?: boolean;
   stage?: string;
 }) => {
   const query = useQuery({
-    queryKey: KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage),
+    queryKey:
+      competitionId != null && memberId != null && selectedFixture > 0
+        ? KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage)
+        : (['matches', 'fixture', 'disabled', competitionId ?? 'none', selectedFixture, memberId ?? 'none', stage ?? 'all'] as const),
     queryFn:
-      enabled && selectedFixture && competitionId && memberId
+      enabled && competitionId != null && memberId != null && selectedFixture > 0
         ? () =>
             matchesApi.getFixtureMatchesWithMemberPrediction({
               fixture: selectedFixture,
@@ -69,6 +72,7 @@ export const useGetMatchesByFixture = ({
 
   return query;
 };
+
 
 export const useGetCompetitionMatches = ({
   competitionId,

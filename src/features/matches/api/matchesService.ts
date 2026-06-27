@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
 import { FIRST_PHASE_STAGES } from '../types/footballStages';
-import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
 
 const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
@@ -11,13 +11,15 @@ const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
   predictions:predictions!predictions_match_id_fkey(*)
 `;
 
-const withMemberPredictions = (
+const filterPredictionsByMember = (
   matches: MatchWithPredictionsType[] | null,
   memberId: string,
 ): MatchWithPredictionsType[] =>
   (matches ?? []).map((match) => ({
     ...match,
-    predictions: (match.predictions ?? []).filter((prediction) => prediction.league_member_id === memberId),
+    predictions: (match.predictions ?? []).filter(
+      (prediction) => prediction.league_member_id === memberId
+    ),
   }));
 
 export const matchesApi = {
@@ -77,10 +79,12 @@ export const matchesApi = {
     const { data, error } = await query.order('kick_off', { ascending: true });
 
     if (error) throw error;
-
-    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
-    void prefetchMatchTeamLogos(matches);
-
+    const matches = filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId
+    );
+    
+ 
     return matches;
   },
   // Get all competition matches with current Member predictions
@@ -96,7 +100,7 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
     void prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -116,7 +120,7 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
     void prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -138,7 +142,7 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
     void prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -179,7 +183,7 @@ export const matchesApi = {
     if (error) throw error;
     if (!data) return [];
 
-    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
     void prefetchMatchTeamLogos(matches);
     return matches;
   },
@@ -203,6 +207,6 @@ export const matchesApi = {
 
     if (error) throw error;
     if (!data) return [];
-    return withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    return filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
   },
 };

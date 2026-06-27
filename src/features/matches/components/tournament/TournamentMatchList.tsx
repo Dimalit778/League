@@ -3,8 +3,9 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
+import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
 import { groupMatchesByFixture } from '../../utils/tournamentMatches';
-import MatchesCard from '../regular-league/MatchesCard';
+import { MatchCard } from '../MatchCard';
 
 type TournamentMatchListProps = {
   view: 'groups' | 'knockout';
@@ -27,9 +28,21 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
               </CText>
             </View>
             <View className="flex-row flex-wrap">
-              {section.matches.map((match) => (
-                <MatchesCard key={match.id} match={match} />
-              ))}
+              {section.matches.map((match) => {
+                const card = mapMatchToCardProps(match);
+
+                return (
+                  <MatchCard
+                    key={match.id}
+                    id={card.id}
+                    home={card.home}
+                    away={card.away}
+                    prediction={card.prediction}
+                    date={card.date}
+                    time={card.time}
+                  />
+                );
+              })}
             </View>
           </View>
         ))}
@@ -40,9 +53,21 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
   // knockout matches
   return (
     <View className="flex-row flex-wrap px-2 mt-2">
-      {matches.map((match) => (
-        <MatchesCard key={match.id} match={match} />
-      ))}
+      {matches.map((match) => {
+        const card = mapMatchToCardProps(match);
+
+        return (
+          <MatchCard
+            key={match.id}
+            id={card.id}
+            home={card.home}
+            away={card.away}
+            prediction={card.prediction}
+            date={card.date}
+            time={card.time}
+          />
+        );
+      })}
     </View>
   );
 }

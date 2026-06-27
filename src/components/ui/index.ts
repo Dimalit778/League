@@ -1,3 +1,5 @@
+export { MatchCard } from '../../features/matches/components/MatchCard';
+export { MatchCardBg } from '../../features/matches/components/MatchCardBg';
 export { Screen } from '../layout/Screen';
 export { AlertDialog } from './AlertDialog';
 export { AvatarImage } from './AvatarImage';

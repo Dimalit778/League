@@ -4,25 +4,18 @@ import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import FixturesList from '@/features/matches/components/regular-league/FixturesList';
 import { useTranslation } from '@/hooks/useTranslation';
+import { selectCompetitionId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MatchesList from '../components/regular-league/MatchesList';
 import { useGetMatchesByFixture } from '../hooks/useMatches';
+import { mapMatchToCardProps } from '../utils/matchCard.mapper';
 
-type RegularLeagueScreenProps = {
-  competitionId: number;
-  memberId: string;
-  stage?: string;
-  withScreen?: boolean;
-};
+export default function RegularLeagueScreen() {
+  const memberId = useMemberStore(selectMemberId);
+  const competitionId = useMemberStore(selectCompetitionId);
 
-export default function RegularLeagueScreen({
-  competitionId,
-  memberId,
-  stage,
-  withScreen = true,
-}: RegularLeagueScreenProps) {
   const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
@@ -88,7 +81,6 @@ export default function RegularLeagueScreen({
     selectedFixture,
     competitionId,
     memberId,
-    stage,
     enabled: !!matchMeta,
   });
 
@@ -111,22 +103,21 @@ export default function RegularLeagueScreen({
 
     return ranges;
   }, [matches, allFixtures, locale]);
+  const matchesList = useMemo(() => matches?.map(mapMatchToCardProps) ?? [], [matches]);
 
   if (metaError || matchesError) return <Error error={metaError || matchesError || ''} />;
 
   if (metaLoading || !matchMeta || matchesLoading || !selectedFixture) {
-    const content = (
-      <>
+    return (
+      <Screen>
         <SkeletonFixtures />
         <SkeletonMatches />
-      </>
+      </Screen>
     );
-
-    return withScreen ? <Screen>{content}</Screen> : content;
   }
 
-  const content = (
-    <>
+  return (
+    <Screen>
       <FixturesList
         fixtures={allFixtures}
         selectedFixture={selectedFixture}
@@ -136,9 +127,7 @@ export default function RegularLeagueScreen({
         fixtureDateRanges={fixtureDateRanges}
       />
 
-      <MatchesList matches={matches} onRefresh={matchesRefetch} />
-    </>
+      <MatchesList matches={matchesList} onRefresh={matchesRefetch} />
+    </Screen>
   );
-
-  return withScreen ? <Screen>{content}</Screen> : content;
 }

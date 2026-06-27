@@ -1,13 +1,12 @@
-import { CText } from '@/components/ui';
+import { CText, MatchCard } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import { MatchWithPredictionsType } from '../../types';
+import { MatchCardData } from '../../utils/matchCard.mapper';
 import MatchesSkeleton from '../MatchesSkeleton';
-import MatchesCard from './MatchesCard';
 
 type MatchesListProps = {
-  matches: MatchWithPredictionsType[] | undefined;
+  matches: MatchCardData[];
   onRefresh: () => void;
 };
 export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
@@ -23,7 +22,16 @@ export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <MatchesCard key={item.id} match={item} />}
+      renderItem={({ item }) => (
+        <MatchCard
+          id={item.id}
+          home={item.home}
+          away={item.away}
+          prediction={item.prediction}
+          date={item.date}
+          time={item.time}
+        />
+      )}
       getItemLayout={(_, index) => ({
         length: 80,
         offset: 80 * index,

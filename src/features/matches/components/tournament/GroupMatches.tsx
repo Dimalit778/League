@@ -3,11 +3,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { formatMatchdayDate } from '@/utils/formats';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { MatchWithPredictionsType } from '../../../types';
-import { isGroupPhaseStage } from '../../../types/footballStages';
-import { getTournamentGroups, normalizedGroupLetter } from '../../../utils/tournamentMatches';
-import { GroupTabs } from '../TournametTabs';
-import GroupMatchCard from './GroupMatchCard';
+import { MatchWithPredictionsType } from '../../types';
+import { isGroupPhaseStage } from '../../types/footballStages';
+import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
+import { getTournamentGroups, normalizedGroupLetter } from '../../utils/tournamentMatches';
+import { MatchCard } from '../MatchCard';
+import { GroupTabs } from './TournametTabs';
 
 type GroupMatchesProps = {
   matches: MatchWithPredictionsType[];
@@ -94,9 +95,21 @@ export default function GroupMatches({
                   {section.label}
                 </CText>
               </View>
-              {section.matches.map((match) => (
-                <GroupMatchCard key={match.id} match={match} />
-              ))}
+              {section.matches.map((match) => {
+                const card = mapMatchToCardProps(match);
+
+                return (
+                  <MatchCard
+                    key={match.id}
+                    id={card.id}
+                    home={card.home}
+                    away={card.away}
+                    prediction={card.prediction}
+                    date={card.date}
+                    time={card.time}
+                  />
+                );
+              })}
             </View>
           ))}
         </View>
