@@ -475,6 +475,7 @@ export type Database = {
         }
         Returns: string
       }
+      delete_own_account: { Args: never; Returns: undefined }
       delete_owned_league: { Args: { p_league_id: string }; Returns: Json }
       find_league_by_code: {
         Args: { p_join_code: string }

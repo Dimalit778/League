@@ -1,24 +1,10 @@
-import { useTranslation } from '@/hooks/useTranslation';
-import { KEYS } from '@/lib/queryClient';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
-import { useQueryClient } from '@tanstack/react-query';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
-const AppleAuth = ({
-  setIsLoading,
-  isLoading,
-  labelKey,
-}: {
-  setIsLoading: (isLoading: boolean) => void;
-  isLoading: boolean;
-  /** i18n key, e.g. "Sign in with Apple" or "Sign up with Apple" */
-  labelKey: string;
-}) => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+const AppleAuth = ({ setIsLoading, isLoading }: { setIsLoading: (isLoading: boolean) => void; isLoading: boolean }) => {
   const [available, setAvailable] = useState(false);
   const errorMessageRef = useRef<string | null>(null);
 
@@ -45,22 +31,29 @@ const AppleAuth = ({
         ],
       });
 
-      const identityToken = credential.identityToken;
-      if (!identityToken) {
-        throw new Error('Failed to get authentication token from Apple');
+      if (!credential.identityToken) {
+        throw new Error('Apple did not return identityToken');
       }
 
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
-        token: identityToken,
+        token: credential.identityToken,
       });
 
       if (error) throw error;
+
       if (!data?.session?.user?.id) {
         throw new Error('Failed to create session after Apple sign in');
       }
 
-      await queryClient.invalidateQueries({ queryKey: KEYS.members.primary(data.session.user.id) });
+      const fullName = [credential.fullName?.givenName, credential.fullName?.familyName].filter(Boolean).join(' ');
+
+      if (fullName) {
+        const { error: updateAuthError } = await supabase.auth.updateUser({
+          data: { full_name: fullName },
+        });
+        if (updateAuthError) throw updateAuthError;
+      }
     } catch (error: unknown) {
       if (
         typeof error === 'object' &&
@@ -77,24 +70,20 @@ const AppleAuth = ({
     } finally {
       setIsLoading(false);
     }
-  }, [queryClient, setIsLoading]);
+  }, [setIsLoading]);
 
   if (Platform.OS !== 'ios' || !available) {
     return null;
   }
 
   return (
-    <View className="gap-2">
-      {/* <AppleSignInButton onPress={handleAppleSignIn} loading={isLoading} disabled={isLoading} label={t(labelKey)} />
-      {errorMessage && <CText className="text-error text-sm text-center mt-1">{errorMessage}</CText>} */}
-      <AppleAuthentication.AppleAuthenticationButton
-        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-        cornerRadius={8}
-        style={{ width: 200, height: 44 }}
-        onPress={handleAppleSignIn}
-      />
-    </View>
+    <AppleAuthentication.AppleAuthenticationButton
+      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+      cornerRadius={8}
+      style={{ width: '100%', height: 44 }}
+      onPress={handleAppleSignIn}
+    />
   );
 };
 

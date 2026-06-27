@@ -1,5 +1,10 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { useDeleteLeague, useGetLeagueAndMembers, useRemoveMember, useUpdateLeague } from '@/features/leagues/hooks/useLeagues';
+import {
+  useDeleteLeague,
+  useGetLeagueAndMembers,
+  useRemoveMember,
+  useUpdateLeague,
+} from '@/features/leagues/hooks/useLeagues';
 import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 
@@ -121,7 +126,7 @@ export default function EditLeagueScreen() {
         onError: (error) => {
           Alert.alert(t('Error'), error.message);
         },
-      }
+      },
     );
   };
 

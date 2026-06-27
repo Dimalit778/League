@@ -1,6 +1,6 @@
 import * as authApi from '@/features/auth/api/authApi';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useAuthActions = () => {
   const queryClient = useQueryClient();
@@ -47,10 +47,6 @@ export const useAuthActions = () => {
     [handleAction]
   );
 
-  const signInWithGoogle = useCallback(
-    () => handleAction(authApi.signInWithGoogle),
-    [handleAction]
-  );
 
   const signOut = useCallback(
     () => handleAction(authApi.signOut, queryClient),
@@ -80,7 +76,6 @@ export const useAuthActions = () => {
   return {
     signIn,
     signUp,
-    signInWithGoogle,
     signOut,
     verifyOtp,
     resendOtp,

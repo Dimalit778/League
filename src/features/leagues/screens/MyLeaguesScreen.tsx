@@ -220,6 +220,7 @@ type LeaguesListProps = {
 };
 
 function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: LeaguesListProps) {
+  const { t } = useTranslation();
   const refreshControl = useMemo(
     () => <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />,
     [isFetching, onRefresh],
@@ -233,11 +234,13 @@ function LeaguesList({ leagues, isFetching, onRefresh, onSelectLeague }: Leagues
       refreshControl={refreshControl}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
-      contentContainerClassName="gap-3 px-2 mt-4"
+      contentContainerClassName="gap-3 px-2 mt-4 flex-1"
     >
       {leagues.length === 0 ? (
-        <View className="pt-10 w-full">
-          <CText className="text-center text-muted font-bold text-lg">Create or join a league to get started</CText>
+        <View className="pt-10 items-center w-full">
+          <CText variant="bodyBold" className="text-center text-muted">
+            {t('Create or join a league to get started.')}
+          </CText>
         </View>
       ) : (
         sortedLeagues.map((league) => (

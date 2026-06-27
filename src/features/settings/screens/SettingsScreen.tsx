@@ -3,31 +3,15 @@ import { BackButton, Button, CText } from '@/components/ui';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
+import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useAuthStore } from '@/store/AuthStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
+import { useCallback } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
-const deleteAccount = async () => {
-  console.log('deleteAccount');
-};
-
-const handleDeleteAccountPress = () => {
-  Alert.alert('Delete Account', 'Are you sure you want to delete your account? This action cannot be undone.', [
-    {
-      text: 'Cancel',
-      style: 'cancel',
-    },
-    {
-      text: 'Delete',
-      style: 'destructive',
-      onPress: deleteAccount,
-    },
-  ]);
-};
 
 const SettingsScreen = () => {
   const user = useAuthStore((s) => s.user);
@@ -35,10 +19,22 @@ const SettingsScreen = () => {
   const { data: isAdmin } = useIsAdmin();
 
   const { subscription } = useRevenueCatSubscription();
-
+  const deleteUserMutation = useDeleteUser();
   const { signOut } = useAuthActions();
   const { t } = useTranslation();
-
+  const handleDeleteAccountPress = useCallback(() => {
+    Alert.alert('Delete Account', 'Are you sure you want to delete your account? This action cannot be undone.', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteUserMutation.mutate(),
+      },
+    ]);
+  }, [deleteUserMutation]);
   const handleSignOut = async () => {
     const result = await signOut();
 

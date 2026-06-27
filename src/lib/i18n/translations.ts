@@ -118,9 +118,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagues: {
       League: 'League',
       Leagues: 'Leagues',
+      'Create or join a league to get started.': 'Create or join a league to get started.',
       'Active leagues': 'Active leagues',
       'Create League': 'Create League',
-      'Edit League': 'Edit League',
+      'Edit League': 'Edit League', 
       'Join League': 'Join League',
       'Choose active leagues': 'Choose active leagues',
       'Save active leagues': 'Save active leagues',
@@ -730,6 +731,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagues: {
       League: 'ליגה',
       Leagues: 'ליגות',
+      'Create or join a league to get started.': 'צור ליגה או הצטרף לליגה כדי להתחיל.',
       'Active leagues': 'ליגות פעילות',
       'Create League': 'יצירת ליגה',
       'Edit League': 'עריכת ליגה',

@@ -5,13 +5,13 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useState } from 'react';
+import { Alert, Pressable } from 'react-native';
 
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
-import { Alert } from 'react-native';
-import GoogleSignInButton from './GoogleSignInButton';
+import { GoogleLogoIcon } from '@assets/icons';
 
 const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS || '';
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB || '';
@@ -33,6 +33,7 @@ const GoogleAuth = ({
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const label = t('Sign in with Google');
 
   const handleGoogleSignIn = async () => {
     try {
@@ -97,12 +98,18 @@ const GoogleAuth = ({
 
   return (
     <>
-      <GoogleSignInButton
+      <Pressable
         onPress={handleGoogleSignIn}
-        loading={isLoading}
         disabled={isLoading}
-        label={t('Sign in with Google')}
-      />
+        className="h-14 px-4 rounded-full flex-row items-center justify-center gap-x-4 border border-muted"
+        accessibilityRole="button"
+        accessibilityLabel={label}
+      >
+        <GoogleLogoIcon size={22} />
+        <CText className="text-md font-semibold text-text" numberOfLines={1}>
+          {label}
+        </CText>
+      </Pressable>
       {errorMessage && <CText className="text-error text-sm text-center mt-2">{errorMessage}</CText>}
     </>
   );

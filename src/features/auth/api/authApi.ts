@@ -80,57 +80,6 @@ export const signUp = async (email: string, password: string, fullname: string) 
   }
 };
 
-// Sign In with Google
-export const signInWithGoogle = async () => {
-  try {
-    const googleRedirectUri = AuthSession.makeRedirectUri({
-      scheme: 'league',
-      path: 'auth/callback',
-    });
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: googleRedirectUri,
-        skipBrowserRedirect: true,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    });
-
-    if (error) throw error;
-    if (!data?.url) {
-      throw new Error('Failed to start Google sign in.');
-    }
-
-    const authResult = await WebBrowser.openAuthSessionAsync(data.url, googleRedirectUri);
-
-    if (authResult.type !== 'success' || !authResult.url) {
-      throw new Error(
-        authResult.type === 'dismiss' || authResult.type === 'cancel'
-          ? 'Google sign in was cancelled.'
-          : 'Google sign in failed.'
-      );
-    }
-
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
-    if (sessionError) throw sessionError;
-    if (!session?.user) {
-      throw new Error('No active session found after Google sign in.');
-    }
-
-    return { success: true };
-  } catch (error: any) {
-    const message = error.message || 'Failed to sign in with Google';
-    return { success: false, error: message };
-  }
-};
 
 // Sign Out
 export const signOut = async (queryClient: QueryClient) => {

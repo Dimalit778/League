@@ -220,6 +220,15 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           } else {
             const logInResult = await Purchases.logIn(userId);
             nextCustomerInfo = logInResult.customerInfo;
+
+            // New login — restore purchases so previous subscriptions are recovered
+            if (logInResult.created) {
+              try {
+                nextCustomerInfo = await Purchases.restorePurchases();
+              } catch {
+                // restorePurchases is best-effort; keep the customerInfo from logIn
+              }
+            }
           }
         } else {
           const currentCustomerInfo = customerInfoRef.current ?? (await Purchases.getCustomerInfo());
