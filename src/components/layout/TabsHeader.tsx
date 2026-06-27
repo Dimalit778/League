@@ -77,11 +77,7 @@ export const TabsHeader = ({
     );
   }
 
-  return (
-    <View style={[styles.androidContainer, { backgroundColor: colors.background }]}>
-      {content}
-    </View>
-  );
+  return <View style={[styles.androidContainer, { backgroundColor: colors.background }]}>{content}</View>;
 };
 
 const styles = StyleSheet.create({

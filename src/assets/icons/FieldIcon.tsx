@@ -1,7 +1,7 @@
 import { IconProps } from '@/types';
 import { View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
-const LeagueIcon = ({ size, color }: IconProps) => (
+const FieldIcon = ({ size, color }: IconProps) => (
   <View style={{ transform: [{ rotate: '90deg' }] }}>
     <Svg viewBox="0 0 24 24" width={size} height={size}>
       <G fill={color}>
@@ -12,4 +12,4 @@ const LeagueIcon = ({ size, color }: IconProps) => (
     </Svg>
   </View>
 );
-export default LeagueIcon;
+export default FieldIcon;

@@ -5,8 +5,8 @@ import EyeOpenIcon from './EyeOpenIcon';
 import LockIcon from './LockIcon';
 import UserIcon from './UserIcon';
 // Tabs Icons
+import FieldIcon from './FieldIcon';
 import GoogleLogoMonoIcon from './GoogleLogoMonoIcon';
-import LeagueIcon from './LeagueIcon';
 import MatchesIcon from './MatchesIcon';
 import MenuIcon from './MenuIcon';
 import ProfileIcon from './ProfileIcon';
@@ -31,11 +31,8 @@ export {
   ArrowUpIcon,
   EmailIcon,
   EyeClosedIcon,
-  EyeOpenIcon,
-  GoogleLogoIcon,
-  GoogleLogoMonoIcon,
-  LeagueIcon,
-  LockIcon,
+  EyeOpenIcon, FieldIcon, GoogleLogoIcon,
+  GoogleLogoMonoIcon, LockIcon,
   MatchesIcon,
   MenuIcon,
   ProfileIcon,
@@ -44,5 +41,6 @@ export {
   StarIcon,
   TrashIcon,
   TrophyIcon,
-  UserIcon,
+  UserIcon
 };
+

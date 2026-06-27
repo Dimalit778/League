@@ -160,6 +160,30 @@ export const matchesApi = {
     };
   },
   // Get member finished matches by fixture
+  async getTodayMatchesForCompetition(
+    competitionId: number,
+    memberId: string,
+  ): Promise<MatchWithPredictionsType[]> {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
+
+    const { data, error } = await supabase
+      .from('matches')
+      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .eq('competition_id', competitionId)
+      .gte('kick_off', startOfDay)
+      .lte('kick_off', endOfDay)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+    if (!data) return [];
+
+    const matches = withMemberPredictions(data as MatchWithPredictionsType[], memberId);
+    void prefetchMatchTeamLogos(matches);
+    return matches;
+  },
+
   async getMemberFinishedMatches(
     memberId: string,
     competitionId: number,

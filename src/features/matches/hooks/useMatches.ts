@@ -117,6 +117,26 @@ export const useGetTournamentActiveStage = ({ competitionId }: { competitionId: 
     staleTime: 1000 * 60 * 5,
   });
 };
+export const useGetTodayMatches = ({
+  competitionId,
+  memberId,
+}: {
+  competitionId: number | null;
+  memberId: string | null;
+}) => {
+  return useQuery({
+    queryKey:
+      competitionId && memberId
+        ? KEYS.matches.today(competitionId, memberId)
+        : ['matches', 'today', 'disabled'],
+    queryFn:
+      competitionId && memberId
+        ? () => matchesApi.getTodayMatchesForCompetition(competitionId, memberId)
+        : skipToken,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useGetMemberFinishedMatches = (memberId: string, competitionId: number, fixture?: number) => {
   return useQuery({
     queryKey:

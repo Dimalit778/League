@@ -1,6 +1,6 @@
-import { LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
+import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon, TrophyIcon } from '@assets/icons';
 
-import { BottomTabsBar, SidebarMenu, TabsHeader } from '@/components/layout';
+import { FloatBottomTabs, SidebarMenu, TabsHeader } from '@/components/layout';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -16,7 +16,7 @@ export default function TabLayout() {
   return (
     <>
       <Tabs
-        tabBar={isWeb ? () => null : (props) => <BottomTabsBar {...props} />}
+        tabBar={isWeb ? () => null : (props) => <FloatBottomTabs {...props} />}
         screenOptions={{
           header: () => <TabsHeader />,
           tabBarHideOnKeyboard: true,
@@ -29,14 +29,7 @@ export default function TabLayout() {
           name="Home"
           options={{
             title: t('Home'),
-            tabBarIcon: ({ color, size }) => <LeagueIcon size={size} color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="Matches"
-          options={{
-            title: t('Matches'),
-            tabBarIcon: ({ color, size }) => <MatchesIcon size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <FieldIcon size={size} color={color} />,
           }}
         />
         <Tabs.Screen
@@ -47,10 +40,25 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="Matches"
+          options={{
+            title: t('Matches'),
+            tabBarIcon: ({ color, size }) => <MatchesIcon size={size} color={color} />,
+          }}
+        />
+
+        <Tabs.Screen
           name="Profile"
           options={{
             title: t('Profile'),
             tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="Leagues"
+          options={{
+            title: t('Leagues'),
+            tabBarIcon: ({ color, size }) => <TrophyIcon size={size} color={color} />,
           }}
         />
       </Tabs>

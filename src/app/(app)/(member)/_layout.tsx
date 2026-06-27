@@ -15,10 +15,7 @@ export default function MemberLayout() {
         fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
-      <Stack.Screen
-        name="(tabs)"
-        options={{ animation: 'none' }}
-      />
+      <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
       <Stack.Screen
         name="match/[id]"
         options={{

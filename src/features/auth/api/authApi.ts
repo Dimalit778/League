@@ -95,7 +95,8 @@ export const signOut = async (queryClient: QueryClient) => {
         throw error;
       }
     } catch (signOutError) {
-      }
+      console.log('signOutError', JSON.stringify(signOutError, null, 2));
+    }
 
     // Clear member store
     useMemberStore.getState().clearMember();
@@ -140,7 +141,7 @@ export const verifyOtp = async (email: string, token: string) => {
   }
 };
 
-// Resend OTP
+// Resend OTP 
 export const resendOtp = async (email: string) => {
   try {
     const isConnected = await checkNetworkConnection();

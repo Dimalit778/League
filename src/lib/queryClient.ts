@@ -47,6 +47,8 @@ export const KEYS = {
       ['matches', competitionId, 'competition', 'member', memberId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
+    today: (competitionId: number, memberId: string) =>
+      ['matches', competitionId, 'today', memberId] as const,
   },
 
   // ==================== PREDICTIONS ====================

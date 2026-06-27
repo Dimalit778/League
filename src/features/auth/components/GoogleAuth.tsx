@@ -62,7 +62,7 @@ const GoogleAuth = ({
           throw new Error('Failed to create session after Google sign in');
         }
       } else {
-        throw new Error('Google sign in was cancelled or failed');
+        return;
       }
     } catch (error: any) {
       let userMessage: string;
