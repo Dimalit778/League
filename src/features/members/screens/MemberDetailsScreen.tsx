@@ -4,6 +4,7 @@ import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import FixturesList from '@/features/matches/components/regular-league/FixturesList';
 import MatchesList from '@/features/matches/components/regular-league/MatchesList';
 import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
+import { mapMatchToCardProps } from '@/features/matches/utils/matchCard.mapper';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -59,6 +60,7 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
     if (!allFinishedMatches) return [];
     return allFinishedMatches.filter((match) => match.fixture === selectedFixture);
   }, [allFinishedMatches, selectedFixture]);
+  const matchCards = useMemo(() => matches.map(mapMatchToCardProps), [matches]);
 
   if (error || matchesError) return <Error error={error || (matchesError as Error)} />;
 
@@ -117,7 +119,7 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
             {matchesLoading ? (
               <SkeletonMatches />
             ) : (
-              <MatchesList matches={matches} onRefresh={() => void refetchMatches()} />
+              <MatchesList matches={matchCards} onRefresh={() => void refetchMatches()} />
             )}
           </View>
         </>

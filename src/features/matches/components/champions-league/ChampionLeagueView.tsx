@@ -1,8 +1,10 @@
+import { useFloatBottomTabsInset } from '@/components/layout';
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
+import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
 import { computeLeagueStandings, getLeagueFixtures, getMatchesByFixture } from '../../utils/tournamentMatches';
 import MatchesList from '../regular-league/MatchesList';
 import { HorizontalTabs } from '../tournament/TournametTabs';
@@ -15,6 +17,7 @@ type ChampionLeagueViewProps = {
 
 export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagueViewProps) {
   const { t } = useTranslation();
+  const bottomTabsInset = useFloatBottomTabsInset();
   const [showStandings, setShowStandings] = useState(false);
 
   const fixtures = useMemo(() => getLeagueFixtures(matches), [matches]);
@@ -23,6 +26,7 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
   const standings = useMemo(() => computeLeagueStandings(matches), [matches]);
 
   const fixtureMatches = useMemo(() => getMatchesByFixture(matches, selectedFixture), [matches, selectedFixture]);
+  const fixtureMatchCards = useMemo(() => fixtureMatches.map(mapMatchToCardProps), [fixtureMatches]);
 
   const fixtureOptions = fixtures.map((f) => ({
     value: String(f),
@@ -49,7 +53,7 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
         </View>
       </View>
 
-      <MatchesList matches={fixtureMatches} onRefresh={onRefresh} />
+      <MatchesList matches={fixtureMatchCards} onRefresh={onRefresh} bottomInset={bottomTabsInset} />
 
       {/* Standings modal */}
       <Modal visible={showStandings} animationType="slide" presentationStyle="pageSheet">

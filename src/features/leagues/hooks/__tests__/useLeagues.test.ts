@@ -44,7 +44,7 @@ describe('useLeagues hooks', () => {
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({
         queryKey: KEYS.leagues.byJoinCode('ABC'),
-        enabled: false,
+        queryFn: undefined,
       })
     );
   });
@@ -55,7 +55,7 @@ describe('useLeagues hooks', () => {
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({
         queryKey: KEYS.leagues.byJoinCode('ABC1234'),
-        enabled: true,
+        queryFn: expect.any(Function),
       })
     );
   });

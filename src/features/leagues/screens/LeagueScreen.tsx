@@ -1,4 +1,4 @@
-import { Error, Screen } from '@/components/layout';
+import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
@@ -12,6 +12,7 @@ import TopThree from '../components/TopThree';
 const LeagueScreen = () => {
   const leagueId = useMemberStore(selectLeagueId) ?? '';
   const memberId = useMemberStore(selectMemberId) ?? '';
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
 
@@ -47,6 +48,7 @@ const LeagueScreen = () => {
         data={leaderboard}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
         keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
         renderItem={({ item, index }) => (
           <LeaderboardCard item={item} index={index} isCurrentUser={item.member_id === memberId} />

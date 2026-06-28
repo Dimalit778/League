@@ -1,7 +1,6 @@
-import { CText } from '@/components/ui';
+import { CText, TeamBadge } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollView, View } from 'react-native';
-import TeamBadge from '../TeamBadge';
 import { ComputedStandingRow } from '../../utils/tournamentMatches';
 
 type Props = {
@@ -86,11 +85,9 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
             </View>
             <View className="flex-1 flex-row items-center gap-2">
               <TeamBadge
-                teamId={row.team.id}
-                name={row.team.name}
-                shortName={row.team.shortName}
-                tla={row.team.tla}
-                size={20}
+                source={row.team.logo}
+                width={20}
+                height={20}
               />
               <CText variant="caption" bold className="text-text" numberOfLines={1}>
                 {row.team.shortName ?? row.team.tla ?? row.team.name}

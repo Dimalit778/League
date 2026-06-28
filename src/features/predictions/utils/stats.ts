@@ -1,5 +1,9 @@
-import { predictionService } from '../api/predictionService';
-type MyPredictionRow = Awaited<ReturnType<typeof predictionService.getPredictionsByLeagueFixture>>[number];
+export type PredictionStatsRow = {
+  is_finished?: boolean | null;
+  score?: unknown;
+  predicted_home_score?: number | null;
+  predicted_away_score?: number | null;
+};
 
 const isScoreObject = (score: unknown): score is Record<string, unknown> =>
   !!score && typeof score === 'object' && !Array.isArray(score);
@@ -7,7 +11,7 @@ const isScoreObject = (score: unknown): score is Record<string, unknown> =>
 const isFullTimeScore = (score: unknown): score is { home?: number | null; away?: number | null } =>
   !!score && typeof score === 'object' && !Array.isArray(score);
 
-export function computePredictionStats(rows: MyPredictionRow[]) {
+export function computePredictionStats(rows: PredictionStatsRow[]) {
   let total = 0;
   let finished = 0;
   let bingo = 0;

@@ -1,6 +1,12 @@
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
 import { useMemo, useState } from 'react';
-import { DimensionValue, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
+import {
+  DimensionValue,
+  ImageStyle,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { SvgUri } from 'react-native-svg';
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';
@@ -40,15 +46,22 @@ export const MyImage = ({
 
   // Normalize to a URI string when available
   const uri =
-    typeof source === 'string' ? source : typeof source === 'object' && 'uri' in source ? source.uri : undefined;
+    typeof source === 'string'
+      ? source
+      : typeof source === 'object' && 'uri' in source
+        ? source.uri
+        : undefined;
 
   // Robust SVG detection (string URL, {uri}, or data URI)
   const isSvg =
     forceSvg ||
-    (typeof uri === 'string' && (uri.toLowerCase().includes('.svg') || uri.startsWith('data:image/svg+xml')));
+    (typeof uri === 'string' &&
+      (uri.toLowerCase().includes('.svg') ||
+        uri.startsWith('data:image/svg+xml')));
 
   // Only inject size style if provided (so NativeWind className can control size)
-  const sizeStyle: StyleProp<ImageStyle> = width !== undefined || height !== undefined ? { width, height } : undefined;
+  const sizeStyle: StyleProp<ImageStyle> =
+    width !== undefined || height !== undefined ? { width, height } : undefined;
 
   // Build expo-image source without clobbering require(...) or headers
   const expoSource = useMemo(() => {
@@ -59,13 +72,25 @@ export const MyImage = ({
   }, [source]);
 
   // Stable recycling key helps lists (ignore cache-busting query params if you want)
-  const recyclingKey = typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
+  const recyclingKey =
+    typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
+  const svgPreserveAspectRatio =
+    contentFit === 'fill'
+      ? 'none'
+      : contentFit === 'cover'
+        ? 'xMidYMid slice'
+        : undefined;
 
   if (isSvg && uri) {
     // Render SVG via react-native-svg (no caching; wrap to size)
     return (
       <View className={className} style={sizeStyle as StyleProp<ViewStyle>}>
-        <SvgUri uri={uri} width="100%" height="100%" />
+        <SvgUri
+          uri={uri}
+          width="100%"
+          height="100%"
+          preserveAspectRatio={svgPreserveAspectRatio}
+        />
       </View>
     );
   }

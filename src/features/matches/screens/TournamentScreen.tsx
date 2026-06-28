@@ -2,6 +2,7 @@ import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { useGetCompetitionMatches, useGetTournamentActiveStage } from '@/features/matches/hooks/useMatches';
 import { selectCompetition, selectCompetitionId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { useEffect, useMemo, useState } from 'react';
+import ChampionLeagueView from '../components/champions-league/ChampionLeagueView';
 import GroupMatches from '../components/tournament/GroupMatches';
 import KnockoutMatches from '../components/tournament/KnockoutMatches';
 import { TournamentViewTabs } from '../components/tournament/TournametTabs';
@@ -35,11 +36,15 @@ const TournamentMatches = ({ competitionId, memberId, defaultView = 'groups' }: 
   if (error) return <Error error={error} />;
   if (isLoading) return <LoadingOverlay />;
 
+  const isLeaguePhaseView = view === 'groups' && isLeaguePhase(matches);
+
   return (
     <>
       <TournamentViewTabs value={view} onChange={setView} />
 
-      {view === 'groups' && !isLeaguePhase(matches) && <GroupMatches matches={matches} onRefresh={refetch} />}
+      {isLeaguePhaseView && <ChampionLeagueView matches={matches} onRefresh={refetch} />}
+
+      {view === 'groups' && !isLeaguePhaseView && <GroupMatches matches={matches} onRefresh={refetch} />}
 
       {view === 'knockout' && <KnockoutMatches matches={matches} onRefresh={refetch} />}
     </>

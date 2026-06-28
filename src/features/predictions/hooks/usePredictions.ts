@@ -4,15 +4,7 @@ import { TablesInsert } from '@/types/database.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 import { predictionService } from '../api/predictionService';
-// Get Predictions by League Fixture
-// export const useGetPredictionsByLeagueFixture = (leagueId: string, fixture: number) => {
-//   return useQuery({
-//     queryKey: KEYS.predictions.byLeagueFixture(leagueId, fixture),
-//     queryFn: () => predictionService.getPredictionsByLeagueFixture(leagueId, fixture),
-//     enabled: !!leagueId && !!fixture,
-//   });
-// };
-// Upsert Prediction (Create or Update)
+
 export const useUpsertPrediction = () => {
   const queryClient = useQueryClient();
   const competitionId = useMemberStore(selectCompetitionId) ?? 0;
@@ -23,37 +15,32 @@ export const useUpsertPrediction = () => {
       return predictionService.upsertPrediction(prediction);
     },
     onSuccess: (data) => {
-      // Invalidate all predictions queries for the league
-      queryClient.invalidateQueries({
-        queryKey: ['predictions', 'league', leagueId],
-      });
+      if (leagueId) {
+        queryClient.invalidateQueries({
+          queryKey: KEYS.predictions.byLeague(leagueId),
+        });
+      }
 
-      // Invalidate competition matches for this member so the list reflects the new prediction
-      queryClient.invalidateQueries({
-        queryKey: KEYS.matches.byCompetition(competitionId, memberId),
-      });
+      if (competitionId) {
+        queryClient.invalidateQueries({
+          queryKey: KEYS.matches.byCompetitionRoot(competitionId),
+        });
+      }
 
-      // Invalidate specific match detail with predictions
-      queryClient.invalidateQueries({
-        queryKey: KEYS.matches.withPredictions(leagueId, data.match_id),
-      });
+      if (competitionId && memberId) {
+        queryClient.invalidateQueries({
+          queryKey: KEYS.matches.byCompetition(competitionId, memberId),
+        });
+      }
 
-      // Invalidate match detail
-      queryClient.invalidateQueries({
-        queryKey: KEYS.matches.detail(data.match_id),
-      });
+      if (leagueId) {
+        queryClient.invalidateQueries({
+          queryKey: KEYS.matches.withPredictions(leagueId, data.match_id),
+        });
+      }
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
     },
   });
 };
-
-// export const useMemberPredictions = (memberId: string) => {
-//   return useQuery({
-//     queryKey: KEYS.predictions.byMember(memberId),
-//     queryFn: () => predictionService.getMemberPredictionByFixture(memberId, 0),
-//     enabled: !!memberId,
-//     staleTime: 1000 * 60 * 5,
-//   });
-// };

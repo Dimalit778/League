@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
+import { Error, LoadingOverlay, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { Button, CText } from '@/components/ui';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { AvatarSection } from '@/features/members/components/profile/AvatarSection';
@@ -16,10 +16,11 @@ import { useMemberProfile } from '../hooks/useMembers';
 
 const ProfileScreen = () => {
   const leagueId = useMemberStore(selectLeagueId);
-  const memberId = useMemberStore(selectMemberId) as string;
+  const memberId = useMemberStore(selectMemberId);
   const { t } = useTranslation();
   const { data: memberData, isLoading: memberLoading, error: memberError } = useMemberProfile(memberId);
-  const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId as string);
+  const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId);
+  const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
 
@@ -70,6 +71,7 @@ const ProfileScreen = () => {
         showsVerticalScrollIndicator={false}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
       >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 

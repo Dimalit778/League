@@ -1,16 +1,38 @@
+import { useFloatBottomTabsInset } from '@/components/layout';
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { router } from 'expo-router';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, RefreshControl, ScrollView, useWindowDimensions, View } from 'react-native';
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
-import { getKnockoutStages, getStageLabel } from '../../utils/tournamentMatches';
+import {
+  getKnockoutStages,
+  getStageLabel,
+} from '../../utils/tournamentMatches';
 import { MatchCard } from '../MatchCard';
 import { KnockoutStageTabs } from './TournametTabs';
 
-const getStageIndexFromOffset = (offset: number, pageWidth: number, stageCount: number, isRTL: boolean) => {
+const getStageIndexFromOffset = (
+  offset: number,
+  pageWidth: number,
+  stageCount: number,
+  isRTL: boolean,
+) => {
   const pageIndex = Math.round(offset / pageWidth);
   if (!isRTL) return Math.max(0, Math.min(stageCount - 1, pageIndex));
   return Math.max(0, Math.min(stageCount - 1, stageCount - pageIndex - 1));
@@ -39,6 +61,8 @@ function KnockoutMatchCard({
       home={card.home}
       away={card.away}
       prediction={card.prediction}
+      predictionStatus={card.predictionStatus}
+      logoVariant="flag"
       date={card.date}
       time={card.time}
       onPress={() => {
@@ -61,18 +85,33 @@ function StagePage({
   isScrollingRef: RefObject<boolean>;
 }) {
   const { t } = useTranslation();
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
-      contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 24, flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={false} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={{
+        paddingHorizontal: 12,
+        paddingBottom: bottomTabsInset + 24,
+        flexGrow: 1,
+      }}
       style={{ width }}
     >
       {matches.length > 0 ? (
-        matches.map((match) => <KnockoutMatchCard key={match.id} match={match} isScrollingRef={isScrollingRef} />)
+        matches.map((match) => (
+          <KnockoutMatchCard
+            key={match.id}
+            match={match}
+            isScrollingRef={isScrollingRef}
+          />
+        ))
       ) : (
-        <CText className="text-text mt-6 text-center">{t('No matches found')}</CText>
+        <CText className="text-text mt-6 text-center">
+          {t('No matches found')}
+        </CText>
       )}
     </ScrollView>
   );
@@ -86,6 +125,7 @@ export default function KnockoutMatches({
   showStageTabs = true,
 }: KnockoutMatchesProps) {
   const { t } = useTranslation();
+  const bottomTabsInset = useFloatBottomTabsInset();
   const isRTL = useIsRTL();
   const flatListRef = useRef<FlatList<string>>(null);
   const isScrollingRef = useRef(false);
@@ -96,7 +136,9 @@ export default function KnockoutMatches({
   const pageWidth = Math.min(Math.max(windowWidth - 16, 320), 512);
 
   const stages = useMemo(() => getKnockoutStages(matches), [matches]);
-  const [internalSelectedStage, setInternalSelectedStage] = useState(stages[0] ?? '');
+  const [internalSelectedStage, setInternalSelectedStage] = useState(
+    stages[0] ?? '',
+  );
   const selectedStage = controlledSelectedStage ?? internalSelectedStage;
 
   const setSelectedStage = useCallback(
@@ -134,12 +176,18 @@ export default function KnockoutMatches({
   }, [stages]);
 
   const matchesByStage = useMemo(() => {
-    return stages.reduce<Record<string, MatchWithPredictionsType[]>>((acc, stage) => {
-      acc[stage] = matches
-        .filter((match) => match.stage === stage)
-        .sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime());
-      return acc;
-    }, {});
+    return stages.reduce<Record<string, MatchWithPredictionsType[]>>(
+      (acc, stage) => {
+        acc[stage] = matches
+          .filter((match) => match.stage === stage)
+          .sort(
+            (a, b) =>
+              new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime(),
+          );
+        return acc;
+      },
+      {},
+    );
   }, [matches, stages]);
 
   const getItemLayout = useCallback(
@@ -167,10 +215,17 @@ export default function KnockoutMatches({
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
+        contentContainerStyle={{
+          paddingBottom: bottomTabsInset + 20,
+          flexGrow: 1,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={onRefresh} />
+        }
       >
-        <CText className="text-text mt-6 text-center">{t('No matches found')}</CText>
+        <CText className="text-text mt-6 text-center">
+          {t('No matches found')}
+        </CText>
       </ScrollView>
     );
   }
@@ -204,7 +259,12 @@ export default function KnockoutMatches({
           isScrollingRef.current = false;
           if (isProgrammaticScrollRef.current) return;
 
-          const index = getStageIndexFromOffset(event.nativeEvent.contentOffset.x, pageWidth, stages.length, isRTL);
+          const index = getStageIndexFromOffset(
+            event.nativeEvent.contentOffset.x,
+            pageWidth,
+            stages.length,
+            isRTL,
+          );
           const stage = stages[index];
           if (!stage || stage === selectedStage) return;
 

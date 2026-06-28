@@ -1,7 +1,7 @@
 import { KEYS } from '@/lib/queryClient';
 import { useAuth } from '@/providers/AuthProvider';
 import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
@@ -18,6 +18,7 @@ const invalidateMemberQueries = (
 ) => {
   queryClient.invalidateQueries({ queryKey: KEYS.members.byId(memberId) });
   queryClient.invalidateQueries({ queryKey: KEYS.members.stats(memberId) });
+  queryClient.invalidateQueries({ queryKey: KEYS.members.detailsWithStats(memberId) });
   if (leagueId) {
     queryClient.invalidateQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) });
   }
@@ -25,9 +26,8 @@ const invalidateMemberQueries = (
 
 export const useMemberStats = (memberId?: string) => {
   return useQuery({
-    queryKey: KEYS.members.stats(memberId as string),
-    queryFn: () => memberApi.getMemberStats(memberId as string),
-    enabled: !!memberId,
+    queryKey: memberId ? KEYS.members.stats(memberId) : (['members', 'stats', 'disabled'] as const),
+    queryFn: memberId ? () => memberApi.getMemberStats(memberId) : skipToken,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });
@@ -87,34 +87,26 @@ export const useUploadMemberImage = () => {
 
 export const useMemberPredictions = (memberId?: string) => {
   return useQuery({
-    queryKey: KEYS.predictions.byMember(memberId as string),
-    queryFn: () => {
-      if (!memberId) throw new Error('Member ID is required');
-      return memberApi.getMemberPredictions(memberId);
-    },
-    enabled: !!memberId,
+    queryKey: memberId ? KEYS.predictions.byMember(memberId) : (['predictions', 'member', 'disabled'] as const),
+    queryFn: memberId ? () => memberApi.getMemberPredictions(memberId) : skipToken,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });
 };
 
-export const useMemberDataAndStats = (memberId: string) => {
+export const useMemberDataAndStats = (memberId: string | null) => {
   return useQuery({
-    queryKey: KEYS.members.stats(memberId),
-    queryFn: () => {
-      if (!memberId) throw new Error('Member ID is required');
-      return memberApi.getMemberDataAndStats(memberId);
-    },
-    enabled: !!memberId,
+    queryKey: memberId ? KEYS.members.detailsWithStats(memberId) : (['members', 'details-with-stats', 'disabled'] as const),
+    queryFn: memberId ? () => memberApi.getMemberDataAndStats(memberId) : skipToken,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });
 };
 
-export const useMemberProfile = (memberId: string) => {
+export const useMemberProfile = (memberId: string | null) => {
   return useQuery({
-    queryKey: KEYS.members.byId(memberId),
-    queryFn: () => memberApi.getMemberProfile(memberId),
+    queryKey: memberId ? KEYS.members.byId(memberId) : (['members', 'profile', 'disabled'] as const),
+    queryFn: memberId ? () => memberApi.getMemberProfile(memberId) : skipToken,
   });
 };
 
@@ -124,9 +116,8 @@ export const usePrimaryMember = () => {
   const { setActiveMember } = useMemberStore();
 
   const query = useQuery({
-    queryKey: KEYS.members.primary(userId ?? 'anonymous'),
-    queryFn: () => memberApi.getPrimaryMember(userId!),
-    enabled: !isAuthLoading && !!userId,
+    queryKey: userId ? KEYS.members.primary(userId) : (['members', 'primary', 'disabled'] as const),
+    queryFn: !isAuthLoading && userId ? () => memberApi.getPrimaryMember(userId) : skipToken,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });

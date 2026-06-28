@@ -117,7 +117,7 @@ const SignUpScreen = () => {
           </View>
           <View className="gap-3">
             <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
-            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} labelKey="Sign up with Apple" />
+            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} />
           </View>
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
             <CText variant="caption" className="text-muted">

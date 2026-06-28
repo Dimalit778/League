@@ -8,8 +8,9 @@ import MatchesSkeleton from '../MatchesSkeleton';
 type MatchesListProps = {
   matches: MatchCardData[];
   onRefresh: () => void;
+  bottomInset?: number;
 };
-export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
+export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: MatchesListProps) {
   const flatListRef = useRef<FlatList>(null);
   const { t } = useTranslation();
   if (!matches || matches.length === 0) return <MatchesSkeleton />;
@@ -20,7 +21,7 @@ export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
       data={matches}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
+      contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1 }}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <MatchCard
@@ -28,6 +29,7 @@ export default function MatchesList({ matches, onRefresh }: MatchesListProps) {
           home={item.home}
           away={item.away}
           prediction={item.prediction}
+          predictionStatus={item.predictionStatus}
           date={item.date}
           time={item.time}
         />

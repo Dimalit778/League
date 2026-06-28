@@ -1,4 +1,4 @@
-import { Error, Screen } from '@/components/layout';
+import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
@@ -15,6 +15,7 @@ import { mapMatchToCardProps } from '../utils/matchCard.mapper';
 export default function RegularLeagueScreen() {
   const memberId = useMemberStore(selectMemberId);
   const competitionId = useMemberStore(selectCompetitionId);
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
   const { language } = useTranslation();
@@ -127,7 +128,7 @@ export default function RegularLeagueScreen() {
         fixtureDateRanges={fixtureDateRanges}
       />
 
-      <MatchesList matches={matchesList} onRefresh={matchesRefetch} />
+      <MatchesList matches={matchesList} onRefresh={matchesRefetch} bottomInset={bottomTabsInset} />
     </Screen>
   );
 }

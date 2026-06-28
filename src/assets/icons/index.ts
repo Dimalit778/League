@@ -23,6 +23,8 @@ import SettingsIcon from './SettingsIcon';
 import StarIcon from './StarIcon';
 import TrashIcon from './TrashIcon';
 
+const LeagueIcon = TrophyIcon;
+
 export {
   AddIcon,
   ArrowDownIcon,
@@ -33,6 +35,7 @@ export {
   EyeClosedIcon,
   EyeOpenIcon, FieldIcon, GoogleLogoIcon,
   GoogleLogoMonoIcon, LockIcon,
+  LeagueIcon,
   MatchesIcon,
   MenuIcon,
   ProfileIcon,
@@ -43,4 +46,3 @@ export {
   TrophyIcon,
   UserIcon
 };
-

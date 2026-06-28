@@ -34,10 +34,6 @@ export type PredictionMemberType = Tables<'predictions'> & {
   league_member: Tables<'league_members'>;
 };
 
-export type GroupStandingType = Tables<'competition_group_standings'> & {
-  team: TeamType;
-};
-
 export type MatchStatusType = 'SCHEDULED' | 'LIVE' | 'FINISHED';
 export type TournamentMatchType = MatchType & {
   predictions: PredictionMemberType[];

@@ -2,6 +2,7 @@ import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
 import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
+import { mapMatchToCardProps } from '@/features/matches/utils/matchCard.mapper';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
@@ -169,6 +170,7 @@ const MyLeagues = () => {
     competitionId: primaryLeague?.league?.competition?.id ?? null,
     memberId: primaryLeague?.id ?? null,
   });
+  const matchesList = useMemo(() => matches?.map(mapMatchToCardProps) ?? [], [matches]);
 
   const [selectedActiveMemberIds, setSelectedActiveMemberIds] = useState<string[]>([]);
 
@@ -254,7 +256,7 @@ const MyLeagues = () => {
       >
         <LeagueActionsHeader reachedLimit={reachedLimit} isPro={isPro} onUpgrade={openPaywall} />
         <LeaguesList leagues={leagues ?? []} onSelectLeague={handleSelectLeague} />
-        <TodayMatches matches={matches} isLoadingMatches={isLoadingMatches} />
+        <TodayMatches matches={matchesList} isLoadingMatches={isLoadingMatches} />
       </ScrollView>
       <LeaguesUsageCard
         leaguesCount={leaguesCount}

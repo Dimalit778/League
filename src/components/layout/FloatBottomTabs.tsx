@@ -7,6 +7,14 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const isIOS = Platform.OS === 'ios';
+const PILL_HEIGHT = 64;
+
+export const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + Math.max(safeAreaBottom);
+
+export const useFloatBottomTabsInset = () => {
+  const insets = useSafeAreaInsets();
+  return Platform.OS === 'web' ? 0 : getFloatBottomTabsInset(insets.bottom);
+};
 
 const EXTERNAL_TABS: Record<string, string> = {
   Leagues: '/(app)/(public)/myLeagues',
@@ -26,12 +34,12 @@ const tabsConfig: Record<string, TabConfig> = {
   Profile: { label: 'Profile', icon: ProfileIcon },
 };
 
-export const FloatBottomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
   const { colors } = useThemeTokens();
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.outerWrapper, { paddingBottom: Math.max(insets.bottom + 8, 20) }]}>
+    <View style={[styles.outerWrapper, { paddingBottom: Math.max(insets.bottom + 8) }]}>
       <View
         style={[
           styles.pill,
@@ -80,8 +88,8 @@ export const FloatBottomTabs = ({ state, descriptors, navigation }: BottomTabBar
 
           return (
             <Pressable key={route.key} onPress={onPress} style={styles.item}>
-              <Icon size={24} color={iconColor} strokeWidth={isFocused ? 2.8 : 2.2} />
-              <View style={[styles.dot, { backgroundColor: isFocused ? colors.primary : 'transparent' }]} />
+              <Icon size={26} color={iconColor} strokeWidth={isFocused ? 2.8 : 2.2} />
+              <View className={`w-1.5 h-1.5 rounded-full ${isFocused ? 'bg-primary' : 'bg-transparent'}`} />
             </Pressable>
           );
         })}
@@ -89,9 +97,6 @@ export const FloatBottomTabs = ({ state, descriptors, navigation }: BottomTabBar
     </View>
   );
 };
-
-const CENTER_SIZE = 56;
-const CENTER_RADIUS = 18;
 
 const styles = StyleSheet.create({
   outerWrapper: {
@@ -105,8 +110,8 @@ const styles = StyleSheet.create({
   },
   pill: {
     width: '100%',
-    height: 64,
-    borderRadius: 28,
+    height: PILL_HEIGHT,
+    borderRadius: 24,
     borderWidth: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
@@ -126,21 +131,16 @@ const styles = StyleSheet.create({
     gap: 5,
     height: '100%',
   },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-  },
   centerWrapper: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -(CENTER_SIZE / 2 + 6),
+    marginTop: -28,
   },
   centerButton: {
-    width: CENTER_SIZE,
-    height: CENTER_SIZE,
-    borderRadius: CENTER_RADIUS,
+    width: 60,
+    height: 50,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     shadowOffset: { width: 0, height: 6 },

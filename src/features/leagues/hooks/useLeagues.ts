@@ -1,6 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
@@ -10,19 +10,17 @@ import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
 export const useMyLeagues = () => {
   
-  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   return useQuery({
-    queryKey: KEYS.users.leagues(userId),
-    queryFn: () => leagueApi.getMyLeagues(userId),
-    enabled: !!userId,
+    queryKey: userId ? KEYS.users.leagues(userId) : (['users', 'leagues', 'disabled'] as const),
+    queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
   });
 };
 
 export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
-    queryKey: KEYS.leagues.leaderboard(leagueId),
-    enabled: !!leagueId,
-    queryFn: async () => await leagueApi.getLeaderboardView(leagueId),
+    queryKey: leagueId ? KEYS.leagues.leaderboard(leagueId) : (['leagues', 'leaderboard', 'disabled'] as const),
+    queryFn: leagueId ? () => leagueApi.getLeaderboardView(leagueId) : skipToken,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -51,23 +49,21 @@ export const useRemoveMember = () => {
   });
 };
 
-export const useGetLeagueWithCompetition = (leagueId?: string) => {
+export const useGetLeagueWithCompetition = (leagueId?: string | null) => {
   return useQuery({
     queryKey: leagueId
       ? KEYS.leagues.detail(leagueId)
       : (['leagues', 'unknown', 'withCompetition'] as const),
-    enabled: !!leagueId,
-    queryFn: () => leagueApi.getLeagueWithCompetition(leagueId!),
+    queryFn: leagueId ? () => leagueApi.getLeagueWithCompetition(leagueId) : skipToken,
   });
 };
 
-export const useGetLeagueAndMembers = (leagueId?: string) => {
+export const useGetLeagueAndMembers = (leagueId?: string | null) => {
   return useQuery({
     queryKey: leagueId
       ? KEYS.leagues.members(leagueId)
       : (['leagues', 'unknown', 'full'] as const),
-    enabled: !!leagueId,
-    queryFn: () => leagueApi.getLeagueAndMembers(leagueId!),
+    queryFn: leagueId ? () => leagueApi.getLeagueAndMembers(leagueId) : skipToken,
   });
 };
 
@@ -127,10 +123,10 @@ export const useUpdateLeagueActivation = () => {
 
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   const normalizedJoinCode = joinCode?.trim().toUpperCase() ?? '';
+  const canSearch = normalizedJoinCode.length === 7;
   return useQuery({
     queryKey: KEYS.leagues.byJoinCode(normalizedJoinCode),
-    queryFn: () => leagueApi.findLeagueByJoinCode(normalizedJoinCode),
-    enabled: normalizedJoinCode.length === 7,
+    queryFn: canSearch ? () => leagueApi.findLeagueByJoinCode(normalizedJoinCode) : skipToken,
   });
 };
 //  -- LEAGUE OPERATIONS

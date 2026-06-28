@@ -17,5 +17,5 @@
     "nativewind-env.d.ts",
     "src/components/layout/LoadingBouncingBall.tsx"
   ],
-  "exclude": ["node_modules", "supabase/functions"]
+  "exclude": ["node_modules", "supabase/functions", "supabase_backup"]
 }

@@ -13,9 +13,16 @@ type TournamentMatchListProps = {
   onRefresh: () => void;
 };
 
-export default function TournamentMatchList({ view, matches, onRefresh }: TournamentMatchListProps) {
+export default function TournamentMatchList({
+  view,
+  matches,
+  onRefresh,
+}: TournamentMatchListProps) {
   const { t } = useTranslation();
-  const groupSections = useMemo(() => groupMatchesByFixture(matches), [matches]);
+  const groupSections = useMemo(
+    () => groupMatchesByFixture(matches),
+    [matches],
+  );
   // group matches
   if (view === 'groups') {
     return (
@@ -38,6 +45,8 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
                     home={card.home}
                     away={card.away}
                     prediction={card.prediction}
+                    predictionStatus={card.predictionStatus}
+                    logoVariant="flag"
                     date={card.date}
                     time={card.time}
                   />
@@ -63,6 +72,8 @@ export default function TournamentMatchList({ view, matches, onRefresh }: Tourna
             home={card.home}
             away={card.away}
             prediction={card.prediction}
+            predictionStatus={card.predictionStatus}
+            logoVariant="flag"
             date={card.date}
             time={card.time}
           />

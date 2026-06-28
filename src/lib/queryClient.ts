@@ -17,6 +17,7 @@ export const KEYS = {
     byId: (memberId: string) => ['members', memberId] as const,
     primary: (userId: string) => ['members', 'primary', userId] as const,
     stats: (memberId: string) => ['members', memberId, 'stats'] as const,
+    detailsWithStats: (memberId: string) => ['members', memberId, 'details-with-stats'] as const,
     predictions: (memberId: string) => ['members', memberId, 'predictions'] as const,
   },
 
@@ -31,12 +32,6 @@ export const KEYS = {
 
   // ==================== MATCHES ====================
   matches: {
-    finished: (memberId: string) => ['matches', 'finished', memberId] as const,
-    uniqueDates: (competitionId: number, fixtureNumber: number) =>
-      ['matches', competitionId, fixtureNumber, 'unique-dates'] as const,
-    byDate: (competitionId: number, fixtureNumber: number, date: string) =>
-      ['matches', competitionId, fixtureNumber, date] as const,
-    detail: (matchId: number) => ['matches', matchId] as const,
     byFixture: (fixture?: number, competitionId?: number, memberId?: string) =>
       memberId
         ? (['matches', competitionId, 'fixture', fixture, 'member', memberId] as const)
@@ -45,6 +40,7 @@ export const KEYS = {
       ['matches', competitionId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
     byCompetition: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'competition', 'member', memberId] as const,
+    byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
     today: (competitionId: number, memberId: string) =>
@@ -55,26 +51,13 @@ export const KEYS = {
   predictions: {
     // Member's predictions across all fixtures
     byMember: (memberId: string) => ['predictions', 'member', memberId] as const,
-
-    // Member's predictions for a specific fixture
-    byFixture: (memberId: string, fixture: number) => ['predictions', 'member', memberId, 'fixture', fixture] as const,
-
-    // All predictions in a league for a specific fixture
-    byLeagueFixture: (leagueId: string, fixture: number) =>
-      ['predictions', 'league', leagueId, 'fixture', fixture] as const,
+    byLeague: (leagueId: string) => ['predictions', 'league', leagueId] as const,
   },
 
   // ==================== COMPETITIONS ====================
   competitions: {
     all: ['competitions'] as const,
-    fixtures: (competitionId: number) => ['competitions', competitionId.toString(), 'fixtures'] as const,
     matchMeta: (competitionId: number) => ['competitions', competitionId.toString(), 'match-meta'] as const,
-  },
-
-  // ==================== STANDINGS ====================
-  standings: {
-    group: (competitionId: number, seasonId: number | null | undefined, group: string) =>
-      ['standings', competitionId, seasonId ?? 'current', 'group', group] as const,
   },
 
 

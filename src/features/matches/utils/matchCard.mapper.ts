@@ -1,14 +1,15 @@
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
-import { ImageSourcePropType } from 'react-native';
 import { MatchWithPredictionsType } from '../types';
 
 const PLACEHOLDER_LOGO = 'https://domain.com/placeholder-logo.png';
 
 export type MatchCardTeam = {
   name: string;
-  logo: ImageSourcePropType;
+  logo: string;
   score?: number | null;
 };
+
+export type PredictionDisplayStatus = 'none' | 'pending' | 'correct' | 'incorrect';
 
 export type MatchCardData = {
   id: string | number;
@@ -18,9 +19,25 @@ export type MatchCardData = {
     home?: number | null;
     away?: number | null;
   } | null;
+  predictionStatus: PredictionDisplayStatus;
   date: string;
   time: string;
 };
+
+function getPredictionDisplayStatus(
+  match: MatchWithPredictionsType,
+  prediction: MatchWithPredictionsType['predictions'][number] | null,
+): PredictionDisplayStatus {
+  if (!prediction || prediction.home_score == null || prediction.away_score == null) {
+    return 'none';
+  }
+
+  if (match.status !== 'FINISHED' || !prediction.is_finished) {
+    return 'pending';
+  }
+
+  return prediction.points > 0 ? 'correct' : 'incorrect';
+}
 
 export function mapMatchToCardProps(match: MatchWithPredictionsType): MatchCardData {
   const prediction = match.predictions?.[0] ?? null;
@@ -29,14 +46,14 @@ export function mapMatchToCardProps(match: MatchWithPredictionsType): MatchCardD
     id: match.id,
 
     home: {
-      name: match.home_team?.name ?? '--',
-      logo: { uri: match.home_team?.logo ?? PLACEHOLDER_LOGO },
+      name: match.home_team?.shortName ?? '--',
+      logo: match.home_team?.logo ?? PLACEHOLDER_LOGO,
       score: match.score?.fullTime?.home ?? null,
     },
 
     away: {
-      name: match.away_team?.name ?? '--',
-      logo: { uri: match.away_team?.logo ?? PLACEHOLDER_LOGO },
+      name: match.away_team?.shortName ?? '--',
+      logo: match.away_team?.logo ?? PLACEHOLDER_LOGO,
       score: match.score?.fullTime?.away ?? null,
     },
 
@@ -46,6 +63,8 @@ export function mapMatchToCardProps(match: MatchWithPredictionsType): MatchCardD
           away: prediction.away_score ?? null,
         }
       : null,
+
+    predictionStatus: getPredictionDisplayStatus(match, prediction),
 
     date: formatMatchdayDate(match.kick_off),
     time: formatTime(match.kick_off),

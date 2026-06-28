@@ -1,4 +1,4 @@
-import { Error, Screen } from '@/components/layout';
+import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
 import PredictionChart from '@/features/stats/components/stats/PredictionChart';
 import SkeletonStats from '@/features/stats/components/stats/SkeletonStats';
@@ -14,6 +14,7 @@ const StatsScreen = () => {
   const memberId = useMemberStore(selectMemberId) as string;
   const isFocused = useIsFocused();
   const { t } = useTranslation();
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: stats, isLoading, error, refetch } = useMemberStats(memberId);
 
@@ -30,6 +31,7 @@ const StatsScreen = () => {
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         className="flex-1"
+        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
         refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
       >
         <View className="flex-row mb-4 gap-x-4">

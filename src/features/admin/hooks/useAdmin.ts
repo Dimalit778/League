@@ -68,6 +68,9 @@ export const useAddCompetition = () => {
       queryClient.invalidateQueries({
         queryKey: KEYS.admin.competitions,
       });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.competitions.all,
+      });
     },
   });
 };
@@ -80,6 +83,9 @@ export const useRemoveCompetition = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: KEYS.admin.competitions,
+      });
+      queryClient.invalidateQueries({
+        queryKey: KEYS.competitions.all,
       });
     },
   });
