@@ -83,8 +83,8 @@ function LeaguesUsageCard({
   const { t } = useTranslation();
 
   return (
-    <View className="mb-4" style={{ paddingBottom }}>
-      <View className="mt-4 rounded-2xl border border-border bg-surface p-4">
+    <View style={{ paddingBottom: paddingBottom + 16 }}>
+      <View className=" rounded-2xl border border-border bg-surface p-4">
         <View className="flex-row justify-between items-center mb-2">
           <CText variant="body" bold>
             {t('Active leagues')}

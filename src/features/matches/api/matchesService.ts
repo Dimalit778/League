@@ -2,7 +2,10 @@ import { supabase } from '@/lib/supabase';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { MatchWithPredictions, MatchWithPredictionsType } from '../types';
 import { FIRST_PHASE_STAGES } from '../types/footballStages';
-import { KNOCKOUT_STAGE_VALUES, TournamentView } from '../utils/tournamentMatches';
+import {
+  KNOCKOUT_STAGE_VALUES,
+  TournamentView,
+} from '../utils/tournamentMatches';
 
 const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
   *,
@@ -18,13 +21,16 @@ const filterPredictionsByMember = (
   (matches ?? []).map((match) => ({
     ...match,
     predictions: (match.predictions ?? []).filter(
-      (prediction) => prediction.league_member_id === memberId
+      (prediction) => prediction.league_member_id === memberId,
     ),
   }));
 
 export const matchesApi = {
   // Get One match with all Members predictions
-  async getMatchWithPredictions(leagueId: string, matchId: number): Promise<MatchWithPredictions> {
+  async getMatchWithPredictions(
+    leagueId: string,
+    matchId: number,
+  ): Promise<MatchWithPredictions> {
     const { data, error } = await supabase
       .from('matches')
       .select(
@@ -81,10 +87,9 @@ export const matchesApi = {
     if (error) throw error;
     const matches = filterPredictionsByMember(
       data as MatchWithPredictionsType[],
-      memberId
+      memberId,
     );
-    
- 
+
     return matches;
   },
   // Get all competition matches with current Member predictions
@@ -100,8 +105,11 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
-    void prefetchMatchTeamLogos(matches);
+    const matches = filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId,
+    );
+    await prefetchMatchTeamLogos(matches);
 
     return matches;
   },
@@ -120,8 +128,11 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
-    void prefetchMatchTeamLogos(matches);
+    const matches = filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId,
+    );
+    await prefetchMatchTeamLogos(matches);
 
     return matches;
   },
@@ -136,18 +147,26 @@ export const matchesApi = {
       .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
       .eq('competition_id', competitionId);
 
-    query = view === 'groups' ? query.in('stage', FIRST_PHASE_STAGES) : query.in('stage', KNOCKOUT_STAGE_VALUES);
+    query =
+      view === 'groups'
+        ? query.in('stage', FIRST_PHASE_STAGES)
+        : query.in('stage', KNOCKOUT_STAGE_VALUES);
 
     const { data, error } = await query.order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
-    void prefetchMatchTeamLogos(matches);
+    const matches = filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId,
+    );
+    await prefetchMatchTeamLogos(matches);
 
     return matches;
   },
-  async getTournamentActiveStage(competitionId: number): Promise<{ activeStage: string | null }> {
+  async getTournamentActiveStage(
+    competitionId: number,
+  ): Promise<{ activeStage: string | null }> {
     const { data, error } = await supabase
       .from('matches')
       .select('stage')
@@ -169,8 +188,20 @@ export const matchesApi = {
     memberId: string,
   ): Promise<MatchWithPredictionsType[]> {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    ).toISOString();
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999,
+    ).toISOString();
 
     const { data, error } = await supabase
       .from('matches')
@@ -183,7 +214,10 @@ export const matchesApi = {
     if (error) throw error;
     if (!data) return [];
 
-    const matches = filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
+    const matches = filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId,
+    );
     void prefetchMatchTeamLogos(matches);
     return matches;
   },
@@ -207,6 +241,9 @@ export const matchesApi = {
 
     if (error) throw error;
     if (!data) return [];
-    return filterPredictionsByMember(data as MatchWithPredictionsType[], memberId);
+    return filterPredictionsByMember(
+      data as MatchWithPredictionsType[],
+      memberId,
+    );
   },
 };

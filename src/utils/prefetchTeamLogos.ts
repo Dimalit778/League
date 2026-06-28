@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 
 type TeamLogoInput = {
   home_team_logo?: string | null;
@@ -32,15 +32,21 @@ const isValidImageUrl = (url?: string | null) => {
 };
 
 export const prefetchTeamLogos = async (
-  logos: (string | null | undefined)[]
+  logos: (string | null | undefined)[],
 ) => {
   const uniqueLogos = [...new Set(logos.filter(isValidImageUrl))] as string[];
 
-  await Promise.allSettled(uniqueLogos.map((logo) => Image.prefetch(logo)));
+  if (uniqueLogos.length === 0) return;
+
+  try {
+    await ExpoImage.prefetch(uniqueLogos, { cachePolicy: 'memory-disk' });
+  } catch {
+    // Image prefetch is an optimization; rendering should not depend on it.
+  }
 };
 
 export const prefetchMatchTeamLogos = async (
-  matches: TeamLogoInput | TeamLogoInput[]
+  matches: TeamLogoInput | TeamLogoInput[],
 ) => {
   const matchList = Array.isArray(matches) ? matches : [matches];
 

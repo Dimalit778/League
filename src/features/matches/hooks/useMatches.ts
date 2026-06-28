@@ -64,22 +64,21 @@ export const useGetMatchesByFixture = ({
           ] as const),
     queryFn:
       enabled && competitionId != null && memberId != null && selectedFixture > 0
-        ? () =>
-            matchesApi.getFixtureMatchesWithMemberPrediction({
+        ? async () => {
+            const matches = await matchesApi.getFixtureMatchesWithMemberPrediction({
               fixture: selectedFixture,
               competitionId,
               memberId,
               stage,
-            })
+            });
+            await prefetchMatchTeamLogos(matches);
+            return matches;
+          }
         : skipToken,
     staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
-
-  useEffect(() => {
-    if (query.data) prefetchMatchTeamLogos(query.data);
-  }, [query.data]);
 
   return query;
 };
@@ -107,20 +106,26 @@ export const useGetCompetitionMatches = ({
         : (['matches', 'competition', 'disabled', competitionId ?? 'none', memberId ?? 'none', view ?? stage ?? 'all'] as const),
     queryFn:
       competitionId != null && memberId != null
-        ? () => {
-            if (view) return matchesApi.getTournamentMatchesByView(competitionId, memberId, view);
-            if (stage) return matchesApi.getTournamentMatches(competitionId, memberId, stage);
-            return matchesApi.getCompetitionMatchesWithMemberPredictions(competitionId, memberId);
+        ? async () => {
+            let matches;
+            if (view) {
+              matches = await matchesApi.getTournamentMatchesByView(competitionId, memberId, view);
+            } else if (stage) {
+              matches = await matchesApi.getTournamentMatches(competitionId, memberId, stage);
+            } else {
+              matches = await matchesApi.getCompetitionMatchesWithMemberPredictions(
+                competitionId,
+                memberId,
+              );
+            }
+            await prefetchMatchTeamLogos(matches);
+            return matches;
           }
         : skipToken,
     staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
-
-  useEffect(() => {
-    if (query.data) prefetchMatchTeamLogos(query.data);
-  }, [query.data]);
 
   return query;
 };

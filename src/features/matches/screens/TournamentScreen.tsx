@@ -10,12 +10,12 @@ import { isKnockoutOnlyStage } from '../types/footballStages';
 import { isLeaguePhase, TournamentView } from '../utils/tournamentMatches';
 
 type TournamentMatchesProps = {
-  competitionId: number;
-  memberId: string;
   defaultView?: TournamentView;
 };
 
-const TournamentMatches = ({ competitionId, memberId, defaultView = 'groups' }: TournamentMatchesProps) => {
+const TournamentMatches = ({ defaultView = 'groups' }: TournamentMatchesProps) => {
+  const memberId = useMemberStore(selectMemberId);
+  const competitionId = useMemberStore(selectCompetitionId);
   const [view, setView] = useState<TournamentView>(defaultView);
 
   useEffect(() => {
@@ -52,21 +52,20 @@ const TournamentMatches = ({ competitionId, memberId, defaultView = 'groups' }: 
 };
 
 export default function TournamentScreen() {
-  const memberId = useMemberStore(selectMemberId);
   const competitionId = useMemberStore(selectCompetitionId);
-  const competition = useMemberStore(selectCompetition);
   const { data: activeStage } = useGetTournamentActiveStage({ competitionId });
+  const competition = useMemberStore(selectCompetition);
 
   const defaultView = useMemo(() => {
     const stage = activeStage?.activeStage ?? competition?.current_stage;
     return isKnockoutOnlyStage(stage) ? 'knockout' : 'groups';
   }, [activeStage?.activeStage, competition?.current_stage]);
 
-  if (!competitionId || !memberId) return <LoadingOverlay />;
+  if (!competitionId || !competition || !activeStage) return <LoadingOverlay />;
 
   return (
     <Screen>
-      <TournamentMatches competitionId={competitionId} memberId={memberId} defaultView={defaultView} />
+      <TournamentMatches defaultView={defaultView} />
     </Screen>
   );
 }

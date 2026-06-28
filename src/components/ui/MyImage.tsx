@@ -52,12 +52,12 @@ export const MyImage = ({
         ? source.uri
         : undefined;
 
-  // Robust SVG detection (string URL, {uri}, or data URI)
+  // Only use SvgUri when explicitly requested — ExpoImage caches SVGs too.
   const isSvg =
-    forceSvg ||
-    (typeof uri === 'string' &&
-      (uri.toLowerCase().includes('.svg') ||
-        uri.startsWith('data:image/svg+xml')));
+    forceSvg &&
+    typeof uri === 'string' &&
+    (uri.toLowerCase().includes('.svg') ||
+      uri.startsWith('data:image/svg+xml'));
 
   // Only inject size style if provided (so NativeWind className can control size)
   const sizeStyle: StyleProp<ImageStyle> =

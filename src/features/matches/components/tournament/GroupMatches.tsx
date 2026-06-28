@@ -1,6 +1,7 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
+import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { isGroupPhaseStage } from '../../types/footballStages';
 import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
@@ -45,23 +46,29 @@ export default function GroupMatches({
     }
   }, [groups, selectedGroup, setSelectedGroup]);
 
-  const filteredMatches = useMemo(() => {
-    if (!selectedGroup) return [];
-    return matches.filter(
-      (m) =>
-        isGroupPhaseStage(m.stage) &&
-        normalizedGroupLetter(m.group) === selectedGroup,
+  const matchesByGroup = useMemo(() => {
+    return groups.reduce<Record<string, MatchWithPredictionsType[]>>(
+      (acc, group) => {
+        acc[group] = matches
+          .filter(
+            (m) =>
+              isGroupPhaseStage(m.stage) &&
+              normalizedGroupLetter(m.group) === group,
+          )
+          .sort(
+            (a, b) =>
+              new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime(),
+          );
+        return acc;
+      },
+      {},
     );
-  }, [matches, selectedGroup]);
+  }, [groups, matches]);
 
-  const sortedMatches = useMemo(
-    () =>
-      [...filteredMatches].sort(
-        (a, b) =>
-          new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime(),
-      ),
-    [filteredMatches],
-  );
+  useEffect(() => {
+    if (matches.length === 0) return;
+    void prefetchMatchTeamLogos(matches);
+  }, [matches]);
 
   return (
     <View className="flex-1">
@@ -81,25 +88,41 @@ export default function GroupMatches({
         }
       >
         <View>
-          {sortedMatches.map((match) => {
-            const card = mapMatchToCardProps(match);
+          {groups.map((group) => (
+            <View
+              key={group}
+              style={group === selectedGroup ? styles.visibleGroup : styles.hiddenGroup}
+            >
+              {(matchesByGroup[group] ?? []).map((match) => {
+                const card = mapMatchToCardProps(match);
 
-            return (
-              <MatchCard
-                key={match.id}
-                id={card.id}
-                home={card.home}
-                away={card.away}
-                prediction={card.prediction}
-                predictionStatus={card.predictionStatus}
-                logoVariant="flag"
-                date={card.date}
-                time={card.time}
-              />
-            );
-          })}
+                return (
+                  <MatchCard
+                    key={match.id}
+                    id={card.id}
+                    home={card.home}
+                    away={card.away}
+                    prediction={card.prediction}
+                    predictionStatus={card.predictionStatus}
+                    logoVariant="flag"
+                    date={card.date}
+                    time={card.time}
+                  />
+                );
+              })}
+            </View>
+          ))}
         </View>
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  visibleGroup: {
+    display: 'flex',
+  },
+  hiddenGroup: {
+    display: 'none',
+  },
+});

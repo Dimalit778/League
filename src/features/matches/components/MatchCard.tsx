@@ -59,6 +59,8 @@ function TeamBlock({
           width={logoWidth}
           height={logoHeight}
           contentFit={logoContentFit}
+          cachePolicy="memory-disk"
+          transition={0}
         />
       </View>
 
