@@ -78,7 +78,7 @@ export default function TournamentScreen() {
   if (!competitionId || !competition || !activeStage) return <LoadingOverlay />;
 
   return (
-    <Screen>
+    <Screen className="pt-2">
       <TournamentMatches defaultView={defaultView} />
     </Screen>
   );

@@ -244,7 +244,7 @@ const MyLeagues = () => {
           await queryClient.prefetchQuery({
             queryKey: KEYS.matches.fixture(competitionId, meta.currentFixture, memberId),
             queryFn: () =>
-              matchesApi.getFixtureMatchesWithMemberPrediction({
+              matchesApi.getMatchesByFixture({
                 fixture: meta.currentFixture,
                 competitionId,
                 memberId,

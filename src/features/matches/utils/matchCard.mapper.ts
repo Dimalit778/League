@@ -1,23 +1,24 @@
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
-import { MatchWithPredictionsType } from '../types';
+import { MatchCardType } from '../types';
+import { isMatchFinished } from './matchStatus';
 
 const PLACEHOLDER_LOGO = 'https://domain.com/placeholder-logo.png';
 
 export type MatchCardTeam = {
   name: string;
   logo: string;
-  score?: number | null;
+  score: number | null;
 };
 
 export type PredictionDisplayStatus = 'none' | 'pending' | 'correct' | 'incorrect';
 
 export type MatchCardData = {
-  id: string | number;
+  id: number;
   home: MatchCardTeam;
   away: MatchCardTeam;
-  prediction?: {
-    home?: number | null;
-    away?: number | null;
+  prediction: {
+    home: number | null;
+    away: number | null;
   } | null;
   predictionStatus: PredictionDisplayStatus;
   date: string;
@@ -25,22 +26,22 @@ export type MatchCardData = {
 };
 
 function getPredictionDisplayStatus(
-  match: MatchWithPredictionsType,
-  prediction: MatchWithPredictionsType['predictions'][number] | null,
+  match: MatchCardType,
+  prediction: MatchCardType['prediction'],
 ): PredictionDisplayStatus {
   if (!prediction || prediction.home_score == null || prediction.away_score == null) {
     return 'none';
   }
 
-  if (match.status !== 'FINISHED' || !prediction.is_finished) {
+  if (!isMatchFinished(match.status) || !prediction.is_finished) {
     return 'pending';
   }
 
-  return prediction.points > 0 ? 'correct' : 'incorrect';
+  return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';
 }
 
-export function mapMatchToCardProps(match: MatchWithPredictionsType): MatchCardData {
-  const prediction = match.predictions?.[0] ?? null;
+export function mapMatchToCardProps(match: MatchCardType): MatchCardData {
+  const prediction = match.prediction;
 
   return {
     id: match.id,

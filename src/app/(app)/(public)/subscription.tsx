@@ -1,13 +1,35 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
-import { View } from 'react-native';
+import { usePaywall, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { formatErrorForUser } from '@/utils/errorFormats';
+import { useCallback, useState } from 'react';
+import { Alert, Platform, View } from 'react-native';
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
   const openPaywall = usePaywall();
+  const restorePurchases = useRestorePurchases();
   const { subscription, isLoading, isOffline } = useRevenueCatSubscription();
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handleRestorePurchases = useCallback(async () => {
+    try {
+      setIsRestoring(true);
+      const restored = await restorePurchases();
+
+      if (restored) {
+        Alert.alert(t('Subscription'), t('Your subscription has been updated successfully'));
+        return;
+      }
+
+      Alert.alert(t('Subscription'), t('No purchases found to restore'));
+    } catch (error) {
+      Alert.alert(t('Error'), formatErrorForUser(error) || t('Failed to restore purchases'));
+    } finally {
+      setIsRestoring(false);
+    }
+  }, [restorePurchases, t]);
 
   return (
     <Screen withSafeArea>
@@ -32,8 +54,20 @@ export default function SubscriptionScreen() {
           variant="primary"
           size="lg"
           loading={isLoading}
+          disabled={isRestoring}
           onPress={openPaywall}
         />
+
+        {Platform.OS !== 'web' && (
+          <Button
+            title={t('Restore Purchases')}
+            variant="outline"
+            size="lg"
+            loading={isRestoring}
+            disabled={isLoading}
+            onPress={handleRestorePurchases}
+          />
+        )}
       </View>
     </Screen>
   );

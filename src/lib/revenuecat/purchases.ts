@@ -1,8 +1,9 @@
 import { usePurchasesContext } from '@/providers/PurchasesProvider';
 import { useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
-import { getSubscriptionSummary } from './customerInfoSummary';
+import { getSubscriptionSummary, hasActiveEntitlement } from './customerInfoSummary';
 const PRO_ENTITLEMENT = 'pro';
 
  const purchasesService = {
@@ -21,6 +22,11 @@ const PRO_ENTITLEMENT = 'pro';
 
     return purchased;
   },
+  async restorePurchases(): Promise<boolean> {
+    const customerInfo = await Purchases.restorePurchases();
+    await Purchases.invalidateCustomerInfoCache();
+    return hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT);
+  },
 };
 export const usePaywall = () => {
   const { refreshCustomerInfo } = usePurchasesContext();
@@ -33,6 +39,20 @@ export const usePaywall = () => {
     }
 
     return upgraded;
+  }, [refreshCustomerInfo]);
+};
+
+export const useRestorePurchases = () => {
+  const { refreshCustomerInfo } = usePurchasesContext();
+
+  return useCallback(async () => {
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
+    const restored = await purchasesService.restorePurchases();
+    await refreshCustomerInfo();
+    return restored;
   }, [refreshCustomerInfo]);
 };
 

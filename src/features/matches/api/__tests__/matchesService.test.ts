@@ -54,7 +54,7 @@ describe('matchesApi', () => {
     });
   });
 
-  describe('getFixtureMatchesWithMemberPrediction', () => {
+  describe('getMatchesByFixture', () => {
     it('fetches matches for a fixture', async () => {
       const mockMatches = [{ id: 1 }, { id: 2 }];
       (supabase.from as jest.Mock).mockImplementation((table: string) => {
@@ -62,7 +62,7 @@ describe('matchesApi', () => {
         return mockMatchesQuery(mockMatches);
       });
 
-      const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
+      const result = await matchesApi.getMatchesByFixture({
         fixture: 5,
         competitionId: 100,
         memberId: 'm1',
@@ -89,7 +89,7 @@ describe('matchesApi', () => {
         return mockMatchesQuery(mockMatches);
       });
 
-      const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
+      const result = await matchesApi.getMatchesByFixture({
         fixture: 5,
         competitionId: 100,
         memberId: 'm1',
@@ -110,7 +110,7 @@ describe('matchesApi', () => {
         };
       });
 
-      const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
+      const result = await matchesApi.getMatchesByFixture({
         fixture: 3,
         competitionId: 100,
         memberId: 'm1',

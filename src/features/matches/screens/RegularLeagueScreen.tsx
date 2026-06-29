@@ -15,6 +15,7 @@ import { mapMatchToCardProps } from '../utils/matchCard.mapper';
 export default function RegularLeagueScreen() {
   const memberId = useMemberStore(selectMemberId);
   const competitionId = useMemberStore(selectCompetitionId);
+
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
@@ -118,7 +119,7 @@ export default function RegularLeagueScreen() {
   }
 
   return (
-    <Screen>
+    <Screen className="pt-2">
       <FixturesList
         fixtures={allFixtures}
         selectedFixture={selectedFixture}

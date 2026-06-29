@@ -30,7 +30,7 @@ const StatsScreen = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
-        className="flex-1"
+        className="flex-1 pt-2"
         contentContainerStyle={{ paddingBottom: bottomTabsInset }}
         refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
       >

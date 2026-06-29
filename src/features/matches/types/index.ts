@@ -1,4 +1,16 @@
 import { Tables } from '@/types/database.types';
+
+
+export type TeamType = Pick<
+  Tables<'teams'>,
+  'id' | 'shortName' | 'name' | 'logo' | 'tla'
+>;
+
+export type PredictionsType = Pick<
+  Tables<'predictions'>,
+  'id' | 'match_id' | 'league_member_id' | 'home_score' | 'away_score' | 'points' | 'is_finished'
+>;
+export type StatusType = Tables<'matches'>['status'];
 export type ScoreType = {
   winner: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null;
   duration: 'REGULAR' | 'EXTRA_TIME' | 'PENALTY_SHOOTOUT' | null;
@@ -6,37 +18,42 @@ export type ScoreType = {
   halfTime?: { home: number | null; away: number | null };
 };
 
-export type TeamType = Tables<'teams'>;
-export type PredictionType = Tables<'predictions'>;
-
-export type MatchType = Tables<'matches'> & {
-  home_team: TeamType;
-  away_team: TeamType;
-  score: ScoreType;
-};
-export type MatchWithPredictionsType = MatchType & {
-  predictions: Tables<'predictions'>[];
-};
-
-/** Tournament fetch: first phase (groups or league phase) vs knockout stages. */
-export type TournamentMatchesSplit = {
-  firstPhase: MatchWithPredictionsType[];
-  knockoutStages: MatchWithPredictionsType[];
-};
-
-export type MatchWithPredictions = MatchType & {
-  predictions?: (PredictionType & {
-    league_member: Tables<'league_members'>;
-  })[];
+export type MatchBaseType = Pick<
+  Tables<'matches'>,
+  | 'id'
+  | 'competition_id'
+  | 'fixture'
+  | 'kick_off'
+  | 'stage'
+  | 'group'
+  | 'home_team_id'
+  | 'away_team_id'
+  | 'ai_summary_en'
+  | 'ai_summary_he'
+  | 'ai_predicted_home_score'
+  | 'ai_predicted_away_score'
+> & {
+  status: StatusType;
+  score: ScoreType | null;
+  home_team: TeamType | null;
+  away_team: TeamType | null;
 };
 
-export type PredictionMemberType = Tables<'predictions'> & {
-  league_member: Tables<'league_members'>;
+export type MatchCardType = MatchBaseType & {
+  prediction: PredictionsType | null;
 };
 
-export type MatchStatusType = 'SCHEDULED' | 'LIVE' | 'FINISHED';
-export type TournamentMatchType = MatchType & {
-  predictions: PredictionMemberType[];
+export type MatchCardRawType = MatchBaseType & {
+  predictions: PredictionsType[] | null;
 };
 
-export * from './footballStages';
+export type PredictionWithMemberType = PredictionsType & {
+  league_member: Pick<
+    Tables<'league_members'>,
+    'id' | 'league_id' | 'user_id' | 'nickname' | 'avatar_url' | 'is_primary'
+  > | null;
+};
+
+export type MatchWithAllPredictionsType = MatchBaseType & {
+  predictions: PredictionWithMemberType[];
+};

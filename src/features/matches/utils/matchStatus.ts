@@ -1,4 +1,4 @@
-import { MatchStatusType } from '../types';
+import { StatusType } from '../types';
 
 const getMatchStatus = (status: string | null | undefined): 'SCHEDULED' | 'LIVE' | 'FINISHED' => {
   if (!status) return 'SCHEDULED';
@@ -20,9 +20,9 @@ const getMatchStatus = (status: string | null | undefined): 'SCHEDULED' | 'LIVE'
 
   return 'SCHEDULED';
 };
-const isMatchFinished = (status: MatchStatusType): boolean => status === 'FINISHED';
-const isMatchLive = (status: MatchStatusType): boolean => status === 'LIVE';
-const isMatchScheduled = (status: MatchStatusType): boolean => status === 'SCHEDULED';
+const isMatchFinished = (status: StatusType): boolean => status === 'FINISHED';
+const isMatchLive = (status: StatusType): boolean => status === 'LIVE';
+const isMatchScheduled = (status: StatusType): boolean => status === 'SCHEDULED';
 function getMatchStatusColor(
   status: string,
   isFinished: boolean,

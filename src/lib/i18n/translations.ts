@@ -404,6 +404,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'You are already subscribed to this plan': 'You are already subscribed to this plan',
       'Your subscription has been updated successfully': 'Your subscription has been updated successfully',
       'Failed to update subscription': 'Failed to update subscription',
+      'Failed to restore purchases': 'Failed to restore purchases',
+      'Restore Purchases': 'Restore Purchases',
+      'No purchases found to restore': 'No purchases found to restore',
       'Upgrade your subscription to access more features and create larger leagues':
         'Upgrade your subscription to access more features and create larger leagues',
       'Upgrade to Premium to create leagues with up to 10 members':
@@ -1016,6 +1019,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'You are already subscribed to this plan': 'אתה כבר מנוי בתוכנית הזאת',
       'Your subscription has been updated successfully': 'המנוי שלך עודכן בהצלחה',
       'Failed to update subscription': 'שגיאה בעדכון תשלום',
+      'Failed to restore purchases': 'שחזור הרכישות נכשל',
+      'Restore Purchases': 'שחזור רכישות',
+      'No purchases found to restore': 'לא נמצאו רכישות לשחזור',
       'Upgrade your subscription to access more features and create larger leagues':
         'שדרג את המנוי שלך כדי לגשת לפונקציות נוספות וליצור ליגות גדולות יותר',
       'Upgrade to Premium to create leagues with up to 10 members':

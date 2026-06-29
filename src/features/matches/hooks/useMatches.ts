@@ -49,36 +49,39 @@ export const useGetMatchesByFixture = ({
   enabled?: boolean;
   stage?: string;
 }) => {
+  const isReady =
+    enabled && competitionId != null && memberId != null && selectedFixture > 0;
+
   const query = useQuery({
-    queryKey:
-      competitionId != null && memberId != null && selectedFixture > 0
-        ? KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage)
-        : ([
-            'matches',
-            'fixture',
-            'disabled',
-            competitionId ?? 'none',
-            selectedFixture,
-            memberId ?? 'none',
-            stage ?? 'all',
-          ] as const),
-    queryFn:
-      enabled && competitionId != null && memberId != null && selectedFixture > 0
-        ? async () => {
-            const matches = await matchesApi.getFixtureMatchesWithMemberPrediction({
-              fixture: selectedFixture,
-              competitionId,
-              memberId,
-              stage,
-            });
-            await prefetchMatchTeamLogos(matches);
-            return matches;
-          }
-        : skipToken,
+    queryKey: isReady
+      ? KEYS.matches.fixture(competitionId, selectedFixture, memberId, stage)
+      : ([
+          'matches',
+          'fixture',
+          'disabled',
+          competitionId ?? 'none',
+          selectedFixture,
+          memberId ?? 'none',
+          stage ?? 'all',
+        ] as const),
+    queryFn: isReady
+      ? () =>
+          matchesApi.getMatchesByFixture({
+            fixture: selectedFixture,
+            competitionId,
+            memberId,
+            stage,
+          })
+      : skipToken,
+    enabled: isReady,
     staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
   });
+
+  useEffect(() => {
+    if (query.data) void prefetchMatchTeamLogos(query.data);
+  }, [query.data]);
 
   return query;
 };
