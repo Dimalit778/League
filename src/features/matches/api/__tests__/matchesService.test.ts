@@ -3,6 +3,22 @@ import { FIRST_PHASE_STAGES } from '../../types/footballStages';
 import { KNOCKOUT_STAGE_VALUES } from '../../utils/tournamentMatches';
 import { matchesApi } from '../matchesService';
 
+const mockPredictionsQuery = (predictions: unknown[] = []) => ({
+  select: jest.fn().mockReturnThis(),
+  eq: jest.fn().mockReturnThis(),
+  in: jest.fn().mockResolvedValue({ data: predictions, error: null }),
+});
+
+const mockMatchesQuery = (matches: unknown[]) => ({
+  select: jest.fn().mockReturnThis(),
+  eq: jest.fn().mockReturnThis(),
+  in: jest.fn().mockReturnThis(),
+  gte: jest.fn().mockReturnThis(),
+  lte: jest.fn().mockReturnThis(),
+  not: jest.fn().mockReturnThis(),
+  order: jest.fn().mockResolvedValue({ data: matches, error: null }),
+});
+
 describe('matchesApi', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -41,10 +57,9 @@ describe('matchesApi', () => {
   describe('getFixtureMatchesWithMemberPrediction', () => {
     it('fetches matches for a fixture', async () => {
       const mockMatches = [{ id: 1 }, { id: 2 }];
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return mockMatchesQuery(mockMatches);
       });
 
       const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
@@ -60,19 +75,18 @@ describe('matchesApi', () => {
     });
 
     it('keeps only the current member predictions on each match', async () => {
-      const mockMatches = [
-        {
-          id: 1,
-          predictions: [
-            { id: 'p1', league_member_id: 'm1', home_score: 1, away_score: 0 },
-            { id: 'p2', league_member_id: 'm2', home_score: 2, away_score: 1 },
-          ],
-        },
-      ];
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      const mockMatches = [{ id: 1 }];
+      const memberPrediction = {
+        match_id: 1,
+        league_member_id: 'm1',
+        home_score: 1,
+        away_score: 0,
+        points: 0,
+        is_finished: false,
+      };
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery([memberPrediction]);
+        return mockMatchesQuery(mockMatches);
       });
 
       const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
@@ -81,16 +95,19 @@ describe('matchesApi', () => {
         memberId: 'm1',
       });
 
-      expect(result[0].predictions).toEqual([mockMatches[0].predictions[0]]);
+      expect(result[0].predictions).toEqual([memberPrediction]);
     });
 
     it('fetches fixture matches with an optional stage filter', async () => {
       const mockMatches = [{ id: 1, stage: 'REGULAR_SEASON' }];
       const eq = jest.fn().mockReturnThis();
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq,
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq,
+          order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+        };
       });
 
       const result = await matchesApi.getFixtureMatchesWithMemberPrediction({
@@ -113,10 +130,9 @@ describe('matchesApi', () => {
         { id: 1, stage: 'GROUP_STAGE' },
         { id: 2, stage: 'FINAL' },
       ];
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return mockMatchesQuery(mockMatches);
       });
 
       const result = await matchesApi.getCompetitionMatchesWithMemberPredictions(100, 'm1');
@@ -128,11 +144,10 @@ describe('matchesApi', () => {
     });
 
     it('returns group matches even when the member has no prediction yet', async () => {
-      const mockMatches = [{ id: 1, stage: 'GROUP_STAGE', group: 'A', predictions: [] }];
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      const mockMatches = [{ id: 1, stage: 'GROUP_STAGE', group: 'A' }];
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return mockMatchesQuery(mockMatches);
       });
 
       const result = await matchesApi.getCompetitionMatchesWithMemberPredictions(100, 'm1');
@@ -146,11 +161,14 @@ describe('matchesApi', () => {
     it('fetches group stage matches when view is groups', async () => {
       const mockMatches = [{ id: 1, stage: 'GROUP_STAGE' }];
       const inFilter = jest.fn().mockReturnThis();
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        in: inFilter,
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          in: inFilter,
+          order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+        };
       });
 
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'groups');
@@ -162,11 +180,14 @@ describe('matchesApi', () => {
     it('fetches knockout matches when view is knockout', async () => {
       const mockMatches = [{ id: 2, stage: 'LAST_16' }];
       const inFilter = jest.fn().mockReturnThis();
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        in: inFilter,
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          in: inFilter,
+          order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+        };
       });
 
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'knockout');
@@ -178,26 +199,41 @@ describe('matchesApi', () => {
 
   describe('getMemberFinishedMatches', () => {
     it('returns empty array when no data', async () => {
-      (supabase.from as jest.Mock).mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: null, error: null }),
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return mockMatchesQuery([]);
       });
 
-      const result = await matchesApi.getMemberFinishedMatches('m1', 100);
+      const result = await matchesApi.getMemberFinishedMatches('m1', 100, 1);
       expect(result).toEqual([]);
     });
 
-    it('fetches finished matches', async () => {
+    it('fetches finished matches for a fixture', async () => {
       const mockMatches = [{ id: 1, status: 'FINISHED' }];
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return mockMatchesQuery(mockMatches);
+      });
+
+      const result = await matchesApi.getMemberFinishedMatches('m1', 100, 2);
+      expect(result).toEqual([{ id: 1, status: 'FINISHED', predictions: [] }]);
+    });
+  });
+
+  describe('getFinishedFixtures', () => {
+    it('returns unique sorted fixture numbers', async () => {
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+        not: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({
+          data: [{ fixture: 2 }, { fixture: 1 }, { fixture: 2 }],
+          error: null,
+        }),
       });
 
-      const result = await matchesApi.getMemberFinishedMatches('m1', 100);
-      expect(result).toEqual([{ id: 1, status: 'FINISHED', predictions: [] }]);
+      const result = await matchesApi.getFinishedFixtures(100);
+      expect(result).toEqual([1, 2]);
     });
   });
 });

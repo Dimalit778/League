@@ -133,7 +133,7 @@ export const useGetCompetitionMatches = ({
 export const useGetTournamentActiveStage = ({ competitionId }: { competitionId: number | null }) => {
   return useQuery({
     queryKey: competitionId
-      ? ['matches', competitionId, 'active-stage']
+      ? KEYS.matches.activeStage(competitionId)
       : (['matches', 'active-stage', 'disabled'] as const),
     queryFn: competitionId ? () => matchesApi.getTournamentActiveStage(competitionId) : skipToken,
     staleTime: 1000 * 60 * 5,
@@ -159,14 +159,28 @@ export const useGetTodayMatches = ({
   });
 };
 
-export const useGetMemberFinishedMatches = (memberId: string | null, competitionId: number | null, fixture?: number) => {
+export const useGetFinishedFixtures = (competitionId: number | null) => {
+  return useQuery({
+    queryKey: competitionId
+      ? KEYS.matches.finishedFixtures(competitionId)
+      : (['matches', 'finished-fixtures', 'disabled'] as const),
+    queryFn: competitionId ? () => matchesApi.getFinishedFixtures(competitionId) : skipToken,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetMemberFinishedMatches = (
+  memberId: string | null,
+  competitionId: number | null,
+  fixture: number | null,
+) => {
   return useQuery({
     queryKey:
-      memberId && competitionId && fixture !== undefined
+      memberId && competitionId && fixture != null && fixture > 0
         ? KEYS.matches.byFixture(fixture, competitionId, memberId)
-        : (['matches', 'finished', competitionId ?? 'none', memberId ?? 'none', fixture ?? 'all'] as const),
+        : (['matches', 'finished', competitionId ?? 'none', memberId ?? 'none', fixture ?? 'none'] as const),
     queryFn:
-      memberId && competitionId
+      memberId && competitionId && fixture != null && fixture > 0
         ? () => matchesApi.getMemberFinishedMatches(memberId, competitionId, fixture)
         : skipToken,
     staleTime: 1000 * 60 * 5,

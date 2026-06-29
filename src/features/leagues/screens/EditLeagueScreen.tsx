@@ -5,8 +5,7 @@ import {
   useRemoveMember,
   useUpdateLeague,
 } from '@/features/leagues/hooks/useLeagues';
-import { usePrimaryMember } from '@/features/members/hooks/useMembers';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, selectMemberUserId, useMemberStore } from '@/store/MemberStore';
 
 import { Screen } from '@/components/layout';
 import { AvatarImage, BackButton, Button, CText } from '@/components/ui';
@@ -52,7 +51,7 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
   );
 };
 export default function EditLeagueScreen() {
-  const { data: primaryMember } = usePrimaryMember();
+  const memberUserId = useMemberStore(selectMemberUserId);
   const leagueId = useMemberStore(selectLeagueId);
   const { t } = useTranslation();
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
@@ -61,7 +60,7 @@ export default function EditLeagueScreen() {
   const removeMember = useRemoveMember();
   const updateLeague = useUpdateLeague();
   const deleteLeague = useDeleteLeague();
-  const isOwner = primaryMember?.user_id === league?.owner_id;
+  const isOwner = memberUserId === league?.owner_id;
 
   const sortedMembers = useMemo(() => {
     return [...(league?.league_members ?? [])].sort((a, b) => {
@@ -82,7 +81,7 @@ export default function EditLeagueScreen() {
   }, [league?.name]);
 
   const handleRemoveMember = async (memberId: string, nickname: string) => {
-    if (!leagueId || primaryMember?.user_id !== league?.owner_id) return;
+    if (!leagueId || memberUserId !== league?.owner_id) return;
     showAlert({
       title: t('Remove Member'),
       message: `${t('Remove')} ${nickname} ${t('from this league')}?`,

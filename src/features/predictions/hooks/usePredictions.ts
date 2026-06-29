@@ -1,3 +1,4 @@
+import { MatchWithPredictionsType } from '@/features/matches/types';
 import { KEYS } from '@/lib/queryClient';
 import { selectCompetitionId, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { TablesInsert } from '@/types/database.types';
@@ -15,22 +16,17 @@ export const useUpsertPrediction = () => {
       return predictionService.upsertPrediction(prediction);
     },
     onSuccess: (data) => {
-      if (leagueId) {
-        queryClient.invalidateQueries({
-          queryKey: KEYS.predictions.byLeague(leagueId),
-        });
-      }
-
-      if (competitionId) {
-        queryClient.invalidateQueries({
-          queryKey: KEYS.matches.byCompetitionRoot(competitionId),
-        });
-      }
-
       if (competitionId && memberId) {
-        queryClient.invalidateQueries({
-          queryKey: KEYS.matches.byCompetition(competitionId, memberId),
-        });
+        queryClient.setQueriesData<MatchWithPredictionsType[]>(
+          { queryKey: ['matches', competitionId] },
+          (old) => {
+            if (!old) return old;
+
+            return old.map((match) =>
+              match.id === data.match_id ? { ...match, predictions: [data] } : match,
+            );
+          },
+        );
       }
 
       if (leagueId) {

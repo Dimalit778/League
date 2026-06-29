@@ -85,29 +85,37 @@ export const useUploadMemberImage = () => {
   });
 };
 
-export const useMemberPredictions = (memberId?: string) => {
-  return useQuery({
-    queryKey: memberId ? KEYS.predictions.byMember(memberId) : (['predictions', 'member', 'disabled'] as const),
-    queryFn: memberId ? () => memberApi.getMemberPredictions(memberId) : skipToken,
-    staleTime: STALE_TIME,
-    retry: RETRY_COUNT,
-  });
-};
 
 export const useMemberDataAndStats = (memberId: string | null) => {
-  return useQuery({
+  const memberQuery = useQuery({
     queryKey: memberId ? KEYS.members.detailsWithStats(memberId) : (['members', 'details-with-stats', 'disabled'] as const),
-    queryFn: memberId ? () => memberApi.getMemberDataAndStats(memberId) : skipToken,
+    queryFn: memberId ? () => memberApi.getMemberInfo(memberId) : skipToken,
     staleTime: STALE_TIME,
     retry: RETRY_COUNT,
   });
-};
 
-export const useMemberProfile = (memberId: string | null) => {
-  return useQuery({
-    queryKey: memberId ? KEYS.members.byId(memberId) : (['members', 'profile', 'disabled'] as const),
-    queryFn: memberId ? () => memberApi.getMemberProfile(memberId) : skipToken,
-  });
+  const statsQuery = useMemberStats(memberId ?? undefined);
+
+  const totalFixtures = Array.from(
+    { length: memberQuery.data?.league?.competition?.current_fixture ?? 0 },
+    (_, index) => index + 1,
+  );
+
+  return {
+    ...memberQuery,
+    isLoading: memberQuery.isLoading || statsQuery.isLoading,
+    isPending: memberQuery.isPending || statsQuery.isPending,
+    error: memberQuery.error ?? statsQuery.error,
+    data:
+      memberQuery.data != null
+        ? {
+            member: memberQuery.data,
+            stats: statsQuery.data,
+            totalFixtures,
+            currentFixture: memberQuery.data.league?.competition?.current_fixture ?? 1,
+          }
+        : undefined,
+  };
 };
 
 export const usePrimaryMember = () => {

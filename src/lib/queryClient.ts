@@ -45,6 +45,8 @@ export const KEYS = {
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
     today: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'today', memberId] as const,
+    activeStage: (competitionId: number) => ['matches', competitionId, 'active-stage'] as const,
+    finishedFixtures: (competitionId: number) => ['matches', competitionId, 'finished-fixtures'] as const,
   },
 
   // ==================== PREDICTIONS ====================
@@ -67,8 +69,7 @@ export const KEYS = {
     dashboard: ['admin', 'dashboard'] as const,
     users: ['admin', 'users'] as const,
     leagues: ['admin', 'leagues'] as const,
-    members: ['admin', 'members'] as const,
-    leagueMembers: ['admin', 'members'] as const,
+    leagueMembers: ['admin', 'league-members'] as const,
     predictions: ['admin', 'predictions'] as const,
     competitions: ['admin', 'competitions'] as const,
   },

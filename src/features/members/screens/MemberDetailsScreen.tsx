@@ -3,47 +3,37 @@ import { AvatarImage, BackButton, Card, CText } from '@/components/ui';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import FixturesList from '@/features/matches/components/regular-league/FixturesList';
 import MatchesList from '@/features/matches/components/regular-league/MatchesList';
-import { useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
+import { useGetFinishedFixtures, useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { mapMatchToCardProps } from '@/features/matches/utils/matchCard.mapper';
 import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
 import MemberStats from '../components/memberStats';
+
 const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
   const { data, error, isLoading } = useMemberDataAndStats(memberId);
   const { member, stats, totalFixtures = [], currentFixture = 1 } = data ?? {};
   const competitionId = member?.league?.competition?.id ?? 0;
 
-  const {
-    data: allFinishedMatches,
-    isLoading: matchesLoading,
-    error: matchesError,
-    refetch: refetchMatches,
-  } = useGetMemberFinishedMatches(memberId, competitionId);
-
-  const fixturesWithFinishedMatches = useMemo(() => {
-    if (!allFinishedMatches) return [];
-    const fixtureSet = new Set(
-      allFinishedMatches.map((match) => match.fixture).filter((f): f is number => f !== null && f !== undefined),
-    );
-    return Array.from(fixtureSet).sort((a, b) => a - b);
-  }, [allFinishedMatches]);
+  const { data: finishedFixtures = [] } = useGetFinishedFixtures(competitionId || null);
 
   const availableFixtures = useMemo(() => {
-    if (fixturesWithFinishedMatches.length === 0) return totalFixtures;
-    return totalFixtures.filter((fixture) => fixturesWithFinishedMatches.includes(fixture));
-  }, [totalFixtures, fixturesWithFinishedMatches]);
+    if (finishedFixtures.length === 0) return totalFixtures;
+    return totalFixtures.filter((fixture) => finishedFixtures.includes(fixture));
+  }, [totalFixtures, finishedFixtures]);
 
   const initialFixture = useMemo(() => {
-    if (fixturesWithFinishedMatches.length > 0) {
-      return fixturesWithFinishedMatches[0];
-    }
+    if (finishedFixtures.length > 0) return finishedFixtures[0];
     return currentFixture;
-  }, [fixturesWithFinishedMatches, currentFixture]);
+  }, [finishedFixtures, currentFixture]);
 
   const [selectedFixture, setSelectedFixture] = useState<number>(initialFixture);
   const [animateScroll, setAnimateScroll] = useState(false);
+
+  useEffect(() => {
+    setSelectedFixture(initialFixture);
+  }, [initialFixture]);
 
   useEffect(() => {
     if (availableFixtures.length > 0 && !availableFixtures.includes(selectedFixture)) {
@@ -51,15 +41,18 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
     }
   }, [availableFixtures, selectedFixture]);
 
+  const {
+    data: matches = [],
+    isLoading: matchesLoading,
+    error: matchesError,
+    refetch: refetchMatches,
+  } = useGetMemberFinishedMatches(memberId, competitionId || null, selectedFixture);
+
   const handleFixturePress = (fixture: number) => {
     setSelectedFixture(fixture);
     setAnimateScroll(true);
   };
 
-  const matches = useMemo(() => {
-    if (!allFinishedMatches) return [];
-    return allFinishedMatches.filter((match) => match.fixture === selectedFixture);
-  }, [allFinishedMatches, selectedFixture]);
   const matchCards = useMemo(() => matches.map(mapMatchToCardProps), [matches]);
 
   if (error || matchesError) return <Error error={error || (matchesError as Error)} />;

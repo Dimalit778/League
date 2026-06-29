@@ -8,17 +8,15 @@ import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useMemberProfile } from '../hooks/useMembers';
 
 const ProfileScreen = () => {
   const leagueId = useMemberStore(selectLeagueId);
-  const memberId = useMemberStore(selectMemberId);
+  const memberData = useMemberStore((s) => s.activeMember);
   const { t } = useTranslation();
-  const { data: memberData, isLoading: memberLoading, error: memberError } = useMemberProfile(memberId);
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId);
   const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
@@ -59,9 +57,8 @@ const ProfileScreen = () => {
     });
   };
 
-  if (memberLoading || leagueLoading) return <ProfileSkeleton />;
-  if (memberError || leagueError)
-    return <Error error={memberError || (leagueError as string | Error | { message: string })} />;
+  if (leagueLoading) return <ProfileSkeleton />;
+  if (leagueError) return <Error error={leagueError as string | Error | { message: string }} />;
   if (!memberData || !leagueData) return <Error error={t('Member or league data not found')} />;
 
   return (

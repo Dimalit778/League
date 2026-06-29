@@ -49,14 +49,6 @@ export const useRemoveMember = () => {
   });
 };
 
-export const useGetLeagueWithCompetition = (leagueId?: string | null) => {
-  return useQuery({
-    queryKey: leagueId
-      ? KEYS.leagues.detail(leagueId)
-      : (['leagues', 'unknown', 'withCompetition'] as const),
-    queryFn: leagueId ? () => leagueApi.getLeagueWithCompetition(leagueId) : skipToken,
-  });
-};
 
 export const useGetLeagueAndMembers = (leagueId?: string | null) => {
   return useQuery({

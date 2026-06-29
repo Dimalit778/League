@@ -7,23 +7,58 @@ import {
   TournamentView,
 } from '../utils/tournamentMatches';
 
-const MATCHES_WITH_MEMBER_PREDICTION_SELECT = `
-  *,
-  home_team:teams!matches_home_team_id_fkey(*),
-  away_team:teams!matches_away_team_id_fkey(*),
-  predictions:predictions!predictions_match_id_fkey(*)
+const MATCH_LIST_FIELDS = `
+  id,
+  kick_off,
+  status,
+  score,
+  fixture,
+  stage,
+  group,
+  home_team_id,
+  away_team_id,
+  competition_id
 `;
 
-const filterPredictionsByMember = (
-  matches: MatchWithPredictionsType[] | null,
+const TEAM_LIST_FIELDS = 'id, shortName, name, logo, crest, tla';
+
+const MEMBER_PREDICTION_FIELDS = 'match_id, home_score, away_score, points, is_finished, league_member_id';
+
+const buildMatchListSelect = () => `
+  ${MATCH_LIST_FIELDS},
+  home_team:teams!matches_home_team_id_fkey(${TEAM_LIST_FIELDS}),
+  away_team:teams!matches_away_team_id_fkey(${TEAM_LIST_FIELDS})
+`;
+
+type MatchListRow = Omit<MatchWithPredictionsType, 'predictions'>;
+
+const attachMemberPredictions = async (
+  matches: MatchListRow[],
   memberId: string,
-): MatchWithPredictionsType[] =>
-  (matches ?? []).map((match) => ({
+): Promise<MatchWithPredictionsType[]> => {
+  if (matches.length === 0) return [];
+
+  const matchIds = matches.map((match) => match.id);
+  const { data: predictions, error } = await supabase
+    .from('predictions')
+    .select(MEMBER_PREDICTION_FIELDS)
+    .eq('league_member_id', memberId)
+    .in('match_id', matchIds);
+
+  if (error) throw error;
+
+  const predictionsByMatchId = new Map<number, MatchWithPredictionsType['predictions']>();
+  for (const prediction of predictions ?? []) {
+    const existing = predictionsByMatchId.get(prediction.match_id) ?? [];
+    existing.push(prediction as MatchWithPredictionsType['predictions'][number]);
+    predictionsByMatchId.set(prediction.match_id, existing);
+  }
+
+  return matches.map((match) => ({
     ...match,
-    predictions: (match.predictions ?? []).filter(
-      (prediction) => prediction.league_member_id === memberId,
-    ),
+    predictions: predictionsByMatchId.get(match.id) ?? [],
   }));
+};
 
 export const matchesApi = {
   // Get One match with all Members predictions
@@ -74,7 +109,7 @@ export const matchesApi = {
   }): Promise<MatchWithPredictionsType[]> {
     let query = supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId)
       .eq('fixture', fixture);
 
@@ -85,11 +120,8 @@ export const matchesApi = {
     const { data, error } = await query.order('kick_off', { ascending: true });
 
     if (error) throw error;
-    const matches = filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
-
+    const matches = await attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
+    await prefetchMatchTeamLogos(matches);
     return matches;
   },
   // Get all competition matches with current Member predictions
@@ -99,16 +131,13 @@ export const matchesApi = {
   ): Promise<MatchWithPredictionsType[]> {
     const { data, error } = await supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
+    const matches = await attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
     await prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -121,17 +150,14 @@ export const matchesApi = {
   ): Promise<MatchWithPredictionsType[]> {
     const { data, error } = await supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId)
       .eq('stage', stage)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
+    const matches = await attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
     await prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -144,7 +170,7 @@ export const matchesApi = {
   ): Promise<MatchWithPredictionsType[]> {
     let query = supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId);
 
     query =
@@ -156,10 +182,7 @@ export const matchesApi = {
 
     if (error) throw error;
 
-    const matches = filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
+    const matches = await attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
     await prefetchMatchTeamLogos(matches);
 
     return matches;
@@ -182,7 +205,6 @@ export const matchesApi = {
       activeStage: data?.stage ?? null,
     };
   },
-  // Get member finished matches by fixture
   async getTodayMatchesForCompetition(
     competitionId: number,
     memberId: string,
@@ -205,7 +227,7 @@ export const matchesApi = {
 
     const { data, error } = await supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId)
       .gte('kick_off', startOfDay)
       .lte('kick_off', endOfDay)
@@ -214,36 +236,46 @@ export const matchesApi = {
     if (error) throw error;
     if (!data) return [];
 
-    const matches = filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
+    const matches = await attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
     void prefetchMatchTeamLogos(matches);
     return matches;
+  },
+
+  async getFinishedFixtures(competitionId: number): Promise<number[]> {
+    const { data, error } = await supabase
+      .from('matches')
+      .select('fixture')
+      .eq('competition_id', competitionId)
+      .eq('status', 'FINISHED')
+      .not('fixture', 'is', null)
+      .order('fixture', { ascending: true });
+
+    if (error) throw error;
+
+    const fixtureSet = new Set<number>();
+    for (const row of data ?? []) {
+      if (row.fixture != null) fixtureSet.add(row.fixture);
+    }
+
+    return Array.from(fixtureSet).sort((a, b) => a - b);
   },
 
   async getMemberFinishedMatches(
     memberId: string,
     competitionId: number,
-    fixture?: number,
+    fixture: number,
   ): Promise<MatchWithPredictionsType[]> {
-    let query = supabase
+    const { data, error } = await supabase
       .from('matches')
-      .select(MATCHES_WITH_MEMBER_PREDICTION_SELECT)
+      .select(buildMatchListSelect())
       .eq('competition_id', competitionId)
-      .eq('status', 'FINISHED');
-
-    if (fixture !== undefined) {
-      query = query.eq('fixture', fixture);
-    }
-
-    const { data, error } = await query.order('kick_off', { ascending: true });
+      .eq('status', 'FINISHED')
+      .eq('fixture', fixture)
+      .order('kick_off', { ascending: true });
 
     if (error) throw error;
     if (!data) return [];
-    return filterPredictionsByMember(
-      data as MatchWithPredictionsType[],
-      memberId,
-    );
+
+    return attachMemberPredictions((data ?? []) as unknown as MatchListRow[], memberId);
   },
 };

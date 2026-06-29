@@ -3,23 +3,6 @@ import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MyLeagueT
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name, logo, area, flag';
-const COMPETITION_FULL_SELECT = `
-  area,
-  code,
-  created_at,
-  current_fixture,
-  flag,
-  id,
-  is_free,
-  logo,
-  name,
-  season_end,
-  season_id,
-  season_start,
-  total_fixtures,
-  type,
-  updated_at
-`;
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,
@@ -39,7 +22,7 @@ const MY_LEAGUES_SELECT = `
     name,
     owner_id,
     updated_at,
-    competition:competitions(${COMPETITION_FULL_SELECT})
+    competition:competitions(${COMPETITION_SELECT})
   )
 `;
 const LEAGUE_WITH_COMPETITION_SELECT = `

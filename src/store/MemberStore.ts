@@ -1,7 +1,11 @@
+import { memberApi } from '@/features/members/api/membersApi';
 import { MemberLeagueType } from '@/features/members/types';
-import { supabase } from '@/lib/supabase';
+import { KEYS } from '@/lib/queryClient';
+import { queryClient } from '@/providers/QueryProvider';
 import { create } from 'zustand';
 import { useAuthStore } from './AuthStore';
+
+const PRIMARY_MEMBER_STALE_TIME = 5 * 60 * 1000;
 
 type MemberState = {
   activeMember: MemberLeagueType | null;
@@ -29,15 +33,11 @@ export const useMemberStore = create<MemberState>()((set) => ({
     }
 
     try {
-      const { data, error } = await supabase
-        .from('league_members')
-        .select('*, league:leagues!league_id(*, competition:competitions(*))')
-        .eq('user_id', user.id)
-        .eq('is_primary', true)
-        .eq('active', true)
-        .maybeSingle();
-
-      if (error) throw error;
+      const data = await queryClient.fetchQuery({
+        queryKey: KEYS.members.primary(user.id),
+        queryFn: () => memberApi.getPrimaryMember(user.id),
+        staleTime: PRIMARY_MEMBER_STALE_TIME,
+      });
       set({ activeMember: data ?? null });
     } catch {
       // Network errors on bootstrap are expected — usePrimaryMember query will retry.

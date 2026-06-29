@@ -14,7 +14,9 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { competitionApi } from '../api/competitionApi';
 import { leagueApi } from '../api/leagueApi';
+import { matchesApi } from '@/features/matches/api/matchesService';
 import LeaguesLimitActivation from '../components/leagues-limit-activation';
 import MyLeagueCard from '../components/MyLeagueCard';
 import TodayMatches from '../components/today-matches';
@@ -164,11 +166,10 @@ const MyLeagues = () => {
   const { mutateAsync: updateLeagueActivation, isPending: isUpdatingLeagueActivation } = useUpdateLeagueActivation();
 
   const sortedLeagues = useMemo(() => sortLeaguesByActive(leagues ?? []), [leagues]);
-  const primaryLeague = leagues?.find((l) => l.is_primary);
 
   const { data: matches, isPending: isLoadingMatches } = useGetTodayMatches({
-    competitionId: primaryLeague?.league?.competition?.id ?? null,
-    memberId: primaryLeague?.id ?? null,
+    competitionId: activeMember?.league?.competition?.id ?? null,
+    memberId: activeMember?.id ?? null,
   });
   const matchesList = useMemo(() => matches?.map(mapMatchToCardProps) ?? [], [matches]);
 
@@ -220,11 +221,41 @@ const MyLeagues = () => {
     const previousActiveMember = activeMember;
     setActiveMember(selectedLeague);
 
-    await queryClient.prefetchQuery({
-      queryKey: KEYS.leagues.leaderboard(leagueId),
-      queryFn: () => leagueApi.getLeaderboardView(leagueId),
-      staleTime: 1000 * 60 * 5,
-    });
+    const competitionId = selectedLeague.league.competition?.id;
+    const memberId = selectedLeague.id;
+
+    const prefetchTasks: Promise<unknown>[] = [
+      queryClient.prefetchQuery({
+        queryKey: KEYS.leagues.leaderboard(leagueId),
+        queryFn: () => leagueApi.getLeaderboardView(leagueId),
+        staleTime: 1000 * 60 * 5,
+      }),
+    ];
+
+    if (competitionId && memberId) {
+      prefetchTasks.push(
+        (async () => {
+          const meta = await queryClient.fetchQuery({
+            queryKey: KEYS.competitions.matchMeta(competitionId),
+            queryFn: () => competitionApi.getCompetitionsDetails(competitionId),
+            staleTime: 1000 * 60 * 5,
+          });
+
+          await queryClient.prefetchQuery({
+            queryKey: KEYS.matches.fixture(competitionId, meta.currentFixture, memberId),
+            queryFn: () =>
+              matchesApi.getFixtureMatchesWithMemberPrediction({
+                fixture: meta.currentFixture,
+                competitionId,
+                memberId,
+              }),
+            staleTime: 1000 * 60 * 5,
+          });
+        })(),
+      );
+    }
+
+    await Promise.all(prefetchTasks);
 
     router.replace('/(app)/(member)/(tabs)/Home');
 

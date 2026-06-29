@@ -160,32 +160,21 @@ export const memberApi = {
   async getMemberInfo(memberId: string) {
     const { data, error } = await supabase
       .from('league_members')
-      .select('*, league:leagues!league_id(*, competition:competitions(*))')
+      .select(
+        `
+        nickname,
+        avatar_url,
+        league:leagues!league_id(
+          id,
+          competition:competitions(id, current_fixture, total_fixtures)
+        )
+      `,
+      )
       .eq('id', memberId)
       .maybeSingle();
 
     if (error) throw error;
     if (!data) return null;
-    return data;
-  },
-
-  async getMemberDataAndStats(memberId: string) {
-    const [memberData, stats] = await Promise.all([this.getMemberInfo(memberId), this.getMemberStats(memberId)]);
-    const arrayOfFixtures = Array.from(
-      { length: memberData?.league?.competition?.current_fixture ?? 0 },
-      (_, index) => index + 1
-    );
-
-    return {
-      member: memberData,
-      stats,
-      totalFixtures: arrayOfFixtures,
-      currentFixture: memberData?.league?.competition?.current_fixture ?? 1,
-    };
-  },
-  async getMemberProfile(memberId: string) {
-    const { data, error } = await supabase.from('league_members').select('*').eq('id', memberId).single();
-    if (error) throw error;
     return data;
   },
   async getPrimaryMember(userId: string) {
