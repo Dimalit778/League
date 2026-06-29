@@ -116,8 +116,8 @@ const SignUpScreen = () => {
             <View className="flex-1 h-px bg-gray-600" />
           </View>
           <View className="gap-3">
+            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} mode="signUp" />
             <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
-            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} />
           </View>
           <View className="flex-row items-center justify-center mt-5 gap-2 ">
             <CText variant="caption" className="text-muted">

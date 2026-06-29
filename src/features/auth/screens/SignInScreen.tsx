@@ -120,8 +120,8 @@ const SignInScreen = () => {
           </View>
 
           <View className="gap-3">
+            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} mode="signIn" />
             <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
-            <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} />
           </View>
           <View className="px-5 mt-5 gap-4 ">
             <View className="flex-row items-center justify-center gap-2">

@@ -4,7 +4,15 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 
-const AppleAuth = ({ setIsLoading, isLoading }: { setIsLoading: (isLoading: boolean) => void; isLoading: boolean }) => {
+const AppleAuth = ({
+  setIsLoading,
+  isLoading,
+  mode = 'signIn',
+}: {
+  setIsLoading: (isLoading: boolean) => void;
+  isLoading: boolean;
+  mode?: 'signIn' | 'signUp';
+}) => {
   const [available, setAvailable] = useState(false);
   const errorMessageRef = useRef<string | null>(null);
 
@@ -20,6 +28,8 @@ const AppleAuth = ({ setIsLoading, isLoading }: { setIsLoading: (isLoading: bool
   }, []);
 
   const handleAppleSignIn = useCallback(async () => {
+    if (isLoading) return;
+
     try {
       setIsLoading(true);
       errorMessageRef.current = null;
@@ -70,18 +80,23 @@ const AppleAuth = ({ setIsLoading, isLoading }: { setIsLoading: (isLoading: bool
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading]);
+  }, [isLoading, setIsLoading]);
 
   if (Platform.OS !== 'ios' || !available) {
     return null;
   }
 
+  const buttonType =
+    mode === 'signUp'
+      ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+      : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN;
+
   return (
     <AppleAuthentication.AppleAuthenticationButton
-      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+      buttonType={buttonType}
       buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={8}
-      style={{ width: '100%', height: 44 }}
+      style={{ width: '100%', height: 44, opacity: isLoading ? 0.6 : 1 }}
       onPress={handleAppleSignIn}
     />
   );
