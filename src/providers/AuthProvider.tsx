@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { isAuthSessionActive } from '@/features/auth/utils/authSession';
 import { useAuthStore } from '@/store/AuthStore';
 import type { Session } from '@supabase/supabase-js';
 import { useEffect } from 'react';
@@ -32,11 +33,11 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     return;
   }
 
-  const isEmailConfirmed = !!session.user.email_confirmed_at;
+  const isSessionActive = isAuthSessionActive(session);
   useAuthStore.setState({
     user: data,
     session,
-    isAuthenticated: !!data.id && isEmailConfirmed,
+    isAuthenticated: !!data.id && isSessionActive,
   });
 };
 

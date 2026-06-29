@@ -1,14 +1,14 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePaywall, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { useManageSubscription, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { useCallback, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
-  const openPaywall = usePaywall();
+  const manageSubscription = useManageSubscription();
   const restorePurchases = useRestorePurchases();
   const { subscription, isLoading, isOffline } = useRevenueCatSubscription();
   const [isRestoring, setIsRestoring] = useState(false);
@@ -55,7 +55,7 @@ export default function SubscriptionScreen() {
           size="lg"
           loading={isLoading}
           disabled={isRestoring}
-          onPress={openPaywall}
+          onPress={manageSubscription}
         />
 
         {Platform.OS !== 'web' && (

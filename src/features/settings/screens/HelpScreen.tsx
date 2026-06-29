@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from '@/constants/legal';
 import { Screen } from '@/components/layout';
 import { BackButton, Card } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
@@ -7,7 +8,7 @@ import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const HelpScreen = () => {
   const handleEmailPress = () => {
-    Linking.openURL('mailto:support@league.app?subject=Help Request');
+    Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Help Request`);
   };
   const { t } = useTranslation();
   const helpSections = [
@@ -199,7 +200,7 @@ const HelpScreen = () => {
             </CText>
           </TouchableOpacity>
           <CText variant="small" className=" text-muted mt-2 text-center">
-            {t('support@leaguechampion.app')}
+            {SUPPORT_EMAIL}
           </CText>
         </Card>
 

@@ -36,17 +36,17 @@ Sentry.init({
 
   enabled: !__DEV__ && Platform.OS !== 'web',
 
-  attachScreenshot: true,
-  sendDefaultPii: true,
-  tracesSampleRate: 1.0,
+  attachScreenshot: false,
+  sendDefaultPii: false,
+  tracesSampleRate: 0.2,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
 
   integrations: [
     Sentry.mobileReplayIntegration({
-      maskAllText: false,
-      maskAllImages: false,
-      maskAllVectors: false,
+      maskAllText: true,
+      maskAllImages: true,
+      maskAllVectors: true,
     }),
     navigationIntegration,
   ],

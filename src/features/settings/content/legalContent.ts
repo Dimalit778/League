@@ -26,9 +26,9 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'Account information: name, email address, authentication provider details, and basic profile details you provide when signing in or managing your account.',
             'League and prediction content: leagues you create or join, nicknames, invite codes, predictions, scores, rankings, and related in-app activity.',
-            'Profile media: avatar images or other photos you choose to upload. Camera and photo permissions are used only when you choose to add or update profile media.',
+            'Profile media: avatar images or other photos you choose to upload. Photo library access is requested only when you choose to add or update profile media.',
             'Subscription information: subscription status, product identifiers, purchase or renewal status, and receipt-related metadata processed through Apple and RevenueCat. We do not receive your full payment card details.',
-            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, notification tokens, and security logs.',
+            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, notification tokens, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays.',
             'Support communications: messages, attachments, and contact details you send when requesting help.',
           ],
         },
@@ -190,7 +190,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'מידע חשבון: שם, כתובת אימייל, פרטי ספק התחברות ופרטי פרופיל בסיסיים שאתה מוסר בעת התחברות או ניהול החשבון.',
             'תוכן ליגות וניחושים: ליגות שאתה יוצר או מצטרף אליהן, כינויים, קודי הזמנה, ניחושים, ניקוד, דירוגים ופעילות קשורה באפליקציה.',
-            'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. הרשאות מצלמה ותמונות משמשות רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל.',
+            'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. גישה לספריית התמונות מתבקשת רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל.',
             'מידע מנוי: סטטוס מנוי, מזהי מוצרים, סטטוס רכישה או חידוש ומטא-דאטה שקשור לקבלות, דרך Apple ו-RevenueCat. איננו מקבלים את פרטי כרטיס האשראי המלאים שלך.',
             'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים, אסימוני התראות ולוגים לצורכי אבטחה.',
             'פניות תמיכה: הודעות, קבצים מצורפים ופרטי קשר שאתה שולח כאשר אתה מבקש עזרה.',

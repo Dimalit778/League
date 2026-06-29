@@ -29,8 +29,7 @@
         "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dimalit778.league",
-      "permissions": ["android.permission.RECORD_AUDIO", "android.permission.CAMERA"]
+      "package": "com.dimalit778.league"
     },
     "web": {
       "bundler": "metro",
@@ -49,19 +48,9 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera for your avatar.",
-          "isAccessMediaLocationEnabled": true,
-          "granularPermissions": ["audio", "photo"]
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to choose a profile avatar.",
+          "isAccessMediaLocationEnabled": false,
+          "granularPermissions": ["photo"]
         }
       ],
       [
@@ -84,11 +73,8 @@
               }
             ],
             "infoPlist": {
-              "NSCameraUsageDescription": "We use your photo library to let you upload an avatar for your league profile.",
-              "NSLocalNetworkUsageDescription": "Allow local network for development",
-              "NSBonjourServiceTypes": ["_expo._tcp"],
+              "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos to choose a profile avatar.",
               "NSAppTransportSecurity": {
-                "NSAllowsLocalNetworking": true,
                 "NSExceptionDomains": {
                   "keuavfvgwhwckqordjbp.supabase.co": {
                     "NSIncludesSubdomains": true,
@@ -101,15 +87,6 @@
                     "NSExceptionRequiresForwardSecrecy": true,
                     "NSExceptionMinimumTLSVersion": "TLSv1.2",
                     "NSTemporaryExceptionAllowsInsecureHTTPLoads": false
-                  },
-                  "localhost": {
-                    "NSIncludesSubdomains": false,
-                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true,
-                    "NSTemporaryExceptionMinimumTLSVersion": "1.2"
-                  },
-                  "127.0.0.1": {
-                    "NSIncludesSubdomains": false,
-                    "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
                   }
                 }
               }

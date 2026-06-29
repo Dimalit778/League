@@ -1,4 +1,5 @@
 import { CText } from '@/components/ui';
+import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { ImageBackground, Pressable, Text, View } from 'react-native';
 
 import footballBg from '@assets/images/football-bg.png';
@@ -29,12 +30,13 @@ export default function LandingScreen() {
         </CText>
       </View>
 
-      <View className="flex-1 justify-end px-5 pb-16">
+      <View className="justify-end px-5 pb-4">
         <Link href="/(auth)/signIn" asChild>
-          <Pressable className="bg-blue-500/80 p-4 rounded-full">
+          <Pressable className="bg-blue-500/80 p-4 rounded-full mb-4">
             <CText className="text-white text-center text-2xl font-bold">Get Started</CText>
           </Pressable>
         </Link>
+        <AuthLegalLinks />
       </View>
     </View>
   );

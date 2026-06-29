@@ -2,13 +2,15 @@ import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, CText, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useLocalSearchParams } from 'expo-router';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 const VerifyEmailScreen = () => {
   const { email } = useLocalSearchParams<{ email: string }>();
+  const { t } = useTranslation();
   const { verifyOtp, resendOtp, isLoading, errorMessage, clearError } = useAuthActions();
   const { colors } = useThemeTokens();
   const [resendCoolDown, setResendCoolDown] = useState(0);
@@ -133,8 +135,11 @@ const VerifyEmailScreen = () => {
           <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
             Verify Email
           </CText>
-          <CText className="text-center text-muted font-bold mt-2">We've sent a 6-digit code to</CText>
+          <CText className="text-center text-muted font-bold mt-2">{t('We sent a 6-digit code to')}</CText>
           <CText className="text-center text-secondary font-bold mt-1">{email}</CText>
+          <CText variant="caption" className="text-center text-muted mt-4 px-4">
+            {t('Apple and Google sign-in do not require email verification.')}
+          </CText>
         </View>
 
         <View className="px-5 gap-4">
@@ -209,6 +214,17 @@ const VerifyEmailScreen = () => {
                 <CText className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</CText>
               </Pressable>
             )}
+          </View>
+
+          <View className="flex-row items-center justify-center mt-6 gap-2">
+            <CText variant="caption" className="text-muted">
+              {t('Prefer not to wait?')}
+            </CText>
+            <Link href="/signIn" replace>
+              <CText variant="caption" className="text-secondary font-bold">
+                {t('Sign in with Apple or Google')}
+              </CText>
+            </Link>
           </View>
         </View>
       </KeyboardAwareScrollView>

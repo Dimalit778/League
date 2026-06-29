@@ -93,6 +93,11 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Send reset link': 'Send reset link',
       "We've sent a password reset link to": "We've sent a password reset link to",
       'Try Different Email': 'Try Different Email',
+      'We sent a 6-digit code to': 'We sent a 6-digit code to',
+      'Apple and Google sign-in do not require email verification.':
+        'Apple and Google sign-in do not require email verification.',
+      'Prefer not to wait?': 'Prefer not to wait?',
+      'Sign in with Apple or Google': 'Sign in with Apple or Google',
       'Email is required': 'Email is required',
       'Invalid email': 'Invalid email',
       'Password is required': 'Password is required',
@@ -483,8 +488,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Policy Terms': 'Policy Terms',
       'By continuing to use League you acknowledge that you have read and agree to these policy terms.':
         'By continuing to use League you acknowledge that you have read and agree to these policy terms.',
-      'If you have any questions or concerns about these policy terms, contact us at support@league.app.':
-        'If you have any questions or concerns about these policy terms, contact us at support@league.app.',
+      'If you have any questions or concerns about these policy terms, contact us at support@leaguechampion.app.':
+        'If you have any questions or concerns about these policy terms, contact us at support@leaguechampion.app.',
       Introduction: 'Introduction',
       'Information We Collect': 'Information We Collect',
       'How We Use Information': 'How We Use Information',
@@ -711,6 +716,11 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Send reset link': 'שלח קישור לאיפוס סיסמה',
       "We've sent a password reset link to": 'שלחנו קישור לאיפוס סיסמה ל',
       'Try Different Email': 'נסה דואר אלקטרוני שונה',
+      'We sent a 6-digit code to': 'שלחנו קוד בן 6 ספרות אל',
+      'Apple and Google sign-in do not require email verification.':
+        'התחברות עם Apple או Google אינה דורשת אימות דואר אלקטרוני.',
+      'Prefer not to wait?': 'לא רוצה לחכות?',
+      'Sign in with Apple or Google': 'התחבר עם Apple או Google',
       'Email is required': 'דואר אלקטרוני נדרש',
       'Invalid email': 'דואר אלקטרוני שגוי',
       'Password is required': 'סיסמה נדרשת',
@@ -1097,8 +1107,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Privacy & Data Protection': 'פרטיות ושמירת נתונים',
       'By continuing to use League you acknowledge that you have read and agree to these policy terms.':
         'על ידי המשך להשתמש בליגה אתה מסכים לפרטיות ולתנאי השירות.',
-      'If you have any questions or concerns about these policy terms, contact us at support@league.app.':
-        'אם יש לך שאלות או דיווחים על תנאי השירות האלה, צור קשר עם נויר בכתובת support@league.app.',
+      'If you have any questions or concerns about these policy terms, contact us at support@leaguechampion.app.':
+        'אם יש לך שאלות או דיווחים על תנאי השירות האלה, צור קשר בכתובת support@leaguechampion.app.',
       Introduction: 'מבוא',
       'Information We Collect': 'מידע שאנו מאחסנים',
       'How We Use Information': 'שימוש במידע',

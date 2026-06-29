@@ -26,7 +26,6 @@ const GoogleAuth = ({
   const { t } = useTranslation();
   GoogleSignin.configure({
     webClientId: WEB_CLIENT_ID,
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     offlineAccess: false,
     iosClientId: IOS_CLIENT_ID,
     profileImageSize: 120,

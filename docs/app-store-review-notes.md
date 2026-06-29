@@ -51,7 +51,10 @@ HOW TO TEST
 6. Profile tab → edit nickname or avatar (optional).
 
 SIGN IN WITH APPLE / GOOGLE
-Also available on Sign In and Sign Up. Demo account above is the fastest path for review.
+Also available on Sign In and Sign Up. Apple/Google sign-in does not require email OTP verification.
+
+EMAIL/PASSWORD ACCOUNTS
+New email accounts must enter the 6-digit verification code. The demo reviewer account is pre-verified when created with `npm run seed:app-reviewer`.
 
 SUBSCRIPTIONS (optional)
 Settings → Subscription → Upgrade (RevenueCat / Apple IAP).

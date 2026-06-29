@@ -1,6 +1,6 @@
 import { usePurchasesContext } from '@/providers/PurchasesProvider';
 import { useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { getSubscriptionSummary, hasActiveEntitlement } from './customerInfoSummary';
@@ -26,6 +26,16 @@ const PRO_ENTITLEMENT = 'pro';
     const customerInfo = await Purchases.restorePurchases();
     await Purchases.invalidateCustomerInfoCache();
     return hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT);
+  },
+  async openSubscriptionManagement(): Promise<void> {
+    if (Platform.OS === 'ios') {
+      await Linking.openURL('https://apps.apple.com/account/subscriptions');
+      return;
+    }
+
+    if (Platform.OS === 'android') {
+      await Linking.openURL('https://play.google.com/store/account/subscriptions');
+    }
   },
 };
 export const usePaywall = () => {
@@ -56,7 +66,6 @@ export const useRestorePurchases = () => {
   }, [refreshCustomerInfo]);
 };
 
-
 export const useRevenueCatSubscription = () => {
   const { customerInfo, isReady, isUserSynced, isOffline, error, refreshCustomerInfo } =
     usePurchasesContext();
@@ -78,4 +87,18 @@ export const useRevenueCatSubscription = () => {
     error,
     refreshCustomerInfo,
   };
+};
+
+export const useManageSubscription = () => {
+  const openPaywall = usePaywall();
+  const { subscription } = useRevenueCatSubscription();
+
+  return useCallback(async () => {
+    if (subscription.isActive && Platform.OS !== 'web') {
+      await purchasesService.openSubscriptionManagement();
+      return;
+    }
+
+    await openPaywall();
+  }, [openPaywall, subscription.isActive]);
 };

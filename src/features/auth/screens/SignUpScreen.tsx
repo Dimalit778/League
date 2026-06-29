@@ -1,5 +1,6 @@
 import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import AppleAuth from '@/features/auth/components/AppleAuth';
+import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -129,6 +130,7 @@ const SignUpScreen = () => {
               </CText>
             </Link>
           </View>
+          <AuthLegalLinks />
         </View>
       </KeyboardAwareScrollView>
     </Screen>
