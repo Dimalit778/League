@@ -113,7 +113,7 @@ const HelpScreen = () => {
         {
           question: 'How do I manage notifications?',
           answer:
-            'Notification preferences can be managed through your device settings. The app will notify you about match results and league updates.',
+            'Push notifications are not currently available in League Champion. If we add them in a future update, you will control permission from your device settings.',
         },
       ],
     },

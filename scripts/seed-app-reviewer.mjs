@@ -200,6 +200,11 @@ async function ensureSamplePredictions(admin, memberId, competitionId) {
   return created;
 }
 
+async function ensureReviewerIsNotAdmin(admin, userId) {
+  const { error } = await admin.from('admin_users').delete().eq('user_id', userId);
+  if (error) throw error;
+}
+
 async function main() {
   if (!SUPABASE_URL) fail('Set EXPO_PUBLIC_SUPABASE_URL or SUPABASE_URL.');
   if (!SERVICE_ROLE_KEY) fail('Set SUPABASE_SERVICE_ROLE_KEY (Supabase dashboard → Settings → API).');
@@ -214,6 +219,7 @@ async function main() {
   console.log('Seeding App Store reviewer account...\n');
 
   const userId = await ensureAuthUser(admin);
+  await ensureReviewerIsNotAdmin(admin, userId);
   const competitionId = await resolveCompetitionId(admin);
   const { leagueId, memberId, joinCode } = await ensureReviewLeague(admin, userId, competitionId);
   const predictionsCreated = await ensureSamplePredictions(admin, memberId, competitionId);
@@ -227,6 +233,7 @@ async function main() {
   console.log(`  Member ID:    ${memberId}`);
   console.log(`  Competition:  ${competitionId}`);
   console.log(`  Predictions:  ${predictionsCreated}`);
+  console.log('  Admin access: removed (reviewer must not be an admin user)');
   console.log('\nCopy the App Review Notes template from docs/app-store-review-notes.md into App Store Connect.');
 }
 

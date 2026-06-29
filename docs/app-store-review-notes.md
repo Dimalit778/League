@@ -72,7 +72,14 @@ Support: support@leaguechampion.app
 
 PERMISSIONS
 Photo library: optional, only when updating profile avatar.
+Push notifications: not currently requested or collected.
 No IDFA / no cross-app tracking.
+
+ADMIN FEATURES
+The demo reviewer account is not an admin user and will not show an Admin Dashboard button.
+
+AGE RATING
+Set App Store age rating to 13+ to match our Terms of Service and Privacy Policy.
 
 THIRD-PARTY SERVICES
 Supabase (auth/data), RevenueCat + Apple IAP (subscriptions), Sentry (crash diagnostics), third-party football data providers (fixtures/scores via our backend).
@@ -86,9 +93,22 @@ Supabase (auth/data), RevenueCat + Apple IAP (subscriptions), Sentry (crash diag
 - [ ] Confirmed at least one upcoming match is visible (sync jobs running)
 - [ ] Privacy Policy URL is live and matches in-app policy
 - [ ] Password in Review Notes matches the seeded account
-- [ ] Demo account is **not** an admin user
+- [ ] Demo account is **not** an admin user (seed script removes admin access automatically)
+- [ ] App Store age rating set to **13+**
+- [ ] App Privacy labels do not declare push notifications unless the feature is enabled
 
-## 4. After review
+## 4. App Store Connect metadata
+
+### Age rating (step 21)
+- Select **13+** in App Store Connect
+- Rationale: Terms require users to be at least 13; app is not directed at children
+
+### App Privacy questionnaire (steps 8 & 20)
+- Declare Sentry crash/diagnostics data
+- Do **not** declare push notification data until NotificationProvider is enabled in production
+- Photo library: declare only if you collect photos (optional avatar upload)
+
+## 5. After review
 
 - Rotate `APP_REVIEWER_PASSWORD` if it was exposed in App Store Connect history
 - Re-run the seed script with a new password before the next submission

@@ -63,6 +63,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Auth screens
     auth: {
       'Delete Account': 'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.':
+        'Are you sure you want to delete your account? This action cannot be undone.',
       'Permanently delete your account and all your data.': 'Permanently delete your account and all your data.',
       'Sign In': 'Sign In',
       'Sign Up': 'Sign Up',
@@ -922,6 +924,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Theme: 'ערכת עיצוב',
       Language: 'שפה',
       'Delete Account': 'מחיקת חשבון',
+      'Are you sure you want to delete your account? This action cannot be undone.':
+        'האם אתה בטוח שברצונך למחוק את החשבון? לא ניתן לבטל פעולה זו.',
       'Permanently delete your account and all your data.': 'מחיקת חשבון וכל הנתונים שלך.',
     },
 

@@ -1,5 +1,6 @@
 import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, CText, Screen } from '@/components/ui';
+import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -227,6 +228,7 @@ const VerifyEmailScreen = () => {
             </Link>
           </View>
         </View>
+        <AuthLegalLinks />
       </KeyboardAwareScrollView>
     </Screen>
   );

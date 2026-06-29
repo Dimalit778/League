@@ -28,7 +28,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'League and prediction content: leagues you create or join, nicknames, invite codes, predictions, scores, rankings, and related in-app activity.',
             'Profile media: avatar images or other photos you choose to upload. Photo library access is requested only when you choose to add or update profile media.',
             'Subscription information: subscription status, product identifiers, purchase or renewal status, and receipt-related metadata processed through Apple and RevenueCat. We do not receive your full payment card details.',
-            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, notification tokens, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays.',
+            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays. Push notification tokens are not collected because push notifications are not currently enabled in the app.',
             'Support communications: messages, attachments, and contact details you send when requesting help.',
           ],
         },
@@ -37,7 +37,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'To provide the app experience, including authentication, league creation, prediction submission, standings, profile display, and member management.',
             'To operate subscriptions, restore purchases, enforce plan limits, and provide access to paid features.',
-            'To send service messages such as account notices, league updates, match reminders, subscription updates, and support responses.',
+            'To send service messages such as account notices, subscription updates, and support responses within the app or by email.',
             'To secure the service, prevent abuse, debug errors, improve reliability, and understand how core features are used.',
             'To comply with legal obligations, App Store requirements, and enforce our Terms of Service.',
           ],
@@ -46,7 +46,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'Sharing and Service Providers',
           body: [
             'We do not sell your personal information.',
-            'We share information only with providers needed to run the app, such as Supabase for authentication/database/storage, Apple and RevenueCat for in-app purchases, Sentry for diagnostics, notification services, and authentication providers such as Apple or Google when you choose those sign-in methods.',
+            'We share information only with providers needed to run the app, such as Supabase for authentication/database/storage, Apple and RevenueCat for in-app purchases, Sentry for diagnostics, and authentication providers such as Apple or Google when you choose those sign-in methods.',
             'These providers may process information on our behalf and must protect it consistently with this policy and applicable law.',
             'We may disclose information if required by law, to protect rights and safety, or as part of a business transfer such as a merger or acquisition.',
           ],
@@ -63,7 +63,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'Your Choices',
           body: [
             'You can update profile details in the app where supported.',
-            'You can manage push notifications from your device settings.',
+            'Push notifications are not currently offered in the app. If we add them later, you will be able to control permission from your device settings.',
             'You can manage or cancel Apple subscriptions from your Apple Account subscription settings.',
             'Where consent is required, you may withdraw it by changing device permissions, app settings, or contacting us.',
           ],
@@ -192,7 +192,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'תוכן ליגות וניחושים: ליגות שאתה יוצר או מצטרף אליהן, כינויים, קודי הזמנה, ניחושים, ניקוד, דירוגים ופעילות קשורה באפליקציה.',
             'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. גישה לספריית התמונות מתבקשת רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל.',
             'מידע מנוי: סטטוס מנוי, מזהי מוצרים, סטטוס רכישה או חידוש ומטא-דאטה שקשור לקבלות, דרך Apple ו-RevenueCat. איננו מקבלים את פרטי כרטיס האשראי המלאים שלך.',
-            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים, אסימוני התראות ולוגים לצורכי אבטחה.',
+            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים ולוגים לצורכי אבטחה. אבחון קריסות וסשנים עשוי להיאסף דרך Sentry עם הסתרת טקסט ותמונות. אסימוני התראות push אינם נאספים כי התראות push אינן מופעלות כרגע באפליקציה.',
             'פניות תמיכה: הודעות, קבצים מצורפים ופרטי קשר שאתה שולח כאשר אתה מבקש עזרה.',
           ],
         },
@@ -201,7 +201,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'כדי לספק את חוויית האפליקציה, כולל התחברות, יצירת ליגות, שליחת ניחושים, טבלאות דירוג, הצגת פרופיל וניהול חברים.',
             'כדי להפעיל מנויים, לשחזר רכישות, לאכוף מגבלות תוכנית ולספק גישה לתכונות בתשלום.',
-            'כדי לשלוח הודעות שירות כגון הודעות חשבון, עדכוני ליגה, תזכורות משחקים, עדכוני מנוי ותשובות תמיכה.',
+            'כדי לשלוח הודעות שירות כגון הודעות חשבון, עדכוני מנוי ותשובות תמיכה בתוך האפליקציה או בדוא"ל.',
             'כדי לאבטח את השירות, למנוע שימוש לרעה, לתקן תקלות, לשפר אמינות ולהבין כיצד משתמשים בתכונות המרכזיות.',
             'כדי לעמוד בדרישות חוק, בדרישות App Store ולאכוף את תנאי השירות שלנו.',
           ],
@@ -210,7 +210,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'שיתוף וספקי שירות',
           body: [
             'איננו מוכרים את המידע האישי שלך.',
-            'אנו משתפים מידע רק עם ספקים שנדרשים להפעלת האפליקציה, כגון Supabase לאימות/מסד נתונים/אחסון, Apple ו-RevenueCat לרכישות בתוך האפליקציה, Sentry לאבחון תקלות, שירותי התראות וספקי התחברות כגון Apple או Google כאשר אתה בוחר בהם.',
+            'אנו משתפים מידע רק עם ספקים שנדרשים להפעלת האפליקציה, כגון Supabase לאימות/מסד נתונים/אחסון, Apple ו-RevenueCat לרכישות בתוך האפליקציה, Sentry לאבחון תקלות, וספקי התחברות כגון Apple או Google כאשר אתה בוחר בהם.',
             'ספקים אלה עשויים לעבד מידע מטעמנו ונדרשים להגן עליו בהתאם למדיניות זו ולחוק החל.',
             'אנו עשויים לחשוף מידע אם הדבר נדרש לפי דין, כדי להגן על זכויות ובטיחות, או כחלק מהעברה עסקית כגון מיזוג או רכישה.',
           ],
@@ -227,7 +227,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'הבחירות שלך',
           body: [
             'ניתן לעדכן פרטי פרופיל באפליקציה במקומות שבהם הדבר נתמך.',
-            'ניתן לנהל התראות Push דרך הגדרות המכשיר.',
+            'התראות Push אינן מוצעות כרגע באפליקציה. אם נוסיף אותן בעתיד, תוכל לשלוט בהרשאה דרך הגדרות המכשיר.',
             'ניתן לנהל או לבטל מנויי Apple דרך הגדרות המנויים בחשבון Apple שלך.',
             'כאשר נדרשת הסכמה, ניתן למשוך אותה באמצעות שינוי הרשאות מכשיר, הגדרות באפליקציה או פנייה אלינו.',
           ],
