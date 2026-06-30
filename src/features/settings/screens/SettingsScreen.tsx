@@ -23,17 +23,21 @@ const SettingsScreen = () => {
   const { signOut } = useAuthActions();
   const { t } = useTranslation();
   const handleDeleteAccountPress = useCallback(() => {
-    Alert.alert(t('Delete Account'), t('Are you sure you want to delete your account? This action cannot be undone.'), [
-      {
-        text: t('Cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('Delete'),
-        style: 'destructive',
-        onPress: () => deleteUserMutation.mutate(),
-      },
-    ]);
+    Alert.alert(
+      t('Delete Account'),
+      t('Delete account confirmation message'),
+      [
+        {
+          text: t('Cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('Delete'),
+          style: 'destructive',
+          onPress: () => deleteUserMutation.mutate(),
+        },
+      ],
+    );
   }, [deleteUserMutation, t]);
   const handleSignOut = async () => {
     const result = await signOut();

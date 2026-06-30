@@ -110,6 +110,71 @@ function getPlanFromEvent(event) {
     console.warn('Failed to store RevenueCat event:', error);
   }
 }
+async function findSubscriptionByRcIds(supabase, rcIds) {
+  if (!rcIds?.length) return null;
+  const { data: byRcId } = await supabase.from('user_subscriptions').select('*').in('revenuecat_app_user_id', rcIds).order('updated_at', {
+    ascending: false
+  }).limit(1).maybeSingle();
+  if (byRcId) return byRcId;
+  const resolvedUserIds = [];
+  for (const rcId of rcIds){
+    const userId = await resolveUserId(supabase, rcId);
+    if (userId) resolvedUserIds.push(userId);
+  }
+  if (!resolvedUserIds.length) return null;
+  const { data: byUserId } = await supabase.from('user_subscriptions').select('*').in('user_id', resolvedUserIds).order('updated_at', {
+    ascending: false
+  }).limit(1).maybeSingle();
+  return byUserId ?? null;
+}
+async function handleTransferEvent(supabase, event, body) {
+  const transferredFrom = event.transferred_from ?? [];
+  const transferredTo = event.transferred_to ?? [];
+  const sourceSubscription = await findSubscriptionByRcIds(supabase, transferredFrom);
+  let processed = false;
+  for (const targetRcId of transferredTo){
+    const targetUserId = await resolveUserId(supabase, targetRcId);
+    if (!targetUserId) {
+      console.warn(`TRANSFER target not resolved: ${targetRcId}`);
+      continue;
+    }
+    const payload = sourceSubscription ? {
+      user_id: targetUserId,
+      plan: sourceSubscription.plan,
+      status: sourceSubscription.status,
+      entitlement_id: sourceSubscription.entitlement_id,
+      product_id: sourceSubscription.product_id,
+      revenuecat_app_user_id: targetRcId,
+      expires_at: sourceSubscription.expires_at,
+      updated_at: new Date().toISOString()
+    } : {
+      user_id: targetUserId,
+      plan: 'free',
+      status: 'inactive',
+      entitlement_id: null,
+      product_id: null,
+      revenuecat_app_user_id: targetRcId,
+      expires_at: null,
+      updated_at: new Date().toISOString()
+    };
+    const { error } = await supabase.from('user_subscriptions').upsert(payload, {
+      onConflict: 'user_id'
+    });
+    if (error) {
+      console.error(`TRANSFER upsert failed for ${targetUserId}:`, error);
+      continue;
+    }
+    processed = true;
+    console.log(`TRANSFER applied to user ${targetUserId} (RC: ${targetRcId})`);
+  }
+  await storeRevenueCatEvent(supabase, {
+    appUserId: transferredTo[0] ?? null,
+    eventType: 'TRANSFER',
+    payload: body,
+    processed
+  });
+  return processed;
+}
 Deno.serve(async (req)=>{
   if (req.method !== 'POST') {
     return new Response('Method not allowed', {
@@ -156,19 +221,9 @@ Deno.serve(async (req)=>{
       status: 200
     });
   }
-  /**
-   * TRANSFER events can have a different structure.
-   * For now we store them and return OK.
-   * Later you can use transferred_from / transferred_to to merge aliases.
-   */ if (eventType === 'TRANSFER') {
-    console.log('RevenueCat TRANSFER event received:', JSON.stringify(event));
-    await storeRevenueCatEvent(supabase, {
-      appUserId: appUserId ?? null,
-      eventType,
-      payload: body,
-      processed: false
-    });
-    return new Response('TRANSFER stored', {
+  if (eventType === 'TRANSFER') {
+    const processed = await handleTransferEvent(supabase, event, body);
+    return new Response(processed ? 'TRANSFER processed' : 'TRANSFER stored', {
       status: 200
     });
   }

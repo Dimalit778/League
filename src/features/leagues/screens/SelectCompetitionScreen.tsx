@@ -23,7 +23,6 @@ const SelectCompetitionScreen = () => {
   const { colors } = useThemeTokens();
 
   const isPro = !!subscription.isActive;
-  console.log('isPro', isPro);
 
   const requiresUpgrade = useCallback((comp: Competition) => !comp.is_free && !isPro, [isPro]);
 

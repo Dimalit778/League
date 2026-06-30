@@ -42,7 +42,7 @@ export default function MyLeagueCard({ item, onPress }: LeagueCardProps) {
 
   return (
     <View className={`rounded-xl bg-surface p-3${isLocked ? ' opacity-50' : ''}`}>
-      <TouchableOpacity onPress={onPress} activeOpacity={isLocked ? 1 : 0.7} disabled={isLocked}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
         <View className="items-center gap-2">
           <View className="flex-row items-start gap-2">
             <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />

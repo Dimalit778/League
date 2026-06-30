@@ -65,6 +65,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete Account': 'Delete Account',
       'Are you sure you want to delete your account? This action cannot be undone.':
         'Are you sure you want to delete your account? This action cannot be undone.',
+      'Delete account confirmation message':
+        'Are you sure you want to delete your account? This action cannot be undone. Deleting your account does not cancel your App Store subscription — cancel it in Apple ID → Subscriptions.',
       'Permanently delete your account and all your data.': 'Permanently delete your account and all your data.',
       'Sign In': 'Sign In',
       'Sign Up': 'Sign Up',
@@ -926,6 +928,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete Account': 'מחיקת חשבון',
       'Are you sure you want to delete your account? This action cannot be undone.':
         'האם אתה בטוח שברצונך למחוק את החשבון? לא ניתן לבטל פעולה זו.',
+      'Delete account confirmation message':
+        'האם אתה בטוח שברצונך למחוק את החשבון? לא ניתן לבטל פעולה זו. מחיקת החשבון לא מבטלת מנוי App Store — בטל/י בהגדרות Apple ID → מנויים.',
       'Permanently delete your account and all your data.': 'מחיקת חשבון וכל הנתונים שלך.',
     },
 

@@ -1,12 +1,24 @@
+import { syncSubscriptionToServer } from '@/features/subscription/api/subscriptionApi';
 import { usePurchasesContext } from '@/providers/PurchasesProvider';
 import { useCallback, useMemo } from 'react';
 import { Linking, Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
-import { getSubscriptionSummary, hasActiveEntitlement } from './customerInfoSummary';
-const PRO_ENTITLEMENT = 'pro';
+import {
+  getSubscriptionSummary,
+  hasActiveEntitlement,
+  PRO_ENTITLEMENT,
+} from './customerInfoSummary';
 
- const purchasesService = {
+const syncSubscriptionAfterChange = async () => {
+  try {
+    await syncSubscriptionToServer();
+  } catch (error) {
+    console.warn('[RevenueCat] Server subscription sync failed:', error);
+  }
+};
+
+const purchasesService = {
   async openPaywall(): Promise<boolean> {
     const result = await RevenueCatUI.presentPaywallIfNeeded({
       requiredEntitlementIdentifier: PRO_ENTITLEMENT,
@@ -38,6 +50,7 @@ const PRO_ENTITLEMENT = 'pro';
     }
   },
 };
+
 export const usePaywall = () => {
   const { refreshCustomerInfo } = usePurchasesContext();
 
@@ -46,6 +59,7 @@ export const usePaywall = () => {
 
     if (upgraded) {
       await refreshCustomerInfo();
+      await syncSubscriptionAfterChange();
     }
 
     return upgraded;
@@ -62,6 +76,11 @@ export const useRestorePurchases = () => {
 
     const restored = await purchasesService.restorePurchases();
     await refreshCustomerInfo();
+
+    if (restored) {
+      await syncSubscriptionAfterChange();
+    }
+
     return restored;
   }, [refreshCustomerInfo]);
 };
@@ -102,3 +121,5 @@ export const useManageSubscription = () => {
     await openPaywall();
   }, [openPaywall, subscription.isActive]);
 };
+
+export { hasActiveEntitlement, PRO_ENTITLEMENT };

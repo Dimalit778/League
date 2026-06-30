@@ -214,15 +214,29 @@ const MyLeagues = () => {
     if (!selectedLeague) return;
 
     if (!selectedLeague.active) {
-      await openPaywall();
-      return;
+      if (!isPro) {
+        const purchased = await openPaywall();
+        if (!purchased) return;
+      }
+
+      const activeMemberIds = (leagues ?? [])
+        .filter((league) => league.active || league.id === selectedLeague.id)
+        .map((league) => league.id)
+        .slice(0, maxLeagues);
+
+      await updateLeagueActivation(activeMemberIds);
+      await refetch();
     }
 
-    const previousActiveMember = activeMember;
-    setActiveMember(selectedLeague);
+    const memberToActivate = selectedLeague.active
+      ? selectedLeague
+      : { ...selectedLeague, active: true };
 
-    const competitionId = selectedLeague.league.competition?.id;
-    const memberId = selectedLeague.id;
+    const previousActiveMember = activeMember;
+    setActiveMember(memberToActivate);
+
+    const competitionId = memberToActivate.league.competition?.id;
+    const memberId = memberToActivate.id;
 
     const prefetchTasks: Promise<unknown>[] = [
       queryClient.prefetchQuery({

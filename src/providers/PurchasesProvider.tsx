@@ -20,11 +20,11 @@ const PurchasesContext = createContext<PurchasesContextValue | null>(null);
 
 const getRevenueCatApiKey = (): string | null => {
   if (Platform.OS === 'ios') {
-    return process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
+    return process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
   }
 
   if (Platform.OS === 'android') {
-    return process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
+    return process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
   }
 
   return null;

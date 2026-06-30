@@ -2,7 +2,7 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField, UpgardeBadge } from '@/components/ui';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { usePaywall, hasActiveEntitlement, PRO_ENTITLEMENT, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -61,9 +61,20 @@ const CreateLeagueScreen = () => {
   const { t } = useTranslation();
   const openPaywall = usePaywall();
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
-  const { subscription } = useRevenueCatSubscription();
+  const { subscription, refreshCustomerInfo } = useRevenueCatSubscription();
 
   const isPro = !!subscription.isActive;
+
+  const ensureProAccess = async (): Promise<boolean> => {
+    if (hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT)) {
+      return true;
+    }
+
+    const purchased = await openPaywall();
+    if (!purchased) return false;
+
+    return hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
+  };
   const [membersCount, setMembersCount] = useState(DEFAULT_MEMBERS_COUNT);
 
   const handleOpenPaywall = async () => {
@@ -89,9 +100,9 @@ const CreateLeagueScreen = () => {
     resolver: yupResolver(schema),
   });
   const onSubmit = handleSubmit(async (data) => {
-    if (membersCount === 12 && !isPro) {
-      await openPaywall();
-      return;
+    if (membersCount === 12) {
+      const allowed = await ensureProAccess();
+      if (!allowed) return;
     }
 
     try {

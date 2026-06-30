@@ -74,7 +74,7 @@ const SettingsContent = ({
       </View>
 
       <View>
-        {renderAccountActions(t('Subscription'), '/(app)/subscription' as RelativePathString)}
+        {renderAccountActions(t('Subscription'), '/(app)/(public)/subscription' as RelativePathString)}
 
         {renderAccountActions(t('Privacy Policy'), '/settings/privacy' as RelativePathString)}
 
