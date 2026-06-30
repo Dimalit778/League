@@ -1,5 +1,7 @@
 // TabsHeader.tsx
-import { MenuIcon, SettingsIcon, TrophyIcon } from '@/assets/icons';
+import { MenuIcon, SettingsIcon } from '@/assets/icons';
+import LeaguesUsageCard from '@/features/subscription/componenets/LeaguesUsage';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberStore } from '@/store/MemberStore';
 import { useSidebarStore } from '@/store/SidebarStore';
@@ -21,6 +23,7 @@ export const TabsHeader = ({
   const { colors, theme } = useThemeTokens();
   const activeMember = useMemberStore((s) => s.activeMember);
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
+  const { leaguesCount, totalLeaguesCount, maxLeagues, reachedLimit, usagePercent } = useSubscriptionLimits();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
@@ -56,11 +59,13 @@ export const TabsHeader = ({
           </Link>
         )}
 
-        <Link href="/myLeagues" asChild disabled={isMyLeaguesPage}>
-          <Pressable accessibilityRole="button" disabled={isMyLeaguesPage}>
-            <TrophyIcon size={30} color={colors.primary} />
-          </Pressable>
-        </Link>
+        <LeaguesUsageCard
+          leaguesCount={leaguesCount}
+          totalLeaguesCount={totalLeaguesCount}
+          maxLeagues={maxLeagues}
+          reachedLimit={reachedLimit}
+          usagePercent={usagePercent}
+        />
       </View>
     </View>
   );

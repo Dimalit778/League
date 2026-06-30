@@ -1,7 +1,6 @@
 import { CText } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { useTranslation } from '@/hooks/useTranslation';
-import { StarIcon } from '@assets/icons';
 import { TouchableOpacity, View } from 'react-native';
 import { MyLeagueType } from '../types';
 
@@ -23,17 +22,6 @@ function LeagueStatusBadge({ isPrimary, isLocked }: { isPrimary: boolean; isLock
     );
   }
 
-  if (isPrimary) {
-    return (
-      <View className="flex-row items-center gap-1">
-        <StarIcon size={18} />
-        <CText variant="caption" bold className="text-primary">
-          {t('Primary')}
-        </CText>
-      </View>
-    );
-  }
-
   return null;
 }
 
@@ -41,14 +29,13 @@ export default function MyLeagueCard({ item, onPress }: LeagueCardProps) {
   const isLocked = !item.active;
 
   return (
-    <View className={`rounded-xl bg-surface p-3${isLocked ? ' opacity-50' : ''}`}>
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-        <View className="items-center gap-2">
-          <View className="flex-row items-start gap-2">
-            <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
-            <LeagueStatusBadge isPrimary={item.is_primary} isLocked={isLocked} />
-          </View>
-
+    <View className={`rounded-xl bg-surface p-3 items-center gap-2 ${isLocked ? ' opacity-50' : ''}`}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7} className="flex-row items-center justify-between w-full">
+        <View className=" items-start gap-2">
+          <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
+          <LeagueStatusBadge isPrimary={item.is_primary} isLocked={isLocked} />
+        </View>
+        <View className="flex-1 items-start gap-2">
           <CText className="text-center font-headBold text-lg text-text" numberOfLines={1}>
             {item.league.name}
           </CText>

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MyLeagueType } from '../types';
+import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MyLeagueType, MyLeaguesResponseType } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name, logo, area, flag';
@@ -62,19 +62,25 @@ export const leagueApi = {
     if (error) throw error;
     return (data ?? []) as LeaderboardRow[];
   },
-  async getMyLeagues(userId: string) {
-    
+  async getMyLeagues(userId: string): Promise<MyLeaguesResponseType> {
     const { data, error } = await supabase
       .from('league_members')
       .select(MY_LEAGUES_SELECT)
       .eq('user_id', userId)
-      .order('is_primary', { ascending: false });
+      .order('is_primary', { ascending: false })
+      .order('active', { ascending: false });
 
     if (error) throw new Error(error.message);
 
-    return (data ?? []) as MyLeagueType[];
+    const memberships = (data ?? []) as MyLeagueType[];
+
+    return {
+      primaryLeague: memberships.find((league) => league.is_primary) ?? null,
+      leagues: memberships.filter((league) => !league.is_primary && league.active),
+      inactiveLeagues: memberships.filter((league) => !league.is_primary && !league.active),
+      totalLeagues: memberships.length,
+    };
   },
-  
 
   async getLeagueAndMembers(leagueId: string) {
     const { data: leagueData, error: leagueError } = await supabase

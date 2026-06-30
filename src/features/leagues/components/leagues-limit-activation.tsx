@@ -22,6 +22,7 @@ export default function LeaguesLimitActivation({
   onUpgrade,
 }: LeagueActivationResolutionProps) {
   const { t } = useTranslation();
+
   const selectedCount = selectedMemberIds.length;
   const hasValidSelection = selectedCount <= maxLeagues && (maxLeagues === 0 || selectedCount > 0);
 

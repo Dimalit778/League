@@ -10,8 +10,8 @@ export const useSubscriptionLimits = () => {
   const plan = isPro ? 'PRO' : 'FREE';
   const limits = PLAN_LIMITS[plan];
 
-  const leaguesCount = leaguesQuery.data?.filter((league) => league.active).length ?? 0;
-  const totalLeaguesCount = leaguesQuery.data?.length ?? 0;
+  const leaguesCount = leaguesQuery.data?.leagues.length ?? 0;
+  const totalLeaguesCount = leaguesQuery.data?.totalLeagues ?? 0;
   const maxLeagues = limits.maxLeagues;
   const reachedLimit = leaguesCount >= maxLeagues;
   const exceededLimit = leaguesCount > maxLeagues;
