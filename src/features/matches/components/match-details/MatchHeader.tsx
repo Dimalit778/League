@@ -107,7 +107,7 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
 
       {/* Teams and Score Section */}
       <View className="flex-row items-center justify-evenly w-full mx-auto">
-        <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
+        {homeTeam ? <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} /> : <View className="flex-1" />}
         {isScheduled ? (
           <PredictionForm prediction={memberPrediction} matchId={match.id} />
         ) : (
@@ -118,7 +118,7 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
             kick_off={match.kick_off}
           />
         )}
-        <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />
+        {awayTeam ? <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} /> : <View className="flex-1" />}
       </View>
     </View>
   );

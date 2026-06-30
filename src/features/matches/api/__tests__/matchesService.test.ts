@@ -55,12 +55,31 @@ describe('matchesApi', () => {
   });
 
   describe('getMatchesByFixture', () => {
+    const baseMatchRow = {
+      competition_id: 100,
+      fixture: 5,
+      kick_off: '2026-05-23T19:00:00+00:00',
+      status: 'SCHEDULED',
+      stage: null,
+      group: null,
+      home_team_id: 1,
+      away_team_id: 2,
+      score: null,
+      ai_summary_en: null,
+      ai_summary_he: null,
+      ai_predicted_home_score: null,
+      ai_predicted_away_score: null,
+      home_team: null,
+      away_team: null,
+      predictions: [],
+    };
+
     it('fetches matches for a fixture', async () => {
-      const mockMatches = [{ id: 1 }, { id: 2 }];
-      (supabase.from as jest.Mock).mockImplementation((table: string) => {
-        if (table === 'predictions') return mockPredictionsQuery();
-        return mockMatchesQuery(mockMatches);
-      });
+      const mockMatches = [
+        { ...baseMatchRow, id: 1 },
+        { ...baseMatchRow, id: 2 },
+      ];
+      (supabase.from as jest.Mock).mockReturnValue(mockMatchesQuery(mockMatches));
 
       const result = await matchesApi.getMatchesByFixture({
         fixture: 5,
@@ -68,15 +87,14 @@ describe('matchesApi', () => {
         memberId: 'm1',
       });
       expect(supabase.from).toHaveBeenCalledWith('matches');
-      expect(result).toEqual([
-        { id: 1, predictions: [] },
-        { id: 2, predictions: [] },
-      ]);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({ id: 1, prediction: null });
+      expect(result[1]).toMatchObject({ id: 2, prediction: null });
     });
 
     it('keeps only the current member predictions on each match', async () => {
-      const mockMatches = [{ id: 1 }];
       const memberPrediction = {
+        id: 'pred-1',
         match_id: 1,
         league_member_id: 'm1',
         home_score: 1,
@@ -84,10 +102,8 @@ describe('matchesApi', () => {
         points: 0,
         is_finished: false,
       };
-      (supabase.from as jest.Mock).mockImplementation((table: string) => {
-        if (table === 'predictions') return mockPredictionsQuery([memberPrediction]);
-        return mockMatchesQuery(mockMatches);
-      });
+      const mockMatches = [{ ...baseMatchRow, id: 1, predictions: [memberPrediction] }];
+      (supabase.from as jest.Mock).mockReturnValue(mockMatchesQuery(mockMatches));
 
       const result = await matchesApi.getMatchesByFixture({
         fixture: 5,
@@ -95,19 +111,16 @@ describe('matchesApi', () => {
         memberId: 'm1',
       });
 
-      expect(result[0].predictions).toEqual([memberPrediction]);
+      expect(result[0].prediction).toEqual(memberPrediction);
     });
 
     it('fetches fixture matches with an optional stage filter', async () => {
-      const mockMatches = [{ id: 1, stage: 'REGULAR_SEASON' }];
+      const mockMatches = [{ ...baseMatchRow, id: 1, stage: 'REGULAR_SEASON' }];
       const eq = jest.fn().mockReturnThis();
-      (supabase.from as jest.Mock).mockImplementation((table: string) => {
-        if (table === 'predictions') return mockPredictionsQuery();
-        return {
-          select: jest.fn().mockReturnThis(),
-          eq,
-          order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
-        };
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq,
+        order: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
       });
 
       const result = await matchesApi.getMatchesByFixture({
@@ -119,8 +132,9 @@ describe('matchesApi', () => {
 
       expect(eq).toHaveBeenCalledWith('competition_id', 100);
       expect(eq).toHaveBeenCalledWith('fixture', 3);
+      expect(eq).toHaveBeenCalledWith('predictions.league_member_id', 'm1');
       expect(eq).toHaveBeenCalledWith('stage', 'REGULAR_SEASON');
-      expect(result).toEqual([{ id: 1, stage: 'REGULAR_SEASON', predictions: [] }]);
+      expect(result[0]).toMatchObject({ id: 1, stage: 'REGULAR_SEASON', prediction: null });
     });
   });
 
@@ -137,10 +151,8 @@ describe('matchesApi', () => {
 
       const result = await matchesApi.getCompetitionMatchesWithMemberPredictions(100, 'm1');
       expect(supabase.from).toHaveBeenCalledWith('matches');
-      expect(result).toEqual([
-        { id: 1, stage: 'GROUP_STAGE', predictions: [] },
-        { id: 2, stage: 'FINAL', predictions: [] },
-      ]);
+      expect(result[0]).toMatchObject({ id: 1, stage: 'GROUP_STAGE', prediction: null });
+      expect(result[1]).toMatchObject({ id: 2, stage: 'FINAL', prediction: null });
     });
 
     it('returns group matches even when the member has no prediction yet', async () => {
@@ -174,7 +186,7 @@ describe('matchesApi', () => {
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'groups');
 
       expect(inFilter).toHaveBeenCalledWith('stage', [...FIRST_PHASE_STAGES]);
-      expect(result).toEqual([{ id: 1, stage: 'GROUP_STAGE', predictions: [] }]);
+      expect(result[0]).toMatchObject({ id: 1, stage: 'GROUP_STAGE', prediction: null });
     });
 
     it('fetches knockout matches when view is knockout', async () => {
@@ -193,7 +205,7 @@ describe('matchesApi', () => {
       const result = await matchesApi.getTournamentMatchesByView(100, 'm1', 'knockout');
 
       expect(inFilter).toHaveBeenCalledWith('stage', KNOCKOUT_STAGE_VALUES);
-      expect(result).toEqual([{ id: 2, stage: 'LAST_16', predictions: [] }]);
+      expect(result[0]).toMatchObject({ id: 2, stage: 'LAST_16', prediction: null });
     });
   });
 
@@ -216,7 +228,7 @@ describe('matchesApi', () => {
       });
 
       const result = await matchesApi.getMemberFinishedMatches('m1', 100, 2);
-      expect(result).toEqual([{ id: 1, status: 'FINISHED', predictions: [] }]);
+      expect(result[0]).toMatchObject({ id: 1, status: 'FINISHED', prediction: null });
     });
   });
 

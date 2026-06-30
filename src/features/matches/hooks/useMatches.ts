@@ -19,7 +19,7 @@ export const useGetMatchDetail = (matchId: number) => {
       const sortedPredictions = [...(data?.predictions ?? [])].sort((a, b) => {
         const diff = (b.points ?? 0) - (a.points ?? 0);
         if (diff !== 0) return diff;
-        return a.league_member.nickname.localeCompare(b.league_member.nickname);
+        return (a.league_member?.nickname ?? '').localeCompare(b.league_member?.nickname ?? '');
       });
       data.predictions = sortedPredictions;
       return data;

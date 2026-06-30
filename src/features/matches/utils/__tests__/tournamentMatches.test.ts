@@ -21,7 +21,7 @@ const match = (id: number, overrides: Partial<MatchWithPredictionsType> = {}): M
     stage: null,
     group: null,
     kick_off: `2026-06-${String(id).padStart(2, '0')}T12:00:00Z`,
-    predictions: [],
+    prediction: null,
     ...overrides,
   }) as MatchWithPredictionsType;
 

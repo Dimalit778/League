@@ -1,4 +1,4 @@
-import { MatchWithPredictionsType } from '@/features/matches/types';
+import { MatchCardType } from '@/features/matches/types';
 import { KEYS } from '@/lib/queryClient';
 import { selectCompetitionId, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { TablesInsert } from '@/types/database.types';
@@ -17,13 +17,13 @@ export const useUpsertPrediction = () => {
     },
     onSuccess: (data) => {
       if (competitionId && memberId) {
-        queryClient.setQueriesData<MatchWithPredictionsType[]>(
+        queryClient.setQueriesData<MatchCardType[]>(
           { queryKey: ['matches', competitionId] },
           (old) => {
             if (!old) return old;
 
             return old.map((match) =>
-              match.id === data.match_id ? { ...match, predictions: [data] } : match,
+              match.id === data.match_id ? { ...match, prediction: data } : match,
             );
           },
         );

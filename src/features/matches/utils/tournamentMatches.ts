@@ -20,15 +20,18 @@ export const computeLeagueStandings = (matches: MatchWithPredictionsType[]): Com
   for (const match of matches) {
     if (match.status !== 'FINISHED' || !match.score?.fullTime) continue;
     if (match.home_team_id == null || match.away_team_id == null) continue;
+    if (!match.home_team || !match.away_team) continue;
 
     const homeId = match.home_team_id;
     const awayId = match.away_team_id;
+    const homeTeam = match.home_team;
+    const awayTeam = match.away_team;
     const homeGoals = match.score.fullTime.home ?? 0;
     const awayGoals = match.score.fullTime.away ?? 0;
 
     if (!teamMap.has(homeId)) {
       teamMap.set(homeId, {
-        team: match.home_team,
+        team: homeTeam,
         played: 0,
         won: 0,
         drawn: 0,
@@ -40,7 +43,7 @@ export const computeLeagueStandings = (matches: MatchWithPredictionsType[]): Com
     }
     if (!teamMap.has(awayId)) {
       teamMap.set(awayId, {
-        team: match.away_team,
+        team: awayTeam,
         played: 0,
         won: 0,
         drawn: 0,

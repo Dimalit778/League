@@ -9,6 +9,7 @@
     "web": "expo start --web",
     "vercel-build": "expo export",
     "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
     "test": "jest --watchAll",
     "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
     "seed:app-reviewer": "node scripts/seed-app-reviewer.mjs",

@@ -87,7 +87,7 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => {
           return (
-            <RankCard key={item.id} item={item} index={index + 1} currentMember={memberId === item.league_member.id} />
+            <RankCard key={item.id} item={item} index={index + 1} currentMember={memberId === item.league_member?.id} />
           );
         }}
         ListEmptyComponent={

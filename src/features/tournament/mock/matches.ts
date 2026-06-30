@@ -9,7 +9,7 @@ const nextId = () => idCounter++;
 // MD1: T1 vs T2,  T3 vs T4
 // MD2: T1 vs T3,  T2 vs T4
 // MD3: T1 vs T4,  T2 vs T3
-const groupSchedule: Array<[number, number, WCMatchday]> = [
+const groupSchedule: [number, number, WCMatchday][] = [
   [0, 1, 1],
   [2, 3, 1],
   [0, 2, 2],
@@ -20,7 +20,7 @@ const groupSchedule: Array<[number, number, WCMatchday]> = [
 
 // Predetermined group results per group (matches order matches groupSchedule).
 // Using realistic-ish scores so the standings table looks varied.
-const GROUP_RESULTS: Record<WCGroup, Array<[number, number]>> = {
+const GROUP_RESULTS: Record<WCGroup, [number, number][]> = {
   A: [
     [0, 2], // QAT 0-2 ECU
     [0, 2], // SEN 0-2 NED
@@ -169,7 +169,7 @@ const scheduledKnockout = (stage: WCStage, idx: number, home: WCTeam, away: WCTe
 const buildKnockoutMatches = (): WCMatch[] => {
   const out: WCMatch[] = [];
   // R16: pair group winners vs runners-up across groups (typical bracket).
-  const r16: Array<[string, string]> = [
+  const r16: [string, string][] = [
     ['NED', 'USA'],
     ['ARG', 'AUS'],
     ['FRA', 'POL'],
@@ -180,7 +180,7 @@ const buildKnockoutMatches = (): WCMatch[] => {
     ['POR', 'SUI'],
   ];
   // Mark first 4 as finished, last 4 scheduled — gives a mix.
-  const r16Scores: Array<[number, number]> = [
+  const r16Scores: [number, number][] = [
     [3, 1],
     [2, 1],
     [3, 1],
@@ -196,7 +196,7 @@ const buildKnockoutMatches = (): WCMatch[] => {
   });
 
   // QF, SF, Final: all scheduled with placeholder advancing teams.
-  const qf: Array<[string, string]> = [
+  const qf: [string, string][] = [
     ['NED', 'ARG'],
     ['CRO', 'BRA'],
     ['MAR', 'POR'],
@@ -204,7 +204,7 @@ const buildKnockoutMatches = (): WCMatch[] => {
   ];
   qf.forEach(([h, a], idx) => out.push(scheduledKnockout('QUARTER_FINAL', idx, team(h as never), team(a as never))));
 
-  const sf: Array<[string, string]> = [
+  const sf: [string, string][] = [
     ['ARG', 'CRO'],
     ['FRA', 'MAR'],
   ];

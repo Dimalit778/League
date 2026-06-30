@@ -3,7 +3,7 @@ import { Tables } from '@/types/database.types';
 
 export type TeamType = Pick<
   Tables<'teams'>,
-  'id' | 'shortName' | 'name' | 'logo' | 'tla'
+  'id' | 'shortName' | 'name' | 'logo' | 'tla' | 'venue'
 >;
 
 export type PredictionsType = Pick<
@@ -57,3 +57,14 @@ export type PredictionWithMemberType = PredictionsType & {
 export type MatchWithAllPredictionsType = MatchBaseType & {
   predictions: PredictionWithMemberType[];
 };
+
+/** List/tournament match with the current member's single prediction. */
+export type MatchWithPredictionsType = MatchCardType;
+
+/** Match detail with all league member predictions. */
+export type MatchWithPredictions = MatchWithAllPredictionsType;
+
+/** @deprecated Alias for PredictionWithMemberType */
+export type PredictionMemberType = PredictionWithMemberType;
+
+export * from './footballStages';
