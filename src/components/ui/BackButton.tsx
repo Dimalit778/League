@@ -28,7 +28,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
       <Pressable
         style={{
           position: 'absolute',
-          left: -10,
+          left: 0,
           zIndex: 1000,
           height: '100%',
           width: 60,
@@ -40,11 +40,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
         <ArrowIcon color={colors.text} size={28} />
       </Pressable>
 
-      {title && (
-        <CText variant="body" bold style={{ textAlign: 'center' }} className={`${textColor}`}>
-          {title}
-        </CText>
-      )}
+      {title && <CText className={`text-xl  text-text text-center`}>{title}</CText>}
     </View>
   );
 };

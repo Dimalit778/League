@@ -8,19 +8,31 @@ import { useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { leagueApi } from '../api/leagueApi';
+
 export const useMyLeagues = () => {
   
   const userId = useAuthStore((state) => state.user?.id ?? null);
+
   return useQuery({
     queryKey: userId ? KEYS.users.leagues(userId) : (['users', 'leagues', 'disabled'] as const),
     queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
   });
 };
 
+
 export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
     queryKey: leagueId ? KEYS.leagues.leaderboard(leagueId) : (['leagues', 'leaderboard', 'disabled'] as const),
     queryFn: leagueId ? () => leagueApi.getLeaderboardView(leagueId) : skipToken,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useMemberLeagueSummary = (memberId?: string | null) => {
+  return useQuery({
+    queryKey: memberId ? KEYS.members.summary(memberId) : (['members', 'summary', 'disabled'] as const),
+    queryFn: memberId ? () => leagueApi.getMemberLeagueSummary(memberId) : skipToken,
+    enabled: !!memberId,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -146,7 +158,7 @@ export const useCreateLeague = () => {
         }),
       ]);
       router.replace({
-        pathname: '/(app)/(public)/myLeagues/preview-league',
+        pathname: '/(app)/(user)/myLeagues/preview-league',
         params: { leagueId },
       });
     },
@@ -223,7 +235,7 @@ export const useLeaveLeague = () => {
       return result;
     },
     onSuccess: async (_result, leagueId) => {
-      router.replace('/(app)/(public)/myLeagues');
+      router.replace('/(app)/(user)/myLeagues');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({
@@ -256,7 +268,7 @@ export const useDeleteLeague = () => {
       return leagueApi.deleteLeague(leagueId);
     },
     onSuccess: async (_result, { leagueId }) => {
-      router.replace('/(app)/(public)/myLeagues');
+      router.replace('/(app)/(user)/myLeagues');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({

@@ -328,6 +328,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "predictions_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["member_id"]
+          },
+          {
             foreignKeyName: "predictions_match_id_fkey"
             columns: ["match_id"]
             isOneToOne: false
@@ -335,6 +342,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      revenuecat_events: {
+        Row: {
+          app_user_id: string | null
+          created_at: string | null
+          event_type: string | null
+          id: string
+          payload: Json
+          processed: boolean | null
+        }
+        Insert: {
+          app_user_id?: string | null
+          created_at?: string | null
+          event_type?: string | null
+          id?: string
+          payload: Json
+          processed?: boolean | null
+        }
+        Update: {
+          app_user_id?: string | null
+          created_at?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json
+          processed?: boolean | null
+        }
+        Relationships: []
       }
       teams: {
         Row: {
@@ -463,6 +497,28 @@ export type Database = {
           },
         ]
       }
+      member_league_summary_view: {
+        Row: {
+          competition_logo: string | null
+          competition_name: string | null
+          league_id: string | null
+          league_name: string | null
+          member_id: string | null
+          nickname: string | null
+          pending_predictions: number | null
+          rank: number | null
+          total_points: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_new_league: {
@@ -498,6 +554,7 @@ export type Database = {
           max_members: number
         }[]
       }
+      get_user_plan: { Args: { p_user_id: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_league_member: { Args: { league_id_param: string }; Returns: boolean }
       is_league_owner: { Args: { league_id_param: string }; Returns: boolean }

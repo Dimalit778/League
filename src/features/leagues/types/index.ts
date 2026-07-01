@@ -64,8 +64,10 @@ type MyLeaguesResponseType = {
   primaryLeague: MyLeagueType | null;
   leagues: MyLeagueType[];
   inactiveLeagues: MyLeagueType[];
-  totalLeagues: number;
+  total: number;
 };
+
+type MemberLeagueSummaryType = Tables<"member_league_summary_view">;
 
 type LeagueWithCompetitionType = Omit<LeagueDetailsType, "league_members">;
 
@@ -81,11 +83,13 @@ type FullLeagueType = {
   owner_nickname: string;
 };
 
+
 export {
   FullLeagueType,
   LeaderboardRow,
   LeagueDetailsType,
   LeagueWithCompetitionType,
-  MyLeaguesResponseType,
-  MyLeagueType,
+  MemberLeagueSummaryType,
+  MyLeaguesResponseType, MyLeagueType
 };
+

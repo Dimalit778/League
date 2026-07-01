@@ -8,11 +8,6 @@
     "scheme": "league",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./src/assets/app-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0f172a"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.league",
@@ -56,10 +51,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./src/assets/app-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#0f172a"
+          "backgroundColor": "#05070D"
         }
       ],
       [

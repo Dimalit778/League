@@ -54,12 +54,14 @@ Sentry.init({
 
 ExpoSplashScreen.preventAutoHideAsync().catch(() => {});
 
+const BOOT_ASSETS_TIMEOUT_MS = 2500;
+
 const AppBootstrap = () => {
   const ref = useNavigationContainerRef();
   const { isLoggedIn, isAuthLoading } = useAuth();
 
   const { colors } = useThemeTokens();
-  const [isReady, setIsReady] = useState(false);
+  const [isAppShellReady, setIsAppShellReady] = useState(false);
 
   const { status: memberStatus } = usePrimaryMember();
   const isMemberSettled = !isLoggedIn || memberStatus === 'success' || memberStatus === 'error';
@@ -69,18 +71,29 @@ const AppBootstrap = () => {
   }, [ref]);
 
   useEffect(() => {
-    if (isAuthLoading || !isMemberSettled) return;
-
     let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const prepare = async () => {
+      const bootAssetsTimeout = new Promise<void>((resolve) => {
+        timeoutId = setTimeout(resolve, BOOT_ASSETS_TIMEOUT_MS);
+      });
+      const bootAssets = Asset.fromModule(footballBg)
+        .downloadAsync()
+        .then(() => undefined)
+        .catch((e: unknown) => {
+          console.error('[AppBootstrap] Error preparing app:', e);
+        });
+
       try {
-        await Asset.fromModule(footballBg).downloadAsync();
-      } catch (e: any) {
-        console.error('[AppBootstrap] Error preparing app:', e);
+        await Promise.race([bootAssets, bootAssetsTimeout]);
       } finally {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+
         if (!cancelled) {
-          setIsReady(true);
+          setIsAppShellReady(true);
           await ExpoSplashScreen.hideAsync().catch(() => {});
         }
       }
@@ -90,10 +103,13 @@ const AppBootstrap = () => {
 
     return () => {
       cancelled = true;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
-  }, [isAuthLoading, isMemberSettled]);
+  }, []);
 
-  if (!isReady) {
+  if (!isAppShellReady || isAuthLoading || !isMemberSettled) {
     return <LoadingBall />;
   }
 
@@ -103,7 +119,6 @@ const AppBootstrap = () => {
       <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          <Stack.Screen name="(paywall)" options={{ headerShown: false }} />
         </Stack.Protected>
 
         <Stack.Protected guard={!isLoggedIn}>

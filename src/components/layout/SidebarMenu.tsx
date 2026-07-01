@@ -2,33 +2,19 @@
 import { CText } from '@/components/ui/CText';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { ArrowLeftIcon, LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
-import { RelativePathString, usePathname, useRouter } from 'expo-router';
+import { Href, usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, ScrollView, View } from 'react-native';
 
-const ROUTES = [
-  {
-    label: 'League',
-    route: 'League',
-    icon: LeagueIcon,
-  },
-  {
-    label: 'Matches',
-    route: 'Matches',
-    icon: MatchesIcon,
-  },
-  {
-    label: 'Stats',
-    route: 'Stats',
-    icon: RankIcon,
-  },
-  {
-    label: 'Profile',
-    route: 'Profile',
-    icon: ProfileIcon,
-  },
-];
+type SidebarRoute = {
+  label: string;
+  route: string;
+  href: Href;
+  icon: typeof LeagueIcon;
+};
+
 export const SidebarMenu = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,10 +22,38 @@ export const SidebarMenu = () => {
   const isOpen = useSidebarStore((s) => s.isOpen);
   const closeSidebar = useSidebarStore((s) => s.closeSidebar);
   const { t } = useTranslation();
+  const leagueId = useMemberStore(selectLeagueId);
   const isWeb = Platform.OS === 'web';
 
-  const handleNavigation = (routeName: string) => {
-    router.push(`/(app)/(member)/(tabs)/${routeName}` as RelativePathString);
+  const routes: SidebarRoute[] = [
+    {
+      label: 'League',
+      route: 'index',
+      href: `/(app)/league/${leagueId}` as Href,
+      icon: LeagueIcon,
+    },
+    {
+      label: 'Matches',
+      route: 'Matches',
+      href: `/(app)/league/${leagueId}/Matches` as Href,
+      icon: MatchesIcon,
+    },
+    {
+      label: 'Stats',
+      route: 'Stats',
+      href: `/(app)/league/${leagueId}/Stats` as Href,
+      icon: RankIcon,
+    },
+    {
+      label: 'Profile',
+      route: 'Profile',
+      href: `/(app)/league/${leagueId}/Profile` as Href,
+      icon: ProfileIcon,
+    },
+  ];
+
+  const handleNavigation = (href: SidebarRoute['href']) => {
+    router.push(href);
     if (isWeb) {
       closeSidebar();
     }
@@ -64,8 +78,9 @@ export const SidebarMenu = () => {
         </View>
         <ScrollView className="flex-1">
           <View className="px-3">
-            {ROUTES.map((route) => {
-              const isActive = pathname.toLowerCase().includes(route.route.toLowerCase());
+            {routes.map((route) => {
+              const isActive =
+                route.route === 'index' ? pathname === '/' : pathname.toLowerCase().includes(route.route.toLowerCase());
               const Icon = route.icon;
 
               return (
@@ -73,7 +88,7 @@ export const SidebarMenu = () => {
                   accessibilityRole="button"
                   accessibilityLabel={t(route.label)}
                   key={route.route}
-                  onPress={() => handleNavigation(route.route)}
+                  onPress={() => handleNavigation(route.href)}
                   className={`flex-row items-center px-4 py-3 rounded-lg mb-2 ${
                     isActive ? 'bg-surface' : 'bg-transparent'
                   }`}

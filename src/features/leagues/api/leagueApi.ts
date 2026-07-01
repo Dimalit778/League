@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MyLeagueType, MyLeaguesResponseType } from '../types';
+import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MemberLeagueSummaryType, MyLeagueType, MyLeaguesResponseType } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name, logo, area, flag';
@@ -85,6 +85,17 @@ export const leagueApi = {
       correct_scores: row.member_id ? (correctScoreCounts.get(row.member_id) ?? 0) : 0,
     }));
   },
+  async getMemberLeagueSummary(memberId: string): Promise<MemberLeagueSummaryType | null> {
+    const { data, error } = await supabase
+      .from('member_league_summary_view')
+      .select('member_id, league_id, nickname, league_name, competition_name, competition_logo, total_points, rank, pending_predictions')
+      .eq('member_id', memberId)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
   async getMyLeagues(userId: string): Promise<MyLeaguesResponseType> {
     const { data, error } = await supabase
       .from('league_members')
@@ -101,7 +112,7 @@ export const leagueApi = {
       primaryLeague: memberships.find((league) => league.is_primary) ?? null,
       leagues: memberships.filter((league) => !league.is_primary && league.active),
       inactiveLeagues: memberships.filter((league) => !league.is_primary && !league.active),
-      totalLeagues: memberships.length,
+      total: memberships.length,
     };
   },
 

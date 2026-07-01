@@ -22,7 +22,7 @@ type TabConfig = {
 };
 
 const tabsConfig: Record<string, TabConfig> = {
-  Home: { label: 'Home', icon: FieldIcon },
+  index: { label: 'Home', icon: FieldIcon },
   Stats: { label: 'Stats', icon: RankIcon },
   Matches: { label: 'Matches', icon: MatchesIcon },
 

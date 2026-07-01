@@ -4,7 +4,7 @@ import {
   computeStreaks,
 } from '@/features/stats/utils/computeExtendedStats';
 import { supabase } from '@/lib/supabase';
-import {} from '../types';
+import { } from '../types';
 
 import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
@@ -196,6 +196,7 @@ export const memberApi = {
     if (!data) return null;
     return data;
   },
+ 
   async getPrimaryMember(userId: string) {
     const { data, error } = await supabase
       .from('league_members')
@@ -209,4 +210,38 @@ export const memberApi = {
     if (!data) return null;
     return data;
   },
+  async getMyMemberByLeague(userId: string, leagueId: string) {
+    const { data, error } = await supabase
+      .from('league_members')
+      .select(`
+        active,
+        avatar_url,
+        created_at,
+        id,
+        is_primary,
+        league_id,
+        nickname,
+        updated_at,
+        user_id,
+        league:leagues!league_id(
+          competition_id,
+          created_at,
+          id,
+          join_code,
+          max_members,
+          name,
+          owner_id,
+          updated_at,
+          competition:competitions(id, name, logo, area, flag)
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('league_id', leagueId)
+      .eq('active', true)
+      .maybeSingle();
+  
+    if (error) throw new Error(error.message);
+  
+    return data;
+  }
 };

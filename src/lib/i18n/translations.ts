@@ -79,6 +79,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       "Don't have an account?": "Don't have an account?",
       'Already have an account?': 'Already have an account?',
       'Welcome Back': 'Welcome Back',
+      'Hello {{name}}': 'Hello {{name}}',
       'Welcome to League': 'Welcome to League',
       'Your ultimate football companion. Track leagues, follow matches, and stay connected with the beautiful game.':
         'Your ultimate football companion. Track leagues, follow matches, and stay connected with the beautiful game.',
@@ -730,6 +731,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       "Don't have an account?": 'אין לך חשבון?',
       'Already have an account?': 'יש לך חשבון?',
       'Welcome Back': 'ברוך הבא',
+      'Hello {{name}}': 'שלום {{name}}',
       'Welcome to League': 'ברוכים הבאים לליגה',
       'Your ultimate football companion. Track leagues, follow matches, and stay connected with the beautiful game.':
         'הליגה האולימפית המושלמת. עקוב אחר ליגות, עקוב אחר משחקים, והישאר מחובר למשחק היפה.',

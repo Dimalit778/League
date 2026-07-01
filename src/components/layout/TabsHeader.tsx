@@ -24,7 +24,7 @@ function TabsContect({ nickname, avatar_url, color }: TabsContectProps) {
           {nickname}
         </CText>
       </View>
-      <Pressable accessibilityRole="button" onPress={() => router.replace('/(app)/(public)/myLeagues')}>
+      <Pressable accessibilityRole="button" onPress={() => router.replace('/(app)/(user)/myLeagues')}>
         <TrophyIcon color={color} size={24} />
       </Pressable>
     </>

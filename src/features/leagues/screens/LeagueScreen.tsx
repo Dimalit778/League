@@ -2,6 +2,7 @@ import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { LeaderboardStatsBar } from '@/features/leagues/components/leaderboard/LeaderboardStatsBar';
 import { LeaderboardTableHeader } from '@/features/leagues/components/leaderboard/LeaderboardTableHeader';
 import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
+import { LeagueHeader } from '@/features/leagues/components/myleagues/league-header';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { selectCompetition, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { getProfileImage } from '@/utils/getProfileImage';
@@ -53,29 +54,31 @@ const LeagueScreen = () => {
 
   return (
     <Screen>
-      <View>
-        <FlatList
-          data={leaderboard}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
-          keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
-          ListHeaderComponent={
-            <View>
-              <LeaderboardStatsBar membersCount={leaderboard.length} gameweek={gameweek} yourRank={yourRank} />
-              <TopThree topMembers={topThree} />
-              <LeaderboardTableHeader />
-            </View>
-          }
-          renderItem={({ item, index }) => (
-            <LeaderboardCard item={item} index={index} isCurrentUser={item.member_id === memberId} />
-          )}
-          getItemLayout={(_, index) => ({
-            length: 52,
-            offset: 52 * index,
-            index,
-          })}
-        />
+      <View className="flex-1  bg-red-500">
+        <LeagueHeader />
       </View>
+
+      <FlatList
+        data={leaderboard}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
+        keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
+        ListHeaderComponent={
+          <View>
+            <LeaderboardStatsBar membersCount={leaderboard.length} gameweek={gameweek} yourRank={yourRank} />
+            <TopThree topMembers={topThree} />
+            <LeaderboardTableHeader />
+          </View>
+        }
+        renderItem={({ item, index }) => (
+          <LeaderboardCard item={item} index={index} isCurrentUser={item.member_id === memberId} />
+        )}
+        getItemLayout={(_, index) => ({
+          length: 52,
+          offset: 52 * index,
+          index,
+        })}
+      />
     </Screen>
   );
 };

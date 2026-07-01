@@ -1,6 +1,7 @@
 import { AvatarImage, CText } from '@/components/ui';
 import { LeaderboardRow } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import stadiumBg from '@assets/images/fieldImage.jpg';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -59,6 +60,7 @@ function getPositionStyle(position: number): PositionStyle {
 
 function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined; position: number }) {
   const { t } = useTranslation();
+  const leagueId = useMemberStore(selectLeagueId);
   const style = getPositionStyle(position);
 
   const content = (
@@ -111,7 +113,7 @@ function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined
   }
 
   return (
-    <Link href={`/(app)/(member)/member/id?memberId=${member.member_id}`} asChild>
+    <Link href={`/(app)/league/${leagueId}/member/${member.member_id}`} asChild>
       <TouchableOpacity activeOpacity={0.7}>{content}</TouchableOpacity>
     </Link>
   );

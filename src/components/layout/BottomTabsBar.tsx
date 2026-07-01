@@ -10,7 +10,7 @@ const isIOS = Platform.OS === 'ios';
 const FLOATING_TAB = 'Matches';
 
 const EXTERNAL_TABS: Record<string, string> = {
-  Leagues: '/(app)/(public)/myLeagues',
+  Leagues: '/(app)/(user)/myLeagues',
 };
 
 const FLOAT_SIZE = 60;

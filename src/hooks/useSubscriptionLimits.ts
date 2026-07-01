@@ -4,28 +4,28 @@ import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 
 export const useSubscriptionLimits = () => {
   const leaguesQuery = useMyLeagues();
+  console.log('leaguesQuery', JSON.stringify(leaguesQuery.data, null, 2));
   const subscriptionState = useRevenueCatSubscription();
 
   const isPro = subscriptionState.subscription.isActive;
   const plan = isPro ? 'PRO' : 'FREE';
   const limits = PLAN_LIMITS[plan];
 
-  const leaguesCount = leaguesQuery.data?.leagues.length ?? 0;
-  const totalLeaguesCount = leaguesQuery.data?.totalLeagues ?? 0;
+ 
+  const totalLeagues = leaguesQuery.data?.totalLeagues ?? 0;
   const maxLeagues = limits.maxLeagues;
-  const reachedLimit = leaguesCount >= maxLeagues;
-  const exceededLimit = leaguesCount > maxLeagues;
-  const remainingLeagues = Math.max(0, maxLeagues - leaguesCount);
+  const reachedLimit = totalLeagues >= maxLeagues;
+  const exceededLimit = totalLeagues > maxLeagues;
+  const remainingLeagues = Math.max(0, maxLeagues - totalLeagues);
   const usagePercent =
-    maxLeagues > 0 ? Math.min(100, (leaguesCount / maxLeagues) * 100) : 0;
+    maxLeagues > 0 ? Math.min(100, (totalLeagues / maxLeagues) * 100) : 0;
 
   return {
     plan,
     isPro,
     subscription: subscriptionState.subscription,
     limits,
-    leaguesCount,
-    totalLeaguesCount,
+    totalLeagues,
     maxLeagues,
     reachedLimit,
     exceededLimit,

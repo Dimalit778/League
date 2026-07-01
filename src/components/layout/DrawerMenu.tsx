@@ -1,7 +1,8 @@
 import { LeagueIcon, MatchesIcon, MenuIcon, ProfileIcon, RankIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Link, RelativePathString } from 'expo-router';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { Href, Link } from 'expo-router';
 import React from 'react';
 import { Modal, Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,33 +13,34 @@ interface DrawerMenuProps {
   onClose: () => void;
 }
 
-const DRAWER_ROUTES = [
-  {
-    label: 'League',
-    route: '/(app)/(member)/(tabs)/League',
-    icon: LeagueIcon,
-  },
-  {
-    label: 'Matches',
-    route: '/(app)/(member)/(tabs)/Matches',
-    icon: MatchesIcon,
-  },
-  {
-    label: 'Stats',
-    route: '/(app)/(member)/(tabs)/Stats',
-    icon: RankIcon,
-  },
-  {
-    label: 'Profile',
-    route: '/(app)/(member)/(tabs)/Profile',
-    icon: ProfileIcon,
-  },
-];
-
 export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const leagueId = useMemberStore(selectLeagueId);
+
+  const drawerRoutes = [
+    {
+      label: 'League',
+      route: `/(app)/league/${leagueId}`,
+      icon: LeagueIcon,
+    },
+    {
+      label: 'Matches',
+      route: `/(app)/league/${leagueId}/Matches`,
+      icon: MatchesIcon,
+    },
+    {
+      label: 'Stats',
+      route: `/(app)/league/${leagueId}/Stats`,
+      icon: RankIcon,
+    },
+    {
+      label: 'Profile',
+      route: `/(app)/league/${leagueId}/Profile`,
+      icon: ProfileIcon,
+    },
+  ] as const;
 
   if (Platform.OS !== 'web') {
     return null;
@@ -69,10 +71,10 @@ export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
             </TouchableOpacity>
             {/* Navigation Items */}
             <View className="flex-1 pt-4 bg-secondary">
-              {DRAWER_ROUTES.map((route) => {
+              {drawerRoutes.map((route) => {
                 const IconComponent = route.icon;
                 return (
-                  <Link key={route.route} href={route.route as RelativePathString} asChild prefetch onPress={onClose}>
+                  <Link key={route.route} href={route.route as Href} asChild prefetch onPress={onClose}>
                     <TouchableOpacity
                       className="flex-row items-center gap-4 px-4 py-3 hover:bg-border"
                       onPress={onClose}

@@ -1,4 +1,5 @@
 import { MyImage } from '@/components/ui/MyImage';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
@@ -89,6 +90,7 @@ export const MatchCard = memo(function MatchCard({
   onPress,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
+  const leagueId = useMemberStore(selectLeagueId);
 
   const cardWidth = screenWidth - 16;
   const cardHeight = Math.round(cardWidth * (MATCH_CARD_VIEWBOX_HEIGHT / 360));
@@ -147,7 +149,7 @@ export const MatchCard = memo(function MatchCard({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      onPress={onPress ?? (() => router.push(`/(app)/(member)/match/${id}`))}
+      onPress={onPress ?? (() => router.push(`/(app)/league/${leagueId}/match/${id}`))}
       className="mb-2 w-full items-center"
     >
       <View

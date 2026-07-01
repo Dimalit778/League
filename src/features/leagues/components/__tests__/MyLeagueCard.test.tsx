@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import MyLeagueCard from '../MyLeagueCard';
+import MyLeagueCard from '../myleagues/leagues-list';
 
 const mockItem = {
   avatar_url: null,
@@ -43,24 +43,18 @@ const mockItem = {
 
 describe('MyLeagueCard', () => {
   it('renders league name', () => {
-    const { getByText } = render(
-      <MyLeagueCard item={mockItem} onPress={jest.fn()} />
-    );
+    const { getByText } = render(<MyLeagueCard item={mockItem} onPress={jest.fn()} />);
     expect(getByText('My Test League')).toBeTruthy();
   });
 
   it('renders nickname', () => {
-    const { getByText } = render(
-      <MyLeagueCard item={mockItem} onPress={jest.fn()} />
-    );
+    const { getByText } = render(<MyLeagueCard item={mockItem} onPress={jest.fn()} />);
     expect(getByText('TestPlayer')).toBeTruthy();
   });
 
   it('calls onPress when pressed', () => {
     const onPress = jest.fn();
-    const { getByText } = render(
-      <MyLeagueCard item={mockItem} onPress={onPress} />
-    );
+    const { getByText } = render(<MyLeagueCard item={mockItem} onPress={onPress} />);
     fireEvent.press(getByText('My Test League'));
     expect(onPress).toHaveBeenCalledTimes(1);
   });

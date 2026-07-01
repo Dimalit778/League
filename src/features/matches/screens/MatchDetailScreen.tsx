@@ -11,12 +11,12 @@ import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
 
 const MatchDetailScreen = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
   const memberId = useMemberStore(selectMemberId) ?? '';
 
-  const { data: matchData, isLoading, error } = useGetMatchDetail(Number(id));
+  const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
 
   if (isLoading) return <LoadingOverlay />;
   if (error) return <Error error={error} />;

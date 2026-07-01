@@ -35,7 +35,7 @@ const LockedStats = () => {
 
         <Button
           title={t('Upgrade to Pro')}
-          onPress={() => router.push('/(app)/(public)/settings')}
+          onPress={() => router.push('/(app)/(user)/settings')}
           className="mt-6 w-full"
         />
       </View>

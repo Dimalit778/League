@@ -2,6 +2,7 @@ import { useFloatBottomTabsInset } from '@/components/layout';
 import { CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import {
   type RefObject,
@@ -54,6 +55,7 @@ function KnockoutMatchCard({
   isScrollingRef: RefObject<boolean>;
 }) {
   const card = mapMatchToCardProps(match);
+  const leagueId = useMemberStore(selectLeagueId);
 
   return (
     <MatchCard
@@ -67,7 +69,7 @@ function KnockoutMatchCard({
       time={card.time}
       onPress={() => {
         if (isScrollingRef.current) return;
-        router.push(`/(app)/(member)/match/${match.id}`);
+        router.push(`/(app)/league/${leagueId}/match/${match.id}`);
       }}
     />
   );

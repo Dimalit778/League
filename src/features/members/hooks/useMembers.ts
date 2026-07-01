@@ -138,3 +138,13 @@ export const usePrimaryMember = () => {
 
   return query;
 };
+export const useMyMemberByLeague = (leagueId: string) => {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  return useQuery({
+    queryKey: userId ? KEYS.members.byLeague(userId, leagueId) : (['members', 'by-league', 'disabled'] as const),
+    queryFn:  userId ? () => memberApi.getMyMemberByLeague(userId, leagueId) : skipToken,
+    staleTime: STALE_TIME,
+    retry: RETRY_COUNT,
+  });
+};  

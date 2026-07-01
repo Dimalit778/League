@@ -1,5 +1,6 @@
 import { AvatarImage, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { Link } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
 import { LeaderboardRow } from '../types';
@@ -13,6 +14,7 @@ interface LeaderboardCardProps {
 export default function LeaderboardCard({ item, index, isCurrentUser }: LeaderboardCardProps) {
   const { nickname, avatar_url, total_points, correct_scores, member_id } = item;
   const { t } = useTranslation();
+  const leagueId = useMemberStore(selectLeagueId);
   const rank = index + 1;
 
   const textColor = isCurrentUser ? 'text-[#E3B421]' : 'text-white';
@@ -21,8 +23,8 @@ export default function LeaderboardCard({ item, index, isCurrentUser }: Leaderbo
   return (
     <Link
       href={{
-        pathname: '/(app)/(member)/member/id',
-        params: { memberId: member_id },
+        pathname: '/(app)/league/[leagueId]/member/[memberId]',
+        params: { leagueId: leagueId ?? '', memberId: member_id ?? '' },
       }}
       asChild
     >

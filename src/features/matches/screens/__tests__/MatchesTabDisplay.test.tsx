@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import MatchesTab from '@/app/(app)/(member)/(tabs)/Matches';
+import MatchesTab from '@/app/(app)/league/[leagueId]/(tabs)/Matches';
 
 const mockState: any = {
   activeMember: {
@@ -25,7 +25,7 @@ jest.mock('@/store/MemberStore', () => {
   };
 });
 
-jest.mock('@/features/matches/screens/LeagueMatches', () => {
+jest.mock('@/features/matches/screens/RegularLeagueScreen', () => {
   const { Text } = require('react-native');
   return () => <Text>LeagueMatches</Text>;
 });

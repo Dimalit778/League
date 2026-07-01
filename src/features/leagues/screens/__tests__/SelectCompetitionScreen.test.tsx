@@ -68,7 +68,7 @@ describe('SelectCompetitionScreen', () => {
     fireEvent.press(getByText('Continue'));
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/(app)/(public)/myLeagues/create-league',
+      pathname: '/(app)/(user)/myLeagues/create-league',
       params: {
         competitionId: 1_000,
       },
