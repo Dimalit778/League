@@ -17,7 +17,6 @@ export default function PublicLayout() {
     >
       <Stack.Screen name="myLeagues" />
       <Stack.Screen name="settings" />
-      <Stack.Screen name="subscription" />
     </Stack>
   );
 }

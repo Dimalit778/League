@@ -60,7 +60,30 @@ export const leagueApi = {
       .order('total_points', { ascending: false });
 
     if (error) throw error;
-    return (data ?? []) as LeaderboardRow[];
+
+    const rows = (data ?? []) as LeaderboardRow[];
+    if (rows.length === 0) return rows;
+
+    const memberIds = rows.map((row) => row.member_id).filter((id): id is string => !!id);
+    const { data: predictions, error: predictionsError } = await supabase
+      .from('predictions')
+      .select('league_member_id')
+      .in('league_member_id', memberIds)
+      .eq('is_finished', true)
+      .eq('points', 5);
+
+    if (predictionsError) throw predictionsError;
+
+    const correctScoreCounts = new Map<string, number>();
+    for (const prediction of predictions ?? []) {
+      const memberId = prediction.league_member_id;
+      correctScoreCounts.set(memberId, (correctScoreCounts.get(memberId) ?? 0) + 1);
+    }
+
+    return rows.map((row) => ({
+      ...row,
+      correct_scores: row.member_id ? (correctScoreCounts.get(row.member_id) ?? 0) : 0,
+    }));
   },
   async getMyLeagues(userId: string): Promise<MyLeaguesResponseType> {
     const { data, error } = await supabase

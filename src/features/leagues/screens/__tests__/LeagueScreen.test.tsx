@@ -42,6 +42,7 @@ jest.mock('@/components/layout', () => {
   return {
     Error: ({ error }: { error: Error }) => <Text>{error.message}</Text>,
     Screen: ({ children }: { children: any }) => <View>{children}</View>,
+    useFloatBottomTabsInset: () => 0,
   };
 });
 
@@ -59,6 +60,27 @@ jest.mock('@/features/leagues/components/LeagueSkeleton', () => {
   return {
     __esModule: true,
     default: () => <Text>LeagueSkeleton</Text>,
+  };
+});
+
+jest.mock('@/features/leagues/components/leaderboard/LeaderboardScreenHeader', () => {
+  const { Text } = require('react-native');
+  return {
+    LeaderboardScreenHeader: () => <Text>LeaderboardHeader</Text>,
+  };
+});
+
+jest.mock('@/features/leagues/components/leaderboard/LeaderboardStatsBar', () => {
+  const { Text } = require('react-native');
+  return {
+    LeaderboardStatsBar: () => <Text>LeaderboardStats</Text>,
+  };
+});
+
+jest.mock('@/features/leagues/components/leaderboard/LeaderboardTableHeader', () => {
+  const { Text } = require('react-native');
+  return {
+    LeaderboardTableHeader: () => <Text>LeaderboardTableHeader</Text>,
   };
 });
 

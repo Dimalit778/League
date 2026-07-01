@@ -1,8 +1,7 @@
-import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon, TrophyIcon } from '@/assets/icons';
+import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,10 +15,6 @@ export const useFloatBottomTabsInset = () => {
   return Platform.OS === 'web' ? 0 : getFloatBottomTabsInset(insets.bottom);
 };
 
-const EXTERNAL_TABS: Record<string, string> = {
-  Leagues: '/(app)/(public)/myLeagues',
-};
-
 type TabConfig = {
   label: string;
   icon: React.ComponentType<{ size: number; color: string; strokeWidth?: number }>;
@@ -29,8 +24,8 @@ type TabConfig = {
 const tabsConfig: Record<string, TabConfig> = {
   Home: { label: 'Home', icon: FieldIcon },
   Stats: { label: 'Stats', icon: RankIcon },
-  Matches: { label: 'Matches', icon: MatchesIcon, isCenter: true },
-  Leagues: { label: 'Leagues', icon: TrophyIcon },
+  Matches: { label: 'Matches', icon: MatchesIcon },
+
   Profile: { label: 'Profile', icon: ProfileIcon },
 };
 
@@ -55,16 +50,10 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
 
           const isFocused = state.index === index;
           const Icon = config.icon;
-          const iconColor = config.isCenter ? '#fff' : isFocused ? colors.primary : colors.muted;
+          const iconColor = isFocused ? colors.primary : colors.muted;
 
           const onPress = () => {
             if (isIOS) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-            const externalHref = EXTERNAL_TABS[route.name];
-            if (externalHref) {
-              router.navigate(externalHref as any);
-              return;
-            }
 
             const event = navigation.emit({
               type: 'tabPress',
@@ -75,16 +64,6 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
               navigation.navigate(route.name);
             }
           };
-
-          if (config.isCenter) {
-            return (
-              <Pressable key={route.key} onPress={onPress} style={styles.centerWrapper}>
-                <View style={[styles.centerButton, { backgroundColor: colors.primary, shadowColor: colors.primary }]}>
-                  <Icon size={24} color="#fff" strokeWidth={2.5} />
-                </View>
-              </Pressable>
-            );
-          }
 
           return (
             <Pressable key={route.key} onPress={onPress} style={styles.item}>

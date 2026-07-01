@@ -23,21 +23,17 @@ const SettingsScreen = () => {
   const { signOut } = useAuthActions();
   const { t } = useTranslation();
   const handleDeleteAccountPress = useCallback(() => {
-    Alert.alert(
-      t('Delete Account'),
-      t('Delete account confirmation message'),
-      [
-        {
-          text: t('Cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('Delete'),
-          style: 'destructive',
-          onPress: () => deleteUserMutation.mutate(),
-        },
-      ],
-    );
+    Alert.alert(t('Delete Account'), t('Delete account confirmation message'), [
+      {
+        text: t('Cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('Delete'),
+        style: 'destructive',
+        onPress: () => deleteUserMutation.mutate(),
+      },
+    ]);
   }, [deleteUserMutation, t]);
   const handleSignOut = async () => {
     const result = await signOut();
@@ -51,7 +47,7 @@ const SettingsScreen = () => {
   if (!user) return <LoadingOverlay />;
 
   return (
-    <Screen withSafeArea>
+    <Screen topSafeArea>
       <BackButton title={t('Settings')} />
 
       <ScrollView className="flex-1 px-2" showsVerticalScrollIndicator={false}>

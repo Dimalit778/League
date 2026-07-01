@@ -11,7 +11,7 @@ export default function MyLeaguesLayout() {
         name="index"
         options={{
           headerShown: true,
-          header: () => <TabsHeader tabsLayout={false} isMyLeaguesPage={true} />,
+          header: () => <TabsHeader />,
         }}
       />
       <Stack.Screen name="join-league" options={{ headerShown: false }} />

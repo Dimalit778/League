@@ -1,6 +1,4 @@
-import { CText } from '@/components/ui';
-import { AvatarImage } from '@/components/ui/AvatarImage';
-import { Card } from '@/components/ui/Card';
+import { AvatarImage, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
@@ -13,49 +11,50 @@ interface LeaderboardCardProps {
 }
 
 export default function LeaderboardCard({ item, index, isCurrentUser }: LeaderboardCardProps) {
-  const { nickname, avatar_url, total_points } = item;
-  const memberId = item.member_id;
+  const { nickname, avatar_url, total_points, correct_scores, member_id } = item;
   const { t } = useTranslation();
+  const rank = index + 1;
+
+  const textColor = isCurrentUser ? 'text-[#E3B421]' : 'text-white';
+  const mutedColor = isCurrentUser ? 'text-[#E3B421]/80' : 'text-[#97A7BF]';
+
   return (
     <Link
       href={{
         pathname: '/(app)/(member)/member/id',
-        params: {
-          memberId: memberId,
-        },
+        params: { memberId: member_id },
       }}
       asChild
     >
       <TouchableOpacity activeOpacity={0.7}>
-        <Card className={`${isCurrentUser ? 'border-primary' : ''} px-3 py-1 my-1.5`}>
-          <View className="flex-row items-center gap-3">
-            {/* Position Badge */}
-            <View className="w-8 h-8 rounded-full items-center justify-center bg-background">
-              <CText variant="caption" bold className="text-text">
-                {index + 1}
-              </CText>
-            </View>
-            <View className="w-10 h-10 rounded-full overflow-hidden">
+        <View
+          className={`mx-3 mb-1.5 flex-row items-center rounded-xl px-2 py-2.5 ${
+            isCurrentUser ? 'border border-[#E3B421] bg-[#101A2A]' : 'bg-[#0D1524]'
+          }`}
+        >
+          <CText className={`w-6 text-sm font-bold ${textColor}`}>{rank}</CText>
+
+          <View className="flex-1 flex-row items-center gap-2 pr-1">
+            <View className="h-7 w-7 overflow-hidden rounded-full">
               <AvatarImage nickname={nickname!} path={avatar_url} />
             </View>
-            {/* User Info */}
-            <View className="flex-1 items-start">
-              <CText variant="body" bold className="text-text" numberOfLines={1}>
-                {nickname}
-              </CText>
-            </View>
-
-            {/* Points Section */}
-            <View className="items-center pr-2">
-              <CText variant="body" bold>
-                {total_points?.toLocaleString() ?? 0}
-              </CText>
-              <CText variant="caption" className="text-muted">
-                {t('pts')}
-              </CText>
-            </View>
+            <CText className={`flex-1 text-sm font-semibold ${textColor}`} numberOfLines={1}>
+              {nickname}
+            </CText>
           </View>
-        </Card>
+
+          <CText className={`w-14 text-center text-xs font-semibold ${textColor}`}>
+            {total_points?.toLocaleString() ?? 0} {t('pts')}
+          </CText>
+
+          <CText className={`w-10 text-center text-xs font-semibold ${mutedColor}`}>
+            {correct_scores ?? 0}
+          </CText>
+
+          <View className="w-10 items-center">
+            <CText className={`text-xs ${mutedColor}`}>—</CText>
+          </View>
+        </View>
       </TouchableOpacity>
     </Link>
   );

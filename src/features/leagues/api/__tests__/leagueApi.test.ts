@@ -9,15 +9,31 @@ describe("leagueApi", () => {
   describe("getLeaderboardView", () => {
     it("fetches leaderboard for a league", async () => {
       const mockData = [{ member_id: "m1", total_points: 100 }];
-      (supabase.from as jest.Mock).mockReturnValue({
+      const leaderboardChain = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+      };
+      const predictionsChain = {
+        select: jest.fn().mockReturnThis(),
+        in: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+      };
+      predictionsChain.eq.mockReturnValueOnce(predictionsChain);
+      predictionsChain.eq.mockResolvedValueOnce({
+        data: [{ league_member_id: "m1" }, { league_member_id: "m1" }],
+        error: null,
+      });
+
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === "league_leaderboard_view") return leaderboardChain;
+        if (table === "predictions") return predictionsChain;
+        return leaderboardChain;
       });
 
       const result = await leagueApi.getLeaderboardView("l1");
       expect(supabase.from).toHaveBeenCalledWith("league_leaderboard_view");
-      expect(result).toEqual(mockData);
+      expect(result).toEqual([{ member_id: "m1", total_points: 100, correct_scores: 2 }]);
     });
 
     it("throws on error", async () => {

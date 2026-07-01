@@ -1,7 +1,7 @@
-import { SUPPORT_EMAIL } from '@/constants/legal';
 import { Screen } from '@/components/layout';
 import { BackButton, Card } from '@/components/ui';
 import { CText } from '@/components/ui/CText';
+import { SUPPORT_EMAIL } from '@/constants/legal';
 import { useTranslation } from '@/hooks/useTranslation';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
 import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
@@ -142,7 +142,7 @@ const HelpScreen = () => {
   const edges = useSafeAreaInsets();
 
   return (
-    <Screen withSafeArea>
+    <Screen topSafeArea>
       <BackButton title={t('Help & Support')} />
       <ScrollView
         className="flex-1 "
@@ -156,7 +156,7 @@ const HelpScreen = () => {
           </CText>
           <CText variant="body" className=" leading-6 ">
             {t(
-              'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!'
+              'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
             )}
           </CText>
         </Card>
@@ -187,7 +187,7 @@ const HelpScreen = () => {
           </CText>
           <CText variant="body" className=" leading-6 text-muted mb-4">
             {t(
-              "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible."
+              "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
             )}
           </CText>
           <TouchableOpacity

@@ -1,4 +1,4 @@
-import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon, TrophyIcon } from '@assets/icons';
+import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
 import { FloatBottomTabs, SidebarMenu, TabsHeader } from '@/components/layout';
 
@@ -29,6 +29,7 @@ export default function TabLayout() {
           name="Home"
           options={{
             title: t('Home'),
+
             tabBarIcon: ({ color, size }) => <FieldIcon size={size} color={color} />,
           }}
         />
@@ -52,13 +53,6 @@ export default function TabLayout() {
           options={{
             title: t('Profile'),
             tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="Leagues"
-          options={{
-            title: t('Leagues'),
-            tabBarIcon: ({ color, size }) => <TrophyIcon size={size} color={color} />,
           }}
         />
       </Tabs>

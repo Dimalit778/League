@@ -1,23 +1,26 @@
 import { Error, LoadingOverlay, Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Button, CText } from '@/components/ui';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
-import { AvatarSection } from '@/features/members/components/profile/AvatarSection';
-import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
-import { NicknameSection } from '@/features/members/components/profile/NicknameSection';
+import { ProfileAchievements } from '@/features/members/components/profile/ProfileAchievements';
+import { ProfileActionsMenu } from '@/features/members/components/profile/ProfileActionsMenu';
+import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
+import { ProfileLeagueDetails } from '@/features/members/components/profile/ProfileLeagueDetails';
+import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
+import { ProfileScreenHeader } from '@/features/members/components/profile/ProfileScreenHeader';
 import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
+import { useMemberStats } from '@/features/members/hooks/useMembers';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { Pressable, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { ScrollView, View } from 'react-native';
 
 const ProfileScreen = () => {
   const leagueId = useMemberStore(selectLeagueId);
+  const memberId = useMemberStore(selectMemberId);
   const memberData = useMemberStore((s) => s.activeMember);
   const { t } = useTranslation();
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId);
+  const { data: stats, isLoading: statsLoading } = useMemberStats(memberId ?? undefined);
   const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
@@ -57,49 +60,48 @@ const ProfileScreen = () => {
     });
   };
 
-  if (leagueLoading) return <ProfileSkeleton />;
+  if (leagueLoading || statsLoading) return <ProfileSkeleton />;
   if (leagueError) return <Error error={leagueError as string | Error | { message: string }} />;
   if (!memberData || !leagueData) return <Error error={t('Member or league data not found')} />;
 
   return (
     <Screen>
-      <KeyboardAwareScrollView
+      <ScrollView
         className="flex-1 bg-background"
         showsVerticalScrollIndicator={false}
-        keyboardDismissMode="interactive"
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
+        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
       >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
-        <AvatarSection nickname={memberData?.nickname} avatarUrl={memberData?.avatar_url} />
+        <ProfileScreenHeader leagueName={leagueData.name} />
 
-        <NicknameSection initialNickname={memberData?.nickname} />
+        <ProfileHeroCard
+          nickname={memberData.nickname}
+          avatarUrl={memberData.avatar_url}
+          leagueName={leagueData.name}
+          isPrimary={memberData.is_primary}
+          joinedAt={memberData.created_at}
+          stats={stats}
+        />
 
-        <LeagueDetailsSection league={leagueData} memberUserId={memberData?.user_id} />
+        <ProfileNicknameEdit initialNickname={memberData.nickname} />
 
-        <View className="px-6 mt-4">
-          <Button
-            title={t('Leave League')}
-            variant="error"
-            onPress={confirmLeaveLeague}
-            disabled={leaveLeague.isPending}
-          />
-        </View>
-        {isOwner && (
-          <View className="mx-auto mt-6">
-            <Pressable
-              onPress={confirmDeleteLeague}
-              className="flex-row items-center gap-2 bg-gray-300 rounded-lg px-4 py-2"
-            >
-              <FontAwesome6 name="trash" size={24} color="red" />
-              <CText variant="body" bold className="text-red-500">
-                {t('Delete League')}
-              </CText>
-            </Pressable>
-          </View>
-        )}
-      </KeyboardAwareScrollView>
+        <ProfileLeagueDetails league={leagueData} memberUserId={memberData.user_id} />
+
+        <ProfileAchievements stats={stats} />
+
+        <ProfileActionsMenu
+          leagueName={leagueData.name}
+          joinCode={leagueData.join_code}
+          competitionArea={leagueData.competition.area}
+          onLeave={confirmLeaveLeague}
+          isOwner={isOwner}
+          onDelete={confirmDeleteLeague}
+          leavePending={leaveLeague.isPending}
+        />
+
+        <View className="h-4" />
+      </ScrollView>
       <DialogComponent />
     </Screen>
   );

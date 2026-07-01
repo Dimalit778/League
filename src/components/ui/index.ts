@@ -8,6 +8,7 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { ConfirmDialog } from './ConfirmDialog';
 export { CText } from './CText';
+export { HeaderSection } from './HeaderSection';
 export { Icon } from './Icon';
 export { InputField } from './InputField';
 export { LogoBadge } from './LogoBadge';

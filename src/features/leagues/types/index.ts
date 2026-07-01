@@ -13,7 +13,9 @@ type LeaderboardRow = Pick<
   | "nickname"
   | "total_points"
   | "user_id"
->;
+> & {
+  correct_scores?: number;
+};
 
 type MyLeagueType = Pick<
   Tables<"league_members">,

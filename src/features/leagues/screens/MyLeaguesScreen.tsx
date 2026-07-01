@@ -1,4 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
+import { Error, LoadingBall, Screen } from '@/components/layout';
 import { CText } from '@/components/ui/CText';
 import { matchesApi } from '@/features/matches/api/matchesService';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { competitionApi } from '../api/competitionApi';
 import { leagueApi } from '../api/leagueApi';
 import { LeaguesIndicator } from '../components/leagues-indicator';
@@ -79,7 +80,7 @@ const MyLeagues = () => {
   const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
   const activeMember = useMemberStore((s) => s.activeMember);
   const setActiveMember = useMemberStore((s) => s.setActiveMember);
-
+  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const openPaywall = usePaywall();
 
@@ -205,26 +206,22 @@ const MyLeagues = () => {
     }
   };
 
-  if (isAuthLoading || isLoading) {
-    return (
-      <Screen>
-        <LoadingOverlay />
-      </Screen>
-    );
-  }
+  if (isAuthLoading || isLoading) return <LoadingBall />;
 
   if (error) return <Error error={error as Error} />;
 
   return (
     <Screen>
       <ScrollView
-        className="pt-2"
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={isFetching} onRefresh={refetch} />}
       >
         <LeaguesList myLeagues={myLeagues} onSelectLeague={handleSelectLeague} />
       </ScrollView>
-      <LeaguesIndicator used={leaguesCount} limit={maxLeagues} onPress={openPaywall} />
+      <View style={{ paddingBottom: insets.bottom }}>
+        <LeaguesIndicator used={leaguesCount} limit={maxLeagues} onPress={openPaywall} />
+      </View>
+
       {requiresLeagueActivation && (
         <LeaguesLimitActivation
           leagues={allLeagues}

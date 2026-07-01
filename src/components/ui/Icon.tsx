@@ -2,7 +2,7 @@ import { Image, StyleSheet } from 'react-native';
 
 interface MyIconProps {
   icon: any; // You might want to use a more specific type here
-  color?: string;
+  color: string | '#fff';
   size: number;
   bRadius?: number;
 }

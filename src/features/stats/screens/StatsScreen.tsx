@@ -1,21 +1,25 @@
 import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
+import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
-import PredictionChart from '@/features/stats/components/stats/PredictionChart';
+import { StatsBestCategory } from '@/features/stats/components/stats/StatsBestCategory';
+import { StatsHeroCard } from '@/features/stats/components/stats/StatsHeroCard';
+import { StatsPredictionSection } from '@/features/stats/components/stats/StatsPredictionSection';
+import { StatsRoundPerformance } from '@/features/stats/components/stats/StatsRoundPerformance';
+import { StatsScreenHeader } from '@/features/stats/components/stats/StatsScreenHeader';
 import SkeletonStats from '@/features/stats/components/stats/SkeletonStats';
-import StatsCard from '@/features/stats/components/stats/StatsCard';
-import { useTranslation } from '@/hooks/useTranslation';
-import { selectMemberId, useMemberStore } from '@/store/MemberStore';
-
+import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { StatsType } from '../types';
+
 const StatsScreen = () => {
   const memberId = useMemberStore(selectMemberId) as string;
+  const leagueId = useMemberStore(selectLeagueId);
+  const memberData = useMemberStore((s) => s.activeMember);
   const isFocused = useIsFocused();
-  const { t } = useTranslation();
   const bottomTabsInset = useFloatBottomTabsInset();
 
+  const { data: leagueData } = useGetLeagueAndMembers(leagueId);
   const { data: stats, isLoading, error, refetch } = useMemberStats(memberId);
 
   const onRefresh = useCallback(() => {
@@ -23,52 +27,32 @@ const StatsScreen = () => {
   }, [refetch]);
 
   if (error) return <Error error={error} />;
+  if (isLoading || !stats || !memberData) return <SkeletonStats />;
 
-  if (isLoading) return <SkeletonStats />;
   return (
     <Screen>
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
-        className="flex-1 pt-2"
-        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
+        className="flex-1 bg-background"
+        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
         refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
       >
-        <View className="flex-row mb-4 gap-x-4">
-          <StatsCard title={t('Total Predictions')} value={stats?.totalPredictions ?? 0} />
-          <StatsCard title={t('Total Points')} value={stats?.totalPoints ?? 0} />
-        </View>
+        <StatsScreenHeader leagueName={leagueData?.name ?? '—'} />
 
-        <View className="flex-row mb-4 gap-x-4">
-          <StatsCard title={t('Accuracy')} value={`${stats?.accuracy}%`} subtitle={t('Correct predictions')} />
-          <StatsCard
-            title={t('Avg. Points')}
-            value={
-              stats?.totalPoints && stats?.totalPredictions && stats?.totalPredictions > 0
-                ? (stats?.totalPoints / stats?.totalPredictions).toFixed(1)
-                : '0'
-            }
-            subtitle={t('Per prediction')}
-          />
-        </View>
+        <StatsHeroCard
+          nickname={memberData.nickname}
+          avatarUrl={memberData.avatar_url}
+          isPrimary={memberData.is_primary}
+          stats={stats}
+        />
 
-        <PredictionChart {...(stats ?? ({} as StatsType))} />
+        <StatsPredictionSection stats={stats} />
 
-        <View className="mb-4">
-          <StatsCard title={t('Bingo Hits')} value={stats?.bingoHits ?? 0} subtitle={t('Bingo hits (5 points)')} />
-        </View>
+        <StatsRoundPerformance rounds={stats.roundPerformance ?? []} />
 
-        <View className="mb-4">
-          <StatsCard title={t('Regular Hits')} value={stats?.regularHits ?? 0} subtitle={t('Regular hits (3 point)')} />
-        </View>
+        <StatsBestCategory bestCategory={stats.bestCategory} />
 
-        <View className="mb-4">
-          <StatsCard
-            title={t('Missed')}
-            value={stats?.missedHits ?? 0}
-            subtitle={t('Incorrect predictions (0 points)')}
-          />
-        </View>
+        <View className="h-4" />
       </ScrollView>
     </Screen>
   );

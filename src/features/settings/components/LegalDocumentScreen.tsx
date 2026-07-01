@@ -21,7 +21,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
   const iconMarginClass = isRTL ? 'ml-3' : 'mr-3';
 
   return (
-    <Screen withSafeArea>
+    <Screen topSafeArea>
       <BackButton title={content.title} />
 
       <ScrollView

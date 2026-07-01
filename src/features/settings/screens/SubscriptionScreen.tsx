@@ -32,7 +32,7 @@ export default function SubscriptionScreen() {
   }, [restorePurchases, t]);
 
   return (
-    <Screen withSafeArea>
+    <Screen topSafeArea>
       <BackButton title={t('Subscription')} />
       <View className="flex-1 px-4 pt-6 gap-4">
         <View className="rounded-2xl border border-border bg-surface p-5 gap-3">

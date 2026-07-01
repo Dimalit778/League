@@ -103,6 +103,7 @@ const AppBootstrap = () => {
       <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Protected guard={isLoggedIn}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          <Stack.Screen name="(paywall)" options={{ headerShown: false }} />
         </Stack.Protected>
 
         <Stack.Protected guard={!isLoggedIn}>

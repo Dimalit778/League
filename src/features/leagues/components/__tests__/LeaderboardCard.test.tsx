@@ -8,6 +8,7 @@ const mockItem = {
   nickname: 'TestUser',
   avatar_url: null,
   total_points: 42,
+  correct_scores: 5,
 };
 
 describe('LeaderboardCard', () => {
@@ -22,7 +23,7 @@ describe('LeaderboardCard', () => {
     const { getByText } = render(
       <LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />
     );
-    expect(getByText('42')).toBeTruthy();
+    expect(getByText(/42/)).toBeTruthy();
   });
 
   it('renders position number', () => {
@@ -37,6 +38,6 @@ describe('LeaderboardCard', () => {
     const { getByText } = render(
       <LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />
     );
-    expect(getByText('pts')).toBeTruthy();
+    expect(getByText(/pts/)).toBeTruthy();
   });
 });

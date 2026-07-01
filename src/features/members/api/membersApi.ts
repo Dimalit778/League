@@ -1,3 +1,8 @@
+import {
+  computeBestCategory,
+  computeRoundPerformance,
+  computeStreaks,
+} from '@/features/stats/utils/computeExtendedStats';
 import { supabase } from '@/lib/supabase';
 import {} from '../types';
 
@@ -19,7 +24,7 @@ export const memberApi = {
     const [predictionsResult, leaderboardResult] = await Promise.all([
       supabase
         .from('predictions')
-        .select('points, is_finished')
+        .select('points, is_finished, matches(fixture, kick_off)')
         .eq('league_member_id', memberId)
         .eq('is_finished', true),
       supabase
@@ -47,6 +52,16 @@ export const memberApi = {
     // Find member's position in leaderboard
     const memberIndex = leaderboardData.findIndex((entry) => entry.member_id === memberId);
     const position = memberIndex !== -1 ? memberIndex + 1 : null;
+    const totalMembers = leaderboardData.length;
+
+    const { currentStreak, longestStreak } = computeStreaks(predictionsData);
+    const roundPerformance = computeRoundPerformance(predictionsData);
+    const bestCategory = computeBestCategory({
+      bingoHits,
+      regularHits,
+      position,
+      totalMembers,
+    });
 
     return {
       totalPredictions,
@@ -56,6 +71,10 @@ export const memberApi = {
       totalPoints,
       accuracy: Math.round(accuracy * 100) / 100,
       position,
+      currentStreak,
+      longestStreak,
+      roundPerformance,
+      bestCategory,
     };
   },
   async updateMember(memberId: string, nickname: string) {

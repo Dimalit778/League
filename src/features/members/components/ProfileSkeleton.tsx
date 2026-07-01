@@ -1,102 +1,61 @@
 import { Screen } from '@/components/layout';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function ProfileSkeleton() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Screen>
-      {/* Avatar section skeleton */}
-      <View className="px-4 mt-4">
-        <View className="items-center px-4">
-          <View className="relative mb-4">
-            <View className="w-40 h-40 bg-muted rounded-full animate-pulse" />
+      <View style={{ paddingTop: insets.top }} className="flex-1 bg-background px-3">
+        {/* Header skeleton */}
+        <View className="flex-row items-center justify-between px-1 py-3">
+          <View>
+            <View className="mb-2 h-7 w-28 animate-pulse rounded bg-[#1A2740]" />
+            <View className="h-4 w-16 animate-pulse rounded bg-[#1A2740]" />
           </View>
+          <View className="h-12 w-12 animate-pulse rounded-full bg-[#1A2740]" />
         </View>
-      </View>
 
-      {/* Nickname section skeleton */}
-      <View className="px-4 mt-2">
-        <View className="flex-row items-center justify-between bg-surface rounded-lg px-4 py-5 border border-border">
-          <View className="w-32 h-6 bg-muted rounded animate-pulse" />
-          <View className="w-5 h-5 bg-muted rounded animate-pulse" />
-        </View>
-      </View>
-
-      {/* League details skeleton */}
-      <View className="flex-grow justify-center px-4 ">
-        <View className="bg-surface rounded-2xl border border-border p-4">
-          {/* League header skeleton */}
-          <View className="flex-row items-center px-4">
-            {/* Competition logo skeleton */}
-            <View className="w-10 h-10 bg-muted rounded-xl mr-3 animate-pulse" />
-
-            {/* League name skeleton - centered */}
-            <View className="flex-1 items-end">
-              <View className="w-28 h-6 bg-muted rounded animate-pulse" />
+        {/* Hero card skeleton */}
+        <View className="mt-1 overflow-hidden rounded-3xl border border-[#223554] bg-[#101A2A] p-4">
+          <View className="flex-row items-center gap-4">
+            <View className="h-24 w-24 animate-pulse rounded-full bg-[#1A2740]" />
+            <View className="flex-1 gap-2">
+              <View className="h-6 w-36 animate-pulse rounded bg-[#1A2740]" />
+              <View className="h-4 w-28 animate-pulse rounded bg-[#1A2740]" />
+              <View className="h-4 w-24 animate-pulse rounded bg-[#1A2740]" />
             </View>
           </View>
+          <View className="mt-5 h-16 animate-pulse rounded-2xl bg-[#1A2740]" />
+        </View>
 
-          <View className="h-[1px] bg-muted my-3" />
+        {/* Nickname skeleton */}
+        <View className="mt-3 h-16 animate-pulse rounded-xl border border-[#223554] bg-[#101A2A]" />
 
-          {/* League details skeleton */}
-          <View className="gap-3">
-            {/* Join Code skeleton */}
-            <View className="flex-row items-center justify-between">
-              <View className="w-20 h-4 bg-muted rounded animate-pulse" />
-              <View className="w-24 h-8 bg-muted rounded-lg border border-border animate-pulse" />
+        {/* League details skeleton */}
+        <View className="mt-4 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] p-4">
+          <View className="mb-3 h-5 w-32 animate-pulse rounded bg-[#1A2740]" />
+          {[1, 2, 3, 4].map((i) => (
+            <View key={i} className="mb-3 flex-row justify-between">
+              <View className="h-4 w-24 animate-pulse rounded bg-[#1A2740]" />
+              <View className="h-4 w-20 animate-pulse rounded bg-[#1A2740]" />
             </View>
+          ))}
+        </View>
 
-            <View className="h-[1px] bg-border" />
-
-            {/* Members skeleton */}
-            <View className="flex-row justify-between">
-              <View className="w-16 h-4 bg-muted rounded animate-pulse" />
-              <View className="w-16 h-4 bg-muted rounded animate-pulse" />
-            </View>
-
-            <View className="h-[1px] bg-border" />
-
-            {/* Owner skeleton */}
-            <View className="flex-row justify-between">
-              <View className="w-24 h-4 bg-muted rounded animate-pulse" />
-              <View className="w-20 h-4 bg-muted rounded animate-pulse" />
-            </View>
-
-            <View className="h-[1px] bg-border" />
-
-            {/* Competition details skeleton */}
-            <View className="flex-row justify-between">
-              <View className="w-12 h-4 bg-muted rounded animate-pulse" />
-              <View className="flex-row items-center">
-                <View className="w-20 h-4 bg-muted rounded mr-2 animate-pulse" />
-                <View className="w-[18px] h-[18px] bg-muted rounded animate-pulse" />
-              </View>
-            </View>
-
-            <View className="h-[1px] bg-border" />
-
-            {/* Country skeleton */}
-            <View className="flex-row justify-between items-center">
-              <View className="w-14 h-4 bg-muted rounded animate-pulse" />
-              <View className="flex-row items-center">
-                <View className="w-20 h-4 bg-muted rounded mr-2 animate-pulse" />
-                <View className="w-[18px] h-[18px] bg-muted rounded animate-pulse" />
-              </View>
-            </View>
-
-            <View className="h-[1px] bg-border" />
-
-            {/* Created date skeleton */}
-            <View className="flex-row justify-between">
-              <View className="w-20 h-4 bg-muted rounded animate-pulse" />
-              <View className="w-24 h-4 bg-muted rounded animate-pulse" />
-            </View>
+        {/* Achievements skeleton */}
+        <View className="mt-5">
+          <View className="mb-3 h-5 w-36 animate-pulse rounded bg-[#1A2740]" />
+          <View className="flex-row gap-2">
+            {[1, 2, 3].map((i) => (
+              <View key={i} className="h-28 flex-1 animate-pulse rounded-2xl bg-[#101A2A] border border-[#223554]" />
+            ))}
           </View>
         </View>
-      </View>
 
-      {/* Leave League Button skeleton */}
-      <View className="px-6  mb-4">
-        <View className="w-full h-12 bg-muted rounded-lg animate-pulse" />
+        {/* Actions skeleton */}
+        <View className="mt-5 h-44 animate-pulse rounded-2xl border border-[#223554] bg-[#101A2A]" />
       </View>
     </Screen>
   );
