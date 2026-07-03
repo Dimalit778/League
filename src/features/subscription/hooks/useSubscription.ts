@@ -1,6 +1,6 @@
 import { useSubscriptionLimits as useAppSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
-import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
+import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 
 export const useSubscription = () => {
   const state = useRevenueCatSubscription();
@@ -27,6 +27,6 @@ export const useSubscriptionLimit = () => {
     limit: limits.maxLeagues,
     reachedLimit: limits.reachedLimit,
     usagePercent: limits.usagePercent,
-    ownedLeaguesCount: limits.leaguesCount,
+    ownedLeaguesCount: limits.maxLeagues,
   };
 };

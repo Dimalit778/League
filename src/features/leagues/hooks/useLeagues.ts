@@ -158,7 +158,7 @@ export const useCreateLeague = () => {
         }),
       ]);
       router.replace({
-        pathname: '/(app)/(user)/myLeagues/preview-league',
+        pathname: '/(app)/(user)/leagues/create-league/success',
         params: { leagueId },
       });
     },
@@ -235,7 +235,7 @@ export const useLeaveLeague = () => {
       return result;
     },
     onSuccess: async (_result, leagueId) => {
-      router.replace('/(app)/(user)/myLeagues');
+      router.replace('/(app)/(user)/leagues');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({
@@ -268,7 +268,7 @@ export const useDeleteLeague = () => {
       return leagueApi.deleteLeague(leagueId);
     },
     onSuccess: async (_result, { leagueId }) => {
-      router.replace('/(app)/(user)/myLeagues');
+      router.replace('/(app)/(user)/leagues');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({

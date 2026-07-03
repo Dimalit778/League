@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import JoinLeagueScreen from '../../screens/JoinLeagueScreen';
+import JoinLeagueScreen from '../JoinLeagueScreen';
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useFindLeagueByJoinCode: () => ({

@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import CreateLeagueScreen from '../../screens/CreateLeagueScreen';
+import LeagueDetailsScreen from '../create-league/LeagueDetailsScreen';
 
 const mockOpenPaywall = jest.fn();
 
@@ -27,35 +27,35 @@ jest.mock('@/lib/revenuecat/purchases', () => ({
   }),
 }));
 
-describe('CreateLeagueScreen', () => {
+describe('LeagueDetailsScreen', () => {
   beforeEach(() => {
     mockOpenPaywall.mockReset();
   });
 
   it('renders League Name input placeholder', () => {
-    const { getByPlaceholderText } = render(<CreateLeagueScreen />);
+    const { getByPlaceholderText } = render(<LeagueDetailsScreen />);
     expect(getByPlaceholderText('Enter league name')).toBeTruthy();
   });
 
   it('renders Nickname input placeholder', () => {
-    const { getByPlaceholderText } = render(<CreateLeagueScreen />);
+    const { getByPlaceholderText } = render(<LeagueDetailsScreen />);
     expect(getByPlaceholderText('Enter your nickname')).toBeTruthy();
   });
 
   it('renders member option buttons', () => {
-    const { getByText } = render(<CreateLeagueScreen />);
+    const { getByText } = render(<LeagueDetailsScreen />);
     expect(getByText('6 Members')).toBeTruthy();
     expect(getByText('12 Members')).toBeTruthy();
   });
 
   it('renders Create League submit button', () => {
-    const { getByText } = render(<CreateLeagueScreen />);
+    const { getByText } = render(<LeagueDetailsScreen />);
     expect(getByText('Create League')).toBeTruthy();
   });
 
   it('opens paywall when locked 12 Members option is pressed', async () => {
     mockOpenPaywall.mockResolvedValue(null);
-    const { getByText } = render(<CreateLeagueScreen />);
+    const { getByText } = render(<LeagueDetailsScreen />);
 
     fireEvent.press(getByText('12 Members'));
 

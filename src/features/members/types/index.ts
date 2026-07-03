@@ -9,6 +9,12 @@ type RoundPerformance = {
   round: number;
   points: number;
 };
+type PredictionRow = {
+  points: number | null;
+  is_finished: boolean;
+  matches: { fixture: number | null; kick_off: string } | null;
+};
+
 
 type BestCategory = {
   name: string;
@@ -41,6 +47,7 @@ type MemberProfileType = MemberType & {
   };
 };
 
+
 export type {
   BestCategory,
   MemberLeagueType,
@@ -48,5 +55,7 @@ export type {
   MemberProfileType,
   MemberStatsType,
   MemberType,
-  RoundPerformance,
+  PredictionRow,
+  RoundPerformance
 };
+

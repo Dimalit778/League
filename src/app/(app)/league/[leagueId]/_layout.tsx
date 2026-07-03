@@ -3,12 +3,11 @@ import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 
 export default function LeagueLayout() {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
-  console.log('leagueId', leagueId);
 
   const { data: myMember, isLoading } = useMyMemberByLeague(leagueId);
 
   if (!leagueId) {
-    return <Redirect href="/(app)/(user)/myLeagues" />;
+    return <Redirect href="/(app)/(user)/leagues" />;
   }
 
   if (isLoading) {
@@ -16,9 +15,9 @@ export default function LeagueLayout() {
   }
 
   if (!myMember) {
-    return <Redirect href="/(app)/(user)/myLeagues" />;
+    return <Redirect href="/(app)/(user)/leagues" />;
   }
-  console.log('myMember', myMember);
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />

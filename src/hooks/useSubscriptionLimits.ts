@@ -4,7 +4,7 @@ import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 
 export const useSubscriptionLimits = () => {
   const leaguesQuery = useMyLeagues();
-  console.log('leaguesQuery', JSON.stringify(leaguesQuery.data, null, 2));
+
   const subscriptionState = useRevenueCatSubscription();
 
   const isPro = subscriptionState.subscription.isActive;
@@ -12,7 +12,7 @@ export const useSubscriptionLimits = () => {
   const limits = PLAN_LIMITS[plan];
 
  
-  const totalLeagues = leaguesQuery.data?.totalLeagues ?? 0;
+  const totalLeagues = leaguesQuery.data?.total ?? 0;
   const maxLeagues = limits.maxLeagues;
   const reachedLimit = totalLeagues >= maxLeagues;
   const exceededLimit = totalLeagues > maxLeagues;

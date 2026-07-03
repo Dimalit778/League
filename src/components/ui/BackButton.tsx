@@ -1,7 +1,7 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useIsRTL } from '@/providers/LanguageProvider';
-import { ArrowLeftIcon, ArrowRightIcon } from '@assets/icons';
 import { useRouter } from 'expo-router';
+import { CircleArrowLeftIcon, CircleArrowRightIcon } from 'lucide-react-native';
 import { Platform, Pressable, View } from 'react-native';
 import { CText } from './CText';
 
@@ -15,7 +15,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
   const { colors } = useThemeTokens();
   const router = useRouter();
   const isRTL = useIsRTL();
-  const ArrowIcon = isRTL ? ArrowRightIcon : ArrowLeftIcon;
+  const CircleArrowIcon = isRTL ? CircleArrowRightIcon : CircleArrowLeftIcon;
 
   const headerHeight = Platform.OS === 'ios' ? 44 : 56;
   const isWeb = Platform.OS === 'web';
@@ -28,7 +28,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
       <Pressable
         style={{
           position: 'absolute',
-          left: 0,
+          left: 5,
           zIndex: 1000,
           height: '100%',
           width: 60,
@@ -37,7 +37,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
         }}
         onPress={() => router.back()}
       >
-        <ArrowIcon color={colors.text} size={28} />
+        <CircleArrowIcon color={colors.text} size={40} strokeWidth={1} />
       </Pressable>
 
       {title && <CText className={`text-xl  text-text text-center`}>{title}</CText>}

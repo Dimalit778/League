@@ -3,7 +3,8 @@ import { BackButton, Card, CText } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Ionicons } from '@expo/vector-icons';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { legalContent } from '../content/legalContent';
 

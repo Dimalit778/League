@@ -1,5 +1,1 @@
-import ProfileScreen from '@/features/members/screens/ProfileScreen';
-
-export default function Profile() {
-  return <ProfileScreen />;
-}
+export { default } from '@/features/members/screens/ProfileScreen';

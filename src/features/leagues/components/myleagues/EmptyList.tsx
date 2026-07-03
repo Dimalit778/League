@@ -12,11 +12,11 @@ export default function EmptyList() {
   return (
     <View className="flex-1  ">
       <View className="flex-row items-center justify-around mt-5">
-        <Button title={t('Create League')} onPress={() => router.push('/(app)/(user)/myLeagues/select-competition')} />
+        <Button title={t('Create League')} onPress={() => router.push('/(app)/(user)/leagues/create-league')} />
         <Button
           title={t('Join League')}
           variant="outline"
-          onPress={() => router.push('/(app)/(user)/myLeagues/join-league')}
+          onPress={() => router.push('/(app)/(user)/leagues/join-league')}
         />
       </View>
       <View className="items-center justify-center pt-10">

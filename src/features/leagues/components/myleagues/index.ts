@@ -1,8 +1,8 @@
 import EmptyList from './EmptyList';
-import LeagueHeader from './league-header';
-import LeaguesIndicator from './leagues-indicator';
-import LeaguesLimitActivation from './leagues-limit-activation';
-import LeaguesList from './leagues-list';
-import PrimaryLeagueCard from './primary-league-card';
-export { EmptyList, LeagueHeader, LeaguesIndicator, LeaguesLimitActivation, LeaguesList, PrimaryLeagueCard };
+import LeagueHeader from './LeagueHeader';
+import LeaguesIndicator from './LeaguesIndicator';
+import LeaguesList from './LeaguesList';
+import LimitSelectModal from './LimitSelectModal';
+import PrimaryLeagueCard from './PrimaryLeagueCard';
+export { EmptyList, LeagueHeader, LeaguesIndicator, LeaguesList, LimitSelectModal, PrimaryLeagueCard };
 

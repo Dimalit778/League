@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { router } from 'expo-router';
-import SelectCompetitionScreen from '../../screens/SelectCompetitionScreen';
+import SelectCompetitionScreen from '../create-league/SelectCompetitionScreen';
 
 const mockPush = router.push as jest.Mock;
 const mockNavigate = router.navigate as jest.Mock;
@@ -68,7 +68,7 @@ describe('SelectCompetitionScreen', () => {
     fireEvent.press(getByText('Continue'));
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/(app)/(user)/myLeagues/create-league',
+      pathname: '/(app)/(user)/leagues/create-league/details',
       params: {
         competitionId: 1_000,
       },

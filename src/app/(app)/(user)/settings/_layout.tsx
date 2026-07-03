@@ -2,11 +2,19 @@ import { Stack } from 'expo-router';
 
 export default function SettingsLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="privacy" options={{ headerShown: false }} />
-      <Stack.Screen name="terms" options={{ headerShown: false }} />
-      <Stack.Screen name="help" options={{ headerShown: false }} />
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        fullScreenGestureEnabled: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="privacy" />
+      <Stack.Screen name="terms" />
+      <Stack.Screen name="help" />
+      <Stack.Screen name="subscription" />
     </Stack>
   );
 }

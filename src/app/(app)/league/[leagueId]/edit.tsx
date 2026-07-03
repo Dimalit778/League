@@ -1,5 +1,1 @@
-import EditLeagueScreen from '@/features/leagues/screens/EditLeagueScreen';
-
-export default function EditLeague() {
-  return <EditLeagueScreen />;
-}
+export { default } from '@/features/leagues/screens/EditLeagueScreen';

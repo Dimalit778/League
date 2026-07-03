@@ -1,5 +1,1 @@
-import StatsScreen from '@/features/stats/screens/StatsScreen';
-
-export default function Stats() {
-  return <StatsScreen />;
-}
+export { default } from '@/features/stats/screens/StatsScreen';

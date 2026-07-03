@@ -1,5 +1,1 @@
-import LeagueScreen from '@/features/leagues/screens/LeagueScreen';
-
-export default function Home() {
-  return <LeagueScreen />;
-}
+export { default } from '@/features/leagues/screens/LeagueScreen';
