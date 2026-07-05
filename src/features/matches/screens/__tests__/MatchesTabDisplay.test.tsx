@@ -1,29 +1,10 @@
+import MatchesTab from '@/app/(app)/(league)/(tabs)/Matches';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { render } from '@testing-library/react-native';
-import MatchesTab from '@/app/(app)/league/[leagueId]/(tabs)/Matches';
 
-const mockState: any = {
-  activeMember: {
-    id: 'm1',
-    league: {
-      competition: {
-        id: 100,
-        type: 'LEAGUE',
-        current_stage: 'REGULAR_SEASON',
-      },
-    },
-  },
-  setActiveMember: jest.fn(),
-  initializeMember: jest.fn(),
-  clearMember: jest.fn(),
-};
-
-jest.mock('@/store/MemberStore', () => {
-  const actual = jest.requireActual('@/store/MemberStore');
-  return {
-    ...actual,
-    useMemberStore: (selector: any) => selector(mockState),
-  };
-});
+jest.mock('@/store/MemberStore', () => ({
+  usePrimaryMember: jest.fn(),
+}));
 
 jest.mock('@/features/matches/screens/RegularLeagueScreen', () => {
   const { Text } = require('react-native');
@@ -35,15 +16,42 @@ jest.mock('@/features/matches/screens/TournamentScreen', () => {
   return () => <Text>TournamentScreen</Text>;
 });
 
+const baseMember = {
+  memberId: 'm1',
+  leagueId: 'l1',
+  competitionId: 100,
+  member: {
+    id: 'm1',
+    league_id: 'l1',
+    competition_id: 100,
+    competition_type: 'LEAGUE',
+  },
+  competition: {
+    id: 100,
+    name: 'Premier League',
+    logo: '',
+    flag: null,
+    type: 'LEAGUE',
+    current_stage: 'REGULAR_SEASON',
+    current_fixture: 1,
+  },
+};
+
 describe('Matches tab display selection', () => {
   it('renders LeagueMatches for LEAGUE competition', () => {
-    mockState.activeMember.league.competition.type = 'LEAGUE';
+    jest.mocked(usePrimaryMember).mockReturnValue({
+      ...baseMember,
+      competition: { ...baseMember.competition, type: 'LEAGUE' },
+    });
     const { getByText } = render(<MatchesTab />);
     expect(getByText('LeagueMatches')).toBeTruthy();
   });
 
   it('renders TournamentScreen for CUP competition', () => {
-    mockState.activeMember.league.competition.type = 'CUP';
+    jest.mocked(usePrimaryMember).mockReturnValue({
+      ...baseMember,
+      competition: { ...baseMember.competition, type: 'CUP' },
+    });
     const { getByText } = render(<MatchesTab />);
     expect(getByText('TournamentScreen')).toBeTruthy();
   });

@@ -8,7 +8,7 @@ import {
   LeaguesList,
   LimitSelectModal,
   PrimaryLeagueCard,
-} from '@/features/leagues/components/myleagues';
+} from '@/features/leagues/components/myLeagues';
 
 import { useLeagueActivationResolution } from '@/features/leagues/hooks/useLeagueActivationResolution';
 import { useMyLeagues, useUpdateLeagueActivation, useUpdatePrimaryLeague } from '@/features/leagues/hooks/useLeagues';
@@ -19,14 +19,15 @@ import { usePaywall } from '@/lib/revenuecat/purchases';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { Href, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useMemo } from 'react';
 
 export default function MyLeaguesScreen() {
   const userId = useAuthStore((s) => s.user?.id);
   const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
-  const activeMember = useMemberStore((s) => s.activeMember);
-  const setActiveMember = useMemberStore((s) => s.setActiveMember);
+  const primaryMember = useMemberStore((s) => s.primaryMember);
+
+  const setPrimaryMember = useMemberStore((s) => s.setPrimaryMember);
   const queryClient = useQueryClient();
   const openPaywall = usePaywall();
   const { data: myLeagues, isPending, isFetching, error, refetch } = useMyLeagues();
@@ -80,8 +81,8 @@ export default function MyLeaguesScreen() {
 
     const memberToActivate = selectedLeague.active ? selectedLeague : { ...selectedLeague, active: true };
 
-    const previousActiveMember = activeMember;
-    setActiveMember(memberToActivate);
+    const previousPrimaryMember = primaryMember;
+    setPrimaryMember(previousPrimaryMember);
 
     const competitionId = memberToActivate.league.competition?.id;
     const memberId = memberToActivate.id;
@@ -119,15 +120,15 @@ export default function MyLeaguesScreen() {
 
     await Promise.all(prefetchTasks);
 
-    router.replace(`/(app)/league/${leagueId}` as Href);
+    router.replace('/(app)/(league)/(tabs)');
 
     if (isPrimary) return;
 
     try {
       await updatePrimaryLeague({ leagueId });
     } catch {
-      setActiveMember(previousActiveMember);
-      router.replace('/(app)/(user)/leagues');
+      setPrimaryMember(previousPrimaryMember);
+      router.replace('/(app)/(user)');
     }
   };
   const { primaryLeague, leagues, inactiveLeagues, total } = myLeagues ?? {
@@ -153,12 +154,7 @@ export default function MyLeaguesScreen() {
         <EmptyList />
       ) : (
         <>
-          {primaryLeague && (
-            <PrimaryLeagueCard
-              primaryLeagueId={primaryLeague.id}
-              onPress={() => router.replace(`/(app)/league/${primaryLeague.league.id}` as Href)}
-            />
-          )}
+          {primaryLeague && <PrimaryLeagueCard />}
 
           <LeaguesList leagues={leagues} inactiveLeagues={inactiveLeagues} onPress={handleSelectLeague} />
         </>

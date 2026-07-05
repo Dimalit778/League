@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import MyLeagueCard from '../myleagues/LeaguesList';
+import MyLeagueCard from '../myLeagues/LeaguesList';
 
 const mockItem = {
   avatar_url: null,

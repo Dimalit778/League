@@ -1,13 +1,12 @@
 import { AvatarImage, CText } from '@/components/ui';
 import { LeaderboardRow } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import stadiumBg from '@assets/images/fieldImage.jpg';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import { Star } from 'lucide-react-native';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const GOLD = '#E3B421';
 const SILVER = '#A8B4C4';
@@ -60,7 +59,6 @@ function getPositionStyle(position: number): PositionStyle {
 
 function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined; position: number }) {
   const { t } = useTranslation();
-  const leagueId = useMemberStore(selectLeagueId);
   const style = getPositionStyle(position);
 
   const content = (
@@ -113,19 +111,19 @@ function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined
   }
 
   return (
-    <Link href={`/(app)/league/${leagueId}/member/${member.member_id}`} asChild>
+    <Link href={`/(app)/(league)/member/${member.member_id}`} asChild>
       <TouchableOpacity activeOpacity={0.7}>{content}</TouchableOpacity>
     </Link>
   );
 }
 
 export default function TopThree({ topMembers }: TopThreeProps) {
-  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   if (!topMembers || topMembers.length === 0) return null;
 
   return (
-    <View className="mx-3 mb-3">
+    <View className="">
       <LinearGradient
         colors={['#0B1B33', '#081325']}
         start={{ x: 0, y: 0 }}
@@ -144,12 +142,7 @@ export default function TopThree({ topMembers }: TopThreeProps) {
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as StyleProp<ViewStyle>}
         />
 
-        <View className="px-4 pb-5 pt-4">
-          <View className="mb-4 flex-row items-center gap-1.5">
-            <Star size={14} color={GOLD} fill={GOLD} />
-            <CText className="text-sm font-bold text-white">{t('Top 3')}</CText>
-          </View>
-
+        <View style={{ paddingTop: insets.top }}>
           <View className="flex-row items-end justify-center gap-3">
             <View className="flex-1 items-center">
               <PodiumPlayer member={topMembers[1]} position={2} />

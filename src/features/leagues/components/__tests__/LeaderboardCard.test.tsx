@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import LeaderboardCard from '../LeaderboardCard';
+import LeaderboardCard from '../../../members/components/rank/LeaderboardCard';
 
 const mockItem = {
   league_id: 'l1',
@@ -13,31 +13,23 @@ const mockItem = {
 
 describe('LeaderboardCard', () => {
   it('renders nickname', () => {
-    const { getByText } = render(
-      <LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />
-    );
+    const { getByText } = render(<LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />);
     expect(getByText('TestUser')).toBeTruthy();
   });
 
   it('renders total points', () => {
-    const { getByText } = render(
-      <LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />
-    );
+    const { getByText } = render(<LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />);
     expect(getByText(/42/)).toBeTruthy();
   });
 
   it('renders position number', () => {
-    const { getByText } = render(
-      <LeaderboardCard item={mockItem} index={3} isCurrentUser={false} />
-    );
+    const { getByText } = render(<LeaderboardCard item={mockItem} index={3} isCurrentUser={false} />);
     // Position is index + 4 (since top 3 are shown separately)
     expect(getByText('4')).toBeTruthy();
   });
 
   it('renders pts label', () => {
-    const { getByText } = render(
-      <LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />
-    );
+    const { getByText } = render(<LeaderboardCard item={mockItem} index={0} isCurrentUser={false} />);
     expect(getByText(/pts/)).toBeTruthy();
   });
 });

@@ -1,9 +1,9 @@
 import { AvatarImage, CText } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { Link } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
-import { LeaderboardRow } from '../types';
+import { LeaderboardRow } from '../../../leagues/types';
 
 interface LeaderboardCardProps {
   item: LeaderboardRow;
@@ -14,7 +14,7 @@ interface LeaderboardCardProps {
 export default function LeaderboardCard({ item, index, isCurrentUser }: LeaderboardCardProps) {
   const { nickname, avatar_url, total_points, correct_scores, member_id } = item;
   const { t } = useTranslation();
-  const leagueId = useMemberStore(selectLeagueId);
+  const { leagueId } = usePrimaryMember();
   const rank = index + 1;
 
   const textColor = isCurrentUser ? 'text-[#E3B421]' : 'text-white';
@@ -23,7 +23,7 @@ export default function LeaderboardCard({ item, index, isCurrentUser }: Leaderbo
   return (
     <Link
       href={{
-        pathname: '/(app)/league/[leagueId]/member/[memberId]',
+        pathname: '/(app)/(league)/member/[memberId]',
         params: { leagueId: leagueId ?? '', memberId: member_id ?? '' },
       }}
       asChild
@@ -49,9 +49,7 @@ export default function LeaderboardCard({ item, index, isCurrentUser }: Leaderbo
             {total_points?.toLocaleString() ?? 0} {t('pts')}
           </CText>
 
-          <CText className={`w-10 text-center text-xs font-semibold ${mutedColor}`}>
-            {correct_scores ?? 0}
-          </CText>
+          <CText className={`w-10 text-center text-xs font-semibold ${mutedColor}`}>{correct_scores ?? 0}</CText>
 
           <View className="w-10 items-center">
             <CText className={`text-xs ${mutedColor}`}>—</CText>

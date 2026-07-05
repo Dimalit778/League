@@ -30,6 +30,7 @@ type MemberStatsType = {
   accuracy: number;
   totalPoints: number;
   position?: number | null;
+  totalMembers?: number;
   currentStreak?: number;
   longestStreak?: number;
   roundPerformance?: RoundPerformance[];
@@ -46,6 +47,7 @@ type MemberProfileType = MemberType & {
     competition: Tables<'competitions'>;
   };
 };
+  
 
 
 export type {
@@ -55,7 +57,6 @@ export type {
   MemberProfileType,
   MemberStatsType,
   MemberType,
-  PredictionRow,
-  RoundPerformance
+  PredictionRow, RoundPerformance
 };
 

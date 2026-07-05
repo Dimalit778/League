@@ -12,8 +12,6 @@ type LeaguesIndicatorProps = {
 };
 
 export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndicatorProps) {
-  console.log('used', used);
-  console.log('limit', limit);
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const progress = Math.min(used / limit, 1);

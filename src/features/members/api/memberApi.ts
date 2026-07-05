@@ -56,18 +56,22 @@ export const memberApi = {
     return data;
   },
  
-  async getPrimaryMember(userId: string) {
-    const { data, error } = await supabase
+  async removeMember(memberId: string) {
+    const { data: memberData, error: memberError } = await supabase
       .from('league_members')
-      .select('*, league:leagues!league_id(*, competition:competitions(*))')
-      .eq('user_id', userId)
-      .eq('is_primary', true)
-      .eq('active', true)
-      .maybeSingle();
+      .select('id, league_id')
+      .eq('id', memberId)
+      .single();
 
-    if (error) throw error;
-    if (!data) return null;
-    return data;
+    if (memberError) throw new Error(memberError.message);
+    if (!memberData) throw new Error('Member not found');
+
+    const leagueId = memberData.league_id;
+
+    const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
+    if (error) throw new Error(error.message);
+
+    return { data, leagueId };
   },
   async getMyMemberByLeague(userId: string, leagueId: string) {
     const { data, error } = await supabase
@@ -91,7 +95,7 @@ export const memberApi = {
           name,
           owner_id,
           updated_at,
-          competition:competitions(id, name, logo, area, flag)
+          competition:competitions(*)
         )
       `)
       .eq('user_id', userId)

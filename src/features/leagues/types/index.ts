@@ -5,6 +5,11 @@ type CompetitionSummary = Pick<
   "id" | "name" | "logo" | "area" | "flag"
 >;
 
+type CompetitionType = Pick<
+  Tables<"competitions">,
+  "id" | "name" | "logo" | "flag" | "type" | "current_stage" | "current_fixture"
+>;
+
 type LeaderboardRow = Pick<
   Tables<"league_leaderboard_view">,
   | "avatar_url"
@@ -29,8 +34,11 @@ type MyLeagueType = Pick<
   | "updated_at"
   | "user_id"
 > & {
-  league: Tables<"leagues"> & {
-    competition: Tables<"competitions">;
+  league: Pick<
+    Tables<"leagues">,
+    "competition_id" | "created_at" | "id" | "join_code" | "max_members" | "name" | "owner_id" | "updated_at"
+  > & {
+    competition: CompetitionType;
   };
 };
 
@@ -69,7 +77,7 @@ type MyLeaguesResponseType = {
 
 type MemberLeagueSummaryType = Tables<"member_league_summary_view">;
 
-type LeagueWithCompetitionType = Omit<LeagueDetailsType, "league_members">;
+type LeagueWithCompetitionType = Omit<LeagueDetailsType, 'league_members'>;
 
 type FullLeagueType = {
   league_id: string;

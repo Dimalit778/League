@@ -6,7 +6,6 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-
 export default function TabLayout() {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
@@ -29,7 +28,6 @@ export default function TabLayout() {
           name="index"
           options={{
             title: t('Home'),
-
             tabBarIcon: ({ color, size }) => <FieldIcon size={size} color={color} />,
           }}
         />
@@ -53,6 +51,13 @@ export default function TabLayout() {
           options={{
             title: t('Profile'),
             tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="Rank"
+          options={{
+            title: t('Rank'),
+            tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
           }}
         />
       </Tabs>

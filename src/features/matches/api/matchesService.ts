@@ -148,6 +148,44 @@ export const matchesApi = {
     void prefetchMatchTeamLogos(matches);
     return matches;
   },
+   // Get today matches 
+  async getTodayMatches(
+    competitionId: number,
+    memberId: string,
+  ): Promise<MatchCardType[]> {
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    ).toISOString();
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999,
+    ).toISOString();
+
+    const { data, error } = await supabase
+      .from('matches')
+      .select(MATCH_WITH_MEMBER_PREDICTION)
+      .eq('competition_id', competitionId)
+      .gte('kick_off', startOfDay)
+      .lte('kick_off', endOfDay)
+      .eq('predictions.league_member_id', memberId)
+      .order('kick_off', { ascending: true });
+
+    if (error) throw error;
+    if (!data) return [];
+
+    const matches = mapMatchCardData(data);
+    void prefetchMatchTeamLogos(matches);
+   
+    return matches;
+  },
   // Get all competition matches with current Member predictions
   async getCompetitionMatchesWithMemberPredictions(
     competitionId: number,
@@ -225,42 +263,7 @@ export const matchesApi = {
       activeStage: data?.stage ?? null,
     };
   },
-  async getTodayMatchesForCompetition(
-    competitionId: number,
-    memberId: string,
-  ): Promise<MatchCardType[]> {
-    const now = new Date();
-    const startOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    ).toISOString();
-    const endOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      23,
-      59,
-      59,
-      999,
-    ).toISOString();
 
-    const { data, error } = await supabase
-      .from('matches')
-      .select(MATCH_WITH_MEMBER_PREDICTION)
-      .eq('competition_id', competitionId)
-      .gte('kick_off', startOfDay)
-      .lte('kick_off', endOfDay)
-      .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
-
-    if (error) throw error;
-    if (!data) return [];
-
-    const matches = mapMatchCardData(data);
-    void prefetchMatchTeamLogos(matches);
-    return matches;
-  },
 
   async getFinishedFixtures(competitionId: number): Promise<number[]> {
     const { data, error } = await supabase

@@ -15,7 +15,7 @@ export const KEYS = {
   members: {
     all: ['members'] as const,
     byId: (memberId: string) => ['members', memberId] as const,
-    primary: (userId: string) => ['members', 'primary', userId] as const,
+    primary : (userId: string) => ['members', 'primary', userId] as const,
     byLeague: (userId: string, leagueId: string) => ['members', 'by-league', userId, leagueId] as const,
     stats: (memberId: string) => ['members', memberId, 'stats'] as const,
     detailsWithStats: (memberId: string) => ['members', memberId, 'details-with-stats'] as const,

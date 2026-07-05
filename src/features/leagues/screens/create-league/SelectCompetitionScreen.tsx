@@ -1,6 +1,6 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button } from '@/components/ui';
-import CompetitionCard from '@/features/leagues/components/create-league/CompetitionCard';
+import CompetitionCard from '@/features/leagues/components/createLeague/CompetitionCard';
 import { useGetCompetitions } from '@/features/leagues/hooks/useCompetition';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
 import { useTranslation } from '@/hooks/useTranslation';

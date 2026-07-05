@@ -120,6 +120,7 @@ export const memberStatsApi = {
     const totalMembers = leaderboardData.length;
 
     const { currentStreak, longestStreak } = computeStreaks(predictionsData);
+    const pendingPredictions = predictionsData.filter((p) => !p.is_finished).length;
     const roundPerformance = computeRoundPerformance(predictionsData);
     const bestCategory = computeBestCategory({
       bingoHits,
@@ -136,10 +137,12 @@ export const memberStatsApi = {
       totalPoints,
       accuracy: Math.round(accuracy * 100) / 100,
       position,
+      totalMembers,
       currentStreak,
       longestStreak,
       roundPerformance,
       bestCategory,
+      pendingPredictions,
     };
   },
 };

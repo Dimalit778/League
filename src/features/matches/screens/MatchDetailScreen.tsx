@@ -2,7 +2,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import fieldImage from '@/assets/images/fieldImage.jpg';
 import { Error, LoadingOverlay } from '@/components/layout';
-import { selectMemberId, useMemberStore } from '@/store/MemberStore';
+
+import { usePrimaryMember } from '@/store/MemberStore';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
@@ -14,7 +15,7 @@ const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
-  const memberId = useMemberStore(selectMemberId) ?? '';
+  const { memberId } = usePrimaryMember();
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
 

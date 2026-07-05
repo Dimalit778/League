@@ -2,14 +2,14 @@ import { KEYS } from '@/lib/queryClient';
 
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { leagueApi } from '@/features/leagues/api/leagueApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
-import { leagueApi } from '../api/leagueApi';
-
-export const useMyLeagues = () => {
+import { leagueActionsApi } from '../api/leagueActionsApi';
+  export const useMyLeagues = () => {
   
   const userId = useAuthStore((state) => state.user?.id ?? null);
 
@@ -20,10 +20,11 @@ export const useMyLeagues = () => {
 };
 
 
-export const useGetLeaderboard = (leagueId: string) => {
+export const useGetLeaderboard = (leagueId?: string | null) => {
   return useQuery({
     queryKey: leagueId ? KEYS.leagues.leaderboard(leagueId) : (['leagues', 'leaderboard', 'disabled'] as const),
     queryFn: leagueId ? () => leagueApi.getLeaderboardView(leagueId) : skipToken,
+    enabled: !!leagueId,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -34,30 +35,6 @@ export const useMemberLeagueSummary = (memberId?: string | null) => {
     queryFn: memberId ? () => leagueApi.getMemberLeagueSummary(memberId) : skipToken,
     enabled: !!memberId,
     staleTime: 1000 * 60 * 5,
-  });
-};
-
-export const useRemoveMember = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (memberId: string) => leagueApi.removeMember(memberId),
-
-    onSuccess: async (result, memberId) => {
-      const leagueId = result?.leagueId;
-      if (leagueId) {
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: KEYS.leagues.members(leagueId),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: KEYS.leagues.leaderboard(leagueId),
-          }),
-        ]);
-      }
-    },
-    onError: (error) => {
-      Alert.alert('Error', error.message);
-    },
   });
 };
 
@@ -145,7 +122,7 @@ export const useCreateLeague = () => {
       max_members: number;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      return leagueApi.createLeague(params);
+      return leagueActionsApi.createLeague(params);
     },
 
     onSuccess: async (leagueId) => {
@@ -177,7 +154,7 @@ export const useJoinLeague = () => {
       nickname: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      return leagueApi.joinLeague(join_code, nickname);
+      return leagueActionsApi.joinLeague(join_code, nickname);
     },
     onSuccess: async () => {
       await Promise.all([
@@ -204,7 +181,7 @@ export const useUpdateLeague = () => {
       if (!leagueId) {
         throw new Error('League id is required to update league');
       }
-      return leagueApi.updateLeague(leagueId, { name });
+      return leagueActionsApi.updateLeague(leagueId, { name });
     },
     onSuccess: async (updated) => {
       await Promise.all([
@@ -231,11 +208,11 @@ export const useLeaveLeague = () => {
 
   return useMutation({
     mutationFn: async (leagueId: string) => {
-      const result = await leagueApi.leaveLeague(leagueId);
+      const result = await leagueActionsApi.leaveLeague(leagueId);
       return result;
     },
     onSuccess: async (_result, leagueId) => {
-      router.replace('/(app)/(user)/leagues');
+      router.replace('/(app)/(user)');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({
@@ -265,10 +242,10 @@ export const useDeleteLeague = () => {
       if (ownerId !== userId) {
         throw new Error('Only the league owner can delete this league');
       }
-      return leagueApi.deleteLeague(leagueId);
+      return leagueActionsApi.deleteLeague(leagueId);
     },
     onSuccess: async (_result, { leagueId }) => {
-      router.replace('/(app)/(user)/leagues');
+      router.replace('/(app)/(user)');
       useMemberStore.getState().clearMember();
       await Promise.all([
         queryClient.invalidateQueries({

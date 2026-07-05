@@ -5,22 +5,19 @@ import { ProfileActionsMenu } from '@/features/members/components/profile/Profil
 import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
 import { ProfileLeagueDetails } from '@/features/members/components/profile/ProfileLeagueDetails';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
-import { ProfileScreenHeader } from '@/features/members/components/profile/ProfileScreenHeader';
 import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { ScrollView, View } from 'react-native';
 
 const ProfileScreen = () => {
-  const leagueId = useMemberStore(selectLeagueId);
-  const memberId = useMemberStore(selectMemberId);
-  const memberData = useMemberStore((s) => s.activeMember);
+  const member = usePrimaryMember();
   const { t } = useTranslation();
-  const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId);
-  const { data: stats, isLoading: statsLoading } = useMemberStats(memberId ?? undefined);
+  const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(member.leagueId);
+  const { data: stats, isLoading: statsLoading } = useMemberStats(member.memberId);
   const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
@@ -28,23 +25,22 @@ const ProfileScreen = () => {
   const { DialogComponent } = useConfirmDialog();
   const { showAlert } = useAlert();
 
-  const isOwner = memberData?.user_id === leagueData?.owner_id;
+  const isOwner = member.memberId === leagueData?.owner_id;
 
   const confirmLeaveLeague = () => {
-    if (!leagueId) return;
     showAlert({
       title: t('Leave League'),
       message: t('Are you sure you want to leave this league?'),
       type: 'warning',
       buttons: [
         { text: t('Cancel'), style: 'cancel' },
-        { text: t('Leave'), style: 'destructive', onPress: () => leaveLeague.mutate(leagueId) },
+        { text: t('Leave'), style: 'destructive', onPress: () => leaveLeague.mutate(member.leagueId) },
       ],
     });
   };
 
   const confirmDeleteLeague = () => {
-    if (!leagueId || !leagueData) return;
+    if (!leagueData || !member.leagueId) return;
     showAlert({
       title: t('Delete League'),
       message: t('Are you sure you want to delete this league?'),
@@ -54,7 +50,7 @@ const ProfileScreen = () => {
         {
           text: t('Delete'),
           style: 'destructive',
-          onPress: () => deleteLeague.mutate({ leagueId, ownerId: leagueData.owner_id }),
+          onPress: () => deleteLeague.mutate({ leagueId: member.leagueId, ownerId: leagueData.owner_id }),
         },
       ],
     });
@@ -62,7 +58,7 @@ const ProfileScreen = () => {
 
   if (leagueLoading || statsLoading) return <ProfileSkeleton />;
   if (leagueError) return <Error error={leagueError as string | Error | { message: string }} />;
-  if (!memberData || !leagueData) return <Error error={t('Member or league data not found')} />;
+  if (!leagueData) return <Error error={t('Member or league data not found')} />;
 
   return (
     <Screen>
@@ -73,27 +69,25 @@ const ProfileScreen = () => {
       >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
-        <ProfileScreenHeader leagueName={leagueData.name} />
-
         <ProfileHeroCard
-          nickname={memberData.nickname}
-          avatarUrl={memberData.avatar_url}
+          nickname={member.nickname}
+          avatarUrl={member.avatarUrl}
           leagueName={leagueData.name}
-          isPrimary={memberData.is_primary}
-          joinedAt={memberData.created_at}
+          isPrimary={member.isPrimary}
+          joinedAt={member.createdAt}
           stats={stats}
         />
 
-        <ProfileNicknameEdit initialNickname={memberData.nickname} />
+        <ProfileNicknameEdit initialNickname={member.nickname} />
 
-        <ProfileLeagueDetails league={leagueData} memberUserId={memberData.user_id} />
+        <ProfileLeagueDetails league={leagueData} memberUserId={member.memberId} />
 
         <ProfileAchievements stats={stats} />
 
         <ProfileActionsMenu
           leagueName={leagueData.name}
           joinCode={leagueData.join_code}
-          competitionArea={leagueData.competition.area}
+          competitionArea={member.competitionArea ?? undefined}
           onLeave={confirmLeaveLeague}
           isOwner={isOwner}
           onDelete={confirmDeleteLeague}

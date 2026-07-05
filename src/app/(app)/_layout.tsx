@@ -1,32 +1,40 @@
+import { LoadingBall } from '@/components/layout/LoadingBall';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
-import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useAuth } from '@/providers/AuthProvider';
 import { useMemberStore } from '@/store/MemberStore';
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
 
 export default function AppLayout() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAuthLoading } = useAuth();
+  const primaryMember = useMemberStore((s) => s.primaryMember);
+  const loading = useMemberStore((s) => s.loading);
+  const initializeMember = useMemberStore((s) => s.initializeMember);
   const { data: isAdminUser } = useIsAdmin();
-  const activeMember = useMemberStore((s) => s.activeMember);
-  const { isPro, exceededLimit } = useSubscriptionLimits();
-  const admin = isLoggedIn && !!isAdminUser;
-  const requiresLeagueActivation = !isPro && exceededLimit;
-  const hasMember = !!activeMember;
-  const { colors } = useThemeTokens();
+
+  useEffect(() => {
+    if (!isAuthLoading && isLoggedIn) {
+      void initializeMember();
+    }
+  }, [isAuthLoading, isLoggedIn, initializeMember]);
+
+  if (isAuthLoading || loading) {
+    return <LoadingBall />;
+  }
+
+  const hasPrimaryMember = !!primaryMember;
 
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: colors.background },
       }}
     >
       <Stack.Screen name="(user)" />
-      <Stack.Protected guard={hasMember && !requiresLeagueActivation}>
-        <Stack.Screen name="league/[leagueId]" />
+      <Stack.Protected guard={hasPrimaryMember}>
+        <Stack.Screen name="(league)" />
       </Stack.Protected>
-      <Stack.Protected guard={!!admin}>
+      <Stack.Protected guard={!!isAdminUser}>
         <Stack.Screen name="(admin)" />
       </Stack.Protected>
     </Stack>

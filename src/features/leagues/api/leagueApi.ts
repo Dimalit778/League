@@ -1,8 +1,8 @@
 import { supabase } from '@/lib/supabase';
-import { LeaderboardRow, LeagueDetailsType, LeagueWithCompetitionType, MemberLeagueSummaryType, MyLeagueType, MyLeaguesResponseType } from '../types';
+import { LeaderboardRow, MemberLeagueSummaryType, MyLeagueType, MyLeaguesResponseType } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
-const COMPETITION_SELECT = 'id, name, logo, area, flag';
+const COMPETITION_SELECT = 'id, name, logo, flag, type, current_stage, current_fixture';
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,
@@ -125,7 +125,7 @@ export const leagueApi = {
 
     if (leagueError) throw new Error(leagueError.message);
 
-    return leagueData as LeagueDetailsType;
+    return leagueData ;
   },
   async getLeagueWithCompetition(leagueId: string) {
     const { data, error } = await supabase
@@ -137,7 +137,7 @@ export const leagueApi = {
     if (error) throw new Error(error.message);
     if (!data) throw new Error('League not found');
 
-    return data as LeagueWithCompetitionType;
+    return data ;
   },
 
   async updatePrimaryLeague(leagueId: string) {
@@ -199,82 +199,6 @@ export const leagueApi = {
       primaryLeagueId: selectedPrimary?.league_id ?? fallbackPrimary?.league_id ?? null,
     };
   },
-
-  async removeMember(memberId: string) {
-    const { data: memberData, error: memberError } = await supabase
-      .from('league_members')
-      .select('id, league_id')
-      .eq('id', memberId)
-      .single();
-
-    if (memberError) throw new Error(memberError.message);
-    if (!memberData) throw new Error('Member not found');
-
-    const leagueId = memberData.league_id;
-
-    const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
-    if (error) throw new Error(error.message);
-
-    return { data, leagueId };
-  },
-  //  -- LEAGUE OPERATIONS
-  async createLeague(params: {
-    league_name: string;
-    max_members: number;
-    competition_id: number;
-    nickname: string;
-    avatar_url?: string;
-  }) {
-    const { data, error } = await supabase.rpc('create_new_league', {
-      league_name: params.league_name,
-      max_members: params.max_members,
-      competition_id: params.competition_id,
-      nickname: params.nickname,
-      avatar_url: params.avatar_url,
-    });
-
-    if (error) throw new Error(error.message || 'Failed to create league');
-
-    return data;
-  },
-  async joinLeague(joinCode: string, nickname: string) {
-    const { data, error } = await supabase.rpc('join_league', {
-      league_join_code: joinCode,
-      user_nickname: nickname,
-    });
-
-    if (error) {
-      throw new Error(error.message || 'Failed to join league');
-    }
-
-    if (!data) {
-      throw new Error('Failed to join league');
-    }
-
-    return data;
-  },
-  async updateLeague(leagueId: string, data: { name?: string }) {
-    const { data: updated, error } = await supabase
-      .from('leagues')
-      .update({ ...data })
-      .eq('id', leagueId)
-      .select('id, name')
-      .single();
-    if (error) throw new Error(error.message);
-    return updated;
-  },
-  async leaveLeague(leagueId: string) {
-    const { data, error } = await supabase.rpc('leave_league', {
-      p_league_id: leagueId,
-    });
-
-    if (error) {
-      throw new Error(error.message || 'Failed to leave league');
-    }
-
-    return data;
-  },
-
   async findLeagueByJoinCode(joinCode: string) {
     const { data, error } = await supabase.rpc('find_league_by_code', {
       p_join_code: joinCode,
@@ -298,14 +222,5 @@ export const leagueApi = {
     return data ?? [];
   },
 
-  async deleteLeague(leagueId: string) {
-    const { data, error } = await supabase.rpc('delete_owned_league', {
-      p_league_id: leagueId,
-    });
 
-    if (error) throw new Error(error.message || 'Failed to delete league');
-    if (!data) throw new Error('Failed to delete league');
-
-    return data;
-  },
 };

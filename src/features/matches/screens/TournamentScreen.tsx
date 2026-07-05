@@ -2,7 +2,7 @@ import { Error, LoadingOverlay, Screen } from '@/components/layout';
 import { matchesApi } from '@/features/matches/api/matchesService';
 import { useGetCompetitionMatches, useGetTournamentActiveStage } from '@/features/matches/hooks/useMatches';
 import { KEYS } from '@/lib/queryClient';
-import { selectCompetition, selectCompetitionId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import ChampionLeagueView from '../components/champions-league/ChampionLeagueView';
@@ -17,8 +17,7 @@ type TournamentMatchesProps = {
 };
 
 const TournamentMatches = ({ defaultView = 'groups' }: TournamentMatchesProps) => {
-  const memberId = useMemberStore(selectMemberId);
-  const competitionId = useMemberStore(selectCompetitionId);
+  const { memberId, competitionId } = usePrimaryMember();
   const queryClient = useQueryClient();
   const [view, setView] = useState<TournamentView>(defaultView);
 
@@ -66,16 +65,15 @@ const TournamentMatches = ({ defaultView = 'groups' }: TournamentMatchesProps) =
 };
 
 export default function TournamentScreen() {
-  const competitionId = useMemberStore(selectCompetitionId);
+  const { competitionId } = usePrimaryMember();
   const { data: activeStage } = useGetTournamentActiveStage({ competitionId });
-  const competition = useMemberStore(selectCompetition);
 
   const defaultView = useMemo(() => {
-    const stage = activeStage?.activeStage ?? competition?.current_stage;
+    const stage = activeStage?.activeStage;
     return isKnockoutOnlyStage(stage) ? 'knockout' : 'groups';
-  }, [activeStage?.activeStage, competition?.current_stage]);
+  }, [activeStage?.activeStage]);
 
-  if (!competitionId || !competition || !activeStage) return <LoadingOverlay />;
+  if (!activeStage) return <LoadingOverlay />;
 
   return (
     <Screen className="pt-2">

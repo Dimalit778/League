@@ -1,18 +1,14 @@
 import { CText, HeaderSection } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePrimaryMember } from '@/store/MemberStore';
 import Trophy from '@assets/images/Trophy-champo.png';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { ChevronRight, Star } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { useMemberLeagueSummary } from '../../hooks/useLeagues';
-
-type PrimaryLeagueCardProps = {
-  primaryLeagueId: string;
-  onPress?: () => void;
-};
-
 function StatBlock({ label, value }: { label: string; value: string }) {
   return (
     <View className="overflow-hidden flex-1 rounded-xl border border-border py-1 ">
@@ -23,10 +19,15 @@ function StatBlock({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
-export default function PrimaryLeagueCard({ primaryLeagueId, onPress }: PrimaryLeagueCardProps) {
+type PrimaryLeagueCardProps = {
+  onPress?: () => void;
+};
+
+export default function PrimaryLeagueCard({ onPress }: PrimaryLeagueCardProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
-  const { data: primaryLeagueSummary, isPending } = useMemberLeagueSummary(primaryLeagueId);
+  const { memberId } = usePrimaryMember();
+  const { data: primaryLeagueSummary, isPending } = useMemberLeagueSummary(memberId);
 
   if (isPending) {
     return null;
@@ -81,7 +82,7 @@ export default function PrimaryLeagueCard({ primaryLeagueId, onPress }: PrimaryL
 
           {/* Button */}
           <Pressable
-            onPress={onPress}
+            onPress={onPress ?? (() => router.replace('/(app)/(league)/(tabs)'))}
             className="mt-4 h-10 items-center justify-center rounded-2xl border border-border px-5"
             style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
           >

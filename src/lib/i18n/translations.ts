@@ -567,6 +567,16 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Miss: 'Miss',
     },
 
+    // Home
+    home: {
+      'Welcome back': 'Welcome back',
+      'Your predictions': 'Your predictions',
+      'Upcoming matches': 'Upcoming matches',
+      'No matches today.': 'No matches today.',
+      Hits: 'Hits',
+      'Place {{position}}/{{total}}': 'Place {{position}}/{{total}}',
+    },
+
     // Stats
     stats: {
       Statistics: 'Statistics',
@@ -1216,6 +1226,16 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
       Hit: 'פגיעה',
       Miss: 'פיספוס',
+    },
+
+    // Home
+    home: {
+      'Welcome back': 'ברוך שובך',
+      'Your predictions': 'הניחושים שלך',
+      'Upcoming matches': 'משחקים קרובים',
+      'No matches today.': 'אין משחקים היום.',
+      Hits: 'פגיעות',
+      'Place {{position}}/{{total}}': 'מקום {{position}}/{{total}}',
     },
 
     // Stats

@@ -1,5 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -8,7 +8,7 @@ import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
 export const useGetMatchDetail = (matchId: number) => {
-  const leagueId = useMemberStore(selectLeagueId);
+  const { leagueId } = usePrimaryMember();
   const query = useQuery({
     queryKey:
       leagueId && matchId > 0
@@ -146,9 +146,10 @@ export const useGetTodayMatches = ({
   competitionId,
   memberId,
 }: {
-  competitionId: number | null;
-  memberId: string | null;
+  competitionId: number ;
+  memberId: string;
 }) => {
+ 
   return useQuery({
     queryKey:
       competitionId && memberId
@@ -156,13 +157,13 @@ export const useGetTodayMatches = ({
         : (['matches', 'today', 'disabled', competitionId ?? 'none', memberId ?? 'none'] as const),
     queryFn:
       competitionId && memberId
-        ? () => matchesApi.getTodayMatchesForCompetition(competitionId, memberId)
+        ? () => matchesApi.getTodayMatches(competitionId, memberId)
         : skipToken,
     staleTime: 1000 * 60 * 5,
   });
 };
 
-export const useGetFinishedFixtures = (competitionId: number | null) => {
+  export const useGetFinishedFixtures = (competitionId: number | null) => {
   return useQuery({
     queryKey: competitionId
       ? KEYS.matches.finishedFixtures(competitionId)

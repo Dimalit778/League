@@ -3,19 +3,17 @@ import { LeaderboardStatsBar } from '@/features/leagues/components/leaderboard/L
 import { LeaderboardTableHeader } from '@/features/leagues/components/leaderboard/LeaderboardTableHeader';
 import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
-import { selectCompetition, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
-import LeaderboardCard from '../components/LeaderboardCard';
-import TopThree from '../components/TopThree';
+import LeaderboardCard from '../../members/components/rank/LeaderboardCard';
+import TopThree from '../../members/components/rank/TopThree';
 
-const LeagueScreen = () => {
-  const leagueId = useMemberStore(selectLeagueId) ?? '';
-  const memberId = useMemberStore(selectMemberId) ?? '';
-  const activeMember = useMemberStore((s) => s.activeMember);
-  const competition = useMemberStore(selectCompetition);
+export default function RankScreen() {
+  const { memberId, leagueId } = usePrimaryMember();
+
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
@@ -45,9 +43,6 @@ const LeagueScreen = () => {
     return index !== -1 ? index + 1 : null;
   }, [leaderboard, memberId]);
 
-  const leagueName = activeMember?.league?.name ?? activeMember?.league?.competition?.name ?? 'League';
-  const gameweek = competition?.current_fixture ?? 1;
-
   if (error) return <Error error={error} />;
   if (!leaderboard || isLoading) return <LeagueSkeleton />;
 
@@ -60,7 +55,7 @@ const LeagueScreen = () => {
         keyExtractor={(item, index) => item.member_id ?? `member-${index}`}
         ListHeaderComponent={
           <View>
-            <LeaderboardStatsBar membersCount={leaderboard.length} gameweek={gameweek} yourRank={yourRank} />
+            <LeaderboardStatsBar membersCount={leaderboard.length} yourRank={yourRank} />
             <TopThree topMembers={topThree} />
             <LeaderboardTableHeader />
           </View>
@@ -76,6 +71,4 @@ const LeagueScreen = () => {
       />
     </Screen>
   );
-};
-
-export default LeagueScreen;
+}

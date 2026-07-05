@@ -3,7 +3,7 @@ import { AvatarImage, CText, HeaderSection } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
@@ -50,8 +50,7 @@ function StatItem({
 export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, joinedAt, stats }: ProfileHeroCardProps) {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
-  const memberId = useMemberStore(selectMemberId);
-  const leagueId = useMemberStore(selectLeagueId);
+  const { memberId, leagueId } = usePrimaryMember();
 
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);

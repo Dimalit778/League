@@ -1,13 +1,12 @@
-import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@/assets/icons';
+import { MatchesIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
+import { ChartNoAxesCombined, House, PodiumIcon, User } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 const isIOS = Platform.OS === 'ios';
 const PILL_HEIGHT = 64;
-
 export const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + Math.max(safeAreaBottom);
 
 export const useFloatBottomTabsInset = () => {
@@ -22,11 +21,11 @@ type TabConfig = {
 };
 
 const tabsConfig: Record<string, TabConfig> = {
-  index: { label: 'Home', icon: FieldIcon },
-  Stats: { label: 'Stats', icon: RankIcon },
+  index: { label: 'Home', icon: House },
+  Stats: { label: 'Stats', icon: ChartNoAxesCombined },
   Matches: { label: 'Matches', icon: MatchesIcon },
-
-  Profile: { label: 'Profile', icon: ProfileIcon },
+  Profile: { label: 'Profile', icon: User },
+  Rank: { label: 'Rank', icon: PodiumIcon },
 };
 
 export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
@@ -67,7 +66,7 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
 
           return (
             <Pressable key={route.key} onPress={onPress} style={styles.item}>
-              <Icon size={26} color={iconColor} strokeWidth={isFocused ? 2.8 : 2.2} />
+              <Icon size={26} color={iconColor} strokeWidth={1.5} />
               <View className={`w-1.5 h-1.5 rounded-full ${isFocused ? 'bg-primary' : 'bg-transparent'}`} />
             </Pressable>
           );

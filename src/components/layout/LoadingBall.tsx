@@ -77,7 +77,7 @@ export const LoadingBall = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <View style={styles.stage} pointerEvents="box-none">
         <View style={styles.ballColumn}>
           <Animated.View style={[styles.ball, ballStyle]}>
@@ -91,10 +91,6 @@ export const LoadingBall = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#05070D',
-  },
   stage: {
     flex: 1,
     width: '100%',

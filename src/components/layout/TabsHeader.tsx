@@ -1,39 +1,51 @@
 // TabsHeader.tsx
 import { MenuIcon, SettingsIcon, TrophyIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { BlurView } from 'expo-blur';
 import { Link, router } from 'expo-router';
+import { BellIcon } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AvatarImage, CText } from '../ui';
 
 const isIOS = Platform.OS === 'ios';
 type TabsContectProps = {
-  nickname: string | null | undefined;
-  avatar_url: string | null | undefined;
-  color: string;
+  nickname: string;
+  avatar_url: string | null;
 };
-function TabsContect({ nickname, avatar_url, color }: TabsContectProps) {
+function TabsContect({ nickname, avatar_url }: TabsContectProps) {
+  const { colors } = useThemeTokens();
   return (
-    <>
-      <View className="flex-1 flex-row items-center gap-3">
-        <AvatarImage path={avatar_url} className="w-10 h-10 rounded-full" nickname={nickname} />
-        <CText variant="bodyBold" className="text-primary" numberOfLines={1}>
+    <View className="flex-row items-center justify-between w-full">
+      <View className="flex-row items-center gap-3">
+        <AvatarImage nickname={nickname} path={avatar_url} className="w-12 h-12" />
+
+        <CText className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
           {nickname}
         </CText>
       </View>
-      <Pressable accessibilityRole="button" onPress={() => router.replace('/(app)/(user)/leagues')}>
-        <TrophyIcon color={color} size={24} />
-      </Pressable>
-    </>
+      <View className="flex-row items-center gap-1 ">
+        <Pressable accessibilityRole="button" className="p-2 rounded-full border border-border muted">
+          <BellIcon color={colors.muted} size={24} strokeWidth={1.5} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          className="p-2 rounded-full border border-border muted"
+          onPress={() => router.replace('/(app)/(user)')}
+        >
+          <TrophyIcon color={colors.muted} size={24} />
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
 export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
   const { colors, theme } = useThemeTokens();
-  const activeMember = useMemberStore((s) => s.activeMember);
+  const { nickname, avatar_url } = usePrimaryMember();
+
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
 
   const insets = useSafeAreaInsets();
@@ -54,11 +66,7 @@ export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
                 <MenuIcon size={24} color={colors.primary} />
               </Pressable>
             )}
-            <TabsContect
-              nickname={activeMember?.nickname}
-              avatar_url={activeMember?.avatar_url}
-              color={colors.primary}
-            />
+            <TabsContect nickname={nickname} avatar_url={avatar_url} />
           </View>
         ) : (
           <Link href="/settings" asChild>

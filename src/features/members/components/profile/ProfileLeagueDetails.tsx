@@ -5,7 +5,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Link } from 'expo-router';
 import { Copy, Key, Shield, Trophy, User, Users } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { Alert, Pressable, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 
 const GOLD = '#E3B421';
 
@@ -83,10 +83,10 @@ export function ProfileLeagueDetails({ league, memberUserId }: ProfileLeagueDeta
           <Shield size={18} color={GOLD} />
           <CText className="text-base font-bold text-white">{t('League details')}</CText>
           {league.owner_id === memberUserId && (
-            <Link href="/profile/edit-league" asChild>
-              <TouchableOpacity className="ml-auto p-1">
+            <Link href="/(app)/(league)/edit" asChild>
+              <Pressable className="ml-auto p-1">
                 <CText className="text-xs font-semibold text-[#D5B13F]">{t('Edit')}</CText>
-              </TouchableOpacity>
+              </Pressable>
             </Link>
           )}
         </View>

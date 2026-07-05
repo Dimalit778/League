@@ -1,6 +1,6 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, CText, InputField } from '@/components/ui';
-import MemberOption from '@/features/leagues/components/create-league/MemberOption';
+import MemberOption from '@/features/leagues/components/createLeague/MemberOption';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
 import { useTranslation } from '@/hooks/useTranslation';

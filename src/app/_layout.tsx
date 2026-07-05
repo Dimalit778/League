@@ -3,7 +3,6 @@ import '../../global.css';
 import '@/lib/i18n/autoTranslate';
 
 import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
-import { usePrimaryMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -63,9 +62,6 @@ const AppBootstrap = () => {
   const { colors } = useThemeTokens();
   const [isAppShellReady, setIsAppShellReady] = useState(false);
 
-  const { status: memberStatus } = usePrimaryMember();
-  const isMemberSettled = !isLoggedIn || memberStatus === 'success' || memberStatus === 'error';
-
   useEffect(() => {
     navigationIntegration.registerNavigationContainer(ref);
   }, [ref]);
@@ -109,7 +105,7 @@ const AppBootstrap = () => {
     };
   }, []);
 
-  if (!isAppShellReady || isAuthLoading || !isMemberSettled) {
+  if (!isAppShellReady || isAuthLoading) {
     return <LoadingBall />;
   }
 

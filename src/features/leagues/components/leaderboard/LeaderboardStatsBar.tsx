@@ -7,7 +7,7 @@ const GOLD = '#E3B421';
 
 type LeaderboardStatsBarProps = {
   membersCount: number;
-  gameweek: number;
+
   yourRank: number | null;
 };
 
@@ -33,23 +33,15 @@ function StatItem({
   );
 }
 
-export function LeaderboardStatsBar({ membersCount, gameweek, yourRank }: LeaderboardStatsBarProps) {
+export function LeaderboardStatsBar({ membersCount, yourRank }: LeaderboardStatsBarProps) {
   const { t } = useTranslation();
 
   return (
     <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] px-4 py-3">
       <View className="flex-row items-center">
-        <StatItem
-          icon={<Users size={14} color={GOLD} />}
-          label={t('Members')}
-          value={String(membersCount)}
-        />
+        <StatItem icon={<Users size={14} color={GOLD} />} label={t('Members')} value={String(membersCount)} />
         <View className="mx-2 h-8 w-px bg-[#223554]" />
-        <StatItem
-          icon={<Calendar size={14} color={GOLD} />}
-          label={t('Gameweek')}
-          value={String(gameweek)}
-        />
+        <StatItem icon={<Calendar size={14} color={GOLD} />} label={t('Gameweek')} value={'9'} />
         <View className="mx-2 h-8 w-px bg-[#223554]" />
         <StatItem
           icon={<BarChart3 size={14} color={GOLD} />}

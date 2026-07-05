@@ -4,8 +4,8 @@ import PredictionRank from '../match-details/PredictionRank';
 jest.mock('@/store/MemberStore', () => {
   const actual = jest.requireActual('@/store/MemberStore');
   const mockState = {
-    activeMember: { id: 'm1', league: { id: 'l1' } },
-    setActiveMember: jest.fn(),
+    primaryMember: { id: 'm1', league_id: 'l1' },
+    setPrimaryMember: jest.fn(),
     initializeMember: jest.fn(),
     clearMember: jest.fn(),
   };

@@ -4,7 +4,7 @@ import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import FixturesList from '@/features/matches/components/regular-league/FixturesList';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectCompetitionId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,8 +13,7 @@ import { useGetMatchesByFixture } from '../hooks/useMatches';
 import { mapMatchToCardProps } from '../utils/matchCard.mapper';
 
 export default function RegularLeagueScreen() {
-  const memberId = useMemberStore(selectMemberId);
-  const competitionId = useMemberStore(selectCompetitionId);
+  const { member_id, competition_id } = usePrimaryMember();
 
   const bottomTabsInset = useFloatBottomTabsInset();
 
@@ -82,7 +81,7 @@ export default function RegularLeagueScreen() {
   } = useGetMatchesByFixture({
     selectedFixture,
     competitionId,
-    memberId,
+    member_id,
     enabled: !!matchMeta,
   });
 

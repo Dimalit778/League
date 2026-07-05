@@ -15,6 +15,7 @@ export default function PublicLayout() {
         fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
+      <Stack.Screen name="index" />
       <Stack.Screen name="leagues" />
       <Stack.Screen
         name="settings"

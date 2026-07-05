@@ -1,4 +1,4 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
+import { Error, useFloatBottomTabsInset } from '@/components/layout';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import {
   SkeletonStats,
@@ -6,57 +6,49 @@ import {
   StatsHeroCard,
   StatsPredictionSection,
   StatsRoundPerformance,
-  StatsScreenHeader,
 } from '@/features/members/components/stats';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
-import { selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryMember } from '@/store/MemberStore';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 const MemberStatsScreen = () => {
-  const memberId = useMemberStore(selectMemberId) as string;
-  const leagueId = useMemberStore(selectLeagueId);
-  const memberData = useMemberStore((s) => s.activeMember);
+  const member = usePrimaryMember();
   const isFocused = useIsFocused();
   const bottomTabsInset = useFloatBottomTabsInset();
 
-  const { data: leagueData } = useGetLeagueAndMembers(leagueId);
-  const { data: stats, isLoading, error, refetch } = useMemberStats(memberId);
+  const { data: leagueData } = useGetLeagueAndMembers(member.leagueId);
+  const { data: stats, isLoading, error, refetch } = useMemberStats(member.memberId);
 
   const onRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
 
   if (error) return <Error error={error} />;
-  if (isLoading || !stats || !memberData) return <SkeletonStats />;
+  if (isLoading || !stats) return <SkeletonStats />;
 
   return (
-    <Screen>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
-        refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
-      >
-        <StatsScreenHeader leagueName={leagueData?.name ?? '—'} />
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      className="flex-1 bg-background"
+      refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
+    >
+      <StatsHeroCard
+        nickname={member.nickname}
+        avatarUrl={member.avatarUrl}
+        isPrimary={member.isPrimary}
+        stats={stats}
+      />
 
-        <StatsHeroCard
-          nickname={memberData.nickname}
-          avatarUrl={memberData.avatar_url}
-          isPrimary={memberData.is_primary}
-          stats={stats}
-        />
+      <StatsPredictionSection stats={stats} />
 
-        <StatsPredictionSection stats={stats} />
+      <StatsRoundPerformance rounds={stats.roundPerformance ?? []} />
 
-        <StatsRoundPerformance rounds={stats.roundPerformance ?? []} />
+      <StatsBestCategory bestCategory={stats.bestCategory} />
 
-        <StatsBestCategory bestCategory={stats.bestCategory} />
-
-        <View className="h-4" />
-      </ScrollView>
-    </Screen>
+      <View className="h-4" />
+    </ScrollView>
   );
 };
 

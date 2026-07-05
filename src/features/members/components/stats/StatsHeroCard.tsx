@@ -7,6 +7,7 @@ import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BarChart3, Star } from 'lucide-react-native';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const GOLD = '#E3B421';
 
@@ -22,6 +23,7 @@ export function StatsHeroCard({ nickname, avatarUrl, isPrimary, stats }: StatsHe
   const displayName = formatNameCapitalize(nickname);
   const rank = stats?.position ? `#${stats.position}` : '—';
   const points = stats?.totalPoints != null ? `${stats.totalPoints} ${t('pts')}` : '—';
+  const insets = useSafeAreaInsets();
 
   return (
     <View className="mx-3 mt-1">
@@ -50,7 +52,7 @@ export function StatsHeroCard({ nickname, avatarUrl, isPrimary, stats }: StatsHe
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
         />
 
-        <View className="p-4">
+        <View className="p-4" style={{ paddingTop: insets.top }}>
           <View className="flex-row items-center gap-4">
             <View
               className="h-20 w-20 items-center justify-center rounded-full border-2 border-[#D5B13F]"
@@ -74,12 +76,6 @@ export function StatsHeroCard({ nickname, avatarUrl, isPrimary, stats }: StatsHe
               <CText className="text-xl font-black text-white" numberOfLines={1}>
                 {displayName}
               </CText>
-              {isPrimary && (
-                <View className="mt-1.5 flex-row items-center gap-1.5">
-                  <Star size={13} color="#4ade80" fill="#4ade80" />
-                  <CText className="text-sm font-semibold text-[#4ade80]">{t('Primary league')}</CText>
-                </View>
-              )}
             </View>
           </View>
 

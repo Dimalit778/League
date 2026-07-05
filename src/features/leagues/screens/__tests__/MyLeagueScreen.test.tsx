@@ -28,10 +28,11 @@ jest.mock('@/store/AuthStore', () => ({
 }));
 
 jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: (selector: (state: { activeMember: null; setActiveMember: jest.Mock }) => unknown) => selector({
-    activeMember: null,
-    setActiveMember: jest.fn(),
-  }),
+  useMemberStore: (selector: (state: { primaryMember: null; setPrimaryMember: jest.Mock }) => unknown) =>
+    selector({
+      primaryMember: null,
+      setPrimaryMember: jest.fn(),
+    }),
 }));
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
