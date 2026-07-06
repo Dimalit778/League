@@ -33,7 +33,7 @@ export function useLeagueOverview(): LeagueOverviewData {
       points: memberStats?.totalPoints ?? 0,
       pendingPredictions: memberStats?.pendingPredictions ?? 0,
     },
-    leaderboard: leaderboard ?? [],
+    leaderboard: leaderboardData ?? [],
     todayMatches: todayMatches ?? [],
   };
 }

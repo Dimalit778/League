@@ -3,6 +3,7 @@ import { isAuthSessionActive } from '@/features/auth/utils/authSession';
 import { useAuthStore } from '@/store/AuthStore';
 import type { Session } from '@supabase/supabase-js';
 import { useEffect } from 'react';
+import { AppState, Platform } from 'react-native';
 
 const setSignedOut = () => {
   useAuthStore.setState({
@@ -42,6 +43,26 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  // On React Native the token auto-refresh timer must be started/stopped with
+  // the app foreground state, otherwise sessions silently expire in background.
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    supabase.auth.startAutoRefresh();
+    const appStateSubscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        supabase.auth.startAutoRefresh();
+      } else {
+        supabase.auth.stopAutoRefresh();
+      }
+    });
+
+    return () => {
+      appStateSubscription.remove();
+      supabase.auth.stopAutoRefresh();
+    };
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
 

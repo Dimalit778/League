@@ -1,4 +1,5 @@
 import { CText } from '@/components/ui/CText';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Link, type Href } from 'expo-router';
 import { BarChart3, ChevronRight, Goal, List } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
@@ -25,21 +26,27 @@ function QuickAccessItem({ title, icon, href }: Props) {
   );
 }
 export function QuickAccessSection() {
+  const { t } = useTranslation();
+
   return (
     <View>
-      <CText className="text-white text-lg font-bold mb-3">Quick access</CText>
+      <CText className="text-white text-lg font-bold mb-3">{t('Quick access')}</CText>
 
       <View className="flex-row gap-3">
         <QuickAccessItem
-          title="Matches"
+          title={t('Matches')}
           icon={<Goal size={26} color="#D99A00" />}
           href="/(app)/(league)/(tabs)/Matches"
         />
 
-        <QuickAccessItem title="Table" icon={<List size={26} color="#D99A00" />} href="/(app)/(league)/(tabs)/Rank" />
+        <QuickAccessItem
+          title={t('Table')}
+          icon={<List size={26} color="#D99A00" />}
+          href="/(app)/(league)/(tabs)/Rank"
+        />
 
         <QuickAccessItem
-          title="Stats"
+          title={t('Stats')}
           icon={<BarChart3 size={26} color="#D99A00" />}
           href="/(app)/(league)/(tabs)/Stats"
         />

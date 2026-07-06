@@ -33,6 +33,10 @@ type MemberState = {
 
 
 export const selectPrimaryMember = (s: MemberState) => s.primaryMember;
+export const selectMemberId = (s: MemberState) => s.primaryMember?.memberId;
+export const selectMemberUserId = (s: MemberState) => s.primaryMember?.userId;
+export const selectLeagueId = (s: MemberState) => s.primaryMember?.leagueId;
+export const selectCompetitionId = (s: MemberState) => s.primaryMember?.competitionId;
 
  
 export const useMemberStore = create<MemberState>()((set) => ({

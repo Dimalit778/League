@@ -1,16 +1,19 @@
+import Trophy from '@/assets/images/Trophy-champo.png';
 import { CText } from '@/components/ui/CText';
-import { MyLeagueType } from '@/features/leagues/types';
-import { MemberStatsType } from '@/features/members/types';
+import { LeagueOverviewLeague, LeagueOverviewMemberStats } from '@/features/leagues/types/leagueOverviewType';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
-import { ChevronRight, Star } from 'lucide-react-native';
+import { Link } from 'expo-router';
+import { ChevronRight } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 type Props = {
-  league: MyLeagueType;
-  memberStats: MemberStatsType;
+  league: LeagueOverviewLeague;
+  memberStats: LeagueOverviewMemberStats;
 };
+
 function StatItem({ label, value }: { label: string; value: string | number }) {
   return (
-    <View>
+    <View className="bg-cardBorder rounded-full p-2">
       <CText className="text-muted text-xs font-semibold">{label}</CText>
       <CText className="text-white text-xl font-bold mt-1">{value}</CText>
     </View>
@@ -18,33 +21,37 @@ function StatItem({ label, value }: { label: string; value: string | number }) {
 }
 
 export function LeagueHeroCard({ league, memberStats }: Props) {
+  const { t } = useTranslation();
+
   return (
-    <View className="rounded-3xl border border-cardBorder bg-card p-5 overflow-hidden">
-      <View className="flex-row gap-5">
-        <Image source={require('@assets/images/trophy.png')} className="w-32 h-40" resizeMode="contain" />
+    <View className="px-3">
+      <View className="flex-row border border-border rounded-md p-2">
+        <Image source={Trophy} style={{ width: 120, height: 120 }} contentFit="contain" />
 
         <View className="flex-1">
-          <CText className="text-white text-3xl font-bold">{league.name}</CText>
+          <CText className="text-text text-3xl font-bold" numberOfLines={2}>
+            {league.name}
+          </CText>
 
-          {league.isPrimary && (
-            <View className="flex-row items-center mt-2">
-              <Star size={16} color="#B8E35A" fill="#B8E35A" />
-              <CText className="text-white ml-2">Primary league</CText>
-            </View>
-          )}
-
-          <CText className="text-white text-xl mt-5">{memberStats.nickname}</CText>
+          <CText className="text-text text-xl mt-5" numberOfLines={1}>
+            {memberStats.nickname}
+          </CText>
 
           <View className="flex-row justify-between mt-4">
-            <StatItem label="RANK" value={`#${memberStats.rank}`} />
-            <StatItem label="POINTS" value={`${memberStats.points} pts`} />
-            <StatItem label="PENDING" value={memberStats.pendingPredictions} />
+            <StatItem label={t('RANK')} value={memberStats.rank > 0 ? `#${memberStats.rank}` : '—'} />
+            <StatItem label={t('POINTS')} value={`${memberStats.points} ${t('pts')}`} />
+            <StatItem label={t('PENDING')} value={memberStats.pendingPredictions} />
           </View>
 
-          <Pressable className="h-14 rounded-2xl bg-primaryGold flex-row items-center justify-center mt-5">
-            <CText className="text-black font-bold text-lg">Predict now</CText>
-            <ChevronRight size={24} color="black" />
-          </Pressable>
+          <Link href="/(app)/(league)/(tabs)/Matches" asChild>
+            <Pressable
+              className="h-14 rounded-2xl bg-primaryGold flex-row items-center justify-center mt-5"
+              accessibilityRole="button"
+            >
+              <CText className="text-black font-bold text-lg">{t('Predict now')}</CText>
+              <ChevronRight size={24} color="black" />
+            </Pressable>
+          </Link>
         </View>
       </View>
     </View>

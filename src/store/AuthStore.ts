@@ -45,10 +45,12 @@ export const useAuthStore = create<AuthStore>()(
         },
       })),
 
+      // The session (refresh/access tokens) is deliberately not persisted
+      // here: Supabase's own encrypted auth storage is the single source of
+      // truth, and AuthProvider rehydrates the session on launch.
       partialize: (state) =>
         ({
           user: state.user,
-          session: state.session,
           isAuthenticated: state.isAuthenticated,
         }) as AuthStore,
     },
