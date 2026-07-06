@@ -18,30 +18,27 @@ jest.mock('@/features/matches/screens/TournamentScreen', () => {
 
 const baseMember = {
   memberId: 'm1',
+  userId: 'u1',
+  isPrimary: true,
+  active: true,
+  nickname: 'Player1',
+  avatarUrl: null,
+  createdAt: '2026-01-01',
   leagueId: 'l1',
+  leagueName: 'Test League',
   competitionId: 100,
-  member: {
-    id: 'm1',
-    league_id: 'l1',
-    competition_id: 100,
-    competition_type: 'LEAGUE',
-  },
-  competition: {
-    id: 100,
-    name: 'Premier League',
-    logo: '',
-    flag: null,
-    type: 'LEAGUE',
-    current_stage: 'REGULAR_SEASON',
-    current_fixture: 1,
-  },
+  competitionName: 'Premier League',
+  competitionLogo: null,
+  competitionFlag: null,
+  competitionArea: null,
+  competitionType: 'league' as const,
 };
 
 describe('Matches tab display selection', () => {
   it('renders LeagueMatches for LEAGUE competition', () => {
     jest.mocked(usePrimaryMember).mockReturnValue({
       ...baseMember,
-      competition: { ...baseMember.competition, type: 'LEAGUE' },
+      competitionType: 'league',
     });
     const { getByText } = render(<MatchesTab />);
     expect(getByText('LeagueMatches')).toBeTruthy();
@@ -50,7 +47,7 @@ describe('Matches tab display selection', () => {
   it('renders TournamentScreen for CUP competition', () => {
     jest.mocked(usePrimaryMember).mockReturnValue({
       ...baseMember,
-      competition: { ...baseMember.competition, type: 'CUP' },
+      competitionType: 'cup',
     });
     const { getByText } = render(<MatchesTab />);
     expect(getByText('TournamentScreen')).toBeTruthy();

@@ -1,6 +1,26 @@
 import { render } from '@testing-library/react-native';
 import LeaderboardCard from '../../../members/components/rank/LeaderboardCard';
 
+jest.mock('@/store/MemberStore', () => ({
+  usePrimaryMember: () => ({
+    memberId: 'm1',
+    userId: 'u1',
+    isPrimary: true,
+    active: true,
+    nickname: 'TestUser',
+    avatarUrl: null,
+    createdAt: '2026-01-01',
+    leagueId: 'l1',
+    leagueName: 'Test League',
+    competitionId: 100,
+    competitionName: 'Test Competition',
+    competitionLogo: null,
+    competitionFlag: null,
+    competitionArea: null,
+    competitionType: 'league',
+  }),
+}));
+
 const mockItem = {
   league_id: 'l1',
   member_id: 'm1',

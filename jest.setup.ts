@@ -95,24 +95,65 @@ jest.mock('@/store/LanguageStore', () => ({
     }),
 }));
 
+const createMockMMKV = () => {
+  const store = new Map<string, string>();
+  return {
+    set: jest.fn((key: string, value: string) => {
+      store.set(key, value);
+    }),
+    getString: jest.fn((key: string) => store.get(key)),
+    remove: jest.fn((key: string) => {
+      store.delete(key);
+    }),
+    recrypt: jest.fn(),
+    delete: jest.fn((key: string) => {
+      store.delete(key);
+    }),
+    setString: jest.fn((key: string, value: string) => {
+      store.set(key, value);
+    }),
+    contains: jest.fn((key: string) => store.has(key)),
+    getAllKeys: jest.fn(() => [...store.keys()]),
+    clearAll: jest.fn(() => {
+      store.clear();
+    }),
+  };
+};
+
 jest.mock('react-native-mmkv', () => ({
-  createMMKV: jest.fn(() => ({
-    getString: jest.fn(),
-    setString: jest.fn(),
-    delete: jest.fn(),
-    contains: jest.fn(),
-    getAllKeys: jest.fn(() => []),
-    clearAll: jest.fn(),
-  })),
-  MMKV: jest.fn().mockImplementation(() => ({
-    getString: jest.fn(),
-    set: jest.fn(),
-    delete: jest.fn(),
-    contains: jest.fn(),
-    getAllKeys: jest.fn(() => []),
-    clearAll: jest.fn(),
-  })),
+  createMMKV: jest.fn(() => createMockMMKV()),
+  MMKV: jest.fn().mockImplementation(() => createMockMMKV()),
 }));
+
+jest.mock('expo-secure-store', () => ({
+  getItem: jest.fn(() => null),
+  setItem: jest.fn(),
+  getItemAsync: jest.fn(() => Promise.resolve(null)),
+  setItemAsync: jest.fn(() => Promise.resolve()),
+  deleteItemAsync: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('expo-crypto', () => ({
+  getRandomBytes: jest.fn((length: number) => Uint8Array.from({ length }, (_, i) => i + 1)),
+}));
+
+jest.mock('lucide-react-native', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const MockIcon = React.forwardRef((props: any, ref: any) =>
+    React.createElement(View, { ...props, ref, testID: 'lucide-icon' })
+  );
+  MockIcon.displayName = 'MockLucideIcon';
+  return new Proxy(
+    { __esModule: true },
+    {
+      get: (_target, prop) => {
+        if (prop === '__esModule') return true;
+        return MockIcon;
+      },
+    }
+  );
+});
 
 // Mock react-native-nitro-modules to prevent the NitroModules error
 jest.mock('react-native-nitro-modules', () => ({
@@ -347,9 +388,12 @@ jest.mock('@/lib/supabase', () => ({
       resetPasswordForEmail: jest.fn(),
       updateUser: jest.fn(),
       getUser: jest.fn(),
-      getSession: jest.fn(),
+      getSession: jest.fn(() => Promise.resolve({ data: { session: null }, error: null })),
+      startAutoRefresh: jest.fn(),
+      stopAutoRefresh: jest.fn(),
       onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
     },
+    rpc: jest.fn(() => Promise.resolve({ data: null, error: null })),
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
       insert: jest.fn().mockReturnThis(),

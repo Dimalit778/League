@@ -1,5 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { leagueActionsApi } from '../../api/leagueActionsApi';
 import { leagueApi } from '../../api/leagueApi';
 import { useDeleteLeague, useFindLeagueByJoinCode, useUpdatePrimaryLeague } from '../useLeagues';
 
@@ -27,9 +28,14 @@ jest.mock('@/providers/AuthProvider', () => ({
 
 jest.mock('../../api/leagueApi', () => ({
   leagueApi: {
-    deleteLeague: jest.fn(),
     findLeagueByJoinCode: jest.fn(),
     updatePrimaryLeague: jest.fn(),
+  },
+}));
+
+jest.mock('../../api/leagueActionsApi', () => ({
+  leagueActionsApi: {
+    deleteLeague: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
@@ -96,7 +102,7 @@ describe('useLeagues hooks', () => {
     await mutationConfig.mutationFn({ leagueId: 'l1', ownerId: 'u1' });
     await mutationConfig.onSuccess({}, { leagueId: 'l1', ownerId: 'u1' });
 
-    expect(leagueApi.deleteLeague).toHaveBeenCalledWith('l1');
+    expect(leagueActionsApi.deleteLeague).toHaveBeenCalledWith('l1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.detail('l1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.members('l1') });

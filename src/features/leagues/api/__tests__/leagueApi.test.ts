@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { leagueActionsApi } from "../leagueActionsApi";
 import { leagueApi } from "../leagueApi";
 
 describe("leagueApi", () => {
@@ -93,7 +94,7 @@ describe("leagueApi", () => {
         primaryLeague: mockData[0],
         leagues: [mockData[1]],
         inactiveLeagues: [mockData[2]],
-        totalLeagues: 3,
+        total: 3,
       });
     });
   });
@@ -103,7 +104,7 @@ describe("leagueApi", () => {
       const mockRpc = jest.fn().mockResolvedValue({ data: "l1", error: null });
       (supabase as any).rpc = mockRpc;
 
-      const result = await leagueApi.createLeague({
+      const result = await leagueActionsApi.createLeague({
         league_name: "Test",
         max_members: 6,
         competition_id: 1,
@@ -127,7 +128,7 @@ describe("leagueApi", () => {
         .mockResolvedValue({ data: "member-id", error: null });
       (supabase as any).rpc = mockRpc;
 
-      const result = await leagueApi.joinLeague("ABC1234", "TestUser");
+      const result = await leagueActionsApi.joinLeague("ABC1234", "TestUser");
       expect(mockRpc).toHaveBeenCalledWith("join_league", {
         league_join_code: "ABC1234",
         user_nickname: "TestUser",
@@ -139,7 +140,7 @@ describe("leagueApi", () => {
       const mockRpc = jest.fn().mockResolvedValue({ data: null, error: null });
       (supabase as any).rpc = mockRpc;
 
-      await expect(leagueApi.joinLeague("ABC1234", "TestUser")).rejects.toThrow(
+      await expect(leagueActionsApi.joinLeague("ABC1234", "TestUser")).rejects.toThrow(
         "Failed to join league",
       );
     });
@@ -179,7 +180,7 @@ describe("leagueApi", () => {
         .mockResolvedValue({ data: { success: true }, error: null });
       (supabase as any).rpc = mockRpc;
 
-      const result = await leagueApi.deleteLeague("l1");
+      const result = await leagueActionsApi.deleteLeague("l1");
 
       expect(mockRpc).toHaveBeenCalledWith("delete_owned_league", {
         p_league_id: "l1",
@@ -193,7 +194,7 @@ describe("leagueApi", () => {
         .mockResolvedValue({ data: null, error: { message: "Not owner" } });
       (supabase as any).rpc = mockRpc;
 
-      await expect(leagueApi.deleteLeague("l1")).rejects.toThrow("Not owner");
+      await expect(leagueActionsApi.deleteLeague("l1")).rejects.toThrow("Not owner");
     });
   });
 
@@ -229,7 +230,7 @@ describe("leagueApi", () => {
         single: jest.fn().mockResolvedValue({ data: mockUpdated, error: null }),
       });
 
-      const result = await leagueApi.updateLeague("l1", { name: "New Name" });
+      const result = await leagueActionsApi.updateLeague("l1", { name: "New Name" });
       expect(supabase.from).toHaveBeenCalledWith("leagues");
       expect(result).toEqual(mockUpdated);
     });
