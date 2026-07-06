@@ -13,14 +13,14 @@ import { AvatarImage, CText } from '../ui';
 const isIOS = Platform.OS === 'ios';
 type TabsContectProps = {
   nickname: string;
-  avatar_url: string | null;
+  avatarUrl: string | null;
 };
-function TabsContect({ nickname, avatar_url }: TabsContectProps) {
+function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
   const { colors } = useThemeTokens();
   return (
     <View className="flex-row items-center justify-between w-full">
       <View className="flex-row items-center gap-3">
-        <AvatarImage nickname={nickname} path={avatar_url} className="w-12 h-12" />
+        <AvatarImage nickname={nickname} path={avatarUrl} className="w-12 h-12" />
 
         <CText className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
           {nickname}
@@ -44,7 +44,7 @@ function TabsContect({ nickname, avatar_url }: TabsContectProps) {
 
 export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
   const { colors, theme } = useThemeTokens();
-  const { nickname, avatar_url } = usePrimaryMember();
+  const { nickname, avatarUrl } = usePrimaryMember();
 
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
 
@@ -66,7 +66,7 @@ export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
                 <MenuIcon size={24} color={colors.primary} />
               </Pressable>
             )}
-            <TabsContect nickname={nickname} avatar_url={avatar_url} />
+            <TabsContect nickname={nickname} avatarUrl={avatarUrl} />
           </View>
         ) : (
           <Link href="/settings" asChild>

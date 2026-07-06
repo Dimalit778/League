@@ -47,7 +47,7 @@ export const LeagueDetailsSection = ({
           </CText>
 
           {league.owner_id === memberUserId && (
-            <Link href="/profile/edit-league" asChild>
+            <Link href="/(app)/(league)/edit" asChild>
               <TouchableOpacity className="p-2">
                 <FontAwesome6 name="pen-to-square" size={16} color={colors.secondary} />
               </TouchableOpacity>

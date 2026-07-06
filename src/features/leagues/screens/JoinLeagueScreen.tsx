@@ -69,7 +69,7 @@ export default function JoinLeagueScreen() {
         join_code: inviteCodeValue,
         nickname: formData.nickname,
       });
-      router.replace('/(app)/(user)/leagues');
+      router.replace('/(app)/(user)');
     } catch (error: any) {
       if (error?.message?.includes('Upgrade')) {
         openPaywall();
