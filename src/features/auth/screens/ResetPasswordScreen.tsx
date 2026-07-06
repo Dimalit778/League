@@ -33,12 +33,12 @@ const ResetPasswordScreen = () => {
       if (event === 'PASSWORD_RECOVERY') {
         const { error } = await supabase.auth.updateUser({ password: passwordForm.getValues('password') });
         if (error) {
-          }
+        }
       }
     });
   }, [passwordForm]);
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">

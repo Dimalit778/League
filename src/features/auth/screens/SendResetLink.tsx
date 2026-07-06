@@ -34,7 +34,7 @@ const SendResetLink = () => {
     }
   };
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       {(isLoading || isProcessingLink) && <LoadingOverlay />}
       <BackButton />
       <KeyboardAwareScrollView

@@ -90,7 +90,7 @@ if (Platform.OS === 'web') {
   authStorage = createAuthStorage();
 }
 
-export { appStorage, userStorage, authStorage };
+export { appStorage, authStorage, userStorage };
 
 // Zustand-compatible storage adapter
 export function createMMKVStorageAdapter(storage: StorageInstance) {

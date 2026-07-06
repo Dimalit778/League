@@ -51,7 +51,7 @@ const SignUpScreen = () => {
   };
 
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">

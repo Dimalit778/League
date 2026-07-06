@@ -128,7 +128,7 @@ const VerifyEmailScreen = () => {
   }
 
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       {isLoading && <LoadingOverlay />}
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
