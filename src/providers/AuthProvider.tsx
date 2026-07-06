@@ -27,7 +27,28 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
 
   if (!shouldApply()) return;
 
-  const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single();
+  let data;
+  let error;
+  try {
+    ({ data, error } = await supabase.from('users').select('*').eq('id', session.user.id).single());
+  } catch (fetchError) {
+    // Network/transient failure — keep the existing auth state
+    console.error('Failed to fetch user row:', fetchError);
+    return;
+  }
+
+  if (!shouldApply()) return;
+
+  if (error) {
+    // PGRST116 = no rows found: the user row genuinely does not exist
+    if (error.code === 'PGRST116') {
+      setSignedOut();
+    } else {
+      // Server/transient error — keep the existing auth state
+      console.error('Failed to fetch user row:', error.message);
+    }
+    return;
+  }
 
   if (!data) {
     setSignedOut();

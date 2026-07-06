@@ -83,32 +83,24 @@ export const signUp = async (email: string, password: string, fullname: string) 
 
 // Sign Out
 export const signOut = async (queryClient: QueryClient) => {
+  // Always attempt the remote sign-out, even if the local session is
+  // expired, revoked, or missing — Supabase errors here must not block logout.
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData.session) {
-      throw new Error('No active session found');
+    const { error } = await supabase.auth.signOut();
+    if (error && error.message !== 'Auth session missing!') {
+      console.log('signOutError', JSON.stringify(error, null, 2));
     }
-
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error && error.message !== 'Auth session missing!') {
-        throw error;
-      }
-    } catch (signOutError) {
-      console.log('signOutError', JSON.stringify(signOutError, null, 2));
-    }
-
-    // Clear member store
-    useMemberStore.getState().clearMember();
-
-    // Clear queries
-    queryClient.invalidateQueries({ queryKey: KEYS.users.all });
-    queryClient.removeQueries({ queryKey: KEYS.users.all });
-
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to sign out' };
+  } catch (signOutError) {
+    console.log('signOutError', JSON.stringify(signOutError, null, 2));
   }
+
+  // Clear member store
+  useMemberStore.getState().clearMember();
+
+  // Drop all cached server data so the next user on this device starts fresh
+  queryClient.clear();
+
+  return { success: true };
 };
 
 // Verify OTP
