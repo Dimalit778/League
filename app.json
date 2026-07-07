@@ -7,7 +7,7 @@
     "icon": "./src/assets/app-icon.png",
     "scheme": "champo",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.champo",
