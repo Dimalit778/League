@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "league",
-    "slug": "leaguechampion",
+    "name": "Champo",
+    "slug": "champo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/app-icon.png",
-    "scheme": "league",
+    "scheme": "champo",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dimalit778.league",
+      "bundleIdentifier": "com.dimalit778.champo",
       "userInterfaceStyle": "dark",
       "usesAppleSignIn": true,
       "config": {
@@ -24,7 +24,8 @@
         "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dimalit778.league"
+      "package": "com.dimalit778.champo",
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -114,7 +115,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "ae460131-1d9e-4bfe-9dae-4953f64f9dc2"
+        "projectId": "2634cc91-a5eb-48e7-a323-c4a5dbfd03e7"
       }
     },
     "runtimeVersion": "1.0.0",

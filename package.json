@@ -135,6 +135,13 @@
       "exclude": [
         "@sentry/react-native"
       ]
+    },
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "@lottiefiles/dotlottie-react-native"
+        ]
+      }
     }
   },
   "private": true
