@@ -7,7 +7,7 @@ type CompetitionSummary = Pick<
 
 type CompetitionType = Pick<
   Tables<"competitions">,
-  "id" | "name" | "logo" | "flag" | "type" | "current_stage" | "current_fixture"
+  "id" | "name" | "logo" | "flag" | "area" | "type" | "current_stage" | "current_fixture"
 >;
 
 type LeaderboardRow = Pick<

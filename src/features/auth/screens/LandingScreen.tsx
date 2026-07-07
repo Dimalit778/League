@@ -1,43 +1,34 @@
-import { CText } from '@/components/ui';
-import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
-import { ImageBackground, Pressable, Text, View } from 'react-native';
-
-import footballBg from '@assets/images/football-bg.png';
+import { CText, ScreenBackground } from '@/components/ui';
+import trophyBallBg from '@assets/images/trophy-ball.png';
 import { Link } from 'expo-router';
+import { Pressable, View } from 'react-native';
+
 export default function LandingScreen() {
   return (
-    <View className="flex-1">
-      <ImageBackground
-        className="opacity-60"
-        resizeMode={'cover'}
-        source={footballBg}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-          height: '100%',
-        }}
-      />
+    <ScreenBackground source={trophyBallBg}>
+      <View className="flex-1  pt-16">
+        <View className="items-center pb-8">
+          <CText className="text-text text-[50px] font-bold leading-[54px] tracking-tight">League</CText>
 
-      <View className="flex-1 justify-center mt-10">
-        <Text className="text-center text-black text-7xl font-black leading-tight">League</Text>
-        <Text className="text-center  text-black text-7xl font-black leading-tight">Champion</Text>
-        <CText variant="body" className="text-center text-stone-800">
-          Predict. Compete. Win.
-        </CText>
+          <View className="mt-2 rounded-2xl border border-white/20 bg-white/10 px-7 py-2">
+            <CText className="text-text text-[48px] font-bold leading-[52px] tracking-tight">Champion</CText>
+          </View>
+
+          <View className="mt-3 rounded-full  px-4 py-1">
+            <CText className="text-primary text-xs font-semibold uppercase tracking-[3px]">Football Prediction</CText>
+          </View>
+        </View>
+
+        <CText className="pt-16 text-center text-2xl font-semibold text-white/80">Predict. Compete. Win.</CText>
       </View>
 
-      <View className="justify-end px-5 pb-4">
+      <View className="px-5 pb-8">
         <Link href="/(auth)/signIn" asChild>
-          <Pressable className="bg-blue-500/80 p-4 rounded-full mb-4">
-            <CText className="text-white text-center text-2xl font-bold">Get Started</CText>
+          <Pressable className="mb-4 rounded-2xl bg-primary p-4 active:opacity-85">
+            <CText className="text-background text-center text-xl font-semibold">Get Started</CText>
           </Pressable>
         </Link>
-        <AuthLegalLinks />
       </View>
-    </View>
+    </ScreenBackground>
   );
 }

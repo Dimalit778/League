@@ -26,12 +26,12 @@ describe('SignUpScreen', () => {
   });
 
   it('renders the Sign Up button', () => {
-    const { getByText } = render(<SignUpScreen />);
+    const { getByTestId } = render(<SignUpScreen />);
 
-    expect(getByText('Sign Up')).toBeTruthy();
+    expect(getByTestId('button')).toBeTruthy();
   });
 
-  it('renders link to Sign In', () => {
+  it('renders auth mode toggle with Sign In option', () => {
     const { getByText } = render(<SignUpScreen />);
 
     expect(getByText('Sign In')).toBeTruthy();

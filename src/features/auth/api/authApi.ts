@@ -5,6 +5,7 @@ import { useMemberStore } from '@/store/MemberStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import type { QueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
+import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -173,6 +174,79 @@ export const sendResetPasswordLink = async (email: string) => {
 
     return { success: true };
   } catch (error: any) {
+    const userFriendlyError = formatErrorForUser(error);
+    return { success: false, error: userFriendlyError };
+  }
+};
+
+export type RecoveryTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+// Parse the tokens Supabase appends to the password recovery deep link
+// (league://resetPassword#access_token=...&refresh_token=...&type=recovery).
+// detectSessionInUrl is disabled on the client, so the app must consume them itself.
+export const parseRecoveryTokensFromUrl = (
+  url: string
+): { tokens: RecoveryTokens | null; error: string | null } => {
+  const { params, errorCode } = QueryParams.getQueryParams(url);
+
+  if (errorCode) {
+    return { tokens: null, error: errorCode };
+  }
+  if (params.error_description) {
+    return { tokens: null, error: params.error_description };
+  }
+
+  const accessToken = params.access_token;
+  const refreshToken = params.refresh_token;
+
+  if (!accessToken || !refreshToken) {
+    return { tokens: null, error: null };
+  }
+
+  return { tokens: { accessToken, refreshToken }, error: null };
+};
+
+// Update Password using the recovery tokens from the reset link.
+// The session is established here (at submit time) rather than on screen mount,
+// so the auth guard doesn't unmount the reset screen while the user is typing.
+export const updatePasswordWithRecoveryTokens = async (password: string, tokens: RecoveryTokens) => {
+  let sessionEstablished = false;
+
+  try {
+    const isConnected = await checkNetworkConnection();
+    if (!isConnected) {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+
+    const { error: sessionError } = await supabase.auth.setSession({
+      access_token: tokens.accessToken,
+      refresh_token: tokens.refreshToken,
+    });
+
+    if (sessionError) throw sessionError;
+    sessionEstablished = true;
+
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) throw error;
+
+    // End the temporary recovery session so the auth guard does not redirect
+    // into the app stack while this screen is still showing feedback.
+    await supabase.auth.signOut();
+
+    return { success: true };
+  } catch (error: any) {
+    if (sessionEstablished) {
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore — local session cleanup is best-effort after a failed reset.
+      }
+    }
+
     const userFriendlyError = formatErrorForUser(error);
     return { success: false, error: userFriendlyError };
   }

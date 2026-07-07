@@ -82,9 +82,27 @@ export default function MyLeaguesScreen() {
     const memberToActivate = selectedLeague.active ? selectedLeague : { ...selectedLeague, active: true };
 
     const previousPrimaryMember = primaryMember;
-    setPrimaryMember(previousPrimaryMember);
+    const { league } = memberToActivate;
+    const { competition } = league;
+    setPrimaryMember({
+      memberId: memberToActivate.id,
+      userId: memberToActivate.user_id,
+      isPrimary: true,
+      active: true,
+      nickname: memberToActivate.nickname,
+      avatarUrl: memberToActivate.avatar_url,
+      createdAt: memberToActivate.created_at,
+      leagueId: league.id,
+      leagueName: league.name,
+      competitionId: competition.id,
+      competitionName: competition.name,
+      competitionLogo: competition.logo,
+      competitionFlag: competition.flag,
+      competitionArea: competition.area,
+      competitionType: competition.type as 'league' | 'cup',
+    });
 
-    const competitionId = memberToActivate.league.competition?.id;
+    const competitionId = competition?.id;
     const memberId = memberToActivate.id;
 
     const prefetchTasks: Promise<unknown>[] = [

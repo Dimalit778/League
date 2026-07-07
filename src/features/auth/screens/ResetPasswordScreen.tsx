@@ -1,13 +1,22 @@
-import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
+import { Button, CText, InputField, Screen } from '@/components/ui';
+import {
+  parseRecoveryTokensFromUrl,
+  updatePasswordWithRecoveryTokens,
+  type RecoveryTokens,
+} from '@/features/auth/api/authApi';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { supabase } from '@/lib/supabase';
+import { useTranslation } from '@/hooks/useTranslation';
 import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
+
+type PasswordFormData = yup.InferType<typeof passwordSchema>;
 
 const passwordSchema = yup.object().shape({
   password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
@@ -19,87 +28,137 @@ const passwordSchema = yup.object().shape({
 
 const ResetPasswordScreen = () => {
   const { colors } = useThemeTokens();
-
+  const url = Linking.useLinkingURL();
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [recoveryTokens, setRecoveryTokens] = useState<RecoveryTokens | null>(null);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const passwordForm = useForm({
     resolver: yupResolver(passwordSchema),
     mode: 'onChange',
   });
 
+  // The recovery link carries the session tokens in its fragment. Capture them
+  // once; the session itself is only established when the user submits.
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        const { error } = await supabase.auth.updateUser({ password: passwordForm.getValues('password') });
-        if (error) {
-        }
+    if (!url || recoveryTokens) return;
+
+    const { tokens, error } = parseRecoveryTokensFromUrl(url);
+    if (tokens) {
+      setRecoveryTokens(tokens);
+      setLinkError(null);
+    } else if (error) {
+      setLinkError(error);
+    }
+  }, [url, recoveryTokens]);
+
+  const handleResetPassword = async (data: PasswordFormData) => {
+    if (!recoveryTokens) {
+      setErrorMessage(linkError ?? t('Reset link is invalid or expired.'));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const result = await updatePasswordWithRecoveryTokens(data.password, recoveryTokens);
+
+      if (!result.success) {
+        setErrorMessage(result.error ?? t('Failed to update password. Please try again.'));
+        return;
       }
-    });
-  }, [passwordForm]);
+
+      Alert.alert(t('Password Updated'), t('Your password has been changed successfully.'), [
+        {
+          text: 'OK',
+          onPress: () => router.replace('/(auth)/signIn'),
+        },
+      ]);
+    } catch (error) {
+      console.error('Reset password failed:', error);
+      setErrorMessage('Failed to update password. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Screen edges={['top']}>
-      <BackButton />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
-            New Password
-          </CText>
-          <CText className="text-muted font-bold text-center mt-2">Enter your new password</CText>
+          <CText className="text-secondary text-4xl font-bold text-center">{t('New Password')}</CText>
+
+          <CText className="text-muted text-base text-center mt-4">{t('Enter your new password')}</CText>
         </View>
 
-        <View className="px-5 gap-4">
-          <InputField
-            control={passwordForm.control}
-            name="password"
-            placeholder="New Password"
-            secureTextEntry={!showPassword}
-            error={passwordForm.formState.errors.password}
-            icon={<LockIcon size={24} color={colors.muted} />}
-            rightIcon={
-              showPassword ? (
-                <EyeOpenIcon size={24} color={colors.muted} />
-              ) : (
-                <EyeClosedIcon size={24} color={colors.muted} />
-              )
-            }
-            onRightIconPress={() => setShowPassword(!showPassword)}
-            // clearError={clearError}
-          />
+        {linkError && !recoveryTokens ? (
+          <View className="px-5 gap-4">
+            <CText className="text-error text-center">{t('Reset link is invalid or expired.')}</CText>
+            <CText className="text-muted text-center">{t('Please request a new link.')}</CText>
+            <Button
+              title={t('Resend New Link')}
+              onPress={() => router.replace('/(auth)/sendResetLink')}
+              variant="secondary"
+              size="lg"
+            />
+          </View>
+        ) : (
+          <View className="px-5 gap-4">
+            <InputField
+              control={passwordForm.control}
+              name="password"
+              placeholder={t('New Password')}
+              secureTextEntry={!showPassword}
+              error={passwordForm.formState.errors.password}
+              icon={<LockIcon size={24} color={colors.muted} />}
+              rightIcon={
+                showPassword ? (
+                  <EyeOpenIcon size={24} color={colors.muted} />
+                ) : (
+                  <EyeClosedIcon size={24} color={colors.muted} />
+                )
+              }
+              onRightIconPress={() => setShowPassword(!showPassword)}
+            />
 
-          <InputField
-            control={passwordForm.control}
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            secureTextEntry={!showConfirmPassword}
-            error={passwordForm.formState.errors.confirmPassword}
-            icon={<LockIcon size={24} color={colors.muted} />}
-            rightIcon={
-              showConfirmPassword ? (
-                <EyeOpenIcon size={24} color={colors.muted} />
-              ) : (
-                <EyeClosedIcon size={24} color={colors.muted} />
-              )
-            }
-            onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            // clearError={clearError}
-          />
+            <InputField
+              control={passwordForm.control}
+              name="confirmPassword"
+              placeholder={t('Confirm Password')}
+              secureTextEntry={!showConfirmPassword}
+              error={passwordForm.formState.errors.confirmPassword}
+              icon={<LockIcon size={24} color={colors.muted} />}
+              rightIcon={
+                showConfirmPassword ? (
+                  <EyeOpenIcon size={24} color={colors.muted} />
+                ) : (
+                  <EyeClosedIcon size={24} color={colors.muted} />
+                )
+              }
+              onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            />
 
-          {/* {errorMessage && (
-            <View className="">
-              <Text className="text-error text-center">{errorMessage}</Text>
-            </View>
-          )} */}
+            {errorMessage && (
+              <View>
+                <CText className="text-error text-center">{errorMessage}</CText>
+              </View>
+            )}
 
-          <Button
-            title="Save New Password"
-            onPress={passwordForm.handleSubmit(() => {})}
-            loading={false}
-            disabled={!passwordForm.formState.isValid}
-            variant="secondary"
-            size="lg"
-          />
-        </View>
+            <Button
+              title={t('Save New Password')}
+              onPress={passwordForm.handleSubmit(handleResetPassword)}
+              loading={isSubmitting}
+              disabled={!passwordForm.formState.isValid || isSubmitting}
+              variant="secondary"
+              size="lg"
+            />
+          </View>
+        )}
       </KeyboardAwareScrollView>
     </Screen>
   );

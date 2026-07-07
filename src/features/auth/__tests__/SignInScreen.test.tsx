@@ -25,16 +25,24 @@ describe('SignInScreen', () => {
   });
 
   it('renders the Sign In button', () => {
-    const { getByText } = render(<SignInScreen />);
+    const { getByTestId } = render(<SignInScreen />);
 
-    expect(getByText('Sign In')).toBeTruthy();
+    expect(getByTestId('button')).toBeTruthy();
   });
 
-  it('renders links to Sign Up and Forgot Password', () => {
+  it('renders Forgot Password link', () => {
     const { getByText } = render(<SignInScreen />);
 
-    expect(getByText('Sign Up')).toBeTruthy();
     expect(getByText('Forgot Password')).toBeTruthy();
+  });
+
+  it('switches to sign up form when toggle is pressed', () => {
+    const { getByText, getByPlaceholderText } = render(<SignInScreen />);
+
+    fireEvent.press(getByText('Sign Up'));
+
+    expect(getByPlaceholderText('Full Name')).toBeTruthy();
+    expect(getByText('Create account')).toBeTruthy();
   });
 
   it('renders Google Sign In option', () => {

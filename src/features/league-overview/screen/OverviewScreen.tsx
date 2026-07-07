@@ -1,14 +1,14 @@
 import { Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { useLeagueOverview } from '@/features/leagues/hooks/useLeagueOverview';
+import { useLeagueOverview } from '@/features/league-overview/hooks/useLeagueOverview';
+import { LeagueHeroCard } from '@/features/leagues/components/leagueOverview/LeagueHeroCard';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
-import { LeagueHeroCard } from '../components/leagueOverview/LeagueHeroCard';
 
-import { QuickAccessSection } from '../components/leagueOverview/QuickAccessSection';
-import { TopLeaderboardCard } from '../components/leagueOverview/TopLeaderboardCard';
-import { UpcomingMatchesCard } from '../components/leagueOverview/UpcomingMatches';
+import { QuickAccessSection } from '@/features/leagues/components/leagueOverview/QuickAccessSection';
+import { TopLeaderboardCard } from '@/features/leagues/components/leagueOverview/TopLeaderboardCard';
+import { UpcomingMatchesCard } from '@/features/leagues/components/leagueOverview/UpcomingMatches';
 
 const TOP_LEADERBOARD_SIZE = 5;
 

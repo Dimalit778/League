@@ -15,6 +15,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
   const { colors } = useThemeTokens();
   const router = useRouter();
   const isRTL = useIsRTL();
+
   const CircleArrowIcon = isRTL ? CircleArrowRightIcon : CircleArrowLeftIcon;
 
   const headerHeight = Platform.OS === 'ios' ? 44 : 56;

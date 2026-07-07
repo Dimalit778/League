@@ -1,6 +1,7 @@
 export { MatchCard } from '../../features/matches/components/MatchCard';
 export { MatchCardBg } from '../../features/matches/components/MatchCardBg';
 export { Screen } from '../layout/Screen';
+export { ScreenBackground } from '../layout/ScreenBackground';
 export { AlertDialog } from './AlertDialog';
 export { AvatarImage } from './AvatarImage';
 export { BackButton } from './BackButton';

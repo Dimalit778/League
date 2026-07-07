@@ -103,20 +103,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) return;
 
       if (event === 'INITIAL_SESSION') {
         return;
       }
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-        await syncSessionUser(session, () => isMounted);
-      } else if (event === 'SIGNED_OUT') {
-        setSignedOut();
-      } else {
-        useAuthStore.setState({ isAuthLoading: false });
-      }
+      // Never await Supabase auth work here — async listeners block setSession,
+      // updateUser, and signOut until they finish (e.g. password reset submit).
+      void (async () => {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          await syncSessionUser(session, () => isMounted);
+        } else if (event === 'SIGNED_OUT') {
+          setSignedOut();
+        } else {
+          useAuthStore.setState({ isAuthLoading: false });
+        }
+      })();
     });
 
     // Cleanup function

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import { Image as ExpoImage } from 'expo-image';
+import OverviewScreen from '../../../league-overview/screen/OverviewScreen';
 import { LeaderboardRow } from '../../types';
-import OverviewScreen from '../OverviewScreen';
 
 let mockLeaderboard: LeaderboardRow[] = [];
 

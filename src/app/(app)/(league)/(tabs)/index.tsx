@@ -1,1 +1,1 @@
-export { default } from '@/features/leagues/screens/OverviewScreen';
+export { default } from '@/features/league-overview/screen/OverviewScreen';

@@ -1,8 +1,8 @@
+import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
+import { LeagueOverviewData } from '@/features/leagues/types/leagueOverviewType';
 import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
 import { useMemberStats } from '@/features/members/hooks/useMembers';
 import { usePrimaryMember } from '@/store/MemberStore';
-import { LeagueOverviewData } from '../types/leagueOverviewType';
-import { useGetLeaderboard } from './useLeagues';
 
 export function useLeagueOverview(): LeagueOverviewData {
   const primaryMember = usePrimaryMember();

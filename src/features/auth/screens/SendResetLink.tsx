@@ -1,12 +1,12 @@
-import { LoadingOverlay } from '@/components/layout';
 import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { EmailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
@@ -18,24 +18,24 @@ const emailSchema = yup.object().shape({
 });
 
 const SendResetLink = () => {
+  const { t } = useTranslation();
   const emailForm = useForm({
     resolver: yupResolver(emailSchema),
     mode: 'onChange',
   });
-  const [isProcessingLink, setIsProcessingLink] = useState(false);
+
+  const [message, setMessage] = useState<string | null>(null);
   const { colors } = useThemeTokens();
   const { sendResetPasswordLink, isLoading, errorMessage, clearError } = useAuthActions();
   const handleSendResetLink = async (data: EmailFormData) => {
     const result = await sendResetPasswordLink(data.email);
 
     if (result && result.success) {
-      // Email sent successfully - user needs to check their email
-      // The email link will redirect them back to this screen with URL params
+      setMessage(t('An email has been sent to your email address with a link to reset your password.'));
     }
   };
   return (
     <Screen edges={['top']}>
-      {(isLoading || isProcessingLink) && <LoadingOverlay />}
       <BackButton />
       <KeyboardAwareScrollView
         bottomOffset={62}
@@ -44,11 +44,9 @@ const SendResetLink = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View className="items-center py-16">
-          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
-            Reset Password
-          </CText>
-          <CText className="text-muted font-bold text-center mt-2">
-            Enter your email address and we'll send you a reset link
+          <CText className="text-secondary text-4xl font-bold text-center">{t('Reset Password')}</CText>
+          <CText className="text-muted text-base text-center mt-4">
+            {t("Enter your email address and we'll send you a reset link")}
           </CText>
         </View>
 
@@ -63,26 +61,22 @@ const SendResetLink = () => {
             clearError={clearError}
           />
 
-          {errorMessage && (
-            <View className="">
-              <CText className="text-error text-center">{errorMessage}</CText>
-            </View>
-          )}
-
           <Button
-            title="Send Reset Link"
+            title={t('Send Reset Link')}
             onPress={emailForm.handleSubmit(handleSendResetLink)}
             loading={isLoading}
             disabled={!emailForm.formState.isValid || isLoading}
             variant="secondary"
             size="lg"
           />
-
-          <View className="flex-row items-center justify-center mt-5">
-            <Link href="/(auth)/signIn" replace>
-              <CText className="text-secondary font-bold">Back to Sign In</CText>
-            </Link>
-          </View>
+          {errorMessage ||
+            (message && (
+              <View className="mt-4">
+                <CText className={`text-center ${errorMessage ? 'text-error' : 'text-success'}`}>
+                  {errorMessage || message}
+                </CText>
+              </View>
+            ))}
         </View>
       </KeyboardAwareScrollView>
     </Screen>
