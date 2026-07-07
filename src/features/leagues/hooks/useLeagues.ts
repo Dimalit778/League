@@ -3,6 +3,7 @@ import { KEYS } from '@/lib/queryClient';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
+import { memberApi } from '@/features/members/api/memberApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore } from '@/store/MemberStore';
@@ -202,6 +203,25 @@ export const useUpdateLeague = () => {
     },
   });
 };
+export const useRemoveMember = () => {
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? '');
+
+  return useMutation({
+    mutationFn: (memberId: string) => memberApi.removeMember(memberId),
+    onSuccess: async ({ leagueId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: KEYS.leagues.members(leagueId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) }),
+      ]);
+    },
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
+  });
+};
+
 export const useLeaveLeague = () => {
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');

@@ -4,7 +4,7 @@ import {
   isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable } from 'react-native';
 
 import { CText } from '@/components/ui';
@@ -24,12 +24,15 @@ const GoogleAuth = ({
   isLoading: boolean;
 }) => {
   const { t } = useTranslation();
-  GoogleSignin.configure({
-    webClientId: WEB_CLIENT_ID,
-    offlineAccess: false,
-    iosClientId: IOS_CLIENT_ID,
-    profileImageSize: 120,
-  });
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: WEB_CLIENT_ID,
+      offlineAccess: false,
+      iosClientId: IOS_CLIENT_ID,
+      profileImageSize: 120,
+    });
+  }, []);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const label = t('Sign in with Google');

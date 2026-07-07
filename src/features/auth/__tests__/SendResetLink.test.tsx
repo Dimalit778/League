@@ -26,10 +26,10 @@ describe('SendResetLink', () => {
     expect(getByText('Send Reset Link')).toBeTruthy();
   });
 
-  it('renders Back to Sign In link', () => {
-    const { getByText } = render(<SendResetLink />);
+  it('renders a back button', () => {
+    const { getByTestId } = render(<SendResetLink />);
 
-    expect(getByText('Back to Sign In')).toBeTruthy();
+    expect(getByTestId('lucide-icon')).toBeTruthy();
   });
 
   it('enables button when valid email is entered', async () => {

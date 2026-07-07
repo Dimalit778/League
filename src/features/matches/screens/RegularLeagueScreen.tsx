@@ -13,7 +13,7 @@ import { useGetMatchesByFixture } from '../hooks/useMatches';
 import { mapMatchToCardProps } from '../utils/matchCard.mapper';
 
 export default function RegularLeagueScreen() {
-  const { member_id, competition_id } = usePrimaryMember();
+  const { memberId, competitionId } = usePrimaryMember();
 
   const bottomTabsInset = useFloatBottomTabsInset();
 
@@ -81,7 +81,7 @@ export default function RegularLeagueScreen() {
   } = useGetMatchesByFixture({
     selectedFixture,
     competitionId,
-    member_id,
+    memberId,
     enabled: !!matchMeta,
   });
 

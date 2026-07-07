@@ -25,7 +25,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.dimalit778.champo",
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",

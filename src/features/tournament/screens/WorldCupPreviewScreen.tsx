@@ -29,7 +29,7 @@ export default function WorldCupPreviewScreen() {
   const knockoutMatches = useMemo(() => getKnockoutMatches(selectedStage), [selectedStage]);
 
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       <BackButton title={t('World Cup')} />
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="flex-row items-center justify-center gap-3 mt-1 mb-2 px-3">

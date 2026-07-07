@@ -35,14 +35,14 @@ This is an **Expo React Native** app using **expo-router** (file-based routing),
 src/
   app/                  # expo-router file-based routes
     (app)/
-      (member)/         # Authenticated member screens
-        (tabs)/         # Bottom tabs: Home, Matches, Stats, Profile
-        match/          # Match detail screen
-        member/         # Member profile screen
-        profile/        # Own profile screen
-      (admin)/          # Admin-only screens
-      (public)/         # Public screens (join league, etc.)
-    (auth)/             # Sign in / sign up screens
+      (league)/         # Screens gated on an active primary league membership
+        (tabs)/         # Bottom tabs: Home (index), Stats, Matches, Profile, Rank
+        match/          # Match detail screen ([matchId])
+        member/         # Member profile screen ([memberId])
+        edit.tsx        # Edit league screen
+      (admin)/          # Admin-only screens (guarded by useIsAdmin)
+      (user)/           # User-level screens: my leagues (index), create/join league, settings
+    (auth)/             # Sign in / sign up / verify email / password reset screens
   features/             # Feature slices (see below)
   providers/            # React context providers
   store/                # Zustand stores
@@ -69,8 +69,8 @@ All TanStack Query keys are defined in [src/lib/queryClient.ts](src/lib/queryCli
 
 ### Zustand stores
 
-- `AuthStore` — `session`, `user`, `isAuthenticated`, `isAuthLoading`. Persisted via MMKV.
-- `MemberStore` — `activeMember`, `memberId`, `leagueId`, `competitionId`. The active league membership drives most of the app. Call `initializeMember()` after login; it queries Supabase for the `is_primary` league_member row.
+- `AuthStore` — `session`, `user`, `isAuthenticated`, `isAuthLoading`. `user`/`isAuthenticated` persisted via MMKV; the session itself lives only in Supabase's encrypted auth storage.
+- `MemberStore` — `primaryMember` (member + league + competition of the primary league membership). Drives most of the app; `(app)/_layout.tsx` calls `initializeMember()` after login, which queries Supabase for the `is_primary` + `active` league_member row. Selectors like `selectMemberId`/`selectLeagueId` live in the store file.
 - `LanguageStore` — current language (`en` | `he`) + RTL flag.
 - `ThemeStore`, `SidebarStore` — UI state.
 

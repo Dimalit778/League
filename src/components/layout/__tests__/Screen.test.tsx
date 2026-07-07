@@ -23,7 +23,7 @@ describe('Screen', () => {
 
   it('renders with safe area wrapper', () => {
     const { getByText } = render(
-      <Screen withSafeArea>
+      <Screen edges={['top']}>
         <Text>Safe content</Text>
       </Screen>
     );

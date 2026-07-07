@@ -133,7 +133,7 @@ export default function EditLeagueScreen() {
   if (error) return <Error error={error} />;
 
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       <BackButton title={t('Edit League')} />
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="p-4">

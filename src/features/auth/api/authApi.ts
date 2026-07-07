@@ -13,11 +13,11 @@ WebBrowser.maybeCompleteAuthSession();
 // Helper: Create redirect URI for password reset
 const getPasswordResetRedirectUri = () => {
   const uri = AuthSession.makeRedirectUri({
-    scheme: 'league',
+    scheme: 'champo',
     path: 'resetPassword',
   });
   if (uri.startsWith('localhost://') || uri.startsWith('http://localhost')) {
-    return 'league://resetPassword';
+    return 'champo://resetPassword';
   }
   return uri;
 };
@@ -185,7 +185,7 @@ export type RecoveryTokens = {
 };
 
 // Parse the tokens Supabase appends to the password recovery deep link
-// (league://resetPassword#access_token=...&refresh_token=...&type=recovery).
+// (champo://resetPassword#access_token=...&refresh_token=...&type=recovery).
 // detectSessionInUrl is disabled on the client, so the app must consume them itself.
 export const parseRecoveryTokensFromUrl = (
   url: string

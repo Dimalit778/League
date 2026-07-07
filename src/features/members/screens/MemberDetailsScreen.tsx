@@ -58,7 +58,7 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
   if (error || matchesError) return <Error error={error || (matchesError as Error)} />;
 
   return (
-    <Screen withSafeArea>
+    <Screen edges={['top']}>
       <BackButton />
 
       {isLoading ? (

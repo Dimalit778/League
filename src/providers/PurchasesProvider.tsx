@@ -107,9 +107,6 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     dispatch({ type: 'setError', value: null });
     dispatch({ type: 'setReady', value: true });
     markUserSynced(true);
-
-    if (customerInfoRef.current) {
-    }
   }, [markUserSynced]);
 
   const refreshCustomerInfo = useCallback(async (): Promise<CustomerInfo | null> => {

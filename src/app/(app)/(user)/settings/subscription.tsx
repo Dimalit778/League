@@ -1,3 +1,1 @@
-export default function SubscriptionScreen() {
-  return <SubscriptionScreen />;
-}
+export { default } from '@/features/settings/screens/SubscriptionScreen';
