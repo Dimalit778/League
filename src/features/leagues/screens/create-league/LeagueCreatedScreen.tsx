@@ -47,7 +47,7 @@ const LeagueCreatedScreen = () => {
   };
 
   const handleStartLeague = async () => {
-    router.replace(`/(app)/league/${leagueId}` as Href);
+    router.replace(`/(app)/(league)` as Href);
   };
 
   return (

@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { LeaderboardRow, MemberLeagueSummaryType, MyLeagueType, MyLeaguesResponseType } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
-const COMPETITION_SELECT = 'id, name, logo, flag, type, current_stage, current_fixture';
+const COMPETITION_SELECT = 'id, name,area, logo, flag, type, current_stage, current_fixture';
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,

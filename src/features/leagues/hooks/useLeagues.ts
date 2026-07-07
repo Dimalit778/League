@@ -218,9 +218,15 @@ export const useLeaveLeague = () => {
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
       ]);
+      // Re-resolve the primary member: picks up a server-reassigned primary
+      // league, or stays null when no leagues remain
+      await useMemberStore.getState().initializeMember();
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
@@ -251,10 +257,16 @@ export const useDeleteLeague = () => {
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.members.primary(userId),
+        }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.detail(leagueId) }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
       ]);
+      // Re-resolve the primary member: picks up a server-reassigned primary
+      // league, or stays null when no leagues remain
+      await useMemberStore.getState().initializeMember();
     },
     onError: (error) => {
       Alert.alert('Error', error.message);

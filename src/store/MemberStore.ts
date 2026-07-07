@@ -112,7 +112,9 @@ export const useMemberStore = create<MemberState>()((set) => ({
         initialized: true,
       });
     } catch {
+      // Don't keep a stale member from a previous user/league around
       set({
+        primaryMember: null,
         loading: false,
         initialized: true,
       });
