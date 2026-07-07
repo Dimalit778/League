@@ -1,7 +1,14 @@
+import { MATCH_REMINDER_TYPE } from '@/features/notifications/utils/matchReminders';
+import { cancelAllMatchReminders, syncMatchReminders } from '@/features/notifications/utils/reminderScheduler';
+import { ensureNotificationPermission, setupAndroidNotificationChannel } from '@/lib/notifications';
+import { useAuthStore } from '@/store/AuthStore';
+import { useLanguageStore } from '@/store/LanguageStore';
+import { useMemberStore } from '@/store/MemberStore';
+import * as Sentry from '@sentry/react-native';
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
 import { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import registerForPushNotificationsAsync from '../lib/notifications';
-import { supabase } from '../lib/supabase';
+import { AppState, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,49 +20,127 @@ Notifications.setNotificationHandler({
   }),
 });
 
+const FOREGROUND_RESYNC_MIN_INTERVAL_MS = 15 * 60 * 1000;
+
+const getReminderMatchId = (response: Notifications.NotificationResponse | null): number | null => {
+  const data = response?.notification?.request?.content?.data;
+  if (!data || data.type !== MATCH_REMINDER_TYPE) return null;
+  const matchId = Number(data.matchId);
+  return Number.isFinite(matchId) ? matchId : null;
+};
+
 export const NotificationProvider = ({ children }: PropsWithChildren) => {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(undefined);
-  const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
-  const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
+  const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
+  const primaryMember = useMemberStore((s) => s.primaryMember);
+  const language = useLanguageStore((s) => s.language);
 
-  const saveUserPushNotificationToken = async (token: string) => {
-    if (!token.length) return;
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [pendingMatchId, setPendingMatchId] = useState<number | null>(null);
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+  // Serialize sync/cancel work so a logout can't interleave with an in-flight sync
+  const syncChainRef = useRef<Promise<void>>(Promise.resolve());
+  const lastSyncAtRef = useRef(0);
 
-    if (!session) return;
-
-    await supabase
-      .from('users')
-      .update({
-        notification_token: token,
-      })
-      .eq('id', session.user.id);
-  };
+  const competitionId = primaryMember?.competitionId ?? null;
+  const leagueId = primaryMember?.leagueId ?? null;
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => {
-        setExpoPushToken(token ?? '');
-        saveUserPushNotificationToken(token ?? '');
+    if (Platform.OS === 'web') return;
+    setupAndroidNotificationChannel().catch(() => {});
+  }, []);
+
+  // Ask for permission once, on the first logged-in open
+  useEffect(() => {
+    if (Platform.OS === 'web' || !isLoggedIn) return;
+    let cancelled = false;
+
+    ensureNotificationPermission()
+      .then((granted) => {
+        if (!cancelled) setPermissionGranted(granted);
       })
-      .catch((error: any) => setExpoPushToken(`${error}`));
-
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      .catch(() => {
+        if (!cancelled) setPermissionGranted(false);
       });
 
     return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
+      cancelled = true;
     };
+  }, [isLoggedIn]);
+
+  // Keep scheduled reminders in step with auth state, primary league and language
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    const shouldSchedule = isLoggedIn && permissionGranted && competitionId != null && leagueId != null;
+
+    const run = () =>
+      shouldSchedule
+        ? syncMatchReminders({ competitionId, leagueId, language })
+        : cancelAllMatchReminders();
+
+    syncChainRef.current = syncChainRef.current.then(run).then(
+      () => {
+        lastSyncAtRef.current = Date.now();
+      },
+      (error) => {
+        Sentry.captureException(error, { tags: { feature: 'match-reminders' } });
+      },
+    );
+  }, [isLoggedIn, permissionGranted, competitionId, leagueId, language]);
+
+  // Refresh on foreground so postponed/rescheduled matches are picked up
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    if (!isLoggedIn || !permissionGranted || competitionId == null || leagueId == null) return;
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      if (Date.now() - lastSyncAtRef.current < FOREGROUND_RESYNC_MIN_INTERVAL_MS) return;
+
+      syncChainRef.current = syncChainRef.current
+        .then(() => syncMatchReminders({ competitionId, leagueId, language }))
+        .then(
+          () => {
+            lastSyncAtRef.current = Date.now();
+          },
+          (error) => {
+            Sentry.captureException(error, { tags: { feature: 'match-reminders' } });
+          },
+        );
+    });
+
+    return () => subscription.remove();
+  }, [isLoggedIn, permissionGranted, competitionId, leagueId, language]);
+
+  // Notification taps: warm taps via the listener, cold starts via the last response
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        const matchId = getReminderMatchId(response);
+        if (matchId != null) setPendingMatchId(matchId);
+      })
+      .catch(() => {});
+
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const matchId = getReminderMatchId(response);
+      if (matchId != null) setPendingMatchId(matchId);
+    });
+
+    return () => subscription.remove();
   }, []);
+
+  // Navigate once the auth + primary-member guards allow the match screen to mount
+  useEffect(() => {
+    if (pendingMatchId == null || !isLoggedIn || !primaryMember) return;
+
+    setPendingMatchId(null);
+    router.push({
+      pathname: '/(app)/(league)/match/[matchId]',
+      params: { matchId: String(pendingMatchId) },
+    });
+  }, [pendingMatchId, isLoggedIn, primaryMember]);
 
   return <>{children}</>;
 };

@@ -679,6 +679,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Today matches': 'Today matches',
       'No matches today': 'No matches today',
     },
+    notifications: {
+      'Match starts soon': 'Match starts soon',
+      'match-reminder-body': '{{home}} vs {{away}} starts soon, enter your prediction for the match',
+    },
   },
   //@eslint-disable-next-line @typescript-eslint/ban-ts-comment
   he: {
@@ -1367,6 +1371,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'View full table': 'לטבלה המלאה',
       'Today matches': 'משחקי היום',
       'No matches today': 'אין משחקים היום',
+    },
+    notifications: {
+      'Match starts soon': 'המשחק מתחיל בקרוב',
+      'match-reminder-body': '{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק',
     },
   },
 };

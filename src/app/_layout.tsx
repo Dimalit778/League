@@ -9,6 +9,7 @@ import {
   AuthProvider,
   ErrorBoundaryProvider,
   LanguageProvider,
+  NotificationProvider,
   PurchasesProvider,
   QueryProvider,
   ThemeProvider,
@@ -133,15 +134,17 @@ const RootLayout = () => (
           <PurchasesProvider>
             <ThemeProvider>
               <LanguageProvider>
-                <AlertProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <SafeAreaProvider>
-                      <KeyboardProvider>
-                        <AppBootstrap />
-                      </KeyboardProvider>
-                    </SafeAreaProvider>
-                  </GestureHandlerRootView>
-                </AlertProvider>
+                <NotificationProvider>
+                  <AlertProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <SafeAreaProvider>
+                        <KeyboardProvider>
+                          <AppBootstrap />
+                        </KeyboardProvider>
+                      </SafeAreaProvider>
+                    </GestureHandlerRootView>
+                  </AlertProvider>
+                </NotificationProvider>
               </LanguageProvider>
             </ThemeProvider>
           </PurchasesProvider>
