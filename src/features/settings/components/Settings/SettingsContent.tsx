@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useThemeStore } from '@/store/ThemeStore';
@@ -35,7 +35,7 @@ const SettingsContent = ({
     return (
       <Pressable onPress={handlePress}>
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base ">{title}</CText>
+          <Text className="text-text text-base ">{title}</Text>
           <AntDesign name={ArrowIcon} size={16} color={theme === 'dark' ? 'white' : 'black'} />
         </View>
       </Pressable>
@@ -47,29 +47,29 @@ const SettingsContent = ({
       <View className="border-b border-primary">
         {/* Theme Toggle */}
         <View className="border-t border-b border-border py-3 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base">{t('Theme')}</CText>
+          <Text className="text-text text-base">{t('Theme')}</Text>
           <ThemeToggle />
         </View>
         {/* Language Toggle */}
         <View className="border-t border-b border-border py-3 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base">{t('Language')}</CText>
+          <Text className="text-text text-base">{t('Language')}</Text>
           <LanguageToggle />
         </View>
         {/* Subscription */}
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base">{t('Subscription')}</CText>
+          <Text className="text-text text-base">{t('Subscription')}</Text>
 
-          <CText className="text-primary text-sm font-medium ">{displayType}</CText>
+          <Text className="text-primary text-sm font-medium ">{displayType}</Text>
         </View>
         {/* Email */}
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base ">{t('Email')}</CText>
-          <CText className="text-text text-base">{email}</CText>
+          <Text className="text-text text-base ">{t('Email')}</Text>
+          <Text className="text-text text-base">{email}</Text>
         </View>
         {/* Joined On */}
         <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <CText className="text-text text-base ">{t('Joined On')}</CText>
-          <CText className="text-text text-base">{createdAtDateString}</CText>
+          <Text className="text-text text-base ">{t('Joined On')}</Text>
+          <Text className="text-text text-base">{createdAtDateString}</Text>
         </View>
       </View>
 

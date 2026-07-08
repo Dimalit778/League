@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/AuthStore';
@@ -29,10 +29,10 @@ export default function LeagueHeader({ settingsHref = '/(app)/(user)/settings' }
         >
           <View className="flex-row items-center justify-between gap-3 px-4 py-3.5">
             <View className="min-w-0 flex-1">
-              <CText className="text-sm font-medium uppercase tracking-widest text-muted">{t('Hello')}</CText>
-              <CText className="mt-0.5 text-2xl font-black text-white" numberOfLines={1}>
+              <Text className="text-sm font-medium uppercase tracking-widest text-muted">{t('Hello')}</Text>
+              <Text className="mt-0.5 text-2xl font-black text-white" numberOfLines={1}>
                 {displayName}
-              </CText>
+              </Text>
             </View>
 
             <Pressable

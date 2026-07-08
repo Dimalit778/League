@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguageStore } from '@/store/LanguageStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,25 +30,25 @@ export default function AiAnalysisCard({
       {/* Header */}
       <View className="flex-row items-center gap-2">
         <Ionicons name="sparkles" size={18} color="#a78bfa" />
-        <CText variant="bodyBold" className="text-primary">
+        <Text variant="bodyBold" className="text-primary">
           {t('AI Preview')}
-        </CText>
+        </Text>
       </View>
 
       {/* Summary */}
-      <CText variant="body" className="text-text leading-6">
+      <Text variant="body" className="text-text leading-6">
         {summary}
-      </CText>
+      </Text>
 
       {/* Predicted score chip */}
       <View className="flex-row items-center gap-2 mt-1">
-        <CText variant="caption" className="text-muted">
+        <Text variant="caption" className="text-muted">
           {t('Prediction:')}
-        </CText>
+        </Text>
         <View className="flex-row items-center bg-primary/10 rounded-lg px-3 py-1 gap-1">
-          <CText variant="bodyBold" className="text-primary">
+          <Text variant="bodyBold" className="text-primary">
             {homeTeamName} {predictedHomeScore} – {predictedAwayScore} {awayTeamName}
-          </CText>
+          </Text>
         </View>
       </View>
     </View>

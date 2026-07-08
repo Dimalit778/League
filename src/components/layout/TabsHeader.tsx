@@ -8,7 +8,7 @@ import { Link, router } from 'expo-router';
 import { BellIcon } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AvatarImage, CText } from '../ui';
+import { AvatarImage, Text } from '../ui';
 
 const isIOS = Platform.OS === 'ios';
 type TabsContectProps = {
@@ -22,9 +22,9 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
       <View className="flex-row items-center gap-3">
         <AvatarImage nickname={nickname} path={avatarUrl} className="w-12 h-12" />
 
-        <CText className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
+        <Text className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
           {nickname}
-        </CText>
+        </Text>
       </View>
       <View className="flex-row items-center gap-1 ">
         <Pressable accessibilityRole="button" className="p-2 rounded-full border border-border muted">

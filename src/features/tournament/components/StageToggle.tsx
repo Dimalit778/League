@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import { Pressable, View } from 'react-native';
@@ -12,9 +12,9 @@ type Props = {
 
 const Item = ({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) => (
   <Pressable onPress={onPress} className={cn('flex-1 py-2 rounded-lg items-center', active ? 'bg-primary' : '')}>
-    <CText variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
+    <Text variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
       {label}
-    </CText>
+    </Text>
   </Pressable>
 );
 

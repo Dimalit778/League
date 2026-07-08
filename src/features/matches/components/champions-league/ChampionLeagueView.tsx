@@ -1,5 +1,5 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
@@ -40,9 +40,9 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
           onPress={() => setShowStandings(true)}
           className="ml-3 rounded-lg border border-border bg-surface px-3 py-1.5"
         >
-          <CText variant="bodyBold" className="text-text">
+          <Text variant="bodyBold" className="text-text">
             {t('Standings')}
-          </CText>
+          </Text>
         </Pressable>
         <View className="flex-1">
           <HorizontalTabs
@@ -59,13 +59,13 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
       <Modal visible={showStandings} animationType="slide" presentationStyle="pageSheet">
         <View className="flex-1 bg-background">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
-            <CText variant="h3" bold className="text-text">
+            <Text variant="h3" bold className="text-text">
               {t('Standings')}
-            </CText>
+            </Text>
             <Pressable onPress={() => setShowStandings(false)} className="px-2 py-1">
-              <CText variant="body" className="text-primary">
+              <Text variant="body" className="text-primary">
                 {t('Close')}
-              </CText>
+              </Text>
             </Pressable>
           </View>
           <LeagueStandingsTable rows={standings} />

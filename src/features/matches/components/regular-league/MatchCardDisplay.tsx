@@ -1,4 +1,4 @@
-// import { CText, LogoBadge } from '@/components/ui';
+// import { Text, LogoBadge } from '@/components/ui';
 // import { useThemeTokens } from '@/hooks/useThemeTokens';
 // import { useTranslation } from '@/hooks/useTranslation';
 // import { cn } from '@/lib/nativeWind';
@@ -45,29 +45,29 @@
 //     <View className="flex-row items-center justify-between  border-t border-border p-1">
 //       {isPredictionFinished && isFinished && (
 //         <View className="w-1/3 flex-row items-center">
-//           <CText variant="caption" className="text-text" style={{ color: predictionResult?.color }}>
+//           <Text variant="caption" className="text-text" style={{ color: predictionResult?.color }}>
 //             {t(predictionResultTitle)}
-//           </CText>
+//           </Text>
 //         </View>
 //       )}
 
 //       <View className="flex-1 items-center">
 //         {isFinished && !predictionScore ? (
-//           <CText variant="caption" className="text-muted ">
+//           <Text variant="caption" className="text-muted ">
 //             {t('No prediction')}
-//           </CText>
+//           </Text>
 //         ) : (
-//           <CText variant="caption" className="text-text ">
+//           <Text variant="caption" className="text-text ">
 //             {predictionScore}
-//           </CText>
+//           </Text>
 //         )}
 //       </View>
 
 //       {isPredictionFinished && isFinished && points != null && (
 //         <View className="w-1/3 flex-row items-center justify-end">
-//           <CText variant="caption" className="text-text" style={{ color: predictionResult?.color }}>
+//           <Text variant="caption" className="text-text" style={{ color: predictionResult?.color }}>
 //             {points} {t('pts')}
-//           </CText>
+//           </Text>
 //         </View>
 //       )}
 //     </View>
@@ -82,12 +82,12 @@
 
 //   return (
 //     <View className="flex-row items-center justify-between p-1 px-2 border-b border-border   ">
-//       <CText variant="caption" className={isScheduled ? 'text-text' : 'text-muted'}>
+//       <Text variant="caption" className={isScheduled ? 'text-text' : 'text-muted'}>
 //         {dateStr}
-//       </CText>
-//       <CText variant="caption" className={cn(isLive ? 'text-success ' : isFinished ? 'text-muted ' : 'text-text ')}>
+//       </Text>
+//       <Text variant="caption" className={cn(isLive ? 'text-success ' : isFinished ? 'text-muted ' : 'text-text ')}>
 //         {isScheduled ? kickOffTime : isLive ? t('Live') : isFinished ? t('FT') : null}
-//       </CText>
+//       </Text>
 //     </View>
 //   );
 // };
@@ -95,9 +95,9 @@
 //   return (
 //     <View className="flex-1  items-center ">
 //       <LogoBadge source={{ uri: team.logo }} width={50} height={50} />
-//       <CText variant="caption" className="text-center mt-2">
+//       <Text variant="caption" className="text-center mt-2">
 //         {isDesktop ? team.shortName || team.name : team.shortName || team.name || team.tla}
-//       </CText>
+//       </Text>
 //     </View>
 //   );
 // };
@@ -108,13 +108,13 @@
 //   if (isFinished) {
 //     return (
 //       <View className="flex-row items-center">
-//         <CText variant="h3" className="text-muted ">
+//         <Text variant="h3" className="text-muted ">
 //           {homeScore}
-//         </CText>
+//         </Text>
 //         <View className="w-0.5 h-full bg-border mx-3" />
-//         <CText variant="h3" className="text-muted ">
+//         <Text variant="h3" className="text-muted ">
 //           {awayScore}
-//         </CText>
+//         </Text>
 //       </View>
 //     );
 //   }
@@ -124,15 +124,15 @@
 //       <View className="items-center ">
 //         <View className="w-1.5 h-1.5 rounded-full bg-success" />
 //         <View className="flex-row items-center justify-center gap-1 mt-1">
-//           <CText variant="h3" className="text-text ">
+//           <Text variant="h3" className="text-text ">
 //             {homeScore}
-//           </CText>
-//           <CText variant="h3" className="text-text ">
+//           </Text>
+//           <Text variant="h3" className="text-text ">
 //             :
-//           </CText>
-//           <CText variant="h3" className="text-text ">
+//           </Text>
+//           <Text variant="h3" className="text-text ">
 //             {awayScore}
-//           </CText>
+//           </Text>
 //         </View>
 //       </View>
 //     );

@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
 
@@ -11,7 +11,7 @@ export default function MatchStats({
   return (
     <View className="flex-1 bg-background items-center ">
       <View className=" mt-14 items-center justify-center">
-        <CText className="text-text text-center text-3xl font-black">{t('Coming Soon...')}</CText>
+        <Text className="text-text text-center text-3xl font-black">{t('Coming Soon...')}</Text>
       </View>
     </View>
   );

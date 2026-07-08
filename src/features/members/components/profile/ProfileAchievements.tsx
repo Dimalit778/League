@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,8 +29,8 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
         <View className="mb-2 h-12 w-12 items-center justify-center rounded-xl border border-[#D5B13F]/30 bg-[#1A2740]">
           {achievement.icon}
         </View>
-        <CText className="text-center text-sm font-bold text-white">{achievement.title}</CText>
-        <CText className="mt-1 text-center text-[10px] leading-4 text-[#97A7BF]">{achievement.description}</CText>
+        <Text className="text-center text-sm font-bold text-white">{achievement.title}</Text>
+        <Text className="mt-1 text-center text-[10px] leading-4 text-[#97A7BF]">{achievement.description}</Text>
       </View>
     </View>
   );
@@ -76,7 +76,7 @@ export function ProfileAchievements({ stats }: ProfileAchievementsProps) {
 
   return (
     <View className="mx-3 mt-5">
-      <CText className="mb-3 text-base font-bold text-white">{t('Your achievements')}</CText>
+      <Text className="mb-3 text-base font-bold text-white">{t('Your achievements')}</Text>
       <View className="flex-row gap-2">
         {achievements.map((achievement) => (
           <AchievementCard key={achievement.id} achievement={achievement} />

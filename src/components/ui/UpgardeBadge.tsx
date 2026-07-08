@@ -1,6 +1,6 @@
-import { CText } from './CText';
 import { BlurView } from 'expo-blur';
 import { Platform, StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 
 type Props = {
   visible: boolean;
@@ -23,9 +23,9 @@ export const UpgardeBadge = ({ visible }: Props) => {
             backgroundColor: 'rgba(250, 204, 21, 0.12)',
           }}
         >
-          <CText variant="body" bold className=" uppercase tracking-widest text-yellow-400">
+          <Text variant="body" bold className=" uppercase tracking-widest text-yellow-400">
             PRO
-          </CText>
+          </Text>
         </View>
       </View>
     </View>

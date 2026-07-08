@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import { Pressable, ScrollView } from 'react-native';
@@ -29,9 +29,9 @@ export default function GroupTabs({ selected, onSelect }: Props) {
               active ? 'bg-primary' : 'border border-border'
             )}
           >
-            <CText variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
+            <Text variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
               {t('Group')} {g}
-            </CText>
+            </Text>
           </Pressable>
         );
       })}

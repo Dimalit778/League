@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, CText } from '@/components/ui';
+import { BackButton, Button, Text } from '@/components/ui';
 import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
@@ -130,7 +130,7 @@ const AdminCompetitionsScreen = () => {
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
         <View className="bg-surface border border-border rounded-2xl p-4 mb-6">
-          <CText className="text-text text-lg font-semibold mb-4">Add New Competition</CText>
+          <Text className="text-text text-lg font-semibold mb-4">Add New Competition</Text>
           <View className="space-y-4">
             {[
               { key: 'id', label: 'Competition ID', keyboardType: 'numeric' },
@@ -148,7 +148,7 @@ const AdminCompetitionsScreen = () => {
               },
             ].map((field) => (
               <View key={field.key}>
-                <CText className="text-text text-sm mb-1">{field.label}</CText>
+                <Text className="text-text text-sm mb-1">{field.label}</Text>
                 <TextInput
                   value={form[field.key as keyof FormState]}
                   onChangeText={(value) => handleChange(field.key as keyof FormState, value)}
@@ -161,7 +161,7 @@ const AdminCompetitionsScreen = () => {
               </View>
             ))}
           </View>
-          {validationError && <CText className="text-error text-sm mt-3">{validationError}</CText>}
+          {validationError && <Text className="text-error text-sm mt-3">{validationError}</Text>}
           <View className="mt-4">
             <Button
               title="Add Competition"
@@ -173,11 +173,11 @@ const AdminCompetitionsScreen = () => {
         </View>
 
         {error ? (
-          <CText className="text-error text-base mb-4">
+          <Text className="text-error text-base mb-4">
             Unable to load competitions. Pull to refresh to try again.
-          </CText>
+          </Text>
         ) : (
-          <CText className="text-text text-sm mb-4">Showing {data?.length ?? 0} competitions.</CText>
+          <Text className="text-text text-sm mb-4">Showing {data?.length ?? 0} competitions.</Text>
         )}
 
         <View className="space-y-4 pb-16">
@@ -185,9 +185,9 @@ const AdminCompetitionsScreen = () => {
             <View key={competition.id} className="bg-surface border border-border rounded-2xl p-4">
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text text-lg font-semibold">{competition.name}</CText>
-                  <CText className="text-text/70 text-sm">{competition.area}</CText>
-                  <CText className="text-text/50 text-xs">ID: {competition.id}</CText>
+                  <Text className="text-text text-lg font-semibold">{competition.name}</Text>
+                  <Text className="text-text/70 text-sm">{competition.area}</Text>
+                  <Text className="text-text/50 text-xs">ID: {competition.id}</Text>
                 </View>
                 <Button
                   title="Remove"
@@ -200,31 +200,31 @@ const AdminCompetitionsScreen = () => {
 
               <View className="flex-row justify-between">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Logo URL</CText>
-                  <CText className="text-text text-xs" numberOfLines={2}>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Logo URL</Text>
+                  <Text className="text-text text-xs" numberOfLines={2}>
                     {competition.logo}
-                  </CText>
+                  </Text>
                 </View>
                 <View className="flex-1">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Flag URL</CText>
-                  <CText className="text-text text-xs" numberOfLines={2}>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Flag URL</Text>
+                  <Text className="text-text text-xs" numberOfLines={2}>
                     {competition.flag}
-                  </CText>
+                  </Text>
                 </View>
               </View>
 
               <View className="flex-row justify-between mt-3">
                 <View>
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Type</CText>
-                  <CText className="text-text text-sm">{competition.type ?? 'N/A'}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Type</Text>
+                  <Text className="text-text text-sm">{competition.type ?? 'N/A'}</Text>
                 </View>
                 <View>
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Display</CText>
-                  <CText className="text-text text-sm">{competition.current_stage ?? 'LEAGUE'}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Display</Text>
+                  <Text className="text-text text-sm">{competition.current_stage ?? 'LEAGUE'}</Text>
                 </View>
                 <View className="items-end">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Season</CText>
-                  <CText className="text-text text-sm">{competition.season_id ?? 'N/A'}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Season</Text>
+                  <Text className="text-text text-sm">{competition.season_id ?? 'N/A'}</Text>
                 </View>
               </View>
             </View>

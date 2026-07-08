@@ -1,11 +1,17 @@
+// Admin-only manual sync of one regular league (PL/PD). 1 football API call.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import {
+  FD_BASE,
+  fdFetch,
+  lockedResponse,
+  releaseSyncLock,
+  requireSyncAuth,
+  tryAcquireSyncLock,
+} from "../_shared/sync.ts";
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Content-Type": "application/json"
 };
-const FD_BASE = "https://api.football-data.org/v4";
+const JOB = "sync-matches";
 // רק ליגות רגילות, בלי גביעים/בתים
 const ALLOWED_LEAGUES = new Set([
   "PL",
@@ -37,16 +43,15 @@ function deriveLeagueProgress(matches) {
   };
 }
 Deno.serve(async (req)=>{
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders
-    });
-  }
+  const denied = requireSyncAuth(req);
+  if (denied) return denied;
   try {
     const SUPABASE_URL = must("SUPABASE_URL");
     const SERVICE_ROLE = must("SUPABASE_SERVICE_ROLE_KEY");
     const FD_KEY = must("FOOTBALL_ORG_API_KEY");
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+    if (!(await tryAcquireSyncLock(supabase, JOB, 120))) return lockedResponse(JOB);
+    try {
     const url = new URL(req.url);
     const qComp = url.searchParams.get("competition");
     let body = {};
@@ -66,16 +71,7 @@ Deno.serve(async (req)=>{
     if (!ALLOWED_LEAGUES.has(competition)) {
       throw new Error(`Invalid "competition". Only regular leagues are allowed: ${Array.from(ALLOWED_LEAGUES).join(", ")}`);
     }
-    const res = await fetch(`${FD_BASE}/competitions/${competition}/matches`, {
-      headers: {
-        "X-Auth-Token": FD_KEY,
-        Accept: "application/json"
-      }
-    });
-    if (!res.ok) {
-      throw new Error(`Football-data API ${res.status}: ${await res.text()}`);
-    }
-    const data = await res.json();
+    const data = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${competition}/matches`, FD_KEY);
     const matches = Array.isArray(data?.matches) ? data.matches : [];
     const compId = data?.competition?.id ?? null;
     if (compId == null) {
@@ -127,6 +123,7 @@ Deno.serve(async (req)=>{
       }
       upserted += part.length;
     }
+    await releaseSyncLock(supabase, JOB, "success");
     return new Response(JSON.stringify({
       success: true,
       type: "regular_league",
@@ -138,6 +135,10 @@ Deno.serve(async (req)=>{
     }), {
       headers: corsHeaders
     });
+    } catch (err) {
+      await releaseSyncLock(supabase, JOB, "error");
+      throw err;
+    }
   } catch (err) {
     const e = err instanceof Error ? err : new Error(String(err));
     const reqId = crypto.randomUUID();

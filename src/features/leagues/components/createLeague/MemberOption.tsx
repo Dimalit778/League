@@ -1,4 +1,4 @@
-import { CText, UpgardeBadge } from '@/components/ui';
+import { Text, UpgardeBadge } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Pressable, View } from 'react-native';
 
@@ -30,9 +30,9 @@ export default function MemberOption({ value, label, locked, membersCount, onSel
         <View
           className={`rounded-2xl border-2 px-4 py-4 ${isActive ? 'border-secondary bg-surface' : 'border-border bg-background'}`}
         >
-          <CText variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+          <Text variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
             {t(label)}
-          </CText>
+          </Text>
         </View>
         <UpgardeBadge visible={locked} />
       </View>

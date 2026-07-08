@@ -6,7 +6,7 @@ import { Href, Link } from 'expo-router';
 import React from 'react';
 import { Modal, Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CText } from '../ui';
+import { Text } from '../ui';
 
 interface DrawerMenuProps {
   isOpen: boolean;
@@ -81,7 +81,7 @@ export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
                       accessibilityRole="button"
                     >
                       <IconComponent size={24} color={colors.primary} />
-                      <CText variant="bodyBold">{t(route.label)}</CText>
+                      <Text variant="bodyBold">{t(route.label)}</Text>
                     </TouchableOpacity>
                   </Link>
                 );

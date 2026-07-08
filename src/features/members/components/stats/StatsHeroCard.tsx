@@ -1,4 +1,4 @@
-import { AvatarImage, CText } from '@/components/ui';
+import { AvatarImage, Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
@@ -73,23 +73,23 @@ export function StatsHeroCard({ nickname, avatarUrl, isPrimary, stats }: StatsHe
             </View>
 
             <View className="min-w-0 flex-1">
-              <CText className="text-xl font-black text-white" numberOfLines={1}>
+              <Text className="text-xl font-black text-white" numberOfLines={1}>
                 {displayName}
-              </CText>
+              </Text>
             </View>
           </View>
 
           <View className="mt-5 flex-row rounded-2xl border border-[#223554] bg-[#091425]/60 px-4 py-3">
             <View className="flex-1 items-center">
               <BarChart3 size={16} color={GOLD} />
-              <CText className="mt-1 text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Rank')}</CText>
-              <CText className="mt-0.5 text-lg font-bold text-white">{rank}</CText>
+              <Text className="mt-1 text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Rank')}</Text>
+              <Text className="mt-0.5 text-lg font-bold text-white">{rank}</Text>
             </View>
             <View className="mx-3 w-px self-stretch bg-[#223554]" />
             <View className="flex-1 items-center">
               <Star size={16} color={GOLD} fill={GOLD} />
-              <CText className="mt-1 text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Total Points')}</CText>
-              <CText className="mt-0.5 text-lg font-bold text-white">{points}</CText>
+              <Text className="mt-1 text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Total Points')}</Text>
+              <Text className="mt-0.5 text-lg font-bold text-white">{points}</Text>
             </View>
           </View>
         </View>

@@ -1,4 +1,4 @@
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { MyLeagueType } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Modal, Pressable, ScrollView, View } from 'react-native';
@@ -31,22 +31,22 @@ export default function LimitSelectModal({
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => {}}>
       <View className="flex-1 justify-center px-4" style={{ backgroundColor: 'rgba(0,0,0,0.62)' }}>
         <View className="rounded-2xl border border-border bg-background p-4" style={{ maxHeight: '82%' }}>
-          <CText variant="h2" className="text-text">
+          <Text variant="h2" className="text-text">
             {t('Choose active leagues')}
-          </CText>
-          <CText variant="body" className="mt-2 text-muted">
+          </Text>
+          <Text variant="body" className="mt-2 text-muted">
             {t('Your free plan allows {{count}} active leagues. Choose which leagues stay active to continue.', {
               count: String(maxLeagues),
             })}
-          </CText>
+          </Text>
           <View className="mt-3 flex-row items-center justify-between">
-            <CText variant="bodyBold" className={selectedCount > maxLeagues ? 'text-error' : 'text-text'}>
+            <Text variant="bodyBold" className={selectedCount > maxLeagues ? 'text-error' : 'text-text'}>
               {selectedCount}/{maxLeagues}
-            </CText>
+            </Text>
             <Pressable onPress={onUpgrade} className="rounded-lg border border-yellow-500 px-3 py-2">
-              <CText variant="caption" bold className="text-yellow-500">
+              <Text variant="caption" bold className="text-yellow-500">
                 {t('Upgrade to Pro')}
-              </CText>
+              </Text>
             </Pressable>
           </View>
 
@@ -75,19 +75,19 @@ export default function LimitSelectModal({
                         {selected && <View className="h-2.5 w-2.5 rounded-full bg-white" />}
                       </View>
                       {league.is_primary && (
-                        <CText variant="caption" bold className="text-primary">
+                        <Text variant="caption" bold className="text-primary">
                           {t('Primary')}
-                        </CText>
+                        </Text>
                       )}
                     </View>
 
                     <View>
-                      <CText variant="bodyBold" numberOfLines={1} className="text-text">
+                      <Text variant="bodyBold" numberOfLines={1} className="text-text">
                         {league.league.name}
-                      </CText>
-                      <CText variant="caption" numberOfLines={1} className="text-muted">
+                      </Text>
+                      <Text variant="caption" numberOfLines={1} className="text-muted">
                         {league.league.competition?.name ?? t('Unknown League')}
-                      </CText>
+                      </Text>
                     </View>
                   </View>
                 </Pressable>

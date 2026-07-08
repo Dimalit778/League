@@ -1,4 +1,4 @@
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
@@ -85,7 +85,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
             )}
           />
           {errors.nickname && (
-            <CText className="text-error mb-3 text-sm text-center">{t(errors.nickname.message as string)}</CText>
+            <Text className="text-error mb-3 text-sm text-center">{t(errors.nickname.message as string)}</Text>
           )}
           <View className="flex-row gap-2">
             <Button
@@ -107,7 +107,7 @@ export const NicknameSection = ({ initialNickname }: NicknameSectionProps) => {
         </View>
       ) : (
         <View className="flex-row items-center justify-between bg-surface rounded-lg px-4 py-3 border border-border">
-          <CText className="text-text text-lg font-semibold">{displayNickname}</CText>
+          <Text className="text-text text-lg font-semibold">{displayNickname}</Text>
           <Pressable onPress={handleStartEdit} className="p-2">
             <FontAwesome6 name="pen-to-square" size={16} color={colors.secondary} />
           </Pressable>

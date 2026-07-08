@@ -1,4 +1,4 @@
-import { CText, TeamBadge } from '@/components/ui';
+import { Text, TeamBadge } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollView, View } from 'react-native';
 import { ComputedStandingRow } from '../../utils/tournamentMatches';
@@ -16,17 +16,17 @@ const DEFAULT_CL_ZONES: Props['zones'] = [
 
 const HeaderCell = ({ label, width }: { label: string; width: number }) => (
   <View style={{ width }} className="items-center">
-    <CText variant="small" bold className="text-muted">
+    <Text variant="small" bold className="text-muted">
       {label}
-    </CText>
+    </Text>
   </View>
 );
 
 const Cell = ({ value, width, bold = false }: { value: string | number; width: number; bold?: boolean }) => (
   <View style={{ width }} className="items-center">
-    <CText variant="caption" bold={bold} className="text-text">
+    <Text variant="caption" bold={bold} className="text-text">
       {value}
-    </CText>
+    </Text>
   </View>
 );
 
@@ -46,7 +46,7 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
   if (rows.length === 0) {
     return (
       <View className="mx-3 my-2 rounded-xl border border-border bg-surface px-3 py-4">
-        <CText className="text-muted text-center">{t('No standings found')}</CText>
+        <Text className="text-muted text-center">{t('No standings found')}</Text>
       </View>
     );
   }
@@ -60,10 +60,10 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
         {/* Header */}
         <View className="flex-row items-center border-b border-border bg-background/40 px-3 py-2">
           <View style={{ width: 22 }} className="items-center">
-            <CText variant="small" bold className="text-muted">#</CText>
+            <Text variant="small" bold className="text-muted">#</Text>
           </View>
           <View className="flex-1">
-            <CText variant="small" bold className="text-muted">{t('Team')}</CText>
+            <Text variant="small" bold className="text-muted">{t('Team')}</Text>
           </View>
           <HeaderCell label={t('P')} width={colW} />
           <HeaderCell label={t('W')} width={colW} />
@@ -81,7 +81,7 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
             style={{ backgroundColor: getRowBg(row.position, zones) }}
           >
             <View style={{ width: 22 }} className="items-center">
-              <CText variant="caption" bold className="text-text">{row.position}</CText>
+              <Text variant="caption" bold className="text-text">{row.position}</Text>
             </View>
             <View className="flex-1 flex-row items-center gap-2">
               <TeamBadge
@@ -89,9 +89,9 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
                 width={20}
                 height={20}
               />
-              <CText variant="caption" bold className="text-text" numberOfLines={1}>
+              <Text variant="caption" bold className="text-text" numberOfLines={1}>
                 {row.team.shortName ?? row.team.tla ?? row.team.name}
-              </CText>
+              </Text>
             </View>
             <Cell value={row.played} width={colW} />
             <Cell value={row.won} width={colW} />

@@ -1,4 +1,4 @@
-import { AvatarImage, CText } from '@/components/ui';
+import { AvatarImage, Text } from '@/components/ui';
 import { LeaderboardRow } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import stadiumBg from '@assets/images/fieldImage.jpg';
@@ -67,9 +67,9 @@ function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined
         className="mb-1 h-6 w-6 items-center justify-center rounded-full"
         style={{ backgroundColor: style.badgeBg }}
       >
-        <CText className="text-xs font-bold" style={{ color: style.badgeText }}>
+        <Text className="text-xs font-bold" style={{ color: style.badgeText }}>
           {position}
-        </CText>
+        </Text>
       </View>
 
       <View
@@ -93,12 +93,12 @@ function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined
         </View>
       </View>
 
-      <CText className="mt-2 max-w-[88px] text-center text-xs font-bold text-white" numberOfLines={1}>
+      <Text className="mt-2 max-w-[88px] text-center text-xs font-bold text-white" numberOfLines={1}>
         {member?.nickname ?? '—'}
-      </CText>
-      <CText className={`text-xs font-bold ${style.pointsColor}`}>
+      </Text>
+      <Text className={`text-xs font-bold ${style.pointsColor}`}>
         {member?.total_points != null ? `${member.total_points} ${t('pts')}` : '—'}
-      </CText>
+      </Text>
     </View>
   );
 

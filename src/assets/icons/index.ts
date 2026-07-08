@@ -1,8 +1,8 @@
 // Auth Icons
-import EmailIcon from './EmailIcon';
 import EyeClosedIcon from './EyeClosedIcon';
 import EyeOpenIcon from './EyeOpenIcon';
 import LockIcon from './LockIcon';
+import MailIcon from './MailIcon';
 import UserIcon from './UserIcon';
 // Tabs Icons
 import FieldIcon from './FieldIcon';
@@ -30,13 +30,8 @@ export {
   ArrowDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
-  ArrowUpIcon,
-  EmailIcon,
-  EyeClosedIcon,
-  EyeOpenIcon, FieldIcon, GoogleLogoIcon,
-  GoogleLogoMonoIcon, LockIcon,
-  LeagueIcon,
-  MatchesIcon,
+  ArrowUpIcon, EyeClosedIcon, EyeOpenIcon, FieldIcon, GoogleLogoIcon,
+  GoogleLogoMonoIcon, LeagueIcon, LockIcon, MailIcon, MatchesIcon,
   MenuIcon,
   ProfileIcon,
   RankIcon,
@@ -46,3 +41,4 @@ export {
   TrophyIcon,
   UserIcon
 };
+

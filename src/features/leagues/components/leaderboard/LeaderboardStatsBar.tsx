@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BarChart3, Calendar, Users } from 'lucide-react-native';
 import { View } from 'react-native';
@@ -26,9 +26,9 @@ function StatItem({
     <View className="flex-1 items-center">
       <View className="mb-1 flex-row items-center gap-1.5">
         {icon}
-        <CText className={`text-base font-bold ${valueClassName ?? 'text-white'}`}>{value}</CText>
+        <Text className={`text-base font-bold ${valueClassName ?? 'text-white'}`}>{value}</Text>
       </View>
-      <CText className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</CText>
+      <Text className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</Text>
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { AvatarImage, CText } from '@/components/ui';
+import { AvatarImage, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { Link } from 'expo-router';
@@ -34,25 +34,25 @@ export default function LeaderboardCard({ item, index, isCurrentUser }: Leaderbo
             isCurrentUser ? 'border border-[#E3B421] bg-[#101A2A]' : 'bg-[#0D1524]'
           }`}
         >
-          <CText className={`w-6 text-sm font-bold ${textColor}`}>{rank}</CText>
+          <Text className={`w-6 text-sm font-bold ${textColor}`}>{rank}</Text>
 
           <View className="flex-1 flex-row items-center gap-2 pr-1">
             <View className="h-7 w-7 overflow-hidden rounded-full">
               <AvatarImage nickname={nickname!} path={avatar_url} />
             </View>
-            <CText className={`flex-1 text-sm font-semibold ${textColor}`} numberOfLines={1}>
+            <Text className={`flex-1 text-sm font-semibold ${textColor}`} numberOfLines={1}>
               {nickname}
-            </CText>
+            </Text>
           </View>
 
-          <CText className={`w-14 text-center text-xs font-semibold ${textColor}`}>
+          <Text className={`w-14 text-center text-xs font-semibold ${textColor}`}>
             {total_points?.toLocaleString() ?? 0} {t('pts')}
-          </CText>
+          </Text>
 
-          <CText className={`w-10 text-center text-xs font-semibold ${mutedColor}`}>{correct_scores ?? 0}</CText>
+          <Text className={`w-10 text-center text-xs font-semibold ${mutedColor}`}>{correct_scores ?? 0}</Text>
 
           <View className="w-10 items-center">
-            <CText className={`text-xs ${mutedColor}`}>—</CText>
+            <Text className={`text-xs ${mutedColor}`}>—</Text>
           </View>
         </View>
       </TouchableOpacity>

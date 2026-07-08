@@ -1,5 +1,5 @@
 import Trophy from '@/assets/images/Trophy-champo.png';
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { LeagueOverviewLeague, LeagueOverviewMemberStats } from '@/features/leagues/types/leagueOverviewType';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
@@ -14,8 +14,8 @@ type Props = {
 function StatItem({ label, value }: { label: string; value: string | number }) {
   return (
     <View className="bg-cardBorder rounded-full p-2">
-      <CText className="text-muted text-xs font-semibold">{label}</CText>
-      <CText className="text-white text-xl font-bold mt-1">{value}</CText>
+      <Text className="text-muted text-xs font-semibold">{label}</Text>
+      <Text className="text-white text-xl font-bold mt-1">{value}</Text>
     </View>
   );
 }
@@ -29,13 +29,13 @@ export function LeagueHeroCard({ league, memberStats }: Props) {
         <Image source={Trophy} style={{ width: 120, height: 120 }} contentFit="contain" />
 
         <View className="flex-1">
-          <CText className="text-text text-3xl font-bold" numberOfLines={2}>
+          <Text className="text-text text-3xl font-bold" numberOfLines={2}>
             {league.name}
-          </CText>
+          </Text>
 
-          <CText className="text-text text-xl mt-5" numberOfLines={1}>
+          <Text className="text-text text-xl mt-5" numberOfLines={1}>
             {memberStats.nickname}
-          </CText>
+          </Text>
 
           <View className="flex-row justify-between mt-4">
             <StatItem label={t('RANK')} value={memberStats.rank > 0 ? `#${memberStats.rank}` : '—'} />
@@ -48,7 +48,7 @@ export function LeagueHeroCard({ league, memberStats }: Props) {
               className="h-14 rounded-2xl bg-primaryGold flex-row items-center justify-center mt-5"
               accessibilityRole="button"
             >
-              <CText className="text-black font-bold text-lg">{t('Predict now')}</CText>
+              <Text className="text-black font-bold text-lg">{t('Predict now')}</Text>
               <ChevronRight size={24} color="black" />
             </Pressable>
           </Link>

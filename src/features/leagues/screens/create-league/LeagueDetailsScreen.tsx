@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, CText, InputField } from '@/components/ui';
+import { BackButton, Button, Text, InputField } from '@/components/ui';
 import MemberOption from '@/features/leagues/components/createLeague/MemberOption';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
@@ -85,9 +85,9 @@ const LeagueDetailsScreen = () => {
         >
           {/* League name */}
           <View className="mb-8">
-            <CText variant="body" className="mb-2 text-left">
+            <Text variant="body" className="mb-2 text-left">
               {t('League Name')}
-            </CText>
+            </Text>
             <InputField
               control={control}
               name="leagueName"
@@ -101,9 +101,9 @@ const LeagueDetailsScreen = () => {
 
           {/* Nickname */}
           <View className="mb-8">
-            <CText variant="body" className="mb-2 text-left">
+            <Text variant="body" className="mb-2 text-left">
               {t('Your Nickname')}
-            </CText>
+            </Text>
             <InputField
               control={control}
               name="nickname"
@@ -116,12 +116,12 @@ const LeagueDetailsScreen = () => {
 
           {/* Members count */}
           <View>
-            <CText variant="body" className="mb-2 text-left">
+            <Text variant="body" className="mb-2 text-left">
               {t('Number of Members')}
-            </CText>
-            <CText variant="caption" className="text-muted mb-3 text-center">
+            </Text>
+            <Text variant="caption" className="text-muted mb-3 text-center">
               {t('Choose how many friends can join this league.')}
-            </CText>
+            </Text>
 
             <View className="flex-row mt-4">
               <MemberOption

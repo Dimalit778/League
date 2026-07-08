@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, CText, MyImage } from '@/components/ui';
+import { Button, Text, MyImage } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -55,9 +55,9 @@ const LeagueCreatedScreen = () => {
       {!leagueData && <LoadingOverlay />}
 
       <View className="items-center my-8">
-        <CText variant="h2" bold className="text-center mb-2 text-primary">
+        <Text variant="h2" bold className="text-center mb-2 text-primary">
           {t('League Created Successfully!')}
-        </CText>
+        </Text>
       </View>
 
       <View className="px-4 py-6 mx-3 border border-border rounded-2xl">
@@ -66,35 +66,35 @@ const LeagueCreatedScreen = () => {
             <MyImage source={leagueData?.competition?.logo as string} />
           </View>
 
-          <CText variant="h3" bold className="text-center text-primary my-2">
+          <Text variant="h3" bold className="text-center text-primary my-2">
             {leagueData?.name}
-          </CText>
-          <CText variant="caption" className="text-muted text-center">
+          </Text>
+          <Text variant="caption" className="text-muted text-center">
             {t(leagueData?.competition?.area || '')} • {t(leagueData?.competition?.name || '')}
-          </CText>
+          </Text>
         </View>
 
         <View className="rounded-xl p-4 mb-4 border border-border">
-          <CText variant="caption" className="text-muted mb-1 text-center">
+          <Text variant="caption" className="text-muted mb-1 text-center">
             {t('Your Nickname')}
-          </CText>
-          <CText variant="body" bold className="text-text text-center">
+          </Text>
+          <Text variant="body" bold className="text-text text-center">
             {leagueData?.league_members[0]?.nickname}
-          </CText>
+          </Text>
         </View>
 
         <View className="p-4">
-          <CText variant="caption" className="text-muted mb-3 text-center">
+          <Text variant="caption" className="text-muted mb-3 text-center">
             {t('League Join Code')}
-          </CText>
+          </Text>
           <TouchableOpacity onPress={handleCopyJoinCode} className=" border border-border rounded-lg p-4 mb-3">
-            <CText variant="h3" bold className="text-primary text-center tracking-[8px]">
+            <Text variant="h3" bold className="text-primary text-center tracking-[8px]">
               {leagueData?.join_code}
-            </CText>
+            </Text>
           </TouchableOpacity>
-          <CText variant="caption" className="text-muted text-center">
+          <Text variant="caption" className="text-muted text-center">
             {t('Tap to copy code')}
-          </CText>
+          </Text>
         </View>
       </View>
 

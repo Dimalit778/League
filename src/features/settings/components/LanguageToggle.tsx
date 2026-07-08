@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TouchableOpacity, View } from 'react-native';
 
@@ -25,23 +25,23 @@ const LanguageToggle = () => {
         accessibilityState={{ checked: isHebrew }}
       >
         <View className="w-10 h-8 items-center justify-center">
-          <CText variant="caption" bold className="text-text">
+          <Text variant="caption" bold className="text-text">
             EN
-          </CText>
+          </Text>
         </View>
         <View className="w-10 h-8 items-center justify-center">
-          <CText variant="caption" bold className="text-text">
+          <Text variant="caption" bold className="text-text">
             עב
-          </CText>
+          </Text>
         </View>
         <View
           className={`absolute w-10 h-8 bg-background rounded-full items-center justify-center ${
             isHebrew ? 'right-1' : 'left-1'
           }`}
         >
-          <CText variant="caption" bold className="text-text">
+          <Text variant="caption" bold className="text-text">
             {isHebrew ? 'עב' : 'EN'}
-          </CText>
+          </Text>
         </View>
       </TouchableOpacity>
     </View>

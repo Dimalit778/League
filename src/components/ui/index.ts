@@ -8,12 +8,12 @@ export { BackButton } from './BackButton';
 export { Button } from './Button';
 export { Card } from './Card';
 export { ConfirmDialog } from './ConfirmDialog';
-export { CText } from './CText';
 export { HeaderSection } from './HeaderSection';
 export { Icon } from './Icon';
 export { InputField } from './InputField';
 export { LogoBadge } from './LogoBadge';
 export { MyImage } from './MyImage';
 export { TeamBadge } from './TeamBadge';
+export { Text } from './Text';
 export { UpgardeBadge } from './UpgardeBadge';
 

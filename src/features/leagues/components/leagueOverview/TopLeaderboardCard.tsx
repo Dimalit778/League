@@ -1,5 +1,5 @@
 import { AvatarImage } from '@/components/ui';
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { LeaderboardRow } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
@@ -21,17 +21,17 @@ function Row({ user, rank, isCurrentUser }: RowProps) {
         isCurrentUser ? 'border border-primaryGold bg-goldGlow' : ''
       }`}
     >
-      <CText className="text-white w-8">{rank}</CText>
+      <Text className="text-white w-8">{rank}</Text>
 
       <View className="h-8 w-8 overflow-hidden rounded-full">
         <AvatarImage nickname={user.nickname} path={user.avatar_url} />
       </View>
 
-      <CText className={`flex-1 ml-3 font-semibold ${textColor}`} numberOfLines={1}>
+      <Text className={`flex-1 ml-3 font-semibold ${textColor}`} numberOfLines={1}>
         {user.nickname}
-      </CText>
+      </Text>
 
-      <CText className={`font-bold ${textColor}`}>{user.total_points ?? 0}</CText>
+      <Text className={`font-bold ${textColor}`}>{user.total_points ?? 0}</Text>
     </View>
   );
 }
@@ -47,11 +47,11 @@ export function TopLeaderboardCard({ users, currentMemberId }: Props) {
   return (
     <View className="rounded-3xl border border-cardBorder bg-card p-4">
       <View className="flex-row justify-between items-center mb-4">
-        <CText className="text-white text-lg font-bold">{t('Top leaderboard')}</CText>
+        <Text className="text-white text-lg font-bold">{t('Top leaderboard')}</Text>
 
         <Link href="/(app)/(league)/(tabs)/Rank" asChild>
           <Pressable className="flex-row items-center" accessibilityRole="button">
-            <CText className="text-primaryGold">{t('View full table')}</CText>
+            <Text className="text-primaryGold">{t('View full table')}</Text>
             <ChevronRight size={18} color="#D99A00" />
           </Pressable>
         </Link>

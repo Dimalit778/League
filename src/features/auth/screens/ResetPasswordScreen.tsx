@@ -1,4 +1,4 @@
-import { Button, CText, InputField, Screen } from '@/components/ui';
+import { Button, Text, InputField, Screen } from '@/components/ui';
 import {
   parseRecoveryTokensFromUrl,
   updatePasswordWithRecoveryTokens,
@@ -91,15 +91,15 @@ const ResetPasswordScreen = () => {
     <Screen edges={['top']}>
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className="text-secondary text-4xl font-bold text-center">{t('New Password')}</CText>
+          <Text className="text-secondary text-4xl font-bold text-center">{t('New Password')}</Text>
 
-          <CText className="text-muted text-base text-center mt-4">{t('Enter your new password')}</CText>
+          <Text className="text-muted text-base text-center mt-4">{t('Enter your new password')}</Text>
         </View>
 
         {linkError && !recoveryTokens ? (
           <View className="px-5 gap-4">
-            <CText className="text-error text-center">{t('Reset link is invalid or expired.')}</CText>
-            <CText className="text-muted text-center">{t('Please request a new link.')}</CText>
+            <Text className="text-error text-center">{t('Reset link is invalid or expired.')}</Text>
+            <Text className="text-muted text-center">{t('Please request a new link.')}</Text>
             <Button
               title={t('Resend New Link')}
               onPress={() => router.replace('/(auth)/sendResetLink')}
@@ -145,7 +145,7 @@ const ResetPasswordScreen = () => {
 
             {errorMessage && (
               <View>
-                <CText className="text-error text-center">{errorMessage}</CText>
+                <Text className="text-error text-center">{errorMessage}</Text>
               </View>
             )}
 

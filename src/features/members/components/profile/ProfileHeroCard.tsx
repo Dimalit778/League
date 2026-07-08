@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { AvatarImage, CText, HeaderSection } from '@/components/ui';
+import { AvatarImage, Text, HeaderSection } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -39,10 +39,10 @@ function StatItem({
   return (
     <View className="flex-1 items-center">
       <View className="mb-1">{icon}</View>
-      <CText className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</CText>
-      <CText className={`mt-0.5 text-sm font-bold ${valueClassName ?? 'text-white'}`} numberOfLines={1}>
+      <Text className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</Text>
+      <Text className={`mt-0.5 text-sm font-bold ${valueClassName ?? 'text-white'}`} numberOfLines={1}>
         {value}
-      </CText>
+      </Text>
     </View>
   );
 }
@@ -212,17 +212,17 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
 
           {/* User info */}
           <View className="min-w-0 flex-1">
-            <CText className="text-xl font-black text-white" numberOfLines={1}>
+            <Text className="text-xl font-black text-white" numberOfLines={1}>
               {displayName}
-            </CText>
+            </Text>
             <View className="mt-1.5 flex-row items-center gap-1.5">
               <Shield size={13} color={GOLD_LIGHT} />
-              <CText className="text-sm text-[#97A7BF]">{t('Member of {{name}}', { name: leagueName })}</CText>
+              <Text className="text-sm text-[#97A7BF]">{t('Member of {{name}}', { name: leagueName })}</Text>
             </View>
             {isPrimary && (
               <View className="mt-1 flex-row items-center gap-1.5">
                 <Star size={13} color="#4ade80" fill="#4ade80" />
-                <CText className="text-sm font-semibold text-[#4ade80]">{t('Primary league')}</CText>
+                <Text className="text-sm font-semibold text-[#4ade80]">{t('Primary league')}</Text>
               </View>
             )}
           </View>

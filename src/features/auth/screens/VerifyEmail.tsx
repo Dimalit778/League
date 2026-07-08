@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, CText, Screen } from '@/components/ui';
+import { BackButton, Button, Text, Screen } from '@/components/ui';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -121,7 +121,7 @@ const VerifyEmailScreen = () => {
       <Screen>
         <BackButton />
         <View className="flex-1 items-center justify-center px-5">
-          <CText className="text-error text-center">Email address is missing. Please try signing up again.</CText>
+          <Text className="text-error text-center">Email address is missing. Please try signing up again.</Text>
         </View>
       </Screen>
     );
@@ -133,14 +133,14 @@ const VerifyEmailScreen = () => {
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-16">
-          <CText className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
+          <Text className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
             Verify Email
-          </CText>
-          <CText className="text-center text-muted font-bold mt-2">{t('We sent a 6-digit code to')}</CText>
-          <CText className="text-center text-secondary font-bold mt-1">{email}</CText>
-          <CText variant="caption" className="text-center text-muted mt-4 px-4">
+          </Text>
+          <Text className="text-center text-muted font-bold mt-2">{t('We sent a 6-digit code to')}</Text>
+          <Text className="text-center text-secondary font-bold mt-1">{email}</Text>
+          <Text variant="caption" className="text-center text-muted mt-4 px-4">
             {t('Apple and Google sign-in do not require email verification.')}
-          </CText>
+          </Text>
         </View>
 
         <View className="px-5 gap-4">
@@ -174,19 +174,19 @@ const VerifyEmailScreen = () => {
 
           {errorMessage && (
             <View className="">
-              <CText className="text-error text-center">{errorMessage}</CText>
+              <Text className="text-error text-center">{errorMessage}</Text>
             </View>
           )}
 
           {successMessage && (
             <View className="">
-              <CText className="text-green-500 text-center font-bold">Email verified successfully!</CText>
+              <Text className="text-green-500 text-center font-bold">Email verified successfully!</Text>
             </View>
           )}
 
           {resendSuccess && (
             <View className="">
-              <CText className="text-green-500 text-center">Code resent successfully!</CText>
+              <Text className="text-green-500 text-center">Code resent successfully!</Text>
             </View>
           )}
 
@@ -200,9 +200,9 @@ const VerifyEmailScreen = () => {
           />
 
           <View className="flex-row items-center justify-center mt-4 gap-2">
-            <CText className="text-muted text-center">Didn't receive the code?</CText>
+            <Text className="text-muted text-center">Didn't receive the code?</Text>
             {resendCoolDown > 0 ? (
-              <CText className="text-muted text-center">Resend in {resendCoolDown}s</CText>
+              <Text className="text-muted text-center">Resend in {resendCoolDown}s</Text>
             ) : (
               <Pressable
                 onPress={handleResend}
@@ -212,19 +212,19 @@ const VerifyEmailScreen = () => {
                 accessibilityLabel="Resend verification code"
                 accessibilityHint="Resend the verification code to your email"
               >
-                <CText className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</CText>
+                <Text className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</Text>
               </Pressable>
             )}
           </View>
 
           <View className="flex-row items-center justify-center mt-6 gap-2">
-            <CText variant="caption" className="text-muted">
+            <Text variant="caption" className="text-muted">
               {t('Prefer not to wait?')}
-            </CText>
+            </Text>
             <Link href="/signIn" replace>
-              <CText variant="caption" className="text-secondary font-bold">
+              <Text variant="caption" className="text-secondary font-bold">
                 {t('Sign in with Apple or Google')}
-              </CText>
+              </Text>
             </Link>
           </View>
         </View>

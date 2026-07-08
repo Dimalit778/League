@@ -1,4 +1,4 @@
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -35,11 +35,11 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
           {/* Content */}
           <View className="flex-1 pe-2 ">
             <View className="flex-row items-center justify-between">
-              <CText className="text-muted">{t('Leagues')}</CText>
+              <Text className="text-muted">{t('Leagues')}</Text>
 
-              <CText className="text-muted">
+              <Text className="text-muted">
                 {used}/{limit}
-              </CText>
+              </Text>
             </View>
 
             {/* Progress bar */}

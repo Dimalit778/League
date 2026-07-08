@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
@@ -22,9 +22,9 @@ const TeamSide = ({ team }: { team: WCMatch['home_team'] }) => (
       cachePolicy="memory-disk"
       contentFit="contain"
     />
-    <CText variant="caption" className="text-center mt-2">
+    <Text variant="caption" className="text-center mt-2">
       {team.tla}
-    </CText>
+    </Text>
   </View>
 );
 
@@ -32,21 +32,21 @@ const Score = ({ home, away, finished }: { home: number | null; away: number | n
   if (!finished) {
     return (
       <View className="items-center justify-center px-3">
-        <CText variant="h3" className="text-muted">
+        <Text variant="h3" className="text-muted">
           –
-        </CText>
+        </Text>
       </View>
     );
   }
   return (
     <View className="flex-row items-center px-2">
-      <CText variant="h3" className="text-text">
+      <Text variant="h3" className="text-text">
         {home}
-      </CText>
+      </Text>
       <View className="w-0.5 h-full bg-border mx-3" />
-      <CText variant="h3" className="text-text">
+      <Text variant="h3" className="text-text">
         {away}
-      </CText>
+      </Text>
     </View>
   );
 };
@@ -69,12 +69,12 @@ export default function WCMatchCard({ match, layout = 'grid' }: Props) {
         style={{ borderColor: prediction ? accentColor : colors.surface }}
       >
         <View className="flex-row items-center justify-between p-1 px-2">
-          <CText variant="caption" className={finished ? 'text-muted' : 'text-text'}>
+          <Text variant="caption" className={finished ? 'text-muted' : 'text-text'}>
             {dateStr}
-          </CText>
-          <CText variant="caption" className={finished ? 'text-muted' : 'text-text'}>
+          </Text>
+          <Text variant="caption" className={finished ? 'text-muted' : 'text-text'}>
             {finished ? t('FT') : timeStr}
-          </CText>
+          </Text>
         </View>
 
         <View className="flex-row py-3">
@@ -85,13 +85,13 @@ export default function WCMatchCard({ match, layout = 'grid' }: Props) {
 
         <View className="bg-surface justify-center border-t border-border rounded-b-md min-h-[20px] px-2 py-1">
           <View className="flex-row items-center justify-between">
-            <CText variant="caption" className="text-muted">
+            <Text variant="caption" className="text-muted">
               {prediction ? `${prediction.home} - ${prediction.away}` : finished ? t('No prediction') : t('Predict')}
-            </CText>
+            </Text>
             {prediction && finished && points != null && (
-              <CText variant="caption" bold style={{ color: accentColor }}>
+              <Text variant="caption" bold style={{ color: accentColor }}>
                 {points} {t('pts')}
-              </CText>
+              </Text>
             )}
           </View>
         </View>

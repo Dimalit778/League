@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link, type Href } from 'expo-router';
 import { BarChart3, ChevronRight, Goal, List } from 'lucide-react-native';
@@ -20,7 +20,7 @@ function QuickAccessItem({ title, icon, href }: Props) {
           <ChevronRight size={22} color="#8A94A6" />
         </View>
 
-        <CText className="text-white font-semibold mt-3">{title}</CText>
+        <Text className="text-white font-semibold mt-3">{title}</Text>
       </Pressable>
     </Link>
   );
@@ -30,7 +30,7 @@ export function QuickAccessSection() {
 
   return (
     <View>
-      <CText className="text-white text-lg font-bold mb-3">{t('Quick access')}</CText>
+      <Text className="text-white text-lg font-bold mb-3">{t('Quick access')}</Text>
 
       <View className="flex-row gap-3">
         <QuickAccessItem

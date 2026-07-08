@@ -3,6 +3,7 @@ import '../../global.css';
 import '@/lib/i18n/autoTranslate';
 
 import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
+import { useAppFonts } from '@/hooks/useAppFonts';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -61,6 +62,7 @@ const AppBootstrap = () => {
   const { isLoggedIn, isAuthLoading } = useAuth();
 
   const { colors } = useThemeTokens();
+  const fontsLoaded = useAppFonts();
   const [isAppShellReady, setIsAppShellReady] = useState(false);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ const AppBootstrap = () => {
     };
   }, []);
 
-  if (!isAppShellReady || isAuthLoading) {
+  if (!isAppShellReady || isAuthLoading || !fontsLoaded) {
     return <LoadingBall />;
   }
 

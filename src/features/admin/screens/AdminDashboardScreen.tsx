@@ -1,5 +1,5 @@
 import { Error, LoadingOverlay } from '@/components/layout';
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -69,14 +69,14 @@ const AdminDashboardScreen = () => {
         className="flex-1 p-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
-        <CText className="text-text text-center text-xl font-semibold mb-2">Platform Overview</CText>
+        <Text className="text-text text-center text-xl font-semibold mb-2">Platform Overview</Text>
 
         <View className="flex-row flex-wrap ">
           {statsCards.map((stat) => (
             <View key={stat.key} className={`${stat.width} px-2 my-1`}>
               <View className="bg-border border border-border rounded-xl gap-1 p-2 justify-center items-center">
-                <CText className="text-muted text-md ">{stat.label}</CText>
-                <CText className="text-text text-2xl font-semibold ">{data?.[stat.key] ?? 0}</CText>
+                <Text className="text-muted text-md ">{stat.label}</Text>
+                <Text className="text-text text-2xl font-semibold ">{data?.[stat.key] ?? 0}</Text>
               </View>
             </View>
           ))}
@@ -89,8 +89,8 @@ const AdminDashboardScreen = () => {
             className="bg-surface border border-border rounded-2xl p-4 my-2 flex-row justify-between"
           >
             <View className="flex-1">
-              <CText className="text-text text-lg font-semibold mb-2">{link.title}</CText>
-              <CText className="text-muted text-sm">{link.description}</CText>
+              <Text className="text-text text-lg font-semibold mb-2">{link.title}</Text>
+              <Text className="text-muted text-sm">{link.description}</Text>
             </View>
             <View className=" items-center justify-center">
               <Entypo name="chevron-right" size={28} color={colors.text} />

@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { RoundPerformance } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BarChart3 } from 'lucide-react-native';
@@ -19,10 +19,10 @@ export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
       <View className="mx-3 mt-5">
         <View className="mb-3 flex-row items-center gap-2">
           <BarChart3 size={16} color={GOLD} />
-          <CText className="text-base font-bold text-white">{t('Performance by round')}</CText>
+          <Text className="text-base font-bold text-white">{t('Performance by round')}</Text>
         </View>
         <View className="rounded-2xl border border-[#223554] bg-[#101A2A] p-4">
-          <CText className="text-center text-sm text-[#97A7BF]">{t('No round data yet')}</CText>
+          <Text className="text-center text-sm text-[#97A7BF]">{t('No round data yet')}</Text>
         </View>
       </View>
     );
@@ -32,7 +32,7 @@ export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
     <View className="mx-3 mt-5">
       <View className="mb-3 flex-row items-center gap-2">
         <BarChart3 size={16} color={GOLD} />
-        <CText className="text-base font-bold text-white">{t('Performance by round')}</CText>
+        <Text className="text-base font-bold text-white">{t('Performance by round')}</Text>
       </View>
 
       <View className="rounded-2xl border border-[#223554] bg-[#101A2A] p-4">
@@ -41,10 +41,10 @@ export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
           return (
             <View key={round.round} className={index < rounds.length - 1 ? 'mb-3' : ''}>
               <View className="mb-1 flex-row items-center justify-between">
-                <CText className="text-xs text-[#97A7BF]">{t('Round {{n}}', { n: round.round })}</CText>
-                <CText className="text-xs font-semibold text-white">
+                <Text className="text-xs text-[#97A7BF]">{t('Round {{n}}', { n: round.round })}</Text>
+                <Text className="text-xs font-semibold text-white">
                   {round.points} {t('pts')}
-                </CText>
+                </Text>
               </View>
               <View className="h-2.5 overflow-hidden rounded-full bg-[#1A2740]">
                 <View

@@ -1,4 +1,4 @@
-import { Card, CText } from '@/components/ui';
+import { Card, Text } from '@/components/ui';
 import { View } from 'react-native';
 import { MemberStatsType } from '../types';
 
@@ -44,12 +44,12 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <CText variant="caption" className="text-muted uppercase">
+              <Text variant="caption" className="text-muted uppercase">
                 {item.label}
-              </CText>
-              <CText variant="body" bold className={`${item.color}`}>
+              </Text>
+              <Text variant="body" bold className={`${item.color}`}>
                 {item.value}
-              </CText>
+              </Text>
             </View>
           </View>
         ))}
@@ -63,12 +63,12 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <CText variant="caption" className="text-muted uppercase">
+              <Text variant="caption" className="text-muted uppercase">
                 {item.label}
-              </CText>
-              <CText variant="body" bold className={`${item.color}`}>
+              </Text>
+              <Text variant="body" bold className={`${item.color}`}>
                 {item.value}
-              </CText>
+              </Text>
             </View>
           </View>
         ))}

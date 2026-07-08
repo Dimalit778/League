@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
@@ -62,21 +62,22 @@ export const InputField = ({
 
   const containerStyle = [
     isIOS ? styles.iosContainer : styles.androidContainer,
-    { backgroundColor: isIOS ? colors.background : 'transparent' },
     {
+      backgroundColor: colors.surface,
       borderWidth: isFocused ? 2 : 1,
-      borderColor: isFocused ? colors.primary : colors.border,
+      borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
     },
   ];
 
   return (
-    <View>
+    <View className="gap-1">
       <View style={containerStyle} className="flex-row items-center px-2">
         {icon && (
           <View className={isRTL ? 'ml-2' : 'mr-2'} accessible={false}>
             {icon}
           </View>
         )}
+
         <Controller
           control={control}
           name={name}
@@ -85,8 +86,11 @@ export const InputField = ({
               placeholder={placeholder}
               placeholderTextColor={colors.muted}
               secureTextEntry={secureTextEntry}
-              className="flex-1 text-text py-4 pl-2"
-              style={{ textAlign: isRTL ? 'right' : 'left' }}
+              className="flex-1 text-text py-4 px-2"
+              style={{
+                textAlign: isRTL ? 'right' : 'left',
+                color: colors.text,
+              }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
                 onBlur();
@@ -110,6 +114,7 @@ export const InputField = ({
             />
           )}
         />
+
         {rightIcon && (
           <Pressable
             onPress={onRightIconPress}
@@ -122,21 +127,21 @@ export const InputField = ({
           </Pressable>
         )}
       </View>
+
       {error && (
-        <CText
-          variant="small"
-          className="text-error mt-1 text-center"
+        <Text
+          small
+          className="text-error text-center"
           accessible
           accessibilityRole="text"
           accessibilityLiveRegion="assertive"
         >
           {error.message && t(error.message)}
-        </CText>
+        </Text>
       )}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   iosContainer: {
     borderRadius: 10,

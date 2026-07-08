@@ -1,4 +1,4 @@
-import { CText, MatchCard } from '@/components/ui';
+import { Text, MatchCard } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
@@ -39,7 +39,7 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
         offset: 80 * index,
         index,
       })}
-      ListEmptyComponent={<CText className="text-text text-center">{t('No matches found')}</CText>}
+      ListEmptyComponent={<Text className="text-text text-center">{t('No matches found')}</Text>}
       refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
     />
   );

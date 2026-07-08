@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, CText } from '@/components/ui';
+import { BackButton, Text } from '@/components/ui';
 import { useAdminLeagues } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -26,9 +26,9 @@ const AdminLeaguesScreen = () => {
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
         {error ? (
-          <CText className="text-error text-base">Unable to load leagues. Pull to refresh to try again.</CText>
+          <Text className="text-error text-base">Unable to load leagues. Pull to refresh to try again.</Text>
         ) : (
-          <CText className="text-text text-sm mb-4">Showing {data?.length ?? 0} leagues.</CText>
+          <Text className="text-text text-sm mb-4">Showing {data?.length ?? 0} leagues.</Text>
         )}
 
         <View className="space-y-4 pb-16">
@@ -36,36 +36,36 @@ const AdminLeaguesScreen = () => {
             <View key={league.id} className="bg-surface border border-border rounded-2xl p-4">
               <View className="flex-row justify-between items-start mb-4">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text text-lg font-semibold">{league.name}</CText>
-                  <CText className="text-text/70 text-sm">{league.id}</CText>
+                  <Text className="text-text text-lg font-semibold">{league.name}</Text>
+                  <Text className="text-text/70 text-sm">{league.id}</Text>
                 </View>
                 <View>
-                  <CText className="text-text/50 text-xs uppercase tracking-wide text-right">Join Code</CText>
-                  <CText className="text-text text-base font-semibold">{league.join_code}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide text-right">Join Code</Text>
+                  <Text className="text-text text-base font-semibold">{league.join_code}</Text>
                 </View>
               </View>
 
               <View className="flex-row mb-3">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Owner</CText>
-                  <CText className="text-text text-sm">{league.owner?.full_name ?? 'Unknown owner'}</CText>
-                  <CText className="text-text/70 text-xs">{league.owner?.email ?? 'No email on file'}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Owner</Text>
+                  <Text className="text-text text-sm">{league.owner?.full_name ?? 'Unknown owner'}</Text>
+                  <Text className="text-text/70 text-xs">{league.owner?.email ?? 'No email on file'}</Text>
                 </View>
                 <View className="flex-1">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Competition</CText>
-                  <CText className="text-text text-sm">{league.competition?.name ?? 'Not assigned'}</CText>
-                  <CText className="text-text/70 text-xs">{league.competition?.area ?? ''}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Competition</Text>
+                  <Text className="text-text text-sm">{league.competition?.name ?? 'Not assigned'}</Text>
+                  <Text className="text-text/70 text-xs">{league.competition?.area ?? ''}</Text>
                 </View>
               </View>
 
               <View className="flex-row justify-between">
                 <View>
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Max Members</CText>
-                  <CText className="text-text text-sm">{league.max_members}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Max Members</Text>
+                  <Text className="text-text text-sm">{league.max_members}</Text>
                 </View>
                 <View className="items-end">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Created</CText>
-                  <CText className="text-text text-sm">{new Date(league.created_at).toLocaleString()}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Created</Text>
+                  <Text className="text-text text-sm">{new Date(league.created_at).toLocaleString()}</Text>
                 </View>
               </View>
             </View>

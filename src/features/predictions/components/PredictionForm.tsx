@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { PredictionMemberType } from '@/features/matches/types';
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -141,9 +141,9 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
           onEditingEnd={handleSave}
           accessibilityLabel={t('Home score')}
         />
-        <CText variant="h2" className="text-white">
+        <Text variant="h2" className="text-white">
           -
-        </CText>
+        </Text>
         <ScoreInput
           value={awayScore}
           onChange={handleAwayScoreChange}

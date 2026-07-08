@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Card, CText } from '@/components/ui';
+import { BackButton, Card, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,15 +31,15 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
         contentContainerStyle={{ paddingBottom: edges.bottom + 24, paddingHorizontal: 10 }}
       >
         <View className="mb-5 mt-3">
-          <CText variant="h2" className={textAlignClass}>
+          <Text variant="h2" className={textAlignClass}>
             {content.title}
-          </CText>
-          <CText variant="caption" className={`mt-1 text-muted ${textAlignClass}`}>
+          </Text>
+          <Text variant="caption" className={`mt-1 text-muted ${textAlignClass}`}>
             {content.updatedAt}
-          </CText>
-          <CText variant="body" className={`mt-4 text-muted ${textAlignClass}`}>
+          </Text>
+          <Text variant="body" className={`mt-4 text-muted ${textAlignClass}`}>
             {content.intro}
-          </CText>
+          </Text>
         </View>
 
         {content.sections.map((section) => (
@@ -51,28 +51,28 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
               >
                 <Ionicons name="document-text-outline" size={20} color={colors.primary} />
               </View>
-              <CText variant="h3" className={`flex-1 ${textAlignClass}`}>
+              <Text variant="h3" className={`flex-1 ${textAlignClass}`}>
                 {section.title}
-              </CText>
+              </Text>
             </View>
 
             {section.body.map((paragraph) => (
               <View key={paragraph} className={`mb-2 ${directionClass}`}>
-                <CText variant="body" className={`text-muted ${isRTL ? 'ml-2' : 'mr-2'}`}>
+                <Text variant="body" className={`text-muted ${isRTL ? 'ml-2' : 'mr-2'}`}>
                   •
-                </CText>
-                <CText variant="body" className={`flex-1 text-muted ${textAlignClass}`}>
+                </Text>
+                <Text variant="body" className={`flex-1 text-muted ${textAlignClass}`}>
                   {paragraph}
-                </CText>
+                </Text>
               </View>
             ))}
           </Card>
         ))}
 
         <View className="mt-1 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
-          <CText variant="caption" className={`text-muted ${textAlignClass}`}>
+          <Text variant="caption" className={`text-muted ${textAlignClass}`}>
             {content.footer}
-          </CText>
+          </Text>
         </View>
       </ScrollView>
     </Screen>

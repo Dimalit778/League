@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { cn } from '@/lib/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
@@ -41,7 +41,7 @@ export const AvatarImage = ({ nickname, path, style, className }: AvatarImagePro
           accessibilityRole="text"
           accessibilityLabel={nickname ? `${nickname}'s avatar initial ${initial}` : `Avatar initial ${initial}`}
         >
-          <CText className="text-primary font-semibold text-2xl">{initial}</CText>
+          <Text className="text-primary font-semibold text-2xl">{initial}</Text>
         </View>
       )}
     </View>

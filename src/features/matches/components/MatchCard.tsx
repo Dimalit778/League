@@ -2,7 +2,7 @@ import { MyImage } from '@/components/ui/MyImage';
 import { router } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
-import { CText } from '../../../components/ui/CText';
+import { Text } from '../../../components/ui/Text';
 import { PredictionDisplayStatus } from '../utils/matchCard.mapper';
 import { MATCH_CARD_LAYOUT, MATCH_CARD_VIEWBOX_HEIGHT, MatchCardBg } from './MatchCardBg';
 
@@ -51,13 +51,13 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
       </View>
 
       <View className="mt-0.5 h-6 w-[95%] justify-start">
-        <CText
+        <Text
           className="text-center text-[10px] font-bold leading-tight text-text"
           numberOfLines={2}
           ellipsizeMode="tail"
         >
           {name}
-        </CText>
+        </Text>
       </View>
     </View>
   );
@@ -131,13 +131,13 @@ export const MatchCard = memo(function MatchCard({
         {/* Date */}
         <View className="absolute left-0 right-0 z-10 items-center" style={{ top: dateTop }}>
           <View className="max-w-[85%] flex-row items-center justify-center gap-2">
-            <CText className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+            <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
               {date}
-            </CText>
+            </Text>
             <View className="h-3 w-0.5 bg-border" />
-            <CText className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+            <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
               {time}
-            </CText>
+            </Text>
           </View>
         </View>
 
@@ -161,14 +161,14 @@ export const MatchCard = memo(function MatchCard({
           />
 
           <View style={{ width: centerWidth }} className="items-center justify-center">
-            <CText
+            <Text
               className="text-2xl font-semibold text-text"
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.75}
             >
               {scoreText}
-            </CText>
+            </Text>
           </View>
 
           <TeamBlock
@@ -183,9 +183,9 @@ export const MatchCard = memo(function MatchCard({
 
         {/* Prediction */}
         <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
-          <CText className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
+          <Text className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
             {predictionText}
-          </CText>
+          </Text>
         </View>
       </View>
     </Pressable>

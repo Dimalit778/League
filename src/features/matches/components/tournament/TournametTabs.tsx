@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import { useIsRTL } from '@/providers/LanguageProvider';
@@ -41,9 +41,9 @@ export const TournamentViewTabs = ({ value, onChange }: TournamentViewTabsProps)
             onPress={() => onChange(option.value)}
             className={cn('flex-1 items-center rounded-lg py-2', active && 'bg-primary')}
           >
-            <CText variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
+            <Text variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
               {option.label}
-            </CText>
+            </Text>
           </Pressable>
         );
       })}
@@ -152,9 +152,9 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
               active ? 'bg-primary' : 'border border-border',
             )}
           >
-            <CText variant="bodyBold" numberOfLines={1} className={active ? 'text-background' : 'text-text'}>
+            <Text variant="bodyBold" numberOfLines={1} className={active ? 'text-background' : 'text-text'}>
               {option.label}
-            </CText>
+            </Text>
           </Pressable>
         );
       })}

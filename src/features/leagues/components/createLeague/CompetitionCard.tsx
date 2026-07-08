@@ -1,4 +1,4 @@
-import { CText, UpgardeBadge } from '@/components/ui';
+import { Text, UpgardeBadge } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
@@ -38,17 +38,17 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             priority="high"
           />
           <View className="flex-1 items-center">
-            <CText variant="caption" className="text-muted">
+            <Text variant="caption" className="text-muted">
               {t(competition.area)}
-            </CText>
-            <CText
+            </Text>
+            <Text
               variant="body"
               bold
               className="text-center"
               style={{ color: isSelected ? colors.primary : colors.text }}
             >
               {t(competition.name)}
-            </CText>
+            </Text>
           </View>
           <ExpoImage
             source={competition.logo}

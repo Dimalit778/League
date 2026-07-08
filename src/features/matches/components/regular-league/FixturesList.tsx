@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { cn } from '@/lib/nativeWind';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';
@@ -56,7 +56,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
             style={{ height: 2.5 }}
           />
         )}
-        <CText
+        <Text
           variant="h3"
           className={cn(isSelected || isToday ? 'text-text' : 'text-muted')}
           style={
@@ -66,7 +66,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
           }
         >
           {fixture}
-        </CText>
+        </Text>
       </Pressable>
     </View>
   );

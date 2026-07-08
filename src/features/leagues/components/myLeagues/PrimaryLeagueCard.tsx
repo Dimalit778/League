@@ -1,4 +1,4 @@
-import { CText, HeaderSection } from '@/components/ui';
+import { Text, HeaderSection } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePrimaryMember } from '@/store/MemberStore';
@@ -13,9 +13,9 @@ function StatBlock({ label, value }: { label: string; value: string }) {
   return (
     <View className="overflow-hidden flex-1 rounded-xl border border-border py-1 ">
       <View className="mb-1 flex-row items-center  justify-center">
-        <CText className="text-xs font-semibold tracking-wide text-muted uppercase ">{label}</CText>
+        <Text className="text-xs font-semibold tracking-wide text-muted uppercase ">{label}</Text>
       </View>
-      <CText className="text-base text-center  text-primary font-bold ">{value}</CText>
+      <Text className="text-base text-center  text-primary font-bold ">{value}</Text>
     </View>
   );
 }
@@ -44,7 +44,7 @@ export default function PrimaryLeagueCard({ onPress }: PrimaryLeagueCardProps) {
         <View className=" justify-center items-center w-40 h-40  ">
           <View className="flex-row items-center gap-2 mb-2">
             <Star size={18} color="#D5B13F" fill="#D5B13F" />
-            <CText className=" font-semibold uppercase tracking-wide text-[#D5B13F]">{t('Primary')}</CText>
+            <Text className=" font-semibold uppercase tracking-wide text-[#D5B13F]">{t('Primary')}</Text>
           </View>
           {/* Trophy circle */}
           <View className="w-28 h-28 items-center justify-center rounded-full border border-white/10 bg-[#091425]">
@@ -62,13 +62,13 @@ export default function PrimaryLeagueCard({ onPress }: PrimaryLeagueCardProps) {
 
         <View className="min-w-0 flex-1">
           <View>
-            <CText className="text-2xl font-black text-text" numberOfLines={1}>
+            <Text className="text-2xl font-black text-text" numberOfLines={1}>
               {league.league_name}
-            </CText>
+            </Text>
 
-            <CText className="mt-1 text-base font-semibold text-muted" numberOfLines={1}>
+            <Text className="mt-1 text-base font-semibold text-muted" numberOfLines={1}>
               {league.nickname}
-            </CText>
+            </Text>
           </View>
 
           {/* stats */}
@@ -86,7 +86,7 @@ export default function PrimaryLeagueCard({ onPress }: PrimaryLeagueCardProps) {
             className="mt-4 h-10 items-center justify-center rounded-2xl border border-border px-5"
             style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
           >
-            <CText className="text-base font-bold text-text ">Enter league</CText>
+            <Text className="text-base font-bold text-text ">Enter league</Text>
 
             <View className="absolute right-5">
               <ChevronRight size={24} color={colors.text} />

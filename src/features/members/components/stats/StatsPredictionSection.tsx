@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -32,7 +32,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
 
   return (
     <View className="flex-1 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] p-3">
-      <CText className="text-xs font-semibold text-[#97A7BF]">{t('Prediction accuracy')}</CText>
+      <Text className="text-xs font-semibold text-[#97A7BF]">{t('Prediction accuracy')}</Text>
 
       <View className="mt-2 items-center justify-center">
         <View style={{ width: GAUGE_SIZE, height: GAUGE_SIZE }}>
@@ -63,13 +63,13 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
             className="absolute inset-0 items-center justify-center"
             style={{ width: GAUGE_SIZE, height: GAUGE_SIZE }}
           >
-            <CText className="text-2xl font-black text-white">{Math.round(clamped)}%</CText>
-            <CText className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Accuracy')}</CText>
+            <Text className="text-2xl font-black text-white">{Math.round(clamped)}%</Text>
+            <Text className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{t('Accuracy')}</Text>
           </View>
         </View>
       </View>
 
-      <CText className="mt-1 text-center text-xs font-semibold text-[#D5B13F]">{t(messageKey)}</CText>
+      <Text className="mt-1 text-center text-xs font-semibold text-[#D5B13F]">{t(messageKey)}</Text>
     </View>
   );
 }
@@ -80,10 +80,10 @@ function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: stri
       <View className="mb-1.5 h-7 w-7 items-center justify-center rounded-lg border border-[#D5B13F]/30 bg-[#1A2740]">
         {icon}
       </View>
-      <CText className="text-[10px] text-[#97A7BF]" numberOfLines={1}>
+      <Text className="text-[10px] text-[#97A7BF]" numberOfLines={1}>
         {label}
-      </CText>
-      <CText className="mt-0.5 text-lg font-bold text-white">{value}</CText>
+      </Text>
+      <Text className="mt-0.5 text-lg font-bold text-white">{value}</Text>
     </View>
   );
 }

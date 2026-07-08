@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, CText } from '@/components/ui';
+import { BackButton, Button, Text } from '@/components/ui';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
@@ -52,7 +52,7 @@ const SettingsScreen = () => {
 
       <ScrollView className="flex-1 px-2" showsVerticalScrollIndicator={false}>
         <View className="mt-8 mx-3  flex-row justify-between items-center p-4 bg-surface rounded-xl border border-border">
-          <CText className="text-text text-3xl">{fullName}</CText>
+          <Text className="text-text text-3xl">{fullName}</Text>
         </View>
         <View className=" mt-12">
           <SettingsContent
@@ -71,23 +71,20 @@ const SettingsScreen = () => {
             />
           </View>
         )}
-        <Pressable
+        <Button
+          title={t('Sign Out')}
           onPress={handleSignOut}
-          className="mt-6 flex-row items-center justify-between border-b border-border py-4"
-        >
-          <CText variant="body" className="text-orange-400">
-            {t('Sign Out')}
-          </CText>
-        </Pressable>
+          className="mt-6 flex-row items-center justify-center border-b border-border py-4"
+        />
 
         <View className="mt-8">
           <Pressable
             onPress={handleDeleteAccountPress}
             className="items-center rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4"
           >
-            <CText className="text-red-400 font-bold text-base">{t('Delete Account')}</CText>
+            <Text className="text-red-400 font-bold text-base">{t('Delete Account')}</Text>
 
-            <CText className="mt-1 text-muted text-sm">{t('Permanently delete your account and all your data.')}</CText>
+            <Text className="mt-1 text-muted text-sm">{t('Permanently delete your account and all your data.')}</Text>
           </Pressable>
         </View>
       </ScrollView>

@@ -1,4 +1,4 @@
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
@@ -26,12 +26,12 @@ const LockedStats = () => {
           <Feather name="lock" size={30} color={colors.primary} />
         </View>
 
-        <CText variant="h3" className="text-center text-text">
+        <Text variant="h3" className="text-center text-text">
           {t('Premium stats only')}
-        </CText>
-        <CText variant="caption" className="mt-3 text-center text-muted">
+        </Text>
+        <Text variant="caption" className="mt-3 text-center text-muted">
           {t('Upgrade to Pro to unlock match statistics')}
-        </CText>
+        </Text>
 
         <Button
           title={t('Upgrade to Pro')}
@@ -88,9 +88,9 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
               <Feather name={tab.icon} size={20} color={isActive ? colors.primary : colors.muted} />
-              <CText variant="bodyBold" className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
+              <Text variant="bodyBold" className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
                 {t(tab.title)}
-              </CText>
+              </Text>
             </TouchableOpacity>
           );
         })}

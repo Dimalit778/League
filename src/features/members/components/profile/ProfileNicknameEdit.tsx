@@ -1,4 +1,4 @@
-import { Button, CText } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
@@ -63,8 +63,8 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
           className="flex-row items-center justify-between rounded-xl border border-[#223554] bg-[#101A2A] px-4 py-3 active:opacity-80"
         >
           <View>
-            <CText className="text-xs text-[#97A7BF]">{t('Nickname')}</CText>
-            <CText className="text-base font-semibold text-white">{displayNickname}</CText>
+            <Text className="text-xs text-[#97A7BF]">{t('Nickname')}</Text>
+            <Text className="text-base font-semibold text-white">{displayNickname}</Text>
           </View>
           <FontAwesome6 name="pen-to-square" size={14} color={colors.secondary} />
         </Pressable>
@@ -74,7 +74,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
 
   return (
     <View className="mx-3 mt-3 rounded-xl border border-[#223554] bg-[#101A2A] p-4">
-      <CText className="mb-2 text-xs text-[#97A7BF]">{t('Edit nickname')}</CText>
+      <Text className="mb-2 text-xs text-[#97A7BF]">{t('Edit nickname')}</Text>
       <Controller
         control={control}
         name="nickname"
@@ -91,7 +91,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
         )}
       />
       {errors.nickname && (
-        <CText className="mb-2 text-sm text-error">{t(errors.nickname.message as string)}</CText>
+        <Text className="mb-2 text-sm text-error">{t(errors.nickname.message as string)}</Text>
       )}
       <View className="flex-row gap-2">
         <Button

@@ -169,7 +169,7 @@ export default function MyLeaguesScreen() {
       <LeagueHeader />
 
       {!hasLeagues ? (
-        <EmptyList />
+        <EmptyList message="Create or join a league to get started." />
       ) : (
         <>
           {primaryLeague && <PrimaryLeagueCard />}

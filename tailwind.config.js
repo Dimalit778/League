@@ -23,11 +23,8 @@ module.exports = {
         success: 'var(--color-success)',
       },
       fontFamily: {
-        nunito: ['Nunito_400Regular'],
-        'nunito-bold': ['Nunito_700Bold'],
-        'nunito-black': ['Nunito_900Black'],
-        teko: ['Teko-Regular'],
-        'teko-bold': ['Teko-Bold'],
+        teko: ['Teko_400Regular'],
+        'teko-bold': ['Teko_700Bold'],
       },
 
       maxWidth: {

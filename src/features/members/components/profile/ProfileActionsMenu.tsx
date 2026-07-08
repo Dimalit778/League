@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { Link } from 'expo-router';
@@ -32,7 +32,7 @@ function MenuItem({
     <View className="flex-row items-center justify-between py-4">
       <View className="flex-row items-center gap-3">
         {icon}
-        <CText className={`text-base ${labelClassName ?? 'text-white'}`}>{label}</CText>
+        <Text className={`text-base ${labelClassName ?? 'text-white'}`}>{label}</Text>
       </View>
       <ChevronRight size={18} color="rgba(255,255,255,0.4)" />
     </View>
@@ -124,7 +124,7 @@ export function ProfileActionsMenu({
 
       {isOwner && onDelete && (
         <Pressable onPress={onDelete} className="mt-4 items-center py-2 active:opacity-70">
-          <CText className="text-sm font-semibold text-[#f87171]">{t('Delete League')}</CText>
+          <Text className="text-sm font-semibold text-[#f87171]">{t('Delete League')}</Text>
         </Pressable>
       )}
     </View>

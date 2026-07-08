@@ -1,5 +1,5 @@
 import { LoadingOverlay } from '@/components/layout';
-import { BackButton, CText } from '@/components/ui';
+import { BackButton, Text } from '@/components/ui';
 import { useAdminLeagueMembers } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -26,9 +26,9 @@ const AdminLeagueMembersScreen = () => {
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
         {error ? (
-          <CText className="text-error text-base">Unable to load league members. Pull to refresh to try again.</CText>
+          <Text className="text-error text-base">Unable to load league members. Pull to refresh to try again.</Text>
         ) : (
-          <CText className="text-text text-sm mb-4">Showing {data?.length ?? 0} league members.</CText>
+          <Text className="text-text text-sm mb-4">Showing {data?.length ?? 0} league members.</Text>
         )}
 
         <View className="space-y-4 pb-16">
@@ -36,25 +36,25 @@ const AdminLeagueMembersScreen = () => {
             <View key={member.id} className="bg-surface border border-border rounded-2xl p-4">
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text text-lg font-semibold">{member.nickname}</CText>
-                  <CText className="text-text/70 text-sm">{member.user?.full_name ?? 'Unknown User'}</CText>
-                  <CText className="text-text/50 text-xs">{member.user?.email ?? 'No email available'}</CText>
+                  <Text className="text-text text-lg font-semibold">{member.nickname}</Text>
+                  <Text className="text-text/70 text-sm">{member.user?.full_name ?? 'Unknown User'}</Text>
+                  <Text className="text-text/50 text-xs">{member.user?.email ?? 'No email available'}</Text>
                 </View>
                 <View className="items-end">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Primary</CText>
-                  <CText className="text-text text-sm">{member.is_primary ? 'Yes' : 'No'}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Primary</Text>
+                  <Text className="text-text text-sm">{member.is_primary ? 'Yes' : 'No'}</Text>
                 </View>
               </View>
 
               <View className="flex-row justify-between">
                 <View className="flex-1 mr-4">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">League</CText>
-                  <CText className="text-text text-sm">{member.league?.name ?? 'Unknown League'}</CText>
-                  <CText className="text-text/70 text-xs">{member.league?.id}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">League</Text>
+                  <Text className="text-text text-sm">{member.league?.name ?? 'Unknown League'}</Text>
+                  <Text className="text-text/70 text-xs">{member.league?.id}</Text>
                 </View>
                 <View className="items-end">
-                  <CText className="text-text/50 text-xs uppercase tracking-wide">Joined</CText>
-                  <CText className="text-text text-sm">{new Date(member.created_at).toLocaleString()}</CText>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">Joined</Text>
+                  <Text className="text-text text-sm">{new Date(member.created_at).toLocaleString()}</Text>
                 </View>
               </View>
             </View>

@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo } from 'react';
 import { View } from 'react-native';
@@ -30,9 +30,9 @@ export default function TournamentMatchList({
         {groupSections.map((section) => (
           <View key={section.fixture} className="mx-2 mt-3">
             <View className="px-2 mb-1">
-              <CText variant="caption" bold className="text-muted">
+              <Text variant="caption" bold className="text-muted">
                 {t('Matchday')} {section.fixture}
-              </CText>
+              </Text>
             </View>
             <View className="flex-row flex-wrap">
               {section.matches.map((match) => {

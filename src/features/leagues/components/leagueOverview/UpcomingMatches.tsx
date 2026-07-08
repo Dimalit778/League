@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { MatchCardType } from '@/features/matches/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
@@ -17,25 +17,25 @@ function Row({ match }: { match: MatchCardType }) {
         <CalendarDays size={22} color="#8A94A6" />
 
         <View className="ml-3 w-16">
-          <CText className="text-muted">{dateLabel}</CText>
-          <CText className="text-muted">{timeLabel}</CText>
+          <Text className="text-muted">{dateLabel}</Text>
+          <Text className="text-muted">{timeLabel}</Text>
         </View>
 
         {match.home_team?.logo && (
           <Image source={{ uri: match.home_team.logo }} className="w-8 h-6" contentFit="contain" />
         )}
-        <CText className="text-white ml-2 flex-1" numberOfLines={1}>
+        <Text className="text-white ml-2 flex-1" numberOfLines={1}>
           {match.home_team?.shortName ?? match.home_team?.name}
-        </CText>
+        </Text>
 
-        <CText className="text-muted mx-3">VS</CText>
+        <Text className="text-muted mx-3">VS</Text>
 
         {match.away_team?.logo && (
           <Image source={{ uri: match.away_team.logo }} className="w-8 h-6" contentFit="contain" />
         )}
-        <CText className="text-white ml-2 flex-1" numberOfLines={1}>
+        <Text className="text-white ml-2 flex-1" numberOfLines={1}>
           {match.away_team?.shortName ?? match.away_team?.name}
-        </CText>
+        </Text>
 
         <ChevronRight size={20} color="#8A94A6" />
       </Pressable>
@@ -49,18 +49,18 @@ export function UpcomingMatchesCard({ matches }: { matches: MatchCardType[] }) {
   return (
     <View className="rounded-3xl border border-cardBorder bg-card p-4">
       <View className="flex-row justify-between items-center mb-3">
-        <CText className="text-white text-lg font-bold">{t('Today matches')}</CText>
+        <Text className="text-white text-lg font-bold">{t('Today matches')}</Text>
 
         <Link href="/(app)/(league)/(tabs)/Matches" asChild>
           <Pressable className="flex-row items-center" accessibilityRole="button">
-            <CText className="text-primaryGold">{t('View all')}</CText>
+            <Text className="text-primaryGold">{t('View all')}</Text>
             <ChevronRight size={18} color="#D99A00" />
           </Pressable>
         </Link>
       </View>
 
       {matches.length === 0 ? (
-        <CText className="text-muted py-3">{t('No matches today')}</CText>
+        <Text className="text-muted py-3">{t('No matches today')}</Text>
       ) : (
         matches.map((match) => <Row key={match.id} match={match} />)
       )}

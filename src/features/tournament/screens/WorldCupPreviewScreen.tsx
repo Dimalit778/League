@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, CText } from '@/components/ui';
+import { BackButton, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image as ExpoImage } from 'expo-image';
 import { useMemo, useState } from 'react';
@@ -40,13 +40,13 @@ export default function WorldCupPreviewScreen() {
             contentFit="contain"
           />
           <View className="items-start">
-            <CText variant="h3" bold>
+            <Text variant="h3" bold>
               {t('World Cup')}
-            </CText>
+            </Text>
             <View className="px-2 py-0.5 rounded bg-primary/20 self-start">
-              <CText variant="small" className="text-primary">
+              <Text variant="small" className="text-primary">
                 {t('Preview')}
-              </CText>
+              </Text>
             </View>
           </View>
         </View>

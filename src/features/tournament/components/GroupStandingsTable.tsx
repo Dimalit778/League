@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image as ExpoImage } from 'expo-image';
 import { View } from 'react-native';
@@ -10,17 +10,17 @@ type Props = {
 
 const HeaderCell = ({ label, w }: { label: string; w: number }) => (
   <View style={{ width: w }} className="items-center">
-    <CText variant="small" bold className="text-muted">
+    <Text variant="small" bold className="text-muted">
       {label}
-    </CText>
+    </Text>
   </View>
 );
 
 const Cell = ({ value, w, bold = false }: { value: string | number; w: number; bold?: boolean }) => (
   <View style={{ width: w }} className="items-center">
-    <CText variant="caption" bold={bold} className="text-text">
+    <Text variant="caption" bold={bold} className="text-text">
       {value}
-    </CText>
+    </Text>
   </View>
 );
 
@@ -32,14 +32,14 @@ export default function GroupStandingsTable({ rows }: Props) {
     <View className="mx-3 my-2 rounded-xl border border-border bg-surface overflow-hidden">
       <View className="flex-row items-center px-3 py-2 border-b border-border bg-background/40">
         <View style={{ width: 22 }} className="items-center">
-          <CText variant="small" bold className="text-muted">
+          <Text variant="small" bold className="text-muted">
             #
-          </CText>
+          </Text>
         </View>
         <View className="flex-1">
-          <CText variant="small" bold className="text-muted">
+          <Text variant="small" bold className="text-muted">
             {t('Team')}
-          </CText>
+          </Text>
         </View>
         <HeaderCell label={t('P')} w={colW} />
         <HeaderCell label={t('W')} w={colW} />
@@ -58,9 +58,9 @@ export default function GroupStandingsTable({ rows }: Props) {
             style={{ backgroundColor: qualified ? 'rgba(34,197,94,0.08)' : 'transparent' }}
           >
             <View style={{ width: 22 }} className="items-center">
-              <CText variant="caption" bold className="text-text">
+              <Text variant="caption" bold className="text-text">
                 {idx + 1}
-              </CText>
+              </Text>
             </View>
             <View className="flex-1 flex-row items-center gap-2">
               <ExpoImage
@@ -69,9 +69,9 @@ export default function GroupStandingsTable({ rows }: Props) {
                 cachePolicy="memory-disk"
                 contentFit="contain"
               />
-              <CText variant="caption" bold className="text-text">
+              <Text variant="caption" bold className="text-text">
                 {row.team.tla}
-              </CText>
+              </Text>
             </View>
             <Cell value={row.played} w={colW} />
             <Cell value={row.won} w={colW} />

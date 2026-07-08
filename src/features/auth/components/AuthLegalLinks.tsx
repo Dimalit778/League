@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
 import { View } from 'react-native';
@@ -9,17 +9,17 @@ const AuthLegalLinks = () => {
   return (
     <View className="flex-row flex-wrap items-center justify-center gap-x-2 px-5 pb-6">
       <Link href="/privacy" asChild>
-        <CText variant="caption" className="text-muted underline">
+        <Text variant="caption" className="text-muted underline">
           {t('Privacy Policy')}
-        </CText>
+        </Text>
       </Link>
-      <CText variant="caption" className="text-muted">
+      <Text variant="caption" className="text-muted">
         ·
-      </CText>
+      </Text>
       <Link href="/terms" asChild>
-        <CText variant="caption" className="text-muted underline">
+        <Text variant="caption" className="text-muted underline">
           {t('Terms of Service')}
-        </CText>
+        </Text>
       </Link>
     </View>
   );

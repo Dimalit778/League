@@ -16,7 +16,6 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
-    "@expo-google-fonts/nunito": "^0.4.2",
     "@expo-google-fonts/teko": "^0.4.1",
     "@expo/vector-icons": "^15.0.3",
     "@google/genai": "^2.10.0",

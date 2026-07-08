@@ -8,7 +8,7 @@ import {
 import { selectLeagueId, selectMemberUserId, useMemberStore } from '@/store/MemberStore';
 
 import { Screen } from '@/components/layout';
-import { AvatarImage, BackButton, Button, CText } from '@/components/ui';
+import { AvatarImage, BackButton, Button, Text } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { MemberType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -32,13 +32,13 @@ const MemberCard = ({ member, isOwner, handleRemoveMember }: MemberCardProps) =>
           <AvatarImage nickname={member.nickname} path={member.avatar_url ?? null} />
         </View>
         <View className="flex-1 items-start">
-          <CText variant="body" bold>
+          <Text variant="body" bold>
             {member.nickname}
-          </CText>
+          </Text>
           {isOwner && (
-            <CText variant="caption" className="text-muted">
+            <Text variant="caption" className="text-muted">
               {t('League Owner')}
-            </CText>
+            </Text>
           )}
         </View>
       </View>
@@ -141,12 +141,12 @@ export default function EditLeagueScreen() {
             <View className="flex-row items-center gap-3 mb-4">
               <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
               <View className="flex-1">
-                <CText variant="body" bold>
+                <Text variant="body" bold>
                   {league?.competition?.name}
-                </CText>
-                <CText variant="caption" className="text-muted">
+                </Text>
+                <Text variant="caption" className="text-muted">
                   {league?.competition?.area}
-                </CText>
+                </Text>
               </View>
             </View>
 

@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { FlatList, ScrollView, TouchableOpacity, View } from 'react-native';
@@ -36,17 +36,17 @@ export default function LeaguesList({ leagues, inactiveLeagues, onPress }: Leagu
                     <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
                     {isLocked && (
                       <View className="rounded-md bg-background px-2 py-1">
-                        <CText className="text-text">{t('Not Active')}</CText>
+                        <Text className="text-text">{t('Not Active')}</Text>
                       </View>
                     )}
                   </View>
                   <View className="flex-1 items-start gap-2">
-                    <CText className="text-center font-headBold text-lg text-text" numberOfLines={1}>
+                    <Text className="text-center font-headBold text-lg text-text" numberOfLines={1}>
                       {item.league.name}
-                    </CText>
-                    <CText className="text-center text-sm text-muted" numberOfLines={1}>
+                    </Text>
+                    <Text className="text-center text-sm text-muted" numberOfLines={1}>
                       {item.nickname}
-                    </CText>
+                    </Text>
                   </View>
                 </TouchableOpacity>
               </View>

@@ -1,6 +1,15 @@
 // /supabase/functions/sync_teams/index.ts
+// Admin-only manual sync of World Cup teams + logos. 1 football API call.
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "npm:@supabase/supabase-js@2";
+import {
+  fdFetch,
+  lockedResponse,
+  releaseSyncLock,
+  requireSyncAuth,
+  tryAcquireSyncLock,
+} from "../_shared/sync.ts";
+const JOB = "sync-worldcup-teams";
 /** ---------- Config ---------- */ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -109,20 +118,9 @@ function dedupeTeamsById(teams) {
   }
   return Array.from(teamsById.values());
 }
-async function fetchWorldCupTeams(fdKey) {
+async function fetchWorldCupTeams(supabase, fdKey) {
   const url = `${FD_BASE}/competitions/${WORLD_CUP_COMPETITION.code}/teams`;
-  const res = await retry(async ()=>{
-    const r = await timedFetch(url, {
-      headers: {
-        "X-Auth-Token": fdKey,
-        Accept: "application/json"
-      }
-    });
-    if (!r.ok) {
-      throw new Error(`FD API ${r.status}: ${await r.text()}`);
-    }
-    return r.json();
-  });
+  const res = await fdFetch(supabase, JOB, url, fdKey);
   const teams = Array.isArray(res?.teams) ? res.teams : [];
   console.info(`${WORLD_CUP_COMPETITION.code}: Found ${teams.length} teams`);
   return teams;
@@ -154,7 +152,7 @@ async function bulkUpsertTeams(supabase, teams) {
   };
 }
 /** ---------- Main sync function ---------- */ async function syncWorldCupTeams(supabase, fdKey) {
-  const rawTeams = await fetchWorldCupTeams(fdKey);
+  const rawTeams = await fetchWorldCupTeams(supabase, fdKey);
   const uniqueTeams = dedupeTeamsById(rawTeams);
   console.info(`Total unique World Cup teams collected: ${uniqueTeams.length}`);
   if (uniqueTeams.length === 0) {
@@ -192,17 +190,22 @@ async function bulkUpsertTeams(supabase, teams) {
   };
 }
 /** ---------- Main handler ---------- */ Deno.serve(async (req)=>{
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: CORS_HEADERS
-    });
-  }
+  const denied = requireSyncAuth(req);
+  if (denied) return denied;
   try {
     const SUPABASE_URL = must("SUPABASE_URL");
     const SERVICE_ROLE = must("SUPABASE_SERVICE_ROLE_KEY");
     const FD_KEY = must("FOOTBALL_ORG_API_KEY");
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-    const result = await syncWorldCupTeams(supabase, FD_KEY);
+    if (!(await tryAcquireSyncLock(supabase, JOB, 300))) return lockedResponse(JOB);
+    let result;
+    try {
+      result = await syncWorldCupTeams(supabase, FD_KEY);
+      await releaseSyncLock(supabase, JOB, result.success ? "success" : "partial");
+    } catch (err) {
+      await releaseSyncLock(supabase, JOB, "error");
+      throw err;
+    }
     console.info(`✅ Synced ${result.synced} World Cup teams, uploaded ${result.uploadedLogos} logos`);
     return new Response(JSON.stringify(result), {
       headers: CORS_HEADERS

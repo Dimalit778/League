@@ -1,4 +1,4 @@
-import { Card, CText } from '@/components/ui';
+import { Card, Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
@@ -15,9 +15,9 @@ export default function PredictionChart(props: PredictionChartProps) {
 
   return (
     <Card className="p-4 mb-4">
-      <CText variant="body" bold className="mb-2">
+      <Text variant="body" bold className="mb-2">
         {t('Prediction Results')}
-      </CText>
+      </Text>
 
       <View className="h-6 flex-row rounded-md overflow-hidden mb-2">
         {stats.totalPredictions > 0 ? (
@@ -34,21 +34,21 @@ export default function PredictionChart(props: PredictionChartProps) {
       <View className="flex-row justify-between">
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
-          <CText>
+          <Text>
             {t('Bingo')} ({stats.bingoHits})
-          </CText>
+          </Text>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
-          <CText>
+          <Text>
             {t('Regular')} ({stats.regularHits})
-          </CText>
+          </Text>
         </View>
         <View className="flex-row items-center">
           <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
-          <CText>
+          <Text>
             {t('Missed')} ({stats.missedHits})
-          </CText>
+          </Text>
         </View>
       </View>
     </Card>

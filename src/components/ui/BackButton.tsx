@@ -3,7 +3,7 @@ import { useIsRTL } from '@/providers/LanguageProvider';
 import { useRouter } from 'expo-router';
 import { CircleArrowLeftIcon, CircleArrowRightIcon } from 'lucide-react-native';
 import { Platform, Pressable, View } from 'react-native';
-import { CText } from './CText';
+import { Text } from './Text';
 
 interface BackButtonProps {
   title?: string;
@@ -41,7 +41,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
         <CircleArrowIcon color={colors.text} size={40} strokeWidth={1} />
       </Pressable>
 
-      {title && <CText className={`text-xl  text-text text-center`}>{title}</CText>}
+      {title && <Text className={`text-xl  text-text text-center`}>{title}</Text>}
     </View>
   );
 };

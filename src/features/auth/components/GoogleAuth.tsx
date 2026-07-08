@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Alert, Pressable } from 'react-native';
 
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -108,11 +108,11 @@ const GoogleAuth = ({
         accessibilityLabel={label}
       >
         <GoogleLogoIcon size={22} />
-        <CText className="text-md font-semibold text-text" numberOfLines={1}>
+        <Text className="text-md font-semibold text-text" numberOfLines={1}>
           {label}
-        </CText>
+        </Text>
       </Pressable>
-      {errorMessage && <CText className="text-error text-sm text-center mt-2">{errorMessage}</CText>}
+      {errorMessage && <Text className="text-error text-sm text-center mt-2">{errorMessage}</Text>}
     </>
   );
 };

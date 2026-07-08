@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { useTranslation } from '@/hooks/useTranslation';
 import { DimensionValue, View } from 'react-native';
 
@@ -37,7 +37,7 @@ export default function LeaguesUsageCard({
 
         <View className="flex-row items-baseline gap-1">
           {inactiveCount > 0 && (
-            <CText
+            <Text
               variant="small"
               className="mr-0.5 text-muted"
               accessibilityLabel={t('{{count}} inactive leagues kept in your account', {
@@ -45,15 +45,15 @@ export default function LeaguesUsageCard({
               })}
             >
               +{inactiveCount}
-            </CText>
+            </Text>
           )}
-          <CText bold className={reachedLimit ? 'text-yellow-500' : 'text-text'}>
+          <Text bold className={reachedLimit ? 'text-yellow-500' : 'text-text'}>
             {leaguesCount}
-          </CText>
-          <CText className="text-muted">/</CText>
-          <CText bold className="text-muted">
+          </Text>
+          <Text className="text-muted">/</Text>
+          <Text bold className="text-muted">
             {maxLeagues}
-          </CText>
+          </Text>
         </View>
       </View>
     </View>

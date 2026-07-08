@@ -2,7 +2,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativeWind';
 import * as Haptics from 'expo-haptics';
 import { ActivityIndicator, Platform, Pressable } from 'react-native';
-import { CText } from './CText';
+import { Text } from './Text';
 
 interface ButtonProps {
   title: string;
@@ -109,13 +109,13 @@ export const Button = ({
       {loading ? (
         <ActivityIndicator color="#fff" size="small" />
       ) : (
-        <CText
+        <Text
           variant="body"
           className={cn(textSizeClasses[size], textVariantClasses[variant])}
           style={!isIOS ? { textTransform: 'uppercase', letterSpacing: 0.5 } : undefined}
         >
           {title}
-        </CText>
+        </Text>
       )}
     </Pressable>
   );

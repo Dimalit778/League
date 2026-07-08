@@ -1,5 +1,5 @@
 import { Error, Screen } from '@/components/layout';
-import { AvatarImage, BackButton, Card, CText } from '@/components/ui';
+import { AvatarImage, BackButton, Card, Text } from '@/components/ui';
 import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
 import FixturesList from '@/features/matches/components/regular-league/FixturesList';
 import MatchesList from '@/features/matches/components/regular-league/MatchesList';
@@ -72,27 +72,27 @@ const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
               </View>
 
               <View className="flex-1">
-                <CText variant="body" bold numberOfLines={1}>
+                <Text variant="body" bold numberOfLines={1}>
                   {member?.nickname}
-                </CText>
+                </Text>
               </View>
               <View className="flex-row items-center gap-4">
                 <View className="items-end">
-                  <CText variant="caption" className="text-muted uppercase">
+                  <Text variant="caption" className="text-muted uppercase">
                     Points
-                  </CText>
-                  <CText variant="body" bold>
+                  </Text>
+                  <Text variant="body" bold>
                     {stats?.totalPoints.toLocaleString() ?? 0}
-                  </CText>
+                  </Text>
                 </View>
                 <View className="h-6 w-px bg-border" />
                 <View className="items-end">
-                  <CText variant="caption" className="text-muted uppercase">
+                  <Text variant="caption" className="text-muted uppercase">
                     Position
-                  </CText>
-                  <CText variant="body" bold>
+                  </Text>
+                  <Text variant="body" bold>
                     {stats?.position ?? '—'}
-                  </CText>
+                  </Text>
                 </View>
               </View>
             </View>

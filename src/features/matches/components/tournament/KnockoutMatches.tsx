@@ -1,5 +1,5 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { router } from 'expo-router';
@@ -109,9 +109,9 @@ function StagePage({
           />
         ))
       ) : (
-        <CText className="text-text mt-6 text-center">
+        <Text className="text-text mt-6 text-center">
           {t('No matches found')}
-        </CText>
+        </Text>
       )}
     </ScrollView>
   );
@@ -223,9 +223,9 @@ export default function KnockoutMatches({
           <RefreshControl refreshing={false} onRefresh={onRefresh} />
         }
       >
-        <CText className="text-text mt-6 text-center">
+        <Text className="text-text mt-6 text-center">
           {t('No matches found')}
-        </CText>
+        </Text>
       </ScrollView>
     );
   }

@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { BestCategory } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Award, ChevronRight } from 'lucide-react-native';
@@ -32,15 +32,15 @@ export function StatsBestCategory({ bestCategory }: StatsBestCategoryProps) {
         </View>
 
         <View className="min-w-0 flex-1">
-          <CText className="text-xs text-[#97A7BF]">{t('Best category')}</CText>
-          <CText className="text-base font-bold text-white">{t(bestCategory.name)}</CText>
-          <CText className="text-sm font-semibold text-[#D5B13F]">
+          <Text className="text-xs text-[#97A7BF]">{t('Best category')}</Text>
+          <Text className="text-base font-bold text-white">{t(bestCategory.name)}</Text>
+          <Text className="text-sm font-semibold text-[#D5B13F]">
             {t('{{count}} correct', { count: bestCategory.value })}
-          </CText>
+          </Text>
           {bestCategory.topPercent != null && (
-            <CText className="mt-0.5 text-[11px] text-[#97A7BF]">
+            <Text className="mt-0.5 text-[11px] text-[#97A7BF]">
               {t("You're in the top {{percent}}% of the league", { percent: bestCategory.topPercent })}
-            </CText>
+            </Text>
           )}
         </View>
 
@@ -50,7 +50,7 @@ export function StatsBestCategory({ bestCategory }: StatsBestCategoryProps) {
           accessibilityRole="button"
           accessibilityLabel={t('View breakdown')}
         >
-          <CText className="text-xs font-semibold text-[#D5B13F]">{t('View breakdown')}</CText>
+          <Text className="text-xs font-semibold text-[#D5B13F]">{t('View breakdown')}</Text>
           <ChevronRight size={14} color={GOLD} />
         </TouchableOpacity>
       </View>

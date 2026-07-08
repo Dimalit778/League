@@ -1,5 +1,5 @@
 // components/layout/Sidebar.tsx
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
@@ -94,9 +94,9 @@ export const SidebarMenu = () => {
                   }`}
                 >
                   <Icon size={24} color={isActive ? colors.primary : colors.muted} />
-                  <CText variant="body" className={`ml-3  ${isActive ? 'text-primary' : 'text-muted'}`}>
+                  <Text variant="body" className={`ml-3  ${isActive ? 'text-primary' : 'text-muted'}`}>
                     {t(route.label)}
-                  </CText>
+                  </Text>
                 </Pressable>
               );
             })}

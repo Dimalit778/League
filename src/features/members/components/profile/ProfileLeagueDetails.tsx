@@ -1,4 +1,4 @@
-import { AvatarImage, CText } from '@/components/ui';
+import { AvatarImage, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LeagueWithMembersType } from '@/types';
 import * as Clipboard from 'expo-clipboard';
@@ -31,12 +31,12 @@ function DetailRow({
     <View className="flex-row items-center justify-between py-3">
       <View className="flex-row items-center gap-3">
         <View className="h-8 w-8 items-center justify-center rounded-lg bg-[#1A2740]">{icon}</View>
-        <CText className="text-sm text-[#97A7BF]">{label}</CText>
+        <Text className="text-sm text-[#97A7BF]">{label}</Text>
       </View>
       {valueNode ?? (
-        <CText className="text-sm font-semibold text-white" numberOfLines={1}>
+        <Text className="text-sm font-semibold text-white" numberOfLines={1}>
           {value}
-        </CText>
+        </Text>
       )}
     </View>
   );
@@ -81,11 +81,11 @@ export function ProfileLeagueDetails({ league, memberUserId }: ProfileLeagueDeta
       >
         <View className="flex-row items-center gap-2 border-b border-[#223554] py-3">
           <Shield size={18} color={GOLD} />
-          <CText className="text-base font-bold text-white">{t('League details')}</CText>
+          <Text className="text-base font-bold text-white">{t('League details')}</Text>
           {league.owner_id === memberUserId && (
             <Link href="/(app)/(league)/edit" asChild>
               <Pressable className="ml-auto p-1">
-                <CText className="text-xs font-semibold text-[#D5B13F]">{t('Edit')}</CText>
+                <Text className="text-xs font-semibold text-[#D5B13F]">{t('Edit')}</Text>
               </Pressable>
             </Link>
           )}
@@ -105,7 +105,7 @@ export function ProfileLeagueDetails({ league, memberUserId }: ProfileLeagueDeta
           onPress={handleCopyJoinCode}
           valueNode={
             <View className="flex-row items-center gap-2">
-              <CText className="text-sm font-bold tracking-widest text-[#D5B13F]">{league.join_code}</CText>
+              <Text className="text-sm font-bold tracking-widest text-[#D5B13F]">{league.join_code}</Text>
               <Copy size={14} color={GOLD} />
             </View>
           }
@@ -116,7 +116,7 @@ export function ProfileLeagueDetails({ league, memberUserId }: ProfileLeagueDeta
           label={t('Created by')}
           valueNode={
             <View className="flex-row items-center gap-2">
-              <CText className="text-sm font-semibold text-white">{owner?.nickname ?? t('Unknown')}</CText>
+              <Text className="text-sm font-semibold text-white">{owner?.nickname ?? t('Unknown')}</Text>
               <View className="h-7 w-7 overflow-hidden rounded-full border border-[#223554]">
                 <AvatarImage nickname={owner?.nickname} path={owner?.avatar_url ?? null} />
               </View>

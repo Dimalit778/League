@@ -1,4 +1,4 @@
-import { BackButton, Button, CText, InputField, Screen } from '@/components/ui';
+import { BackButton, Button, Text, InputField, Screen } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -44,10 +44,10 @@ const SendResetLink = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View className="items-center py-16">
-          <CText className="text-secondary text-4xl font-bold text-center">{t('Reset Password')}</CText>
-          <CText className="text-muted text-base text-center mt-4">
+          <Text className="text-secondary text-4xl font-bold text-center">{t('Reset Password')}</Text>
+          <Text className="text-muted text-base text-center mt-4">
             {t("Enter your email address and we'll send you a reset link")}
-          </CText>
+          </Text>
         </View>
 
         <View className="px-5 gap-4">
@@ -72,9 +72,9 @@ const SendResetLink = () => {
           {errorMessage ||
             (message && (
               <View className="mt-4">
-                <CText className={`text-center ${errorMessage ? 'text-error' : 'text-success'}`}>
+                <Text className={`text-center ${errorMessage ? 'text-error' : 'text-success'}`}>
                   {errorMessage || message}
-                </CText>
+                </Text>
               </View>
             ))}
         </View>

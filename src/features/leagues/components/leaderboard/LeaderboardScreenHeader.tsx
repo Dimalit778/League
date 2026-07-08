@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import Trophy from '@assets/images/Trophy-champo.png';
 import { Image } from 'expo-image';
@@ -16,8 +16,8 @@ export function LeaderboardScreenHeader({ leagueName }: LeaderboardScreenHeaderP
   return (
     <View style={{ paddingTop: insets.top }} className="flex-row items-center justify-between px-4 pb-2 pt-1">
       <View>
-        <CText className="text-2xl font-black text-white">{leagueName}</CText>
-        <CText className="text-sm text-[#97A7BF]">{t('League table')}</CText>
+        <Text className="text-2xl font-black text-white">{leagueName}</Text>
+        <Text className="text-sm text-[#97A7BF]">{t('League table')}</Text>
       </View>
       <Image source={Trophy} contentFit="contain" style={{ width: 52, height: 52 }} />
     </View>

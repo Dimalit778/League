@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BarChart3, Crosshair, Star, Target, XCircle } from 'lucide-react-native';
@@ -20,12 +20,12 @@ function StatCell({ icon, label, value, showDivider = true }: StatCellProps) {
     <>
       <View className="flex-1 items-center px-0.5">
         {icon}
-        <CText className="mt-0.5 text-[8px] uppercase tracking-wide text-[#97A7BF]" numberOfLines={1}>
+        <Text className="mt-0.5 text-[8px] uppercase tracking-wide text-[#97A7BF]" numberOfLines={1}>
           {label}
-        </CText>
-        <CText className="text-sm font-bold text-white" numberOfLines={1}>
+        </Text>
+        <Text className="text-sm font-bold text-white" numberOfLines={1}>
           {value}
-        </CText>
+        </Text>
       </View>
       {showDivider ? <View className="w-px self-stretch bg-[#223554]" /> : null}
     </>

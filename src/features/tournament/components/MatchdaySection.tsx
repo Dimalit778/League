@@ -1,4 +1,4 @@
-import { CText } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
 import { WCMatch, WCMatchday } from '../types';
@@ -14,9 +14,9 @@ export default function MatchdaySection({ matchday, matches }: Props) {
   return (
     <View className="mx-2 mt-3">
       <View className="px-2 mb-1">
-        <CText variant="caption" bold className="text-muted">
+        <Text variant="caption" bold className="text-muted">
           {t('Matchday')} {matchday}
-        </CText>
+        </Text>
       </View>
       <View className="flex-row flex-wrap">
         {matches.map((m) => (

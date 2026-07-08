@@ -1,6 +1,6 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Card } from '@/components/ui';
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
@@ -153,30 +153,30 @@ const HelpScreen = () => {
       >
         {/* Welcome Section */}
         <Card className="mb-6 p-4">
-          <CText variant="h3" className=" mb-2">
+          <Text variant="h3" className=" mb-2">
             {t('Welcome to League Champion')}
-          </CText>
-          <CText variant="body" className=" leading-6 ">
+          </Text>
+          <Text variant="body" className=" leading-6 ">
             {t(
               'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
             )}
-          </CText>
+          </Text>
         </Card>
 
         {/* Help Sections */}
         {helpSections.map((section) => (
           <View key={section.title} className="mb-6">
-            <CText variant="h3" className=" mb-3">
+            <Text variant="h3" className=" mb-3">
               {t(section.title)}
-            </CText>
+            </Text>
             {section.items.map((item, index) => (
               <Card key={index} className="mb-3 p-4">
-                <CText variant="body" className=" mb-2">
+                <Text variant="body" className=" mb-2">
                   {t(item.question)}
-                </CText>
-                <CText variant="body" className=" leading-5 text-muted ">
+                </Text>
+                <Text variant="body" className=" leading-5 text-muted ">
                   {t(item.answer)}
-                </CText>
+                </Text>
               </Card>
             ))}
           </View>
@@ -184,56 +184,56 @@ const HelpScreen = () => {
 
         {/* Contact Support */}
         <Card className="mb-6 p-4">
-          <CText variant="h3" className=" mb-3">
+          <Text variant="h3" className=" mb-3">
             {t('Contact Support')}
-          </CText>
-          <CText variant="body" className=" leading-6 text-muted mb-4">
+          </Text>
+          <Text variant="body" className=" leading-6 text-muted mb-4">
             {t(
               "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
             )}
-          </CText>
+          </Text>
           <TouchableOpacity
             onPress={handleEmailPress}
             className="flex-row items-center justify-center bg-primary rounded-lg py-3 px-4"
           >
             <FontAwesome6 name="envelope" size={16} color="white" />
-            <CText variant="body" className=" text-white ml-2">
+            <Text variant="body" className=" text-white ml-2">
               {t('Email Support')}{' '}
-            </CText>
+            </Text>
           </TouchableOpacity>
-          <CText variant="small" className=" text-muted mt-2 text-center">
+          <Text variant="small" className=" text-muted mt-2 text-center">
             {SUPPORT_EMAIL}
-          </CText>
+          </Text>
         </Card>
 
         {/* App Information */}
         <View className="mb-6">
-          <CText variant="h3" className=" mb-3">
+          <Text variant="h3" className=" mb-3">
             {t('App Information')}
-          </CText>
+          </Text>
           <Card className="p-4">
             <View className="flex-row justify-between items-center mb-2">
-              <CText variant="body" className=" text-muted">
+              <Text variant="body" className=" text-muted">
                 {t('Version')}
-              </CText>
-              <CText variant="body" className=" text-text">
+              </Text>
+              <Text variant="body" className=" text-text">
                 1.0.0
-              </CText>
+              </Text>
             </View>
             <View className="flex-row justify-between items-center">
-              <CText variant="body" className=" text-muted">
+              <Text variant="body" className=" text-muted">
                 {t('Platform')}
-              </CText>
-              <CText variant="body" className=" text-text">
+              </Text>
+              <Text variant="body" className=" text-text">
                 {t('iOS & Android')}
-              </CText>
+              </Text>
             </View>
           </Card>
         </View>
 
-        <CText variant="small" className=" text-muted">
+        <Text variant="small" className=" text-muted">
           {t("Thank you for using League! We're constantly working to improve your experience.")}
-        </CText>
+        </Text>
       </ScrollView>
     </Screen>
   );

@@ -1,6 +1,6 @@
 import { Screen } from '@/components/layout';
 import { BackButton, Button, InputField } from '@/components/ui';
-import { CText } from '@/components/ui/CText';
+import { Text } from '@/components/ui/Text';
 import FullLeagueCard from '@/features/leagues/components/FullLeagueCard';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -86,9 +86,9 @@ export default function JoinLeagueScreen() {
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="flex-1 px-4 pt-6">
-          <CText variant="h2" className="mb-2 ">
+          <Text variant="h2" className="mb-2 ">
             {t('Invite Code')}
-          </CText>
+          </Text>
 
           <View className="mb-6">
             <InputField
@@ -99,13 +99,13 @@ export default function JoinLeagueScreen() {
               autoCorrect={false}
               autoCapitalize="characters"
             />
-            <CText variant="caption" className="mt-1 text-center text-muted">
+            <Text variant="caption" className="mt-1 text-center text-muted">
               {t('Ask the league owner for the invite code')}
-            </CText>
+            </Text>
             {isLoading && (
-              <CText variant="caption" className="mt-2 text-center text-muted">
+              <Text variant="caption" className="mt-2 text-center text-muted">
                 {t('Searching for league...')}
-              </CText>
+              </Text>
             )}
           </View>
 
@@ -115,9 +115,9 @@ export default function JoinLeagueScreen() {
               <View className="mx-4 gap-4">
                 {isLeagueFull ? (
                   <View className="gap-3">
-                    <CText variant="caption" className="text-center text-muted">
+                    <Text variant="caption" className="text-center text-muted">
                       {t('This league is full. Upgrade to create larger leagues.')}
-                    </CText>
+                    </Text>
                     <Button title={t('Upgrade')} variant="primary" onPress={openPaywall} />
                   </View>
                 ) : (
@@ -143,28 +143,28 @@ export default function JoinLeagueScreen() {
 
           {error && !foundLeague && !isLoading && inviteCodeValue?.length === 7 && (
             <View className="mb-6 p-2 bg-error border border-error rounded-xl">
-              <CText variant="small" className="text-center text-white">
+              <Text variant="small" className="text-center text-white">
                 {t('League not found')}
-              </CText>
+              </Text>
             </View>
           )}
 
           {!foundLeague && (
             <View className="mt-8 p-4 bg-surface rounded-xl">
-              <CText variant="h2" className="mb-3">
+              <Text variant="h2" className="mb-3">
                 {t('How to Join a League')}
-              </CText>
+              </Text>
               <View className="gap-3">
                 {steps.map((step, index) => (
                   <View key={index} className="flex-row items-start gap-3">
                     <View className="w-6 h-6 bg-primary rounded-full items-center justify-center mt-0.5">
-                      <CText variant="caption" bold>
+                      <Text variant="caption" bold>
                         {index + 1}
-                      </CText>
+                      </Text>
                     </View>
-                    <CText variant="body" className="text-muted flex-1">
+                    <Text variant="body" className="text-muted flex-1">
                       {t(step)}
-                    </CText>
+                    </Text>
                   </View>
                 ))}
               </View>
