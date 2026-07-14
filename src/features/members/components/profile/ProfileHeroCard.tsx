@@ -39,8 +39,8 @@ function StatItem({
   return (
     <View className="flex-1 items-center">
       <View className="mb-1">{icon}</View>
-      <Text className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</Text>
-      <Text className={`mt-0.5 text-sm font-bold ${valueClassName ?? 'text-white'}`} numberOfLines={1}>
+      <Text className="text-[10px] uppercase tracking-wide text-muted">{label}</Text>
+      <Text className={`mt-0.5 text-sm font-bold ${valueClassName ?? 'text-text'}`} numberOfLines={1}>
         {value}
       </Text>
     </View>
@@ -212,12 +212,12 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
 
           {/* User info */}
           <View className="min-w-0 flex-1">
-            <Text className="text-xl font-black text-white" numberOfLines={1}>
+            <Text className="text-xl font-black text-text" numberOfLines={1}>
               {displayName}
             </Text>
             <View className="mt-1.5 flex-row items-center gap-1.5">
               <Shield size={13} color={GOLD_LIGHT} />
-              <Text className="text-sm text-[#97A7BF]">{t('Member of {{name}}', { name: leagueName })}</Text>
+              <Text className="text-sm text-muted">{t('Member of {{name}}', { name: leagueName })}</Text>
             </View>
             {isPrimary && (
               <View className="mt-1 flex-row items-center gap-1.5">
@@ -240,7 +240,7 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
             icon={<Trophy size={16} color={GOLD} />}
             label={t('League')}
             value={isPrimary ? t('Primary') : leagueName}
-            valueClassName={isPrimary ? 'text-[#4ade80]' : 'text-white'}
+            valueClassName={isPrimary ? 'text-[#4ade80]' : 'text-text'}
           />
         </View>
       </View>

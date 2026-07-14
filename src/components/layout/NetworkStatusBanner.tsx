@@ -1,12 +1,12 @@
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 
 /**
  * Network Status Banner Component
  * Shows a banner when device is offline
  */
-export const NetworkStatusBanner = () => {
+export function NetworkStatusBanner() {
   const { isConnected, isInternetReachable } = useNetworkStatus();
   const [showBanner, setShowBanner] = useState(false);
 
@@ -24,10 +24,7 @@ export const NetworkStatusBanner = () => {
 
   return (
     <View className="bg-error px-4 py-2 items-center">
-      <Text className="text-white text-sm font-semibold">
-        No internet connection. Some features may not work.
-      </Text>
+      <Text className="text-white text-sm font-semibold">No internet connection. Some features may not work.</Text>
     </View>
   );
-};
-
+}

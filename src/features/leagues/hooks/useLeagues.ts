@@ -6,10 +6,15 @@ import { leagueApi } from '@/features/leagues/api/leagueApi';
 import { memberApi } from '@/features/members/api/memberApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
-import { useMemberStore } from '@/store/MemberStore';
+import { usePaywall } from '@/lib/revenuecat/purchases';
+import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
+import { useMemberStore, usePrimaryMember } from '@/store/MemberStore';
 import { router } from 'expo-router';
+import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { leagueActionsApi } from '../api/leagueActionsApi';
+import { MyLeagueType } from '../types';
+
   export const useMyLeagues = () => {
   
   const userId = useAuthStore((state) => state.user?.id ?? null);
@@ -50,7 +55,7 @@ export const useGetLeagueAndMembers = (leagueId?: string | null) => {
 };
 
 export const useUpdatePrimaryLeague = () => {
-  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const { userId } = usePrimaryMember();
   const queryClient = useQueryClient();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
@@ -77,7 +82,7 @@ export const useUpdatePrimaryLeague = () => {
 };
 
 export const useUpdateLeagueActivation = () => {
-  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const userId = useAuthStore((s) => s.user?.id);
   const queryClient = useQueryClient();
   const initializeMember = useMemberStore((s) => s.initializeMember);
 
@@ -87,6 +92,8 @@ export const useUpdateLeagueActivation = () => {
       return leagueApi.updateMyLeagueActivation(userId, activeMemberIds);
     },
     onSuccess: async () => {
+      if (!userId) return;
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
@@ -103,6 +110,35 @@ export const useUpdateLeagueActivation = () => {
   });
 };
 
+export const useReactivateLeaguesAfterProUpgrade = () => {
+  const openPaywall = usePaywall();
+  const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation();
+  const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
+
+  return useCallback(
+    async (leagues: MyLeagueType[]) => {
+      const purchased = await openPaywall();
+      if (!purchased) return false;
+
+      const memberIds = leagues.map((league) => league.id).slice(0, PLAN_LIMITS.PRO.maxLeagues);
+      if (memberIds.length === 0) return true;
+
+      await updateLeagueActivation(memberIds);
+
+      const preferredPrimary =
+        leagues.find((league) => league.is_primary && memberIds.includes(league.id)) ??
+        leagues.find((league) => memberIds.includes(league.id));
+
+      if (preferredPrimary) {
+        await updatePrimaryLeague({ leagueId: preferredPrimary.league.id });
+      }
+
+      return true;
+    },
+    [openPaywall, updateLeagueActivation, updatePrimaryLeague],
+  );
+};
+
 export const useFindLeagueByJoinCode = (joinCode: string) => {
   const normalizedJoinCode = joinCode?.trim().toUpperCase() ?? '';
   const canSearch = normalizedJoinCode.length === 7;
@@ -113,7 +149,7 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
 };
 //  -- LEAGUE OPERATIONS
 export const useCreateLeague = () => {
-  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const { userId } = usePrimaryMember();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (params: {
@@ -143,7 +179,7 @@ export const useCreateLeague = () => {
   });
 };
 export const useJoinLeague = () => {
-  const userId = useAuthStore((state) => state.user?.id ?? '');
+  const { userId } = usePrimaryMember();
   const queryClient = useQueryClient();
 
   return useMutation({

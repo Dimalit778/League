@@ -1,5 +1,7 @@
+import { Card } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Text';
 import { MatchCardType } from '@/features/matches/types';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -43,27 +45,32 @@ function Row({ match }: { match: MatchCardType }) {
   );
 }
 
-export function UpcomingMatchesCard({ matches }: { matches: MatchCardType[] }) {
+export function UpcomingMatches({ matches }: { matches: MatchCardType[] }) {
   const { t } = useTranslation();
-
+  const { colors } = useThemeTokens();
   return (
-    <View className="rounded-3xl border border-cardBorder bg-card p-4">
+    <Card>
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-white text-lg font-bold">{t('Today matches')}</Text>
+        <Text bold>{t('Today matches')}</Text>
 
         <Link href="/(app)/(league)/(tabs)/Matches" asChild>
           <Pressable className="flex-row items-center" accessibilityRole="button">
-            <Text className="text-primaryGold">{t('View all')}</Text>
-            <ChevronRight size={18} color="#D99A00" />
+            <Text caption className="text-muted">
+              {t('View all')}
+            </Text>
+            <ChevronRight size={18} color={colors.muted} strokeWidth={1.5} />
           </Pressable>
         </Link>
       </View>
+      <View className="h-0.5 w-full bg-border rounded-full " />
 
       {matches.length === 0 ? (
-        <Text className="text-muted py-3">{t('No matches today')}</Text>
+        <Text caption className="text-muted py-3">
+          {t('No matches today')}
+        </Text>
       ) : (
         matches.map((match) => <Row key={match.id} match={match} />)
       )}
-    </View>
+    </Card>
   );
 }

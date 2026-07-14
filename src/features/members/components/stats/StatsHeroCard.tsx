@@ -2,7 +2,6 @@ import { AvatarImage, Text } from '@/components/ui';
 import { MemberStatsType } from '@/features/members/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
-import stadiumBg from '@assets/images/fieldImage.jpg';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BarChart3, Star } from 'lucide-react-native';

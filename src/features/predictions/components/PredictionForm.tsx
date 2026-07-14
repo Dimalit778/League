@@ -1,12 +1,13 @@
 import { Text } from '@/components/ui';
-import { PredictionMemberType } from '@/features/matches/types';
+import { PredictionWithMemberType } from '@/features/matches/types';
+
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { selectMemberId, useMemberStore } from '@/store/MemberStore';
 import { useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 type PredictionFormProps = {
-  prediction?: PredictionMemberType;
+  prediction?: PredictionWithMemberType;
   matchId: number;
 };
 

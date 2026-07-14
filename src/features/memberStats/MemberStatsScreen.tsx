@@ -7,7 +7,7 @@ import {
   StatsPredictionSection,
   StatsRoundPerformance,
 } from '@/features/members/components/stats';
-import { useMemberStats } from '@/features/members/hooks/useMembers';
+import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';

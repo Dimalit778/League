@@ -6,7 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import { memberApi } from '../api/memberApi';
 import { memberImageApi } from '../api/memberImageApi';
-import { memberStatsApi } from '../api/memberStatsApi';
 
 // Constants
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
@@ -25,14 +24,7 @@ const invalidateMemberQueries = (
   }
 };
 
-export const useMemberStats = (memberId: string) => {
-  return useQuery({
-    queryKey: memberId ? KEYS.members.stats(memberId) : (['members', 'stats', 'disabled'] as const),
-    queryFn: memberId ? () => memberStatsApi.getMemberStats(memberId) : skipToken,
-    staleTime: STALE_TIME,
-    retry: RETRY_COUNT,
-  });
-};
+
 export const useUpdateMember = () => {
   const queryClient = useQueryClient();
   const { memberId, leagueId } = usePrimaryMember();
@@ -92,37 +84,7 @@ export const useUploadMemberImage = () => {
 };
 
 
-export const useMemberDataAndStats = (memberId: string) => {
-  const memberQuery = useQuery({
-    queryKey: memberId ? KEYS.members.detailsWithStats(memberId) : (['members', 'details-with-stats', 'disabled'] as const),
-    queryFn: memberId ? () => memberApi.getMemberInfo(memberId) : skipToken,
-    staleTime: STALE_TIME,
-    retry: RETRY_COUNT,
-  });
 
-  const statsQuery = useMemberStats(memberId);
-
-  const totalFixtures = Array.from(
-    { length: memberQuery.data?.league?.competition?.current_fixture ?? 0 },
-    (_, index) => index + 1,
-  );
-
-  return {
-    ...memberQuery,
-    isLoading: memberQuery.isLoading || statsQuery.isLoading,
-    isPending: memberQuery.isPending || statsQuery.isPending,
-    error: memberQuery.error ?? statsQuery.error,
-    data:
-      memberQuery.data != null
-        ? {
-            member: memberQuery.data,
-            stats: statsQuery.data,
-            totalFixtures,
-            currentFixture: memberQuery.data.league?.competition?.current_fixture ?? 1,
-          }
-        : undefined,
-  };
-};  
 
 
 export const useMyMemberByLeague = (leagueId: string) => {

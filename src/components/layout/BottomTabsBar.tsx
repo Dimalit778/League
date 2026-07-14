@@ -17,7 +17,7 @@ const FLOAT_SIZE = 60;
 const FLOAT_OFFSET = 28;
 const FLOAT_RADIUS = 18;
 
-export const BottomTabsBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+export function BottomTabsBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useThemeTokens();
   const insets = useSafeAreaInsets();
 
@@ -73,18 +73,10 @@ export const BottomTabsBar = ({ state, descriptors, navigation }: BottomTabBarPr
         >
           {/* glow layer */}
           <View
-            style={[
-              styles.floatingGlow,
-              { backgroundColor: colors.primary + '40', shadowColor: colors.primary },
-            ]}
+            style={[styles.floatingGlow, { backgroundColor: colors.primary + '40', shadowColor: colors.primary }]}
           />
           {/* button */}
-          <View
-            style={[
-              styles.floatingButton,
-              { backgroundColor: colors.primary, shadowColor: colors.primary },
-            ]}
-          >
+          <View style={[styles.floatingButton, { backgroundColor: colors.primary, shadowColor: colors.primary }]}>
             {icon}
           </View>
           <Text
@@ -127,18 +119,13 @@ export const BottomTabsBar = ({ state, descriptors, navigation }: BottomTabBarPr
   });
 
   return (
-    <View
-      style={[
-        styles.outerWrapper,
-        { paddingBottom: Math.max(insets.bottom, 12) },
-      ]}
-    >
+    <View style={[styles.outerWrapper, { paddingBottom: Math.max(insets.bottom, 12) }]}>
       <View style={[styles.pill, { backgroundColor: colors.surface }]}>
         <View style={styles.inner}>{tabs}</View>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   outerWrapper: {

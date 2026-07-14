@@ -24,9 +24,13 @@ export function useLeagueActivationResolution({
     setSelectedMemberIds((current) => {
       const validCurrent = current.filter((memberId) => leagues.some((league) => league.id === memberId));
       if (validCurrent.length > 0) return validCurrent;
-      return [];
+
+      return leagues
+        .filter((league) => league.active)
+        .map((league) => league.id)
+        .slice(0, maxLeagues);
     });
-  }, [enabled, leagues]);
+  }, [enabled, leagues, maxLeagues]);
 
   const toggleLeague = useCallback(
     (memberId: string) => {
@@ -44,14 +48,14 @@ export function useLeagueActivationResolution({
   );
 
   const save = useCallback(async () => {
-    if (selectedMemberIds.length > maxLeagues) return;
+    if (selectedMemberIds.length !== maxLeagues) return;
 
     await updateLeagueActivation(selectedMemberIds);
     await refetch();
   }, [maxLeagues, refetch, selectedMemberIds, updateLeagueActivation]);
 
   const selectedCount = selectedMemberIds.length;
-  const canSave = selectedCount <= maxLeagues && (maxLeagues === 0 || selectedCount > 0);
+  const canSave = maxLeagues > 0 && selectedCount === maxLeagues;
 
   return {
     selectedMemberIds,

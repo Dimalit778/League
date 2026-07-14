@@ -1,19 +1,18 @@
 import { Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useLeagueOverview } from '@/features/league-overview/hooks/useLeagueOverview';
-import { LeagueHeroCard } from '@/features/leagues/components/leagueOverview/LeagueHeroCard';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 
-import { QuickAccessSection } from '@/features/leagues/components/leagueOverview/QuickAccessSection';
-import { TopLeaderboardCard } from '@/features/leagues/components/leagueOverview/TopLeaderboardCard';
-import { UpcomingMatchesCard } from '@/features/leagues/components/leagueOverview/UpcomingMatches';
-
+import { QuickAccessSection } from '@/features/league-overview/components/QuickAccessSection';
+import { TopLeaderboardCard } from '@/features/league-overview/components/TopLeaderboardCard';
+import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
+import { PrimaryLeagueCard } from '@/features/leagues/components/myLeagues';
 const TOP_LEADERBOARD_SIZE = 5;
 
 export default function OverviewScreen() {
-  const { league, memberStats, leaderboard, todayMatches } = useLeagueOverview();
+  const { memberStats, leaderboard, todayMatches } = useLeagueOverview();
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const avatarUrls = useMemo(() => {
@@ -31,9 +30,9 @@ export default function OverviewScreen() {
   return (
     <Screen>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomTabsInset + 24 }}>
-        <View>
-          <LeagueHeroCard league={league} memberStats={memberStats} />
+        <PrimaryLeagueCard />
 
+        <View className="gap-4 px-3">
           <QuickAccessSection />
 
           <TopLeaderboardCard
@@ -41,7 +40,7 @@ export default function OverviewScreen() {
             currentMemberId={memberStats.memberId}
           />
 
-          <UpcomingMatchesCard matches={todayMatches} />
+          <UpcomingMatches matches={todayMatches} />
         </View>
       </ScrollView>
     </Screen>

@@ -1,10 +1,8 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { matchesApi } from '@/features/matches/api/matchesService';
 import { useGetCompetitionMatches, useGetTournamentActiveStage } from '@/features/matches/hooks/useMatches';
-import { KEYS } from '@/lib/queryClient';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import ChampionLeagueView from '../components/champions-league/ChampionLeagueView';
 import GroupMatches from '../components/tournament/GroupMatches';
 import KnockoutMatches from '../components/tournament/KnockoutMatches';
@@ -21,19 +19,15 @@ const TournamentMatches = ({ defaultView = 'groups' }: TournamentMatchesProps) =
   const queryClient = useQueryClient();
   const [view, setView] = useState<TournamentView>(defaultView);
 
-  useEffect(() => {
-    setView(defaultView);
-  }, [defaultView]);
+  // useEffect(() => {
+  //   if (!competitionId || !memberId || view !== 'groups') return;
 
-  useEffect(() => {
-    if (!competitionId || !memberId || view !== 'groups') return;
-
-    void queryClient.prefetchQuery({
-      queryKey: [...KEYS.matches.byCompetition(competitionId, memberId), 'view', 'knockout'],
-      queryFn: () => matchesApi.getTournamentMatchesByView(competitionId, memberId, 'knockout'),
-      staleTime: 1000 * 60 * 5,
-    });
-  }, [competitionId, memberId, queryClient, view]);
+  //   void queryClient.prefetchQuery({
+  //     queryKey: [...KEYS.matches.byCompetition(competitionId, memberId), 'view', 'knockout'],
+  //     queryFn: () => matchesApi.getTournamentMatchesByView(competitionId, memberId, 'knockout'),
+  //     staleTime: 1000 * 60 * 5,
+  //   });
+  // }, [competitionId, memberId, queryClient, view]);
 
   const {
     data: matches = [],

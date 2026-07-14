@@ -1,7 +1,7 @@
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { LeagueOverviewData } from '@/features/leagues/types/leagueOverviewType';
 import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
-import { useMemberStats } from '@/features/members/hooks/useMembers';
+import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
 
 export function useLeagueOverview(): LeagueOverviewData {

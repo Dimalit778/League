@@ -103,12 +103,13 @@ const GoogleAuth = ({
       <Pressable
         onPress={handleGoogleSignIn}
         disabled={isLoading}
-        className="h-14 px-4 rounded-full flex-row items-center justify-center gap-x-4 border border-muted"
+        className="px-4 rounded-md flex-row items-center justify-center gap-x-4 bg-background"
+        style={{ height: 44 }}
         accessibilityRole="button"
         accessibilityLabel={label}
       >
         <GoogleLogoIcon size={22} />
-        <Text className="text-md font-semibold text-text" numberOfLines={1}>
+        <Text semibold className="text-text" numberOfLines={1}>
           {label}
         </Text>
       </Pressable>

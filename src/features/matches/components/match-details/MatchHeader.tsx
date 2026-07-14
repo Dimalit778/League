@@ -1,5 +1,5 @@
-import { Text, TeamBadge } from '@/components/ui';
-import { MatchWithPredictions, PredictionMemberType, TeamType } from '@/features/matches/types';
+import { TeamBadge, Text } from '@/components/ui';
+import { MatchWithPredictions, PredictionWithMemberType, TeamType } from '@/features/matches/types';
 import PredictionForm from '@/features/predictions/components/PredictionForm';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,9 +12,7 @@ function TeamCard({ team, width, height }: { team: TeamType; width: number; heig
     <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40 max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
       <TeamBadge source={team.logo} width={width} height={height} />
 
-      <Text variant="body" className="text-white text-center">
-        {shortName}
-      </Text>
+      <Text className="text-white text-center">{shortName}</Text>
     </View>
   );
 }
@@ -35,32 +33,22 @@ function ScoreCard({
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
         <View className="rounded-2xl p-4 md:p-6 items-center">
           <Ionicons name="time-outline" size={24} color="#fff" className="md:text-[32px]" />
-          <Text variant="caption" className="text-white mt-2 text-center">
-            {formatTime(kick_off)}
-          </Text>
+          <Text className="text-white mt-2 text-center">{formatTime(kick_off)}</Text>
         </View>
       )}
       {['IN_PLAY'].includes(matchStatus) && (
         <View className="items-center justify-center gap-2">
-          <Text variant="bodyBold" className="text-green-500">
-            LIVE
-          </Text>
-          <Text variant="h3" className="text-white">
+          <Text className="text-green-500">LIVE</Text>
+          <Text className="text-white">
             {homeScore} : {awayScore}
           </Text>
         </View>
       )}
       {['FINISHED'].includes(matchStatus) && (
         <View className="flex-row items-center justify-center border-2 border-gray-500 rounded-lg p-2 md:p-3 gap-2">
-          <Text variant="h3" className="text-white">
-            {homeScore}
-          </Text>
-          <Text variant="h3" className="text-white">
-            :
-          </Text>
-          <Text variant="h3" className="text-white">
-            {awayScore}
-          </Text>
+          <Text className="text-white">{homeScore}</Text>
+          <Text className="text-white">:</Text>
+          <Text className="text-white">{awayScore}</Text>
         </View>
       )}
     </View>
@@ -69,7 +57,7 @@ function ScoreCard({
 
 type MatchHeaderProps = {
   match: MatchWithPredictions;
-  memberPrediction?: PredictionMemberType;
+  memberPrediction?: PredictionWithMemberType;
   isScheduled: boolean;
 };
 
@@ -90,9 +78,7 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
         <View className="items-center justify-center">
           <View className="flex-row items-center justify-center gap-2">
             <Ionicons name="calendar-outline" size={20} color="#fff" />
-            <Text variant="caption" className="text-white">
-              {dateFormat(match.kick_off)}
-            </Text>
+            <Text className="text-white">{dateFormat(match.kick_off)}</Text>
           </View>
           {venue ? (
             <View className="flex-row items-center mt-2 justify-center">

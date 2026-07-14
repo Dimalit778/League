@@ -8,7 +8,6 @@ interface MatchContentProps {
 }
 
 export default function MatchContent({ match, isScheduled }: MatchContentProps) {
-
   if (isScheduled) {
     if (match.ai_summary_en && match.ai_summary_he) {
       return (
@@ -22,8 +21,6 @@ export default function MatchContent({ match, isScheduled }: MatchContentProps) 
         />
       );
     }
-    // No AI analysis yet — render nothing (analysis runs at 08:00 UTC)
-    return null;
   }
 
   const predictions = match.predictions ?? [];

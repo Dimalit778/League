@@ -1,7 +1,7 @@
+import { images } from '@/assets/images';
 import { AvatarImage, Text } from '@/components/ui';
 import { LeaderboardRow } from '@/features/leagues/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import stadiumBg from '@assets/images/fieldImage.jpg';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
@@ -131,7 +131,7 @@ export default function TopThree({ topMembers }: TopThreeProps) {
         className="overflow-hidden rounded-2xl border border-[#223554]"
       >
         <ExpoImage
-          source={stadiumBg}
+          source={images.fieldIcon}
           contentFit="cover"
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, opacity: 0.25 }}
         />

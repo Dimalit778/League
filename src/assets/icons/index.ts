@@ -26,19 +26,19 @@ import TrashIcon from './TrashIcon';
 const LeagueIcon = TrophyIcon;
 
 export {
-  AddIcon,
-  ArrowDownIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ArrowUpIcon, EyeClosedIcon, EyeOpenIcon, FieldIcon, GoogleLogoIcon,
-  GoogleLogoMonoIcon, LeagueIcon, LockIcon, MailIcon, MatchesIcon,
-  MenuIcon,
-  ProfileIcon,
-  RankIcon,
-  SettingsIcon,
-  StarIcon,
-  TrashIcon,
-  TrophyIcon,
-  UserIcon
+    AddIcon,
+    ArrowDownIcon,
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    ArrowUpIcon, EyeClosedIcon, EyeOpenIcon, FieldIcon, GoogleLogoIcon,
+    GoogleLogoMonoIcon, LeagueIcon, LockIcon, MailIcon, MatchesIcon,
+    MenuIcon,
+    ProfileIcon,
+    RankIcon,
+    SettingsIcon,
+    StarIcon,
+    TrashIcon,
+    TrophyIcon,
+    UserIcon
 };
 

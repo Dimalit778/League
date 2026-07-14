@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { PredictionMemberType } from '../../types';
+import { MatchWithPredictions } from '../../types';
 import MatchStats from './MatchStats';
 import PredictionRank from './PredictionRank';
 
@@ -43,7 +43,7 @@ const LockedStats = () => {
   );
 };
 
-export default function TabsContent({ predictions }: { predictions: PredictionMemberType[] }) {
+export default function TabsContent({ predictions }: { predictions: MatchWithPredictions['predictions'] }) {
   const { t } = useTranslation();
   const { subscription } = useRevenueCatSubscription();
   const [activeTab, setActiveTab] = useState(0);
@@ -88,9 +88,7 @@ export default function TabsContent({ predictions }: { predictions: PredictionMe
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
               <Feather name={tab.icon} size={20} color={isActive ? colors.primary : colors.muted} />
-              <Text variant="bodyBold" className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
-                {t(tab.title)}
-              </Text>
+              <Text className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
             </TouchableOpacity>
           );
         })}

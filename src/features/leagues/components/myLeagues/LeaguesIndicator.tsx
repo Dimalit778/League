@@ -25,10 +25,10 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
           <Button title={t('Join League')} onPress={() => router.push('/leagues/join-league')} variant="outline" />
         </View>
       )}
-      <Pressable onPress={onPress} className="mx-5 rounded-2xl border border-border bg-background px-2 py-3">
+      <Pressable onPress={onPress} className="mx-5 rounded-2xl bg-surface px-2 py-3">
         <View className="flex-row items-center">
           {/* Icon */}
-          <View className="mr-4 h-14 w-14 items-center justify-center rounded-full bg-surface">
+          <View className="mr-4 h-14 w-14 items-center justify-center rounded-full bg-border">
             <Trophy size={26} color={colors.primary} strokeWidth={1.8} />
           </View>
 
@@ -43,11 +43,11 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
             </View>
 
             {/* Progress bar */}
-            <View className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <View className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surfaceSecondary">
               <View className="h-full rounded-full bg-primary" style={{ width: `${progress * 100}%` }} />
             </View>
           </View>
-          <ChevronRight size={28} color={colors.primary} strokeWidth={2} />
+          <ChevronRight size={28} color={colors.muted} strokeWidth={2} />
           {/* Arrow */}
         </View>
       </Pressable>

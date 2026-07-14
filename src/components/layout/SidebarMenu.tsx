@@ -15,7 +15,7 @@ type SidebarRoute = {
   icon: typeof LeagueIcon;
 };
 
-export const SidebarMenu = () => {
+export function SidebarMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const { colors } = useThemeTokens();
@@ -105,6 +105,4 @@ export const SidebarMenu = () => {
       </View>
     </>
   );
-};
-
-export default SidebarMenu;
+}

@@ -13,7 +13,7 @@ module.exports = {
     extend: {
       colors: {
         primary: 'var(--color-primary)',
-        secondary: 'var(--color-secondary)',
+        surfaceSecondary: 'var(--color-surfaceSecondary)',
         background: 'var(--color-background)',
         surface: 'var(--color-surface)',
         border: 'var(--color-border)',

@@ -1,8 +1,8 @@
-import { BackButton, Button, Text, InputField, Screen } from '@/components/ui';
+import { BackButton, Button, InputField, Screen, Text } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { EmailIcon } from '@assets/icons';
+import { MailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -57,7 +57,7 @@ const SendResetLink = () => {
             placeholder="Email"
             secureTextEntry={false}
             error={emailForm.formState.errors.email}
-            icon={<EmailIcon size={24} color={colors.muted} />}
+            icon={<MailIcon size={24} color={colors.muted} />}
             clearError={clearError}
           />
 

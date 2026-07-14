@@ -42,7 +42,7 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
   );
 }
 
-export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
+export function TabsHeader({ tabsLayout = true }: { tabsLayout?: boolean }) {
   const { colors, theme } = useThemeTokens();
   const { nickname, avatarUrl } = usePrimaryMember();
 
@@ -92,7 +92,7 @@ export const TabsHeader = ({ tabsLayout = true }: { tabsLayout?: boolean }) => {
   }
 
   return <View style={[styles.androidContainer, { backgroundColor: colors.background }]}>{content}</View>;
-};
+}
 
 const styles = StyleSheet.create({
   iosContainer: {

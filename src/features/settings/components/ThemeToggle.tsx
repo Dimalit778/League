@@ -1,3 +1,4 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useThemeStore } from '@/store/ThemeStore';
 import Feather from '@expo/vector-icons/Feather';
@@ -13,10 +14,15 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+const AnimatedFeather = Animated.createAnimatedComponent(Feather);
+
 const springConfig = {
-  damping: 15,
+  damping: 30,
   stiffness: 150,
 };
+
+const ICON_SLOT = 32;
+const ACTIVE_ICON_COLOR = '#FFFFFF';
 
 const ThemeToggle = () => {
   const isRTL = useIsRTL();
@@ -25,67 +31,54 @@ const ThemeToggle = () => {
   const isDark = theme === 'dark';
 
   const progress = useSharedValue(isDark ? 1 : 0);
-  const translateX = useSharedValue(isDark ? (isRTL ? 3.3 : 32) : isRTL ? 32 : 3.3);
 
   useEffect(() => {
-    const targetProgress = isDark ? 1 : 0;
-    const targetTranslateX = isDark ? (isRTL ? 3.3 : 32) : isRTL ? 32 : 3.3;
+    progress.value = withSpring(isDark ? 1 : 0, springConfig);
+  }, [isDark, progress]);
 
-    progress.value = withSpring(targetProgress, springConfig);
-    translateX.value = withSpring(targetTranslateX, springConfig);
-  }, [isRTL, progress, translateX, isDark]);
-
-  const toggleHandler = () => {
-    toggleTheme();
-  };
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const x = isRTL ? -translateX.value : translateX.value;
+  const thumbStyle = useAnimatedStyle(() => {
+    const x = interpolate(progress.value, [0, 1], [0, ICON_SLOT]);
     return {
-      transform: [{ translateX: x }],
+      transform: [{ translateX: isRTL ? -x : x }],
     };
-  });
+  }, [isRTL]);
 
   return (
     <Pressable
-      onPress={toggleHandler}
-      className="bg-secondary relative flex-row rounded-full items-center justify-between p-1"
+      onPress={toggleTheme}
+      className="relative flex-row items-center rounded-full bg-surfaceSecondary p-0.5"
       accessible={true}
       accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} theme`}
       accessibilityRole="switch"
       accessibilityState={{ checked: isDark }}
     >
+      <Animated.View style={thumbStyle} className="absolute left-0.5 top-0.5 z-0 h-9 w-9 rounded-full bg-primary" />
       <Icon icon="sun" progress={progress} />
       <Icon icon="moon" progress={progress} />
-      <Animated.View
-        style={[animatedStyle]}
-        className="w-8 h-8 bg-background rounded-full items-center justify-center absolute"
-      />
     </Pressable>
   );
 };
+
 const Icon = memo(({ icon, progress }: { icon: 'sun' | 'moon'; progress: SharedValue<number> }) => {
+  const { colors } = useThemeTokens();
+  const isSun = icon === 'sun';
+
   const animatedIconStyle = useAnimatedStyle(() => {
-    const isSun = icon === 'sun';
     const opacity = interpolate(progress.value, [0, 1], [isSun ? 1 : 0.5, isSun ? 0.5 : 1]);
-
-    const color = interpolateColor(progress.value, [0, 1], ['black', 'white']);
-
-    return {
-      opacity,
-      color,
-    };
+    return { opacity };
   });
+
   const animatedIconProps = useAnimatedProps(() => {
-    const color = interpolateColor(progress.value, [0, 1], ['#000000', '#ffffff']);
-    return { color };
-  });
+    return {
+      color: isSun
+        ? interpolateColor(progress.value, [0, 1], [ACTIVE_ICON_COLOR, colors.muted])
+        : interpolateColor(progress.value, [0, 1], [colors.muted, ACTIVE_ICON_COLOR]),
+    };
+  }, [colors.muted, isSun]);
 
   return (
-    <View className="w-8 h-8 relative z-50 rounded-full items-center justify-center">
-      <Animated.Text style={animatedIconStyle} animatedProps={animatedIconProps as any}>
-        <Feather name={icon} size={20} color={animatedIconStyle.color} />
-      </Animated.Text>
+    <View className="relative z-10 h-9 w-9 items-center justify-center rounded-full">
+      <AnimatedFeather animatedProps={animatedIconProps} style={animatedIconStyle} name={icon} size={22} />
     </View>
   );
 });

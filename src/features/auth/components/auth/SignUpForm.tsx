@@ -1,3 +1,4 @@
+import { EyeClosedIcon, EyeOpenIcon, LockIcon, MailIcon } from '@/assets/icons';
 import { Button, Text } from '@/components/ui';
 import { InputField } from '@/components/ui/InputField';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
@@ -5,11 +6,10 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { Eye, EyeClosed, LockIcon, Mail, User } from 'lucide-react-native';
+import { UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-
 const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
@@ -54,7 +54,7 @@ export default function SignUpForm() {
         control={control}
         name="fullname"
         placeholder={t('Full Name')}
-        icon={<User size={24} color={colors.muted} />}
+        icon={<UserIcon size={24} color={colors.muted} strokeWidth={1.5} />}
         error={errors.fullname}
         clearError={clearError}
       />
@@ -63,7 +63,7 @@ export default function SignUpForm() {
         control={control}
         name="email"
         placeholder={t('Email')}
-        icon={<Mail size={24} color={colors.muted} />}
+        icon={<MailIcon size={24} color={colors.muted} />}
         error={errors.email}
         clearError={clearError}
       />
@@ -76,7 +76,13 @@ export default function SignUpForm() {
         icon={<LockIcon size={24} color={colors.muted} />}
         error={errors.password}
         onRightIconPress={() => setShowPassword(!showPassword)}
-        rightIcon={showPassword ? <Eye size={18} color={colors.muted} /> : <EyeClosed size={18} color={colors.muted} />}
+        rightIcon={
+          showPassword ? (
+            <EyeOpenIcon size={18} color={colors.muted} />
+          ) : (
+            <EyeClosedIcon size={18} color={colors.muted} />
+          )
+        }
         clearError={clearError}
       />
 
@@ -91,7 +97,7 @@ export default function SignUpForm() {
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}
-        variant="secondary"
+        variant="primary"
         size="lg"
       />
     </>

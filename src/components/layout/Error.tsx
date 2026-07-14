@@ -1,11 +1,12 @@
+import { Text } from '@/components/ui';
 import { formatErrorForUser } from '@/utils/errorFormats';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 type ErrorProps = {
   error: string | Error | { message: string };
 };
 
-export const Error = ({ error }: ErrorProps) => {
+export function Error({ error }: ErrorProps) {
   const errorMessage =
     typeof error === 'string'
       ? error
@@ -21,4 +22,4 @@ export const Error = ({ error }: ErrorProps) => {
       <Text className="text-error text-2xl font-bold text-center">{errorMessage}</Text>
     </View>
   );
-};
+}

@@ -3,7 +3,6 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
 import { Href, Link } from 'expo-router';
-import React from 'react';
 import { Modal, Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../ui';
@@ -13,7 +12,7 @@ interface DrawerMenuProps {
   onClose: () => void;
 }
 
-export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
+export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -81,7 +80,7 @@ export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
                       accessibilityRole="button"
                     >
                       <IconComponent size={24} color={colors.primary} />
-                      <Text variant="bodyBold">{t(route.label)}</Text>
+                      <Text>{t(route.label)}</Text>
                     </TouchableOpacity>
                   </Link>
                 );
@@ -95,4 +94,4 @@ export const DrawerMenu: React.FC<DrawerMenuProps> = ({ isOpen, onClose }) => {
       </Pressable>
     </Modal>
   );
-};
+}

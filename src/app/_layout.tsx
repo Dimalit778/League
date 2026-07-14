@@ -2,6 +2,7 @@ import '../../global.css';
 
 import '@/lib/i18n/autoTranslate';
 
+import { images } from '@/assets/images';
 import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
 import { useAppFonts } from '@/hooks/useAppFonts';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -17,7 +18,6 @@ import {
   useAuth,
 } from '@/providers';
 
-import footballBg from '@/assets/images/football-bg.png';
 import * as Sentry from '@sentry/react-native';
 import { Asset } from 'expo-asset';
 import { Stack, useNavigationContainerRef } from 'expo-router';
@@ -77,7 +77,7 @@ const AppBootstrap = () => {
       const bootAssetsTimeout = new Promise<void>((resolve) => {
         timeoutId = setTimeout(resolve, BOOT_ASSETS_TIMEOUT_MS);
       });
-      const bootAssets = Asset.fromModule(footballBg)
+      const bootAssets = Asset.fromModule(images.bgBallTrophy)
         .downloadAsync()
         .then(() => undefined)
         .catch((e: unknown) => {

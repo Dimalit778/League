@@ -8,7 +8,7 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   color?: string;
-  variant?: 'primary' | 'secondary' | 'error' | 'border' | 'outline';
+  variant?: 'primary' | 'error' | 'border' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
@@ -23,7 +23,7 @@ const BORDER_RADIUS = isIOS ? 12 : 10;
 
 const RIPPLE_COLORS: Record<NonNullable<ButtonProps['variant']>, string> = {
   primary: 'rgba(0,0,0,0.18)',
-  secondary: 'rgba(0,0,0,0.18)',
+
   error: 'rgba(0,0,0,0.18)',
   border: 'rgba(0,0,0,0.18)',
   outline: 'rgba(255,255,255,0.12)',
@@ -71,17 +71,15 @@ export const Button = ({
 
   const variantClasses = {
     primary: 'bg-primary',
-    secondary: 'bg-secondary',
     error: 'bg-error',
     border: 'bg-border',
-    outline: 'bg-transparent border border-text',
+    outline: 'bg-transparent border border-muted',
   };
 
   const textVariantClasses = {
-    primary: 'text-white',
-    secondary: 'text-white',
-    error: 'text-white',
-    border: 'text-white',
+    primary: 'text-white  ',
+    error: 'text-error',
+    border: 'text-border',
     outline: 'text-text',
   };
 
@@ -110,7 +108,7 @@ export const Button = ({
         <ActivityIndicator color="#fff" size="small" />
       ) : (
         <Text
-          variant="body"
+          semibold
           className={cn(textSizeClasses[size], textVariantClasses[variant])}
           style={!isIOS ? { textTransform: 'uppercase', letterSpacing: 0.5 } : undefined}
         >

@@ -412,6 +412,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Subscription
     subscription: {
       Subscription: 'Subscription',
+      Plan: 'Plan',
       Subscribe: 'Subscribe',
       'Choose Your Plan': 'Choose Your Plan',
       'Active Subscriptions': 'Active Subscriptions',
@@ -1081,6 +1082,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Subscription
     subscription: {
       Subscription: 'מנוי',
+      Plan: 'תוכנית',
       Subscribe: 'הירשם',
       PRO: 'פרו',
       mo: 'חודש',

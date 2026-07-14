@@ -33,7 +33,7 @@ function splashAnimRevision(): number {
 
 const SPLASH_ANIM_REVISION = splashAnimRevision();
 
-export const LoadingBall = () => {
+export function LoadingBall() {
   const translateY = useSharedValue(-BOUNCE_UP);
 
   useLayoutEffect(() => {
@@ -88,7 +88,7 @@ export const LoadingBall = () => {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   stage: {

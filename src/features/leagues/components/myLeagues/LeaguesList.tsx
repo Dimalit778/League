@@ -1,59 +1,68 @@
-import { Text } from '@/components/ui';
+import { Card, Text } from '@/components/ui';
+import { LockedBadge } from '@/components/ui/LockedBadge';
 import { LogoBadge } from '@/components/ui/LogoBadge';
 import { useTranslation } from '@/hooks/useTranslation';
-import { FlatList, ScrollView, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { MyLeagueType } from '../../types';
 
 interface LeaguesListProps {
   leagues: MyLeagueType[];
-  inactiveLeagues: MyLeagueType[];
   onPress: (leagueId: string, isPrimary: boolean) => void;
 }
 
-export default function LeaguesList({ leagues, inactiveLeagues, onPress }: LeaguesListProps) {
+export default function LeaguesList({ leagues, onPress }: LeaguesListProps) {
   const { t } = useTranslation();
+
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      contentContainerClassName="gap-3 px-2 mt-4 flex-1"
-    >
+    <View className="mt-4">
+      <Text semibold className="px-4 mb-2">
+        {t('My Leagues')}
+      </Text>
+
       <FlatList
         data={leagues}
         keyExtractor={(item) => item.league.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="gap-3 px-4"
         renderItem={({ item }) => {
           const isLocked = !item.active;
           return (
-            <View key={item.league.id} className="w-[180px]">
-              <View className={`rounded-xl bg-surface p-3 items-center gap-2 ${!item.active ? ' opacity-50' : ''}`}>
-                <TouchableOpacity
-                  onPress={() => onPress(item.league.id, item.is_primary)}
-                  activeOpacity={0.7}
-                  className="flex-row items-center justify-between w-full"
+            <View className="w-44">
+              <Card
+                padding="md"
+                contentClassName="h-[72px] justify-center"
+                onPress={() => onPress(item.league.id, item.is_primary)}
+              >
+                {isLocked && <LockedBadge />}
+                <View
+                  className="relative flex-1 justify-center"
+                  style={{
+                    opacity: isLocked ? 0.2 : 1,
+                  }}
                 >
-                  <View className=" items-start gap-2">
-                    <LogoBadge source={{ uri: item.league.competition?.logo }} width={70} height={70} />
-                    {isLocked && (
-                      <View className="rounded-md bg-background px-2 py-1">
-                        <Text className="text-text">{t('Not Active')}</Text>
-                      </View>
-                    )}
+                  <View className="flex-row items-center">
+                    <LogoBadge source={{ uri: item.league.competition?.logo }} width={52} height={52} />
+
+                    <View className="mx-1 h-16 w-px bg-border" />
+
+                    <View className="min-w-0 flex-1 px-2">
+                      <Text bold numberOfLines={1}>
+                        {item.league.name}
+                      </Text>
+
+                      <Text caption numberOfLines={1} className="mt-1 text-muted">
+                        {item.nickname}
+                      </Text>
+                    </View>
                   </View>
-                  <View className="flex-1 items-start gap-2">
-                    <Text className="text-center font-headBold text-lg text-text" numberOfLines={1}>
-                      {item.league.name}
-                    </Text>
-                    <Text className="text-center text-sm text-muted" numberOfLines={1}>
-                      {item.nickname}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+                </View>
+              </Card>
             </View>
           );
         }}
       />
-    </ScrollView>
+    </View>
   );
 }

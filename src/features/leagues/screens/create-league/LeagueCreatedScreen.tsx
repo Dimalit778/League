@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Text, MyImage } from '@/components/ui';
+import { Button, MyImage, Text } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -55,7 +55,7 @@ const LeagueCreatedScreen = () => {
       {!leagueData && <LoadingOverlay />}
 
       <View className="items-center my-8">
-        <Text variant="h2" bold className="text-center mb-2 text-primary">
+        <Text h2 bold className="text-center mb-2 text-primary">
           {t('League Created Successfully!')}
         </Text>
       </View>
@@ -66,16 +66,16 @@ const LeagueCreatedScreen = () => {
             <MyImage source={leagueData?.competition?.logo as string} />
           </View>
 
-          <Text variant="h3" bold className="text-center text-primary my-2">
+          <Text h3 bold className="text-center text-primary my-2">
             {leagueData?.name}
           </Text>
-          <Text variant="caption" className="text-muted text-center">
+          <Text caption className="text-muted text-center">
             {t(leagueData?.competition?.area || '')} • {t(leagueData?.competition?.name || '')}
           </Text>
         </View>
 
         <View className="rounded-xl p-4 mb-4 border border-border">
-          <Text variant="caption" className="text-muted mb-1 text-center">
+          <Text caption className="text-muted mb-1 text-center">
             {t('Your Nickname')}
           </Text>
           <Text variant="body" bold className="text-text text-center">
@@ -84,15 +84,15 @@ const LeagueCreatedScreen = () => {
         </View>
 
         <View className="p-4">
-          <Text variant="caption" className="text-muted mb-3 text-center">
+          <Text caption className="text-muted mb-3 text-center">
             {t('League Join Code')}
           </Text>
           <TouchableOpacity onPress={handleCopyJoinCode} className=" border border-border rounded-lg p-4 mb-3">
-            <Text variant="h3" bold className="text-primary text-center tracking-[8px]">
+            <Text h3 bold className="text-primary text-center tracking-[8px]">
               {leagueData?.join_code}
             </Text>
           </TouchableOpacity>
-          <Text variant="caption" className="text-muted text-center">
+          <Text caption className="text-muted text-center">
             {t('Tap to copy code')}
           </Text>
         </View>
@@ -100,7 +100,7 @@ const LeagueCreatedScreen = () => {
 
       {/* Action Buttons */}
       <View className="gap-5 p-5">
-        <Button onPress={handleShareJoinCode} title={t('Share Join Code')} variant="secondary" size="md" />
+        <Button onPress={handleShareJoinCode} title={t('Share Join Code')} variant="outline" size="md" />
 
         <Button onPress={handleStartLeague} title={t('Start League')} variant="primary" size="lg" />
       </View>

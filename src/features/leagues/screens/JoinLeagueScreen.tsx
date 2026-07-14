@@ -99,9 +99,7 @@ export default function JoinLeagueScreen() {
               autoCorrect={false}
               autoCapitalize="characters"
             />
-            <Text variant="caption" className="mt-1 text-center text-muted">
-              {t('Ask the league owner for the invite code')}
-            </Text>
+            <Text className="mt-1 text-center ">{t('Ask the league owner for the invite code')}</Text>
             {isLoading && (
               <Text variant="caption" className="mt-2 text-center text-muted">
                 {t('Searching for league...')}

@@ -5,7 +5,7 @@ import FixturesList from '@/features/matches/components/regular-league/FixturesL
 import MatchesList from '@/features/matches/components/regular-league/MatchesList';
 import { useGetFinishedFixtures, useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
 import { mapMatchToCardProps } from '@/features/matches/utils/matchCard.mapper';
-import { useMemberDataAndStats } from '@/features/members/hooks/useMembers';
+import { useMemberDataAndStats } from '@/features/memberStats/hooks/useMemberStats';
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';

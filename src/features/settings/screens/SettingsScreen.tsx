@@ -1,27 +1,23 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
+import { Screen } from '@/components/layout';
 import { BackButton, Button, Text } from '@/components/ui';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
-import { useAuthStore } from '@/store/AuthStore';
-import { formatNameCapitalize } from '@/utils/formats';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
-  const user = useAuthStore((s) => s.user);
-  const fullName = formatNameCapitalize(user?.full_name);
   const { data: isAdmin } = useIsAdmin();
-
-  const { subscription } = useRevenueCatSubscription();
+  const insets = useSafeAreaInsets();
   const deleteUserMutation = useDeleteUser();
   const { signOut } = useAuthActions();
   const { t } = useTranslation();
+
   const handleDeleteAccountPress = useCallback(() => {
     Alert.alert(t('Delete Account'), t('Delete account confirmation message'), [
       {
@@ -35,6 +31,7 @@ const SettingsScreen = () => {
       },
     ]);
   }, [deleteUserMutation, t]);
+
   const handleSignOut = async () => {
     const result = await signOut();
 
@@ -44,22 +41,19 @@ const SettingsScreen = () => {
       Alert.alert(t('Error'), result.error || t('Failed to sign out'));
     }
   };
-  if (!user) return <LoadingOverlay />;
 
   return (
-    <Screen edges={['top', 'bottom']}>
+    <Screen edges={['top']}>
       <BackButton title={t('Settings')} />
-
-      <ScrollView className="flex-1 px-2" showsVerticalScrollIndicator={false}>
-        <View className="mt-8 mx-3  flex-row justify-between items-center p-4 bg-surface rounded-xl border border-border">
-          <Text className="text-text text-3xl">{fullName}</Text>
-        </View>
-        <View className=" mt-12">
-          <SettingsContent
-            created_at={user?.created_at}
-            subscriptionType={subscription.isActive ? 'PRO' : 'FREE'}
-            email={user?.email}
-          />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom,
+          paddingHorizontal: 12,
+        }}
+      >
+        <View className="mt-2">
+          <SettingsContent />
         </View>
 
         {isAdmin && (
@@ -67,24 +61,22 @@ const SettingsScreen = () => {
             <Button
               title={t('Open Admin Dashboard')}
               onPress={() => router.push('/(app)/(admin)/competitions')}
-              variant="secondary"
+              variant="outline"
             />
           </View>
         )}
-        <Button
-          title={t('Sign Out')}
-          onPress={handleSignOut}
-          className="mt-6 flex-row items-center justify-center border-b border-border py-4"
-        />
+        <Button size="md" variant="outline" title={t('Sign Out')} onPress={handleSignOut} className="mt-10 " />
 
         <View className="mt-8">
           <Pressable
             onPress={handleDeleteAccountPress}
-            className="items-center rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4"
+            className="items-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-4"
           >
-            <Text className="text-red-400 font-bold text-base">{t('Delete Account')}</Text>
+            <Text bold className="text-red-400">
+              {t('Delete Account')}
+            </Text>
 
-            <Text className="mt-1 text-muted text-sm">{t('Permanently delete your account and all your data.')}</Text>
+            <Text className="mt-1 text-muted">{t('Permanently delete your account and all your data.')}</Text>
           </Pressable>
         </View>
       </ScrollView>

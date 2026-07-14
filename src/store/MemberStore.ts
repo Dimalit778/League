@@ -125,9 +125,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
 }));
 
 export const usePrimaryMember = () => {
-  const primaryMember = useMemberStore(selectPrimaryMember);
-  if (!primaryMember) throw new Error('Active member is unavailable');
-
+  const primaryMember = useMemberStore(selectPrimaryMember)
   return {
     ...primaryMember,
   };

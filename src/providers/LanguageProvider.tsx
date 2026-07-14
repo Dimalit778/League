@@ -42,7 +42,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
           } else {
             DevSettings.reload();
           }
-        } catch (e) {
+        } catch {
           setVersion((v) => v + 1);
         }
       } else {

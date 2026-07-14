@@ -38,7 +38,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
         }}
         onPress={() => router.back()}
       >
-        <CircleArrowIcon color={colors.text} size={40} strokeWidth={1} />
+        <CircleArrowIcon color={colors.text} size={38} strokeWidth={1} />
       </Pressable>
 
       {title && <Text className={`text-xl  text-text text-center`}>{title}</Text>}

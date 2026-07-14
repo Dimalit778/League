@@ -20,7 +20,7 @@ export default function AuthModeToggle({
   ] as const;
 
   return (
-    <View className=" rounded-2xl border border-border  p-1">
+    <View className=" rounded-2xl border border-border  ">
       <View className="flex-row">
         {options.map((option) => {
           const active = mode === option.key;
@@ -29,7 +29,10 @@ export default function AuthModeToggle({
             <Pressable
               key={option.key}
               onPress={() => onModeChange(option.key)}
-              className={cn('flex-1 items-center justify-center rounded-xl py-2', active && 'bg-surface')}
+              className={cn(
+                'flex-1 items-center justify-center rounded-xl py-2',
+                active && 'bg-border border border-muted',
+              )}
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
             >

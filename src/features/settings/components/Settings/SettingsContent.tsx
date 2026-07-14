@@ -1,88 +1,153 @@
-import { Text } from '@/components/ui';
+import { DirectionalIcon, Text } from '@/components/ui';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
-import { useThemeStore } from '@/store/ThemeStore';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { RelativePathString, useRouter } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import {
+  Bell,
+  Calendar,
+  CreditCard,
+  FileQuestionMark,
+  Globe,
+  Info,
+  Mail,
+  Palette,
+  ReceiptText,
+  User,
+} from 'lucide-react-native';
+import { ReactNode } from 'react';
+import { View } from 'react-native';
+
+import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { useAuthStore } from '@/store/AuthStore';
+import { formatNameCapitalize } from '@/utils/formats';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
+import SettingsRow from './SettingsRow';
 
-const SettingsContent = ({
-  created_at = 'N/A',
-  subscriptionType,
-  email,
-}: {
-  created_at?: string;
-  subscriptionType?: string;
-  email?: string;
-}) => {
-  const { theme } = useThemeStore();
+type SettingsItem = {
+  key: string;
+  label: string;
+  icon: ReactNode;
+  rightContent?: ReactNode;
+  path?: RelativePathString;
+};
+
+const SettingsContent = () => {
+  const user = useAuthStore((s) => s.user);
+  const subscription = useRevenueCatSubscription();
+
   const router = useRouter();
   const { t } = useTranslation();
-  const isRTL = useIsRTL();
-  const ArrowIcon = isRTL ? 'left' : 'right';
-  const createdAtDateString = new Date(created_at).toLocaleDateString();
-  const displayType = subscriptionType || t('Free');
+  const { colors } = useThemeTokens();
+  const fullName = formatNameCapitalize(user?.full_name);
+  const joinedDate = user?.created_at === 'N/A' ? user?.created_at : new Date(user?.created_at!).toLocaleDateString();
+  const subscriptionType = subscription.subscription.isActive ? 'PRO' : 'FREE';
 
-  const renderAccountActions = (title: string, path?: RelativePathString) => {
-    const handlePress = () => {
-      if (path) {
-        router.push(path);
-      }
-    };
+  const iconSize = 24;
 
-    return (
-      <Pressable onPress={handlePress}>
-        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base ">{title}</Text>
-          <AntDesign name={ArrowIcon} size={16} color={theme === 'dark' ? 'white' : 'black'} />
-        </View>
-      </Pressable>
-    );
-  };
+  const accountRows: SettingsItem[] = [
+    {
+      key: 'name',
+      label: t('Name'),
+      icon: <User size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: fullName,
+    },
+    {
+      key: 'email',
+      label: t('Email'),
+      icon: <Mail size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: user?.email!,
+    },
+    {
+      key: 'joined',
+      label: t('Joined'),
+      icon: <Calendar size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: joinedDate,
+    },
+    {
+      key: 'plan',
+      label: t('Plan'),
+      icon: <CreditCard size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: subscriptionType,
+    },
+  ];
+
+  const preferenceRows: SettingsItem[] = [
+    {
+      key: 'theme',
+      label: t('Theme'),
+      icon: <Palette size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: <ThemeToggle />,
+    },
+    {
+      key: 'language',
+      label: t('Language'),
+      icon: <Globe size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: <LanguageToggle />,
+    },
+    {
+      key: 'notification',
+      label: t('Notification'),
+      icon: <Bell size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: <Text className="text-sm font-medium text-primary">{t('Enabled')}</Text>,
+    },
+  ];
+
+  const generalRows: SettingsItem[] = [
+    {
+      key: 'privacy',
+      label: t('Privacy Policy'),
+      path: '/settings/privacy' as RelativePathString,
+      icon: <Info size={iconSize} color={colors.text} strokeWidth={1.5} />,
+    },
+    {
+      key: 'terms',
+      label: t('Terms of Service'),
+      path: '/settings/terms' as RelativePathString,
+      icon: <ReceiptText size={iconSize} color={colors.text} strokeWidth={1.5} />,
+    },
+    {
+      key: 'help',
+      label: t('Help & Support'),
+      path: '/settings/help' as RelativePathString,
+      icon: <FileQuestionMark size={iconSize} color={colors.text} strokeWidth={1.5} />,
+    },
+  ];
+
+  const renderSection = (items: SettingsItem[], title?: string) => (
+    <View>
+      {title && (
+        <Text h3 className="my-2 px-1">
+          {title}
+        </Text>
+      )}
+      <View className="overflow-hidden rounded-xl border border-border bg-surface ">
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+
+          const rightContent = item.rightContent ?? (item.path ? <DirectionalIcon size={24} /> : null);
+
+          return (
+            <SettingsRow
+              key={item.key}
+              icon={item.icon}
+              label={item.label}
+              rightContent={rightContent}
+              showDivider={!isLast}
+              onPress={item.path ? () => router.push(item.path!) : undefined}
+            />
+          );
+        })}
+      </View>
+    </View>
+  );
+
   return (
-    <>
-      {/* Profile Information */}
-      <View className="border-b border-primary">
-        {/* Theme Toggle */}
-        <View className="border-t border-b border-border py-3 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base">{t('Theme')}</Text>
-          <ThemeToggle />
-        </View>
-        {/* Language Toggle */}
-        <View className="border-t border-b border-border py-3 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base">{t('Language')}</Text>
-          <LanguageToggle />
-        </View>
-        {/* Subscription */}
-        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base">{t('Subscription')}</Text>
-
-          <Text className="text-primary text-sm font-medium ">{displayType}</Text>
-        </View>
-        {/* Email */}
-        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base ">{t('Email')}</Text>
-          <Text className="text-text text-base">{email}</Text>
-        </View>
-        {/* Joined On */}
-        <View className="border-t border-b border-border py-4 px-4 flex-row justify-between items-center">
-          <Text className="text-text text-base ">{t('Joined On')}</Text>
-          <Text className="text-text text-base">{createdAtDateString}</Text>
-        </View>
-      </View>
-
-      <View>
-        {renderAccountActions(t('Subscription'), '/settings/subscription' as RelativePathString)}
-
-        {renderAccountActions(t('Privacy Policy'), '/settings/privacy' as RelativePathString)}
-
-        {renderAccountActions(t('Terms of Service'), '/settings/terms' as RelativePathString)}
-
-        {renderAccountActions(t('Help & Support'), '/settings/help' as RelativePathString)}
-      </View>
-    </>
+    <View className="gap-4">
+      {renderSection(accountRows)}
+      {renderSection(preferenceRows, t('Preferences'))}
+      {renderSection(generalRows, t('General'))}
+    </View>
   );
 };
 
