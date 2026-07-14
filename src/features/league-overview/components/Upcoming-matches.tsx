@@ -5,7 +5,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { CalendarDays, ChevronRight } from 'lucide-react-native';
+import { CalendarDays, ChevronRight, Podium } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 function Row({ match }: { match: MatchCardType }) {
@@ -49,8 +49,9 @@ export function UpcomingMatches({ matches }: { matches: MatchCardType[] }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   return (
-    <Card>
+    <Card className="mx-3">
       <View className="flex-row justify-between items-center mb-3">
+        <Podium size={20} color={colors.primary} />
         <Text bold>{t('Today matches')}</Text>
 
         <Link href="/(app)/(league)/(tabs)/Matches" asChild>

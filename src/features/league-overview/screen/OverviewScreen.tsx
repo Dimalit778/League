@@ -3,9 +3,8 @@ import { useLeagueOverview } from '@/features/league-overview/hooks/useLeagueOve
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 
-import { QuickAccessSection } from '@/features/league-overview/components/QuickAccessSection';
 import { TopLeaderboardCard } from '@/features/league-overview/components/TopLeaderboardCard';
 import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
 import { PrimaryLeagueCard } from '@/features/leagues/components/myLeagues';
@@ -29,19 +28,15 @@ export default function OverviewScreen() {
 
   return (
     <Screen>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomTabsInset + 24 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: bottomTabsInset + 24, gap: 12 }}
+      >
         <PrimaryLeagueCard />
 
-        <View className="gap-4 px-3">
-          <QuickAccessSection />
+        <TopLeaderboardCard users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)} currentMemberId={memberStats.memberId} />
 
-          <TopLeaderboardCard
-            users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)}
-            currentMemberId={memberStats.memberId}
-          />
-
-          <UpcomingMatches matches={todayMatches} />
-        </View>
+        <UpcomingMatches matches={todayMatches} />
       </ScrollView>
     </Screen>
   );

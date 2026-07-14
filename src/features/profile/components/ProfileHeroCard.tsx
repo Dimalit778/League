@@ -1,6 +1,8 @@
 import { LoadingOverlay } from '@/components/layout';
-import { AvatarImage, Text, HeaderSection } from '@/components/ui';
-import { MemberStatsType } from '@/features/members/types';
+import { AvatarImage, Text } from '@/components/ui';
+import { HeaderSection } from '@/components/ui/HeaderSection';
+import { MemberStatsType } from '@/features/memberStats/types';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { usePrimaryMember } from '@/store/MemberStore';
@@ -8,13 +10,10 @@ import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BarChart3, Calendar, Shield, Star, Trophy } from 'lucide-react-native';
+import { BarChart3, Calendar, Camera, Shield, Star, Trophy } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
-const GOLD = '#E3B421';
-const GOLD_LIGHT = '#D5B13F';
+import { useDeleteMemberImage, useUploadMemberImage } from '../hooks/useMembers';
 
 type ProfileHeroCardProps = {
   nickname: string;
@@ -36,11 +35,14 @@ function StatItem({
   value: string;
   valueClassName?: string;
 }) {
+  const { colors } = useThemeTokens();
   return (
     <View className="flex-1 items-center">
       <View className="mb-1">{icon}</View>
-      <Text className="text-[10px] uppercase tracking-wide text-muted">{label}</Text>
-      <Text className={`mt-0.5 text-sm font-bold ${valueClassName ?? 'text-text'}`} numberOfLines={1}>
+      <Text small semibold>
+        {label}
+      </Text>
+      <Text caption semibold className={`mt-0.5 ${valueClassName ?? colors.text}`} numberOfLines={1}>
         {value}
       </Text>
     </View>
@@ -51,7 +53,7 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
   const { t } = useTranslation();
   const { showAlert } = useAlert();
   const { memberId, leagueId } = usePrimaryMember();
-
+  const { colors } = useThemeTokens();
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -142,19 +144,7 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
         <View className="flex-row items-center gap-4">
           {/* Avatar with gold ring */}
           <View className="relative">
-            <View
-              className="h-24 w-24 items-center justify-center rounded-full border-2 border-[#D5B13F]"
-              style={{
-                shadowColor: GOLD,
-                shadowOpacity: 0.4,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 0 },
-              }}
-            >
-              <LinearGradient
-                colors={['rgba(227,180,33,0.15)', 'rgba(227,180,33,0.02)']}
-                style={{ position: 'absolute', inset: 0, borderRadius: 999 }}
-              />
+            <View className="h-24 w-24 items-center justify-center rounded-full border-2 bg-surfaceSecondary border-primary">
               <View className="h-[88px] w-[88px] overflow-hidden rounded-full bg-[#091425]">
                 {previewImage ? (
                   <ExpoImage
@@ -164,18 +154,9 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
                     cachePolicy="none"
                   />
                 ) : (
-                  <AvatarImage
-                    nickname={nickname}
-                    path={image}
-                    className="h-[88px] w-[88px] rounded-full border-0 bg-[#091425]"
-                  />
+                  <AvatarImage nickname={nickname} path={image} />
                 )}
               </View>
-            </View>
-
-            {/* Hex badge */}
-            <View className="absolute -bottom-1 -right-1 h-7 w-7 items-center justify-center rounded-md bg-[#1A2740] border border-[#D5B13F]">
-              <Star size={14} color={GOLD} fill={GOLD} />
             </View>
 
             {/* Camera / save / cancel controls */}
@@ -184,7 +165,7 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
                 <TouchableOpacity
                   onPress={handleCancelPreview}
                   disabled={uploadImage.isPending}
-                  className="absolute -bottom-1 -left-1 rounded-full border-2 border-[#081325] bg-red-500 p-2"
+                  className="absolute -bottom-1 -left-1 rounded-full border-2 border-border bg-surfaceSecondary p-2"
                   accessibilityLabel={t('Cancel image selection')}
                 >
                   <FontAwesome6 name="xmark" size={12} color="white" />
@@ -192,55 +173,61 @@ export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, jo
                 <TouchableOpacity
                   onPress={handleSavePreview}
                   disabled={uploadImage.isPending}
-                  className="absolute -top-1 -right-1 rounded-full border-2 border-[#081325] bg-[#D5B13F] p-2"
+                  className="absolute -top-1 -right-1 rounded-full border-2 border-border bg-surfaceSecondary p-2"
                   accessibilityLabel={t('Save profile picture')}
                 >
-                  <FontAwesome6 name="check" size={12} color="#081325" />
+                  <FontAwesome6 name="check" size={12} color="white" />
                 </TouchableOpacity>
               </>
             ) : (
               <TouchableOpacity
                 onPress={handleImagePicker}
                 disabled={uploadImage.isPending || deleteImage.isPending}
-                className="absolute -top-1 -right-1 rounded-full border-2 border-[#081325] bg-[#D5B13F] p-2"
+                className="absolute -bottom-1 -right-1 h-8 w-8 items-center justify-center rounded-full bg-surfaceSecondary border border-primary "
                 accessibilityLabel={t('Change profile picture')}
               >
-                <FontAwesome6 name="camera" size={12} color="#081325" />
+                <Camera size={18} color={colors.primary} strokeWidth={2.5} />
               </TouchableOpacity>
             )}
           </View>
 
           {/* User info */}
           <View className="min-w-0 flex-1">
-            <Text className="text-xl font-black text-text" numberOfLines={1}>
+            <Text h2 semibold numberOfLines={1}>
               {displayName}
             </Text>
             <View className="mt-1.5 flex-row items-center gap-1.5">
-              <Shield size={13} color={GOLD_LIGHT} />
+              <Shield size={13} color={colors.primary} strokeWidth={2.5} />
               <Text className="text-sm text-muted">{t('Member of {{name}}', { name: leagueName })}</Text>
             </View>
-            {isPrimary && (
-              <View className="mt-1 flex-row items-center gap-1.5">
-                <Star size={13} color="#4ade80" fill="#4ade80" />
-                <Text className="text-sm font-semibold text-[#4ade80]">{t('Primary league')}</Text>
-              </View>
-            )}
           </View>
         </View>
 
         {/* Stats row */}
-        <View className="mt-5 flex-row rounded-2xl border border-[#223554] bg-[#091425]/60 px-2 py-3">
-          <StatItem icon={<BarChart3 size={16} color={GOLD} />} label={t('Rank')} value={rank} />
-          <View className="mx-1 w-px self-stretch bg-[#223554]" />
-          <StatItem icon={<Star size={16} color={GOLD} fill={GOLD} />} label={t('Points')} value={points} />
-          <View className="mx-1 w-px self-stretch bg-[#223554]" />
-          <StatItem icon={<Calendar size={16} color={GOLD} />} label={t('Joined')} value={joinedFormatted} />
-          <View className="mx-1 w-px self-stretch bg-[#223554]" />
+        <View className="mt-5 flex-row rounded-2xl border border-border bg-surfaceSecondary px-2 py-3">
           <StatItem
-            icon={<Trophy size={16} color={GOLD} />}
+            icon={<BarChart3 size={16} color={colors.primary} strokeWidth={2.5} />}
+            label={t('Rank')}
+            value={rank}
+          />
+          <View className="mx-1 w-px self-stretch bg-border" />
+          <StatItem
+            icon={<Star size={16} color={colors.primary} fill={colors.primary} strokeWidth={2.5} />}
+            label={t('Points')}
+            value={points}
+          />
+          <View className="mx-1 w-px self-stretch bg-border" />
+          <StatItem
+            icon={<Calendar size={16} color={colors.primary} strokeWidth={2.5} />}
+            label={t('Joined')}
+            value={joinedFormatted}
+          />
+          <View className="mx-1 w-px self-stretch bg-border" />
+          <StatItem
+            icon={<Trophy size={16} color={colors.primary} strokeWidth={2.5} />}
             label={t('League')}
             value={isPrimary ? t('Primary') : leagueName}
-            valueClassName={isPrimary ? 'text-[#4ade80]' : 'text-text'}
+            valueClassName={isPrimary ? 'text-primary' : colors.text}
           />
         </View>
       </View>

@@ -16,13 +16,20 @@ const SelectCompetitionScreen = () => {
   const { isPro, openPaywall } = useEnsureProAccess();
   const { t } = useTranslation();
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   const requiresUpgrade = useCallback((comp: Competition) => !comp.is_free && !isPro, [isPro]);
 
   const handleSelectCompetition = useCallback(
     async (comp: Competition) => {
       if (requiresUpgrade(comp)) {
-        const payload = await openPaywall();
+        setIsPurchasing(true);
+        let payload = false;
+        try {
+          payload = await openPaywall();
+        } finally {
+          setIsPurchasing(false);
+        }
         if (!payload) return;
       }
       setSelectedCompetition(comp);
@@ -34,7 +41,13 @@ const SelectCompetitionScreen = () => {
     if (!selectedCompetition) return;
 
     if (requiresUpgrade(selectedCompetition)) {
-      const payload = await openPaywall();
+      setIsPurchasing(true);
+      let payload = false;
+      try {
+        payload = await openPaywall();
+      } finally {
+        setIsPurchasing(false);
+      }
       if (!payload) return;
     }
 
@@ -64,6 +77,7 @@ const SelectCompetitionScreen = () => {
 
   return (
     <Screen edges={['top', 'bottom']}>
+      {isPurchasing && <LoadingOverlay />}
       <BackButton title={t('Select a Competition')} />
       <FlatList
         data={competitions ?? []}

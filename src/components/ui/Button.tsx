@@ -79,7 +79,7 @@ export const Button = ({
   const textVariantClasses = {
     primary: 'text-white  ',
     error: 'text-error',
-    border: 'text-border',
+    border: 'text-text',
     outline: 'text-text',
   };
 

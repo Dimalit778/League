@@ -153,6 +153,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'No leagues found': 'No leagues found',
       'Unable to load leagues. Pull to refresh to try again.': 'Unable to load leagues. Pull to refresh to try again.',
       'Failed to create league': 'Failed to create league',
+      'Subscription not confirmed': 'Subscription not confirmed',
+      'We could not confirm your PRO subscription. Please try again in a moment.':
+        'We could not confirm your PRO subscription. Please try again in a moment.',
       'Failed to join league': 'Failed to join league',
       'Failed to update primary league:': 'Failed to update primary league:',
       'Enter League Details': 'Enter League Details',
@@ -670,6 +673,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagueOverview: {
       'Primary league': 'Primary league',
       RANK: 'RANK',
+      USER: 'USER',
       POINTS: 'POINTS',
       PENDING: 'PENDING',
       'Predict now': 'Predict now',
@@ -835,6 +839,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'No leagues found': 'ליגות לא נמצאו',
       'Unable to load leagues. Pull to refresh to try again.': 'לא ניתן לטעון ליגות. נסה לטעון מחדש ',
       'Failed to create league': 'שגיאה ביצירת ליגה',
+      'Subscription not confirmed': 'המנוי לא אומת',
+      'We could not confirm your PRO subscription. Please try again in a moment.':
+        'לא הצלחנו לאמת את מנוי ה-PRO שלך. נסה שוב בעוד רגע.',
       'Failed to join league': 'שגיאה בהצטרפות לליגה',
       'Failed to update primary league:': 'שגיאה בעדכון ליגה ראשית:',
       'Enter League Details': 'הזן פרטי הליגה',
@@ -1364,6 +1371,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     leagueOverview: {
       'Primary league': 'ליגה ראשית',
       RANK: 'דירוג',
+      USER: 'משתמש',
       POINTS: 'נקודות',
       PENDING: 'ממתינים',
       'Predict now': 'נחש עכשיו',

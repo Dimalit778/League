@@ -8,7 +8,7 @@ import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
+import { useDeleteMemberImage, useUploadMemberImage } from '../hooks/useMembers';
 
 type AvatarSectionProps = {
   nickname: string | null;
@@ -68,7 +68,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         type: 'error',
         buttons: [{ text: 'OK' }],
       });
-      }
+    }
   };
 
   const handleCancelPreview = () => {
@@ -93,7 +93,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
         buttons: [{ text: 'OK' }],
       });
       setImage(previousImageRef.current);
-      }
+    }
   };
 
   const handleDeleteImage = async () => {
@@ -121,7 +121,7 @@ export const AvatarSection = ({ nickname, avatarUrl }: AvatarSectionProps) => {
                 buttons: [{ text: 'OK' }],
               });
               setImage(previousImageRef.current);
-              }
+            }
           },
         },
       ],

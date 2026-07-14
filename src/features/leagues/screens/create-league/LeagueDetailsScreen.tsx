@@ -26,11 +26,17 @@ const LeagueDetailsScreen = () => {
   const { mutateAsync: createLeague, isPending } = useCreateLeague();
 
   const [membersCount, setMembersCount] = useState(DEFAULT_MEMBERS_COUNT);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleLockedOptionPress = async () => {
-    const purchased = await openPaywall();
-    if (purchased) {
-      setMembersCount(12);
+    setIsProcessing(true);
+    try {
+      const purchased = await openPaywall();
+      if (purchased) {
+        setMembersCount(12);
+      }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -52,8 +58,20 @@ const LeagueDetailsScreen = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     if (membersCount === 12) {
-      const allowed = await ensureProAccess();
-      if (!allowed) return;
+      setIsProcessing(true);
+      let allowed = false;
+      try {
+        allowed = await ensureProAccess();
+      } finally {
+        setIsProcessing(false);
+      }
+      if (!allowed) {
+        Alert.alert(
+          t('Subscription not confirmed'),
+          t('We could not confirm your PRO subscription. Please try again in a moment.'),
+        );
+        return;
+      }
     }
 
     try {
@@ -71,7 +89,7 @@ const LeagueDetailsScreen = () => {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      {isPending && <LoadingOverlay />}
+      {(isPending || isProcessing) && <LoadingOverlay />}
       <BackButton title={t('League Details')} />
       <View className="flex-1 ">
         <KeyboardAwareScrollView
@@ -152,7 +170,7 @@ const LeagueDetailsScreen = () => {
             onPress={onSubmit}
             variant="primary"
             size="lg"
-            disabled={!isValid || isPending}
+            disabled={!isValid || isPending || isProcessing}
           />
         </View>
       </View>

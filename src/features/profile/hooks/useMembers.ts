@@ -83,10 +83,6 @@ export const useUploadMemberImage = () => {
   });
 };
 
-
-
-
-
 export const useMyMemberByLeague = (leagueId: string) => {
   const { user } = useAuth();
   const userId = user?.id ?? null;

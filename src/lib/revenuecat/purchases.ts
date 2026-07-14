@@ -1,4 +1,4 @@
-import { syncSubscriptionToServer } from '@/features/subscription/api/subscriptionApi';
+import { syncSubscriptionToServerUntilPro } from '@/features/subscription/api/subscriptionApi';
 import { usePurchasesContext } from '@/providers/PurchasesProvider';
 import { useCallback, useMemo } from 'react';
 import { Linking, Platform } from 'react-native';
@@ -12,7 +12,7 @@ import {
 
 const syncSubscriptionAfterChange = async () => {
   try {
-    await syncSubscriptionToServer();
+    await syncSubscriptionToServerUntilPro();
   } catch (error) {
     console.warn('[RevenueCat] Server subscription sync failed:', error);
   }

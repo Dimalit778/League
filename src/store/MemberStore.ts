@@ -126,6 +126,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
 
 export const usePrimaryMember = () => {
   const primaryMember = useMemberStore(selectPrimaryMember)
+
   return {
     ...primaryMember,
   };

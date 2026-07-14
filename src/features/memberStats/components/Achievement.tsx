@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui';
-import { MemberStatsType } from '@/features/members/types';
+import { MemberStatsType } from '@/features/memberStats/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Award, Crosshair, Trophy } from 'lucide-react-native';
@@ -36,7 +36,10 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
   );
 }
 
-function buildAchievements(stats: MemberStatsType | undefined, t: (key: string, params?: Record<string, string | number>) => string): Achievement[] {
+function buildAchievements(
+  stats: MemberStatsType | undefined,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): Achievement[] {
   const position = stats?.position ?? null;
   const totalPredictions = stats?.totalPredictions ?? 0;
   const correctPredictions = (stats?.bingoHits ?? 0) + (stats?.regularHits ?? 0);
@@ -66,11 +69,11 @@ function buildAchievements(stats: MemberStatsType | undefined, t: (key: string, 
   ];
 }
 
-type ProfileAchievementsProps = {
+type AchievementsProps = {
   stats?: MemberStatsType;
 };
 
-export function ProfileAchievements({ stats }: ProfileAchievementsProps) {
+export function Achievements({ stats }: AchievementsProps) {
   const { t } = useTranslation();
   const achievements = buildAchievements(stats, t);
 

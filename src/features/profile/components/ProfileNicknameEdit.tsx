@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, TextInput, View } from 'react-native';
 import * as yup from 'yup';
-import { useUpdateMember } from '../../hooks/useMembers';
+import { useUpdateMember } from '../hooks/useMembers';
 
 type ProfileNicknameEditProps = {
   initialNickname: string;
@@ -60,44 +60,42 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
             reset({ nickname: displayNickname });
             setIsEditing(true);
           }}
-          className="flex-row items-center justify-between rounded-xl border border-[#223554] bg-[#101A2A] px-4 py-3 active:opacity-80"
+          className="flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 active:opacity-80"
         >
           <View>
-            <Text className="text-xs text-[#97A7BF]">{t('Nickname')}</Text>
-            <Text className="text-base font-semibold text-white">{displayNickname}</Text>
+            <Text className="text-xs text-muted">{t('Nickname')}</Text>
+            <Text className="text-base font-semibold text-text">{displayNickname}</Text>
           </View>
-          <FontAwesome6 name="pen-to-square" size={14} color={colors.secondary} />
+          <FontAwesome6 name="pen-to-square" size={14} color={colors.primary} />
         </Pressable>
       </View>
     );
   }
 
   return (
-    <View className="mx-3 mt-3 rounded-xl border border-[#223554] bg-[#101A2A] p-4">
-      <Text className="mb-2 text-xs text-[#97A7BF]">{t('Edit nickname')}</Text>
+    <View className="mx-3 mt-3 rounded-xl border border-border bg-background p-4">
+      <Text className="mb-2 text-xs text-muted">{t('Edit nickname')}</Text>
       <Controller
         control={control}
         name="nickname"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            className="mb-2 rounded-lg border border-[#223554] bg-[#091425] px-4 py-3 text-white"
+            className="mb-2 rounded-lg border border-border bg-background px-4 py-3 text-text"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
             placeholder={t('Nickname')}
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.muted}
             autoFocus
           />
         )}
       />
-      {errors.nickname && (
-        <Text className="mb-2 text-sm text-error">{t(errors.nickname.message as string)}</Text>
-      )}
+      {errors.nickname && <Text className="mb-2 text-sm text-error">{t(errors.nickname.message as string)}</Text>}
       <View className="flex-row gap-2">
         <Button
           title={t('Save')}
           onPress={handleSave}
-          variant="secondary"
+          variant="primary"
           loading={updateMember.isPending}
           disabled={!isValid || updateMember.isPending}
           className="flex-1"
@@ -108,7 +106,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
             setIsEditing(false);
             reset({ nickname: displayNickname });
           }}
-          variant="error"
+          variant="border"
           disabled={updateMember.isPending}
           className="flex-1"
         />

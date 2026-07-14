@@ -1,24 +1,22 @@
-import { Error, useFloatBottomTabsInset } from '@/components/layout';
-import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
+import { Error } from '@/components/layout';
 import {
   SkeletonStats,
   StatsBestCategory,
   StatsHeroCard,
   StatsPredictionSection,
   StatsRoundPerformance,
-} from '@/features/members/components/stats';
+} from '@/features/memberStats/components';
 import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
+import { Achievements } from './components/Achievement';
 
 const MemberStatsScreen = () => {
   const member = usePrimaryMember();
   const isFocused = useIsFocused();
-  const bottomTabsInset = useFloatBottomTabsInset();
 
-  const { data: leagueData } = useGetLeagueAndMembers(member.leagueId);
   const { data: stats, isLoading, error, refetch } = useMemberStats(member.memberId);
 
   const onRefresh = useCallback(() => {
@@ -34,14 +32,10 @@ const MemberStatsScreen = () => {
       className="flex-1 bg-background"
       refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
     >
-      <StatsHeroCard
-        nickname={member.nickname}
-        avatarUrl={member.avatarUrl}
-        isPrimary={member.isPrimary}
-        stats={stats}
-      />
+      <StatsHeroCard points={stats.totalPoints} rank={stats.position ?? 0} />
 
       <StatsPredictionSection stats={stats} />
+      <Achievements stats={stats} />
 
       <StatsRoundPerformance rounds={stats.roundPerformance ?? []} />
 

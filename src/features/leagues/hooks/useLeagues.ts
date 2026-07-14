@@ -3,11 +3,11 @@ import { KEYS } from '@/lib/queryClient';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
-import { memberApi } from '@/features/members/api/memberApi';
+import { memberApi } from '@/features/profile/api/memberApi';
+import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
+import { usePaywall } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
-import { usePaywall } from '@/lib/revenuecat/purchases';
-import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 import { useMemberStore, usePrimaryMember } from '@/store/MemberStore';
 import { router } from 'expo-router';
 import { useCallback } from 'react';

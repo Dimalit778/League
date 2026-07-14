@@ -6,15 +6,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 type DirectionalIconProps = {
   size?: number;
   color?: string;
+  strokeWidth?: number;
 };
 
-export function DirectionalIcon({ size = 24 }: DirectionalIconProps) {
+export function DirectionalIcon({ size = 24, color, strokeWidth = 1.5 }: DirectionalIconProps) {
   const { colors } = useThemeTokens();
   const isRTL = useIsRTL();
+  const iconColor = color ?? colors.muted;
 
   return isRTL ? (
-    <ChevronLeft size={size} color={colors.muted} strokeWidth={1.5} />
+    <ChevronLeft size={size} color={iconColor} strokeWidth={strokeWidth} />
   ) : (
-    <ChevronRight size={size} color={colors.muted} strokeWidth={1.5} />
+    <ChevronRight size={size} color={iconColor} strokeWidth={strokeWidth} />
   );
 }

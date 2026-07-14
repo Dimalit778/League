@@ -1,12 +1,11 @@
 import { Error, LoadingOverlay, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
-import { ProfileAchievements } from '@/features/members/components/profile/ProfileAchievements';
-import { ProfileActionsMenu } from '@/features/members/components/profile/ProfileActionsMenu';
-import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
-import { ProfileLeagueDetails } from '@/features/members/components/profile/ProfileLeagueDetails';
-import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
 import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
-import { useMemberStats } from '@/features/members/hooks/useMembers';
+import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
+import { ProfileActionsMenu } from '@/features/profile/components/ProfileActionsMenu';
+import { ProfileHeroCard } from '@/features/profile/components/ProfileHeroCard';
+import { ProfileLeagueDetails } from '@/features/profile/components/ProfileLeagueDetails';
+import { ProfileNicknameEdit } from '@/features/profile/components/ProfileNicknameEdit';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -16,8 +15,9 @@ import { ScrollView, View } from 'react-native';
 const ProfileScreen = () => {
   const member = usePrimaryMember();
   const { t } = useTranslation();
+
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(member.leagueId);
-  const { data: stats, isLoading: statsLoading } = useMemberStats(member.memberId);
+  const { data: stats, isLoading: statsLoading } = useMemberStats(member.memberId ?? '');
   const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
@@ -34,13 +34,13 @@ const ProfileScreen = () => {
       type: 'warning',
       buttons: [
         { text: t('Cancel'), style: 'cancel' },
-        { text: t('Leave'), style: 'destructive', onPress: () => leaveLeague.mutate(member.leagueId) },
+        { text: t('Leave'), style: 'destructive', onPress: () => leaveLeague.mutate(member.leagueId ?? '') },
       ],
     });
   };
 
   const confirmDeleteLeague = () => {
-    if (!leagueData || !member.leagueId) return;
+    if ((!leagueData || !member.leagueId) ?? '') return;
     showAlert({
       title: t('Delete League'),
       message: t('Are you sure you want to delete this league?'),
@@ -50,7 +50,7 @@ const ProfileScreen = () => {
         {
           text: t('Delete'),
           style: 'destructive',
-          onPress: () => deleteLeague.mutate({ leagueId: member.leagueId, ownerId: leagueData.owner_id }),
+          onPress: () => deleteLeague.mutate({ leagueId: member.leagueId ?? '', ownerId: leagueData.owner_id }),
         },
       ],
     });
@@ -70,19 +70,17 @@ const ProfileScreen = () => {
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
         <ProfileHeroCard
-          nickname={member.nickname}
-          avatarUrl={member.avatarUrl}
+          nickname={member.nickname ?? ''}
+          avatarUrl={member.avatarUrl ?? ''}
           leagueName={leagueData.name}
-          isPrimary={member.isPrimary}
-          joinedAt={member.createdAt}
+          isPrimary={member.isPrimary ?? false}
+          joinedAt={member.createdAt ?? ''}
           stats={stats}
         />
 
-        <ProfileNicknameEdit initialNickname={member.nickname} />
+        <ProfileNicknameEdit initialNickname={member.nickname ?? ''} />
 
-        <ProfileLeagueDetails league={leagueData} memberUserId={member.memberId} />
-
-        <ProfileAchievements stats={stats} />
+        <ProfileLeagueDetails league={leagueData} memberUserId={member.memberId ?? ''} />
 
         <ProfileActionsMenu
           leagueName={leagueData.name}

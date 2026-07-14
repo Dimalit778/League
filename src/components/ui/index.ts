@@ -12,6 +12,7 @@ export { Icon } from './Icon';
 export { InputField } from './InputField';
 export { LogoBadge } from './LogoBadge';
 export { MyImage } from './MyImage';
+export { PositionBadge } from './PositionBadge';
 export { TeamBadge } from './TeamBadge';
 export { Text } from './Text';
 export { UpgardeBadge } from './UpgardeBadge';
