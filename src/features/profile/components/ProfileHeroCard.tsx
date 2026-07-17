@@ -5,7 +5,7 @@ import { MemberStatsType } from '@/features/memberStats/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { usePrimaryMember } from '@/store/MemberStore';
+import { useMyMember } from '@/store/MemberStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
@@ -49,22 +49,23 @@ function StatItem({
   );
 }
 
-export function ProfileHeroCard({ nickname, avatarUrl, leagueName, isPrimary, joinedAt, stats }: ProfileHeroCardProps) {
+export function ProfileHeroCard() {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
-  const { memberId, leagueId } = usePrimaryMember();
+  const { member } = useMyMember();
   const { colors } = useThemeTokens();
-  const [image, setImage] = useState<string | null>(avatarUrl);
+  const [image, setImage] = useState<string | null>(member?.avatar_url ?? null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pickedAsset, setPickedAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const uploadImage = useUploadMemberImage();
   const deleteImage = useDeleteMemberImage();
-  const previousImageRef = useRef<string | null>(avatarUrl);
+
+  const previousImageRef = useRef<string | null>(member?.avatar_url ?? null);
 
   useEffect(() => {
-    setImage(avatarUrl);
-    previousImageRef.current = avatarUrl;
-  }, [avatarUrl]);
+    setImage(member?.avatar_url ?? null);
+    previousImageRef.current = member?.avatar_url ?? null;
+  }, [member?.avatar_url]);
 
   const handleImagePicker = async () => {
     try {

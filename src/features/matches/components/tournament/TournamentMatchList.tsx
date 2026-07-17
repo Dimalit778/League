@@ -46,6 +46,7 @@ export default function TournamentMatchList({
                     away={card.away}
                     prediction={card.prediction}
                     predictionStatus={card.predictionStatus}
+                    status={card.status}
                     logoVariant="flag"
                     date={card.date}
                     time={card.time}
@@ -73,6 +74,7 @@ export default function TournamentMatchList({
             away={card.away}
             prediction={card.prediction}
             predictionStatus={card.predictionStatus}
+            status={card.status}
             logoVariant="flag"
             date={card.date}
             time={card.time}

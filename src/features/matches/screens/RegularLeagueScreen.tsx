@@ -10,7 +10,7 @@ import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MatchesList from '../components/regular-league/MatchesList';
 import { useGetMatchesByFixture } from '../hooks/useMatches';
-import { mapMatchToCardProps } from '../utils/matchCard.mapper';
+import { mapMatchToCardData } from '../utils/matchCard.mapper';
 
 export default function RegularLeagueScreen() {
   const { memberId, competitionId } = usePrimaryMember();
@@ -104,7 +104,7 @@ export default function RegularLeagueScreen() {
 
     return ranges;
   }, [matches, allFixtures, locale]);
-  const matchesList = useMemo(() => matches?.map(mapMatchToCardProps) ?? [], [matches]);
+  const matchesList = useMemo(() => matches?.map(mapMatchToCardData) ?? [], [matches]);
 
   if (metaError || matchesError) return <Error error={metaError || matchesError || ''} />;
 

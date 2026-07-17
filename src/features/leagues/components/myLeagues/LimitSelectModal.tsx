@@ -80,7 +80,7 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
           className="flex-row items-center gap-2 rounded-lg border border-primary px-3 py-2"
         >
           <Text bold className="text-primary">
-            {t('Keep all leagues active')}
+            {t('Upgrade')}
           </Text>
           <ChevronRight size={18} color={theme.colors.primary} />
         </Pressable>
@@ -100,6 +100,7 @@ export default function LimitSelectModal({
 }: LimitSelectModalProps) {
   const { t } = useTranslation();
   const selectedCount = selectedMemberIds.length;
+  console.log('selectedCount', selectedMemberIds);
 
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => {}}>

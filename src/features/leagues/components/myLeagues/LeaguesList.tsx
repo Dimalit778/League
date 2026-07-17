@@ -7,11 +7,12 @@ import { MyLeagueType } from '../../types';
 
 interface LeaguesListProps {
   leagues: MyLeagueType[];
-  onPress: (leagueId: string, isPrimary: boolean) => void;
+  onPress: (leagueId: string) => void;
 }
 
 export default function LeaguesList({ leagues, onPress }: LeaguesListProps) {
   const { t } = useTranslation();
+  const otherLeagues = leagues.filter((league) => !league.is_primary);
 
   return (
     <View className="mt-4">
@@ -20,7 +21,7 @@ export default function LeaguesList({ leagues, onPress }: LeaguesListProps) {
       </Text>
 
       <FlatList
-        data={leagues}
+        data={otherLeagues}
         keyExtractor={(item) => item.league.id}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -32,8 +33,8 @@ export default function LeaguesList({ leagues, onPress }: LeaguesListProps) {
             <View className="w-44">
               <Card
                 padding="md"
-                contentClassName="h-[72px] justify-center"
-                onPress={() => onPress(item.league.id, item.is_primary)}
+                contentClassName="h-[72px] justify-center bg-border"
+                onPress={() => onPress(item.league.id)}
               >
                 {isLocked && <LockedBadge />}
                 <View
@@ -42,10 +43,10 @@ export default function LeaguesList({ leagues, onPress }: LeaguesListProps) {
                     opacity: isLocked ? 0.2 : 1,
                   }}
                 >
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center ">
                     <LogoBadge source={{ uri: item.league.competition?.logo }} width={52} height={52} />
 
-                    <View className="mx-1 h-16 w-px bg-border" />
+                    <View className="mx-1 h-16 w-px bg-surfaceSoft" />
 
                     <View className="min-w-0 flex-1 px-2">
                       <Text bold numberOfLines={1}>

@@ -13,9 +13,9 @@ module.exports = {
     extend: {
       colors: {
         primary: 'var(--color-primary)',
-        surfaceSecondary: 'var(--color-surfaceSecondary)',
         background: 'var(--color-background)',
         surface: 'var(--color-surface)',
+        surfaceSoft: 'var(--color-surfaceSoft)',
         border: 'var(--color-border)',
         text: 'var(--color-text)',
         muted: 'var(--color-text-muted)',

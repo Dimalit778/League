@@ -4,7 +4,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
-import { mapMatchToCardProps } from '../../utils/matchCard.mapper';
+import { mapMatchToCardData } from '../../utils/matchCard.mapper';
 import { computeLeagueStandings, getLeagueFixtures, getMatchesByFixture } from '../../utils/tournamentMatches';
 import MatchesList from '../regular-league/MatchesList';
 import { HorizontalTabs } from '../tournament/TournametTabs';
@@ -26,7 +26,7 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
   const standings = useMemo(() => computeLeagueStandings(matches), [matches]);
 
   const fixtureMatches = useMemo(() => getMatchesByFixture(matches, selectedFixture), [matches, selectedFixture]);
-  const fixtureMatchCards = useMemo(() => fixtureMatches.map(mapMatchToCardProps), [fixtureMatches]);
+  const fixtureMatchCards = useMemo(() => fixtureMatches.map(mapMatchToCardData), [fixtureMatches]);
 
   const fixtureOptions = fixtures.map((f) => ({
     value: String(f),
@@ -40,7 +40,7 @@ export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagu
           onPress={() => setShowStandings(true)}
           className="ml-3 rounded-lg border border-border bg-surface px-3 py-1.5"
         >
-          <Text variant="bodyBold" className="text-text">
+          <Text semibold className="text-text">
             {t('Standings')}
           </Text>
         </Pressable>

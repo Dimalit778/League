@@ -1,6 +1,7 @@
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { LeagueOverviewData } from '@/features/leagues/types/leagueOverviewType';
 import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
+import { mapMatchToCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
 
@@ -17,23 +18,23 @@ export function useLeagueOverview(): LeagueOverviewData {
   return {
     league: {
       id: primaryMember.leagueId,
-      name: primaryMember.leagueName,
+      name: primaryMember.leagueName ?? '',
       competitionId: primaryMember.competitionId,
-      competitionName: primaryMember.competitionName,
-      logoUrl: primaryMember.competitionLogo,
-      flagUrl: primaryMember.competitionFlag,
+      competitionName: primaryMember.competitionName ?? '',
+      logoUrl: primaryMember.competitionLogo ?? '',
+      flagUrl: primaryMember.competitionFlag ?? '',
       isPrimary: primaryMember.isPrimary,
     },
 
     memberStats: {
       memberId: primaryMember.memberId,
-      nickname: primaryMember.nickname,
+      nickname: primaryMember.nickname ?? '',
       avatarUrl: primaryMember.avatarUrl,
       rank: memberStats?.position ?? 0,
       points: memberStats?.totalPoints ?? 0,
       pendingPredictions: memberStats?.pendingPredictions ?? 0,
     },
     leaderboard: leaderboardData ?? [],
-    todayMatches: todayMatches ?? [],
+    todayMatches: (todayMatches ?? []).map(mapMatchToCardData),
   };
 }

@@ -88,9 +88,14 @@ describe('tournamentMatches utils', () => {
       'QUARTER_FINALS',
       'LAST_4',
       'SEMI_FINALS',
-      'THIRD_PLACE',
       'FINAL',
     ]);
+  });
+
+  it('merges third place into the final display stage when only third place exists', () => {
+    const matches = [match(1, { stage: 'SEMI_FINALS' }), match(2, { stage: 'THIRD_PLACE' })];
+
+    expect(getKnockoutStages(matches)).toEqual(['SEMI_FINALS', 'FINAL']);
   });
 
   it('groups matches by fixture and sorts each section by kick off', () => {

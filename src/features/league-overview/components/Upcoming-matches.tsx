@@ -1,76 +1,70 @@
-import { Card } from '@/components/ui/Card';
+import { Card, DirectionalIcon, MatchCard } from '@/components/ui';
 import { Text } from '@/components/ui/Text';
-import { MatchCardType } from '@/features/matches/types';
+import { MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { CalendarDays, ChevronRight, Podium } from 'lucide-react-native';
+import { CalendarDays, Goal } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
-function Row({ match }: { match: MatchCardType }) {
-  const kickOff = new Date(match.kick_off);
-  const dateLabel = kickOff.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-  const timeLabel = kickOff.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-
-  return (
-    <Link href={`/(app)/(league)/match/${match.id}`} asChild>
-      <Pressable className="flex-row items-center py-3" accessibilityRole="button">
-        <CalendarDays size={22} color="#8A94A6" />
-
-        <View className="ml-3 w-16">
-          <Text className="text-muted">{dateLabel}</Text>
-          <Text className="text-muted">{timeLabel}</Text>
-        </View>
-
-        {match.home_team?.logo && (
-          <Image source={{ uri: match.home_team.logo }} className="w-8 h-6" contentFit="contain" />
-        )}
-        <Text className="text-white ml-2 flex-1" numberOfLines={1}>
-          {match.home_team?.shortName ?? match.home_team?.name}
-        </Text>
-
-        <Text className="text-muted mx-3">VS</Text>
-
-        {match.away_team?.logo && (
-          <Image source={{ uri: match.away_team.logo }} className="w-8 h-6" contentFit="contain" />
-        )}
-        <Text className="text-white ml-2 flex-1" numberOfLines={1}>
-          {match.away_team?.shortName ?? match.away_team?.name}
-        </Text>
-
-        <ChevronRight size={20} color="#8A94A6" />
-      </Pressable>
-    </Link>
-  );
-}
-
-export function UpcomingMatches({ matches }: { matches: MatchCardType[] }) {
+export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  return (
-    <Card className="mx-3">
-      <View className="flex-row justify-between items-center mb-3">
-        <Podium size={20} color={colors.primary} />
-        <Text bold>{t('Today matches')}</Text>
 
+  return (
+    <Card className="mx-3" padding="md">
+      <View className="mb-3 flex-row items-center justify-between">
+        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+          <View className="h-9 w-9 items-center justify-center rounded-full border border-border bg-surfaceSecondary">
+            <CalendarDays size={19} color={colors.primary} strokeWidth={1.8} />
+          </View>
+          <View className="min-w-0 flex-1 flex-row items-center gap-2">
+            <Text semibold className="min-w-0" numberOfLines={1}>
+              {t('Today matches')}
+            </Text>
+            <View className="min-w-7 items-center rounded-full border border-border bg-surface px-2 py-0.5">
+              <Text small semibold style={{ color: colors.primary }}>
+                {matches.length}
+              </Text>
+            </View>
+          </View>
+        </View>
         <Link href="/(app)/(league)/(tabs)/Matches" asChild>
-          <Pressable className="flex-row items-center" accessibilityRole="button">
-            <Text caption className="text-muted">
+          <Pressable
+            className="flex-row items-center rounded-full border border-border bg-surfaceSecondary px-2.5 py-1 active:opacity-90"
+            accessibilityRole="button"
+          >
+            <Text small className="text-muted">
               {t('View all')}
             </Text>
-            <ChevronRight size={18} color={colors.muted} strokeWidth={1.5} />
+            <DirectionalIcon size={15} color={colors.muted} strokeWidth={1.8} />
           </Pressable>
         </Link>
       </View>
-      <View className="h-0.5 w-full bg-border rounded-full " />
 
       {matches.length === 0 ? (
-        <Text caption className="text-muted py-3">
-          {t('No matches today')}
-        </Text>
+        <View className="items-center rounded-2xl border border-dashed border-border bg-surfaceSecondary px-4 py-6">
+          <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-surface">
+            <Goal size={20} color={colors.muted} strokeWidth={1.7} />
+          </View>
+          <Text caption semibold className="text-muted text-center">
+            {t('No matches today')}
+          </Text>
+        </View>
       ) : (
-        matches.map((match) => <Row key={match.id} match={match} />)
+        matches.map((item) => (
+          <MatchCard
+            key={item.id}
+            id={item.id}
+            home={item.home}
+            away={item.away}
+            prediction={item.prediction}
+            predictionStatus={item.predictionStatus}
+            status={item.status}
+            date={item.date}
+            time={item.time}
+          />
+        ))
       )}
     </Card>
   );

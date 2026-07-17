@@ -1,5 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
 import { useAuth } from '@/providers/AuthProvider';
+import { useAuthStore } from '@/store/AuthStore';
 import { useMemberStore, usePrimaryMember } from '@/store/MemberStore';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
@@ -93,3 +94,21 @@ export const useMyMemberByLeague = (leagueId: string) => {
     retry: RETRY_COUNT,
   });
 };  
+export const useRemoveMember = () => {
+  const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id ?? '');
+
+  return useMutation({
+    mutationFn: (memberId: string) => memberApi.removeMember(memberId),
+    onSuccess: async ({ leagueId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: KEYS.leagues.members(leagueId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) }),
+      ]);
+    },
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+    },
+  });
+};

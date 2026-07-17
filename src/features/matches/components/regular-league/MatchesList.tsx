@@ -30,6 +30,7 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
           away={item.away}
           prediction={item.prediction}
           predictionStatus={item.predictionStatus}
+          status={item.status}
           date={item.date}
           time={item.time}
         />

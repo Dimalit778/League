@@ -69,14 +69,7 @@ const ProfileScreen = () => {
       >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
-        <ProfileHeroCard
-          nickname={member.nickname ?? ''}
-          avatarUrl={member.avatarUrl ?? ''}
-          leagueName={leagueData.name}
-          isPrimary={member.isPrimary ?? false}
-          joinedAt={member.createdAt ?? ''}
-          stats={stats}
-        />
+        <ProfileHeroCard nickname={member.nickname ?? ''} avatarUrl={member.avatarUrl ?? ''} />
 
         <ProfileNicknameEdit initialNickname={member.nickname ?? ''} />
 

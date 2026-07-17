@@ -55,40 +55,38 @@ export function TopLeaderboardCard({ users, currentMemberId }: Props) {
   const { colors } = useThemeTokens();
 
   return (
-    <Card className="mx-3" padding="md">
-      <View className="flex-row items-center justify-between mb-3">
-        <Text semibold>{t('Top leaderboard')}</Text>
+    <View>
+      <View className="flex-row px-4 py-2">
         <Link href="/(app)/(league)/(tabs)/Rank" asChild>
           <Pressable accessibilityRole="button" className="flex-row items-center gap-0.5">
-            <Text small className="text-muted">
-              {t('View full table')}
-            </Text>
+            <Text semibold>{t('Top leaderboard')}</Text>
             <DirectionalIcon size={16} color={colors.muted} strokeWidth={2} />
           </Pressable>
         </Link>
       </View>
+      <Card className="mx-3" padding="md">
+        <View className="flex-row items-center px-2 pb-2 border-b border-border">
+          <Text small className="w-6 text-muted">
+            #
+          </Text>
+          <Text small className="flex-1 text-muted">
+            {t('USER')}
+          </Text>
+          <Text small className="text-muted text-right">
+            {t('POINTS')}
+          </Text>
+        </View>
 
-      <View className="flex-row items-center px-2 pb-2 border-b border-border">
-        <Text small className="w-6 text-muted">
-          #
-        </Text>
-        <Text small className="flex-1 text-muted">
-          {t('USER')}
-        </Text>
-        <Text small className="text-muted text-right">
-          {t('POINTS')}
-        </Text>
-      </View>
-
-      {users.map((user, index) => (
-        <Row
-          key={user.member_id ?? index}
-          user={user}
-          rank={index + 1}
-          isCurrentUser={user.member_id === currentMemberId}
-          isLast={index === users.length - 1}
-        />
-      ))}
-    </Card>
+        {users.map((user, index) => (
+          <Row
+            key={user.member_id ?? index}
+            user={user}
+            rank={index + 1}
+            isCurrentUser={user.member_id === currentMemberId}
+            isLast={index === users.length - 1}
+          />
+        ))}
+      </Card>
+    </View>
   );
 }

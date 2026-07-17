@@ -9,7 +9,7 @@ export type PrimaryMemberType = {
   active: boolean;
   nickname: string;
   avatarUrl: string | null;
-    createdAt: string;
+  createdAt: string;
   leagueId: string;
   leagueName: string;
   competitionId: number;
@@ -47,7 +47,11 @@ export const useMemberStore = create<MemberState>()((set) => ({
   setPrimaryMember: (primaryMember) => set({ primaryMember }),
 
   initializeMember: async () => {
-    set({ loading: true, initialized: false });
+    const { initialized } = useMemberStore.getState();
+    // Only block the app shell on first load — later refreshes must not unmount navigation
+    if (!initialized) {
+      set({ loading: true });
+    }
 
     const { user } = useAuthStore.getState();
     if (!user) {
@@ -95,7 +99,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
           userId: data.user_id,
           isPrimary: data.is_primary,
           active: data.active,
-          nickname: data.nickname ,
+          nickname: data.nickname,
           avatarUrl: data.avatar_url,
           createdAt: data.created_at,
           leagueId: league.id,
@@ -106,7 +110,6 @@ export const useMemberStore = create<MemberState>()((set) => ({
           competitionFlag: competition.flag,
           competitionArea: competition.area,
           competitionType: competition.type as 'league' | 'cup',
-     
         },
         loading: false,
         initialized: true,
@@ -125,7 +128,10 @@ export const useMemberStore = create<MemberState>()((set) => ({
 }));
 
 export const usePrimaryMember = () => {
-  const primaryMember = useMemberStore(selectPrimaryMember)
+  const primaryMember = useMemberStore(selectPrimaryMember) 
+  if (!primaryMember) {
+throw new Error('Primary member not found');
+  }
 
   return {
     ...primaryMember,

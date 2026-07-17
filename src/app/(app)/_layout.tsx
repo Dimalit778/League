@@ -30,10 +30,11 @@ export default function AppLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="(user)" />
       <Stack.Protected guard={hasPrimaryMember}>
         <Stack.Screen name="(league)" />
       </Stack.Protected>
+      <Stack.Screen name="(user)" />
+
       <Stack.Protected guard={!!isAdminUser}>
         <Stack.Screen name="(admin)" />
       </Stack.Protected>

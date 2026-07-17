@@ -83,7 +83,7 @@ export const useGetMatchesByFixture = ({
     if (query.data) void prefetchMatchTeamLogos(query.data);
   }, [query.data]);
 
-  return query;
+  return query
 };
 
 

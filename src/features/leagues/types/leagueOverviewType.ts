@@ -1,13 +1,13 @@
 import { LeaderboardRow } from '@/features/leagues/types';
-import { MatchCardType } from '@/features/matches/types';
+import { MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 
 export type LeagueOverviewLeague = {
   id: string;
   name: string;
   competitionId: number;
   competitionName: string;
-  logoUrl: string | null;
-  flagUrl: string | null;
+  logoUrl: string;
+  flagUrl: string;
   isPrimary: boolean;
 };
 
@@ -24,5 +24,5 @@ export type LeagueOverviewData = {
   league: LeagueOverviewLeague;
   memberStats: LeagueOverviewMemberStats;
   leaderboard: LeaderboardRow[];
-  todayMatches: MatchCardType[];
+  todayMatches: MatchCardData[];
 };

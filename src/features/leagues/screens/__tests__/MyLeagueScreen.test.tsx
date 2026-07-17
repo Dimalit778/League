@@ -9,71 +9,34 @@ type TestNode = {
   };
 };
 
-let mockLeagues: any[] = [];
-let mockLimitState = {
-  isPro: false,
-  leaguesCount: 0,
-  totalLeaguesCount: 0,
-  maxLeagues: 1,
-  reachedLimit: false,
-  exceededLimit: false,
-  usagePercent: 0,
-  remainingLeagues: 1,
+let mockScreenState = {
   isLoading: false,
+  error: null as Error | null,
+  allLeagues: [] as unknown[],
+  activeCount: 0,
+  maxLeagues: 1,
+  hasPrimaryMember: false,
+  selectLeague: jest.fn(),
+  upgrade: jest.fn(),
+  limitSelect: null as null,
 };
 
-jest.mock('@/store/AuthStore', () => ({
-  useAuthStore: (selector: (state: { user?: { id: string }; isAuthLoading: boolean }) => unknown) =>
-    selector({ user: { id: 'user-1' }, isAuthLoading: false }),
-}));
-
-jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: (selector: (state: { primaryMember: null; setPrimaryMember: jest.Mock }) => unknown) =>
-    selector({
-      primaryMember: null,
-      setPrimaryMember: jest.fn(),
-    }),
-}));
-
-jest.mock('@/features/leagues/hooks/useLeagues', () => ({
-  useMyLeagues: () => ({
-    data: mockLeagues,
-    isPending: false,
-    isFetching: false,
-    error: null,
-    refetch: jest.fn(),
-  }),
-  useUpdatePrimaryLeague: () => ({
-    mutateAsync: jest.fn(),
-    isPending: false,
-  }),
-  useUpdateLeagueActivation: () => ({
-    mutateAsync: jest.fn(),
-    isPending: false,
-  }),
-}));
-
-jest.mock('@/hooks/useSubscriptionLimits', () => ({
-  useSubscriptionLimits: () => mockLimitState,
-}));
-
-jest.mock('@/lib/revenuecat/purchases', () => ({
-  usePaywall: () => jest.fn(),
+jest.mock('@/features/leagues/hooks/useMyLeaguesScreen', () => ({
+  useMyLeaguesScreen: () => mockScreenState,
 }));
 
 describe('MyLeagueScreen', () => {
   beforeEach(() => {
-    mockLeagues = [];
-    mockLimitState = {
-      isPro: false,
-      leaguesCount: 0,
-      totalLeaguesCount: 0,
-      maxLeagues: 1,
-      reachedLimit: false,
-      exceededLimit: false,
-      usagePercent: 0,
-      remainingLeagues: 1,
+    mockScreenState = {
       isLoading: false,
+      error: null,
+      allLeagues: [],
+      activeCount: 0,
+      maxLeagues: 1,
+      hasPrimaryMember: false,
+      selectLeague: jest.fn(),
+      upgrade: jest.fn(),
+      limitSelect: null,
     };
   });
 
@@ -93,16 +56,9 @@ describe('MyLeagueScreen', () => {
   });
 
   it('does not render an infinite progress width when subscription limit is zero', () => {
-    mockLimitState = {
-      isPro: false,
-      leaguesCount: 0,
-      totalLeaguesCount: 0,
+    mockScreenState = {
+      ...mockScreenState,
       maxLeagues: 0,
-      reachedLimit: false,
-      exceededLimit: false,
-      usagePercent: 0,
-      remainingLeagues: 0,
-      isLoading: false,
     };
 
     const { UNSAFE_root } = render(<MyLeagueScreen />);

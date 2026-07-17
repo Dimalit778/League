@@ -133,6 +133,21 @@ export const KNOCKOUT_STAGE_VALUES = KNOCKOUT_STAGE_ORDER;
 
 const KNOCKOUT_STAGE_SET = new Set(KNOCKOUT_STAGE_ORDER);
 
+const THIRD_PLACE_STAGES = new Set(['THIRD_FOURTH', 'THIRD_PLACE', 'THIRD_PLACE_PLAYOFF']);
+const FINAL_MATCH_STAGES = new Set(['FINAL', 'FINALS']);
+
+export const FINAL_DISPLAY_STAGE = 'FINAL';
+
+export const isThirdPlaceStage = (stage: string | null | undefined) => {
+  const key = stage?.trim().toUpperCase();
+  return key != null && THIRD_PLACE_STAGES.has(key);
+};
+
+export const isFinalMatchStage = (stage: string | null | undefined) => {
+  const key = stage?.trim().toUpperCase();
+  return key != null && FINAL_MATCH_STAGES.has(key);
+};
+
 const getKnockoutStageRank = (stage: string) => {
   const index = KNOCKOUT_STAGE_ORDER.indexOf(stage);
   return index === -1 ? Number.MAX_SAFE_INTEGER : index;
@@ -184,13 +199,22 @@ export const getKnockoutStages = (matches: MatchWithPredictionsType[]) => {
     new Set(matches.filter((match) => isKnockoutStage(match.stage)).map((match) => match.stage as string)),
   );
 
-  return stages.sort((a, b) => {
+  const sorted = stages.sort((a, b) => {
     const aIndex = getKnockoutStageRank(a);
     const bIndex = getKnockoutStageRank(b);
 
     if (aIndex !== bIndex) return aIndex - bIndex;
     return a.localeCompare(b);
   });
+
+  const hasFinalMatch = sorted.some(isFinalMatchStage);
+  const hasThirdPlace = sorted.some(isThirdPlaceStage);
+  if (!hasFinalMatch && !hasThirdPlace) return sorted;
+
+  const withoutThirdPlace = sorted.filter((stage) => !isThirdPlaceStage(stage));
+  const withoutFinalKeys = withoutThirdPlace.filter((stage) => !isFinalMatchStage(stage));
+
+  return [...withoutFinalKeys, FINAL_DISPLAY_STAGE];
 };
 
 export const groupMatchesByFixture = (matches: MatchWithPredictionsType[]) => {

@@ -7,11 +7,11 @@ import { ScrollView } from 'react-native';
 
 import { TopLeaderboardCard } from '@/features/league-overview/components/TopLeaderboardCard';
 import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
-import { PrimaryLeagueCard } from '@/features/leagues/components/myLeagues';
+import Header from '../components/Header';
 const TOP_LEADERBOARD_SIZE = 5;
 
 export default function OverviewScreen() {
-  const { memberStats, leaderboard, todayMatches } = useLeagueOverview();
+  const { league, memberStats, leaderboard, todayMatches } = useLeagueOverview();
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const avatarUrls = useMemo(() => {
@@ -32,7 +32,12 @@ export default function OverviewScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: bottomTabsInset + 24, gap: 12 }}
       >
-        <PrimaryLeagueCard />
+        <Header
+          leagueName={league.name}
+          logoUrl={league.logoUrl}
+          points={memberStats.points}
+          nickname={memberStats.nickname}
+        />
 
         <TopLeaderboardCard users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)} currentMemberId={memberStats.memberId} />
 

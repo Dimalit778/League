@@ -1,9 +1,10 @@
-import { MyImage } from '@/components/ui/MyImage';
+import { MyImage, Text } from '@/components/ui';
 import { router } from 'expo-router';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
-import { Text } from '../../../components/ui/Text';
+import { StatusType } from '../types';
 import { PredictionDisplayStatus } from '../utils/matchCard.mapper';
+import { getMatchStatus } from '../utils/matchStatus';
 import { MATCH_CARD_LAYOUT, MATCH_CARD_VIEWBOX_HEIGHT, MatchCardBg } from './MatchCardBg';
 
 type Team = {
@@ -22,6 +23,7 @@ type MatchCardProps = {
   } | null;
   predictionStatus?: PredictionDisplayStatus;
   logoVariant?: 'team' | 'flag';
+  status?: StatusType | null;
   date: string;
   time: string;
   onPress?: () => void;
@@ -38,7 +40,7 @@ type TeamBlockProps = {
 
 function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }: TeamBlockProps) {
   return (
-    <View style={{ width }} className="items-center px-1">
+    <View style={{ width }} className="items-center gap-1.5 ">
       <View style={{ width: logoWidth, height: logoHeight }} className="items-center justify-center overflow-hidden">
         <MyImage
           source={logo}
@@ -50,18 +52,64 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
         />
       </View>
 
-      <View className="mt-0.5 h-6 w-[95%] justify-start">
-        <Text
-          className="text-center text-[10px] font-bold leading-tight text-text"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
+      <View className="mt-0.5 h-6 w-[95%] justify-start items-center">
+        <Text semibold numberOfLines={2} ellipsizeMode="tail">
           {name}
         </Text>
       </View>
     </View>
   );
 }
+
+const LIVE_GOLD = '#F59E0B';
+
+const MatchHeader = ({
+  status,
+  date,
+  time,
+  top,
+}: {
+  status?: StatusType | null;
+  date: string;
+  time: string;
+  top: number;
+}) => {
+  const displayStatus = getMatchStatus(status);
+
+  if (displayStatus === 'FINISHED') {
+    return (
+      <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
+        <Text className="text-[10px] font-semibold text-muted" numberOfLines={1}>
+          FT
+        </Text>
+      </View>
+    );
+  }
+
+  if (displayStatus === 'LIVE') {
+    return (
+      <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
+        <Text className="text-[10px] font-bold" style={{ color: LIVE_GOLD }} numberOfLines={1}>
+          LIVE
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
+      <View className="max-w-[85%] flex-row items-center justify-center gap-2">
+        <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+          {date}
+        </Text>
+        <View className="h-3 w-0.5 bg-border" />
+        <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+          {time}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export const MatchCard = memo(function MatchCard({
   id,
@@ -70,22 +118,22 @@ export const MatchCard = memo(function MatchCard({
   prediction,
   predictionStatus = 'none',
   logoVariant = 'team',
+  status,
   date,
   time,
   onPress,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
 
-  const cardWidth = screenWidth - 16;
-  const cardHeight = Math.round(cardWidth * (MATCH_CARD_VIEWBOX_HEIGHT / 360));
+  const cardWidth = screenWidth - 30;
+  const cardHeight = Math.round(cardWidth * (MATCH_CARD_VIEWBOX_HEIGHT / 360) * 0.9);
 
-  const horizontalPadding = 16;
   const gap = 8;
   const centerWidth = 72;
 
-  const teamWidth = (cardWidth - horizontalPadding * 2 - gap * 2 - centerWidth) / 2;
+  const teamWidth = (cardWidth - gap * 2 - centerWidth) / 2;
   const contentHeight = cardHeight * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
-  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.44), 58);
+  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.5), 58);
   const logoWidth = logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : logoBoxSize;
   const logoContentFit = logoVariant === 'flag' ? 'cover' : 'contain';
@@ -106,7 +154,7 @@ export const MatchCard = memo(function MatchCard({
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
 
-  const dateTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 12;
+  const headerTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 12;
   const predictionTop = cardHeight * MATCH_CARD_LAYOUT.predictionTabCenterY - 10;
   const mainContentTop = cardHeight * MATCH_CARD_LAYOUT.contentTopY;
 
@@ -123,31 +171,17 @@ export const MatchCard = memo(function MatchCard({
           height: cardHeight,
         }}
       >
-        {/* Background SVG */}
         <View className="absolute inset-0">
           <MatchCardBg width={cardWidth} height={cardHeight} predictionStatus={predictionStatus} />
         </View>
 
-        {/* Date */}
-        <View className="absolute left-0 right-0 z-10 items-center" style={{ top: dateTop }}>
-          <View className="max-w-[85%] flex-row items-center justify-center gap-2">
-            <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
-              {date}
-            </Text>
-            <View className="h-3 w-0.5 bg-border" />
-            <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
-              {time}
-            </Text>
-          </View>
-        </View>
+        <MatchHeader status={status} date={date} time={time} top={headerTop} />
 
-        {/* Main content */}
         <View
           className="absolute left-0 right-0 flex-row items-center justify-center"
           style={{
             top: mainContentTop,
             height: contentHeight,
-            paddingHorizontal: horizontalPadding,
             gap,
           }}
         >
@@ -181,7 +215,6 @@ export const MatchCard = memo(function MatchCard({
           />
         </View>
 
-        {/* Prediction */}
         <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
           <Text className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
             {predictionText}

@@ -1,7 +1,7 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, InputField } from '@/components/ui';
+import { BackButton, Button, InputField, LogoBadge, MyImage } from '@/components/ui';
 import { Text } from '@/components/ui/Text';
-import FullLeagueCard from '@/features/leagues/components/FullLeagueCard';
+
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall } from '@/lib/revenuecat/purchases';
@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as Yup from 'yup';
+import { FullLeagueType } from '../types';
 
 const getSchema = (t: (key: string) => string) =>
   Yup.object().shape({
@@ -26,6 +27,62 @@ const steps = [
   'Tap "Join League" to become a member.',
 ];
 
+const FullLeagueCard = ({ league }: { league: FullLeagueType }) => {
+  return (
+    <View className="bg-border rounded-2xl p-4 mx-5">
+      <View className="items-center gap-2">
+        <LogoBadge source={league.competition_logo} width={80} height={80} />
+
+        <Text
+          className="text-primary font-bold text-2xl text-center uppercase"
+          style={{
+            letterSpacing: 1,
+          }}
+        >
+          {league.league_name}
+        </Text>
+      </View>
+
+      <View className="h-[1px] bg-muted my-3" />
+
+      <View className="gap-3">
+        <View>
+          <View className="flex-row justify-between ">
+            <Text className="text-text">Members</Text>
+            <Text className="text-text font-semibold">
+              {league.members_count || 0} / {league.max_members}
+            </Text>
+          </View>
+        </View>
+        <View className="h-[1px] bg-muted" />
+        {/* Owner */}
+        <View className="flex-row justify-between">
+          <Text className="text-text">League Owner</Text>
+          <Text className="text-text font-semibold">{league.owner_nickname}</Text>
+        </View>
+        <View className="h-[1px] bg-muted" />
+        {/* Competition details */}
+        <View className="flex-row justify-between">
+          <Text className="text-text">League</Text>
+          <View className="flex-row items-center">
+            <Text className="text-text font-semibold mr-2">{league.competition_name}</Text>
+            <LogoBadge source={{ uri: league.competition_logo }} width={18} height={18} />
+          </View>
+        </View>
+        <View className="h-[1px] bg-muted" />
+        <View className="flex-row justify-between items-center pb-1">
+          <Text className="text-text">Country</Text>
+          <View className="flex-row items-center">
+            <Text className="text-text font-semibold mr-2">{league.competition_area}</Text>
+            {league.competition_flag && (
+              <MyImage source={league.competition_flag} width={18} height={18} contentFit="contain" />
+            )}
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
 export default function JoinLeagueScreen() {
   const router = useRouter();
   const { t } = useTranslation();

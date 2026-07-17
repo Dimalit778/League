@@ -21,16 +21,10 @@ export function useLeagueActivationResolution({
   useEffect(() => {
     if (!enabled) return;
 
-    setSelectedMemberIds((current) => {
-      const validCurrent = current.filter((memberId) => leagues.some((league) => league.id === memberId));
-      if (validCurrent.length > 0) return validCurrent;
-
-      return leagues
-        .filter((league) => league.active)
-        .map((league) => league.id)
-        .slice(0, maxLeagues);
-    });
-  }, [enabled, leagues, maxLeagues]);
+    setSelectedMemberIds((current) =>
+      current.filter((memberId) => leagues.some((league) => league.id === memberId)),
+    );
+  }, [enabled, leagues]);
 
   const toggleLeague = useCallback(
     (memberId: string) => {

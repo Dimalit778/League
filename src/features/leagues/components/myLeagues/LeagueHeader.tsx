@@ -28,7 +28,7 @@ export default function LeagueHeader({ settingsHref = '/(app)/(user)/settings' }
         onPress={() => router.push(settingsHref)}
         accessibilityRole="button"
         accessibilityLabel={t('Settings')}
-        className="h-11 w-11 items-center justify-center rounded-full bg-surface"
+        className="h-11 w-11 items-center justify-center rounded-full bg-surfaceSoft"
         style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}
       >
         <Settings size={24} strokeWidth={1} color={colors.text} />

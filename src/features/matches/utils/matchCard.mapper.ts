@@ -1,5 +1,5 @@
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
-import { MatchCardType } from '../types';
+import { MatchCardType, StatusType } from '../types';
 import { isMatchFinished } from './matchStatus';
 
 const PLACEHOLDER_LOGO = 'https://domain.com/placeholder-logo.png';
@@ -14,6 +14,7 @@ export type PredictionDisplayStatus = 'none' | 'pending' | 'correct' | 'incorrec
 
 export type MatchCardData = {
   id: number;
+  status: StatusType;
   home: MatchCardTeam;
   away: MatchCardTeam;
   prediction: {
@@ -40,7 +41,7 @@ function getPredictionDisplayStatus(
   return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';
 }
 
-export function mapMatchToCardProps(match: MatchCardType): MatchCardData {
+export function mapMatchToCardData(match: MatchCardType): MatchCardData {
   const prediction = match.prediction;
 
   return {
@@ -66,8 +67,9 @@ export function mapMatchToCardProps(match: MatchCardType): MatchCardData {
       : null,
 
     predictionStatus: getPredictionDisplayStatus(match, prediction),
-
+    status: match.status,
     date: formatMatchdayDate(match.kick_off),
     time: formatTime(match.kick_off),
   };
 }
+export const mapMatchToCardProps = mapMatchToCardData;

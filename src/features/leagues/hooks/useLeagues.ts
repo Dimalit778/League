@@ -3,7 +3,6 @@ import { KEYS } from '@/lib/queryClient';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
-import { memberApi } from '@/features/profile/api/memberApi';
 import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 import { usePaywall } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
@@ -55,13 +54,15 @@ export const useGetLeagueAndMembers = (leagueId?: string | null) => {
 };
 
 export const useUpdatePrimaryLeague = () => {
-  const { userId } = usePrimaryMember();
+  const userId = useAuthStore((s) => s.user?.id);
   const queryClient = useQueryClient();
   const initializeMember = useMemberStore((s) => s.initializeMember);
   return useMutation({
     mutationFn: ({ leagueId }: { leagueId: string }) =>
       leagueApi.updatePrimaryLeague(leagueId),
-    onSuccess: async (data, variables) => {
+    onSuccess: async (_data, variables) => {
+      if (!userId) return;
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.leagues.leaderboard(variables.leagueId),
@@ -239,24 +240,7 @@ export const useUpdateLeague = () => {
     },
   });
 };
-export const useRemoveMember = () => {
-  const queryClient = useQueryClient();
-  const userId = useAuthStore((state) => state.user?.id ?? '');
 
-  return useMutation({
-    mutationFn: (memberId: string) => memberApi.removeMember(memberId),
-    onSuccess: async ({ leagueId }) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: KEYS.leagues.members(leagueId) }),
-        queryClient.invalidateQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
-        queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) }),
-      ]);
-    },
-    onError: (error) => {
-      Alert.alert('Error', error.message);
-    },
-  });
-};
 
 export const useLeaveLeague = () => {
   const queryClient = useQueryClient();

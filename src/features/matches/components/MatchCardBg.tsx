@@ -77,7 +77,12 @@ export const MatchCardBg = ({ width, height, predictionStatus = 'none' }: Props)
   const predictionColors = colors.prediction[predictionStatus];
 
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${MATCH_CARD_VIEWBOX_WIDTH} ${MATCH_CARD_VIEWBOX_HEIGHT}`}>
+    <Svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${MATCH_CARD_VIEWBOX_WIDTH} ${MATCH_CARD_VIEWBOX_HEIGHT}`}
+      preserveAspectRatio="none"
+    >
       <Defs>
         <LinearGradient id="cardBg" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={colors.cardTop} />
