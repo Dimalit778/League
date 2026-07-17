@@ -67,6 +67,7 @@ describe('competitionApi', () => {
       expect(result.currentFixture).toBe(5);
       expect(result.totalFixtures).toBe(38);
       expect(result.type).toBe('league');
+      expect(result.currentStage).toBe('LEAGUE');
       expect(result.seasonId).toBe(2026);
       expect(result.allFixtures).toHaveLength(38);
       expect(result.allFixtures[0]).toBe(1);

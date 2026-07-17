@@ -3,7 +3,7 @@ import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { router } from 'expo-router';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { FlatList, LayoutChangeEvent, RefreshControl, ScrollView, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { mapMatchToCardData } from '../../utils/matchCard.mapper';
@@ -33,6 +33,7 @@ type KnockoutMatchesProps = {
   selectedStage?: string;
   onSelectStage?: (stage: string) => void;
   showStageTabs?: boolean;
+  initialStage?: string;
 };
 
 function KnockoutMatchCard({
@@ -128,6 +129,40 @@ function MatchPairBlock({
   );
 }
 
+function FinalStageSection({
+  title,
+  subtitle,
+  emphasized,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  emphasized?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <View
+      className={
+        emphasized
+          ? 'rounded-2xl border-2 border-primary/35 bg-surface px-2 pb-2 pt-4'
+          : 'rounded-2xl border border-border bg-surfaceSecondary/60 px-2 pb-2 pt-4'
+      }
+    >
+      <View className="mb-3 px-1">
+        <Text variant={emphasized ? 'h3' : 'body'} semibold className="text-text">
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text variant="caption" className="text-muted mt-1">
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      {children}
+    </View>
+  );
+}
+
 function StagePage({
   stageKey,
   matches,
@@ -186,21 +221,30 @@ function StagePage({
     >
       {hasContent ? (
         isFinalPage ? (
-          <>
-            {finalMatches.map((match) => (
-              <KnockoutMatchCard key={match.id} match={match} isScrollingRef={isScrollingRef} />
-            ))}
+          <View className="gap-5">
+            {finalMatches.length > 0 && (
+              <FinalStageSection
+                title={t('Final')}
+                subtitle={t('The championship final')}
+                emphasized
+              >
+                {finalMatches.map((match) => (
+                  <KnockoutMatchCard key={match.id} match={match} isScrollingRef={isScrollingRef} />
+                ))}
+              </FinalStageSection>
+            )}
+
             {thirdPlaceMatches.length > 0 && (
-              <>
-                <Text variant="caption" className="text-muted mb-2 mt-5 px-1">
-                  {t(getStageLabel('THIRD_PLACE'))}
-                </Text>
+              <FinalStageSection
+                title={t('Third-Fourth')}
+                subtitle={t('Third place playoff')}
+              >
                 {thirdPlaceMatches.map((match) => (
                   <KnockoutMatchCard key={match.id} match={match} isScrollingRef={isScrollingRef} />
                 ))}
-              </>
+              </FinalStageSection>
             )}
-          </>
+          </View>
         ) : (
           pairs.map((pair) => (
             <MatchPairBlock
@@ -225,6 +269,7 @@ export default function KnockoutMatches({
   selectedStage: controlledSelectedStage,
   onSelectStage,
   showStageTabs = true,
+  initialStage,
 }: KnockoutMatchesProps) {
   const { t } = useTranslation();
   const bottomTabsInset = useFloatBottomTabsInset();
@@ -237,7 +282,7 @@ export default function KnockoutMatches({
   const listReady = pageWidth > 0;
 
   const stages = useMemo(() => getKnockoutStages(matches), [matches]);
-  const [internalSelectedStage, setInternalSelectedStage] = useState(stages[0] ?? '');
+  const [internalSelectedStage, setInternalSelectedStage] = useState('');
   const selectedStage = controlledSelectedStage ?? internalSelectedStage;
 
   const setSelectedStage = useCallback(
@@ -249,10 +294,15 @@ export default function KnockoutMatches({
   );
 
   useEffect(() => {
-    if (!stages.includes(selectedStage)) {
-      setSelectedStage(stages[0] ?? '');
-    }
-  }, [selectedStage, stages, setSelectedStage]);
+    if (controlledSelectedStage != null) return;
+    if (stages.length === 0) return;
+
+    setInternalSelectedStage((current) => {
+      if (current && stages.includes(current)) return current;
+      if (initialStage && stages.includes(initialStage)) return initialStage;
+      return stages[0] ?? '';
+    });
+  }, [controlledSelectedStage, initialStage, stages]);
 
   useEffect(() => {
     const index = stages.indexOf(selectedStage);
@@ -394,6 +444,7 @@ export default function KnockoutMatches({
             }}
             extraData={matchesByStage}
             style={{ flex: 1 }}
+            windowSize={2}
           />
         )}
       </View>

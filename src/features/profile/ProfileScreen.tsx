@@ -17,6 +17,8 @@ const ProfileScreen = () => {
   const { t } = useTranslation();
 
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(member.leagueId);
+  console.log('member', JSON.stringify(member, null, 2));
+  console.log('leagueData', JSON.stringify(leagueData, null, 2));
   const { data: stats, isLoading: statsLoading } = useMemberStats(member.memberId ?? '');
   const bottomTabsInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
@@ -69,7 +71,7 @@ const ProfileScreen = () => {
       >
         {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
-        <ProfileHeroCard nickname={member.nickname ?? ''} avatarUrl={member.avatarUrl ?? ''} />
+        <ProfileHeroCard />
 
         <ProfileNicknameEdit initialNickname={member.nickname ?? ''} />
 

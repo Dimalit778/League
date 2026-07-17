@@ -1,88 +1,112 @@
+import { MATCH_CARD_LAYOUT, MATCH_CARD_VIEWBOX_HEIGHT, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
-import { hexToRgba } from '@/utils/colorHexToRgba';
-import { FlatList, View } from 'react-native';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 
-const TEAM_LOGO_SIZE = 32;
-const skeletonItems = Array.from({ length: 12 });
+const SKELETON_COUNT = 6;
 
-const SkeletonMatchCard = () => {
+type MatchesSkeletonProps = {
+  count?: number;
+  bottomInset?: number;
+};
+
+function SkeletonMatchCard() {
+  const { width: screenWidth } = useWindowDimensions();
   const { colors } = useThemeTokens();
 
+  const cardWidth = screenWidth - 30;
+  const cardHeight = Math.round(cardWidth * (MATCH_CARD_VIEWBOX_HEIGHT / 360) * 0.9);
+
+  const gap = 8;
+  const centerWidth = 72;
+  const teamWidth = (cardWidth - gap * 2 - centerWidth) / 2;
+  const contentHeight = cardHeight * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
+  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.5), 58);
+  const logoWidth = logoBoxSize;
+  const logoHeight = logoBoxSize;
+
+  const headerTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 10;
+  const predictionTop = cardHeight * MATCH_CARD_LAYOUT.predictionTabCenterY - 6;
+  const mainContentTop = cardHeight * MATCH_CARD_LAYOUT.contentTopY;
+
+  const boneColor = colors.border;
+
   return (
-    <View
-      className="flex-1 m-1.5 rounded-md border"
-      style={{
-        backgroundColor: hexToRgba(colors.surface, 0.8),
-        borderColor: colors.border,
-        borderWidth: 1,
-      }}
-    >
-      {/* Header: Date on left, Status/Time on right */}
-      <View className="flex-row items-center justify-between p-1 px-2">
-        <AnimatedSkeleton style={{ height: 12, width: 60 }} />
-        <AnimatedSkeleton style={{ height: 12, width: 30 }} />
-      </View>
-
-      {/* Teams and Score Section */}
-      <View className="flex-row py-3">
-        {/* Home Team */}
-        <View className="flex-1 items-center">
-          <AnimatedSkeleton
-            style={{
-              width: TEAM_LOGO_SIZE,
-              height: TEAM_LOGO_SIZE,
-              borderRadius: TEAM_LOGO_SIZE / 2,
-              marginBottom: 4,
-            }}
-          />
-          <AnimatedSkeleton style={{ height: 10, width: 40 }} />
+    <View className="mb-2 w-full items-center">
+      <View style={{ width: cardWidth, height: cardHeight }}>
+        <View className="absolute inset-0">
+          <MatchCardBg width={cardWidth} height={cardHeight} />
         </View>
 
-        {/* Center: Score or Button */}
-        <View className="items-center justify-center">
+        <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top: headerTop }}>
           <AnimatedSkeleton
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-            }}
+            style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
           />
         </View>
 
-        {/* Away Team */}
-        <View className="flex-1 items-center">
-          <AnimatedSkeleton
-            style={{
-              width: TEAM_LOGO_SIZE,
-              height: TEAM_LOGO_SIZE,
-              borderRadius: TEAM_LOGO_SIZE / 2,
-              marginBottom: 4,
-            }}
-          />
-          <AnimatedSkeleton style={{ height: 10, width: 40 }} />
-        </View>
-      </View>
+        <View
+          className="absolute left-0 right-0 flex-row items-center justify-center"
+          style={{ top: mainContentTop, height: contentHeight, gap }}
+        >
+          <View style={{ width: teamWidth }} className="items-center gap-1.5">
+            <AnimatedSkeleton
+              style={{
+                width: logoWidth,
+                height: logoHeight,
+                borderRadius: logoWidth / 2,
+                backgroundColor: boneColor,
+              }}
+            />
+            <AnimatedSkeleton
+              style={{ width: teamWidth * 0.5, height: cardHeight * 0.12, borderRadius: 4, backgroundColor: boneColor }}
+            />
+          </View>
 
-      {/* Prediction Status Section */}
-      <View className="flex-1 bg-surface border-t border-border px-2 rounded-b-md py-2">
-        <View className="flex-row items-center justify-center">
-          <AnimatedSkeleton style={{ height: 12, width: 80 }} />
+          <View style={{ width: centerWidth }} className="items-center justify-center">
+            <AnimatedSkeleton style={{ width: 40, height: 24, borderRadius: 6, backgroundColor: boneColor }} />
+          </View>
+
+          <View style={{ width: teamWidth }} className="items-center gap-1.5">
+            <AnimatedSkeleton
+              style={{
+                width: logoWidth,
+                height: logoHeight,
+                borderRadius: logoWidth / 2,
+                backgroundColor: boneColor,
+              }}
+            />
+            <AnimatedSkeleton
+              style={{
+                width: teamWidth * 0.6,
+                height: cardHeight * 0.12,
+                borderRadius: 4,
+                backgroundColor: boneColor,
+              }}
+            />
+          </View>
+        </View>
+
+        <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
+          <AnimatedSkeleton
+            style={{ width: cardWidth * 0.13, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
+          />
         </View>
       </View>
     </View>
   );
-};
+}
 
-export default function SkeletonMatches() {
+export default function MatchesSkeleton({ count = SKELETON_COUNT, bottomInset = 0 }: MatchesSkeletonProps) {
+  const items = Array.from({ length: count }, (_, index) => index);
+
   return (
     <FlatList
-      data={skeletonItems}
-      numColumns={2}
-      keyExtractor={(_, i) => `member-match-skeleton-${i}`}
+      data={items}
+      keyExtractor={(item) => `match-skeleton-${item}`}
       scrollEnabled={false}
-      renderItem={({ index }) => <SkeletonMatchCard />}
-      style={{ paddingTop: 10 }}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1 }}
+      renderItem={() => <SkeletonMatchCard />}
     />
   );
 }

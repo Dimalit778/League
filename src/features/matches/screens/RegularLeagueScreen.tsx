@@ -9,7 +9,7 @@ import { formatDateRange } from '@/utils/formats';
 import { useFocusEffect, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MatchesList from '../components/regular-league/MatchesList';
-import { useGetMatchesByFixture } from '../hooks/useMatches';
+import { useGetMatchesByFixture, useGetNearestUpcomingMatch } from '../hooks/useMatches';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 
 export default function RegularLeagueScreen() {
@@ -18,6 +18,11 @@ export default function RegularLeagueScreen() {
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: matchMeta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
+  const { data: nearestMatch, isLoading: nearestLoading } = useGetNearestUpcomingMatch({
+    competitionId,
+    memberId,
+    enabled: !!matchMeta,
+  });
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
@@ -61,11 +66,17 @@ export default function RegularLeagueScreen() {
         setSelectedFixture(preservedFixtureRef.current);
         preservedFixtureRef.current = null;
         isNavigatingToMatchRef.current = false;
-      } else if (currentFixture && !preservedFixtureRef.current) {
-        setAnimateScroll(false);
-        setSelectedFixture(currentFixture);
+        return;
       }
-    }, [currentFixture]),
+
+      if (nearestLoading) return;
+
+      const fixture = nearestMatch?.fixture ?? currentFixture;
+      if (fixture) {
+        setAnimateScroll(true);
+        setSelectedFixture(fixture);
+      }
+    }, [nearestMatch?.fixture, nearestLoading, currentFixture]),
   );
 
   const handleFixturePress = useCallback((fixture: number) => {
@@ -108,7 +119,7 @@ export default function RegularLeagueScreen() {
 
   if (metaError || matchesError) return <Error error={metaError || matchesError || ''} />;
 
-  if (metaLoading || !matchMeta || matchesLoading || !selectedFixture) {
+  if (metaLoading || nearestLoading || !matchMeta || matchesLoading || !selectedFixture) {
     return (
       <Screen>
         <SkeletonFixtures />

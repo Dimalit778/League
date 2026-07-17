@@ -1,4 +1,4 @@
-export { BottomTabsBar } from './BottomTabsBar';
+
 export { DrawerMenu } from './DrawerMenu';
 export { Error } from './Error';
 export { FloatBottomTabs, getFloatBottomTabsInset, useFloatBottomTabsInset } from './FloatBottomTabs';

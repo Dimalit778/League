@@ -1,7 +1,7 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { MatchWithPredictionsType } from '../../types';
 import { isGroupPhaseStage } from '../../types/footballStages';
 import { mapMatchToCardData } from '../../utils/matchCard.mapper';
@@ -15,6 +15,7 @@ type GroupMatchesProps = {
   selectedGroup?: string;
   onSelectGroup?: (group: string) => void;
   showGroupTabs?: boolean;
+  initialGroup?: string;
 };
 
 export default function GroupMatches({
@@ -22,6 +23,7 @@ export default function GroupMatches({
   onRefresh,
   selectedGroup: controlledSelectedGroup,
   onSelectGroup,
+  initialGroup,
 }: GroupMatchesProps) {
   const bottomTabsInset = useFloatBottomTabsInset();
   const groups = useMemo(() => getTournamentGroups(matches), [matches]);
@@ -36,24 +38,27 @@ export default function GroupMatches({
   );
 
   useEffect(() => {
-    if (!groups.includes(selectedGroup)) {
-      setSelectedGroup(groups[0] ?? '');
-    }
-  }, [groups, selectedGroup, setSelectedGroup]);
+    if (controlledSelectedGroup != null) return;
 
-  const matchesByGroup = useMemo(() => {
-    return groups.reduce<Record<string, MatchWithPredictionsType[]>>((acc, group) => {
-      acc[group] = matches
-        .filter((m) => isGroupPhaseStage(m.stage) && normalizedGroupLetter(m.group) === group)
-        .sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime());
-      return acc;
-    }, {});
-  }, [groups, matches]);
+    setInternalSelectedGroup((current) => {
+      if (groups.includes(current)) return current;
+      if (initialGroup && groups.includes(initialGroup)) return initialGroup;
+      return groups[0] ?? '';
+    });
+  }, [controlledSelectedGroup, groups, initialGroup]);
+
+  const selectedGroupMatches = useMemo(
+    () =>
+      matches
+        .filter((m) => isGroupPhaseStage(m.stage) && normalizedGroupLetter(m.group) === selectedGroup)
+        .sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime()),
+    [matches, selectedGroup],
+  );
 
   useEffect(() => {
-    if (matches.length === 0) return;
-    void prefetchMatchTeamLogos(matches);
-  }, [matches]);
+    if (selectedGroupMatches.length === 0) return;
+    void prefetchMatchTeamLogos(selectedGroupMatches);
+  }, [selectedGroupMatches]);
 
   return (
     <View className="flex-1">
@@ -66,40 +71,25 @@ export default function GroupMatches({
         }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
       >
-        <View>
-          {groups.map((group) => (
-            <View key={group} style={group === selectedGroup ? styles.visibleGroup : styles.hiddenGroup}>
-              {(matchesByGroup[group] ?? []).map((match) => {
-                const card = mapMatchToCardData(match);
+        {selectedGroupMatches.map((match) => {
+          const card = mapMatchToCardData(match);
 
-                return (
-                  <MatchCard
-                    key={match.id}
-                    id={card.id}
-                    home={card.home}
-                    away={card.away}
-                    prediction={card.prediction}
-                    predictionStatus={card.predictionStatus}
-                    status={card.status}
-                    logoVariant="flag"
-                    date={card.date}
-                    time={card.time}
-                  />
-                );
-              })}
-            </View>
-          ))}
-        </View>
+          return (
+            <MatchCard
+              key={match.id}
+              id={card.id}
+              home={card.home}
+              away={card.away}
+              prediction={card.prediction}
+              predictionStatus={card.predictionStatus}
+              status={card.status}
+              logoVariant="flag"
+              date={card.date}
+              time={card.time}
+            />
+          );
+        })}
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  visibleGroup: {
-    display: 'flex',
-  },
-  hiddenGroup: {
-    display: 'none',
-  },
-});

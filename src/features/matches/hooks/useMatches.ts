@@ -92,15 +92,19 @@ export const useGetCompetitionMatches = ({
   memberId,
   stage,
   view,
+  enabled = true,
 }: {
   competitionId: number | null;
   memberId: string | null;
   stage?: string;
   view?: TournamentView;
-}) => { 
+  enabled?: boolean;
+}) => {
+  const isReady = enabled && competitionId != null && memberId != null;
+
   const query = useQuery({
     queryKey:
-      competitionId != null && memberId != null
+      isReady
         ? view
           ? [...KEYS.matches.byCompetition(competitionId, memberId), 'view', view]
           : stage
@@ -108,7 +112,7 @@ export const useGetCompetitionMatches = ({
             : KEYS.matches.byCompetition(competitionId, memberId)
         : (['matches', 'competition', 'disabled', competitionId ?? 'none', memberId ?? 'none', view ?? stage ?? 'all'] as const),
     queryFn:
-      competitionId != null && memberId != null
+      isReady
         ? async () => {
             let matches;
             if (view) {
@@ -125,6 +129,7 @@ export const useGetCompetitionMatches = ({
             return matches;
           }
         : skipToken,
+    enabled: isReady,
     staleTime: 1000 * 60 * 5,
     refetchOnMount: false,
     placeholderData: (previousData) => previousData,
@@ -133,15 +138,29 @@ export const useGetCompetitionMatches = ({
   return query;
 };
 
-export const useGetTournamentActiveStage = ({ competitionId }: { competitionId: number | null }) => {
+export const useGetNearestUpcomingMatch = ({
+  competitionId,
+  memberId,
+  enabled = true,
+}: {
+  competitionId: number | null;
+  memberId: string | null;
+  enabled?: boolean;
+}) => {
+  const isReady = enabled && competitionId != null && memberId != null;
+
   return useQuery({
-    queryKey: competitionId
-      ? KEYS.matches.activeStage(competitionId)
-      : (['matches', 'active-stage', 'disabled'] as const),
-    queryFn: competitionId ? () => matchesApi.getTournamentActiveStage(competitionId) : skipToken,
+    queryKey: isReady
+      ? KEYS.matches.nearest(competitionId, memberId)
+      : (['matches', 'nearest', 'disabled', competitionId ?? 'none', memberId ?? 'none'] as const),
+    queryFn: isReady
+      ? () => matchesApi.getNearestUpcomingMatch(competitionId, memberId)
+      : skipToken,
+    enabled: isReady,
     staleTime: 1000 * 60 * 5,
   });
 };
+
 export const useGetTodayMatches = ({
   competitionId,
   memberId,

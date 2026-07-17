@@ -2,9 +2,11 @@ import { MatchWithPredictionsType } from '../../types';
 import {
   filterMatchesByGroup,
   getGroupStageMatches,
+  getKnockoutDisplayStageForMatch,
   getKnockoutStages,
   getStageLabel,
   getTournamentGroups,
+  getTournamentViewForMatch,
   hasLeagueStage,
   isFirstPhaseStage,
   groupMatchesByFixture,
@@ -145,5 +147,17 @@ describe('tournamentMatches utils', () => {
     expect(getGroupStageMatches(matches)).toEqual([matches[0]]);
     expect(selectKnockoutMatches(matches)).toEqual([matches[1]]);
     expect(filterMatchesByGroup(matches, 'A')).toEqual([matches[0]]);
+  });
+
+  it('maps final and third place stages to the final display stage', () => {
+    expect(getKnockoutDisplayStageForMatch('FINAL')).toBe('FINAL');
+    expect(getKnockoutDisplayStageForMatch('THIRD_PLACE')).toBe('FINAL');
+    expect(getKnockoutDisplayStageForMatch('SEMI_FINALS')).toBe('SEMI_FINALS');
+    expect(getKnockoutDisplayStageForMatch('GROUP_STAGE')).toBeUndefined();
+  });
+
+  it('derives tournament view from match stage', () => {
+    expect(getTournamentViewForMatch('GROUP_STAGE')).toBe('groups');
+    expect(getTournamentViewForMatch('QUARTER_FINALS')).toBe('knockout');
   });
 });

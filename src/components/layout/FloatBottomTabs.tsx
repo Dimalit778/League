@@ -38,7 +38,7 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
         style={[
           styles.pill,
           {
-            backgroundColor: colors.surface + 'e6',
+            backgroundColor: colors.surface + 'f7',
             borderColor: colors.surface,
           },
         ]}

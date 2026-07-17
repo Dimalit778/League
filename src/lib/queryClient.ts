@@ -42,12 +42,13 @@ export const KEYS = {
       ['matches', competitionId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
     byCompetition: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'competition', 'member', memberId] as const,
+    nearest: (competitionId: number, memberId: string) =>
+      ['matches', competitionId, 'nearest', memberId] as const,
     byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
     today: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'today', memberId] as const,
-    activeStage: (competitionId: number) => ['matches', competitionId, 'active-stage'] as const,
     finishedFixtures: (competitionId: number) => ['matches', competitionId, 'finished-fixtures'] as const,
   },
 

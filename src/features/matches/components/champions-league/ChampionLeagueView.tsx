@@ -13,15 +13,26 @@ import LeagueStandingsTable from './LeagueStandingsTable';
 type ChampionLeagueViewProps = {
   matches: MatchWithPredictionsType[];
   onRefresh: () => void;
+  initialFixture?: number;
 };
 
-export default function ChampionLeagueView({ matches, onRefresh }: ChampionLeagueViewProps) {
+export default function ChampionLeagueView({ matches, onRefresh, initialFixture }: ChampionLeagueViewProps) {
   const { t } = useTranslation();
   const bottomTabsInset = useFloatBottomTabsInset();
   const [showStandings, setShowStandings] = useState(false);
 
   const fixtures = useMemo(() => getLeagueFixtures(matches), [matches]);
-  const [selectedFixture, setSelectedFixture] = useState<number>(fixtures[fixtures.length - 1] ?? 1);
+  const [selectedFixture, setSelectedFixture] = useState<number>(initialFixture ?? fixtures[0] ?? 1);
+
+  useEffect(() => {
+    if (fixtures.length === 0) return;
+
+    setSelectedFixture((current) => {
+      if (fixtures.includes(current)) return current;
+      if (initialFixture != null && fixtures.includes(initialFixture)) return initialFixture;
+      return fixtures[fixtures.length - 1] ?? 1;
+    });
+  }, [fixtures, initialFixture]);
 
   const standings = useMemo(() => computeLeagueStandings(matches), [matches]);
 

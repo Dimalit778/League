@@ -31,6 +31,7 @@ export const competitionApi = {
       currentFixture,
       totalFixtures: data?.total_fixtures ?? 0,
       type: data?.type,
+      currentStage: data?.current_stage ?? null,
       seasonId: data?.season_id ?? null,
     };
   },

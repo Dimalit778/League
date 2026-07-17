@@ -209,6 +209,49 @@ describe('matchesApi', () => {
     });
   });
 
+  describe('getNearestUpcomingMatch', () => {
+    it('returns the earliest non-finished match', async () => {
+      const mockMatches = [{ id: 3, status: 'TIMED', kick_off: '2026-06-10T12:00:00Z' }];
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          neq: jest.fn().mockReturnThis(),
+          order: jest.fn().mockReturnThis(),
+          limit: jest.fn().mockResolvedValue({ data: mockMatches, error: null }),
+        };
+      });
+
+      const result = await matchesApi.getNearestUpcomingMatch(100, 'm1');
+
+      expect(result).toMatchObject({ id: 3, status: 'TIMED', prediction: null });
+    });
+
+    it('falls back to the latest match when all are finished', async () => {
+      const latestMatch = [{ id: 9, status: 'FINISHED', kick_off: '2026-06-20T12:00:00Z' }];
+      let callCount = 0;
+      (supabase.from as jest.Mock).mockImplementation((table: string) => {
+        if (table === 'predictions') return mockPredictionsQuery();
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          neq: jest.fn().mockReturnThis(),
+          order: jest.fn().mockReturnThis(),
+          limit: jest.fn().mockImplementation(() => {
+            callCount += 1;
+            if (callCount === 1) return Promise.resolve({ data: [], error: null });
+            return Promise.resolve({ data: latestMatch, error: null });
+          }),
+        };
+      });
+
+      const result = await matchesApi.getNearestUpcomingMatch(100, 'm1');
+
+      expect(result).toMatchObject({ id: 9, status: 'FINISHED', prediction: null });
+    });
+  });
+
   describe('getMemberFinishedMatches', () => {
     it('returns empty array when no data', async () => {
       (supabase.from as jest.Mock).mockImplementation((table: string) => {

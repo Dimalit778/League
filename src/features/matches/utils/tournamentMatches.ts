@@ -194,6 +194,16 @@ export const getTournamentGroups = (matches: MatchWithPredictionsType[]) => {
   ).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 };
 
+export const getKnockoutDisplayStageForMatch = (stage: string | null | undefined): string | undefined => {
+  if (!stage) return undefined;
+  if (isFinalMatchStage(stage) || isThirdPlaceStage(stage)) return FINAL_DISPLAY_STAGE;
+  if (isKnockoutStage(stage)) return stage;
+  return undefined;
+};
+
+export const getTournamentViewForMatch = (stage: string | null | undefined): TournamentView =>
+  isKnockoutStage(stage) ? 'knockout' : 'groups';
+
 export const getKnockoutStages = (matches: MatchWithPredictionsType[]) => {
   const stages = Array.from(
     new Set(matches.filter((match) => isKnockoutStage(match.stage)).map((match) => match.stage as string)),

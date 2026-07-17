@@ -210,6 +210,7 @@ export const matchesApi = {
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
       .eq('stage', stage)
+      .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: true });
 
     if (error) throw error;
@@ -245,25 +246,39 @@ export const matchesApi = {
 
     return matches;
   },
-  async getTournamentActiveStage(
+
+  async getNearestUpcomingMatch(
     competitionId: number,
-  ): Promise<{ activeStage: string | null }> {
-    const { data, error } = await supabase
+    memberId: string,
+  ): Promise<MatchCardType | null> {
+    const upcomingQuery = supabase
       .from('matches')
-      .select('stage')
+      .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('predictions.league_member_id', memberId)
       .neq('status', 'FINISHED')
       .order('kick_off', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      .limit(1);
 
-    if (error) throw error;
+    const { data: upcoming, error: upcomingError } = await upcomingQuery;
+    if (upcomingError) throw upcomingError;
+    if (upcoming?.length) {
+      return mapMatchCardData(upcoming)[0] ?? null;
+    }
 
-    return {
-      activeStage: data?.stage ?? null,
-    };
+    const { data: latest, error: latestError } = await supabase
+      .from('matches')
+      .select(MATCH_WITH_MEMBER_PREDICTION)
+      .eq('competition_id', competitionId)
+      .eq('predictions.league_member_id', memberId)
+      .order('kick_off', { ascending: false })
+      .limit(1);
+
+    if (latestError) throw latestError;
+    if (!latest?.length) return null;
+
+    return mapMatchCardData(latest)[0] ?? null;
   },
-
 
   async getFinishedFixtures(competitionId: number): Promise<number[]> {
     const { data, error } = await supabase
