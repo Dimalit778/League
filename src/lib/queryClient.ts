@@ -42,6 +42,8 @@ export const KEYS = {
       ['matches', competitionId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
     byCompetition: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'competition', 'member', memberId] as const,
+    season: (competitionId: number, memberId: string) =>
+      ['matches', competitionId, 'season', memberId] as const,
     nearest: (competitionId: number, memberId: string) =>
       ['matches', competitionId, 'nearest', memberId] as const,
     byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
