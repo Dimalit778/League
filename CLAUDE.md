@@ -76,13 +76,14 @@ All TanStack Query keys are defined in [src/lib/queryClient.ts](src/lib/queryCli
 
 ### Competition/match display logic
 
-Competitions have a `type` field and a `current_stage` field. The stage drives which UI view is shown:
+The Matches tab loads the whole season once via `useSeasonMatches` and slices it client-side — every view/tab switch is zero extra network. [MatchesScreen](src/features/matches/screens/MatchesScreen.tsx) calls `resolveCompetitionShape(type, matches)` ([model/competitionShape.ts](src/features/matches/model/competitionShape.ts)) to pick one composition view:
 
-- **Domestic league** (`REGULAR_SEASON`, `CLAUSURA`, etc.) → fixture-by-fixture list view ([LeagueMatchesView](src/features/matches/screens/LeagueMatchesView.tsx))
-- **Cup with groups** (`GROUP_STAGE`, `PRELIMINARY_ROUND`, etc.) → groups + knockout shell ([GroupsKnockoutMatchesView](src/features/matches/screens/GroupsKnockoutMatchesView.tsx))
-- **Pure knockout** (`FINAL`, `SEMI_FINALS`, etc.) → knockout bracket only ([LeagueKnockoutMatchesView](src/features/matches/screens/LeagueKnockoutMatchesView.tsx))
+- **`REGULAR`** (`type = LEAGUE`) → fixture-by-fixture list ([RegularLeagueView](src/features/matches/views/RegularLeagueView.tsx))
+- **`LEAGUEPHASE_KO`** (CUP with a `LEAGUE_STAGE`/`REGULAR_SEASON` match — Champions League) → league-phase fixtures + knockout tabs ([LeaguePhaseKnockoutView](src/features/matches/views/LeaguePhaseKnockoutView.tsx))
+- **`GROUPS_KO`** (CUP with a `GROUP_STAGE` match — World Cup) → groups + knockout tabs ([GroupsKnockoutView](src/features/matches/views/GroupsKnockoutView.tsx))
+- **`KNOCKOUT_ONLY`** (CUP with only knockout stages) → bracket only ([KnockoutOnlyView](src/features/matches/views/KnockoutOnlyView.tsx))
 
-Stage classification helpers live in [src/features/matches/types/footballStages.ts](src/features/matches/types/footballStages.ts): `isDomesticLeagueStage`, `isGroupPhaseStage`, `isKnockoutOnlyStage`.
+CL vs WC is **not** stored — it is inferred from the stages present. Views compose three reusable engines ([engines/](src/features/matches/engines)): `FixtureListEngine`, `GroupsEngine`, `KnockoutEngine`. Data slicing lives in [model/selectors.ts](src/features/matches/model/selectors.ts); two-legged knockout ties are paired into aggregate cards by [model/knockout.ts](src/features/matches/model/knockout.ts) (`selectKnockoutTies` groups by `(stage, unordered team pair)`). Stage classification helpers live in [src/features/matches/types/footballStages.ts](src/features/matches/types/footballStages.ts): `isDomesticLeagueStage`, `isGroupPhaseStage`, `isKnockoutOnlyStage`.
 
 ### i18n
 
