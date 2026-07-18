@@ -53,7 +53,7 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   }),
 }));
 
-jest.mock('@/features/members/hooks/useMembers', () => ({
+jest.mock('@/features/memberStats/hooks/useMemberStats', () => ({
   useMemberStats: () => ({
     data: { position: 1, totalPoints: 100, pendingPredictions: 2 },
     isLoading: false,
@@ -85,7 +85,6 @@ describe('OverviewScreen', () => {
   it('renders the league name and leaderboard', () => {
     const { getByText, getAllByText } = render(<OverviewScreen />);
 
-    expect(getByText('Test League')).toBeTruthy();
     expect(getByText('Top leaderboard')).toBeTruthy();
     expect(getAllByText('Player1').length).toBeGreaterThan(0);
     expect(getByText('Player2')).toBeTruthy();

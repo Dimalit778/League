@@ -18,7 +18,7 @@ export default function TabLayout() {
         tabBar={isWeb ? () => null : (props) => <FloatBottomTabs {...props} />}
         screenOptions={{
           header: () => <TabsHeader />,
-          tabBarHideOnKeyboard: true,
+
           sceneStyle: {
             backgroundColor: colors.background,
           },
@@ -54,9 +54,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="Rank"
+          name="Leaderboard"
           options={{
-            title: t('Rank'),
+            title: t('Leaderboard'),
             tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
           }}
         />

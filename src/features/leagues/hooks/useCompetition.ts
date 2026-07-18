@@ -26,6 +26,3 @@ export const useGetCompetitionsDetails = () => {
   });
 };
 
-export const useGetCompetitionFixtures = useGetCompetitionsDetails;
-/** @deprecated Use useGetCompetitionsDetails */
-export const useGetCompetitionMatchMeta = useGetCompetitionsDetails;

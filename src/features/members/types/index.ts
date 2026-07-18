@@ -17,10 +17,11 @@ type MemberProfileType = MemberType & {
     competition: Tables<'competitions'>;
   };
 };
-  
 
+type LeaderboardMember = Tables<'league_leaderboard_view'>;
 
 export type {
+  LeaderboardMember,
   MemberLeagueType,
   MemberPredictionType,
   MemberProfileType,

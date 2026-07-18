@@ -25,7 +25,7 @@ const tabsConfig: Record<string, TabConfig> = {
   Stats: { label: 'Stats', icon: ChartNoAxesCombined },
   Matches: { label: 'Matches', icon: MatchesIcon },
   Profile: { label: 'Profile', icon: User },
-  Rank: { label: 'Rank', icon: PodiumIcon },
+  Leaderboard: { label: 'Leaderboard', icon: PodiumIcon },
 };
 
 export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {

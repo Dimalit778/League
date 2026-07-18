@@ -1,5 +1,6 @@
-import { Card, DirectionalIcon, MatchCard } from '@/components/ui';
+import { Card, DirectionalIcon } from '@/components/ui';
 import { Text } from '@/components/ui/Text';
+import { MatchCard } from '@/features/matches/components/MatchCard';
 import { MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -35,7 +36,7 @@ export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
             accessibilityRole="button"
           >
             <Text small className="text-muted">
-              {t('View all')}
+              {t('View all')}-
             </Text>
             <DirectionalIcon size={15} color={colors.muted} strokeWidth={1.8} />
           </Pressable>

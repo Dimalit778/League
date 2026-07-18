@@ -5,7 +5,8 @@ export { FloatBottomTabs, getFloatBottomTabsInset, useFloatBottomTabsInset } fro
 export { LoadingBall } from './LoadingBall';
 export { LoadingOverlay } from './LoadingOverlay';
 export { NetworkStatusBanner } from './NetworkStatusBanner';
-export { Screen } from './Screen';
 export { SidebarMenu } from './SidebarMenu';
 export { TabsHeader } from './TabsHeader';
+
+export { Screen } from './Screens';
 

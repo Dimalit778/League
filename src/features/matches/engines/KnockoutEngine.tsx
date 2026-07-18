@@ -55,10 +55,7 @@ export default function KnockoutEngine({
   const stages = useMemo(() => getKnockoutStages(matches), [matches]);
   const [selectedStage, setSelectedStage] = useState(initialStage ?? stages[0] ?? '');
   const activeStage = stages.includes(selectedStage) ? selectedStage : (stages[0] ?? '');
-  const stageTies = useMemo(
-    () => ties.filter((tie) => tie.stage === activeStage),
-    [ties, activeStage],
-  );
+  const stageTies = useMemo(() => ties.filter((tie) => tie.stage === activeStage), [ties, activeStage]);
 
   if (stages.length === 0) {
     return <Text className="text-text mt-6 text-center">{t('No matches found')}</Text>;
@@ -75,7 +72,7 @@ export default function KnockoutEngine({
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
-        contentContainerStyle={{ padding: 12, flexGrow: 1 }}
+        contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
       >
         {stageTies.length > 0 ? (
           stageTies.map((tie) => <TieBlock key={tie.key} tie={tie} />)

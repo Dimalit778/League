@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import LeaderboardCard from '../../../members/components/rank/LeaderboardCard';
+import LeaderboardCard from '../../../members/components/leaderboard/LeaderboardCard';
 
 jest.mock('@/store/MemberStore', () => ({
   usePrimaryMember: () => ({

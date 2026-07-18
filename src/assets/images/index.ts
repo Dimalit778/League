@@ -10,7 +10,6 @@ glowPitch: require('./glow-pitch.png'),
 pitchGrass: require('./pitch-grass.png'),
 pitchIcon: require('./pitch-icon.png'),
 
-
  trophyGold: require('./trophy-gold.png'),
 
 

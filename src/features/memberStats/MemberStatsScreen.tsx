@@ -1,4 +1,4 @@
-import { Error } from '@/components/layout';
+import { Error, useFloatBottomTabsInset } from '@/components/layout';
 import {
   SkeletonStats,
   StatsBestCategory,
@@ -8,30 +8,23 @@ import {
 } from '@/features/memberStats/components';
 import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
-import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Achievements } from './components/Achievement';
 
 const MemberStatsScreen = () => {
   const member = usePrimaryMember();
-  const isFocused = useIsFocused();
-
+  const bottomInset = useFloatBottomTabsInset();
   const { data: stats, isLoading, error, refetch } = useMemberStats(member.memberId);
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const onRefresh = useCallback(() => refetch(), [refetch]);
 
   if (error) return <Error error={error} />;
   if (isLoading || !stats) return <SkeletonStats />;
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      className="flex-1 bg-background"
-      refreshControl={<RefreshControl refreshing={isFocused && isLoading} onRefresh={onRefresh} />}
-    >
+    <ScrollView className="flex-1 pt-2" contentContainerStyle={{ paddingBottom: bottomInset }}>
       <StatsHeroCard points={stats.totalPoints} rank={stats.position ?? 0} />
 
       <StatsPredictionSection stats={stats} />

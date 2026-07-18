@@ -14,35 +14,10 @@ import { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../hooks/useMembers';
 
-function StatItem({
-  icon,
-  label,
-  value,
-  valueClassName,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  valueClassName?: string;
-}) {
-  const { colors } = useThemeTokens();
-  return (
-    <View className="flex-1 items-center">
-      <View className="mb-1">{icon}</View>
-      <Text small semibold>
-        {label}
-      </Text>
-      <Text caption semibold className={`mt-0.5 ${valueClassName ?? colors.text}`} numberOfLines={1}>
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 export function ProfileHeroCard() {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
-  const { memberId, nickname, avatarUrl, leagueName, isPrimary, createdAt, leagueId } = usePrimaryMember();
+  const { memberId, nickname, avatarUrl, leagueName, leagueId } = usePrimaryMember();
   const { colors } = useThemeTokens();
   const [image, setImage] = useState<string | null>(avatarUrl ?? null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -117,15 +92,7 @@ export function ProfileHeroCard() {
     }
   };
 
-  const joinedFormatted = new Date(createdAt).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-
   const displayName = formatNameCapitalize(nickname);
-  // const rank = stats?.position ? `#${stats.position}` : '—';
-  // const points = stats?.totalPoints != null ? `${stats.totalPoints} pts` : '—';
 
   return (
     <HeaderSection>

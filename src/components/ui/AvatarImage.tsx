@@ -6,14 +6,17 @@ import { View } from 'react-native';
 
 type AvatarImageProps = {
   nickname?: string | null;
+  /** Storage path under profile_images (preferred). */
   path?: string | null;
+  /** Alias for path — same storage path, not a full URL. */
+  src?: string | null;
   style?: ImageStyle;
   className?: string;
 };
 
-export const AvatarImage = ({ nickname, path, style, className }: AvatarImageProps) => {
+export const AvatarImage = ({ nickname, path, src, style, className }: AvatarImageProps) => {
   const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
-  const profileImage = getProfileImage(path);
+  const profileImage = getProfileImage(path ?? src);
 
   return (
     <View

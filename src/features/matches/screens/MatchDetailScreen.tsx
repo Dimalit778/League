@@ -7,7 +7,6 @@ import { usePrimaryMember } from '@/store/MemberStore';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
 import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
@@ -17,7 +16,6 @@ const MatchDetailScreen = () => {
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
   const { memberId } = usePrimaryMember();
-  const inset = useSafeAreaInsets();
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
 

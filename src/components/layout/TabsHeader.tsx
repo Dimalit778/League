@@ -20,7 +20,7 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
   return (
     <View className="flex-row items-center justify-between w-full">
       <View className="flex-row items-center gap-3">
-        <AvatarImage nickname={nickname} path={avatarUrl} className="w-12 h-12" />
+        <AvatarImage nickname={nickname} src={avatarUrl} className="w-12 h-12" />
 
         <Text className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
           {nickname}

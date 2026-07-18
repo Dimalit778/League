@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { Screen } from '../Screen';
+import { Screen } from '../Screens';
 
 describe('Screen', () => {
   it('renders children', () => {
     const { getByText } = render(
       <Screen>
         <Text>Screen content</Text>
-      </Screen>
+      </Screen>,
     );
     expect(getByText('Screen content')).toBeTruthy();
   });
@@ -16,7 +16,7 @@ describe('Screen', () => {
     const { getByText } = render(
       <Screen className="p-4">
         <Text>Styled screen</Text>
-      </Screen>
+      </Screen>,
     );
     expect(getByText('Styled screen')).toBeTruthy();
   });
@@ -25,7 +25,7 @@ describe('Screen', () => {
     const { getByText } = render(
       <Screen edges={['top']}>
         <Text>Safe content</Text>
-      </Screen>
+      </Screen>,
     );
     expect(getByText('Safe content')).toBeTruthy();
   });
@@ -34,7 +34,7 @@ describe('Screen', () => {
     const { getByText } = render(
       <Screen>
         <Text>No safe area</Text>
-      </Screen>
+      </Screen>,
     );
     expect(getByText('No safe area')).toBeTruthy();
   });

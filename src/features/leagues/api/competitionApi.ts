@@ -36,7 +36,5 @@ export const competitionApi = {
     };
   },
 
-  async getCompetitionFixtures(competitionId: number) {
-    return competitionApi.getCompetitionsDetails(competitionId);
-  },
+
 };

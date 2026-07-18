@@ -1,7 +1,6 @@
-import { Error, LoadingOverlay, Screen, useFloatBottomTabsInset } from '@/components/layout';
+import { Error, LoadingOverlay } from '@/components/layout';
 import { useDeleteLeague, useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
-import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { ProfileActionsMenu } from '@/features/profile/components/ProfileActionsMenu';
 import { ProfileHeroCard } from '@/features/profile/components/ProfileHeroCard';
 import { ProfileLeagueDetails } from '@/features/profile/components/ProfileLeagueDetails';
@@ -17,10 +16,7 @@ const ProfileScreen = () => {
   const { t } = useTranslation();
 
   const { data: leagueData, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(member.leagueId);
-  console.log('member', JSON.stringify(member, null, 2));
-  console.log('leagueData', JSON.stringify(leagueData, null, 2));
-  const { data: stats, isLoading: statsLoading } = useMemberStats(member.memberId ?? '');
-  const bottomTabsInset = useFloatBottomTabsInset();
+
   const leaveLeague = useLeaveLeague();
   const deleteLeague = useDeleteLeague();
 
@@ -58,39 +54,33 @@ const ProfileScreen = () => {
     });
   };
 
-  if (leagueLoading || statsLoading) return <ProfileSkeleton />;
+  if (leagueLoading) return <ProfileSkeleton />;
   if (leagueError) return <Error error={leagueError as string | Error | { message: string }} />;
   if (!leagueData) return <Error error={t('Member or league data not found')} />;
 
   return (
-    <Screen>
-      <ScrollView
-        className="flex-1 bg-background"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
-      >
-        {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
+    <ScrollView className="flex-1">
+      {(leaveLeague.isPending || deleteLeague.isPending) && <LoadingOverlay />}
 
-        <ProfileHeroCard />
+      <ProfileHeroCard />
 
-        <ProfileNicknameEdit initialNickname={member.nickname ?? ''} />
+      <ProfileNicknameEdit initialNickname={member.nickname ?? ''} />
 
-        <ProfileLeagueDetails league={leagueData} memberUserId={member.memberId ?? ''} />
+      <ProfileLeagueDetails league={leagueData} memberUserId={member.memberId ?? ''} />
 
-        <ProfileActionsMenu
-          leagueName={leagueData.name}
-          joinCode={leagueData.join_code}
-          competitionArea={member.competitionArea ?? undefined}
-          onLeave={confirmLeaveLeague}
-          isOwner={isOwner}
-          onDelete={confirmDeleteLeague}
-          leavePending={leaveLeague.isPending}
-        />
+      <ProfileActionsMenu
+        leagueName={leagueData.name}
+        joinCode={leagueData.join_code}
+        competitionArea={member.competitionArea ?? undefined}
+        onLeave={confirmLeaveLeague}
+        isOwner={isOwner}
+        onDelete={confirmDeleteLeague}
+        leavePending={leaveLeague.isPending}
+      />
 
-        <View className="h-4" />
-      </ScrollView>
+      <View className="h-4" />
       <DialogComponent />
-    </Screen>
+    </ScrollView>
   );
 };
 

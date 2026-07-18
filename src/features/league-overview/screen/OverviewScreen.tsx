@@ -1,18 +1,16 @@
-import { Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useLeagueOverview } from '@/features/league-overview/hooks/useLeagueOverview';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
-import { ScrollView } from 'react-native';
 
 import { TopLeaderboardCard } from '@/features/league-overview/components/TopLeaderboardCard';
 import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
-import Header from '../components/Header';
+import { ScrollView } from 'react-native-gesture-handler';
+
 const TOP_LEADERBOARD_SIZE = 5;
 
 export default function OverviewScreen() {
-  const { league, memberStats, leaderboard, todayMatches } = useLeagueOverview();
-  const bottomTabsInset = useFloatBottomTabsInset();
+  const { memberStats, leaderboard, todayMatches } = useLeagueOverview();
 
   const avatarUrls = useMemo(() => {
     const urls = leaderboard.map((member) => getProfileImage(member.avatar_url)).filter((url): url is string => !!url);
@@ -27,22 +25,10 @@ export default function OverviewScreen() {
   }, [avatarUrls]);
 
   return (
-    <Screen>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomTabsInset + 24, gap: 12 }}
-      >
-        <Header
-          leagueName={league.name}
-          logoUrl={league.logoUrl}
-          points={memberStats.points}
-          nickname={memberStats.nickname}
-        />
+    <ScrollView className="flex-1">
+      <TopLeaderboardCard users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)} currentMemberId={memberStats.memberId} />
 
-        <TopLeaderboardCard users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)} currentMemberId={memberStats.memberId} />
-
-        <UpcomingMatches matches={todayMatches} />
-      </ScrollView>
-    </Screen>
+      <UpcomingMatches matches={todayMatches} />
+    </ScrollView>
   );
 }

@@ -6,7 +6,6 @@ import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const GOLD = '#E3B421';
 const SILVER = '#A8B4C4';
@@ -118,8 +117,6 @@ function PodiumPlayer({ member, position }: { member: LeaderboardRow | undefined
 }
 
 export default function TopThree({ topMembers }: TopThreeProps) {
-  const insets = useSafeAreaInsets();
-
   if (!topMembers || topMembers.length === 0) return null;
 
   return (
@@ -142,7 +139,7 @@ export default function TopThree({ topMembers }: TopThreeProps) {
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as StyleProp<ViewStyle>}
         />
 
-        <View style={{ paddingTop: insets.top }}>
+        <View className="py-4">
           <View className="flex-row items-end justify-center gap-3">
             <View className="flex-1 items-center">
               <PodiumPlayer member={topMembers[1]} position={2} />
