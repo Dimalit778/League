@@ -1,5 +1,14 @@
 import { Tables } from '@/types/database.types';
 
+export type ComMetadata ={
+  id: number;
+  currentStage: string | null;
+  currentFixture: number;
+  totalFixtures: number;
+  type: string | null;
+  seasonId: number | null;
+  allFixtures: number[];
+}
 
 export type TeamType = Pick<
   Tables<'teams'>,

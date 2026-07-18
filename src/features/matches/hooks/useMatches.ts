@@ -3,7 +3,7 @@ import { usePrimaryMember } from '@/store/MemberStore';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { matchesApi } from '../api/matchesService';
+import { matchesApi } from '../api/matchesApi';
 import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
