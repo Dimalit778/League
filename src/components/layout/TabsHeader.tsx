@@ -1,14 +1,13 @@
 // TabsHeader.tsx
-import { MenuIcon, SettingsIcon, TrophyIcon } from '@/assets/icons';
+import { MenuIcon, SettingsIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { BlurView } from 'expo-blur';
 import { Link, router } from 'expo-router';
-import { BellIcon } from 'lucide-react-native';
+import { Settings, Trophy } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AvatarImage, Text } from '../ui';
 
 const isIOS = Platform.OS === 'ios';
 type TabsContectProps = {
@@ -19,25 +18,21 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
   const { colors } = useThemeTokens();
   return (
     <View className="flex-row items-center justify-between w-full">
-      <View className="flex-row items-center gap-3">
-        <AvatarImage nickname={nickname} src={avatarUrl} className="w-12 h-12" />
-
-        <Text className="text-xs uppercase tracking-widest text-text" numberOfLines={1}>
-          {nickname}
-        </Text>
-      </View>
-      <View className="flex-row items-center gap-1 ">
-        <Pressable accessibilityRole="button" className="p-2 rounded-full border border-border muted">
-          <BellIcon color={colors.muted} size={24} strokeWidth={1.5} />
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          className="p-2 rounded-full border border-border muted"
-          onPress={() => router.replace('/(app)/(user)')}
-        >
-          <TrophyIcon color={colors.muted} size={24} />
-        </Pressable>
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft"
+        hitSlop={4}
+      >
+        <Settings color={colors.text} size={25} strokeWidth={1.5} />
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft"
+        hitSlop={4}
+        onPress={() => router.replace('/(app)/(user)')}
+      >
+        <Trophy color={colors.text} size={25} strokeWidth={1.5} />
+      </Pressable>
     </View>
   );
 }

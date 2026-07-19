@@ -17,7 +17,7 @@ export default function LeagueHeader({ settingsHref = '/(app)/(user)/settings' }
   const displayName = formatNameCapitalize(user?.full_name) || t('Player');
 
   return (
-    <View className="flex-row items-center justify-between gap-3 px-4 py-3.5">
+    <View className="flex-row items-center justify-between gap-3 px-4 pb-2">
       <View className="min-w-0 flex-1">
         <Text h2 numberOfLines={1}>
           {displayName}
@@ -28,10 +28,10 @@ export default function LeagueHeader({ settingsHref = '/(app)/(user)/settings' }
         onPress={() => router.push(settingsHref)}
         accessibilityRole="button"
         accessibilityLabel={t('Settings')}
-        className="h-11 w-11 items-center justify-center rounded-full bg-surfaceSoft"
+        className="p-2 items-center justify-center rounded-full bg-surfaceSoft"
         style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}
       >
-        <Settings size={24} strokeWidth={1} color={colors.text} />
+        <Settings size={28} strokeWidth={1.5} color={colors.text} />
       </Pressable>
     </View>
   );

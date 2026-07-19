@@ -5,6 +5,7 @@ import { Crown } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import { AvatarImage } from '@/components/ui';
+import { HeaderSection } from '@/components/ui/HeaderSection';
 type PodiumProps = {
   first?: LeaderboardMember;
   second?: LeaderboardMember;
@@ -29,8 +30,8 @@ function getPositionColor(
 }
 function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
   const { colors } = useThemeTokens();
-
-  const avatarSize = position === 1 ? 76 : 64;
+  const positionColor = getPositionColor(position, colors);
+  const avatarSize = position === 1 ? 72 : 60;
 
   return (
     <View className="w-28 items-center">
@@ -46,39 +47,35 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
           style={{
             width: avatarSize,
             height: avatarSize,
-            borderColor: getPositionColor(position, colors),
+            borderColor: positionColor,
           }}
         >
           <AvatarImage path={member?.avatar_url} nickname={member?.nickname} />
         </View>
-
-        <View
-          className="absolute -bottom-2 h-7 w-7 items-center justify-center rounded-full border-2 border-background"
-          style={{
-            backgroundColor: getPositionColor(position, colors),
-          }}
-        >
-          <Text bold className="text-xs text-background">
-            {position}
-          </Text>
-        </View>
       </View>
 
-      <Text semibold numberOfLines={1} className="mt-4 w-full text-center">
+      <Text caption semibold numberOfLines={1} className=" w-full text-center">
         {member?.nickname}
       </Text>
 
-      <Text bold className="mt-1 text-primary">
-        {member?.total_points} pts
-      </Text>
+      <View className="mb-2  items-center rounded px-2.5 p-0.5" style={{ backgroundColor: positionColor }}>
+        <Text small semibold className="text-background">
+          {member?.total_points ?? 0} pts
+        </Text>
+      </View>
 
       <View
-        className="mt-3 w-full items-center justify-start rounded-t-2xl border border-border bg-surfaceSecondary px-2 pt-4"
+        className="w-full items-center justify-center "
         style={{
           height: podiumHeight,
+          backgroundColor: colors.surface + '97',
+          borderColor: colors.border,
+          borderWidth: 1,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
         }}
       >
-        <Text title font="teko-bold" className="text-muted">
+        <Text title font="teko-bold" className="pt-1 text-muted">
           {position}
         </Text>
       </View>
@@ -86,14 +83,17 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
   );
 }
 export function Podium({ first, second, third }: PodiumProps) {
-  // Crown sits at -top-6; pad so FlatList/TabsHeader don't clip it (zIndex can't float above nav header)
   return (
-    <View className="flex-row items-end justify-center pt-8">
-      <PodiumMember member={second} position={2} podiumHeight={93} />
+    <View className="mx-2 mb-8 overflow-hidden rounded-md border border-border">
+      <HeaderSection>
+        <View className="flex-row items-end justify-center pt-8">
+          <PodiumMember member={second} position={2} podiumHeight={55} />
 
-      <PodiumMember member={first} position={1} podiumHeight={130} />
+          <PodiumMember member={first} position={1} podiumHeight={75} />
 
-      <PodiumMember member={third} position={3} podiumHeight={70} />
+          <PodiumMember member={third} position={3} podiumHeight={45} />
+        </View>
+      </HeaderSection>
     </View>
   );
 }

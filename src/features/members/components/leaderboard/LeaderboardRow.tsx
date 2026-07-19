@@ -1,8 +1,9 @@
-import { AvatarImage } from '@/components/ui';
+import { AvatarImage, PositionBadge } from '@/components/ui';
 import { Text } from '@/components/ui/Text';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { Trophy } from 'lucide-react-native';
-import { View } from 'react-native';
+import { cn } from '@/lib/nativeWind';
+import { usePrimaryMember } from '@/store/MemberStore';
+import { Link } from 'expo-router';
+import { TouchableOpacity, View } from 'react-native';
 import { LeaderboardMember } from '../../types';
 
 type LeaderboardRowProps = {
@@ -11,37 +12,49 @@ type LeaderboardRowProps = {
 };
 
 export function LeaderboardRow({ member, position }: LeaderboardRowProps) {
-  const { colors } = useThemeTokens();
+  const { nickname, avatar_url, member_id, total_points, league_id } = member;
+  const { memberId } = usePrimaryMember();
+  const isCurrentUser = memberId === member_id;
 
   return (
-    <View className="min-h-20 flex-row items-center py-3">
-      <View className="w-10 items-center">
-        <Text bold className="text-muted">
-          {position}
-        </Text>
-      </View>
+    <Link
+      href={{
+        pathname: '/(app)/(league)/member/[memberId]',
+        params: { leagueId: league_id ?? '', memberId: member_id ?? '' },
+      }}
+      asChild
+    >
+      <TouchableOpacity activeOpacity={0.7}>
+        <View
+          className={cn(
+            'flex-row items-center py-2 px-3 rounded-md',
+            isCurrentUser ? 'bg-surface border border-primary' : 'bg-background',
+          )}
+        >
+          <View className="w-10 items-center">
+            <PositionBadge position={position} isCurrentUser={isCurrentUser} />
+          </View>
 
-      <View className="mr-3 h-12 w-12">
-        <AvatarImage path={member.avatar_url} nickname={member.nickname} />
-      </View>
+          <View className="mx-3 h-11 w-11">
+            <AvatarImage path={avatar_url} nickname={nickname} />
+          </View>
 
-      <View className="min-w-0 flex-1">
-        <Text semibold numberOfLines={1}>
-          {member.nickname}
-        </Text>
-      </View>
+          <View className="min-w-0 flex-1">
+            <Text semibold numberOfLines={1} className={isCurrentUser ? 'text-primary' : undefined}>
+              {nickname}
+            </Text>
+          </View>
 
-      <View className="items-end">
-        <View className="flex-row items-center gap-1">
-          <Trophy size={16} color={colors.primary} />
-
-          <Text bold>{member.total_points}</Text>
+          <View className="items-end">
+            <Text bold className={isCurrentUser ? 'text-primary' : undefined}>
+              {total_points}
+            </Text>
+            <Text caption className="mt-0.5 text-muted">
+              points
+            </Text>
+          </View>
         </View>
-
-        <Text caption className="mt-1 text-success">
-          points
-        </Text>
-      </View>
-    </View>
+      </TouchableOpacity>
+    </Link>
   );
 }

@@ -28,7 +28,7 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
       <Pressable onPress={onPress} className="mx-5 rounded-2xl bg-surface px-2 py-3">
         <View className="flex-row items-center">
           {/* Icon */}
-          <View className="mr-4 h-14 w-14 items-center justify-center rounded-full bg-border">
+          <View className="mr-4 h-14 w-14 items-center justify-center rounded-full bg-surfaceSoft">
             <Trophy size={26} color={colors.primary} strokeWidth={1.8} />
           </View>
 
@@ -43,7 +43,7 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
             </View>
 
             {/* Progress bar */}
-            <View className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surfaceSecondary">
+            <View className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surfaceSoft">
               <View className="h-full rounded-full bg-primary" style={{ width: `${progress * 100}%` }} />
             </View>
           </View>

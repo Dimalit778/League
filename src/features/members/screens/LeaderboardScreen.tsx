@@ -1,11 +1,12 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
+import { Error, useFloatBottomTabsInset } from '@/components/layout';
 import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { usePrimaryMember } from '@/store/MemberStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { LeaderboardRow } from '../components/leaderboard/LeaderboardRow';
 import { Podium } from '../components/leaderboard/Pudiom';
 
@@ -33,16 +34,13 @@ export default function LeaderboardScreen() {
   if (!leaderboard || isLoading) return <LeagueSkeleton />;
 
   return (
-    <Screen>
-      <FlatList
-        data={rest}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16, paddingHorizontal: 12 }}
-        keyExtractor={(item) => item.member_id ?? ''}
-        ListHeaderComponent={<Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />}
-        ItemSeparatorComponent={() => <View className="h-px bg-border" />}
-        renderItem={({ item, index }) => <LeaderboardRow member={item} position={index + 4} />}
-      />
-    </Screen>
+    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}>
+      <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
+      <View className="mx-2 bg-surface border border-border rounded-md">
+        {rest.map((member, index) => (
+          <LeaderboardRow key={member.member_id} member={member} position={index + 4} />
+        ))}
+      </View>
+    </ScrollView>
   );
 }

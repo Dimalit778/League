@@ -3,7 +3,6 @@ import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 
-import { TopLeaderboardCard } from '@/features/league-overview/components/TopLeaderboardCard';
 import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -26,8 +25,6 @@ export default function OverviewScreen() {
 
   return (
     <ScrollView className="flex-1">
-      <TopLeaderboardCard users={leaderboard.slice(0, TOP_LEADERBOARD_SIZE)} currentMemberId={memberStats.memberId} />
-
       <UpcomingMatches matches={todayMatches} />
     </ScrollView>
   );

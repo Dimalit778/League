@@ -35,7 +35,7 @@ export default function MyLeaguesScreen() {
           <EmptyList message="Create or join a league to get started." />
         ) : (
           <>
-            {hasPrimaryMember && <PrimaryLeagueCard showButton />}
+            {hasPrimaryMember && <PrimaryLeagueCard />}
             <LeaguesList leagues={allLeagues} onPress={selectLeague} />
           </>
         )}

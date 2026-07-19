@@ -21,10 +21,10 @@ type MemberProfileType = MemberType & {
 type LeaderboardMember = Tables<'league_leaderboard_view'>;
 
 export type {
-  LeaderboardMember,
-  MemberLeagueType,
-  MemberPredictionType,
-  MemberProfileType,
-  MemberType
+    LeaderboardMember,
+    MemberLeagueType,
+    MemberPredictionType,
+    MemberProfileType,
+    MemberType
 };
 

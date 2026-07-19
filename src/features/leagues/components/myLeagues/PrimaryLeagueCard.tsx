@@ -47,13 +47,7 @@ function Divider() {
     />
   );
 }
-export default function PrimaryLeagueCard({
-  onPress,
-  showButton = false,
-}: {
-  onPress?: () => void;
-  showButton?: boolean;
-}) {
+export default function PrimaryLeagueCard({ onPress }: { onPress?: () => void }) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
   const { memberId } = usePrimaryMember();
@@ -155,22 +149,20 @@ export default function PrimaryLeagueCard({
               />
             </View>
 
-            {showButton && (
-              <View className="mt-4 h-11 flex-row items-center justify-center rounded-xl border border-primary">
-                <Text semibold className="text-primary">
-                  {t('Enter league')}
-                </Text>
+            <View className="mt-4 h-11 flex-row items-center justify-center rounded-xl border border-primary">
+              <Text semibold className="text-primary">
+                {t('Enter league')}
+              </Text>
 
-                <View
-                  className="absolute right-3"
-                  style={{
-                    transform: [{ scaleX: isRTL ? -1 : 1 }],
-                  }}
-                >
-                  <ChevronRight size={26} color={colors.primary} />
-                </View>
+              <View
+                className="absolute right-3"
+                style={{
+                  transform: [{ scaleX: isRTL ? -1 : 1 }],
+                }}
+              >
+                <ChevronRight size={26} color={colors.primary} />
               </View>
-            )}
+            </View>
           </View>
         </View>
       </Pressable>

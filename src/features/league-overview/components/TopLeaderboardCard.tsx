@@ -57,7 +57,7 @@ export function TopLeaderboardCard({ users, currentMemberId }: Props) {
   return (
     <View>
       <View className="flex-row px-4 py-2">
-        <Link href="/(app)/(league)/(tabs)/Rank" asChild>
+        <Link href="/(app)/(league)/(tabs)/Leaderboard" asChild>
           <Pressable accessibilityRole="button" className="flex-row items-center gap-0.5">
             <Text semibold>{t('Top leaderboard')}</Text>
             <DirectionalIcon size={16} color={colors.muted} strokeWidth={2} />
