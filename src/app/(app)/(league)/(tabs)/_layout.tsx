@@ -32,25 +32,10 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="Stats"
-          options={{
-            title: t('Stats'),
-            tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
-          }}
-        />
-        <Tabs.Screen
           name="Matches"
           options={{
             title: t('Matches'),
             tabBarIcon: ({ color, size }) => <MatchesIcon size={size} color={color} />,
-          }}
-        />
-
-        <Tabs.Screen
-          name="Profile"
-          options={{
-            title: t('Profile'),
-            tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
           }}
         />
         <Tabs.Screen
@@ -58,6 +43,13 @@ export default function TabLayout() {
           options={{
             title: t('Leaderboard'),
             tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="Profile"
+          options={{
+            title: t('Me'),
+            tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
           }}
         />
       </Tabs>

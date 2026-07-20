@@ -42,13 +42,13 @@ export function QuickAccessSection() {
       <QuickAccessItem
         title={t('Table')}
         icon={<Podium size={30} color={colors.primary} strokeWidth={1.5} />}
-        href="/(app)/(league)/(tabs)/Rank"
+        href="/(app)/(league)/(tabs)/Leaderboard"
       />
 
       <QuickAccessItem
         title={t('Stats')}
         icon={<Flame size={30} color={colors.primary} strokeWidth={1.5} />}
-        href="/(app)/(league)/(tabs)/Stats"
+        href="/(app)/(league)/(tabs)/Profile"
       />
     </View>
   );

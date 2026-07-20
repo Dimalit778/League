@@ -36,16 +36,8 @@ export function NativeTabLayout() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="Stats">
-        <Label>Stats</Label>
-        <Icon
-          sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }}
-          androidSrc={{ default: fieldIcon, selected: fieldIcon }}
-        />
-      </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="Profile">
-        <Label>Profile</Label>
+        <Label>Me</Label>
         <Icon
           sf={{ default: 'person', selected: 'person.fill' }}
           androidSrc={{ default: fieldIcon, selected: fieldIcon }}

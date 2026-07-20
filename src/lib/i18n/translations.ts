@@ -281,6 +281,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Profile and Settings
     profile: {
       Profile: 'Profile',
+      Me: 'Me',
       Settings: 'Settings',
       'Update Profile': 'Update Profile',
       'Profile Information': 'Profile Information',
@@ -965,6 +966,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Profile and Settings
     profile: {
       Profile: 'פרופיל',
+      Me: 'שלי',
       Settings: 'הגדרות',
       'Leave League': 'עזוב ליגה',
       'Are you sure you want to leave this league?': 'האם אתה בטוח שברצונך לצאת מהליגה ?',
