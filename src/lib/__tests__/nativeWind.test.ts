@@ -35,9 +35,9 @@ describe('themeTokens', () => {
   it('light theme has all required colors', () => {
     const colors = themeTokens.light.colors;
     expect(colors).toHaveProperty('primary');
-    expect(colors).toHaveProperty('secondary');
     expect(colors).toHaveProperty('background');
     expect(colors).toHaveProperty('surface');
+    expect(colors).toHaveProperty('surfaceSoft');
     expect(colors).toHaveProperty('border');
     expect(colors).toHaveProperty('text');
     expect(colors).toHaveProperty('muted');
@@ -48,9 +48,9 @@ describe('themeTokens', () => {
   it('dark theme has all required colors', () => {
     const colors = themeTokens.dark.colors;
     expect(colors).toHaveProperty('primary');
-    expect(colors).toHaveProperty('secondary');
     expect(colors).toHaveProperty('background');
     expect(colors).toHaveProperty('surface');
+    expect(colors).toHaveProperty('surfaceSoft');
     expect(colors).toHaveProperty('border');
     expect(colors).toHaveProperty('text');
     expect(colors).toHaveProperty('muted');

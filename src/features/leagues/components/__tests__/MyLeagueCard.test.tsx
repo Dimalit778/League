@@ -43,25 +43,19 @@ const mockItem = {
 
 describe('MyLeagueCard', () => {
   it('renders league name', () => {
-    const { getByText } = render(
-      <LeaguesList leagues={[mockItem]} inactiveLeagues={[]} onPress={jest.fn()} />
-    );
+    const { getByText } = render(<LeaguesList leagues={[mockItem]} onPress={jest.fn()} />);
     expect(getByText('My Test League')).toBeTruthy();
   });
 
   it('renders nickname', () => {
-    const { getByText } = render(
-      <LeaguesList leagues={[mockItem]} inactiveLeagues={[]} onPress={jest.fn()} />
-    );
+    const { getByText } = render(<LeaguesList leagues={[mockItem]} onPress={jest.fn()} />);
     expect(getByText('TestPlayer')).toBeTruthy();
   });
 
   it('calls onPress when pressed', () => {
     const onPress = jest.fn();
-    const { getByText } = render(
-      <LeaguesList leagues={[mockItem]} inactiveLeagues={[]} onPress={onPress} />
-    );
+    const { getByText } = render(<LeaguesList leagues={[mockItem]} onPress={onPress} />);
     fireEvent.press(getByText('My Test League'));
-    expect(onPress).toHaveBeenCalledWith('l1', false);
+    expect(onPress).toHaveBeenCalledWith('l1');
   });
 });

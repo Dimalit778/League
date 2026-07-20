@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react-native';
 import LandingScreen from '../screens/LandingScreen';
 
-jest.mock('@assets/images/football-bg.png', () => 'football-bg');
+jest.mock('@/assets/images', () => ({
+  images: { bgWelcome: 1 },
+}));
 
 describe('LandingScreen', () => {
   it('renders the app title', () => {
