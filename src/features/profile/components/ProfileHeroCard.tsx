@@ -9,7 +9,8 @@ import { formatNameCapitalize } from '@/utils/formats';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, Shield } from 'lucide-react-native';
+import { Link } from 'expo-router';
+import { Camera, Settings, Shield } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../hooks/useMembers';
@@ -98,6 +99,17 @@ export function ProfileHeroCard() {
     <HeaderSection>
       <View className="p-4">
         {(deleteImage.isPending || uploadImage.isPending) && <LoadingOverlay />}
+
+        <Link href="/(app)/(league)/edit" asChild>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={t('Manage League')}
+            className="absolute top-2 end-2 z-10 h-9 w-9 items-center justify-center rounded-full bg-surfaceSecondary"
+            hitSlop={6}
+          >
+            <Settings size={18} color={colors.primary} strokeWidth={2} />
+          </TouchableOpacity>
+        </Link>
 
         <View className="flex-row items-center gap-4">
           {/* Avatar with gold ring */}
