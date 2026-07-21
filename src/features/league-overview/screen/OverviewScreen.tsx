@@ -1,31 +1,20 @@
-import { useLeagueOverview } from '@/features/league-overview/hooks/useLeagueOverview';
-import { getProfileImage } from '@/utils/getProfileImage';
-import { Image as ExpoImage } from 'expo-image';
-import { useEffect, useMemo } from 'react';
-
-import { UpcomingMatches } from '@/features/league-overview/components/Upcoming-matches';
-import { ScrollView } from 'react-native-gesture-handler';
-
-const TOP_LEADERBOARD_SIZE = 5;
+import { Screen } from '@/components/layout';
+import { StatsPredictionSection } from '@/features/memberStats/components/StatsPredictionSection';
+import { ScrollView } from 'react-native';
+import Header from '../components/Header';
+import { UpcomingMatches } from '../components/Upcoming-matches';
+import { useLeagueOverview } from '../hooks/useLeagueOverview';
 
 export default function OverviewScreen() {
-  const { memberStats, leaderboard, todayMatches } = useLeagueOverview();
-
-  const avatarUrls = useMemo(() => {
-    const urls = leaderboard.map((member) => getProfileImage(member.avatar_url)).filter((url): url is string => !!url);
-
-    return [...new Set(urls)];
-  }, [leaderboard]);
-
-  useEffect(() => {
-    if (avatarUrls.length === 0) return;
-
-    ExpoImage.prefetch(avatarUrls, { cachePolicy: 'memory-disk' }).catch(() => false);
-  }, [avatarUrls]);
+  const vm = useLeagueOverview();
 
   return (
-    <ScrollView className="flex-1">
-      <UpcomingMatches matches={todayMatches} />
-    </ScrollView>
+    <Screen>
+      <Header {...vm.header} />
+      <ScrollView className="flex-1">
+        <StatsPredictionSection stats={vm.stats} />
+        <UpcomingMatches matches={vm.upcomingMatches} />
+      </ScrollView>
+    </Screen>
   );
 }
