@@ -1,40 +1,33 @@
-import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
-import { LeagueOverviewData } from '@/features/leagues/types/leagueOverviewType';
+import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
+import { LeagueOverviewVM } from '@/features/leagues/types/leagueOverviewType';
 import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
 import { mapMatchToCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useMemberStats } from '@/features/memberStats/hooks/useMemberStats';
 import { usePrimaryMember } from '@/store/MemberStore';
 
-export function useLeagueOverview(): LeagueOverviewData {
-  const primaryMember = usePrimaryMember();
+export function useLeagueOverview(): LeagueOverviewVM {
+  const { memberId, leagueId, competitionId, nickname, avatarUrl } = usePrimaryMember();
 
-  const { data: leaderboardData } = useGetLeaderboard(primaryMember.leagueId);
-  const { data: memberStats } = useMemberStats(primaryMember.memberId);
-  const { data: todayMatches } = useGetTodayMatches({
-    competitionId: primaryMember.competitionId,
-    memberId: primaryMember.memberId,
+  const { data: league, isLoading: leagueLoading } = useGetLeagueAndMembers(leagueId);
+  const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
+  const { data: todayMatches, isLoading: matchesLoading } = useGetTodayMatches({
+    competitionId,
+    memberId,
   });
 
   return {
-    league: {
-      id: primaryMember.leagueId,
-      name: primaryMember.leagueName ?? '',
-      competitionId: primaryMember.competitionId,
-      competitionName: primaryMember.competitionName ?? '',
-      logoUrl: primaryMember.competitionLogo ?? '',
-      flagUrl: primaryMember.competitionFlag ?? '',
-      isPrimary: primaryMember.isPrimary,
+    header: {
+      nickname: nickname ?? '',
+      avatarUrl: avatarUrl ?? null,
+      leagueName: league?.name ?? '',
+      logoUrl: league?.competition?.logo ?? '',
+      flagUrl: league?.competition?.flag ?? '',
+      rank: stats?.position ?? 0,
+      points: stats?.totalPoints ?? 0,
+      membersCount: league?.league_members?.length ?? 0,
     },
-
-    memberStats: {
-      memberId: primaryMember.memberId,
-      nickname: primaryMember.nickname ?? '',
-      avatarUrl: primaryMember.avatarUrl,
-      rank: memberStats?.position ?? 0,
-      points: memberStats?.totalPoints ?? 0,
-      pendingPredictions: memberStats?.pendingPredictions ?? 0,
-    },
-    leaderboard: leaderboardData ?? [],
-    todayMatches: (todayMatches ?? []).map(mapMatchToCardData),
+    stats,
+    upcomingMatches: (todayMatches ?? []).map(mapMatchToCardData),
+    isLoading: leagueLoading || statsLoading || matchesLoading,
   };
 }
