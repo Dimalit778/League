@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { BestCategory, PredictionRow, RoundPerformance } from "../types";
+import { BestCategory, MemberStats, PredictionRow, RoundPerformance } from "../types";
 
 function computeStreaks(predictions: PredictionRow[]) {
     const sorted = predictions
@@ -75,7 +75,7 @@ function computeBestCategory({
     };
   }
 export const memberStatsApi = {
-    async getMemberStats(memberId: string) {  
+    async getMemberStats(memberId: string): Promise<MemberStats> {  
     if (!memberId) throw new Error('No member ID available');
 
     const { data: memberData, error: memberError } = await supabase
@@ -142,7 +142,7 @@ export const memberStatsApi = {
       longestStreak,
       roundPerformance,
       bestCategory,
-      pendingPredictions,
+      pendingPredictions, 
     };
   },
 };

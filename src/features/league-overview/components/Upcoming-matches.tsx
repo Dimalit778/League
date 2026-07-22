@@ -13,7 +13,7 @@ export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
   const { colors } = useThemeTokens();
 
   return (
-    <Card className="mx-3" padding="md">
+    <Card padding="md" className="mt-2">
       <View className="mb-3 flex-row items-center justify-between">
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
           <View className="h-9 w-9 items-center justify-center rounded-full border border-border bg-surfaceSecondary">

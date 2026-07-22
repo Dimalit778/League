@@ -2,7 +2,7 @@ import { MatchesIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { ChartNoAxesCombined, House, PodiumIcon, User } from 'lucide-react-native';
+import { ChartNoAxesCombined, House, PodiumIcon, TrophyIcon, User } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const isIOS = Platform.OS === 'ios';
@@ -26,11 +26,15 @@ const tabsConfig: Record<string, TabConfig> = {
   Matches: { label: 'Matches', icon: MatchesIcon },
   Profile: { label: 'Profile', icon: User },
   Leaderboard: { label: 'Leaderboard', icon: PodiumIcon },
+  MyLeagues: { label: 'My Leagues', icon: TrophyIcon },
 };
 
 export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
   const { colors } = useThemeTokens();
   const insets = useSafeAreaInsets();
+  const currentRoute = state.routes[state.index]?.name;
+
+  if (currentRoute === 'MyLeagues') return null;
 
   return (
     <View style={[styles.outerWrapper, { paddingBottom: Math.max(insets.bottom + 8) }]}>

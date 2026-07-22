@@ -10,7 +10,7 @@ const DARK_GRADIENT = ['#0B1B33', '#081325'] as const;
 /** Vignette: darker at edges, grass clear in the middle. */
 const DARK_OVERLAY = [
   'rgba(6,12,24,0.9)',
-  'rgba(6,12,24,0.45)',
+  'rgba(6,12,24,0.9)',
   'rgba(6,12,24,0.1)',
   'rgba(6,12,24,0.45)',
   'rgba(6,12,24,0.92)',
@@ -26,11 +26,11 @@ const LIGHT_OVERLAY = [
 ] as const;
 const LIGHT_OVERLAY_LOCATIONS = [0, 0.2, 0.5, 0.8, 1] as const;
 
-type HeaderSectionProps = {
+type HeaderBackgroundProps = {
   children: ReactNode;
 };
 
-export function HeaderSection({ children }: HeaderSectionProps) {
+export function HeaderBackground({ children }: HeaderBackgroundProps) {
   const { theme, colors } = useThemeTokens();
   const isLight = theme === 'light';
 
@@ -70,7 +70,7 @@ export function HeaderSection({ children }: HeaderSectionProps) {
             right: 0,
             bottom: 0,
             left: 0,
-            opacity: 0.35,
+            opacity: 0.2,
           }}
         />
 

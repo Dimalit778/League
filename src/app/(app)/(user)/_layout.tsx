@@ -15,13 +15,10 @@ export default function PublicLayout() {
         fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
-      <Stack.Screen name="index" />
       <Stack.Screen name="leagues" />
       <Stack.Screen
         name="settings"
         options={{
-          // Let the nested settings stack handle swipe-back (help → settings index).
-          // Without this, iOS full-screen back pops the whole settings screen to leagues.
           gestureEnabled: false,
           fullScreenGestureEnabled: false,
         }}

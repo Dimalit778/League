@@ -8,6 +8,7 @@ export type ThemeTokens = {
     background: string;
     surface: string;
     surfaceSoft: string;
+    soft: string;
     text: string;
     muted: string;
     border: string;
@@ -26,6 +27,7 @@ const light: ThemeTokens = {
     primary: '#B7791F',
     surface: '#FFFFFF',
     surfaceSoft: '#E8EDF4',
+    soft: '#F1F5F9',
     border: '#D5DDE8',
     text: '#0F172A',
     muted: '#64748B',
@@ -43,6 +45,7 @@ const dark: ThemeTokens = {
     background: '#0b1120',
   primary: '#D6A21E',
     surface: '#111827',
+    soft: '#101A2A',
    surfaceSoft: '#172033',
     border: '#334155',
     text: '#f1f5f9',
@@ -61,6 +64,7 @@ const toNativeWindVars = (tokens: ThemeTokens) => ({
   '--color-background': tokens.colors.background,
   '--color-surface': tokens.colors.surface,
   '--color-surfaceSoft': tokens.colors.surfaceSoft,
+  '--color-soft': tokens.colors.soft,
   '--color-text': tokens.colors.text,
   '--color-text-muted': tokens.colors.muted,  
   '--color-border': tokens.colors.border,

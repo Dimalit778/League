@@ -15,13 +15,14 @@ type RoundPerformance = {
     topPercent: number | null;
   };
   
-  type MemberStatsType = {
+  type MemberStats= {
     totalPredictions: number;
     bingoHits: number;
     regularHits: number;
     missedHits: number;
     accuracy: number;
     totalPoints: number;
+    pendingPredictions: number;
     position?: number | null;
     totalMembers?: number;
     currentStreak?: number;
@@ -29,4 +30,4 @@ type RoundPerformance = {
     roundPerformance?: RoundPerformance[];
     bestCategory?: BestCategory;
   };
-  export type { BestCategory, MemberStatsType, PredictionRow, RoundPerformance };
+  export type { BestCategory, MemberStats, PredictionRow, RoundPerformance };

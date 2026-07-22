@@ -48,7 +48,7 @@ export function TabsHeader({ tabsLayout = true }: { tabsLayout?: boolean }) {
 
   const content = (
     <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="flex-row items-center justify-between py-2 px-4 ">
+      <View className="flex-row items-center justify-between pb-2 px-4 ">
         {tabsLayout ? (
           <View className="flex-row items-center gap-3">
             {isWeb && (

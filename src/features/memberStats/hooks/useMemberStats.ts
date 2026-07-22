@@ -13,34 +13,3 @@ export const useMemberStats = (memberId?: string ) => {
       retry: RETRY_COUNT,
     });
   };
-  // export const useMemberDataAndStats = (memberId: string) => {
-  //   const memberQuery = useQuery({
-  //     queryKey: memberId ? KEYS.members.detailsWithStats(memberId) : (['members', 'details-with-stats', 'disabled'] as const),
-  //     queryFn: memberId ? () => memberApi.getMemberInfo(memberId) : skipToken,
-  //     staleTime: STALE_TIME,
-  //     retry: RETRY_COUNT,
-  //   });
-  
-  //   const statsQuery = useMemberStats(memberId);
-  
-  //   const totalFixtures = Array.from(
-  //     { length: memberQuery.data?.league?.competition?.current_fixture ?? 0 },
-  //     (_, index) => index + 1,
-  //   );
-  
-  //   return {
-  //     ...memberQuery,
-  //     isLoading: memberQuery.isLoading || statsQuery.isLoading,
-  //     isPending: memberQuery.isPending || statsQuery.isPending,
-  //     error: memberQuery.error ?? statsQuery.error,
-  //     data:
-  //       memberQuery.data != null
-  //         ? {
-  //             member: memberQuery.data,
-  //             stats: statsQuery.data,
-  //             totalFixtures,
-  //             currentFixture: memberQuery.data.league?.competition?.current_fixture ?? 1,
-  //           }
-  //         : undefined,
-  //   };
-  // };  

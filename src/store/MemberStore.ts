@@ -2,24 +2,18 @@ import { supabase } from '@/lib/supabase';
 import { create } from 'zustand';
 import { useAuthStore } from './AuthStore';
 
+// Only identity/context that drives routing or serves as a query key.
+// Display fields (nickname, avatar, league/competition names, logos) live in
+// TanStack Query — one source of truth, refetched and invalidated on mutation.
 export type PrimaryMemberType = {
   memberId: string;
   userId: string;
-  isPrimary: boolean;
-  active: boolean;
+  leagueId: string;
   nickname: string;
   avatarUrl: string | null;
-  createdAt: string;
-  leagueId: string;
-  leagueName: string;
   competitionId: number;
-  competitionName: string;
-  competitionLogo: string | null;
-  competitionFlag: string | null;
-  competitionArea: string | null;
   competitionType: 'league' | 'cup';
 };
-
 
 type MemberState = {
   primaryMember: PrimaryMemberType | null;
@@ -30,15 +24,14 @@ type MemberState = {
   clearMember: () => void;
 };
 
-
-
 export const selectPrimaryMember = (s: MemberState) => s.primaryMember;
 export const selectMemberId = (s: MemberState) => s.primaryMember?.memberId;
 export const selectMemberUserId = (s: MemberState) => s.primaryMember?.userId;
 export const selectLeagueId = (s: MemberState) => s.primaryMember?.leagueId;
+export const selectNickname = (s: MemberState) => s.primaryMember?.nickname;
 export const selectCompetitionId = (s: MemberState) => s.primaryMember?.competitionId;
+export const selectCompetitionType = (s: MemberState) => s.primaryMember?.competitionType;
 
- 
 export const useMemberStore = create<MemberState>()((set) => ({
   primaryMember: null,
   loading: false,
@@ -66,15 +59,11 @@ export const useMemberStore = create<MemberState>()((set) => ({
           `
           id,
           user_id,
-          is_primary,
-          active,
           nickname,
           avatar_url,
-          created_at,
           league:leagues!league_id(
             id,
-            name,
-            competition:competitions(id, name, logo, flag, type, area)
+            competition:competitions(id, type)
           )
         `,
         )
@@ -97,18 +86,10 @@ export const useMemberStore = create<MemberState>()((set) => ({
         primaryMember: {
           memberId: data.id,
           userId: data.user_id,
-          isPrimary: data.is_primary,
-          active: data.active,
+          leagueId: league.id,
           nickname: data.nickname,
           avatarUrl: data.avatar_url,
-          createdAt: data.created_at,
-          leagueId: league.id,
-          leagueName: league.name,
           competitionId: competition.id,
-          competitionName: competition.name,
-          competitionLogo: competition.logo,
-          competitionFlag: competition.flag,
-          competitionArea: competition.area,
           competitionType: competition.type as 'league' | 'cup',
         },
         loading: false,
@@ -116,11 +97,7 @@ export const useMemberStore = create<MemberState>()((set) => ({
       });
     } catch {
       // Don't keep a stale member from a previous user/league around
-      set({
-        primaryMember: null,
-        loading: false,
-        initialized: true,
-      });
+      set({ primaryMember: null, loading: false, initialized: true });
     }
   },
 
@@ -128,12 +105,9 @@ export const useMemberStore = create<MemberState>()((set) => ({
 }));
 
 export const usePrimaryMember = () => {
-  const primaryMember = useMemberStore(selectPrimaryMember) 
+  const primaryMember = useMemberStore(selectPrimaryMember);
   if (!primaryMember) {
-throw new Error('Primary member not found');
+    throw new Error('Primary member not found');
   }
-
-  return {
-    ...primaryMember,
-  };
+  return primaryMember;
 };

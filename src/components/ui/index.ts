@@ -7,6 +7,7 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { ConfirmDialog } from './ConfirmDialog';
 export { DirectionalIcon } from './DirectionsIcon';
+export { HeaderBackground } from './HeaderBackground';
 export { Icon } from './Icon';
 export { InputField } from './InputField';
 export { LogoBadge } from './LogoBadge';

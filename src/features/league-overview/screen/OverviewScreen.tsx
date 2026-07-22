@@ -11,7 +11,7 @@ export default function OverviewScreen() {
   return (
     <Screen>
       <Header {...vm.header} />
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1 px-3 mt-2 bg-soft">
         <StatsPredictionSection stats={vm.stats} />
         <UpcomingMatches matches={vm.upcomingMatches} />
       </ScrollView>

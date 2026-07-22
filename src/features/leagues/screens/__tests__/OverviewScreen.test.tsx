@@ -13,6 +13,39 @@ jest.mock('expo-image', () => {
   };
 });
 
+jest.mock('@/store/MemberStore', () => ({
+  usePrimaryMember: () => ({
+    memberId: 'm1',
+    nickname: 'Player1',
+    avatarUrl: null,
+    leagueName: 'Test League',
+    competitionName: 'Premier League',
+    competitionArea: 'England',
+    competitionLogo: null,
+    competitionFlag: null,
+  }),
+}));
+
+jest.mock('@/features/memberStats/hooks/useMemberStats', () => ({
+  useMemberStats: () => ({
+    data: {
+      position: 4,
+      totalPoints: 85,
+      totalPredictions: 0,
+      bingoHits: 0,
+      regularHits: 0,
+      missedHits: 0,
+      accuracy: 0,
+      pendingPredictions: 0,
+    },
+    isLoading: false,
+  }),
+}));
+
+jest.mock('@/features/memberStats/components/StatsPredictionSection', () => ({
+  StatsPredictionSection: () => null,
+}));
+
 jest.mock('@/features/league-overview/hooks/useLeagueOverview', () => ({
   useLeagueOverview: () => ({
     league: {
@@ -76,5 +109,12 @@ describe('OverviewScreen', () => {
       ['https://example.com/player-1.jpg', 'https://example.com/player-2.jpg'],
       { cachePolicy: 'memory-disk' },
     );
+  });
+
+  it('renders league name and current user nickname in the header', () => {
+    const { getByText } = render(<OverviewScreen />);
+
+    expect(getByText('Test League')).toBeTruthy();
+    expect(getByText('Player1')).toBeTruthy();
   });
 });

@@ -1,6 +1,6 @@
 import { LoadingOverlay } from '@/components/layout';
 import { AvatarImage, Text } from '@/components/ui';
-import { HeaderSection } from '@/components/ui/HeaderSection';
+import { HeaderSection } from '@/components/ui/HeaderBackground';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';

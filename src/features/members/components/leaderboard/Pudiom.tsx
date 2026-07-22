@@ -5,7 +5,7 @@ import { Crown } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import { AvatarImage } from '@/components/ui';
-import { HeaderSection } from '@/components/ui/HeaderSection';
+import { HeaderSection } from '@/components/ui/HeaderBackground';
 type PodiumProps = {
   first?: LeaderboardMember;
   second?: LeaderboardMember;
