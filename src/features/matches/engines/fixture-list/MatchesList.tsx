@@ -1,10 +1,10 @@
 import { Text } from '@/components/ui';
-import { MatchCard } from '../../components/MatchCard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import { MatchCardData } from '../../utils/matchCard.mapper';
+import { MatchCard } from '../../components/MatchCard';
 import MatchesSkeleton from '../../components/MatchesSkeleton';
+import { MatchCardData } from '../../utils/matchCard.mapper';
 
 type MatchesListProps = {
   matches: MatchCardData[];

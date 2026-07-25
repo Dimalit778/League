@@ -32,8 +32,10 @@ function ScoreCard({
     <View>
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
         <View className="rounded-2xl p-4 md:p-6 items-center">
-          <Ionicons name="time-outline" size={24} color="#fff" className="md:text-[32px]" />
-          <Text className="text-white mt-2 text-center">{formatTime(kick_off)}</Text>
+          <Ionicons name="time-outline" size={22} color="#fff" />
+          <Text semibold className="text-white mt-2 text-center">
+            {formatTime(kick_off)}
+          </Text>
         </View>
       )}
       {['IN_PLAY'].includes(matchStatus) && (
@@ -46,9 +48,15 @@ function ScoreCard({
       )}
       {['FINISHED'].includes(matchStatus) && (
         <View className="flex-row items-center justify-center border-2 border-gray-500 rounded-lg p-2 md:p-3 gap-2">
-          <Text className="text-white">{homeScore}</Text>
-          <Text className="text-white">:</Text>
-          <Text className="text-white">{awayScore}</Text>
+          <Text semibold h1 className="text-white">
+            {homeScore}
+          </Text>
+          <Text semibold h1 className="text-white">
+            :
+          </Text>
+          <Text semibold h1 className="text-white">
+            {awayScore}
+          </Text>
         </View>
       )}
     </View>
@@ -77,15 +85,15 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
       <View className="p-4 mb-8">
         <View className="items-center justify-center">
           <View className="flex-row items-center justify-center gap-2">
-            <Ionicons name="calendar-outline" size={20} color="#fff" />
-            <Text className="text-white">{dateFormat(match.kick_off)}</Text>
+            <Ionicons name="calendar-outline" size={22} color="#fff" />
+            <Text semibold className="text-white ">
+              {dateFormat(match.kick_off)}
+            </Text>
           </View>
           {venue ? (
             <View className="flex-row items-center mt-2 justify-center">
-              <Ionicons name="location-outline" size={20} color="#fff" />
-              <Text variant="caption" className="text-white">
-                {venue}
-              </Text>
+              <Ionicons name="location-outline" size={22} color="#fff" />
+              <Text className="text-white">{venue}</Text>
             </View>
           ) : null}
         </View>

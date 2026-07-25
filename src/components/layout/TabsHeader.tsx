@@ -1,7 +1,8 @@
 // TabsHeader.tsx
 import { MenuIcon, SettingsIcon } from '@/assets/icons';
+import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { usePrimaryMember } from '@/store/MemberStore';
+import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { BlurView } from 'expo-blur';
 import { Link, router } from 'expo-router';
@@ -20,16 +21,17 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
     <View className="flex-row items-center justify-between w-full">
       <Pressable
         accessibilityRole="button"
-        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft"
+        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
         hitSlop={4}
+        onPress={() => router.push('/(app)/(user)/settings')}
       >
         <Settings color={colors.text} size={25} strokeWidth={1.5} />
       </Pressable>
       <Pressable
         accessibilityRole="button"
-        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft"
+        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
         hitSlop={4}
-        onPress={() => router.replace('/(app)/(user)')}
+        onPress={() => router.replace('/(app)/(user)/leagues')}
       >
         <Trophy color={colors.text} size={25} strokeWidth={1.5} />
       </Pressable>
@@ -39,9 +41,12 @@ function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
 
 export function TabsHeader({ tabsLayout = true }: { tabsLayout?: boolean }) {
   const { colors, theme } = useThemeTokens();
-  const { nickname, avatarUrl } = usePrimaryMember();
 
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
+
+  const memberId = useMemberId();
+
+  const { data: member } = useGetMember(memberId);
 
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
@@ -61,7 +66,7 @@ export function TabsHeader({ tabsLayout = true }: { tabsLayout?: boolean }) {
                 <MenuIcon size={24} color={colors.primary} />
               </Pressable>
             )}
-            <TabsContect nickname={nickname} avatarUrl={avatarUrl} />
+            <TabsContect nickname={member?.nickname ?? ''} avatarUrl={member?.avatar_url ?? null} />
           </View>
         ) : (
           <Link href="/settings" asChild>

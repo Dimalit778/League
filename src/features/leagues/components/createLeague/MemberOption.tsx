@@ -11,7 +11,14 @@ type MemberOptionProps = {
   onLockedPress: () => Promise<void>;
 };
 
-export default function MemberOption({ value, label, locked, membersCount, onSelect, onLockedPress }: MemberOptionProps) {
+export default function MemberOption({
+  value,
+  label,
+  locked,
+  membersCount,
+  onSelect,
+  onLockedPress,
+}: MemberOptionProps) {
   const { t } = useTranslation();
   const isActive = membersCount === value;
 
@@ -28,9 +35,9 @@ export default function MemberOption({ value, label, locked, membersCount, onSel
     >
       <View className="relative overflow-hidden rounded-2xl">
         <View
-          className={`rounded-2xl border-2 px-4 py-4 ${isActive ? 'border-secondary bg-surface' : 'border-border bg-background'}`}
+          className={`rounded-2xl border px-4 py-4 ${isActive ? 'border-primary bg-surface' : 'border-border bg-background'}`}
         >
-          <Text variant="body" className={`text-center font-semibold ${isActive ? 'text-secondary' : 'text-text'}`}>
+          <Text variant="body" className={`text-center font-semibold ${isActive ? 'text-primary' : 'text-text'}`}>
             {t(label)}
           </Text>
         </View>

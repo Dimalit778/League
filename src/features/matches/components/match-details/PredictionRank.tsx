@@ -1,11 +1,11 @@
 import { AvatarImage, Text } from '@/components/ui';
+import { PredictionWithMemberType } from '@/features/matches/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { FlatList, View } from 'react-native';
-import { PredictionMemberType } from '../../types';
 
 type RankCardProps = {
-  item: PredictionMemberType;
+  item: PredictionWithMemberType;
   index: number;
   currentMember: boolean;
 };
@@ -65,20 +65,20 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
   );
 };
 
-export default function PredictionRank({ predictions }: { predictions: PredictionMemberType[] }) {
-  const memberId = useMemberStore(selectMemberId) ?? '';
+export default function PredictionRank({ predictions }: { predictions: PredictionWithMemberType[] }) {
+  const memberId = useMemberId();
   const { t } = useTranslation();
 
   return (
     <View className="flex-1 p-4 md:px-10 ">
       <View className="flex-row px-1 gap-3 py-2  ">
-        <Text variant="small" className="flex-1 text-text text-left  ">
+        <Text semibold caption className="flex-1 text-text text-left  ">
           {t('Player')}
         </Text>
-        <Text variant="small" className="text-text text-center">
+        <Text semibold caption className="text-text text-center">
           {t('Prediction')}
         </Text>
-        <Text variant="small" className="text-text text-center">
+        <Text semibold caption className="text-text text-center">
           {t('Points')}
         </Text>
       </View>
@@ -92,7 +92,7 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
         }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center mt-16">
-            <Text variant="bodyBold" className="text-center text-muted">
+            <Text semibold caption className="text-center text-muted">
               {t('No predictions')}
             </Text>
           </View>

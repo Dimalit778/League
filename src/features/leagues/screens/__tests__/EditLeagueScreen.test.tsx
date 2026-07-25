@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react-native';
 import EditLeagueScreen from '@/features/leagues/screens/EditLeagueScreen';
 
-// `mock`-prefixed so it can be referenced inside the hoisted jest.mock factory.
 let mockUserId = 'owner-user-1';
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
@@ -26,12 +25,12 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useUpdateLeague: () => ({ mutate: jest.fn(), isPending: false }),
 }));
 
-// Mirror the real MemberStore selector shape: selectMemberUserId -> primaryMember.userId
-jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: (selector: any) =>
-    selector({ primaryMember: { userId: mockUserId, leagueId: 'league-1' } }),
-  selectMemberUserId: (s: any) => s.primaryMember?.userId,
-  selectLeagueId: (s: any) => s.primaryMember?.leagueId,
+jest.mock('@/store/ActiveLeagueStore', () => ({
+  useLeagueId: () => 'league-1',
+}));
+
+jest.mock('@/store/AuthStore', () => ({
+  useAuthStore: (selector: any) => selector({ user: { id: mockUserId } }),
 }));
 
 describe('EditLeagueScreen permissions', () => {

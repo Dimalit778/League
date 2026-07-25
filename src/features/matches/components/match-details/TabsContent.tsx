@@ -87,8 +87,10 @@ export default function TabsContent({ predictions }: { predictions: MatchWithPre
               onPress={() => onTabPress(index)}
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
-              <Feather name={tab.icon} size={20} color={isActive ? colors.primary : colors.muted} />
-              <Text className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
+              <Feather name={tab.icon} size={22} color={isActive ? colors.primary : colors.muted} />
+              <Text semibold caption className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
+                {t(tab.title)}
+              </Text>
             </TouchableOpacity>
           );
         })}

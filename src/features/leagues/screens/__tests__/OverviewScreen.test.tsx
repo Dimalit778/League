@@ -13,17 +13,18 @@ jest.mock('expo-image', () => {
   };
 });
 
-jest.mock('@/store/MemberStore', () => ({
-  usePrimaryMember: () => ({
-    memberId: 'm1',
-    nickname: 'Player1',
-    avatarUrl: null,
-    leagueName: 'Test League',
-    competitionName: 'Premier League',
-    competitionArea: 'England',
-    competitionLogo: null,
-    competitionFlag: null,
-  }),
+jest.mock('@/store/ActiveLeagueStore', () => ({
+  useMemberId: () => 'm1',
+  useLeagueId: () => 'l1',
+  useCompetitionId: () => 100,
+  useActiveLeagueStore: (selector: any) =>
+    selector({
+      memberId: 'm1',
+      leagueId: 'l1',
+      competitionId: 100,
+      loading: false,
+      initialized: true,
+    }),
 }));
 
 jest.mock('@/features/memberStats/hooks/useMemberStats', () => ({

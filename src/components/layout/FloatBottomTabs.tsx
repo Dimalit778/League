@@ -1,80 +1,187 @@
 import { MatchesIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import { ChartNoAxesCombined, House, PodiumIcon, TrophyIcon, User } from 'lucide-react-native';
+import { ChartNoAxesCombined, House, PodiumIcon, User } from 'lucide-react-native';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const isIOS = Platform.OS === 'ios';
+
 const PILL_HEIGHT = 64;
-export const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + Math.max(safeAreaBottom);
+const PILL_BOTTOM_GAP = 8;
+const CONTENT_BOTTOM_GAP = 16;
+
+export const getFloatBottomTabsInset = (safeAreaBottom: number) =>
+  PILL_HEIGHT + safeAreaBottom + PILL_BOTTOM_GAP + CONTENT_BOTTOM_GAP;
 
 export const useFloatBottomTabsInset = () => {
   const insets = useSafeAreaInsets();
+
   return Platform.OS === 'web' ? 0 : getFloatBottomTabsInset(insets.bottom);
 };
 
 type TabConfig = {
   label: string;
-  icon: React.ComponentType<{ size: number; color: string; strokeWidth?: number }>;
-  isCenter?: boolean;
+  icon: React.ComponentType<{
+    size: number;
+    color: string;
+    strokeWidth?: number;
+  }>;
 };
 
 const tabsConfig: Record<string, TabConfig> = {
-  index: { label: 'Home', icon: House },
-  Stats: { label: 'Stats', icon: ChartNoAxesCombined },
-  Matches: { label: 'Matches', icon: MatchesIcon },
-  Profile: { label: 'Profile', icon: User },
-  Leaderboard: { label: 'Leaderboard', icon: PodiumIcon },
-  MyLeagues: { label: 'My Leagues', icon: TrophyIcon },
+  index: {
+    label: 'Home',
+    icon: House,
+  },
+  Stats: {
+    label: 'Stats',
+    icon: ChartNoAxesCombined,
+  },
+  Matches: {
+    label: 'Matches',
+    icon: MatchesIcon,
+  },
+  Profile: {
+    label: 'Profile',
+    icon: User,
+  },
+  Leaderboard: {
+    label: 'Leaderboard',
+    icon: PodiumIcon,
+  },
 };
 
 export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
-  const { colors } = useThemeTokens();
+  const { theme, colors } = useThemeTokens();
   const insets = useSafeAreaInsets();
-  const currentRoute = state.routes[state.index]?.name;
 
-  if (currentRoute === 'MyLeagues') return null;
+  const isDark = theme === 'dark';
+
+  const tabs = state.routes.map((route, index) => {
+    const config = tabsConfig[route.name];
+
+    if (!config) {
+      return null;
+    }
+
+    const isFocused = state.index === index;
+    const Icon = config.icon;
+
+    const iconColor = isFocused ? colors.primary : colors.muted;
+
+    const onPress = () => {
+      if (isIOS) {
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+
+      const event = navigation.emit({
+        type: 'tabPress',
+        target: route.key,
+        canPreventDefault: true,
+      });
+
+      if (!isFocused && !event.defaultPrevented) {
+        navigation.navigate(route.name);
+      }
+    };
+    const onLongPress = () => {
+      navigation.emit({
+        type: 'tabLongPress',
+        target: route.key,
+      });
+    };
+    return (
+      <Pressable
+        key={route.key}
+        onPress={onPress}
+        onLongPress={onLongPress}
+        accessibilityRole="button"
+        accessibilityLabel={config.label}
+        accessibilityState={isFocused ? { selected: true } : {}}
+        hitSlop={6}
+        style={styles.item}
+      >
+        {({ pressed }) => (
+          <View style={[styles.itemContent, pressed && styles.itemPressed]}>
+            <Icon size={26} color={iconColor} strokeWidth={isFocused ? 1.8 : 1.5} />
+
+            <View
+              style={[
+                styles.activeDot,
+                {
+                  backgroundColor: isFocused ? colors.primary : 'transparent',
+                },
+              ]}
+            />
+          </View>
+        )}
+      </Pressable>
+    );
+  });
+
+  const bottomPadding = Math.max(insets.bottom, PILL_BOTTOM_GAP) + PILL_BOTTOM_GAP;
+
+  const borderColor = isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(15, 23, 42, 0.10)';
+
+  const overlayColor = isDark ? 'rgba(11, 17, 32, 0.72)' : 'rgba(255, 255, 255, 0.68)';
+
+  const fallbackBackground = isDark ? 'rgba(17, 24, 39, 0.97)' : 'rgba(255, 255, 255, 0.97)';
+
+  const content = (
+    <>
+      {isIOS && (
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              backgroundColor: overlayColor,
+            },
+          ]}
+        />
+      )}
+
+      <View style={styles.tabsRow}>{tabs}</View>
+    </>
+  );
 
   return (
-    <View style={[styles.outerWrapper, { paddingBottom: Math.max(insets.bottom + 8) }]}>
+    <View
+      pointerEvents="box-none"
+      style={[
+        styles.outerWrapper,
+        {
+          paddingBottom: bottomPadding,
+        },
+      ]}
+    >
       <View
         style={[
-          styles.pill,
+          styles.shadowWrapper,
           {
-            backgroundColor: colors.surface + 'f7',
-            borderColor: colors.surface,
+            borderColor: borderColor,
           },
         ]}
       >
-        {state.routes.map((route, index) => {
-          const config = tabsConfig[route.name];
-          if (!config) return null;
-
-          const isFocused = state.index === index;
-          const Icon = config.icon;
-          const iconColor = isFocused ? colors.primary : colors.muted;
-
-          const onPress = () => {
-            if (isIOS) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
-
-          return (
-            <Pressable key={route.key} onPress={onPress} style={styles.item}>
-              <Icon size={26} color={iconColor} strokeWidth={1.5} />
-              <View className={`w-1.5 h-1.5 rounded-full ${isFocused ? 'bg-primary' : 'bg-transparent'}`} />
-            </Pressable>
-          );
-        })}
+        {isIOS ? (
+          <BlurView intensity={75} tint={isDark ? 'dark' : 'light'} style={styles.pill}>
+            {content}
+          </BlurView>
+        ) : (
+          <View
+            style={[
+              styles.pill,
+              {
+                backgroundColor: fallbackBackground,
+              },
+            ]}
+          >
+            {content}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -83,51 +190,63 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
 const styles = StyleSheet.create({
   outerWrapper: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
+    bottom: 0,
     alignItems: 'center',
-    backgroundColor: 'transparent',
     paddingHorizontal: 16,
   },
-  pill: {
+
+  shadowWrapper: {
     width: '100%',
     height: PILL_HEIGHT,
     borderRadius: 24,
-    borderWidth: 0.5,
+    borderWidth: 1,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -6,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 18,
+
+    elevation: 18,
+  },
+
+  pill: {
+    flex: 1,
+    borderRadius: 23,
+    overflow: 'hidden',
+  },
+
+  tabsRow: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 8,
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 16,
   },
+
   item: {
     flex: 1,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-    height: '100%',
   },
-  centerWrapper: {
+  itemContent: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -28,
+    gap: 5,
   },
-  centerButton: {
-    width: 60,
-    height: 50,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-    elevation: 14,
+  itemPressed: {
+    opacity: 0.65,
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
 });

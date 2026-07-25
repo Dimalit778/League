@@ -2,13 +2,13 @@ import { images } from '@/assets/images';
 import { HeaderBackground, LogoBadge, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePrimaryMember } from '@/store/MemberStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ChevronRight, Clock3, Podium, Star } from 'lucide-react-native';
+import { ChevronRight, Podium, Star, Users } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
-import { useMemberLeagueSummary } from '../../hooks/useLeagues';
+
+import { LeagueSummary } from '../../types';
 type StatBlockProps = {
   icon: React.ReactNode;
   label: string;
@@ -45,17 +45,9 @@ function Divider() {
     />
   );
 }
-export default function PrimaryLeagueCard({ onPress }: { onPress?: () => void }) {
+export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueSummary; onPress?: () => void }) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
-  const { memberId } = usePrimaryMember();
-  const { data: primaryLeagueSummary, isPending } = useMemberLeagueSummary(memberId);
-  console.log('primaryLeagueSummary', JSON.stringify(primaryLeagueSummary, null, 2));
-
-  if (isPending) return null;
-  if (!primaryLeagueSummary) return null;
-
-  const league = primaryLeagueSummary;
 
   const handlePress = () => {
     if (onPress) {
@@ -67,7 +59,7 @@ export default function PrimaryLeagueCard({ onPress }: { onPress?: () => void })
   };
 
   return (
-    <View className="px-3 ">
+    <View className="px-3 mt-4">
       <HeaderBackground>
         <Pressable onPress={handlePress} className="flex-row gap-6 px-3 py-5 border border-border rounded-xl">
           {/* Left Content */}
@@ -147,9 +139,9 @@ export default function PrimaryLeagueCard({ onPress }: { onPress?: () => void })
                 <Divider />
 
                 <StatBlock
-                  icon={<Clock3 size={18} color={colors.primary} />}
-                  label={t('Pending')}
-                  value={`${league.pending_predictions}`}
+                  icon={<Users size={18} color={colors.primary} />}
+                  label={t('Members')}
+                  value={`${league.members_count}`}
                 />
               </View>
             </View>

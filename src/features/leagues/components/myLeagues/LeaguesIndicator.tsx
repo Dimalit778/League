@@ -1,8 +1,8 @@
-import { Button, Text } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
-import { ChevronRight, Trophy } from 'lucide-react-native';
+import { ChevronRight, Settings } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 type LeaguesIndicatorProps = {
@@ -15,27 +15,26 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const progress = Math.min(used / limit, 1);
-  const reachedLimit = limit === used;
-
+  const settingsHref = '/(app)/(user)/settings';
   return (
-    <>
-      {!reachedLimit && (
-        <View className="flex-row items-center justify-around gap-2 p-4">
-          <Button title={t('Create League')} onPress={() => router.push('/leagues/create-league')} variant="outline" />
-          <Button title={t('Join League')} onPress={() => router.push('/leagues/join-league')} variant="outline" />
-        </View>
-      )}
-      <Pressable onPress={onPress} className="mx-5 rounded-2xl bg-surface px-2 py-3">
+    <View className="flex-row items-center gap-4 px-4 ">
+      <Pressable
+        onPress={() => router.push(settingsHref)}
+        accessibilityRole="button"
+        accessibilityLabel={t('Settings')}
+        className="p-2 items-center justify-center rounded-full bg-surfaceSoft"
+        style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}
+      >
+        <Settings size={28} strokeWidth={1.5} color={colors.text} />
+      </Pressable>
+      <Pressable onPress={onPress} className="flex-1 rounded-2xl bg-surface px-2 py-3">
         <View className="flex-row items-center">
-          {/* Icon */}
-          <View className="mr-4 h-14 w-14 items-center justify-center rounded-full bg-surfaceSoft">
-            <Trophy size={26} color={colors.primary} strokeWidth={1.8} />
-          </View>
-
           {/* Content */}
           <View className="flex-1 pe-2 ">
             <View className="flex-row items-center justify-between">
-              <Text className="text-muted">{t('Leagues')}</Text>
+              <Text h3 semibold>
+                {t('My Leagues')}
+              </Text>
 
               <Text className="text-muted">
                 {used}/{limit}
@@ -51,6 +50,6 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
           {/* Arrow */}
         </View>
       </Pressable>
-    </>
+    </View>
   );
 }

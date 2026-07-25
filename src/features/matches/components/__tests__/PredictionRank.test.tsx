@@ -1,20 +1,9 @@
 import { render } from '@testing-library/react-native';
 import PredictionRank from '../match-details/PredictionRank';
 
-jest.mock('@/store/MemberStore', () => {
-  const actual = jest.requireActual('@/store/MemberStore');
-  const mockState = {
-    primaryMember: { id: 'm1', league_id: 'l1' },
-    setPrimaryMember: jest.fn(),
-    initializeMember: jest.fn(),
-    clearMember: jest.fn(),
-  };
-
-  return {
-    ...actual,
-    useMemberStore: (selector: any) => selector(mockState),
-  };
-});
+jest.mock('@/store/ActiveLeagueStore', () => ({
+  useMemberId: () => 'm1',
+}));
 
 describe('PredictionRank', () => {
   it('renders column headers', () => {

@@ -1,6 +1,6 @@
 import { MatchCardType } from '@/features/matches/types';
 import { KEYS } from '@/lib/queryClient';
-import { selectCompetitionId, selectLeagueId, selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { TablesInsert } from '@/types/database.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
@@ -8,9 +8,9 @@ import { predictionService } from '../api/predictionService';
 
 export const useUpsertPrediction = () => {
   const queryClient = useQueryClient();
-  const competitionId = useMemberStore(selectCompetitionId) ?? 0;
-  const leagueId = useMemberStore(selectLeagueId) ?? '';
-  const memberId = useMemberStore(selectMemberId) ?? '';
+  const competitionId = usePrimaryLeagueStore((s) => s.competitionId) ?? 0;
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId) ?? '';
+  const memberId = usePrimaryLeagueStore((s) => s.memberId) ?? '';
   return useMutation({
     mutationFn: (prediction: TablesInsert<'predictions'>) => {
       return predictionService.upsertPrediction(prediction);

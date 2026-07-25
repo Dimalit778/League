@@ -1,11 +1,10 @@
 import { Text } from '@/components/ui/Text';
-import { LeaderboardMember } from '@/features/members/types';
+import { LeaderboardMember } from '@/features/members/types/member.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Crown } from 'lucide-react-native';
 import { View } from 'react-native';
 
-import { AvatarImage } from '@/components/ui';
-import { HeaderSection } from '@/components/ui/HeaderBackground';
+import { AvatarImage, HeaderBackground } from '@/components/ui';
 type PodiumProps = {
   first?: LeaderboardMember;
   second?: LeaderboardMember;
@@ -85,7 +84,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
 export function Podium({ first, second, third }: PodiumProps) {
   return (
     <View className="mx-2 mb-8 overflow-hidden rounded-md border border-border">
-      <HeaderSection>
+      <HeaderBackground>
         <View className="flex-row items-end justify-center pt-8">
           <PodiumMember member={second} position={2} podiumHeight={55} />
 
@@ -93,7 +92,7 @@ export function Podium({ first, second, third }: PodiumProps) {
 
           <PodiumMember member={third} position={3} podiumHeight={45} />
         </View>
-      </HeaderSection>
+      </HeaderBackground>
     </View>
   );
 }

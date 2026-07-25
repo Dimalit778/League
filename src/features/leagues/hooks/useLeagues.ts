@@ -7,17 +7,15 @@ import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 import { usePaywall } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
-import { useMemberStore, usePrimaryMember } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { leagueActionsApi } from '../api/leagueActionsApi';
-import { MyLeagueType } from '../types';
+import { MyLeague } from '../types';
 
-  export const useMyLeagues = () => {
-  
-  const userId = useAuthStore((state) => state.user?.id ?? null);
-
+export const useMyLeagues = () => {
+  const userId = useAuthStore((s) => s.user?.id);
   return useQuery({
     queryKey: userId ? KEYS.users.leagues(userId) : (['users', 'leagues', 'disabled'] as const),
     queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
@@ -25,20 +23,21 @@ import { MyLeagueType } from '../types';
 };
 
 
-export const useGetLeaderboard = (leagueId?: string | null) => {
+export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
-    queryKey: leagueId ? KEYS.leagues.leaderboard(leagueId) : (['leagues', 'leaderboard', 'disabled'] as const),
-    queryFn: leagueId ? () => leagueApi.getLeaderboardView(leagueId) : skipToken,
-    enabled: !!leagueId,
+    queryKey: KEYS.leagues.leaderboard(leagueId),
+    queryFn: () => leagueApi.getLeaderboardView(leagueId),
     staleTime: 1000 * 60 * 5,
   });
 };
 
-export const useMemberLeagueSummary = (memberId?: string | null) => {
+export const useGetMyLeaguesSummary = () => {
+  const userId = useAuthStore((s) => s.user?.id);
   return useQuery({
-    queryKey: memberId ? KEYS.members.summary(memberId) : (['members', 'summary', 'disabled'] as const),
-    queryFn: memberId ? () => leagueApi.getMemberLeagueSummary(memberId) : skipToken,
-    enabled: !!memberId,
+    queryKey: userId
+      ? KEYS.users.leaguesSummary(userId)
+      : (['users', 'leagues-summary', 'disabled'] as const),
+    queryFn: userId ? () => leagueApi.getMyLeaguesSummary(userId) : skipToken,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -54,29 +53,43 @@ export const useGetLeagueAndMembers = (leagueId?: string | null) => {
 };
 
 export const useUpdatePrimaryLeague = () => {
-  const userId = useAuthStore((s) => s.user?.id);
+  const userId = useAuthStore((state) => state.user?.id);
   const queryClient = useQueryClient();
-  const initializeMember = useMemberStore((s) => s.initializeMember);
+
+
   return useMutation({
-    mutationFn: ({ leagueId }: { leagueId: string }) =>
-      leagueApi.updatePrimaryLeague(leagueId),
-    onSuccess: async (_data, variables) => {
-      if (!userId) return;
+    mutationFn: async ({ leagueId }: { leagueId: string }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      return leagueApi.updatePrimaryLeague(leagueId, userId);
+    },
+
+    onSuccess: async (_data, { leagueId }) => {
+      if (!userId) {
+        return;
+      }
 
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: KEYS.leagues.leaderboard(variables.leagueId),
+          queryKey: KEYS.leagues.leaderboard(leagueId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+          queryKey: KEYS.members.primaryLeague(userId),
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leaguesSummary(userId),
+        }),
       ]);
-      await initializeMember();
+
+    
     },
-    onError: (error) => {
+
+    onError: (error: Error) => {
       Alert.alert('Error', error.message);
     },
   });
@@ -85,7 +98,7 @@ export const useUpdatePrimaryLeague = () => {
 export const useUpdateLeagueActivation = () => {
   const userId = useAuthStore((s) => s.user?.id);
   const queryClient = useQueryClient();
-  const initializeMember = useMemberStore((s) => s.initializeMember);
+  const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
 
   return useMutation({
     mutationFn: (activeMemberIds: string[]) => {
@@ -100,10 +113,10 @@ export const useUpdateLeagueActivation = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+          queryKey: KEYS.members.primaryLeague(userId),
         }),
       ]);
-      await initializeMember();
+      await initializePrimaryLeague();
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
@@ -117,7 +130,7 @@ export const useReactivateLeaguesAfterProUpgrade = () => {
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
 
   return useCallback(
-    async (leagues: MyLeagueType[]) => {
+    async (leagues: MyLeague[]) => {
       const purchased = await openPaywall();
       if (!purchased) return false;
 
@@ -150,7 +163,9 @@ export const useFindLeagueByJoinCode = (joinCode: string) => {
 };
 //  -- LEAGUE OPERATIONS
 export const useCreateLeague = () => {
-  const { userId } = usePrimaryMember();
+  const initializePrimaryLeague = usePrimaryLeagueStore((state) => state.initializePrimaryLeague);
+  const userId = useAuthStore((state) => state.user?.id );
+  if (!userId) throw new Error('User not authenticated');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (params: {
@@ -169,9 +184,11 @@ export const useCreateLeague = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+          queryKey: KEYS.members.primaryLeague(userId),
         }),
       ]);
+      // RPC only returns leagueId; member row is is_primary — resolve full store context from DB
+      await initializePrimaryLeague();
       router.replace({
         pathname: '/(app)/(user)/leagues/create-league/success',
         params: { leagueId },
@@ -180,7 +197,8 @@ export const useCreateLeague = () => {
   });
 };
 export const useJoinLeague = () => {
-  const { userId } = usePrimaryMember();
+  const userId = useAuthStore((state) => state.user?.id );
+  if (!userId) throw new Error('User not authenticated');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -200,7 +218,7 @@ export const useJoinLeague = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+          queryKey: KEYS.members.primaryLeague(userId),
         }),
       ]);
     },
@@ -231,7 +249,7 @@ export const useUpdateLeague = () => {
         }),
         userId &&
           queryClient.invalidateQueries({
-            queryKey: KEYS.members.primary(userId),
+            queryKey: KEYS.members.primaryLeague(userId),
           }),
       ]);
     },
@@ -252,21 +270,21 @@ export const useLeaveLeague = () => {
       return result;
     },
     onSuccess: async (_result, leagueId) => {
-      router.replace('/(app)/(user)');
-      useMemberStore.getState().clearMember();
+      router.replace('/(app)/(league)/(tabs)');
+      usePrimaryLeagueStore.getState().clearPrimaryLeague();
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+          queryKey: KEYS.members.primaryLeague(userId),
         }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.leaderboard(leagueId) }),
       ]);
       // Re-resolve the primary member: picks up a server-reassigned primary
       // league, or stays null when no leagues remain
-      await useMemberStore.getState().initializeMember();
+        await usePrimaryLeagueStore.getState().initializePrimaryLeague();
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
@@ -291,14 +309,14 @@ export const useDeleteLeague = () => {
       return leagueActionsApi.deleteLeague(leagueId);
     },
     onSuccess: async (_result, { leagueId }) => {
-      router.replace('/(app)/(user)');
-      useMemberStore.getState().clearMember();
+      router.replace('/(app)/(league)/(tabs)');
+      usePrimaryLeagueStore.getState().clearPrimaryLeague();
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
-          queryKey: KEYS.members.primary(userId),
+            queryKey: KEYS.members.primaryLeague(userId),
         }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.detail(leagueId) }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
@@ -306,7 +324,7 @@ export const useDeleteLeague = () => {
       ]);
       // Re-resolve the primary member: picks up a server-reassigned primary
       // league, or stays null when no leagues remain
-      await useMemberStore.getState().initializeMember();
+        await usePrimaryLeagueStore.getState().initializePrimaryLeague();
     },
     onError: (error) => {
       Alert.alert('Error', error.message);

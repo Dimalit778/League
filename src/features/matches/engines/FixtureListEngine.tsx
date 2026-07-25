@@ -1,5 +1,6 @@
 import { formatDateRange } from '@/utils/formats';
 import { useMemo } from 'react';
+import { View } from 'react-native';
 import { selectByFixture, selectFixtures } from '../model/selectors';
 import type { MatchCardType } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
@@ -54,7 +55,7 @@ export default function FixtureListEngine({
   );
 
   return (
-    <>
+    <View className="flex-1">
       <FixturesList
         fixtures={allFixtures}
         selectedFixture={selectedFixture}
@@ -64,6 +65,6 @@ export default function FixtureListEngine({
         fixtureDateRanges={fixtureDateRanges}
       />
       <MatchesList matches={cards} onRefresh={onRefresh} bottomInset={bottomInset} />
-    </>
+    </View>
   );
 }

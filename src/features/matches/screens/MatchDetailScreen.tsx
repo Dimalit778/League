@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Error, LoadingOverlay } from '@/components/layout';
 
 import { images } from '@/assets/images';
-import { usePrimaryMember } from '@/store/MemberStore';
+import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
@@ -15,7 +15,7 @@ const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
-  const { memberId } = usePrimaryMember();
+  const memberId = useMemberId();
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
 
@@ -42,7 +42,7 @@ const MatchDetailScreen = () => {
           style={{ width: '100%', height: '100%' }}
         />
         <View
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 400, backgroundColor: 'rgba(0,0,0,0.4)' }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 400, backgroundColor: 'rgba(0,0,0,0.5)' }}
         ></View>
       </View>
 

@@ -1,6 +1,6 @@
 import { Card, Text } from '@/components/ui';
 import { View } from 'react-native';
-import { MemberStatsType } from '../types';
+import { MemberStats as MemberStatsType } from '../types/stats.type';
 
 export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
   const topRowStats = [

@@ -1,17 +1,17 @@
 import { Error, useFloatBottomTabsInset } from '@/components/layout';
-import LeagueSkeleton from '@/features/leagues/components/LeagueSkeleton';
+import LeagueSkeleton from '@/features/leagues/components/overview/LeagueSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
-import { usePrimaryMember } from '@/store/MemberStore';
+import { useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
-import { View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { LeaderboardRow } from '../components/leaderboard/LeaderboardRow';
+import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
 import { Podium } from '../components/leaderboard/Pudiom';
 
 export default function LeaderboardScreen() {
-  const { leagueId } = usePrimaryMember();
+  const leagueId = useLeagueId();
+
   const bottomTabsInset = useFloatBottomTabsInset();
 
   const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
@@ -36,11 +36,8 @@ export default function LeaderboardScreen() {
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}>
       <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
-      <View className="mx-2 bg-surface border border-border rounded-md">
-        {rest.map((member, index) => (
-          <LeaderboardRow key={member.member_id} member={member} position={index + 4} />
-        ))}
-      </View>
+
+      <LeaderboardList leaderboard={rest} />
     </ScrollView>
   );
 }

@@ -5,7 +5,6 @@ import { FloatBottomTabs, SidebarMenu, TabsHeader } from '@/components/layout';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tabs } from 'expo-router';
-import { TrophyIcon } from 'lucide-react-native';
 import { Platform } from 'react-native';
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -52,14 +51,6 @@ export default function TabLayout() {
           options={{
             title: t('Me'),
             tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="MyLeagues"
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => <TrophyIcon size={size} color={color} />,
-            title: t('My Leagues'),
           }}
         />
       </Tabs>

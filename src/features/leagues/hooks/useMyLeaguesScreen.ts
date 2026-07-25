@@ -5,13 +5,13 @@ import {
   useUpdateLeagueActivation,
   useUpdatePrimaryLeague,
 } from '@/features/leagues/hooks/useLeagues';
-import { MyLeagueType, MyLeaguesResponseType } from '@/features/leagues/types';
+import { MyLeague, MyLeaguesResponse } from '@/features/leagues/types';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
-import { PrimaryMemberType, selectPrimaryMember, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { useCallback, useMemo } from 'react';
 
-function flattenMyLeagues(myLeagues?: MyLeaguesResponseType | null): MyLeagueType[] {
+function flattenMyLeagues(myLeagues?: MyLeaguesResponse | null): MyLeague[] {
   if (!myLeagues) return [];
   return [
     ...(myLeagues.primaryLeague ? [myLeagues.primaryLeague] : []),
@@ -20,37 +20,25 @@ function flattenMyLeagues(myLeagues?: MyLeaguesResponseType | null): MyLeagueTyp
   ];
 }
 
-function toPrimaryMember(member: MyLeagueType): PrimaryMemberType {
-  const { league } = member;
-  const { competition } = league;
-
+function toPrimaryLeague(member: MyLeague) {
   return {
     memberId: member.id,
-    userId: member.user_id,
-    isPrimary: true,
-    active: true,
-    nickname: member.nickname,
-    avatarUrl: member.avatar_url,
-    createdAt: member.created_at,
-    leagueId: league.id,
-    leagueName: league.name,
-    competitionId: competition.id,
-    competitionName: competition.name,
-    competitionLogo: competition.logo,
-    competitionFlag: competition.flag,
-    competitionArea: competition.area,
-    competitionType: competition.type as 'league' | 'cup',
+    leagueId: member.league.id,
+    competitionId: member.league.competition_id,
   };
 }
 
 export function useMyLeaguesScreen() {
-  const primaryMember = useMemberStore(selectPrimaryMember);
-  const setPrimaryMember = useMemberStore((s) => s.setPrimaryMember);
+  const memberId = usePrimaryLeagueStore((s) => s.memberId);
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
+  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
+  const setPrimaryLeague = usePrimaryLeagueStore((s) => s.setPrimaryLeague);
+
   const reactivateLeaguesAfterProUpgrade = useReactivateLeaguesAfterProUpgrade();
 
   const { data: myLeagues, isPending, error, refetch } = useMyLeagues();
   const { isPro, maxLeagues } = useSubscriptionLimits();
-  const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
+    const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { mutateAsync: updateLeagueActivation, isPending: isUpdatingLeagueActivation } =
     useUpdateLeagueActivation();
 
@@ -67,10 +55,10 @@ export function useMyLeaguesScreen() {
   });
 
   const selectLeague = useCallback(
-    async (leagueId: string) => {
+    async (nextLeagueId: string) => {
       if (requiresLeagueActivation) return;
 
-      const selectedLeague = allLeagues.find((l) => l.league.id === leagueId);
+      const selectedLeague = allLeagues.find((l) => l.league.id === nextLeagueId);
       if (!selectedLeague) return;
 
       if (!selectedLeague.active) {
@@ -87,25 +75,27 @@ export function useMyLeaguesScreen() {
         }
       }
 
-      const previousPrimaryMember = primaryMember;
-      setPrimaryMember(toPrimaryMember({ ...selectedLeague, active: true }));
+      const previousPrimaryLeague = { memberId, leagueId, competitionId };
+      setPrimaryLeague(toPrimaryLeague(selectedLeague));
       router.replace('/(app)/(league)/(tabs)');
 
       try {
-        await updatePrimaryLeague({ leagueId });
+        await updatePrimaryLeague({ leagueId: nextLeagueId });
       } catch {
-        setPrimaryMember(previousPrimaryMember);
-        router.replace('/(app)/(user)');
+        setPrimaryLeague(previousPrimaryLeague);
+        router.replace('/(app)/(league)/(tabs)/MyLeagues');
       }
     },
     [
       allLeagues,
+      competitionId,
       isPro,
+      leagueId,
       maxLeagues,
-      primaryMember,
+      memberId,
       reactivateLeaguesAfterProUpgrade,
       requiresLeagueActivation,
-      setPrimaryMember,
+      setPrimaryLeague,
       updateLeagueActivation,
       updatePrimaryLeague,
     ],
@@ -124,7 +114,7 @@ export function useMyLeaguesScreen() {
     allLeagues,
     activeCount,
     maxLeagues,
-    hasPrimaryMember: !!primaryMember,
+    hasPrimaryLeague: !!memberId && !!leagueId && !!competitionId,
     selectLeague,
     upgrade,
     limitSelect: requiresLeagueActivation

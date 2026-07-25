@@ -1,6 +1,7 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCallback, useState } from 'react';
+import { View } from 'react-native';
 import FixtureListEngine from '../engines/FixtureListEngine';
 import type { MatchCardType } from '../types';
 
@@ -25,15 +26,17 @@ export default function RegularLeagueView({
   }, []);
 
   return (
-    <FixtureListEngine
-      matches={matches}
-      currentFixture={currentFixture}
-      selectedFixture={selectedFixture}
-      onSelectFixture={onSelectFixture}
-      onRefresh={onRefresh}
-      animateScroll={animateScroll}
-      bottomInset={bottomInset}
-      locale={locale}
-    />
+    <View className="flex-1">
+      <FixtureListEngine
+        matches={matches}
+        currentFixture={currentFixture}
+        selectedFixture={selectedFixture}
+        onSelectFixture={onSelectFixture}
+        onRefresh={onRefresh}
+        animateScroll={animateScroll}
+        bottomInset={bottomInset}
+        locale={locale}
+      />
+    </View>
   );
 }

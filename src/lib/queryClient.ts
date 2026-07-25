@@ -9,13 +9,14 @@ export const KEYS = {
     all: ['users'] as const,
     detail: (userId: string) => ['users', userId] as const,
     leagues: (userId: string) => ['users', userId, 'leagues'] as const,
+    leaguesSummary: (userId: string) => ['users', userId, 'leagues-summary'] as const,
   },
 
   // ==================== MEMBERS ====================
   members: {
     all: ['members'] as const,
     byId: (memberId: string) => ['members', memberId] as const,
-    primary : (userId: string) => ['members', 'primary', userId] as const,
+    primaryLeague : (userId: string) => ['members', 'primary-league', userId] as const,
     byLeague: (userId: string, leagueId: string) => ['members', 'by-league', userId, leagueId] as const,
     stats: (memberId: string) => ['members', memberId, 'stats'] as const,
     detailsWithStats: (memberId: string) => ['members', memberId, 'details-with-stats'] as const,

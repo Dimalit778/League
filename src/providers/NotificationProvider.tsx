@@ -3,7 +3,7 @@ import { cancelAllMatchReminders, syncMatchReminders } from '@/features/notifica
 import { ensureNotificationPermission, setupAndroidNotificationChannel } from '@/lib/notifications';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLanguageStore } from '@/store/LanguageStore';
-import { useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import * as Sentry from '@sentry/react-native';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
@@ -31,7 +31,9 @@ const getReminderMatchId = (response: Notifications.NotificationResponse | null)
 
 export const NotificationProvider = ({ children }: PropsWithChildren) => {
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
-  const primaryMember = useMemberStore((s) => s.primaryMember);
+  const memberId = usePrimaryLeagueStore((s) => s.memberId);
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
+  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
   const language = useLanguageStore((s) => s.language);
 
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -40,9 +42,6 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
   // Serialize sync/cancel work so a logout can't interleave with an in-flight sync
   const syncChainRef = useRef<Promise<void>>(Promise.resolve());
   const lastSyncAtRef = useRef(0);
-
-  const competitionId = primaryMember?.competitionId ?? null;
-  const leagueId = primaryMember?.leagueId ?? null;
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
@@ -74,9 +73,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     const shouldSchedule = isLoggedIn && permissionGranted && competitionId != null && leagueId != null;
 
     const run = () =>
-      shouldSchedule
-        ? syncMatchReminders({ competitionId, leagueId, language })
-        : cancelAllMatchReminders();
+      shouldSchedule ? syncMatchReminders({ competitionId, leagueId, language }) : cancelAllMatchReminders();
 
     syncChainRef.current = syncChainRef.current.then(run).then(
       () => {
@@ -133,14 +130,14 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
 
   // Navigate once the auth + primary-member guards allow the match screen to mount
   useEffect(() => {
-    if (pendingMatchId == null || !isLoggedIn || !primaryMember) return;
+    if (pendingMatchId == null || !isLoggedIn || !memberId) return;
 
     setPendingMatchId(null);
     router.push({
       pathname: '/(app)/(league)/match/[matchId]',
       params: { matchId: String(pendingMatchId) },
     });
-  }, [pendingMatchId, isLoggedIn, primaryMember]);
+  }, [pendingMatchId, isLoggedIn, memberId]);
 
   return <>{children}</>;
 };

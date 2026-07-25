@@ -8,16 +8,17 @@ jest.mock('@/store/AuthStore', () => ({
   useAuthStore: (selector: any) => selector({ user: { id: 'u1' } }),
 }));
 
-jest.mock('@/store/MemberStore', () => ({
-  useMemberStore: Object.assign(
+jest.mock('@/store/ActiveLeagueStore', () => ({
+  useActiveLeagueStore: Object.assign(
     (selector: any) =>
       selector({
-        initializeMember: jest.fn(),
+        initializeActiveLeague: jest.fn(),
+        clearActiveLeague: jest.fn(),
       }),
     {
       getState: () => ({
-        clearMember: jest.fn(),
-        initializeMember: jest.fn(),
+        clearActiveLeague: jest.fn(),
+        initializeActiveLeague: jest.fn(),
       }),
     },
   ),

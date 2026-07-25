@@ -2,7 +2,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Stack } from 'expo-router';
 import { Platform } from 'react-native';
 
-export default function PublicLayout() {
+export default function UserLayout() {
   const { colors } = useThemeTokens();
 
   return (

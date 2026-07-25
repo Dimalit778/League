@@ -1,10 +1,12 @@
-import MatchesScreen from '@/features/matches/screens/MatchesScreen';
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import { useSeasonMatches } from '@/features/matches/hooks/useSeasonMatches';
-import { usePrimaryMember } from '@/store/MemberStore';
+import MatchesScreen from '@/features/matches/screens/MatchesScreen';
 import { render } from '@testing-library/react-native';
 
-jest.mock('@/store/MemberStore', () => ({ usePrimaryMember: jest.fn() }));
+jest.mock('@/store/ActiveLeagueStore', () => ({
+  useMemberId: () => 'm1',
+  useCompetitionId: () => 100,
+}));
 jest.mock('@/features/leagues/hooks/useCompetition', () => ({ useGetCompetitionsDetails: jest.fn() }));
 jest.mock('@/features/matches/hooks/useSeasonMatches', () => ({ useSeasonMatches: jest.fn() }));
 
@@ -34,7 +36,6 @@ jest.mock('@/features/matches/views/KnockoutOnlyView', () => {
 });
 
 const setup = (type: string, stages: string[]) => {
-  jest.mocked(usePrimaryMember).mockReturnValue({ memberId: 'm1', competitionId: 100 } as any);
   jest.mocked(useGetCompetitionsDetails).mockReturnValue({
     data: { type, currentFixture: 1, currentStage: stages[0] ?? null },
     isLoading: false,

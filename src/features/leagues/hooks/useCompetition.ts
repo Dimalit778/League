@@ -1,5 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
-import { selectCompetitionId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { competitionApi } from '../api/competitionApi';
 
@@ -15,7 +15,7 @@ export const useGetCompetitions = () => {
 };
 
 export const useGetCompetitionsDetails = () => {
-  const competitionId = useMemberStore(selectCompetitionId);
+  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
 
   return useQuery({
     queryKey: competitionId

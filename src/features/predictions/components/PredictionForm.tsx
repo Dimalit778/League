@@ -3,7 +3,7 @@ import { PredictionWithMemberType } from '@/features/matches/types';
 
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectMemberId, useMemberStore } from '@/store/MemberStore';
+import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 type PredictionFormProps = {
@@ -41,7 +41,7 @@ const ScoreInput = ({ value, accessibilityLabel, onChange, onEditingEnd }: Score
 
 export default function PredictionForm({ prediction, matchId }: PredictionFormProps) {
   const { t } = useTranslation();
-  const memberId = useMemberStore(selectMemberId);
+  const memberId = useMemberId();
   const scoresRef = useRef({ homeScore: 0, awayScore: 0 });
   const lastSubmittedRef = useRef<{ homeScore: number | null; awayScore: number | null }>({
     homeScore: null,

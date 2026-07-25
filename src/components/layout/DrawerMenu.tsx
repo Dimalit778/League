@@ -1,7 +1,7 @@
 import { LeagueIcon, MatchesIcon, MenuIcon, ProfileIcon, RankIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { Href, Link } from 'expo-router';
 import { Modal, Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,7 +16,7 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const leagueId = useMemberStore(selectLeagueId);
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
 
   const drawerRoutes = [
     {

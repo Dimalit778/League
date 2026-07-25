@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui';
-import { MemberStatsType } from '@/features/members/types';
+import { MemberStats as MemberStatsType } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BarChart3, Crosshair, Star, Target, XCircle } from 'lucide-react-native';
 import { View } from 'react-native';

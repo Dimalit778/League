@@ -1,3 +1,5 @@
+import { MatchCardData } from "@/features/matches/utils/matchCard.mapper";
+import { useMemberStats } from "@/features/members/hooks/useMemberStats";
 import { Tables } from "@/types/database.types";
 
 type CompetitionSummary = Pick<
@@ -5,12 +7,12 @@ type CompetitionSummary = Pick<
   "id" | "name" | "logo" | "area" | "flag"
 >;
 
-type CompetitionType = Pick<
+type Competition = Pick<
   Tables<"competitions">,
   "id" | "name" | "logo" | "flag" | "area" | "type" | "current_stage" | "current_fixture"
 >;
 
-type LeaderboardRow = Pick<
+export type LeaderboardRow = Pick<
   Tables<"league_leaderboard_view">,
   | "avatar_url"
   | "league_id"
@@ -22,7 +24,7 @@ type LeaderboardRow = Pick<
   correct_scores?: number;
 };
 
-type MyLeagueType = Pick<
+export type MyLeague = Pick<
   Tables<"league_members">,
   | "active"
   | "avatar_url"
@@ -38,11 +40,21 @@ type MyLeagueType = Pick<
     Tables<"leagues">,
     "competition_id" | "created_at" | "id" | "join_code" | "max_members" | "name" | "owner_id" | "updated_at"
   > & {
-    competition: CompetitionType;
+    competition: Competition;
   };
 };
 
-type LeagueDetailsType = Pick<
+
+
+export type MyLeaguesResponse = {
+  primaryLeague: MyLeague | null;
+  leagues: MyLeague[];
+  inactiveLeagues: MyLeague[];
+  total: number;
+};
+
+
+export type LeagueDetails = Pick<
   Tables<"leagues">,
   | "competition_id"
   | "created_at"
@@ -68,18 +80,22 @@ type LeagueDetailsType = Pick<
   >[];
 };
 
-type MyLeaguesResponseType = {
-  primaryLeague: MyLeagueType | null;
-  leagues: MyLeagueType[];
-  inactiveLeagues: MyLeagueType[];
-  total: number;
+export type LeagueSummary = Tables<"member_league_summary_view">;
+
+export type LeagueWithCompetition = Omit<LeagueDetails, 'league_members'>;
+
+type MemberStatsData = NonNullable<ReturnType<typeof useMemberStats>['data']>;
+
+
+
+export type LeagueOverview = {
+  leagueSummary: LeagueSummary;
+  stats: MemberStatsData;
+  upcomingMatches: MatchCardData[];
+  isLoading: boolean;
 };
 
-type MemberLeagueSummaryType = Tables<"member_league_summary_view">;
-
-type LeagueWithCompetitionType = Omit<LeagueDetailsType, 'league_members'>;
-
-type FullLeagueType = {
+export type FullLeague = {
   league_id: string;
   league_name: string;
   competition_name: string;
@@ -91,13 +107,4 @@ type FullLeagueType = {
   owner_nickname: string;
 };
 
-
-export {
-  FullLeagueType,
-  LeaderboardRow,
-  LeagueDetailsType,
-  LeagueWithCompetitionType,
-  MemberLeagueSummaryType,
-  MyLeaguesResponseType, MyLeagueType
-};
 

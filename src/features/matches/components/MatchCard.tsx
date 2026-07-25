@@ -133,12 +133,14 @@ export const MatchCard = memo(function MatchCard({
 
   const teamWidth = (cardWidth - gap * 2 - centerWidth) / 2;
   const contentHeight = cardHeight * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
-  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.5), 58);
+  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.5), 40);
   const logoWidth = logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : logoBoxSize;
   const logoContentFit = logoVariant === 'flag' ? 'cover' : 'contain';
 
   const hasScore = home.score !== null && home.score !== undefined && away.score !== null && away.score !== undefined;
+
+  const isFinished = status === 'FINISHED';
 
   const hasPrediction =
     prediction?.home !== null &&
@@ -163,7 +165,7 @@ export const MatchCard = memo(function MatchCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${id}`))}
-      className="mb-2 w-full items-center"
+      className={`mb-2 w-full items-center ${isFinished ? 'opacity-60' : ''}`}
     >
       <View
         style={{

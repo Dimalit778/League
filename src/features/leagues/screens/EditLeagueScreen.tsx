@@ -5,13 +5,14 @@ import {
   useLeaveLeague,
   useUpdateLeague,
 } from '@/features/leagues/hooks/useLeagues';
-import { useRemoveMember } from '@/features/profile/hooks/useMembers';
-import { selectLeagueId, selectMemberUserId, useMemberStore } from '@/store/MemberStore';
+import { useRemoveMember } from '@/features/members/hooks/useMembers';
+import { useAuthStore } from '@/store/AuthStore';
+import { useLeagueId } from '@/store/PrimaryLeagueStore';
 
 import { Screen } from '@/components/layout';
 import { AvatarImage, BackButton, Button, Text } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
-import { MemberType } from '@/features/members/types';
+import { MemberType } from '@/features/members/types/member.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -56,18 +57,18 @@ const MemberCard = ({ member, isOwner, canRemove, handleRemoveMember }: MemberCa
   );
 };
 export default function EditLeagueScreen() {
-  const memberUserId = useMemberStore(selectMemberUserId);
-  const leagueId = useMemberStore(selectLeagueId);
+  const userId = useAuthStore((s) => s.user?.id);
+  const leagueId = useLeagueId();
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId!);
+  const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId);
 
   const { showAlert } = useAlert();
   const removeMember = useRemoveMember();
   const updateLeague = useUpdateLeague();
   const deleteLeague = useDeleteLeague();
   const leaveLeague = useLeaveLeague();
-  const isOwner = memberUserId === league?.owner_id;
+  const isOwner = !!userId && userId === league?.owner_id;
 
   const sortedMembers = useMemo(() => {
     return [...(league?.league_members ?? [])].sort((a, b) => {
@@ -88,7 +89,7 @@ export default function EditLeagueScreen() {
   }, [league?.name]);
 
   const handleRemoveMember = async (memberId: string, nickname: string) => {
-    if (!leagueId || memberUserId !== league?.owner_id) return;
+    if (!leagueId || !isOwner) return;
     showAlert({
       title: t('Remove Member'),
       message: `${t('Remove')} ${nickname} ${t('from this league')}?`,
@@ -228,10 +229,7 @@ export default function EditLeagueScreen() {
               </View>
             </Pressable>
 
-            <Pressable
-              onPress={handleInviteFriends}
-              className="flex-row items-center gap-2 mt-3 active:opacity-70"
-            >
+            <Pressable onPress={handleInviteFriends} className="flex-row items-center gap-2 mt-3 active:opacity-70">
               <UserPlus size={18} color={colors.primary} />
               <Text semibold className="text-primary">
                 {t('Invite friends')}

@@ -100,7 +100,7 @@ const LeagueCreatedScreen = () => {
 
       {/* Action Buttons */}
       <View className="gap-5 p-5">
-        <Button onPress={handleShareJoinCode} title={t('Share Join Code')} variant="outline" size="md" />
+        <Button onPress={handleShareJoinCode} title={t('Share Join Code')} variant="border" size="md" />
 
         <Button onPress={handleStartLeague} title={t('Start League')} variant="primary" size="lg" />
       </View>

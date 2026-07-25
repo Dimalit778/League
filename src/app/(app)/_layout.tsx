@@ -1,28 +1,31 @@
 import { LoadingBall } from '@/components/layout/LoadingBall';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuth } from '@/providers/AuthProvider';
-import { useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 
 export default function AppLayout() {
   const { isLoggedIn, isAuthLoading } = useAuth();
-  const primaryMember = useMemberStore((s) => s.primaryMember);
-  const loading = useMemberStore((s) => s.loading);
-  const initializeMember = useMemberStore((s) => s.initializeMember);
+  const memberId = usePrimaryLeagueStore((s) => s.memberId);
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
+  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
+
+  const hasPrimaryLeague = !!leagueId && !!competitionId && !!memberId;
+
+  const loading = usePrimaryLeagueStore((s) => s.loading);
+  const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
   const { data: isAdminUser } = useIsAdmin();
 
   useEffect(() => {
     if (!isAuthLoading && isLoggedIn) {
-      void initializeMember();
+      void initializePrimaryLeague();
     }
-  }, [isAuthLoading, isLoggedIn, initializeMember]);
+  }, [isAuthLoading, isLoggedIn, initializePrimaryLeague]);
 
   if (isAuthLoading || loading) {
     return <LoadingBall />;
   }
-
-  const hasPrimaryMember = !!primaryMember;
 
   return (
     <Stack
@@ -30,7 +33,7 @@ export default function AppLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Protected guard={hasPrimaryMember}>
+      <Stack.Protected guard={hasPrimaryLeague}>
         <Stack.Screen name="(league)" />
       </Stack.Protected>
       <Stack.Screen name="(user)" />

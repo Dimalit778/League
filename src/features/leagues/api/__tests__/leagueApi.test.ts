@@ -147,28 +147,53 @@ describe("leagueApi", () => {
   });
 
   describe("updatePrimaryLeague", () => {
-    it("uses the atomic set_primary_league rpc", async () => {
-      const mockRpc = jest
-        .fn()
-        .mockResolvedValue({ data: { success: true }, error: null });
-      (supabase as any).rpc = mockRpc;
+    it("clears existing primary then sets the selected membership", async () => {
+      const membership = { id: "m1" };
+      const updated = { id: "m1", league_id: "l1", is_primary: true };
 
-      const result = await leagueApi.updatePrimaryLeague("l1");
+      const selectMembershipChain = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue({ data: membership, error: null }),
+      };
 
-      expect(mockRpc).toHaveBeenCalledWith("set_primary_league", {
-        p_league_id: "l1",
+      const clearPrimaryChain = {
+        update: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+      };
+      clearPrimaryChain.eq.mockReturnValueOnce(clearPrimaryChain);
+      clearPrimaryChain.eq.mockResolvedValueOnce({ data: null, error: null });
+
+      const setPrimaryChain = {
+        update: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: updated, error: null }),
+      };
+
+      let call = 0;
+      (supabase.from as jest.Mock).mockImplementation(() => {
+        call += 1;
+        if (call === 1) return selectMembershipChain;
+        if (call === 2) return clearPrimaryChain;
+        return setPrimaryChain;
       });
-      expect(result).toEqual({ success: true });
+
+      const result = await leagueApi.updatePrimaryLeague("l1", "u1");
+
+      expect(result).toEqual(updated);
+      expect(setPrimaryChain.update).toHaveBeenCalledWith({ is_primary: true });
     });
 
-    it("throws on rpc error", async () => {
-      const mockRpc = jest
-        .fn()
-        .mockResolvedValue({ data: null, error: { message: "No membership" } });
-      (supabase as any).rpc = mockRpc;
+    it("throws when the user is not a member of the league", async () => {
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
+      });
 
-      await expect(leagueApi.updatePrimaryLeague("l1")).rejects.toThrow(
-        "No membership",
+      await expect(leagueApi.updatePrimaryLeague("l1", "u1")).rejects.toThrow(
+        "User is not a member of this league",
       );
     });
   });

@@ -12,6 +12,4 @@ pitchIcon: require('./pitch-icon.png'),
 
  trophyGold: require('./trophy-gold.png'),
 
-
-
 };

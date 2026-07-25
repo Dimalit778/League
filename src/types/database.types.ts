@@ -499,13 +499,16 @@ export type Database = {
       }
       member_league_summary_view: {
         Row: {
+          active: boolean | null
+          competition_id: number | null
           competition_logo: string | null
           competition_name: string | null
+          is_primary: boolean | null
           league_id: string | null
           league_name: string | null
           member_id: string | null
+          members_count: number | null
           nickname: string | null
-          pending_predictions: number | null
           rank: number | null
           total_points: number | null
         }
@@ -515,6 +518,13 @@ export type Database = {
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leagues_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
             referencedColumns: ["id"]
           },
         ]

@@ -2,7 +2,7 @@
 import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { selectLeagueId, useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { ArrowLeftIcon, LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 import { Href, usePathname, useRouter } from 'expo-router';
@@ -22,7 +22,7 @@ export function SidebarMenu() {
   const isOpen = useSidebarStore((s) => s.isOpen);
   const closeSidebar = useSidebarStore((s) => s.closeSidebar);
   const { t } = useTranslation();
-  const leagueId = useMemberStore(selectLeagueId);
+  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
   const isWeb = Platform.OS === 'web';
 
   const routes: SidebarRoute[] = [

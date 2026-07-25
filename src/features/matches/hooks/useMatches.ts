@@ -1,5 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
-import { usePrimaryMember } from '@/store/MemberStore';
+import { useLeagueId } from '@/store/PrimaryLeagueStore';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -8,7 +8,7 @@ import { TournamentView } from '../utils/tournamentMatches';
 
 // Get match detail with all members predictions
 export const useGetMatchDetail = (matchId: number) => {
-  const { leagueId } = usePrimaryMember();
+  const leagueId = useLeagueId();
   const query = useQuery({
     queryKey:
       leagueId && matchId > 0

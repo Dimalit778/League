@@ -1,7 +1,7 @@
 import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
 import { KEYS } from '@/lib/queryClient';
 import { supabase } from '@/lib/supabase';
-import { useMemberStore } from '@/store/MemberStore';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import type { QueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
@@ -42,7 +42,7 @@ export const signIn = async (email: string, password: string, queryClient: Query
       data: { session },
     } = await supabase.auth.getSession();
     if (session?.user?.id) {
-      await queryClient.invalidateQueries({ queryKey: KEYS.members.primary(session.user.id) });
+      await queryClient.invalidateQueries({ queryKey: KEYS.members.primaryLeague(session.user.id) });
     }
 
     return { success: true };
@@ -95,8 +95,7 @@ export const signOut = async (queryClient: QueryClient) => {
     console.log('signOutError', JSON.stringify(signOutError, null, 2));
   }
 
-  // Clear member store
-  useMemberStore.getState().clearMember();
+  usePrimaryLeagueStore.getState().clearPrimaryLeague();
 
   // Drop all cached server data so the next user on this device starts fresh
   queryClient.clear();

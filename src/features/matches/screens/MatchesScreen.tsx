@@ -1,7 +1,7 @@
 import { Error } from '@/components/layout';
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
-import { usePrimaryMember } from '@/store/MemberStore';
-import { ScrollView } from 'react-native-gesture-handler';
+import { useCompetitionId, useMemberId } from '@/store/PrimaryLeagueStore';
+import { View } from 'react-native';
 import MatchesSkeleton from '../components/MatchesSkeleton';
 import { useSeasonMatches } from '../hooks/useSeasonMatches';
 import { resolveCompetitionShape } from '../model/competitionShape';
@@ -11,7 +11,8 @@ import LeaguePhaseKnockoutView from '../views/LeaguePhaseKnockoutView';
 import RegularLeagueView from '../views/RegularLeagueView';
 
 export default function MatchesScreen() {
-  const { memberId, competitionId } = usePrimaryMember();
+  const memberId = useMemberId();
+  const competitionId = useCompetitionId();
   const { data: meta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
   const {
     data: matches = [],
@@ -29,9 +30,9 @@ export default function MatchesScreen() {
   const currentFixture = meta.currentFixture ?? 1;
   const currentStage = meta.currentStage ?? null;
 
-  // ponytail: views own scroll/refresh — don't wrap in ScrollScreen
+  // ponytail: views own scroll/refresh — don't wrap in ScrollView (nests FlatList)
   return (
-    <ScrollView>
+    <View className="flex-1">
       {shape === 'REGULAR' && (
         <RegularLeagueView matches={matches} currentFixture={currentFixture} onRefresh={refetch} />
       )}
@@ -49,6 +50,6 @@ export default function MatchesScreen() {
       {shape === 'KNOCKOUT_ONLY' && (
         <KnockoutOnlyView matches={matches} currentStage={currentStage} onRefresh={refetch} />
       )}
-    </ScrollView>
+    </View>
   );
 }

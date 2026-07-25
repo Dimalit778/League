@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { LeaderboardRow, MemberLeagueSummaryType, MyLeagueType, MyLeaguesResponseType } from '../types';
+import { LeaderboardRow, LeagueSummary, MyLeague, MyLeaguesResponse } from '../types';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name,area, logo, flag, type, current_stage, current_fixture';
@@ -85,18 +85,29 @@ export const leagueApi = {
       correct_scores: row.member_id ? (correctScoreCounts.get(row.member_id) ?? 0) : 0,
     }));
   },
-  async getMemberLeagueSummary(memberId: string): Promise<MemberLeagueSummaryType | null> {
+  async getMyLeaguesSummary(userId: string): Promise<LeagueSummary[]> {
+
+    const { data: members, error: membersError } = await supabase
+      .from('league_members')
+      .select('id')
+      .eq('user_id', userId);
+
+    if (membersError) throw new Error(membersError.message);
+
+    const memberIds = (members ?? []).map((m) => m.id);
+    if (memberIds.length === 0) return [];
+
+  
     const { data, error } = await supabase
       .from('member_league_summary_view')
-      .select('member_id, league_id, nickname, league_name, competition_name, competition_logo, total_points, rank, pending_predictions')
-      .eq('member_id', memberId)
-      .maybeSingle();
+      .select('*')
+      .in('member_id', memberIds);
 
     if (error) throw new Error(error.message);
-    return data;
+    return (data as LeagueSummary[]) ?? [];
   },
 
-  async getMyLeagues(userId: string): Promise<MyLeaguesResponseType> {
+  async getMyLeagues(userId: string): Promise<MyLeaguesResponse> {
     const { data, error } = await supabase
       .from('league_members')
       .select(MY_LEAGUES_SELECT)
@@ -106,7 +117,7 @@ export const leagueApi = {
 
     if (error) throw new Error(error.message);
 
-    const memberships = (data ?? []) as MyLeagueType[];
+    const memberships = (data ?? []) as MyLeague[];
 
     return {
       primaryLeague: memberships.find((league) => league.is_primary) ?? null,
@@ -140,13 +151,36 @@ export const leagueApi = {
     return data ;
   },
 
-  async updatePrimaryLeague(leagueId: string) {
-    const { data, error } = await supabase.rpc('set_primary_league', {
-      p_league_id: leagueId,
-    });
+  async updatePrimaryLeague(leagueId: string, userId: string) {
+    const { data: membership, error: membershipError } = await supabase
+      .from('league_members')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('league_id', leagueId)
+      .maybeSingle();
 
-    if (error) throw new Error(error.message);
-    return data;
+    if (membershipError) throw new Error(membershipError.message);
+    if (!membership) throw new Error('User is not a member of this league');
+
+    const { error: clearError } = await supabase
+      .from('league_members')
+      .update({ is_primary: false })
+      .eq('user_id', userId)
+      .eq('is_primary', true);
+
+    if (clearError) throw new Error(clearError.message);
+
+    const { data: primaryLeague, error: primaryLeagueError } = await supabase
+      .from('league_members')
+      .update({ is_primary: true })
+      .eq('id', membership.id)
+      .select('id, league_id, is_primary')
+      .single();
+
+    if (primaryLeagueError) throw new Error(primaryLeagueError.message);
+    if (!primaryLeague?.is_primary) throw new Error('Failed to set primary league');
+
+    return primaryLeague;
   },
 
   async updateMyLeagueActivation(userId: string, activeMemberIds: string[]) {
@@ -192,7 +226,7 @@ export const leagueApi = {
     const fallbackPrimary = (memberships ?? []).find((member) => selectedIds.has(member.id));
 
     if (!selectedPrimary && fallbackPrimary) {
-      await this.updatePrimaryLeague(fallbackPrimary.league_id);
+      await this.updatePrimaryLeague(fallbackPrimary.league_id, userId);
     }
 
     return {
