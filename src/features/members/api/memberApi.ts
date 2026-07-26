@@ -13,6 +13,7 @@ export const memberApi = {
     avatar_url,
     active,
     is_primary,
+    created_at,
     league:leagues (
       id,
       name,

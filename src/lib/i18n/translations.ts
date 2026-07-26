@@ -135,6 +135,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Manage League': 'Manage League',
       'Invite friends': 'Invite friends',
       'Invite code': 'Invite code',
+      "That's the whole leaderboard for now": "That's the whole leaderboard for now",
+      'Invite more friends and make the league more competitive.':
+        'Invite more friends and make the league more competitive.',
+      '{{count}} league members': '{{count}} league members',
       'Leave league': 'Leave league',
       'Failed to share invite code': 'Failed to share invite code',
       'Join League': 'Join League',
@@ -146,6 +150,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
       'League Name': 'League Name',
       'League name': 'League name',
+      'League details': 'League details',
       'Enter league name': 'Enter league name',
       'Enter your league name': 'Enter your league name',
       'League name is required': 'League name is required',
@@ -275,6 +280,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Fixture ID': 'Fixture ID',
       'Enter prediction': 'Enter prediction',
       'AI Preview': 'AI Preview',
+      'AI match analysis': 'AI match analysis',
+      'AI-generated preview based on available match data.':
+        'AI-generated preview based on available match data.',
       'Prediction:': 'Prediction:',
     },
 
@@ -827,6 +835,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Manage League': 'ניהול ליגה',
       'Invite friends': 'הזמנת חברים',
       'Invite code': 'קוד הצטרפות',
+      "That's the whole leaderboard for now": 'זה כל הדירוג בינתיים',
+      'Invite more friends and make the league more competitive.':
+        'הזמינו חברים נוספים והפכו את הליגה לתחרותית יותר.',
+      '{{count}} league members': '{{count}} משתתפים בליגה',
       'Leave league': 'עזיבת ליגה',
       'Failed to share invite code': 'שיתוף קוד ההזמנה נכשל',
       'Join League': 'הצטרפות לליגה',
@@ -841,6 +853,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'League Name': 'שם הליגה',
       'League Created Successfully!': 'ליגה נוצרה בהצלחה!',
       'League name': 'שם הליגה',
+      'League details': 'פרטי הליגה',
       'Ask the league owner for the invite code': 'קבלו ממנהל הליגה קוד הזמנה',
       'Enter league name': 'הזן שם הליגה',
       'Enter your league name': 'הזן שם הליגה',
@@ -960,6 +973,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Fixture ID': 'מזהה צופיות',
       'Coming Soon...': 'בקרוב ...',
       'AI Preview': 'תצוגה מקדימה של AI',
+      'AI match analysis': 'ניתוח המשחק באמצעות AI',
+      'AI-generated preview based on available match data.':
+        'התחזית נוצרה באמצעות AI על סמך נתוני המשחק הזמינים.',
       'Prediction:': 'ניחוש:',
     },
 

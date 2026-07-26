@@ -4,15 +4,16 @@ import PredictionForm from '@/features/predictions/components/PredictionForm';
 import { dateFormat, formatTime } from '@/utils/formats';
 import { Ionicons } from '@expo/vector-icons';
 import { useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function TeamCard({ team, width, height }: { team: TeamType; width: number; height: number }) {
   const shortName = team.shortName || team.name;
   return (
-    <View className="flex-1 items-center rounded-lg p-2 md:p-4 bg-gray-500/40 max-w-[130px] md:max-w-[180px] lg:max-w-[220px]">
+    <View className="min-w-0 flex-1 items-center px-1">
       <TeamBadge source={team.logo} width={width} height={height} />
 
-      <Text className="text-white text-center">{shortName}</Text>
+      <Text semibold numberOfLines={2} className="mt-2 text-center text-white">
+        {shortName}
+      </Text>
     </View>
   );
 }
@@ -29,32 +30,36 @@ function ScoreCard({
   kick_off: string;
 }) {
   return (
-    <View>
+    <View className="w-32 items-center justify-center">
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
-        <View className="rounded-2xl p-4 md:p-6 items-center">
-          <Ionicons name="time-outline" size={22} color="#fff" />
-          <Text semibold className="text-white mt-2 text-center">
+        <View className="items-center rounded-2xl border border-white/20 bg-black/20 px-5 py-3">
+          <Ionicons name="time-outline" size={20} color="#fff" />
+          <Text semibold className="mt-1 text-center text-white">
             {formatTime(kick_off)}
           </Text>
         </View>
       )}
       {['IN_PLAY'].includes(matchStatus) && (
-        <View className="items-center justify-center gap-2">
-          <Text className="text-green-500">LIVE</Text>
-          <Text className="text-white">
+        <View className="items-center justify-center">
+          <View className="mb-2 rounded-full bg-red-500/20 px-2.5 py-1">
+            <Text small bold className="text-red-400">
+              LIVE
+            </Text>
+          </View>
+          <Text h2 bold className="text-white">
             {homeScore} : {awayScore}
           </Text>
         </View>
       )}
       {['FINISHED'].includes(matchStatus) && (
-        <View className="flex-row items-center justify-center border-2 border-gray-500 rounded-lg p-2 md:p-3 gap-2">
-          <Text semibold h1 className="text-white">
+        <View className="flex-row items-center justify-center rounded-xl border border-white/25 bg-black/20 px-4 py-2">
+          <Text bold h1 className="text-white">
             {homeScore}
           </Text>
-          <Text semibold h1 className="text-white">
+          <Text h2 className="mx-2 text-white/70">
             :
           </Text>
-          <Text semibold h1 className="text-white">
+          <Text bold h1 className="text-white">
             {awayScore}
           </Text>
         </View>
@@ -70,9 +75,8 @@ type MatchHeaderProps = {
 };
 
 export default function MatchHeader({ match, memberPrediction, isScheduled }: MatchHeaderProps) {
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const badgeSize = width >= 1024 ? 96 : width >= 768 ? 80 : 64;
+  const badgeSize = width >= 768 ? 82 : 66;
 
   // Teams can be null for future knockout matches where opponents aren't decided yet
   const homeTeam = match.home_team ?? null;
@@ -80,39 +84,50 @@ export default function MatchHeader({ match, memberPrediction, isScheduled }: Ma
   const venue = homeTeam?.venue;
 
   return (
-    <View style={{ paddingTop: insets.top }}>
-      {/* Match Info Section */}
-      <View className="p-4 mb-8">
-        <View className="items-center justify-center">
-          <View className="flex-row items-center justify-center gap-2">
-            <Ionicons name="calendar-outline" size={22} color="#fff" />
-            <Text semibold className="text-white ">
-              {dateFormat(match.kick_off)}
+    <View className="flex-1 justify-center px-4 pt-10 pb-7">
+      <View className="items-center">
+        <View className="flex-row items-center rounded-full border border-white/15 bg-black/20 px-3 py-1.5">
+          <Ionicons name="calendar-outline" size={16} color="#fff" />
+          <Text small semibold className="ml-1.5 text-white">
+            {dateFormat(match.kick_off)} · {formatTime(match.kick_off)}
+          </Text>
+        </View>
+
+        {venue ? (
+          <View className="mt-2 flex-row items-center justify-center px-10">
+            <Ionicons name="location-outline" size={15} color="rgba(255,255,255,0.72)" />
+            <Text small numberOfLines={1} className="ml-1 text-white/70">
+              {venue}
             </Text>
           </View>
-          {venue ? (
-            <View className="flex-row items-center mt-2 justify-center">
-              <Ionicons name="location-outline" size={22} color="#fff" />
-              <Text className="text-white">{venue}</Text>
-            </View>
-          ) : null}
-        </View>
+        ) : null}
       </View>
 
-      {/* Teams and Score Section */}
-      <View className="flex-row items-center justify-evenly w-full mx-auto">
-        {homeTeam ? <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} /> : <View className="flex-1" />}
-        {isScheduled ? (
-          <PredictionForm prediction={memberPrediction} matchId={match.id} />
+      <View className="mt-6 flex-row items-center justify-center">
+        {homeTeam ? (
+          <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
         ) : (
-          <ScoreCard
-            homeScore={match.score?.fullTime?.home || 0}
-            awayScore={match.score?.fullTime?.away || 0}
-            matchStatus={match.status || ''}
-            kick_off={match.kick_off}
-          />
+          <View className="flex-1" />
         )}
-        {awayTeam ? <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} /> : <View className="flex-1" />}
+
+        <View className="w-32 shrink-0 items-center justify-center">
+          {isScheduled ? (
+            <PredictionForm prediction={memberPrediction} matchId={match.id} />
+          ) : (
+            <ScoreCard
+              homeScore={match.score?.fullTime?.home || 0}
+              awayScore={match.score?.fullTime?.away || 0}
+              matchStatus={match.status || ''}
+              kick_off={match.kick_off}
+            />
+          )}
+        </View>
+
+        {awayTeam ? (
+          <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />
+        ) : (
+          <View className="flex-1" />
+        )}
       </View>
     </View>
   );

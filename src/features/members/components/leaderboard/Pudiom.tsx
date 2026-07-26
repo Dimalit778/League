@@ -33,48 +33,72 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
   const avatarSize = position === 1 ? 72 : 60;
 
   return (
-    <View className="w-28 items-center">
-      <View className="relative items-center">
-        {position === 1 && (
-          <View className="absolute -top-6 z-20">
-            <Crown size={26} color={colors.primary} fill={colors.primary} />
+    <View
+      className="min-w-0 flex-1 items-center"
+      style={{ maxWidth: 112 }}
+      accessible={!!member}
+      accessibilityLabel={
+        member ? `${member.nickname}, position ${position}, ${member.total_points ?? 0} points` : undefined
+      }
+    >
+      {member && (
+        <>
+          <View className="relative items-center">
+            {position === 1 && (
+              <View
+                className="absolute -top-6 z-20"
+                style={{
+                  shadowColor: positionColor,
+                  shadowOpacity: 0.35,
+                  shadowRadius: 5,
+                  shadowOffset: { width: 0, height: 2 },
+                }}
+              >
+                <Crown size={26} color={colors.primary} fill={colors.primary} />
+              </View>
+            )}
+
+            <View
+              className="items-center justify-center overflow-hidden rounded-full border-[3px] bg-surface"
+              style={{
+                width: avatarSize,
+                height: avatarSize,
+                borderColor: positionColor,
+              }}
+            >
+              <AvatarImage path={member.avatar_url} nickname={member.nickname} />
+            </View>
           </View>
-        )}
 
-        <View
-          className="items-center justify-center overflow-hidden rounded-full border-2 bg-surface"
-          style={{
-            width: avatarSize,
-            height: avatarSize,
-            borderColor: positionColor,
-          }}
-        >
-          <AvatarImage path={member?.avatar_url} nickname={member?.nickname} />
-        </View>
-      </View>
+          <Text caption semibold numberOfLines={1} ellipsizeMode="tail" className="mt-1 w-full px-1 text-center">
+            {member.nickname}
+          </Text>
 
-      <Text caption semibold numberOfLines={1} className=" w-full text-center">
-        {member?.nickname}
-      </Text>
-
-      <View className="mb-2  items-center rounded px-2.5 p-0.5" style={{ backgroundColor: positionColor }}>
-        <Text small semibold className="text-background">
-          {member?.total_points ?? 0} pts
-        </Text>
-      </View>
+          <View
+            className="mt-1 mb-2 items-center rounded-full px-2.5 py-0.5"
+            style={{ backgroundColor: positionColor }}
+          >
+            <Text small bold style={{ color: '#0F172A' }}>
+              {member.total_points ?? 0} pts
+            </Text>
+          </View>
+        </>
+      )}
 
       <View
         className="w-full items-center justify-center "
         style={{
           height: podiumHeight,
-          backgroundColor: colors.surface + '97',
+          backgroundColor: colors.surface + 'B8',
           borderColor: colors.border,
           borderWidth: 1,
+          borderTopColor: positionColor,
+          borderTopWidth: 3,
           borderTopRightRadius: 10,
           borderTopLeftRadius: 10,
         }}
       >
-        <Text title font="teko-bold" className="pt-1 text-muted">
+        <Text title font="teko-bold" className="pt-1" style={{ color: positionColor }}>
           {position}
         </Text>
       </View>
@@ -83,9 +107,9 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
 }
 export function Podium({ first, second, third }: PodiumProps) {
   return (
-    <View className="mx-2 mb-8 overflow-hidden rounded-md border border-border">
+    <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border">
       <HeaderBackground>
-        <View className="flex-row items-end justify-center pt-8">
+        <View className="flex-row items-end justify-center px-2 pt-9">
           <PodiumMember member={second} position={2} podiumHeight={55} />
 
           <PodiumMember member={first} position={1} podiumHeight={75} />

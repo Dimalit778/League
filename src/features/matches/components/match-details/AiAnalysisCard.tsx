@@ -2,7 +2,7 @@ import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguageStore } from '@/store/LanguageStore';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 type AiAnalysisCardProps = {
   summaryEn: string;
@@ -26,31 +26,66 @@ export default function AiAnalysisCard({
   const summary = language === 'he' ? summaryHe : summaryEn;
 
   return (
-    <View className="mx-4 mt-4 rounded-2xl bg-surface border border-border p-4 gap-3">
-      {/* Header */}
-      <View className="flex-row items-center gap-2">
-        <Ionicons name="sparkles" size={18} color="#a78bfa" />
-        <Text variant="bodyBold" className="text-primary">
-          {t('AI Preview')}
-        </Text>
-      </View>
-
-      {/* Summary */}
-      <Text variant="body" className="text-text leading-6">
-        {summary}
-      </Text>
-
-      {/* Predicted score chip */}
-      <View className="flex-row items-center gap-2 mt-1">
-        <Text variant="caption" className="text-muted">
-          {t('Prediction:')}
-        </Text>
-        <View className="flex-row items-center bg-primary/10 rounded-lg px-3 py-1 gap-1">
-          <Text variant="bodyBold" className="text-primary">
-            {homeTeamName} {predictedHomeScore} – {predictedAwayScore} {awayTeamName}
+    <ScrollView
+      className="flex-1"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ flexGrow: 1, padding: 16, paddingBottom: 32 }}
+    >
+      <View className="flex-1 justify-center">
+        <View className="mb-4 items-center">
+          <View className="mb-2 h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+            <Ionicons name="sparkles" size={21} color="#a78bfa" />
+          </View>
+          <Text h3 bold className="text-center">
+            {t('AI Preview')}
           </Text>
         </View>
+
+        <View className="rounded-2xl border border-primary/30 bg-surfaceSoft px-4 py-5">
+          <Text small semibold className="mb-4 text-center uppercase tracking-wider text-muted">
+            {t('Predicted Score')}
+          </Text>
+
+          <View className="flex-row items-center">
+            <Text semibold numberOfLines={2} className="min-w-0 flex-1 text-center">
+              {homeTeamName}
+            </Text>
+
+            <View className="mx-3 flex-row items-center rounded-xl bg-background px-4 py-2">
+              <Text h1 bold className="text-primary">
+                {predictedHomeScore}
+              </Text>
+              <Text h2 className="mx-2 text-muted">
+                –
+              </Text>
+              <Text h1 bold className="text-primary">
+                {predictedAwayScore}
+              </Text>
+            </View>
+
+            <Text semibold numberOfLines={2} className="min-w-0 flex-1 text-center">
+              {awayTeamName}
+            </Text>
+          </View>
+        </View>
+
+        <View className="mt-3 rounded-2xl border border-border bg-surface px-5 py-4">
+          <View className="mb-3 flex-row items-center">
+            <Ionicons name="analytics-outline" size={18} color="#a78bfa" />
+            <Text semibold className="ml-2">
+              {t('AI match analysis')}
+            </Text>
+          </View>
+
+          <Text body className="leading-7 text-text">
+            {summary}
+          </Text>
+        </View>
+
+        <Text small className="mt-3 px-4 text-center text-muted">
+          {t('AI-generated preview based on available match data.')}
+        </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }

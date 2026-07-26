@@ -33,7 +33,7 @@ const ScoreInput = ({ value, accessibilityLabel, onChange, onEditingEnd }: Score
       keyboardType="number-pad"
       maxLength={2}
       selectTextOnFocus
-      className="h-14 w-14 rounded-lg border border-white/60 bg-white/10 text-center text-2xl font-bold text-white"
+      className="h-12 w-12 rounded-xl border border-white/40 bg-black/20 text-center text-xl font-bold text-white"
       accessibilityLabel={accessibilityLabel}
     />
   );
@@ -133,16 +133,19 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
   };
 
   return (
-    <View className="items-center justify-center px-2">
-      {/* Score Inputs */}
-      <View className="flex-row items-center justify-center gap-2">
+    <View className="items-center justify-center">
+      <Text small semibold className="mb-2 text-center text-white/70">
+        {t('My Prediction')}
+      </Text>
+
+      <View className="flex-row items-center justify-center">
         <ScoreInput
           value={homeScore}
           onChange={handleHomeScoreChange}
           onEditingEnd={handleSave}
           accessibilityLabel={t('Home score')}
         />
-        <Text variant="h2" className="text-white">
+        <Text h2 className="mx-1.5 text-white/70">
           -
         </Text>
         <ScoreInput

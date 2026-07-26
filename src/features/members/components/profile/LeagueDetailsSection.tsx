@@ -8,6 +8,7 @@ import { LeagueWithMembersType } from '@/types';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Link } from 'expo-router';
+import { Shield } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { Alert, Pressable, TouchableOpacity, View } from 'react-native';
 
@@ -31,33 +32,37 @@ export const LeagueDetailsSection = ({
   }, [league.league_members, league.owner_id]);
 
   return (
-    <View className=" px-4 mt-4">
-      <View className="bg-surface rounded-2xl border border-border py-2 px-3">
-        <View className="flex-row justify-between items-center ">
-          <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={50} height={50} />
-
-          <Text
-            className="text-primary font-bold text-2xl text-center uppercase tracking-widest"
-            style={{
-              textShadowRadius: 2,
-              letterSpacing: 4,
-            }}
-          >
-            {league.name}
-          </Text>
+    <View className="px-4 mt-4">
+      <View className="bg-surface rounded-2xl border border-border p-4">
+        {/* Header */}
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-full border border-border bg-surfaceSecondary">
+            <Shield size={18} color={colors.primary} />
+          </View>
+          <Text className="flex-1 text-base font-bold text-text">{t('League details')}</Text>
 
           {league.owner_id === memberUserId && (
             <Link href="/(app)/(league)/edit" asChild>
-              <TouchableOpacity className="p-2">
-                <FontAwesome6 name="pen-to-square" size={16} color={colors.secondary} />
+              <TouchableOpacity className="p-2" hitSlop={6}>
+                <FontAwesome6 name="pen-to-square" size={16} color={colors.primary} />
               </TouchableOpacity>
             </Link>
           )}
         </View>
 
-        <View className="h-[1px] bg-muted my-3" />
+        <View className="h-[1px] bg-border my-3" />
 
         <View className="gap-3">
+          {/* League Name */}
+          <View className="flex-row items-center justify-between">
+            <Text className="text-text">{t('League name')}</Text>
+            <View className="flex-row items-center">
+              <Text className="me-2 font-semibold text-text">{league.name}</Text>
+              <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={20} height={20} />
+            </View>
+          </View>
+          <View className="h-[1px] bg-border" />
+
           {/* Join Code */}
           <View className="flex-row items-center justify-between">
             <Text className="text-text font-medium">{t('Join Code')}</Text>
@@ -87,9 +92,9 @@ export const LeagueDetailsSection = ({
 
           {/* Competition details */}
           <View className="flex-row justify-between">
-            <Text className="text-text">{t('League')}</Text>
+            <Text className="text-text">{t('Competition')}</Text>
             <View className="flex-row items-center">
-              <Text className="text-text font-semibold mr-2">{league.competition.name}</Text>
+              <Text className="text-text font-semibold me-2">{league.competition.name}</Text>
               <LogoBadge source={{ uri: league.competition.logo }} width={18} height={18} />
             </View>
           </View>
@@ -98,7 +103,7 @@ export const LeagueDetailsSection = ({
           <View className="flex-row justify-between items-center">
             <Text className="text-text">{t('Country')}</Text>
             <View className="flex-row items-center">
-              <Text className="text-text font-semibold mr-2">{league.competition.area}</Text>
+              <Text className="text-text font-semibold me-2">{league.competition.area}</Text>
               <MyImage source={{ uri: league.competition.flag || '' }} width={18} height={18} contentFit="contain" />
             </View>
           </View>

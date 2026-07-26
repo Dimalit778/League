@@ -11,12 +11,46 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { Link } from 'expo-router';
-import { Camera, Settings, Shield } from 'lucide-react-native';
+import { BarChart3, Camera, CalendarDays, Settings, Shield, Star, Trophy } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
-export function ProfileHeroCard() {
+function HeroStat({
+  icon,
+  label,
+  value,
+  accent,
+  showDivider = true,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent?: boolean;
+  showDivider?: boolean;
+}) {
+  return (
+    <>
+      <View className="flex-1 items-center px-1">
+        {icon}
+        <Text className="mt-1 text-[9px] uppercase tracking-wide text-muted" numberOfLines={1}>
+          {label}
+        </Text>
+        <Text className={`mt-0.5 text-sm font-bold ${accent ? 'text-success' : 'text-text'}`} numberOfLines={1}>
+          {value}
+        </Text>
+      </View>
+      {showDivider ? <View className="w-px self-stretch bg-border opacity-70" /> : null}
+    </>
+  );
+}
+
+type ProfileHeroCardProps = {
+  rank?: number;
+  points?: number;
+};
+
+export function ProfileHeroCard({ rank, points }: ProfileHeroCardProps) {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
   const memberId = useMemberId();
@@ -25,6 +59,10 @@ export function ProfileHeroCard() {
   const nickname = member?.nickname ?? '';
   const avatarUrl = member?.avatar_url ?? null;
   const leagueName = member?.league?.name ?? '';
+  const isPrimary = member?.is_primary ?? false;
+  const joinedLabel = member?.created_at
+    ? new Date(member.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—';
   const { colors } = useThemeTokens();
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -177,6 +215,32 @@ export function ProfileHeroCard() {
               <Text className="text-sm text-muted">{t('Member of {{name}}', { name: leagueName })}</Text>
             </View>
           </View>
+        </View>
+
+        {/* Identity stat strip */}
+        <View className="mt-4 flex-row items-stretch border-t border-border pt-3">
+          <HeroStat
+            icon={<BarChart3 size={15} color={colors.primary} />}
+            label={t('Rank')}
+            value={rank ? `#${rank}` : '—'}
+          />
+          <HeroStat
+            icon={<Star size={15} color={colors.primary} fill={colors.primary} />}
+            label={t('Points')}
+            value={points != null ? `${points}` : '—'}
+          />
+          <HeroStat
+            icon={<CalendarDays size={15} color={colors.primary} />}
+            label={t('Joined')}
+            value={joinedLabel}
+          />
+          <HeroStat
+            icon={<Trophy size={15} color={colors.primary} />}
+            label={t('League')}
+            value={isPrimary ? t('Primary') : leagueName || '—'}
+            accent={isPrimary}
+            showDivider={false}
+          />
         </View>
       </View>
     </HeaderBackground>
