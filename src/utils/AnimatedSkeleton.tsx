@@ -1,3 +1,4 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useEffect } from 'react';
 import Animated, {
   Easing,
@@ -9,13 +10,14 @@ import Animated, {
 
 // Animated skeleton component with pulse effect
 export default function AnimatedSkeleton({ style }: { style?: any }) {
+  const { colors } = useThemeTokens();
   const opacity = useSharedValue(0.3);
 
   useEffect(() => {
     opacity.value = withRepeat(
       withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
       -1,
-      true
+      true,
     );
   }, [opacity]);
 
@@ -24,7 +26,7 @@ export default function AnimatedSkeleton({ style }: { style?: any }) {
   return (
     <Animated.View
       style={[
-        { backgroundColor: '#e5e7eb', borderRadius: 4 },
+        { backgroundColor: colors.border, borderRadius: 4 },
         style,
         animatedStyle,
       ]}

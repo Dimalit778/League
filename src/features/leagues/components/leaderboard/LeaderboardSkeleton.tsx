@@ -1,7 +1,7 @@
 import { Screen } from '@/components/ui';
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TopThreeSkeleton = () => {
   return (
@@ -66,7 +66,10 @@ export default function LeagueSkeleton() {
 
       <View className="mx-3 mb-2 flex-row px-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <AnimatedSkeleton key={i} style={{ flex: i === 1 ? 2 : 1, height: 10, borderRadius: 4, marginHorizontal: 2 }} />
+          <AnimatedSkeleton
+            key={i}
+            style={{ flex: i === 1 ? 2 : 1, height: 10, borderRadius: 4, marginHorizontal: 2 }}
+          />
         ))}
       </View>
 

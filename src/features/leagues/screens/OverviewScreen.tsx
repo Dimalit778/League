@@ -2,8 +2,8 @@ import { Screen } from '@/components/layout';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LeagueSkeleton from '../components/overview/LeagueSkeleton';
 import LeagueSummary from '../components/overview/LeagueSummary';
+import OverviewSkeleton from '../components/overview/OverviewSkeleton';
 import { QuickAccessSection } from '../components/overview/QuickAccessSection';
 import { UpcomingMatches } from '../components/overview/Upcoming-matches';
 import { useLeagueOverview } from '../hooks/useLeagueOverview';
@@ -12,7 +12,7 @@ export default function OverviewScreen() {
   const { leagueSummary, stats, upcomingMatches, isLoading } = useLeagueOverview();
   const { bottom } = useSafeAreaInsets();
 
-  if (isLoading) return <LeagueSkeleton />;
+  if (isLoading) return <OverviewSkeleton />;
 
   return (
     <Screen>

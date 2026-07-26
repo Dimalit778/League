@@ -10,7 +10,7 @@ type MatchesSkeletonProps = {
   bottomInset?: number;
 };
 
-function SkeletonMatchCard() {
+export const MatchCardSkeleton = () => {
   const { width: screenWidth } = useWindowDimensions();
   const { colors } = useThemeTokens();
 
@@ -32,7 +32,7 @@ function SkeletonMatchCard() {
   const boneColor = colors.border;
 
   return (
-    <View className="mb-2 w-full items-center">
+    <View className="mb-2 w-full items-center bbg">
       <View style={{ width: cardWidth, height: cardHeight }}>
         <View className="absolute inset-0">
           <MatchCardBg width={cardWidth} height={cardHeight} />
@@ -40,7 +40,7 @@ function SkeletonMatchCard() {
 
         <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top: headerTop }}>
           <AnimatedSkeleton
-            style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
+            style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: 'boneColor' }}
           />
         </View>
 
@@ -94,7 +94,7 @@ function SkeletonMatchCard() {
       </View>
     </View>
   );
-}
+};
 
 export default function MatchesSkeleton({ count = SKELETON_COUNT, bottomInset = 0 }: MatchesSkeletonProps) {
   const items = Array.from({ length: count }, (_, index) => index);
@@ -106,7 +106,7 @@ export default function MatchesSkeleton({ count = SKELETON_COUNT, bottomInset = 
       scrollEnabled={false}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1 }}
-      renderItem={() => <SkeletonMatchCard />}
+      renderItem={() => <MatchCardSkeleton />}
     />
   );
 }

@@ -1,5 +1,5 @@
 import { Error, useFloatBottomTabsInset } from '@/components/layout';
-import LeagueSkeleton from '@/features/leagues/components/overview/LeagueSkeleton';
+import LeagueSkeleton from '@/features/leagues/components/leaderboard/LeaderboardSkeleton';
 import { useGetLeaderboard } from '@/features/leagues/hooks/useLeagues';
 import { useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';

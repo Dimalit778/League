@@ -28,7 +28,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
   const isSelected = selectedFixture === fixture;
   const isToday = currentFixture !== undefined && fixture === currentFixture;
 
-  const opacity = isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.35;
+  const opacity = isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.8;
 
   return (
     <View style={{ opacity }} className="items-center mx-2">
@@ -43,18 +43,15 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
         className={cn(
           'rounded-xl justify-center items-center overflow-hidden py-2',
           isSelected
-            ? 'bg-surface border-[1.5px] border-primary'
+            ? 'bg-surface border border-primary'
             : isToday
-              ? 'bg-surface border-[1.5px] border-text'
-              : 'bg-surface border-[0.5px] border-border',
+              ? 'bg-surface border border-text'
+              : 'bg-surface border border-border',
           Platform.OS === 'web' && 'hover:scale-105 active:scale-95',
         )}
       >
         {(isSelected || isToday) && (
-          <View
-            className={cn('absolute top-0 left-0 right-0', isSelected ? 'bg-primary' : 'bg-text')}
-            style={{ height: 2.5 }}
-          />
+          <View className={cn('absolute inset-x-0 inset-y-0', isSelected ? 'bg-primary' : '')} style={{ height: 4 }} />
         )}
         <Text
           variant="h3"
@@ -131,7 +128,7 @@ export default function FixturesList({
       data={fixtures}
       onLayout={onLayout}
       horizontal
-      contentContainerStyle={{ paddingBottom: 5, flexGrow: 1 }}
+      contentContainerStyle={{ paddingVertical: 5, flexGrow: 1 }}
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => (

@@ -158,7 +158,7 @@ C 140 76 133 102 120 104
   "
         fill="url(#predictionBg)"
         stroke={predictionColors.stroke}
-        strokeWidth="1"
+        strokeWidth="1.5"
       />
     </Svg>
   );
