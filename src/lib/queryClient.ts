@@ -35,24 +35,25 @@ export const KEYS = {
 
   // ==================== MATCHES ====================
   matches: {
-    byFixture: (fixture?: number, competitionId?: number, memberId?: string) =>
+    byFixture: (fixture?: number, competitionId?: number, seasonId?: number, memberId?: string) =>
       memberId
-        ? (['matches', competitionId, 'fixture', fixture, 'member', memberId] as const)
-        : (['matches', competitionId, 'fixture', fixture] as const),
-    fixture: (competitionId: number, fixture: number, memberId: string, stage?: string) =>
-      ['matches', competitionId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
-    byCompetition: (competitionId: number, memberId: string) =>
-      ['matches', competitionId, 'competition', 'member', memberId] as const,
-    season: (competitionId: number, memberId: string) =>
-      ['matches', competitionId, 'season', memberId] as const,
-    nearest: (competitionId: number, memberId: string) =>
-      ['matches', competitionId, 'nearest', memberId] as const,
+        ? (['matches', competitionId, seasonId, 'fixture', fixture, 'member', memberId] as const)
+        : (['matches', competitionId, seasonId, 'fixture', fixture] as const),
+    fixture: (competitionId: number, seasonId: number, fixture: number, memberId: string, stage?: string) =>
+      ['matches', competitionId, seasonId, 'phase', 'fixture', fixture, 'member', memberId, stage ?? 'all'] as const,
+    byCompetition: (competitionId: number, seasonId: number, memberId: string) =>
+      ['matches', competitionId, seasonId, 'competition', 'member', memberId] as const,
+    season: (competitionId: number, seasonId: number, memberId: string) =>
+      ['matches', competitionId, seasonId, 'season', memberId] as const,
+    nearest: (competitionId: number, seasonId: number, memberId: string) =>
+      ['matches', competitionId, seasonId, 'nearest', memberId] as const,
     byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
-    today: (competitionId: number, memberId: string) =>
-      ['matches', competitionId, 'today', memberId] as const,
-    finishedFixtures: (competitionId: number) => ['matches', competitionId, 'finished-fixtures'] as const,
+    today: (competitionId: number, seasonId: number, memberId: string) =>
+      ['matches', competitionId, seasonId, 'today', memberId] as const,
+    finishedFixtures: (competitionId: number, seasonId: number) =>
+      ['matches', competitionId, seasonId, 'finished-fixtures'] as const,
   },
 
   // ==================== PREDICTIONS ====================

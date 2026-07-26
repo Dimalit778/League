@@ -53,7 +53,7 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
       </View>
 
       <View className="mt-0.5 h-6 w-[95%] justify-start items-center">
-        <Text semibold numberOfLines={2} ellipsizeMode="tail">
+        <Text caption numberOfLines={2} ellipsizeMode="tail">
           {name}
         </Text>
       </View>
@@ -79,7 +79,7 @@ const MatchHeader = ({
   if (displayStatus === 'FINISHED') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text className="text-[10px] font-semibold text-muted" numberOfLines={1}>
+        <Text caption numberOfLines={1}>
           FT
         </Text>
       </View>
@@ -89,7 +89,7 @@ const MatchHeader = ({
   if (displayStatus === 'LIVE') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text className="text-[10px] font-bold" style={{ color: LIVE_GOLD }} numberOfLines={1}>
+        <Text caption style={{ color: LIVE_GOLD }} numberOfLines={1}>
           LIVE
         </Text>
       </View>
@@ -98,12 +98,20 @@ const MatchHeader = ({
 
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <View className="max-w-[85%] flex-row items-center justify-center gap-2">
-        <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+      <View className="flex-row items-center justify-center gap-2.5">
+        <Text
+          small
+          semibold
+          className="text-muted "
+          numberOfLines={1}
+          ellipsizeMode="clip"
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
+        >
           {date}
         </Text>
-        <View className="h-3 w-0.5 bg-border" />
-        <Text className="max-w-[45%] text-[10px] font-medium text-muted" numberOfLines={1} ellipsizeMode="tail">
+        <View className="h-3 w-px bg-border" />
+        <Text semibold small className="text-muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
           {time}
         </Text>
       </View>
@@ -156,7 +164,7 @@ export const MatchCard = memo(function MatchCard({
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
 
-  const headerTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 12;
+  const headerTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 8;
   const predictionTop = cardHeight * MATCH_CARD_LAYOUT.predictionTabCenterY - 10;
   const mainContentTop = cardHeight * MATCH_CARD_LAYOUT.contentTopY;
 

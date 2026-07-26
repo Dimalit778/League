@@ -69,7 +69,12 @@ export function Leagues() {
   const handleLeaguePress = async (league: LeagueSummary) => {
     if (!league.member_id || !league.league_id || !league.competition_id) return;
 
-    setPrimaryLeague({ memberId: league.member_id, leagueId: league.league_id, competitionId: league.competition_id });
+    setPrimaryLeague({
+      memberId: league.member_id,
+      leagueId: league.league_id,
+      competitionId: league.competition_id,
+      seasonId: league.competition_season_id,
+    });
     router.replace('/(app)/(league)/(tabs)');
     await updatePrimaryLeague({ leagueId: league.league_id });
   };

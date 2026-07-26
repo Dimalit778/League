@@ -61,18 +61,18 @@ describe('KEYS', () => {
     });
 
     it('generates byFixture key with member', () => {
-      const key = KEYS.matches.byFixture(5, 100, 'm1');
-      expect(key).toEqual(['matches', 100, 'fixture', 5, 'member', 'm1']);
+      const key = KEYS.matches.byFixture(5, 100, 2502, 'm1');
+      expect(key).toEqual(['matches', 100, 2502, 'fixture', 5, 'member', 'm1']);
     });
 
     it('generates byFixture key without member', () => {
-      const key = KEYS.matches.byFixture(5, 100);
-      expect(key).toEqual(['matches', 100, 'fixture', 5]);
+      const key = KEYS.matches.byFixture(5, 100, 2502);
+      expect(key).toEqual(['matches', 100, 2502, 'fixture', 5]);
     });
 
     it('generates byCompetition key', () => {
-      const key = KEYS.matches.byCompetition(100, 'm1');
-      expect(key).toEqual(['matches', 100, 'competition', 'member', 'm1']);
+      const key = KEYS.matches.byCompetition(100, 2502, 'm1');
+      expect(key).toEqual(['matches', 100, 2502, 'competition', 'member', 'm1']);
     });
 
     it('generates byCompetitionRoot key', () => {
@@ -80,9 +80,10 @@ describe('KEYS', () => {
     });
 
     it('generates phase-specific keys', () => {
-      expect(KEYS.matches.fixture(100, 5, 'm1')).toEqual([
+      expect(KEYS.matches.fixture(100, 2502, 5, 'm1')).toEqual([
         'matches',
         100,
+        2502,
         'phase',
         'fixture',
         5,
@@ -90,9 +91,10 @@ describe('KEYS', () => {
         'm1',
         'all',
       ]);
-      expect(KEYS.matches.fixture(100, 5, 'm1', 'LEAGUE_STAGE')).toEqual([
+      expect(KEYS.matches.fixture(100, 2502, 5, 'm1', 'LEAGUE_STAGE')).toEqual([
         'matches',
         100,
+        2502,
         'phase',
         'fixture',
         5,

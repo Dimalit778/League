@@ -25,6 +25,7 @@ function toPrimaryLeague(member: MyLeague) {
     memberId: member.id,
     leagueId: member.league.id,
     competitionId: member.league.competition_id,
+    seasonId: member.league.competition?.season_id ?? null,
   };
 }
 
@@ -32,6 +33,7 @@ export function useMyLeaguesScreen() {
   const memberId = usePrimaryLeagueStore((s) => s.memberId);
   const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
   const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
+  const seasonId = usePrimaryLeagueStore((s) => s.seasonId);
   const setPrimaryLeague = usePrimaryLeagueStore((s) => s.setPrimaryLeague);
 
   const reactivateLeaguesAfterProUpgrade = useReactivateLeaguesAfterProUpgrade();
@@ -75,7 +77,7 @@ export function useMyLeaguesScreen() {
         }
       }
 
-      const previousPrimaryLeague = { memberId, leagueId, competitionId };
+      const previousPrimaryLeague = { memberId, leagueId, competitionId, seasonId };
       setPrimaryLeague(toPrimaryLeague(selectedLeague));
       router.replace('/(app)/(league)/(tabs)');
 
@@ -93,6 +95,7 @@ export function useMyLeaguesScreen() {
       leagueId,
       maxLeagues,
       memberId,
+      seasonId,
       reactivateLeaguesAfterProUpgrade,
       requiresLeagueActivation,
       setPrimaryLeague,

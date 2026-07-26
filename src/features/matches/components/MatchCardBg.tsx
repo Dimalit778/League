@@ -24,8 +24,6 @@ type MatchCardColors = {
   cardTop: string;
   cardBottom: string;
   cardStroke: string;
-  dateBg: string;
-  dateStroke: string;
   shadow: string;
   prediction: Record<PredictionDisplayStatus, PredictionTabColors>;
 };
@@ -35,9 +33,6 @@ const MATCH_CARD_COLORS: Record<ThemeName, MatchCardColors> = {
     cardTop: '#F8FAFC',
     cardBottom: '#EAF0F7',
     cardStroke: '#CBD5E1',
-
-    dateBg: '#E2E8F0',
-    dateStroke: '#CBD5E1',
 
     shadow: '#000814',
     prediction: {
@@ -51,9 +46,6 @@ const MATCH_CARD_COLORS: Record<ThemeName, MatchCardColors> = {
     cardTop: '#243044',
     cardBottom: '#1a2332',
     cardStroke: '#334155',
-
-    dateBg: '#1f2a3a',
-    dateStroke: '#52647d',
 
     shadow: '#000000',
     prediction: {
@@ -103,16 +95,16 @@ export const MatchCardBg = ({ width, height, predictionStatus = 'none' }: Props)
         d="
     M 32 6
 
-    H 120
-    C 133 7 140 28 150 28
-    H 210
-    C 220 28 227 7 240 6
+    H 108
+    C 124 8 132 34 144 34
+    H 216
+    C 228 34 236 8 252 6
 
-    H 326
+    H 328
     C 342 6 352 15 352 26
 
     V 82
-    C 352 95 340 104 322 104
+    C 352 95 344 104 328 104
 
 H 240
 C 227 102 220 76 210 76
@@ -132,19 +124,18 @@ C 140 76 133 102 120 104
         strokeWidth="1.3"
       />
 
-      {/* top date tab - mirror of bottom prediction tab */}
-      {/* top date tab - symmetric */}
+      {/* Wider top tab gives the date and time more breathing room. */}
       <Path
         d="
-    M 125 7
-    C 136 28 141 28 150 28
-    H 210
-    C 219 28 224 28 235 7
+    M 115 9
+    C 127 26 133 34 144 34
+    H 216
+    C 227 34 233 26 245 9
     Z
   "
-        fill={colors.dateBg}
-        stroke={colors.dateStroke}
-        strokeWidth="1"
+        fill="url(#predictionBg)"
+        stroke={predictionColors.stroke}
+        strokeWidth="1.5"
       />
 
       {/* bottom prediction tab */}

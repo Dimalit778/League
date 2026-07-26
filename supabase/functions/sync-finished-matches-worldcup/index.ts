@@ -58,6 +58,7 @@ function deriveCupProgress(matches: any[]) {
 const transformMatch = (m: any) => ({
   id: m.id,
   competition_id: m.competition?.id ?? null,
+  season_id: m.season?.id ?? null,
   fixture: m.matchday ?? null,
   kick_off: m.utcDate ?? null,
   status: m.status ?? null,

@@ -9,7 +9,7 @@ type CompetitionSummary = Pick<
 
 type Competition = Pick<
   Tables<"competitions">,
-  "id" | "name" | "logo" | "flag" | "area" | "type" | "current_stage" | "current_fixture"
+  "id" | "name" | "logo" | "flag" | "area" | "type" | "current_stage" | "current_fixture" | "season_id"
 >;
 
 export type LeaderboardRow = Pick<

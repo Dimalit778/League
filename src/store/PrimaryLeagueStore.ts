@@ -5,6 +5,7 @@ type PrimaryLeagueContext = {
   memberId: string | null;
   leagueId: string | null;
   competitionId: number | null;
+  seasonId: number | null;
 };
 
 type PrimaryLeagueStore = PrimaryLeagueContext & {
@@ -23,6 +24,7 @@ const EMPTY_CONTEXT: PrimaryLeagueContext = {
   memberId: null,
   leagueId: null,
   competitionId: null,
+  seasonId: null,
 };
 
 export const usePrimaryLeagueStore =
@@ -69,7 +71,10 @@ export const usePrimaryLeagueStore =
               id,
               league:leagues!inner (
                 id,
-                competition_id
+                competition_id,
+                competition:competitions!inner (
+                  season_id
+                )
               )
             `)
             .eq('user_id', user.id)
@@ -86,6 +91,8 @@ export const usePrimaryLeagueStore =
           leagueId: member?.league?.id ?? null,
           competitionId:
             member?.league?.competition_id ?? null,
+          seasonId:
+            member?.league?.competition?.season_id ?? null,
           loading: false,
           initialized: true,
         });
@@ -134,4 +141,9 @@ export function useLeagueId(): string {
 export function useCompetitionId(): number {
   const competitionId = usePrimaryLeagueStore((state) => state.competitionId);
   return requireStoreValue(competitionId, 'Primary competition');
+}
+
+export function useSeasonId(): number {
+  const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+  return requireStoreValue(seasonId, 'Primary season');
 }

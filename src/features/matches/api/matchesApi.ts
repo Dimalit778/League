@@ -116,19 +116,25 @@ export const matchesApi = {
   },
 
   // Whole-season load feeding every Matches view (sliced client-side).
-  async getSeasonMatches(competitionId: number, memberId: string): Promise<MatchCardType[]> {
-    return this.getCompetitionMatchesWithMemberPredictions(competitionId, memberId);
+  async getSeasonMatches(
+    competitionId: number,
+    seasonId: number,
+    memberId: string,
+  ): Promise<MatchCardType[]> {
+    return this.getCompetitionMatchesWithMemberPredictions(competitionId, seasonId, memberId);
   },
 
   // Get matches by fixture with current member's predictions
   async getMatchesByFixture({
     fixture,
     competitionId,
+    seasonId,
     memberId,
     stage,
   }: {
     fixture: number;
     competitionId: number;
+    seasonId: number;
     memberId: string;
     stage?: string;
   }): Promise<MatchCardType[]> {
@@ -136,6 +142,7 @@ export const matchesApi = {
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('fixture', fixture)
       .eq('predictions.league_member_id', memberId);
 
@@ -154,7 +161,11 @@ export const matchesApi = {
     return matches;
   },
   // Get today matches
-  async getTodayMatches(competitionId: number, memberId: string): Promise<MatchCardType[]> {
+  async getTodayMatches(
+    competitionId: number,
+    seasonId: number,
+    memberId: string,
+  ): Promise<MatchCardType[]> {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const endOfDay = new Date(
@@ -171,6 +182,7 @@ export const matchesApi = {
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .gte('kick_off', startOfDay)
       .lte('kick_off', endOfDay)
       .eq('predictions.league_member_id', memberId)
@@ -187,12 +199,14 @@ export const matchesApi = {
   // Get all competition matches with current member's predictions
   async getCompetitionMatchesWithMemberPredictions(
     competitionId: number,
+    seasonId: number,
     memberId: string,
   ): Promise<MatchCardType[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: true });
 
@@ -204,6 +218,7 @@ export const matchesApi = {
   },
   async getTournamentMatches(
     competitionId: number,
+    seasonId: number,
     memberId: string,
     stage: string,
   ): Promise<MatchCardType[]> {
@@ -211,6 +226,7 @@ export const matchesApi = {
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('stage', stage)
       .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: true });
@@ -225,6 +241,7 @@ export const matchesApi = {
 
   async getTournamentMatchesByView(
     competitionId: number,
+    seasonId: number,
     memberId: string,
     view: TournamentView,
   ): Promise<MatchCardType[]> {
@@ -232,6 +249,7 @@ export const matchesApi = {
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('predictions.league_member_id', memberId);
 
     query =
@@ -251,12 +269,14 @@ export const matchesApi = {
 
   async getNearestUpcomingMatch(
     competitionId: number,
+    seasonId: number,
     memberId: string,
   ): Promise<MatchCardType | null> {
     const upcomingQuery = supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('predictions.league_member_id', memberId)
       .neq('status', 'FINISHED')
       .order('kick_off', { ascending: true })
@@ -272,6 +292,7 @@ export const matchesApi = {
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('predictions.league_member_id', memberId)
       .order('kick_off', { ascending: false })
       .limit(1);
@@ -282,11 +303,12 @@ export const matchesApi = {
     return mapMatchCardData(latest)[0] ?? null;
   },
 
-  async getFinishedFixtures(competitionId: number): Promise<number[]> {
+  async getFinishedFixtures(competitionId: number, seasonId: number): Promise<number[]> {
     const { data, error } = await supabase
       .from('matches')
       .select('fixture')
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('status', 'FINISHED')
       .not('fixture', 'is', null)
       .order('fixture', { ascending: true });
@@ -304,12 +326,14 @@ export const matchesApi = {
   async getMemberFinishedMatches(
     memberId: string,
     competitionId: number,
+    seasonId: number,
     fixture: number,
   ): Promise<MatchCardType[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
+      .eq('season_id', seasonId)
       .eq('status', 'FINISHED')
       .eq('fixture', fixture)
       .eq('predictions.league_member_id', memberId)

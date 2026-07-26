@@ -64,6 +64,7 @@ Deno.serve(async (req) => {
       const rows = matches.map((m: any) => ({
         id: m.id,
         competition_id: m.competition?.id ?? compId,
+        season_id: m.season?.id ?? null,
         fixture: m.matchday ?? null,
         kick_off: m.utcDate ?? null,
         status: m.status ?? null,

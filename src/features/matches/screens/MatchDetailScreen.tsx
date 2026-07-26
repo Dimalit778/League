@@ -4,9 +4,10 @@ import { Error, LoadingOverlay } from '@/components/layout';
 
 import { images } from '@/assets/images';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
-import { AntDesign } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
+import { CircleX } from 'lucide-react-native';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
 import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchDetail } from '../hooks/useMatches';
@@ -16,6 +17,7 @@ const MatchDetailScreen = () => {
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
   const memberId = useMemberId();
+  const inset = useSafeAreaInsets();
 
   const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
 
@@ -31,7 +33,7 @@ const MatchDetailScreen = () => {
   const isScheduled = ['SCHEDULED', 'TIMED'].includes(matchData.status ?? '') && kickOff > now;
 
   return (
-    <View className="flex-1 w-full max-w-lg mx-auto bg-background">
+    <View className="flex-1 w-full max-w-lg mx-auto bg-background" style={{ paddingTop: inset.top }}>
       <View style={{ position: 'absolute', width: '100%', height: 400 }}>
         <ExpoImage
           source={images.pitchGrass}
@@ -46,8 +48,8 @@ const MatchDetailScreen = () => {
         ></View>
       </View>
 
-      <TouchableOpacity className="absolute z-20 left-10 top-16 " onPress={() => router.dismiss()}>
-        <AntDesign name="close-circle" size={isDesktop ? 40 : 30} color="#fff" />
+      <TouchableOpacity className="absolute z-20 left-10 " onPress={() => router.dismiss()}>
+        <CircleX size={36} color="#fff" strokeWidth={1.5} />
       </TouchableOpacity>
       <MatchHeader match={matchData} memberPrediction={memberPrediction} isScheduled={isScheduled} />
       {/* Scrollable Content */}

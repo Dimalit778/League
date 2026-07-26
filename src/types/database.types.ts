@@ -210,6 +210,7 @@ export type Database = {
           kick_off: string
           referee: string | null
           score: Json | null
+          season_id: number | null
           stage: string | null
           status: Database["public"]["Enums"]["match_status"] | null
           updated_at: string
@@ -230,6 +231,7 @@ export type Database = {
           kick_off: string
           referee?: string | null
           score?: Json | null
+          season_id?: number | null
           stage?: string | null
           status?: Database["public"]["Enums"]["match_status"] | null
           updated_at?: string
@@ -250,6 +252,7 @@ export type Database = {
           kick_off?: string
           referee?: string | null
           score?: Json | null
+          season_id?: number | null
           stage?: string | null
           status?: Database["public"]["Enums"]["match_status"] | null
           updated_at?: string
@@ -503,6 +506,7 @@ export type Database = {
           competition_id: number | null
           competition_logo: string | null
           competition_name: string | null
+          competition_season_id: number | null
           is_primary: boolean | null
           league_id: string | null
           league_name: string | null
