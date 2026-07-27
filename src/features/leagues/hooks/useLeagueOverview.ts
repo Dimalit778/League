@@ -47,6 +47,7 @@ export function useLeagueOverview(): LeagueOverview {
       totalMembers: stats?.totalMembers ?? 0,
       currentStreak: stats?.currentStreak ?? 0,
       longestStreak: stats?.longestStreak ?? 0,
+      recentForm: stats?.recentForm ?? [],
     },
     upcomingMatches: (todayMatches ?? []).map(mapMatchToCardData),
     // Don't block the whole screen on matches — they sit below the fold.

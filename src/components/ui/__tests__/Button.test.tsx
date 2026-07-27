@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import { Text } from 'react-native';
 import { Button } from '../Button';
 
 describe('Button', () => {
@@ -28,5 +29,30 @@ describe('Button', () => {
     fireEvent.press(button);
 
     expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it('renders an icon before or after the title', () => {
+    const { getByText, rerender } = render(
+      <Button title="Next" icon={<Text>+</Text>} onPress={jest.fn()} />,
+    );
+
+    expect(getByText('+')).toBeTruthy();
+    expect(getByText('Next')).toBeTruthy();
+
+    rerender(
+      <Button title="Next" icon={<Text>+</Text>} iconPosition="end" onPress={jest.fn()} />,
+    );
+
+    expect(getByText('+')).toBeTruthy();
+  });
+
+  it('supports an accessible icon-only button', () => {
+    const { getByRole, getByText, queryByText } = render(
+      <Button icon={<Text>+</Text>} accessibilityLabel="Add" onPress={jest.fn()} />,
+    );
+
+    expect(getByRole('button', { name: 'Add' })).toBeTruthy();
+    expect(getByText('+')).toBeTruthy();
+    expect(queryByText('Add')).toBeNull();
   });
 });

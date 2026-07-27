@@ -2,6 +2,7 @@ import { Screen } from '@/components/layout';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CurrentFormCard } from '../components/overview/CurrentFormCard';
 import LeagueSummary from '../components/overview/LeagueSummary';
 import OverviewSkeleton from '../components/overview/OverviewSkeleton';
 import { QuickAccessSection } from '../components/overview/QuickAccessSection';
@@ -24,6 +25,7 @@ export default function OverviewScreen() {
         showsVerticalScrollIndicator={false}
       >
         <QuickAccessSection />
+        <CurrentFormCard results={stats.recentForm} />
         <StatsPredictionSection stats={stats} />
         <UpcomingMatches matches={upcomingMatches} />
       </ScrollView>

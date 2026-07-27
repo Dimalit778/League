@@ -283,6 +283,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'AI match analysis': 'AI match analysis',
       'AI-generated preview based on available match data.':
         'AI-generated preview based on available match data.',
+      'Unlock the full AI analysis with Pro': 'Unlock the full AI analysis with Pro',
+      'AI Prediction': 'AI Prediction',
+      'Get the full breakdown behind every prediction.':
+        'Get the full breakdown behind every prediction.',
       'Prediction:': 'Prediction:',
     },
 
@@ -614,6 +618,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Correct results': 'Correct results',
       'Predictions made': 'Predictions made',
       'Current streak': 'Current streak',
+      'Current form': 'Current form',
+      'Last 5 finished predictions': 'Last 5 finished predictions',
+      'No finished predictions yet': 'No finished predictions yet',
       'Longest streak': 'Longest streak',
       'Performance by round': 'Performance by round',
       'Round {{n}}': 'Round {{n}}',
@@ -976,6 +983,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'AI match analysis': 'ניתוח המשחק באמצעות AI',
       'AI-generated preview based on available match data.':
         'התחזית נוצרה באמצעות AI על סמך נתוני המשחק הזמינים.',
+      'Unlock the full AI analysis with Pro': 'ניתוח ה-AI המלא זמין למנויי פרו',
+      'AI Prediction': 'תחזית AI',
+      'Get the full breakdown behind every prediction.':
+        'קבל את הניתוח המלא שמאחורי כל תחזית.',
       'Prediction:': 'ניחוש:',
     },
 
@@ -1330,6 +1341,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Correct results': 'תוצאות נכונות',
       'Predictions made': 'ניחושים שבוצעו',
       'Current streak': 'רצף נוכחי',
+      'Current form': 'כושר נוכחי',
+      'Last 5 finished predictions': '5 הניחושים האחרונים שהסתיימו',
+      'No finished predictions yet': 'עדיין אין ניחושים שהסתיימו',
       'Longest streak': 'רצף הכי ארוך',
       'Performance by round': 'ביצועים לפי סיבוב',
       'Round {{n}}': 'סיבוב {{n}}',

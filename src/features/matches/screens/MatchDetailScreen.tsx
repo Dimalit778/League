@@ -6,7 +6,7 @@ import { images } from '@/assets/images';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { CircleX } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
@@ -31,8 +31,7 @@ const MatchDetailScreen = () => {
 
   const now = new Date();
   const kickOff = new Date(matchData.kick_off);
-  const hasStarted =
-    kickOff <= now || ['IN_PLAY', 'PAUSED', 'FINISHED'].includes(matchData.status ?? '');
+  const hasStarted = kickOff <= now || ['IN_PLAY', 'PAUSED', 'FINISHED'].includes(matchData.status ?? '');
   const isScheduled = !hasStarted;
 
   return (
@@ -53,14 +52,14 @@ const MatchDetailScreen = () => {
         />
 
         <TouchableOpacity
-          className="absolute left-4 z-20 h-11 w-11 items-center justify-center rounded-full bg-black/25"
+          className="absolute left-4 z-20 h-11 w-11 items-center justify-center border-2 border-text rounded-full"
           style={{ top: inset.top + 8 }}
           onPress={() => router.dismiss()}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel="Close"
         >
-          <CircleX size={30} color="#fff" strokeWidth={1.6} />
+          <ChevronLeft size={30} color="#fff" strokeWidth={1.6} />
         </TouchableOpacity>
 
         <MatchHeader match={matchData} memberPrediction={memberPrediction} isScheduled={isScheduled} />

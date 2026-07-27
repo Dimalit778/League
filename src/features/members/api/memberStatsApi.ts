@@ -32,6 +32,23 @@ function computeStreaks(predictions: PredictionRow[]) {
   
     return { currentStreak, longestStreak };
   }
+
+function computeRecentForm(predictions: PredictionRow[]) {
+  return predictions
+    .filter((prediction) => prediction.is_finished)
+    .sort(
+      (a, b) =>
+        new Date(a.matches?.kick_off ?? 0).getTime() - new Date(b.matches?.kick_off ?? 0).getTime(),
+    )
+    .slice(-5)
+    .map((prediction) => {
+      const points = prediction.points ?? 0;
+      return {
+        points,
+        result: points === 5 ? ('B' as const) : points === 3 ? ('H' as const) : ('L' as const),
+      };
+    });
+}
   
 function computeRoundPerformance(predictions: PredictionRow[]): RoundPerformance[] {
     const roundMap = new Map<number, number>();
@@ -126,6 +143,7 @@ export const memberStatsApi = {
     const totalMembers = leaderboardData.length;
 
     const { currentStreak, longestStreak } = computeStreaks(predictionsData);
+    const recentForm = computeRecentForm(predictionsData);
     const pendingPredictions = pendingResult.count ?? 0;
     const roundPerformance = computeRoundPerformance(predictionsData);
     const bestCategory = computeBestCategory({
@@ -146,6 +164,7 @@ export const memberStatsApi = {
       totalMembers ,
       currentStreak ,
       longestStreak ,
+      recentForm,
       roundPerformance, 
       bestCategory, 
       pendingPredictions ,
