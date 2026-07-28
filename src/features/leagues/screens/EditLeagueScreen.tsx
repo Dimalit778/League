@@ -38,11 +38,11 @@ const MemberCard = ({ member, isOwner, canRemove, handleRemoveMember }: MemberCa
           <AvatarImage nickname={member.nickname} path={member.avatar_url ?? null} />
         </View>
         <View className="flex-1 items-start">
-          <Text variant="body" bold>
+          <Text className="text-base font-bold">
             {member.nickname}
           </Text>
           {isOwner && (
-            <Text variant="caption" className="text-muted">
+            <Text className="text-sm text-muted">
               {t('League Owner')}
             </Text>
           )}
@@ -190,10 +190,10 @@ export default function EditLeagueScreen() {
             <View className="flex-row items-center gap-3 mb-4">
               <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
               <View className="flex-1">
-                <Text variant="body" bold>
+                <Text className="text-base font-bold">
                   {league?.competition?.name}
                 </Text>
-                <Text variant="caption" className="text-muted">
+                <Text className="text-sm text-muted">
                   {league?.competition?.area}
                 </Text>
               </View>
@@ -211,7 +211,7 @@ export default function EditLeagueScreen() {
                 autoComplete="off"
               />
             ) : (
-              <Text variant="body" bold className="px-3 py-3">
+              <Text className="text-base font-bold px-3 py-3">
                 {league?.name}
               </Text>
             )}
@@ -222,7 +222,7 @@ export default function EditLeagueScreen() {
             >
               <Text className="text-muted">{t('Invite code')}</Text>
               <View className="flex-row items-center gap-2">
-                <Text semibold className="tracking-widest text-primary">
+                <Text className="font-semibold tracking-widest text-primary">
                   {league?.join_code}
                 </Text>
                 <Copy size={14} color={colors.primary} />
@@ -231,7 +231,7 @@ export default function EditLeagueScreen() {
 
             <Pressable onPress={handleInviteFriends} className="flex-row items-center gap-2 mt-3 active:opacity-70">
               <UserPlus size={18} color={colors.primary} />
-              <Text semibold className="text-primary">
+              <Text className="font-semibold text-primary">
                 {t('Invite friends')}
               </Text>
             </Pressable>
@@ -284,7 +284,7 @@ export default function EditLeagueScreen() {
               className="flex-row items-center justify-center gap-2.5 rounded-xl border border-error px-5 py-3 active:opacity-80 disabled:opacity-50"
             >
               <LogOut size={18} color={colors.error} strokeWidth={2.5} />
-              <Text semibold className="text-error">
+              <Text className="font-semibold text-error">
                 {t('Leave league')}
               </Text>
             </Pressable>

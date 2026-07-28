@@ -109,7 +109,7 @@ const GoogleAuth = ({
         accessibilityLabel={label}
       >
         <GoogleLogoIcon size={22} />
-        <Text semibold className="text-text" numberOfLines={1}>
+        <Text numberOfLines={1} className="font-semibold text-text">
           {label}
         </Text>
       </Pressable>

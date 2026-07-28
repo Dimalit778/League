@@ -207,7 +207,7 @@ export function ProfileHeroCard({ rank, points }: ProfileHeroCardProps) {
 
           {/* User info */}
           <View className="min-w-0 flex-1">
-            <Text h2 semibold numberOfLines={1}>
+            <Text numberOfLines={1} className="text-2xl font-semibold">
               {displayName}
             </Text>
             <View className="mt-1.5 flex-row items-center gap-1.5">

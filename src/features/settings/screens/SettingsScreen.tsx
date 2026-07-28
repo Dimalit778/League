@@ -72,7 +72,7 @@ const SettingsScreen = () => {
             onPress={handleDeleteAccountPress}
             className="items-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-4"
           >
-            <Text bold className="text-red-400">
+            <Text className="font-bold text-red-400">
               {t('Delete Account')}
             </Text>
 

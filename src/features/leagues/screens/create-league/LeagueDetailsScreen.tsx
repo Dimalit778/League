@@ -130,7 +130,7 @@ const LeagueDetailsScreen = () => {
 
           {/* Members count */}
           <View>
-            <Text variant="caption" className="text-muted mb-3 text-center">
+            <Text className="text-sm text-muted mb-3 text-center">
               {t('Choose how many friends can join this league.')}
             </Text>
 

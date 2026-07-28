@@ -152,9 +152,8 @@ export const Button = ({
           {iconPosition === 'start' && icon}
           {title ? (
             <Text
-              semibold
-              className={cn(textSizeClasses[size], textVariantClasses[variant])}
               style={!isIOS ? { textTransform: 'uppercase', letterSpacing: 0.5 } : undefined}
+              className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}
             >
               {title}
             </Text>

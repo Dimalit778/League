@@ -36,14 +36,14 @@ export default function SubscriptionScreen() {
       <BackButton title={t('Subscription')} />
       <View className="flex-1 px-4 pt-6 gap-4">
         <View className="rounded-2xl border border-border bg-surface p-5 gap-3">
-          <Text variant="h2">{subscription.isActive ? t('PRO') : t('FREE')}</Text>
-          <Text variant="body" className="text-muted">
+          <Text className="text-2xl">{subscription.isActive ? t('PRO') : t('FREE')}</Text>
+          <Text className="text-base text-muted">
             {subscription.isActive
               ? t('Your PRO subscription is active.')
               : t('Upgrade to create more leagues and unlock more competitions.')}
           </Text>
           {isOffline && (
-            <Text variant="caption" className="text-muted">
+            <Text className="text-sm text-muted">
               {t('Subscription status may be outdated while offline.')}
             </Text>
           )}

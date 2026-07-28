@@ -1,3 +1,4 @@
+import { cn } from '@/lib/nativeWind';
 import { Screen } from '@/components/layout';
 import { BackButton, Card, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -31,13 +32,13 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
         contentContainerStyle={{ paddingBottom: edges.bottom + 24, paddingHorizontal: 10 }}
       >
         <View className="mb-5 mt-3">
-          <Text variant="h2" className={textAlignClass}>
+          <Text className={cn("text-2xl", textAlignClass)}>
             {content.title}
           </Text>
-          <Text variant="caption" className={`mt-1 text-muted ${textAlignClass}`}>
+          <Text className={`text-sm mt-1 text-muted ${textAlignClass}`}>
             {content.updatedAt}
           </Text>
-          <Text variant="body" className={`mt-4 text-muted ${textAlignClass}`}>
+          <Text className={`text-base mt-4 text-muted ${textAlignClass}`}>
             {content.intro}
           </Text>
         </View>
@@ -51,17 +52,17 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
               >
                 <Ionicons name="document-text-outline" size={20} color={colors.primary} />
               </View>
-              <Text variant="h3" className={`flex-1 ${textAlignClass}`}>
+              <Text className={`text-xl flex-1 ${textAlignClass}`}>
                 {section.title}
               </Text>
             </View>
 
             {section.body.map((paragraph) => (
               <View key={paragraph} className={`mb-2 ${directionClass}`}>
-                <Text variant="body" className={`text-muted ${isRTL ? 'ml-2' : 'mr-2'}`}>
+                <Text className={`text-base text-muted ${isRTL ? 'ml-2' : 'mr-2'}`}>
                   •
                 </Text>
-                <Text variant="body" className={`flex-1 text-muted ${textAlignClass}`}>
+                <Text className={`text-base flex-1 text-muted ${textAlignClass}`}>
                   {paragraph}
                 </Text>
               </View>
@@ -70,7 +71,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
         ))}
 
         <View className="mt-1 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
-          <Text variant="caption" className={`text-muted ${textAlignClass}`}>
+          <Text className={`text-sm text-muted ${textAlignClass}`}>
             {content.footer}
           </Text>
         </View>

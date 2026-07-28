@@ -1,4 +1,4 @@
-import { Screen } from '@/components/layout';
+import { Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { MatchCardSkeleton } from '@/features/matches/components/MatchesSkeleton';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
@@ -171,7 +171,7 @@ function UpcomingMatchesSkeleton() {
 }
 
 export default function OverviewSkeleton() {
-  const { bottom } = useSafeAreaInsets();
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   return (
     <Screen>
@@ -179,7 +179,7 @@ export default function OverviewSkeleton() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="gap-6 px-3 pt-3"
-        style={{ paddingBottom: bottom }}
+        contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
         showsVerticalScrollIndicator={false}
       >
         <QuickAccessSkeleton />

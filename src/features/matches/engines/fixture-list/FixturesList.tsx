@@ -53,15 +53,11 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
         {(isSelected || isToday) && (
           <View className={cn('absolute inset-x-0 inset-y-0', isSelected ? 'bg-primary' : '')} style={{ height: 4 }} />
         )}
-        <Text
-          variant="h3"
-          className={cn(isSelected || isToday ? 'text-text' : 'text-muted')}
-          style={
+        <Text style={
             {
               transition: Platform.OS === 'web' ? 'color 0.1s ease-in-out' : undefined,
             } as any
-          }
-        >
+          } className={cn("text-xl", isSelected || isToday ? 'text-text' : 'text-muted')}>
           {fixture}
         </Text>
       </Pressable>

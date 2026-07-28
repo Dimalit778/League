@@ -38,16 +38,16 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
           </View>
 
           <View className="min-w-0 flex-1">
-            <Text semibold numberOfLines={1} className={isCurrentUser ? 'text-primary' : undefined}>
+            <Text numberOfLines={1} className={cn('font-semibold', isCurrentUser && 'text-primary')}>
               {nickname}
             </Text>
           </View>
 
           <View className="items-end">
-            <Text bold className={isCurrentUser ? 'text-primary' : undefined}>
+            <Text className={cn('font-bold', isCurrentUser && 'text-primary')}>
               {total_points}
             </Text>
-            <Text caption className="mt-0.5 text-muted">
+            <Text className="text-sm mt-0.5 text-muted">
               points
             </Text>
           </View>

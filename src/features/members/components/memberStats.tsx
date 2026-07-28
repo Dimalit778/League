@@ -44,10 +44,10 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <Text variant="caption" className="text-muted uppercase">
+              <Text className="text-sm text-muted uppercase">
                 {item.label}
               </Text>
-              <Text variant="body" bold className={`${item.color}`}>
+              <Text className={`text-base font-bold ${item.color}`}>
                 {item.value}
               </Text>
             </View>
@@ -63,10 +63,10 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                 item.color || ''
               }`}
             >
-              <Text variant="caption" className="text-muted uppercase">
+              <Text className="text-sm text-muted uppercase">
                 {item.label}
               </Text>
-              <Text variant="body" bold className={`${item.color}`}>
+              <Text className={`text-base font-bold ${item.color}`}>
                 {item.value}
               </Text>
             </View>

@@ -47,7 +47,7 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
 
         <View className="flex-1 px-5">
           <View className="items-center py-16 justify-center">
-            <Text title font="teko-bold" className="text-text">
+            <Text font="teko-bold" className="text-5xl text-text">
               {isSignIn ? t('Welcome Back') : t('Create account')}
             </Text>
             <Text className="text-muted">{isSignIn ? t('Sign in to your account') : t('Sign up to get started')}</Text>
@@ -60,7 +60,7 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
 
               <View className="my-2 flex-row items-center">
                 <View className="h-px flex-1 bg-border" />
-                <Text small className="mx-2 text-muted">
+                <Text className="text-xs mx-2 text-muted">
                   {t('OR')}
                 </Text>
                 <View className="h-px flex-1 bg-border" />

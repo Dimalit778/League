@@ -94,7 +94,7 @@ export function SidebarMenu() {
                   }`}
                 >
                   <Icon size={24} color={isActive ? colors.primary : colors.muted} />
-                  <Text variant="body" className={`ml-3  ${isActive ? 'text-primary' : 'text-muted'}`}>
+                  <Text className={`text-base ml-3  ${isActive ? 'text-primary' : 'text-muted'}`}>
                     {t(route.label)}
                   </Text>
                 </Pressable>

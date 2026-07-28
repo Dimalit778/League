@@ -55,9 +55,7 @@ const LeagueCreatedScreen = () => {
       {!leagueData && <LoadingOverlay />}
 
       <View className="items-center my-8">
-        <Text h2 bold className="text-center mb-2 text-primary">
-          {t('League Created Successfully!')}
-        </Text>
+        <Text className="text-2xl font-bold text-center mb-2 text-primary">{t('League Created Successfully!')}</Text>
       </View>
 
       <View className="px-4 py-6 mx-3 border border-border rounded-2xl">
@@ -66,35 +64,23 @@ const LeagueCreatedScreen = () => {
             <MyImage source={leagueData?.competition?.logo as string} />
           </View>
 
-          <Text h3 bold className="text-center text-primary my-2">
-            {leagueData?.name}
-          </Text>
-          <Text caption className="text-muted text-center">
+          <Text className="text-xl font-bold text-center text-primary my-2">{leagueData?.name}</Text>
+          <Text className="text-sm text-muted text-center">
             {t(leagueData?.competition?.area || '')} • {t(leagueData?.competition?.name || '')}
           </Text>
         </View>
 
         <View className="rounded-xl p-4 mb-4 border border-border">
-          <Text caption className="text-muted mb-1 text-center">
-            {t('Your Nickname')}
-          </Text>
-          <Text variant="body" bold className="text-text text-center">
-            {leagueData?.league_members[0]?.nickname}
-          </Text>
+          <Text className="text-sm text-muted mb-1 text-center">{t('Your Nickname')}</Text>
+          <Text className="text-base font-bold text-text text-center">{leagueData?.league_members[0]?.nickname}</Text>
         </View>
 
         <View className="p-4">
-          <Text caption className="text-muted mb-3 text-center">
-            {t('League Join Code')}
-          </Text>
+          <Text className="text-sm text-muted mb-3 text-center">{t('League Join Code')}</Text>
           <TouchableOpacity onPress={handleCopyJoinCode} className=" border border-border rounded-lg p-4 mb-3">
-            <Text h3 bold className="text-primary text-center tracking-[8px]">
-              {leagueData?.join_code}
-            </Text>
+            <Text className="text-xl font-bold text-primary text-center tracking-[8px]">{leagueData?.join_code}</Text>
           </TouchableOpacity>
-          <Text caption className="text-muted text-center">
-            {t('Tap to copy code')}
-          </Text>
+          <Text className="text-sm text-muted text-center">{t('Tap to copy code')}</Text>
         </View>
       </View>
 

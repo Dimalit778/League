@@ -16,7 +16,7 @@ const Row = ({ item, position }: { item: WCLeaderboardMember; position: number }
     <Card className={`${item.is_current_user ? 'border-primary' : ''} px-3 py-1 my-1`}>
       <View className="flex-row items-center gap-3">
         <View className="w-8 h-8 rounded-full items-center justify-center bg-background">
-          <Text variant="caption" bold className="text-text">
+          <Text className="text-sm font-bold text-text">
             {position}
           </Text>
         </View>
@@ -24,15 +24,15 @@ const Row = ({ item, position }: { item: WCLeaderboardMember; position: number }
           <AvatarImage nickname={item.nickname} path={item.avatar_url} />
         </View>
         <View className="flex-1 items-start">
-          <Text variant="body" bold className="text-text" numberOfLines={1}>
+          <Text numberOfLines={1} className="text-base font-bold text-text">
             {item.nickname}
           </Text>
         </View>
         <View className="items-center pr-2">
-          <Text variant="body" bold>
+          <Text className="text-base font-bold">
             {item.total_points.toLocaleString()}
           </Text>
-          <Text variant="caption" className="text-muted">
+          <Text className="text-sm text-muted">
             {t('pts')}
           </Text>
         </View>
@@ -49,12 +49,12 @@ export default function WCLeaderboardPreview({ members }: Props) {
   return (
     <View className="mx-3 mt-2">
       <View className="flex-row items-center justify-between px-1 mb-1">
-        <Text variant="bodyBold" className="text-text">
+        <Text className="text-base font-bold text-text">
           {t('Leaderboard')}
         </Text>
         {members.length > 3 && (
           <Pressable onPress={() => setExpanded((v) => !v)}>
-            <Text variant="caption" className="text-primary">
+            <Text className="text-sm text-primary">
               {expanded ? t('Show less') : t('View all')}
             </Text>
           </Pressable>

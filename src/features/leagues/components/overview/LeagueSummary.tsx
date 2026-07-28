@@ -26,14 +26,12 @@ function StatColumn({
     <View className="w-[52px] items-center justify-center gap-0.5">
       {icon}
 
-      <Text small className="text-muted" numberOfLines={1}>
+      <Text className="text-muted text-xs" numberOfLines={1}>
         {label}
       </Text>
 
       <View className="flex-row items-baseline gap-0.5">
-        <Text semibold numberOfLines={1}>
-          {value}
-        </Text>
+        <Text numberOfLines={1}>{value}</Text>
       </View>
     </View>
   );
@@ -62,7 +60,7 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
             accessibilityLabel="My leagues"
             className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
             hitSlop={4}
-            onPress={() => router.replace('/(app)/(user)/leagues')}
+            onPress={() => router.replace('/(app)/(user)/leagues/my-leagues')}
           >
             <Trophy color={colors.text} size={25} strokeWidth={1.5} />
           </Pressable>
@@ -75,10 +73,10 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
                 <AvatarImage nickname={nickname} path={avatarUrl} />
               </View>
               <View className="min-w-0 flex-1">
-                <Text h3 bold numberOfLines={1}>
+                <Text className="font-bold text-2xl" numberOfLines={1}>
                   {nickname}
                 </Text>
-                <Text small semibold numberOfLines={1} className="text-muted">
+                <Text className="text-muted text-base" numberOfLines={1}>
                   {leagueName}
                 </Text>
               </View>

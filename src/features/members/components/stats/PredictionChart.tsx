@@ -15,7 +15,7 @@ export default function PredictionChart(props: PredictionChartProps) {
 
   return (
     <Card className="p-4 mb-4">
-      <Text variant="body" bold className="mb-2">
+      <Text className="text-base font-bold mb-2">
         {t('Prediction Results')}
       </Text>
 

@@ -1,5 +1,4 @@
-import { Card } from '@/components/ui/Card';
-import { Text } from '@/components/ui/Text';
+import { Card, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router, type Href } from 'expo-router';
@@ -19,11 +18,11 @@ function QuickAccessItem({ title, icon, href }: Props) {
     <Card className="flex-1 p-1.5" contentClassName="flex-row items-center" onPress={() => router.push(href)}>
       <View className="min-w-0 flex-1 gap-1">
         {icon}
-        <Text small numberOfLines={1}>
-          {title}
-        </Text>
+        <Text className="text-sm text-muted">{title}</Text>
       </View>
-      <ChevronRight size={20} color={colors.text} strokeWidth={1} />
+      <View className="absolute right-0 w-8 h-8 items-center justify-center">
+        <ChevronRight size={20} color={colors.text} strokeWidth={1} />
+      </View>
     </Card>
   );
 }
@@ -34,7 +33,7 @@ export function QuickAccessSection() {
 
   return (
     <View className="gap-2">
-      <Text semibold>{t('Quick access')}</Text>
+      <Text className="text-lg font-bold">{t('Quick access')}</Text>
       <View className="flex-row gap-3">
         <QuickAccessItem
           title={t('Matches')}

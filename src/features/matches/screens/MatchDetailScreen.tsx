@@ -36,9 +36,10 @@ const MatchDetailScreen = () => {
 
   return (
     <View className="mx-auto w-full max-w-lg flex-1 bg-background">
-      <View className="overflow-hidden" style={{ height: height * 0.4, paddingTop: inset.top }}>
+      {/* Full-bleed hero bg — extends under the sheet so cover reaches top + MatchContent overlap */}
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: height * 0.35 }}>
         <ExpoImage
-          source={images.pitchGrass}
+          source={images.footballFieldBg}
           contentFit="cover"
           cachePolicy="memory-disk"
           priority="high"
@@ -50,7 +51,9 @@ const MatchDetailScreen = () => {
           locations={[0, 0.55, 1]}
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
         />
+      </View>
 
+      <View style={{ height: height * 0.35, paddingTop: inset.top }}>
         <TouchableOpacity
           className="absolute left-4 z-20 h-11 w-11 items-center justify-center border-2 border-text rounded-full"
           style={{ top: inset.top + 8 }}

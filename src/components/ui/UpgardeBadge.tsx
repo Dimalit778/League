@@ -23,7 +23,7 @@ export const UpgardeBadge = ({ visible }: Props) => {
             backgroundColor: 'rgba(250, 204, 21, 0.12)',
           }}
         >
-          <Text variant="body" bold className=" uppercase tracking-widest text-yellow-400">
+          <Text className="text-base font-bold uppercase tracking-widest text-yellow-400">
             PRO
           </Text>
         </View>

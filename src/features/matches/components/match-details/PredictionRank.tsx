@@ -72,13 +72,13 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
   return (
     <View className="flex-1 p-4 md:px-10 ">
       <View className="flex-row px-1 gap-3 py-2  ">
-        <Text semibold caption className="flex-1 text-text text-left  ">
+        <Text className="font-semibold text-sm flex-1 text-text text-left">
           {t('Player')}
         </Text>
-        <Text semibold caption className="text-text text-center">
+        <Text className="font-semibold text-sm text-text text-center">
           {t('Prediction')}
         </Text>
-        <Text semibold caption className="text-text text-center">
+        <Text className="font-semibold text-sm text-text text-center">
           {t('Points')}
         </Text>
       </View>
@@ -92,7 +92,7 @@ export default function PredictionRank({ predictions }: { predictions: Predictio
         }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center mt-16">
-            <Text semibold caption className="text-center text-muted">
+            <Text className="font-semibold text-sm text-center text-muted">
               {t('No predictions')}
             </Text>
           </View>

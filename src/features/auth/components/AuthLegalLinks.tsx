@@ -9,15 +9,15 @@ const AuthLegalLinks = () => {
   return (
     <View className="flex-row flex-wrap items-center justify-center gap-x-2 px-5 pb-6">
       <Link href="/privacy" asChild>
-        <Text variant="caption" className="text-muted underline">
+        <Text className="text-sm text-muted underline">
           {t('Privacy Policy')}
         </Text>
       </Link>
-      <Text variant="caption" className="text-muted">
+      <Text className="text-sm text-muted">
         ·
       </Text>
       <Link href="/terms" asChild>
-        <Text variant="caption" className="text-muted underline">
+        <Text className="text-sm text-muted underline">
           {t('Terms of Service')}
         </Text>
       </Link>

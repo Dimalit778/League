@@ -10,7 +10,7 @@ type Props = {
 
 const HeaderCell = ({ label, w }: { label: string; w: number }) => (
   <View style={{ width: w }} className="items-center">
-    <Text variant="small" bold className="text-muted">
+    <Text className="text-xs font-bold text-muted">
       {label}
     </Text>
   </View>
@@ -18,7 +18,7 @@ const HeaderCell = ({ label, w }: { label: string; w: number }) => (
 
 const Cell = ({ value, w, bold = false }: { value: string | number; w: number; bold?: boolean }) => (
   <View style={{ width: w }} className="items-center">
-    <Text variant="caption" bold={bold} className="text-text">
+    <Text className={`text-sm text-text${bold ? ' font-bold' : ''}`}>
       {value}
     </Text>
   </View>
@@ -32,12 +32,12 @@ export default function GroupStandingsTable({ rows }: Props) {
     <View className="mx-3 my-2 rounded-xl border border-border bg-surface overflow-hidden">
       <View className="flex-row items-center px-3 py-2 border-b border-border bg-background/40">
         <View style={{ width: 22 }} className="items-center">
-          <Text variant="small" bold className="text-muted">
+          <Text className="text-xs font-bold text-muted">
             #
           </Text>
         </View>
         <View className="flex-1">
-          <Text variant="small" bold className="text-muted">
+          <Text className="text-xs font-bold text-muted">
             {t('Team')}
           </Text>
         </View>
@@ -58,7 +58,7 @@ export default function GroupStandingsTable({ rows }: Props) {
             style={{ backgroundColor: qualified ? 'rgba(34,197,94,0.08)' : 'transparent' }}
           >
             <View style={{ width: 22 }} className="items-center">
-              <Text variant="caption" bold className="text-text">
+              <Text className="text-sm font-bold text-text">
                 {idx + 1}
               </Text>
             </View>
@@ -69,7 +69,7 @@ export default function GroupStandingsTable({ rows }: Props) {
                 cachePolicy="memory-disk"
                 contentFit="contain"
               />
-              <Text variant="caption" bold className="text-text">
+              <Text className="text-sm font-bold text-text">
                 {row.team.tla}
               </Text>
             </View>

@@ -35,7 +35,7 @@ export default function KnockoutStageTabs({ selected, onSelect }: Props) {
               active ? 'bg-primary' : 'border border-border'
             )}
           >
-            <Text variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
+            <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
               {t(s.label)}
             </Text>
           </Pressable>

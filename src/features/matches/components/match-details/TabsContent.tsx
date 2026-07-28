@@ -26,10 +26,10 @@ const LockedStats = () => {
           <Feather name="lock" size={30} color={colors.primary} />
         </View>
 
-        <Text variant="h3" className="text-center text-text">
+        <Text className="text-xl text-center text-text">
           {t('Premium stats only')}
         </Text>
-        <Text variant="caption" className="mt-3 text-center text-muted">
+        <Text className="text-sm mt-3 text-center text-muted">
           {t('Upgrade to Pro to unlock match statistics')}
         </Text>
 
@@ -88,7 +88,7 @@ export default function TabsContent({ predictions }: { predictions: MatchWithPre
               className={`flex-row items-center pb-3 px-4 ${isActive ? 'border-b-2 border-primary' : 'border-b-2 border-border transparent'}`}
             >
               <Feather name={tab.icon} size={22} color={isActive ? colors.primary : colors.muted} />
-              <Text semibold caption className={`ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
+              <Text className={`font-semibold text-sm ml-2  ${isActive ? 'text-primary' : 'text-muted'}`}>
                 {t(tab.title)}
               </Text>
             </TouchableOpacity>

@@ -32,7 +32,7 @@ export default function LeaguesIndicator({ used, limit, onPress }: LeaguesIndica
           {/* Content */}
           <View className="flex-1 pe-2 ">
             <View className="flex-row items-center justify-between">
-              <Text h3 semibold>
+              <Text className="text-xl font-semibold">
                 {t('My Leagues')}
               </Text>
 

@@ -16,7 +16,7 @@ const DEFAULT_CL_ZONES: Props['zones'] = [
 
 const HeaderCell = ({ label, width }: { label: string; width: number }) => (
   <View style={{ width }} className="items-center">
-    <Text variant="small" bold className="text-muted">
+    <Text className="text-xs font-bold text-muted">
       {label}
     </Text>
   </View>
@@ -24,7 +24,7 @@ const HeaderCell = ({ label, width }: { label: string; width: number }) => (
 
 const Cell = ({ value, width, bold = false }: { value: string | number; width: number; bold?: boolean }) => (
   <View style={{ width }} className="items-center">
-    <Text variant="caption" bold={bold} className="text-text">
+    <Text className={`text-sm text-text${bold ? ' font-bold' : ''}`}>
       {value}
     </Text>
   </View>
@@ -60,10 +60,10 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
         {/* Header */}
         <View className="flex-row items-center border-b border-border bg-background/40 px-3 py-2">
           <View style={{ width: 22 }} className="items-center">
-            <Text variant="small" bold className="text-muted">#</Text>
+            <Text className="text-xs font-bold text-muted">#</Text>
           </View>
           <View className="flex-1">
-            <Text variant="small" bold className="text-muted">{t('Team')}</Text>
+            <Text className="text-xs font-bold text-muted">{t('Team')}</Text>
           </View>
           <HeaderCell label={t('P')} width={colW} />
           <HeaderCell label={t('W')} width={colW} />
@@ -81,7 +81,7 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
             style={{ backgroundColor: getRowBg(row.position, zones) }}
           >
             <View style={{ width: 22 }} className="items-center">
-              <Text variant="caption" bold className="text-text">{row.position}</Text>
+              <Text className="text-sm font-bold text-text">{row.position}</Text>
             </View>
             <View className="flex-1 flex-row items-center gap-2">
               <TeamBadge
@@ -89,7 +89,7 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
                 width={20}
                 height={20}
               />
-              <Text variant="caption" bold className="text-text" numberOfLines={1}>
+              <Text numberOfLines={1} className="text-sm font-bold text-text">
                 {row.team.shortName ?? row.team.tla ?? row.team.name}
               </Text>
             </View>

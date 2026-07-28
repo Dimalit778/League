@@ -13,7 +13,7 @@ function StatBlock({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
     <View className="items-center justify-center gap-1">
       <View>{icon}</View>
-      <Text semibold className="text-center text-muted" numberOfLines={1}>
+      <Text numberOfLines={1} className="font-semibold text-center text-muted">
         {value}
       </Text>
     </View>
@@ -38,7 +38,7 @@ function LeagueCard({ league, onPress }: { league: LeagueSummary; onPress: () =>
             <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={36} height={36} />
             <View className="mx-3 h-10 w-px bg-border" />
             <View className="min-w-0 flex-1">
-              <Text h3 semibold numberOfLines={1}>
+              <Text numberOfLines={1} className="text-xl font-semibold">
                 {league.league_name}
               </Text>
               <Text className="text-muted">{league.nickname}</Text>

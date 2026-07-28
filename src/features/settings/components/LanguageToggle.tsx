@@ -34,7 +34,7 @@ const LanguageToggle = () => {
             isHebrew ? 'right-1' : 'left-1'
           }`}
         >
-          <Text bold className="text-background">
+          <Text className="font-bold text-background">
             {isHebrew ? 'עב' : 'EN'}
           </Text>
         </View>

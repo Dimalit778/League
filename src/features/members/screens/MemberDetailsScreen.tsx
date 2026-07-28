@@ -69,25 +69,25 @@
 //               </View>
 
 //               <View className="flex-1">
-//                 <Text variant="body" bold numberOfLines={1}>
+//                 <Text numberOfLines={1} className="text-base font-bold">
 //                   {member?.nickname}
 //                 </Text>
 //               </View>
 //               <View className="flex-row items-center gap-4">
 //                 <View className="items-end">
-//                   <Text variant="caption" className="text-muted uppercase">
+//                   <Text className="text-sm text-muted uppercase">
 //                     Points
 //                   </Text>
-//                   <Text variant="body" bold>
+//                   <Text className="text-base font-bold">
 //                     {stats?.totalPoints.toLocaleString() ?? 0}
 //                   </Text>
 //                 </View>
 //                 <View className="h-6 w-px bg-border" />
 //                 <View className="items-end">
-//                   <Text variant="caption" className="text-muted uppercase">
+//                   <Text className="text-sm text-muted uppercase">
 //                     Position
 //                   </Text>
-//                   <Text variant="body" bold>
+//                   <Text className="text-base font-bold">
 //                     {stats?.position ?? '—'}
 //                   </Text>
 //                 </View>

@@ -15,7 +15,7 @@ const EmptyMatchesList = () => {
       <View className="w-24 h-24 ">
         <MyImage source={emojis.emptyListEmoji} contentFit="contain" tintColor={colors.muted} />
       </View>
-      <Text caption className="text-muted">
+      <Text className="text-sm text-muted">
         {t('No matches today')}
       </Text>
     </View>
@@ -28,7 +28,7 @@ export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
   return (
     <View className="gap-2">
       <View className="min-w-0 flex-1 flex-row items-center gap-2">
-        <Text semibold className="min-w-0" numberOfLines={1}>
+        <Text numberOfLines={1} className="font-semibold min-w-0">
           {t('Today matches')}
         </Text>
       </View>

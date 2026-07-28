@@ -11,5 +11,6 @@ pitchGrass: require('./pitch-grass.png'),
 pitchIcon: require('./pitch-icon.png'),
 
  trophyGold: require('./trophy-gold.png'),
+ footballFieldBg: require('./football-field-bg.png'),
 
 };

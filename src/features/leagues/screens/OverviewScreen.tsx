@@ -1,7 +1,6 @@
-import { Screen } from '@/components/layout';
+import { Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CurrentFormCard } from '../components/overview/CurrentFormCard';
 import LeagueSummary from '../components/overview/LeagueSummary';
 import OverviewSkeleton from '../components/overview/OverviewSkeleton';
@@ -11,7 +10,7 @@ import { useLeagueOverview } from '../hooks/useLeagueOverview';
 
 export default function OverviewScreen() {
   const { leagueSummary, stats, upcomingMatches, isLoading } = useLeagueOverview();
-  const { bottom } = useSafeAreaInsets();
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   if (isLoading) return <OverviewSkeleton />;
 
@@ -21,7 +20,7 @@ export default function OverviewScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="gap-6 px-3 pt-3"
-        style={{ paddingBottom: bottom }}
+        contentContainerStyle={{ paddingBottom: bottomTabsInset }}
         showsVerticalScrollIndicator={false}
       >
         <QuickAccessSection />

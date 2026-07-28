@@ -15,7 +15,7 @@ export function PositionBadge({ position, className, size = 'md', isCurrentUser 
   };
   return (
     <View className={cn(' rounded-md bg-surfaceSoft items-center justify-center ', sizeClasses[size], className)}>
-      <Text caption semibold className={isCurrentUser ? 'text-primary' : 'text-muted'}>
+      <Text className={`text-sm font-semibold ${isCurrentUser ? 'text-primary' : 'text-muted'}`}>
         {position}
       </Text>
     </View>

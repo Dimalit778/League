@@ -21,12 +21,12 @@ function StatBlock({ icon, label, value }: StatBlockProps) {
       <View className="flex-row items-center justify-center gap-1.5">
         {icon}
 
-        <Text small className="text-muted" numberOfLines={1}>
+        <Text numberOfLines={1} className="text-xs text-muted">
           {label}
         </Text>
       </View>
 
-      <Text semibold className="text-text" numberOfLines={1}>
+      <Text numberOfLines={1} className="font-semibold text-text">
         {value}
       </Text>
     </View>
@@ -67,7 +67,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
             <View className="flex-row gap-2">
               <Star size={22} color={colors.primary} fill={colors.primary} />
 
-              <Text semibold className="text-primary">
+              <Text className="font-semibold text-primary">
                 {t('Primary')}
               </Text>
             </View>
@@ -100,11 +100,11 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
                 <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
 
                 <View className="flex-1">
-                  <Text h2 semibold numberOfLines={1}>
+                  <Text numberOfLines={1} className="text-2xl font-semibold">
                     {league.league_name}
                   </Text>
 
-                  <Text h3 className="text-muted">
+                  <Text className="text-xl text-muted">
                     {league.nickname}
                   </Text>
                 </View>

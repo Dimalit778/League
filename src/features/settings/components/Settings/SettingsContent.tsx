@@ -117,7 +117,7 @@ const SettingsContent = () => {
   const renderSection = (items: SettingsItem[], title?: string) => (
     <View>
       {title && (
-        <Text h3 className="my-2 px-1">
+        <Text className="text-xl my-2 px-1">
           {title}
         </Text>
       )}

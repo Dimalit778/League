@@ -129,13 +129,7 @@ export const InputField = ({
       </View>
 
       {error && (
-        <Text
-          small
-          className="text-error text-center"
-          accessible
-          accessibilityRole="text"
-          accessibilityLiveRegion="assertive"
-        >
+        <Text accessible accessibilityRole="text" accessibilityLiveRegion="assertive" className="text-xs text-error text-center">
           {error.message && t(error.message)}
         </Text>
       )}

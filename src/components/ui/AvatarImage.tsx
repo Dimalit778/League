@@ -44,7 +44,7 @@ export const AvatarImage = ({ nickname, path, src, style, className }: AvatarIma
           accessibilityRole="text"
           accessibilityLabel={nickname ? `${nickname}'s avatar initial ${initial}` : `Avatar initial ${initial}`}
         >
-          <Text semibold>{initial}</Text>
+          <Text className="font-semibold">{initial}</Text>
         </View>
       )}
     </View>

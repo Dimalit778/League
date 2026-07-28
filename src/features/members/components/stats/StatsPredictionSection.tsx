@@ -31,9 +31,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
 
   return (
     <Card className="p-1.5" contentClassName=" gap-3">
-      <Text small semibold className="text-muted text-center">
-        {t('Accuracy')}
-      </Text>
+      <Text className="text-sm text-muted text-center">{t('Accuracy')}</Text>
 
       <View className="items-center justify-center py-1">
         <View style={{ width: GAUGE_SIZE, height: GAUGE_SIZE }}>
@@ -62,12 +60,12 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
             className="absolute inset-0 items-center justify-center"
             style={{ width: GAUGE_SIZE, height: GAUGE_SIZE }}
           >
-            <Text semibold>{Math.round(clamped)}%</Text>
+            <Text>{Math.round(clamped)}%</Text>
           </View>
         </View>
       </View>
 
-      <Text small semibold className="text-primary text-center" numberOfLines={2}>
+      <Text className="text-primary text-center" numberOfLines={2}>
         {t(messageKey)}
       </Text>
     </Card>
@@ -78,12 +76,10 @@ function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: stri
   return (
     <Card className="flex-1 p-1.5" contentClassName="items-center justify-center">
       <View className="mb-1.5">{icon}</View>
-      <Text small className="text-muted" numberOfLines={1}>
+      <Text className="text-sm text-muted" numberOfLines={1}>
         {label}
       </Text>
-      <Text small semibold>
-        {value}
-      </Text>
+      <Text>{value}</Text>
     </Card>
   );
 }
@@ -95,7 +91,7 @@ export function StatsPredictionSection({ stats }: { stats: MemberStats }) {
 
   return (
     <View className="flex-1 gap-2">
-      <Text semibold>{t('Stats')}</Text>
+      <Text className="text-lg font-bold">{t('Stats')}</Text>
 
       <View className="flex-row gap-2 ">
         <AccuracyGauge accuracy={accuracy} />

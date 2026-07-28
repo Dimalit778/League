@@ -38,15 +38,10 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             priority="high"
           />
           <View className="flex-1 items-center">
-            <Text variant="caption" className="text-muted">
+            <Text className="text-sm text-muted">
               {t(competition.area)}
             </Text>
-            <Text
-              variant="body"
-              bold
-              className="text-center"
-              style={{ color: isSelected ? colors.primary : colors.text }}
-            >
+            <Text style={{ color: isSelected ? colors.primary : colors.text }} className="text-base font-bold text-center">
               {t(competition.name)}
             </Text>
           </View>

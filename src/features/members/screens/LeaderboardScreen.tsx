@@ -61,10 +61,7 @@ export default function LeaderboardScreen() {
   if (!leaderboard || isLoading) return <LeagueSkeleton />;
 
   return (
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset + 16 }}
-    >
+    <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset + 16 }}>
       <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
 
       {rest.length > 0 ? (

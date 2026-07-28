@@ -33,7 +33,7 @@ function TieBlock({ tie }: { tie: Tie }) {
         );
       })}
       {tie.aggregate && (
-        <Text variant="caption" className="text-muted mt-1 text-center">
+        <Text className="text-sm text-muted mt-1 text-center">
           {t('Aggregate')}: {tie.aggregate.home}–{tie.aggregate.away}
         </Text>
       )}

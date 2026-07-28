@@ -70,7 +70,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
             </View>
           </View>
 
-          <Text caption semibold numberOfLines={1} ellipsizeMode="tail" className="mt-1 w-full px-1 text-center">
+          <Text numberOfLines={1} ellipsizeMode="tail" className="text-sm font-semibold mt-1 w-full px-1 text-center">
             {member.nickname}
           </Text>
 
@@ -78,7 +78,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
             className="mt-1 mb-2 items-center rounded-full px-2.5 py-0.5"
             style={{ backgroundColor: positionColor }}
           >
-            <Text small bold style={{ color: '#0F172A' }}>
+            <Text style={{ color: '#0F172A' }} className="text-xs font-bold">
               {member.total_points ?? 0} pts
             </Text>
           </View>
@@ -98,7 +98,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
           borderTopLeftRadius: 10,
         }}
       >
-        <Text title font="teko-bold" className="pt-1" style={{ color: positionColor }}>
+        <Text font="teko-bold" style={{ color: positionColor }} className="text-5xl pt-1">
           {position}
         </Text>
       </View>

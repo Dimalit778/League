@@ -76,7 +76,7 @@ export default function SignInForm() {
       />
 
       {errorMessage && (
-        <Text variant="small" className="text-error text-center">
+        <Text className="text-xs text-error text-center">
           {errorMessage}
         </Text>
       )}
@@ -92,7 +92,7 @@ export default function SignInForm() {
       />
 
       <Link href="/sendResetLink" asChild>
-        <Text caption className="text-secondary text-center">
+        <Text className="text-sm text-secondary text-center">
           {t('Forgot Password')}
         </Text>
       </Link>

@@ -41,7 +41,7 @@ export const TournamentViewTabs = ({ value, onChange }: TournamentViewTabsProps)
             onPress={() => onChange(option.value)}
             className={cn('flex-1 items-center rounded-lg py-2', active && 'bg-primary')}
           >
-            <Text variant="body" bold className={active ? 'text-background' : 'text-text'}>
+            <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
               {option.label}
             </Text>
           </Pressable>
@@ -152,7 +152,7 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
               active ? 'bg-primary' : 'border border-border',
             )}
           >
-            <Text variant="body" bold numberOfLines={1} className={active ? 'text-background' : 'text-text'}>
+            <Text numberOfLines={1} className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
               {option.label}
             </Text>
           </Pressable>

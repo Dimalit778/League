@@ -134,7 +134,7 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
 
   return (
     <View className="items-center justify-center">
-      <Text small semibold className="mb-2 text-center text-white/70">
+      <Text className="text-xs font-semibold mb-2 text-center text-white/70">
         {t('My Prediction')}
       </Text>
 
@@ -145,7 +145,7 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
           onEditingEnd={handleSave}
           accessibilityLabel={t('Home score')}
         />
-        <Text h2 className="mx-1.5 text-white/70">
+        <Text className="text-2xl mx-1.5 text-white/70">
           -
         </Text>
         <ScoreInput

@@ -37,7 +37,7 @@ export default function MemberOption({
         <View
           className={`rounded-2xl border px-4 py-4 ${isActive ? 'border-primary bg-surface' : 'border-border bg-background'}`}
         >
-          <Text variant="body" className={`text-center font-semibold ${isActive ? 'text-primary' : 'text-text'}`}>
+          <Text className={`text-base text-center font-semibold ${isActive ? 'text-primary' : 'text-text'}`}>
             {t(label)}
           </Text>
         </View>

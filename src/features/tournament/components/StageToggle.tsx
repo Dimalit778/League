@@ -12,7 +12,7 @@ type Props = {
 
 const Item = ({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) => (
   <Pressable onPress={onPress} className={cn('flex-1 py-2 rounded-lg items-center', active ? 'bg-primary' : '')}>
-    <Text variant="bodyBold" className={active ? 'text-background' : 'text-text'}>
+    <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
       {label}
     </Text>
   </Pressable>

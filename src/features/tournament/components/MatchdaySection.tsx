@@ -14,7 +14,7 @@ export default function MatchdaySection({ matchday, matches }: Props) {
   return (
     <View className="mx-2 mt-3">
       <View className="px-2 mb-1">
-        <Text variant="caption" bold className="text-muted">
+        <Text className="text-sm font-bold text-muted">
           {t('Matchday')} {matchday}
         </Text>
       </View>

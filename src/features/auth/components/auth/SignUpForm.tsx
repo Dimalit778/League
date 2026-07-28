@@ -87,7 +87,7 @@ export default function SignUpForm() {
       />
 
       {errorMessage && (
-        <Text variant="small" className="text-error text-center">
+        <Text className="text-xs text-error text-center">
           {errorMessage}
         </Text>
       )}

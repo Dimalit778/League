@@ -28,11 +28,11 @@ export function SparseLeaderboardCard({
           <UsersRound size={22} color={colors.primary} strokeWidth={1.8} />
         </View>
 
-        <Text semibold className="text-center">
+        <Text className="font-semibold text-center">
           {t("That's the whole leaderboard for now")}
         </Text>
 
-        <Text small className="mt-1 max-w-72 text-center text-muted">
+        <Text className="text-xs mt-1 max-w-72 text-center text-muted">
           {t('Invite more friends and make the league more competitive.')}
         </Text>
 
@@ -45,7 +45,7 @@ export function SparseLeaderboardCard({
           className="mt-3 px-5"
         />
 
-        <Text small className="mt-2 text-center text-muted">
+        <Text className="text-xs mt-2 text-center text-muted">
           {t('{{count}} league members', { count: memberCount })}
         </Text>
       </View>

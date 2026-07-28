@@ -89,7 +89,7 @@ export const useGetMatchesByFixture = ({
   return query
 };
 
-
+ 
 export const useGetCompetitionMatches = ({
   competitionId,
   memberId,
@@ -142,31 +142,6 @@ export const useGetCompetitionMatches = ({
 
   return query;
 };
-
-export const useGetNearestUpcomingMatch = ({
-  competitionId,
-  memberId,
-  enabled = true,
-}: {
-  competitionId: number | null;
-  memberId: string | null;
-  enabled?: boolean;
-}) => {
-  const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
-  const isReady = enabled && competitionId != null && seasonId != null && memberId != null;
-
-  return useQuery({
-    queryKey: isReady
-      ? KEYS.matches.nearest(competitionId, seasonId, memberId)
-      : (['matches', 'nearest', 'disabled', competitionId ?? 'none', seasonId ?? 'none', memberId ?? 'none'] as const),
-    queryFn: isReady
-      ? () => matchesApi.getNearestUpcomingMatch(competitionId, seasonId, memberId)
-      : skipToken,
-    enabled: isReady,
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
 export const useGetTodayMatches = ({
   competitionId,
   memberId,
@@ -190,35 +165,61 @@ export const useGetTodayMatches = ({
   });
 };
 
-  export const useGetFinishedFixtures = (competitionId: number | null) => {
-  const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
-  const isReady = competitionId != null && seasonId != null;
-  return useQuery({
-    queryKey: isReady
-      ? KEYS.matches.finishedFixtures(competitionId, seasonId)
-      : (['matches', 'finished-fixtures', 'disabled'] as const),
-    queryFn: isReady ? () => matchesApi.getFinishedFixtures(competitionId, seasonId) : skipToken,
-    staleTime: 1000 * 60 * 5,
-  });
-};
+// export const useGetNearestUpcomingMatch = ({
+//   competitionId,
+//   memberId,
+//   enabled = true,
+// }: {
+//   competitionId: number | null;
+//   memberId: string | null;
+//   enabled?: boolean;
+// }) => {
+//   const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+//   const isReady = enabled && competitionId != null && seasonId != null && memberId != null;
 
-export const useGetMemberFinishedMatches = (
-  memberId: string | null,
-  competitionId: number | null,
-  fixture: number | null,
-) => {
-  const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
-  const isReady =
-    !!memberId && competitionId != null && seasonId != null && fixture != null && fixture > 0;
-  return useQuery({
-    queryKey:
-      isReady
-        ? KEYS.matches.byFixture(fixture, competitionId, seasonId, memberId)
-        : (['matches', 'finished', competitionId ?? 'none', seasonId ?? 'none', memberId ?? 'none', fixture ?? 'none'] as const),
-    queryFn:
-      isReady
-        ? () => matchesApi.getMemberFinishedMatches(memberId, competitionId, seasonId, fixture)
-        : skipToken,
-    staleTime: 1000 * 60 * 5,
-  });
-};
+//   return useQuery({
+//     queryKey: isReady
+//       ? KEYS.matches.nearest(competitionId, seasonId, memberId)
+//       : (['matches', 'nearest', 'disabled', competitionId ?? 'none', seasonId ?? 'none', memberId ?? 'none'] as const),
+//     queryFn: isReady
+//       ? () => matchesApi.getNearestUpcomingMatch(competitionId, seasonId, memberId)
+//       : skipToken,
+//     enabled: isReady,
+//     staleTime: 1000 * 60 * 5,
+//   });
+// };
+
+
+  // ---> Member details screen
+//   export const useGetFinishedFixtures = (competitionId: number | null) => {
+//   const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+//   const isReady = competitionId != null && seasonId != null;
+//   return useQuery({
+//     queryKey: isReady
+//       ? KEYS.matches.finishedFixtures(competitionId, seasonId)
+//       : (['matches', 'finished-fixtures', 'disabled'] as const),
+//     queryFn: isReady ? () => matchesApi.getFinishedFixtures(competitionId, seasonId) : skipToken,
+//     staleTime: 1000 * 60 * 5,
+//   });
+// };
+//  // Member details screen
+// export const useGetMemberFinishedMatches = (
+//   memberId: string | null,
+//   competitionId: number | null,
+//   fixture: number | null,
+// ) => {
+//   const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+//   const isReady =
+//     !!memberId && competitionId != null && seasonId != null && fixture != null && fixture > 0;
+//   return useQuery({
+//     queryKey:
+//       isReady
+//         ? KEYS.matches.byFixture(fixture, competitionId, seasonId, memberId)
+//         : (['matches', 'finished', competitionId ?? 'none', seasonId ?? 'none', memberId ?? 'none', fixture ?? 'none'] as const),
+//     queryFn:
+//       isReady
+//         ? () => matchesApi.getMemberFinishedMatches(memberId, competitionId, seasonId, fixture)
+//         : skipToken,
+//     staleTime: 1000 * 60 * 5,
+//   });
+// };

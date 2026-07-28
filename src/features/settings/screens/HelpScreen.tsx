@@ -153,10 +153,10 @@ const HelpScreen = () => {
       >
         {/* Welcome Section */}
         <Card className="mb-6 p-4">
-          <Text variant="h3" className=" mb-2">
+          <Text className="text-xl mb-2">
             {t('Welcome to League Champion')}
           </Text>
-          <Text variant="body" className=" leading-6 ">
+          <Text className="text-base leading-6">
             {t(
               'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
             )}
@@ -166,15 +166,15 @@ const HelpScreen = () => {
         {/* Help Sections */}
         {helpSections.map((section) => (
           <View key={section.title} className="mb-6">
-            <Text variant="h3" className=" mb-3">
+            <Text className="text-xl mb-3">
               {t(section.title)}
             </Text>
             {section.items.map((item, index) => (
               <Card key={index} className="mb-3 p-4">
-                <Text variant="body" className=" mb-2">
+                <Text className="text-base mb-2">
                   {t(item.question)}
                 </Text>
-                <Text variant="body" className=" leading-5 text-muted ">
+                <Text className="text-base leading-5 text-muted">
                   {t(item.answer)}
                 </Text>
               </Card>
@@ -184,10 +184,10 @@ const HelpScreen = () => {
 
         {/* Contact Support */}
         <Card className="mb-6 p-4">
-          <Text variant="h3" className=" mb-3">
+          <Text className="text-xl mb-3">
             {t('Contact Support')}
           </Text>
-          <Text variant="body" className=" leading-6 text-muted mb-4">
+          <Text className="text-base leading-6 text-muted mb-4">
             {t(
               "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
             )}
@@ -197,41 +197,41 @@ const HelpScreen = () => {
             className="flex-row items-center justify-center bg-primary rounded-lg py-3 px-4"
           >
             <FontAwesome6 name="envelope" size={16} color="white" />
-            <Text variant="body" className=" text-white ml-2">
+            <Text className="text-base text-white ml-2">
               {t('Email Support')}{' '}
             </Text>
           </TouchableOpacity>
-          <Text variant="small" className=" text-muted mt-2 text-center">
+          <Text className="text-xs text-muted mt-2 text-center">
             {SUPPORT_EMAIL}
           </Text>
         </Card>
 
         {/* App Information */}
         <View className="mb-6">
-          <Text variant="h3" className=" mb-3">
+          <Text className="text-xl mb-3">
             {t('App Information')}
           </Text>
           <Card className="p-4">
             <View className="flex-row justify-between items-center mb-2">
-              <Text variant="body" className=" text-muted">
+              <Text className="text-base text-muted">
                 {t('Version')}
               </Text>
-              <Text variant="body" className=" text-text">
+              <Text className="text-base text-text">
                 1.0.0
               </Text>
             </View>
             <View className="flex-row justify-between items-center">
-              <Text variant="body" className=" text-muted">
+              <Text className="text-base text-muted">
                 {t('Platform')}
               </Text>
-              <Text variant="body" className=" text-text">
+              <Text className="text-base text-text">
                 {t('iOS & Android')}
               </Text>
             </View>
           </Card>
         </View>
 
-        <Text variant="small" className=" text-muted">
+        <Text className="text-xs text-muted">
           {t("Thank you for using League! We're constantly working to improve your experience.")}
         </Text>
       </ScrollView>

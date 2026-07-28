@@ -138,7 +138,7 @@ const VerifyEmailScreen = () => {
           </Text>
           <Text className="text-center text-muted font-bold mt-2">{t('We sent a 6-digit code to')}</Text>
           <Text className="text-center text-secondary font-bold mt-1">{email}</Text>
-          <Text variant="caption" className="text-center text-muted mt-4 px-4">
+          <Text className="text-sm text-center text-muted mt-4 px-4">
             {t('Apple and Google sign-in do not require email verification.')}
           </Text>
         </View>
@@ -218,11 +218,11 @@ const VerifyEmailScreen = () => {
           </View>
 
           <View className="flex-row items-center justify-center mt-6 gap-2">
-            <Text variant="caption" className="text-muted">
+            <Text className="text-sm text-muted">
               {t('Prefer not to wait?')}
             </Text>
             <Link href="/signIn" replace>
-              <Text variant="caption" className="text-secondary font-bold">
+              <Text className="text-sm text-secondary font-bold">
                 {t('Sign in with Apple or Google')}
               </Text>
             </Link>

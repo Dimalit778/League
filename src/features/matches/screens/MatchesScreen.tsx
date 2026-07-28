@@ -30,7 +30,6 @@ export default function MatchesScreen() {
   const currentFixture = meta.currentFixture ?? 1;
   const currentStage = meta.currentStage ?? null;
 
-  // ponytail: views own scroll/refresh — don't wrap in ScrollView (nests FlatList)
   return (
     <View className="flex-1">
       {shape === 'REGULAR' && (

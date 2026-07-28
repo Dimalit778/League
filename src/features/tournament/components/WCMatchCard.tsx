@@ -22,7 +22,7 @@ const TeamSide = ({ team }: { team: WCMatch['home_team'] }) => (
       cachePolicy="memory-disk"
       contentFit="contain"
     />
-    <Text variant="caption" className="text-center mt-2">
+    <Text className="text-sm text-center mt-2">
       {team.tla}
     </Text>
   </View>
@@ -32,7 +32,7 @@ const Score = ({ home, away, finished }: { home: number | null; away: number | n
   if (!finished) {
     return (
       <View className="items-center justify-center px-3">
-        <Text variant="h3" className="text-muted">
+        <Text className="text-xl text-muted">
           –
         </Text>
       </View>
@@ -40,11 +40,11 @@ const Score = ({ home, away, finished }: { home: number | null; away: number | n
   }
   return (
     <View className="flex-row items-center px-2">
-      <Text variant="h3" className="text-text">
+      <Text className="text-xl text-text">
         {home}
       </Text>
       <View className="w-0.5 h-full bg-border mx-3" />
-      <Text variant="h3" className="text-text">
+      <Text className="text-xl text-text">
         {away}
       </Text>
     </View>
@@ -69,10 +69,10 @@ export default function WCMatchCard({ match, layout = 'grid' }: Props) {
         style={{ borderColor: prediction ? accentColor : colors.surface }}
       >
         <View className="flex-row items-center justify-between p-1 px-2">
-          <Text variant="caption" className={finished ? 'text-muted' : 'text-text'}>
+          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>
             {dateStr}
           </Text>
-          <Text variant="caption" className={finished ? 'text-muted' : 'text-text'}>
+          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>
             {finished ? t('FT') : timeStr}
           </Text>
         </View>
@@ -85,11 +85,11 @@ export default function WCMatchCard({ match, layout = 'grid' }: Props) {
 
         <View className="bg-surface justify-center border-t border-border rounded-b-md min-h-[20px] px-2 py-1">
           <View className="flex-row items-center justify-between">
-            <Text variant="caption" className="text-muted">
+            <Text className="text-sm text-muted">
               {prediction ? `${prediction.home} - ${prediction.away}` : finished ? t('No prediction') : t('Predict')}
             </Text>
             {prediction && finished && points != null && (
-              <Text variant="caption" bold style={{ color: accentColor }}>
+              <Text style={{ color: accentColor }} className="text-sm font-bold">
                 {points} {t('pts')}
               </Text>
             )}

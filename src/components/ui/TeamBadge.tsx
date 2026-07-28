@@ -14,7 +14,7 @@ export const TeamBadge = ({ source, width, height }: TeamBadgeProps) => {
 
   return (
     <View
-      className="overflow-hidden bg-white/10"
+      className="overflow-hidden p-3 bg-black/50 "
       style={{
         width,
         height,

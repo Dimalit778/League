@@ -40,11 +40,11 @@ export default function WorldCupPreviewScreen() {
             contentFit="contain"
           />
           <View className="items-start">
-            <Text variant="h3" bold>
+            <Text className="text-xl font-bold">
               {t('World Cup')}
             </Text>
             <View className="px-2 py-0.5 rounded bg-primary/20 self-start">
-              <Text variant="small" className="text-primary">
+              <Text className="text-xs text-primary">
                 {t('Preview')}
               </Text>
             </View>

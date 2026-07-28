@@ -143,7 +143,7 @@ export default function JoinLeagueScreen() {
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="flex-1 px-4 pt-6">
-          <Text variant="h2" className="mb-2 ">
+          <Text className="text-2xl mb-2">
             {t('Invite Code')}
           </Text>
 
@@ -158,7 +158,7 @@ export default function JoinLeagueScreen() {
             />
             <Text className="mt-1 text-center ">{t('Ask the league owner for the invite code')}</Text>
             {isLoading && (
-              <Text variant="caption" className="mt-2 text-center text-muted">
+              <Text className="text-sm mt-2 text-center text-muted">
                 {t('Searching for league...')}
               </Text>
             )}
@@ -170,7 +170,7 @@ export default function JoinLeagueScreen() {
               <View className="mx-4 gap-4">
                 {isLeagueFull ? (
                   <View className="gap-3">
-                    <Text variant="caption" className="text-center text-muted">
+                    <Text className="text-sm text-center text-muted">
                       {t('This league is full. Upgrade to create larger leagues.')}
                     </Text>
                     <Button title={t('Upgrade')} variant="primary" onPress={openPaywall} />
@@ -198,7 +198,7 @@ export default function JoinLeagueScreen() {
 
           {error && !foundLeague && !isLoading && inviteCodeValue?.length === 7 && (
             <View className="mb-6 p-2 bg-error border border-error rounded-xl">
-              <Text variant="small" className="text-center text-white">
+              <Text className="text-xs text-center text-white">
                 {t('League not found')}
               </Text>
             </View>
@@ -206,18 +206,18 @@ export default function JoinLeagueScreen() {
 
           {!foundLeague && (
             <View className="mt-8 p-4 bg-surface rounded-xl">
-              <Text variant="h2" className="mb-3">
+              <Text className="text-2xl mb-3">
                 {t('How to Join a League')}
               </Text>
               <View className="gap-3">
                 {steps.map((step, index) => (
                   <View key={index} className="flex-row items-start gap-3">
                     <View className="w-6 h-6 bg-primary rounded-full items-center justify-center mt-0.5">
-                      <Text variant="caption" bold>
+                      <Text className="text-sm font-bold">
                         {index + 1}
                       </Text>
                     </View>
-                    <Text variant="body" className="text-muted flex-1">
+                    <Text className="text-base text-muted flex-1">
                       {t(step)}
                     </Text>
                   </View>

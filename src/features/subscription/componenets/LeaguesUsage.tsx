@@ -37,21 +37,17 @@ export default function LeaguesUsageCard({
 
         <View className="flex-row items-baseline gap-1">
           {inactiveCount > 0 && (
-            <Text
-              variant="small"
-              className="mr-0.5 text-muted"
-              accessibilityLabel={t('{{count}} inactive leagues kept in your account', {
+            <Text accessibilityLabel={t('{{count}} inactive leagues kept in your account', {
                 count: String(inactiveCount),
-              })}
-            >
+              })} className="text-xs mr-0.5 text-muted">
               +{inactiveCount}
             </Text>
           )}
-          <Text bold className={reachedLimit ? 'text-yellow-500' : 'text-text'}>
+          <Text className={`font-bold ${reachedLimit ? 'text-yellow-500' : 'text-text'}`}>
             {leaguesCount}
           </Text>
           <Text className="text-muted">/</Text>
-          <Text bold className="text-muted">
+          <Text className="font-bold text-muted">
             {maxLeagues}
           </Text>
         </View>

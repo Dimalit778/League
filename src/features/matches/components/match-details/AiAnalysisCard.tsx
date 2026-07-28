@@ -49,7 +49,7 @@ export default function AiAnalysisCard({
         <View className="mb-5 items-center">
           <View className="flex-row items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5">
             <Ionicons name="sparkles" size={13} color={colors.primary} />
-            <Text small semibold className="ml-1.5 uppercase tracking-widest text-primary">
+            <Text className="text-xs font-semibold ml-1.5 uppercase tracking-widest text-primary">
               {t('AI Prediction')}
             </Text>
           </View>
@@ -58,7 +58,7 @@ export default function AiAnalysisCard({
         {/* Predicted scoreline — the hero */}
         <View className="overflow-hidden rounded-3xl border border-primary/20 bg-surfaceSoft">
           <View className="items-center border-b border-border/60 py-2.5">
-            <Text small semibold className="uppercase tracking-[2px] text-muted">
+            <Text className="text-xs font-semibold uppercase tracking-[2px] text-muted">
               {t('Predicted Score')}
             </Text>
           </View>
@@ -66,7 +66,7 @@ export default function AiAnalysisCard({
           <View className="flex-row items-center px-3 py-6">
             <View className="min-w-0 flex-1 items-center">
               {homeTeamLogo ? <TeamBadge source={homeTeamLogo} width={52} height={52} /> : null}
-              <Text semibold numberOfLines={2} className="mt-2 text-center">
+              <Text numberOfLines={2} className="font-semibold mt-2 text-center">
                 {homeTeamName}
               </Text>
             </View>
@@ -85,7 +85,7 @@ export default function AiAnalysisCard({
 
             <View className="min-w-0 flex-1 items-center">
               {awayTeamLogo ? <TeamBadge source={awayTeamLogo} width={52} height={52} /> : null}
-              <Text semibold numberOfLines={2} className="mt-2 text-center">
+              <Text numberOfLines={2} className="font-semibold mt-2 text-center">
                 {awayTeamName}
               </Text>
             </View>
@@ -99,12 +99,12 @@ export default function AiAnalysisCard({
               <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
                 <Ionicons name="analytics" size={16} color={colors.primary} />
               </View>
-              <Text semibold className="ml-2">
+              <Text className="font-semibold ml-2">
                 {t('AI match analysis')}
               </Text>
             </View>
 
-            <Text body className="leading-7 text-text">
+            <Text className="text-base leading-7 text-text">
               {summary}
             </Text>
           </View>
@@ -119,10 +119,10 @@ export default function AiAnalysisCard({
               <View className="h-14 w-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
                 <Feather name="lock" size={24} color={colors.primary} />
               </View>
-              <Text semibold className="mt-3 text-center">
+              <Text className="font-semibold mt-3 text-center">
                 {t('Unlock the full AI analysis with Pro')}
               </Text>
-              <Text small className="mt-1 text-center text-muted">
+              <Text className="text-xs mt-1 text-center text-muted">
                 {t('Get the full breakdown behind every prediction.')}
               </Text>
               <Button
@@ -137,7 +137,7 @@ export default function AiAnalysisCard({
         {/* Disclaimer */}
         <View className="mt-4 flex-row items-center justify-center px-4">
           <Ionicons name="shield-checkmark-outline" size={13} color={colors.muted} />
-          <Text small className="ml-1.5 text-center text-muted">
+          <Text className="text-xs ml-1.5 text-center text-muted">
             {t('AI-generated preview based on available match data.')}
           </Text>
         </View>

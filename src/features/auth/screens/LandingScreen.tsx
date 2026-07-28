@@ -20,13 +20,13 @@ export default function LandingScreen() {
           </View>
 
           <View className="mt-3 rounded-full  ">
-            <Text caption className="text-muted uppercase">
+            <Text className="text-sm text-muted uppercase">
               Football Prediction
             </Text>
           </View>
         </View>
 
-        <Text h2 semibold className="pt-16 text-center text-white/80">
+        <Text className="text-2xl font-semibold pt-16 text-center text-white/80">
           Predict. Compete. Win.
         </Text>
       </View>
@@ -34,7 +34,7 @@ export default function LandingScreen() {
       <View className="px-5 pb-8 mt-auto">
         <Link href="/(auth)/signIn" asChild>
           <Pressable className="mb-4 rounded-2xl bg-primary p-4 active:opacity-85">
-            <Text semibold className="text-center">
+            <Text className="font-semibold text-center">
               Get Started
             </Text>
           </Pressable>

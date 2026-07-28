@@ -21,12 +21,12 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
 
   return (
     <View className="gap-2">
-      <Text semibold>{t('Current form')}</Text>
+      <Text className="font-semibold">{t('Current form')}</Text>
 
       <View className="rounded-2xl border border-border bg-surface px-4 py-4">
         <View className="flex-row items-center">
           <View className="min-w-0 flex-1">
-            <Text small className="mb-3 text-muted">
+            <Text className="text-xs mb-3 text-muted">
               {t('Last 5 finished predictions')}
             </Text>
 
@@ -42,14 +42,14 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
                       style={{ backgroundColor: style.backgroundColor, borderColor: style.borderColor }}
                       accessibilityLabel={`${result.result}, ${result.points} ${t('Points')}`}
                     >
-                      <Text bold style={{ color: style.color }}>
+                      <Text style={{ color: style.color }} className="font-bold">
                         {result.result}
                       </Text>
                     </View>
                   );
                 })
               ) : (
-                <Text small className="text-muted">
+                <Text className="text-xs text-muted">
                   {t('No finished predictions yet')}
                 </Text>
               )}
@@ -59,10 +59,10 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
           <View className="mx-3 h-16 w-px bg-border" />
 
           <View className="min-w-14 items-center">
-            <Text h2 bold style={{ color: colors.primary }}>
+            <Text style={{ color: colors.primary }} className="text-2xl font-bold">
               {totalPoints}
             </Text>
-            <Text small className="text-center text-muted">
+            <Text className="text-xs text-center text-muted">
               {t('Points')}
             </Text>
           </View>
@@ -70,18 +70,18 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
 
         {results.length > 0 ? (
           <View className="mt-3 flex-row items-center border-t border-border pt-3">
-            <Text small className="text-muted">
-              <Text small bold style={{ color: resultStyles.L.color }}>
+            <Text className="text-xs text-muted">
+              <Text style={{ color: resultStyles.L.color }} className="text-xs font-bold">
                 L
               </Text>{' '}
               {t('Missed')}
               {'   '}
-              <Text small bold style={{ color: resultStyles.H.color }}>
+              <Text style={{ color: resultStyles.H.color }} className="text-xs font-bold">
                 H
               </Text>{' '}
               {t('Hits')}
               {'   '}
-              <Text small bold style={{ color: resultStyles.B.color }}>
+              <Text style={{ color: resultStyles.B.color }} className="text-xs font-bold">
                 B
               </Text>{' '}
               {t('Bingo')}

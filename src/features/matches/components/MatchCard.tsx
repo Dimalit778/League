@@ -53,7 +53,7 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
       </View>
 
       <View className="mt-0.5 h-6 w-[95%] justify-start items-center">
-        <Text caption numberOfLines={2} ellipsizeMode="tail">
+        <Text numberOfLines={2} ellipsizeMode="tail" className="text-sm">
           {name}
         </Text>
       </View>
@@ -79,7 +79,7 @@ const MatchHeader = ({
   if (displayStatus === 'FINISHED') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text caption numberOfLines={1}>
+        <Text numberOfLines={1} className="text-sm">
           FT
         </Text>
       </View>
@@ -89,7 +89,7 @@ const MatchHeader = ({
   if (displayStatus === 'LIVE') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text caption style={{ color: LIVE_GOLD }} numberOfLines={1}>
+        <Text style={{ color: LIVE_GOLD }} numberOfLines={1} className="text-sm">
           LIVE
         </Text>
       </View>
@@ -99,19 +99,11 @@ const MatchHeader = ({
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
       <View className="flex-row items-center justify-center gap-2.5">
-        <Text
-          small
-          semibold
-          className="text-muted "
-          numberOfLines={1}
-          ellipsizeMode="clip"
-          adjustsFontSizeToFit
-          minimumFontScale={0.8}
-        >
+        <Text numberOfLines={1} ellipsizeMode="clip" adjustsFontSizeToFit minimumFontScale={0.8} className="text-xs font-semibold text-muted">
           {date}
         </Text>
         <View className="h-3 w-px bg-border" />
-        <Text semibold small className="text-muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} className="font-semibold text-xs text-muted">
           {time}
         </Text>
       </View>
