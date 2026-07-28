@@ -1,6 +1,6 @@
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
-import { LeagueOverview } from '@/features/leagues/types/leagueOverviewType';
-import { useGetTodayMatches } from '@/features/matches/hooks/useMatches';
+import { LeagueOverview } from '@/features/leagues/types';
+import { useGetUpcomingMatches } from '@/features/matches/hooks/useUpcomingMatches';
 import { mapMatchToCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
@@ -19,7 +19,7 @@ export function useLeagueOverview(): LeagueOverview {
   const { data: member, isLoading: memberLoading } = useGetMember(memberId);
   const { data: league, isLoading: leagueLoading } = useGetLeagueAndMembers(leagueId);
   const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
-  const { data: todayMatches } = useGetTodayMatches({
+  const { data: upcomingMatches } = useGetUpcomingMatches({
     competitionId,
     memberId,
   });
@@ -49,7 +49,7 @@ export function useLeagueOverview(): LeagueOverview {
       longestStreak: stats?.longestStreak ?? 0,
       recentForm: stats?.recentForm ?? [],
     },
-    upcomingMatches: (todayMatches ?? []).map(mapMatchToCardData),
+    upcomingMatches: (upcomingMatches ?? []).map(mapMatchToCardData),
     // Don't block the whole screen on matches — they sit below the fold.
     isLoading: memberLoading || leagueLoading || statsLoading,
   };

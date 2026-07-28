@@ -1,12 +1,11 @@
+import { TopTabBar } from '@/components/layout';
 import { AvatarImage, HeaderBackground, Text } from '@/components/ui';
-
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { router } from 'expo-router';
-import { Award, Settings, Star, Trophy, Users } from 'lucide-react-native';
-import { Pressable, View } from 'react-native';
+import { Award, Star, Users } from 'lucide-react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LeagueOverviewSummary } from '../../types/leagueOverviewType';
+import { LeagueOverviewSummary } from '../../types';
 
 function Divider() {
   return <View className="mx-0.5 h-14 w-px self-center bg-border opacity-70" />;
@@ -36,6 +35,7 @@ function StatColumn({
     </View>
   );
 }
+
 export default function LeagueSummary({ leagueSummary }: { leagueSummary: LeagueOverviewSummary }) {
   const { nickname, avatarUrl, leagueName, rank, points, membersCount } = leagueSummary;
   const { colors } = useThemeTokens();
@@ -44,39 +44,20 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
 
   return (
     <HeaderBackground>
-      <View style={{ paddingTop: insets.top }} className="px-4 pb-4 ">
-        <View className="flex-row items-center justify-between mb-3 ">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Settings"
-            className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
-            hitSlop={4}
-            onPress={() => router.push('/(app)/(user)/settings')}
-          >
-            <Settings color={colors.text} size={25} strokeWidth={1.5} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="My leagues"
-            className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
-            hitSlop={4}
-            onPress={() => router.replace('/(app)/(user)/leagues/my-leagues')}
-          >
-            <Trophy color={colors.text} size={25} strokeWidth={1.5} />
-          </Pressable>
-        </View>
+      <View style={{ paddingTop: insets.top }} className="px-4 pb-4">
+        <TopTabBar className="mb-3" />
 
-        <View className="rounded-lg border border-border px-1.5 py-4 mt-2   ">
-          <View className="flex-row items-center   ">
-            <View className=" flex-1 flex-row items-center gap-2">
+        <View className="mt-2 rounded-lg border border-border px-1.5 py-4">
+          <View className="flex-row items-center">
+            <View className="flex-1 flex-row items-center gap-2">
               <View className="h-14 w-14 rounded-full border-2 border-primary p-0.5">
                 <AvatarImage nickname={nickname} path={avatarUrl} />
               </View>
               <View className="min-w-0 flex-1">
-                <Text className="font-bold text-2xl" numberOfLines={1}>
+                <Text className="text-2xl font-bold" numberOfLines={1}>
                   {nickname}
                 </Text>
-                <Text className="text-muted text-base" numberOfLines={1}>
+                <Text className="text-base text-muted" numberOfLines={1}>
                   {leagueName}
                 </Text>
               </View>

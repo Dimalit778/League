@@ -86,10 +86,19 @@ export type LeagueWithCompetition = Omit<LeagueDetails, 'league_members'>;
 
 type MemberStatsData = NonNullable<ReturnType<typeof useMemberStats>['data']>;
 
-
+export type LeagueOverviewSummary = {
+  nickname: string;
+  avatarUrl: string | null;
+  leagueName: string;
+  logoUrl: string;
+  flagUrl: string;
+  rank: number;
+  points: number;
+  membersCount: number;
+};
 
 export type LeagueOverview = {
-  leagueSummary: LeagueSummary;
+  leagueSummary: LeagueOverviewSummary;
   stats: MemberStatsData;
   upcomingMatches: MatchCardData[];
   isLoading: boolean;

@@ -10,11 +10,5 @@ export default function KnockoutOnlyView({
   currentStage: string | null;
   onRefresh: () => void;
 }) {
-  return (
-    <KnockoutEngine
-      matches={matches}
-      onRefresh={onRefresh}
-      initialStage={currentStage ?? undefined}
-    />
-  );
+  return <KnockoutEngine matches={matches} onRefresh={onRefresh} initialStage={currentStage ?? undefined} />;
 }

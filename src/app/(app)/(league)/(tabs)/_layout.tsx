@@ -1,6 +1,6 @@
 import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
-import { FloatBottomTabs, SidebarMenu, TabsHeader } from '@/components/layout';
+import { FloatBottomTabs, SidebarMenu } from '@/components/layout';
 
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -17,7 +17,7 @@ export default function TabLayout() {
       <Tabs
         tabBar={isWeb ? () => null : (props) => <FloatBottomTabs {...props} />}
         screenOptions={{
-          header: () => <TabsHeader />,
+          headerShown: false,
 
           sceneStyle: {
             backgroundColor: colors.background,
@@ -36,6 +36,7 @@ export default function TabLayout() {
           name="Matches"
           options={{
             title: t('Matches'),
+            headerShown: false,
             tabBarIcon: ({ color, size }) => <MatchesIcon size={size} color={color} />,
           }}
         />

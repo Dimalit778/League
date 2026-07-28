@@ -2,7 +2,7 @@ import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
 import type { MatchCardType } from '../types';
@@ -13,7 +13,7 @@ import { KnockoutStageTabs } from './shared/TournamentTabs';
 function TieBlock({ tie }: { tie: Tie }) {
   const { t } = useTranslation();
   return (
-    <View className="mb-3 rounded-2xl border border-border bg-surfaceSecondary/60 p-2">
+    <View className="mb-3 rounded-2xl border border-border ">
       {tie.legs.map((leg) => {
         const card = mapMatchToCardData(leg);
         return (
@@ -25,7 +25,6 @@ function TieBlock({ tie }: { tie: Tie }) {
             prediction={card.prediction}
             predictionStatus={card.predictionStatus}
             status={card.status}
-            logoVariant="flag"
             date={card.date}
             time={card.time}
             onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
@@ -69,17 +68,12 @@ export default function KnockoutEngine({
         onSelectStage={setSelectedStage}
         getLabel={getStageLabel}
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
-        contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
-      >
-        {stageTies.length > 0 ? (
-          stageTies.map((tie) => <TieBlock key={tie.key} tie={tie} />)
-        ) : (
-          <Text className="text-text mt-6 text-center">{t('No matches found')}</Text>
-        )}
-      </ScrollView>
+      <FlatList
+        data={stageTies}
+        renderItem={({ item }) => <TieBlock tie={item} />}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={{ paddingBottom: 100, flexGrow: 1, paddingHorizontal: 16 }}
+      />
     </View>
   );
 }

@@ -5,7 +5,7 @@ import { Pressable, useWindowDimensions, View } from 'react-native';
 import { StatusType } from '../types';
 import { PredictionDisplayStatus } from '../utils/matchCard.mapper';
 import { getMatchStatus } from '../utils/matchStatus';
-import { MATCH_CARD_LAYOUT, MATCH_CARD_VIEWBOX_HEIGHT, MatchCardBg } from './MatchCardBg';
+import { getMatchCardMetrics, MatchCardBg } from './MatchCardBg';
 
 type Team = {
   name: string;
@@ -40,7 +40,7 @@ type TeamBlockProps = {
 
 function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }: TeamBlockProps) {
   return (
-    <View style={{ width }} className="items-center gap-1.5 ">
+    <View style={{ width }} className="items-center  gap-1 mt-2 ">
       <View style={{ width: logoWidth, height: logoHeight }} className="items-center justify-center overflow-hidden">
         <MyImage
           source={logo}
@@ -60,8 +60,6 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
     </View>
   );
 }
-
-const LIVE_GOLD = '#F59E0B';
 
 const MatchHeader = ({
   status,
@@ -89,7 +87,7 @@ const MatchHeader = ({
   if (displayStatus === 'LIVE') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text style={{ color: LIVE_GOLD }} numberOfLines={1} className="text-sm">
+        <Text numberOfLines={1} className="text-sm text-success">
           LIVE
         </Text>
       </View>
@@ -99,11 +97,22 @@ const MatchHeader = ({
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
       <View className="flex-row items-center justify-center gap-2.5">
-        <Text numberOfLines={1} ellipsizeMode="clip" adjustsFontSizeToFit minimumFontScale={0.8} className="text-xs font-semibold text-muted">
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="clip"
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
+          className="text-xs font-semibold text-muted"
+        >
           {date}
         </Text>
         <View className="h-3 w-px bg-border" />
-        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} className="font-semibold text-xs text-muted">
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.85}
+          className="font-semibold text-xs text-muted"
+        >
           {time}
         </Text>
       </View>
@@ -124,16 +133,19 @@ export const MatchCard = memo(function MatchCard({
   onPress,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
+  const {
+    width: cardWidth,
+    height: cardHeight,
+    gap,
+    centerWidth,
+    teamWidth,
+    contentHeight,
+    contentTop: mainContentTop,
+    headerTop,
+    predictionTop,
+    logoBoxSize,
+  } = getMatchCardMetrics(screenWidth);
 
-  const cardWidth = screenWidth - 30;
-  const cardHeight = Math.round(cardWidth * (MATCH_CARD_VIEWBOX_HEIGHT / 360) * 0.9);
-
-  const gap = 8;
-  const centerWidth = 72;
-
-  const teamWidth = (cardWidth - gap * 2 - centerWidth) / 2;
-  const contentHeight = cardHeight * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
-  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(cardHeight * 0.5), 40);
   const logoWidth = logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : logoBoxSize;
   const logoContentFit = logoVariant === 'flag' ? 'cover' : 'contain';
@@ -155,10 +167,6 @@ export const MatchCard = memo(function MatchCard({
 
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
-
-  const headerTop = cardHeight * MATCH_CARD_LAYOUT.dateTabCenterY - 8;
-  const predictionTop = cardHeight * MATCH_CARD_LAYOUT.predictionTabCenterY - 10;
-  const mainContentTop = cardHeight * MATCH_CARD_LAYOUT.contentTopY;
 
   return (
     <Pressable
@@ -197,12 +205,7 @@ export const MatchCard = memo(function MatchCard({
           />
 
           <View style={{ width: centerWidth }} className="items-center justify-center">
-            <Text
-              className="text-2xl font-semibold text-text"
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.75}
-            >
+            <Text className="w-full text-center text-2xl font-semibold text-text" numberOfLines={1}>
               {scoreText}
             </Text>
           </View>

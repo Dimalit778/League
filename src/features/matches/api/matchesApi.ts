@@ -87,10 +87,7 @@ export function mapMatchCardData(data: unknown): MatchCardType[] {
   }));
 }
 
-/**
- * All match queries. `getSeasonMatches` loads the whole competition once;
- * every Matches view slices it client-side (see model/selectors, model/knockout).
- */
+
 export const matchesApi = {
   // Get one match with all members' predictions
   async getMatchWithPredictions(
@@ -176,7 +173,7 @@ export const matchesApi = {
     void prefetchMatchTeamLogos(matches);
     return matches;
   },
-  async getTodayMatches(
+  async getUpcomingMatches(
     competitionId: number,
     seasonId: number,
     memberId: string,

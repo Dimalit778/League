@@ -50,6 +50,7 @@ describe('tournamentMatches utils', () => {
   it('detects first phase stages and league phase matches', () => {
     expect(isFirstPhaseStage('GROUP_STAGE')).toBe(true);
     expect(isFirstPhaseStage('REGULAR_SEASON')).toBe(true);
+    expect(isFirstPhaseStage('PLAYOFFS')).toBe(false);
     expect(isFirstPhaseStage('FINAL')).toBe(false);
     expect(hasLeagueStage([match(1, { stage: 'REGULAR_SEASON' })])).toBe(true);
     expect(hasLeagueStage([match(1, { stage: 'GROUP_STAGE' })])).toBe(false);
@@ -142,10 +143,11 @@ describe('tournamentMatches utils', () => {
       match(1, { stage: 'GROUP_STAGE', group: 'A' }),
       match(2, { stage: 'FINAL' }),
       match(3, { stage: 'REGULAR_SEASON' }),
+      match(4, { stage: 'PLAYOFFS' }),
     ];
 
     expect(getGroupStageMatches(matches)).toEqual([matches[0]]);
-    expect(selectKnockoutMatches(matches)).toEqual([matches[1]]);
+    expect(selectKnockoutMatches(matches)).toEqual([matches[1], matches[3]]);
     expect(filterMatchesByGroup(matches, 'A')).toEqual([matches[0]]);
   });
 

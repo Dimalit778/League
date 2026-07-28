@@ -1,5 +1,4 @@
 import { Error, useFloatBottomTabsInset } from '@/components/layout';
-import LeagueSkeleton from '@/features/leagues/components/leaderboard/LeaderboardSkeleton';
 import { useGetLeaderboard, useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -10,6 +9,7 @@ import { useEffect, useMemo } from 'react';
 import { Share } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
+import LeaderboardSkeleton from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Pudiom';
 import { SparseLeaderboardCard } from '../components/leaderboard/SparseLeaderboardCard';
 
@@ -58,7 +58,7 @@ export default function LeaderboardScreen() {
   };
 
   if (error) return <Error error={error} />;
-  if (!leaderboard || isLoading) return <LeagueSkeleton />;
+  if (!leaderboard || isLoading) return <LeaderboardSkeleton />;
 
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset + 16 }}>

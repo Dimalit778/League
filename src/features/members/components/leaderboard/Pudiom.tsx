@@ -86,7 +86,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
       )}
 
       <View
-        className="w-full items-center justify-center "
+        className="w-full items-center"
         style={{
           height: podiumHeight,
           backgroundColor: colors.surface + 'B8',
@@ -98,7 +98,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
           borderTopLeftRadius: 10,
         }}
       >
-        <Text font="teko-bold" style={{ color: positionColor }} className="text-5xl pt-1">
+        <Text font="teko-bold" style={{ color: positionColor, fontSize: 40 }}>
           {position}
         </Text>
       </View>
@@ -110,11 +110,11 @@ export function Podium({ first, second, third }: PodiumProps) {
     <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border">
       <HeaderBackground>
         <View className="flex-row items-end justify-center px-2 pt-9">
-          <PodiumMember member={second} position={2} podiumHeight={55} />
+          <PodiumMember member={second} position={2} podiumHeight={70} />
 
-          <PodiumMember member={first} position={1} podiumHeight={75} />
+          <PodiumMember member={first} position={1} podiumHeight={90} />
 
-          <PodiumMember member={third} position={3} podiumHeight={45} />
+          <PodiumMember member={third} position={3} podiumHeight={60} />
         </View>
       </HeaderBackground>
     </View>

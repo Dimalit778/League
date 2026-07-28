@@ -16,7 +16,7 @@ export const competitionApi = {
   async getCompetitionsDetails(competitionId: number) {
     const { data, error } = await supabase
       .from('competitions')
-      .select('id, current_fixture, total_fixtures, type, current_stage, season_id')
+      .select('id, code, current_fixture, total_fixtures, type, current_stage, season_id')
       .eq('id', competitionId)
       .single();
 
@@ -27,6 +27,7 @@ export const competitionApi = {
 
     return {
       id: competitionId,
+      code: data?.code ?? null,
       allFixtures,
       currentFixture,
       totalFixtures: data?.total_fixtures ?? 0,

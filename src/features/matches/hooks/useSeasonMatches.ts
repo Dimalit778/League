@@ -15,6 +15,7 @@ export const useSeasonMatches = ({
   enabled?: boolean;
 }) => {
   const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+
   const isReady = enabled && competitionId != null && seasonId != null && memberId != null;
 
   const query = useQuery({

@@ -6,13 +6,48 @@ import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 export const MATCH_CARD_VIEWBOX_WIDTH = 360;
 export const MATCH_CARD_VIEWBOX_HEIGHT = 110;
 
-/** Layout anchors scaled from the original 360×150 design */
+const MATCH_CARD_HORIZONTAL_INSET = 65;
+const MATCH_CARD_HEIGHT_SCALE = 0.9;
+const MATCH_CARD_GAP = 6;
+const MATCH_CARD_CENTER_WIDTH = 72;
+const MATCH_CARD_LOGO_MAX = 36;
+
+/** Vertical anchors as fractions of the SVG viewBox height. */
 export const MATCH_CARD_LAYOUT = {
-  dateTabCenterY: 22 / MATCH_CARD_VIEWBOX_HEIGHT,
+  dateTabCenterY: 18 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabCenterY: 88 / MATCH_CARD_VIEWBOX_HEIGHT,
-  contentTopY: 34 / MATCH_CARD_VIEWBOX_HEIGHT,
+  contentTopY: 32 / MATCH_CARD_VIEWBOX_HEIGHT,
   contentBottomY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
+  dateTabTextOffset: 8,
+  predictionTabTextOffset: 10,
 } as const;
+
+/** Shared card size + content metrics for MatchCard and its skeleton. */
+export function getMatchCardMetrics(screenWidth: number) {
+  const width = screenWidth - MATCH_CARD_HORIZONTAL_INSET;
+  const height = Math.round(width * (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) * MATCH_CARD_HEIGHT_SCALE);
+  const gap = MATCH_CARD_GAP;
+  const centerWidth = MATCH_CARD_CENTER_WIDTH;
+  const teamWidth = (width - centerWidth) / 2.2;
+  const contentHeight = height * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
+  const contentTop = height * MATCH_CARD_LAYOUT.contentTopY;
+  const headerTop = height * MATCH_CARD_LAYOUT.dateTabCenterY - MATCH_CARD_LAYOUT.dateTabTextOffset;
+  const predictionTop = height * MATCH_CARD_LAYOUT.predictionTabCenterY - MATCH_CARD_LAYOUT.predictionTabTextOffset;
+  const logoBoxSize = Math.min(teamWidth * 0.9, Math.round(height * 0.4), MATCH_CARD_LOGO_MAX);
+
+  return {
+    width,
+    height,
+    gap,
+    centerWidth,
+    teamWidth,
+    contentHeight,
+    contentTop,
+    headerTop,
+    predictionTop,
+    logoBoxSize,
+  };
+}
 
 type PredictionTabColors = {
   top: string;
@@ -33,7 +68,6 @@ const MATCH_CARD_COLORS: Record<ThemeName, MatchCardColors> = {
     cardTop: '#F8FAFC',
     cardBottom: '#EAF0F7',
     cardStroke: '#CBD5E1',
-
     shadow: '#000814',
     prediction: {
       none: { top: '#E2E8F0', bottom: '#CBD5E1', stroke: '#94A3B8' },
@@ -46,7 +80,6 @@ const MATCH_CARD_COLORS: Record<ThemeName, MatchCardColors> = {
     cardTop: '#243044',
     cardBottom: '#1a2332',
     cardStroke: '#334155',
-
     shadow: '#000000',
     prediction: {
       none: { top: '#2a3548', bottom: '#1e293b', stroke: '#475569' },
@@ -85,6 +118,7 @@ export const MatchCardBg = ({ width, height, predictionStatus = 'none' }: Props)
           <Stop offset="0" stopColor={predictionColors.top} />
           <Stop offset="1" stopColor={predictionColors.bottom} />
         </LinearGradient>
+
       </Defs>
 
       {/* shadow */}
@@ -96,9 +130,9 @@ export const MatchCardBg = ({ width, height, predictionStatus = 'none' }: Props)
     M 32 6
 
     H 108
-    C 124 8 132 34 144 34
+    C 124 8 132 30 144 30
     H 216
-    C 228 34 236 8 252 6
+    C 228 30 236 8 252 6
 
     H 328
     C 342 6 352 15 352 26
@@ -128,9 +162,9 @@ C 140 76 133 102 120 104
       <Path
         d="
     M 115 9
-    C 127 26 133 34 144 34
+    C 127 23 133 30 144 30
     H 216
-    C 227 34 233 26 245 9
+    C 227 30 233 23 245 9
     Z
   "
         fill="url(#predictionBg)"

@@ -12,36 +12,41 @@ type TabOption<T extends string = string> = {
 
 type TournamentView = 'groups' | 'knockout';
 
-type TournamentViewTabsProps = {
-  value: TournamentView;
-  onChange: (value: TournamentView) => void;
-};
-
 type HorizontalTabsProps<T extends string = string> = {
   options: TabOption<T>[];
   value: T;
   onChange: (value: T) => void;
 };
 
-export const TournamentViewTabs = ({ value, onChange }: TournamentViewTabsProps) => {
+export const TournamentViewTabs = ({
+  value,
+  onChange,
+  firstPhaseLabel,
+}: {
+  value: TournamentView;
+  onChange: (value: TournamentView) => void;
+  firstPhaseLabel?: string;
+}) => {
   const { t } = useTranslation();
   const options: TabOption<TournamentView>[] = [
-    { value: 'groups', label: t('Groups') },
+    { value: 'groups', label: firstPhaseLabel ?? t('Groups') },
     { value: 'knockout', label: t('Knockout') },
   ];
 
   return (
-    <View className="mx-3 my-2 flex-row rounded-xl border border-border bg-surface p-1">
+    <View className="flex-row px-8">
       {options.map((option) => {
         const active = value === option.value;
 
         return (
           <Pressable
             key={option.value}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
             onPress={() => onChange(option.value)}
-            className={cn('flex-1 items-center rounded-lg py-2', active && 'bg-primary')}
+            className={cn('flex-1 items-center border-b py-2', active ? 'border-primary' : 'border-transparent')}
           >
-            <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
+            <Text numberOfLines={1} className={cn('text-lg font-semibold ', active ? 'text-primary' : 'text-muted')}>
               {option.label}
             </Text>
           </Pressable>

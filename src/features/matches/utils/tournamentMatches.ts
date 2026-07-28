@@ -107,6 +107,14 @@ export type TournamentView = 'groups' | 'knockout';
 
 
 const KNOCKOUT_STAGE_ORDER = [
+  'PRELIMINARY_ROUND',
+  'QUALIFICATION',
+  'QUALIFICATION_ROUND_1',
+  'QUALIFICATION_ROUND_2',
+  'QUALIFICATION_ROUND_3',
+  'PLAYOFF_ROUND_1',
+  'PLAYOFF_ROUND_2',
+  'PLAYOFFS',
   'ROUND_1',
   'ROUND_2',
   'ROUND_3',

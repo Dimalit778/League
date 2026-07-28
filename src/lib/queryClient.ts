@@ -50,8 +50,8 @@ export const KEYS = {
     byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
-    today: (competitionId: number, seasonId: number, memberId: string) =>
-      ['matches', competitionId, seasonId, 'today', memberId] as const,
+    upcoming: (competitionId: number, seasonId: number, memberId: string) =>
+      ['matches', competitionId, seasonId, 'upcoming', memberId] as const,
     finishedFixtures: (competitionId: number, seasonId: number) =>
       ['matches', competitionId, seasonId, 'finished-fixtures'] as const,
   },

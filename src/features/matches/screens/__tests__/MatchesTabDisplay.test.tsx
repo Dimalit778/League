@@ -3,7 +3,7 @@ import { useSeasonMatches } from '@/features/matches/hooks/useSeasonMatches';
 import MatchesScreen from '@/features/matches/screens/MatchesScreen';
 import { render } from '@testing-library/react-native';
 
-jest.mock('@/store/ActiveLeagueStore', () => ({
+jest.mock('@/store/PrimaryLeagueStore', () => ({
   useMemberId: () => 'm1',
   useCompetitionId: () => 100,
 }));
@@ -30,14 +30,9 @@ jest.mock('@/features/matches/views/LeaguePhaseKnockoutView', () => {
   const { Text } = require('react-native');
   return { __esModule: true, default: () => <Text>LeaguePhaseKnockoutView</Text> };
 });
-jest.mock('@/features/matches/views/KnockoutOnlyView', () => {
-  const { Text } = require('react-native');
-  return { __esModule: true, default: () => <Text>KnockoutOnlyView</Text> };
-});
-
-const setup = (type: string, stages: string[]) => {
+const setup = (code: string, stages: string[]) => {
   jest.mocked(useGetCompetitionsDetails).mockReturnValue({
-    data: { type, currentFixture: 1, currentStage: stages[0] ?? null },
+    data: { code, type: code === 'CL' || code === 'WC' ? 'CUP' : 'LEAGUE', currentFixture: 1, currentStage: stages[0] ?? null },
     isLoading: false,
     error: null,
   } as any);
@@ -53,17 +48,17 @@ describe('Matches tab display selection', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('renders RegularLeagueView for a LEAGUE competition', () => {
-    setup('league', []);
+    setup('PL', []);
     expect(render(<MatchesScreen />).getByText('RegularLeagueView')).toBeTruthy();
   });
 
   it('renders GroupsKnockoutView for a CUP with group stage', () => {
-    setup('cup', ['GROUP_STAGE', 'FINAL']);
+    setup('WC', ['GROUP_STAGE', 'FINAL']);
     expect(render(<MatchesScreen />).getByText('GroupsKnockoutView')).toBeTruthy();
   });
 
   it('renders LeaguePhaseKnockoutView for a CUP with a league phase', () => {
-    setup('cup', ['LEAGUE_STAGE', 'LAST_16']);
+    setup('CL', ['LEAGUE_STAGE', 'LAST_16']);
     expect(render(<MatchesScreen />).getByText('LeaguePhaseKnockoutView')).toBeTruthy();
   });
 });

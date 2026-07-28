@@ -6,7 +6,6 @@ import MatchesSkeleton from '../components/MatchesSkeleton';
 import { useSeasonMatches } from '../hooks/useSeasonMatches';
 import { resolveCompetitionShape } from '../model/competitionShape';
 import GroupsKnockoutView from '../views/GroupsKnockoutView';
-import KnockoutOnlyView from '../views/KnockoutOnlyView';
 import LeaguePhaseKnockoutView from '../views/LeaguePhaseKnockoutView';
 import RegularLeagueView from '../views/RegularLeagueView';
 
@@ -14,6 +13,7 @@ export default function MatchesScreen() {
   const memberId = useMemberId();
   const competitionId = useCompetitionId();
   const { data: meta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
+
   const {
     data: matches = [],
     isLoading: matchesLoading,
@@ -26,9 +26,13 @@ export default function MatchesScreen() {
     return <Error error={metaError?.message || matchesError?.message || 'Unknown error'} />;
   }
 
-  const shape = resolveCompetitionShape(meta.type, matches);
+  const shape = resolveCompetitionShape(meta.code);
   const currentFixture = meta.currentFixture ?? 1;
   const currentStage = meta.currentStage ?? null;
+
+  if (!shape) {
+    return <Error error={`Unsupported competition code: ${meta.code ?? 'missing'}`} />;
+  }
 
   return (
     <View className="flex-1">
@@ -45,9 +49,6 @@ export default function MatchesScreen() {
       )}
       {shape === 'GROUPS_KO' && (
         <GroupsKnockoutView matches={matches} currentStage={currentStage} onRefresh={refetch} />
-      )}
-      {shape === 'KNOCKOUT_ONLY' && (
-        <KnockoutOnlyView matches={matches} currentStage={currentStage} onRefresh={refetch} />
       )}
     </View>
   );

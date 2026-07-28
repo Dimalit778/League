@@ -2,6 +2,7 @@ import { Tables } from '@/types/database.types';
 
 export type ComMetadata ={
   id: number;
+  code: string | null;
   currentStage: string | null;
   currentFixture: number;
   totalFixtures: number;

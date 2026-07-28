@@ -59,17 +59,9 @@ export const DOMESTIC_LEAGUE_STAGES = [
   'RELEGATION_ROUND',
 ] as const;
 
-/** Cup-style group / qualification / play-in — groups + knockout shell. */
+/** A real group phase. Qualification and playoffs are elimination rounds. */
 export const GROUP_PHASE_STAGES = [
   'GROUP_STAGE',
-  'PRELIMINARY_ROUND',
-  'QUALIFICATION',
-  'QUALIFICATION_ROUND_1',
-  'QUALIFICATION_ROUND_2',
-  'QUALIFICATION_ROUND_3',
-  'PLAYOFF_ROUND_1',
-  'PLAYOFF_ROUND_2',
-  'PLAYOFFS',
 ] as const;
 
 /** First phase = league style + group/qualification style. */
@@ -80,6 +72,14 @@ export const FIRST_PHASE_STAGES = [
 
 /** Knockout bracket rounds (no group table). */
 export const KNOCKOUT_ONLY_STAGES = [
+  'PRELIMINARY_ROUND',
+  'QUALIFICATION',
+  'QUALIFICATION_ROUND_1',
+  'QUALIFICATION_ROUND_2',
+  'QUALIFICATION_ROUND_3',
+  'PLAYOFF_ROUND_1',
+  'PLAYOFF_ROUND_2',
+  'PLAYOFFS',
   'FINAL',
   'THIRD_PLACE',
   'SEMI_FINALS',

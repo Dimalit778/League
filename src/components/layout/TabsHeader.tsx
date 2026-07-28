@@ -1,72 +1,38 @@
-// TabsHeader.tsx
 import { MenuIcon, SettingsIcon } from '@/assets/icons';
-import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { BlurView } from 'expo-blur';
-import { Link, router } from 'expo-router';
-import { Settings, Trophy } from 'lucide-react-native';
+import { Link } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MobileTopBar } from './TopTabBar';
 
 const isIOS = Platform.OS === 'ios';
-type TabsContectProps = {
-  nickname: string;
-  avatarUrl: string | null;
-};
-function TabsContect({ nickname, avatarUrl }: TabsContectProps) {
-  const { colors } = useThemeTokens();
-  return (
-    <View className="flex-row items-center justify-between w-full">
-      <Pressable
-        accessibilityRole="button"
-        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
-        hitSlop={4}
-        onPress={() => router.push('/(app)/(user)/settings')}
-      >
-        <Settings color={colors.text} size={25} strokeWidth={1.5} />
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        className="h-12 w-12 items-center justify-center rounded-full bg-surfaceSoft border border-border"
-        hitSlop={4}
-        onPress={() => router.replace('/(app)/(user)/leagues')}
-      >
-        <Trophy color={colors.text} size={25} strokeWidth={1.5} />
-      </Pressable>
-    </View>
-  );
-}
 
 export function TabsHeader({ tabsLayout = true }: { tabsLayout?: boolean }) {
   const { colors, theme } = useThemeTokens();
-
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
-
-  const memberId = useMemberId();
-
-  const { data: member } = useGetMember(memberId);
-
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
   const content = (
     <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="flex-row items-center justify-between pb-2 px-4 ">
+      <View className="flex-row items-center justify-between px-4 pb-2">
         {tabsLayout ? (
-          <View className="flex-row items-center gap-3">
+          <View className="w-full flex-row items-center gap-3">
             {isWeb && (
               <Pressable
                 onPress={toggleSidebar}
                 accessibilityRole="button"
                 accessibilityLabel="Toggle menu"
-                className="p-2 -ml-2 hover:bg-border rounded-lg"
+                className="-ml-2 rounded-lg p-2 hover:bg-border"
               >
                 <MenuIcon size={24} color={colors.primary} />
               </Pressable>
             )}
-            <TabsContect nickname={member?.nickname ?? ''} avatarUrl={member?.avatar_url ?? null} />
+            <View className="min-w-0 flex-1">
+              <MobileTopBar />
+            </View>
           </View>
         ) : (
           <Link href="/settings" asChild>

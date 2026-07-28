@@ -11,7 +11,7 @@ import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
 import MatchHeader from '../components/match-details/MatchHeader';
-import { useGetMatchDetail } from '../hooks/useMatches';
+import { useGetMatchData } from '../hooks/useMatchData';
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
@@ -20,7 +20,7 @@ const MatchDetailScreen = () => {
   const inset = useSafeAreaInsets();
   const { height } = useWindowDimensions();
 
-  const { data: matchData, isLoading, error } = useGetMatchDetail(Number(matchId));
+  const { data: matchData, isLoading, error } = useGetMatchData(Number(matchId));
 
   if (isLoading) return <LoadingOverlay />;
   if (error) return <Error error={error} />;

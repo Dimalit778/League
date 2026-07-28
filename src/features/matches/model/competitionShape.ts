@@ -1,18 +1,19 @@
-import type { MatchBaseType } from '../types';
-import { isDomesticLeagueStage, isGroupPhaseStage } from '../types/footballStages';
+export type CompetitionShape = 'REGULAR' | 'LEAGUEPHASE_KO' | 'GROUPS_KO';
 
-export type CompetitionShape = 'REGULAR' | 'LEAGUEPHASE_KO' | 'GROUPS_KO' | 'KNOCKOUT_ONLY';
+const SHAPE_BY_COMPETITION_CODE: Record<string, CompetitionShape> = {
+  PL: 'REGULAR',
+  BL1: 'REGULAR',
+  PD: 'REGULAR',
+  CL: 'LEAGUEPHASE_KO',
+  WC: 'GROUPS_KO',
+};
 
 /**
- * Single source of truth for which Matches view to render.
- * CL vs WC is not stored — it is inferred from the stage vocabulary present.
+ * Competition format is product configuration, not something to infer from a
+ * potentially partial match sync.
  */
 export function resolveCompetitionShape(
-  type: string | null | undefined,
-  matches: Pick<MatchBaseType, 'stage'>[],
-): CompetitionShape {
-  if ((type ?? '').toUpperCase() === 'LEAGUE') return 'REGULAR';
-  if (matches.some((match) => isGroupPhaseStage(match.stage))) return 'GROUPS_KO';
-  if (matches.some((match) => isDomesticLeagueStage(match.stage))) return 'LEAGUEPHASE_KO';
-  return 'KNOCKOUT_ONLY';
+  code: string | null | undefined,
+): CompetitionShape | null {
+  return SHAPE_BY_COMPETITION_CODE[(code ?? '').trim().toUpperCase()] ?? null;
 }
