@@ -7,7 +7,6 @@
     "icon": "./src/assets/app-icon.png",
     "scheme": "champo",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.champo",
@@ -23,9 +22,10 @@
         "foregroundImage": "./src/assets/app-icon.png",
         "backgroundColor": "#0f172a"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.dimalit778.champo",
-      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +46,9 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to choose a profile avatar.",
           "isAccessMediaLocationEnabled": false,
-          "granularPermissions": ["photo"]
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ],
       [
@@ -106,7 +108,8 @@
           "color": "#0f172a",
           "sounds": []
         }
-      ]
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
