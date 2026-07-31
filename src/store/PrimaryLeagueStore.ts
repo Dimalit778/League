@@ -6,6 +6,8 @@ type PrimaryLeagueContext = {
   leagueId: string | null;
   competitionId: number | null;
   seasonId: number | null;
+  nickname: string | null;
+  avatarUrl: string | null;
 };
 
 type PrimaryLeagueStore = PrimaryLeagueContext & {
@@ -16,6 +18,12 @@ type PrimaryLeagueStore = PrimaryLeagueContext & {
     context: PrimaryLeagueContext
   ) => void;
 
+  /** Patch display fields after nickname/avatar mutations (avoids full re-init). */
+  patchPrimaryMember: (patch: {
+    nickname?: string | null;
+    avatarUrl?: string | null;
+  }) => void;
+
   initializePrimaryLeague: () => Promise<void>;
   clearPrimaryLeague: () => void;
 };
@@ -25,6 +33,8 @@ const EMPTY_CONTEXT: PrimaryLeagueContext = {
   leagueId: null,
   competitionId: null,
   seasonId: null,
+  nickname: null,
+  avatarUrl: null,
 };
 
 export const usePrimaryLeagueStore =
@@ -36,6 +46,10 @@ export const usePrimaryLeagueStore =
 
     setPrimaryLeague: (context) => {
       set(context);
+    },
+
+    patchPrimaryMember: (patch) => {
+      set(patch);
     },
 
     initializePrimaryLeague: async () => {
@@ -69,6 +83,8 @@ export const usePrimaryLeagueStore =
             .from('league_members')
             .select(`
               id,
+              nickname,
+              avatar_url,
               league:leagues!inner (
                 id,
                 competition_id,
@@ -93,6 +109,8 @@ export const usePrimaryLeagueStore =
             member?.league?.competition_id ?? null,
           seasonId:
             member?.league?.competition?.season_id ?? null,
+          nickname: member?.nickname ?? null,
+          avatarUrl: member?.avatar_url ?? null,
           loading: false,
           initialized: true,
         });

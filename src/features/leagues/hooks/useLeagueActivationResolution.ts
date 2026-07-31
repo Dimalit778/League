@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { MyLeagueType } from '../types';
+import { MyLeague } from '../types';
 
 type UseLeagueActivationResolutionParams = {
-  leagues: MyLeagueType[];
+  leagues: MyLeague[];
   maxLeagues: number;
   enabled: boolean;
   updateLeagueActivation: (activeMemberIds: string[]) => Promise<unknown>;

@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
 import { Image as ExpoImage } from 'expo-image';
 import { View } from 'react-native';
@@ -22,9 +22,7 @@ const TeamSide = ({ team }: { team: WCMatch['home_team'] }) => (
       cachePolicy="memory-disk"
       contentFit="contain"
     />
-    <Text className="text-sm text-center mt-2">
-      {team.tla}
-    </Text>
+    <Text className="text-sm text-center mt-2">{team.tla}</Text>
   </View>
 );
 
@@ -32,21 +30,15 @@ const Score = ({ home, away, finished }: { home: number | null; away: number | n
   if (!finished) {
     return (
       <View className="items-center justify-center px-3">
-        <Text className="text-xl text-muted">
-          –
-        </Text>
+        <Text className="text-xl text-muted">–</Text>
       </View>
     );
   }
   return (
     <View className="flex-row items-center px-2">
-      <Text className="text-xl text-text">
-        {home}
-      </Text>
+      <Text className="text-xl text-text">{home}</Text>
       <View className="w-0.5 h-full bg-border mx-3" />
-      <Text className="text-xl text-text">
-        {away}
-      </Text>
+      <Text className="text-xl text-text">{away}</Text>
     </View>
   );
 };
@@ -69,12 +61,8 @@ export default function WCMatchCard({ match, layout = 'grid' }: Props) {
         style={{ borderColor: prediction ? accentColor : colors.surface }}
       >
         <View className="flex-row items-center justify-between p-1 px-2">
-          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>
-            {dateStr}
-          </Text>
-          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>
-            {finished ? t('FT') : timeStr}
-          </Text>
+          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>{dateStr}</Text>
+          <Text className={`text-sm ${finished ? 'text-muted' : 'text-text'}`}>{finished ? t('FT') : timeStr}</Text>
         </View>
 
         <View className="flex-row py-3">

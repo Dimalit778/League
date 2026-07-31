@@ -24,8 +24,8 @@ describe('KEYS', () => {
       expect(KEYS.members.byId('m1')).toEqual(['members', 'm1']);
     });
 
-    it('generates primary key', () => {
-      expect(KEYS.members.primary('u1')).toEqual(['members', 'primary', 'u1']);
+    it('generates primary league key', () => {
+      expect(KEYS.members.primaryLeague('u1')).toEqual(['members', 'primary-league', 'u1']);
     });
 
     it('generates stats key', () => {

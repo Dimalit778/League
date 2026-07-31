@@ -25,9 +25,13 @@ export default function SignInForm() {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<SignInFormData>({
     resolver: yupResolver(signInSchema),
     mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data: SignInFormData) => {
@@ -51,6 +55,7 @@ export default function SignInForm() {
         control={control}
         name="email"
         placeholder={t('Email')}
+        autoComplete="email"
         secureTextEntry={false}
         error={errors.email}
         icon={<MailIcon size={22} color={colors.muted} />}
@@ -61,6 +66,7 @@ export default function SignInForm() {
         control={control}
         name="password"
         placeholder={t('Password')}
+        autoComplete="current-password"
         secureTextEntry={!showPassword}
         icon={<LockIcon size={24} color={colors.muted} />}
         rightIcon={

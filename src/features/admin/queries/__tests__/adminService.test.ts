@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { supabase } from '@/lib/supabase';
 
 // Re-import after supabase mock is set up

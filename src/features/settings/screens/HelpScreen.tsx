@@ -152,7 +152,7 @@ const HelpScreen = () => {
         contentContainerStyle={{ paddingBottom: edges.bottom + 10, paddingHorizontal: 10 }}
       >
         {/* Welcome Section */}
-        <Card className="mb-6 p-4">
+        <Card className="mb-6">
           <Text className="text-xl mb-2">
             {t('Welcome to League Champion')}
           </Text>
@@ -170,7 +170,7 @@ const HelpScreen = () => {
               {t(section.title)}
             </Text>
             {section.items.map((item, index) => (
-              <Card key={index} className="mb-3 p-4">
+              <Card key={index} className="mb-3">
                 <Text className="text-base mb-2">
                   {t(item.question)}
                 </Text>
@@ -183,7 +183,7 @@ const HelpScreen = () => {
         ))}
 
         {/* Contact Support */}
-        <Card className="mb-6 p-4">
+        <Card className="mb-6">
           <Text className="text-xl mb-3">
             {t('Contact Support')}
           </Text>
@@ -211,7 +211,7 @@ const HelpScreen = () => {
           <Text className="text-xl mb-3">
             {t('App Information')}
           </Text>
-          <Card className="p-4">
+          <Card>
             <View className="flex-row justify-between items-center mb-2">
               <Text className="text-base text-muted">
                 {t('Version')}

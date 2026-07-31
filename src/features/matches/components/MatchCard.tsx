@@ -1,5 +1,7 @@
 import { MyImage, Text } from '@/components/ui';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { router } from 'expo-router';
+import { Clock, Plus } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import { StatusType } from '../types';
@@ -25,7 +27,7 @@ type MatchCardProps = {
   logoVariant?: 'team' | 'flag';
   status?: StatusType | null;
   date: string;
-  time: string;
+  time?: string;
   onPress?: () => void;
 };
 
@@ -53,31 +55,70 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
       </View>
 
       <View className="mt-0.5 h-6 w-[95%] justify-start items-center">
-        <Text numberOfLines={2} ellipsizeMode="tail" className="text-sm">
+        <Text variant="bodySmall" numberOfLines={2} ellipsizeMode="tail">
           {name}
         </Text>
       </View>
     </View>
   );
 }
-
-const MatchHeader = ({
-  status,
-  date,
-  time,
+const PredictionBlock = ({
+  prediction,
+  predictionStatus,
   top,
 }: {
-  status?: StatusType | null;
-  date: string;
-  time: string;
+  prediction?: { home?: number | null; away?: number | null } | null;
+  predictionStatus: PredictionDisplayStatus;
   top: number;
 }) => {
+  const predictionText =
+    prediction?.home !== null &&
+    prediction?.home !== undefined &&
+    prediction?.away !== null &&
+    prediction?.away !== undefined ? (
+      `${prediction?.home} - ${prediction?.away}`
+    ) : (
+      <Plus size={22} color="gold" strokeWidth={2.2} />
+    );
+  const predictionTextClass =
+    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
+
+  return (
+    <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
+      <Text className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
+        {predictionText}
+      </Text>
+    </View>
+  );
+};
+const ScoreBlock = ({ score, time, hasScore }: { score: string; time?: string; hasScore: boolean }) => {
+  const { colors } = useThemeTokens();
+
+  if (hasScore) {
+    return (
+      <Text className="w-full text-center text-2xl font-semibold text-text" numberOfLines={1}>
+        {score}
+      </Text>
+    );
+  }
+
+  return (
+    <View className="flex-row items-center justify-center gap-1.5">
+      <Clock size={16} color={colors.muted} />
+      <Text variant="bodySmall" tone="muted" numberOfLines={1}>
+        {time}
+      </Text>
+    </View>
+  );
+};
+
+const MatchHeader = ({ status, date, top }: { status?: StatusType | null; date: string; top: number }) => {
   const displayStatus = getMatchStatus(status);
 
   if (displayStatus === 'FINISHED') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text numberOfLines={1} className="text-sm">
+        <Text variant="bodySmall" numberOfLines={1}>
           FT
         </Text>
       </View>
@@ -87,7 +128,7 @@ const MatchHeader = ({
   if (displayStatus === 'LIVE') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-        <Text numberOfLines={1} className="text-sm text-success">
+        <Text variant="bodySmall" tone="success" numberOfLines={1}>
           LIVE
         </Text>
       </View>
@@ -96,26 +137,9 @@ const MatchHeader = ({
 
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <View className="flex-row items-center justify-center gap-2.5">
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="clip"
-          adjustsFontSizeToFit
-          minimumFontScale={0.8}
-          className="text-xs font-semibold text-muted"
-        >
-          {date}
-        </Text>
-        <View className="h-3 w-px bg-border" />
-        <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.85}
-          className="font-semibold text-xs text-muted"
-        >
-          {time}
-        </Text>
-      </View>
+      <Text variant="caption" tone="muted">
+        {date}
+      </Text>
     </View>
   );
 };
@@ -154,26 +178,16 @@ export const MatchCard = memo(function MatchCard({
 
   const isFinished = status === 'FINISHED';
 
-  const hasPrediction =
-    prediction?.home !== null &&
-    prediction?.home !== undefined &&
-    prediction?.away !== null &&
-    prediction?.away !== undefined;
+  const scoreLabel = hasScore ? `${home.score} - ${away.score}` : (time ?? '');
 
-  const scoreText = hasScore ? `${home.score} - ${away.score}` : 'VS';
-  const predictionText = hasPrediction ? `${prediction?.home} - ${prediction?.away}` : '- -';
-
-  const accessibilityLabel = `${home.name}, ${scoreText}, ${away.name}`;
-
-  const predictionTextClass =
-    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
+  const accessibilityLabel = `${home.name}, ${scoreLabel}, ${away.name}`;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${id}`))}
-      className={`mb-2 w-full items-center ${isFinished ? 'opacity-60' : ''}`}
+      className={` w-full items-center ${isFinished ? 'opacity-60' : ''}`}
     >
       <View
         style={{
@@ -185,7 +199,7 @@ export const MatchCard = memo(function MatchCard({
           <MatchCardBg width={cardWidth} height={cardHeight} predictionStatus={predictionStatus} />
         </View>
 
-        <MatchHeader status={status} date={date} time={time} top={headerTop} />
+        <MatchHeader status={status} date={date} top={headerTop} />
 
         <View
           className="absolute left-0 right-0 flex-row items-center justify-center"
@@ -205,9 +219,7 @@ export const MatchCard = memo(function MatchCard({
           />
 
           <View style={{ width: centerWidth }} className="items-center justify-center">
-            <Text className="w-full text-center text-2xl font-semibold text-text" numberOfLines={1}>
-              {scoreText}
-            </Text>
+            <ScoreBlock score={scoreLabel} time={time} hasScore={hasScore} />
           </View>
 
           <TeamBlock
@@ -220,11 +232,7 @@ export const MatchCard = memo(function MatchCard({
           />
         </View>
 
-        <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
-          <Text className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
-            {predictionText}
-          </Text>
-        </View>
+        <PredictionBlock prediction={prediction} predictionStatus={predictionStatus} top={predictionTop} />
       </View>
     </Pressable>
   );

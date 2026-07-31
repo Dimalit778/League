@@ -1,6 +1,8 @@
 import { Database } from '@/types/database.types';
 import { createClient } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
 import { authStorage, createMMKVStorageAdapter } from './storage';
+
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
@@ -22,7 +24,7 @@ const MMKVStorage = {
   getItem: (key: string): Promise<string | null> => {
     try {
       return Promise.resolve(mmkvAdapter.getItem(key));
-    } catch (error) {
+    } catch {
       return Promise.resolve(null);
     }
   },
@@ -30,7 +32,7 @@ const MMKVStorage = {
     try {
       mmkvAdapter.setItem(key, value);
       return Promise.resolve();
-    } catch (error) {
+    } catch {
       return Promise.resolve();
     }
   },
@@ -38,7 +40,7 @@ const MMKVStorage = {
     try {
       mmkvAdapter.removeItem(key);
       return Promise.resolve();
-    } catch (error) {
+    } catch {
       return Promise.resolve();
     }
   },
@@ -49,6 +51,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     storage: MMKVStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    // Web OAuth returns ?code= in the URL; native keeps this off so password-reset
+    // deep links are consumed manually instead of racing the auth client.
+    detectSessionInUrl: Platform.OS === 'web',
   },
 });

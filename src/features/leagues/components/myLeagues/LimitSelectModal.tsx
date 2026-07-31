@@ -1,13 +1,13 @@
 import { Button, Text } from '@/components/ui';
 import { LogoBadge } from '@/components/ui/LogoBadge';
-import { MyLeagueType } from '@/features/leagues/types';
+import { MyLeague } from '@/features/leagues/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ChevronRight } from 'lucide-react-native';
 import { Modal, Pressable, ScrollView, View } from 'react-native';
 
 type LimitSelectModalProps = {
-  leagues: MyLeagueType[];
+  leagues: MyLeague[];
   maxLeagues: number;
   selectedMemberIds: string[];
   isSaving: boolean;
@@ -17,7 +17,7 @@ type LimitSelectModalProps = {
   onUpgrade: () => void;
 };
 
-const LeagueCard = ({ league, selected }: { league: MyLeagueType; selected: boolean }) => {
+const LeagueCard = ({ league, selected }: { league: MyLeague; selected: boolean }) => {
   const { t } = useTranslation();
 
   return (
@@ -100,8 +100,6 @@ export default function LimitSelectModal({
 }: LimitSelectModalProps) {
   const { t } = useTranslation();
   const selectedCount = selectedMemberIds.length;
-  console.log('selectedCount', selectedMemberIds);
-
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => {}}>
       <View className="flex-1 justify-center px-4" style={{ backgroundColor: 'rgba(0,0,0,0.90)' }}>

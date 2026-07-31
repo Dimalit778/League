@@ -2,6 +2,7 @@ import { BackButton, Button, InputField, Screen, Text } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
 import { MailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
@@ -22,6 +23,9 @@ const SendResetLink = () => {
   const emailForm = useForm({
     resolver: yupResolver(emailSchema),
     mode: 'onChange',
+    defaultValues: {
+      email: '',
+    },
   });
 
   const [message, setMessage] = useState<string | null>(null);
@@ -35,7 +39,7 @@ const SendResetLink = () => {
     }
   };
   return (
-    <Screen edges={['top']}>
+    <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
       <BackButton />
       <KeyboardAwareScrollView
         bottomOffset={62}
@@ -43,14 +47,16 @@ const SendResetLink = () => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
-        <View className="items-center py-16">
-          <Text className="text-secondary text-4xl font-bold text-center">{t('Reset Password')}</Text>
-          <Text className="text-muted text-base text-center mt-4">
+        <View className="items-center py-12 sm:py-16">
+          <Text variant="display" tone="primary" className="text-center">
+            {t('Reset Password')}
+          </Text>
+          <Text variant="body" tone="muted" className="mt-4 text-center">
             {t("Enter your email address and we'll send you a reset link")}
           </Text>
         </View>
 
-        <View className="px-5 gap-4">
+        <View className={spacing.stack}>
           <InputField
             control={emailForm.control}
             name="email"

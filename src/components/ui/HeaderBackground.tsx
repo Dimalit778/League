@@ -1,5 +1,6 @@
 import { images } from '@/assets/images';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { radius } from '@/lib/nativewind/radius';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode, useMemo } from 'react';
@@ -47,6 +48,7 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
 
   return (
     <View
+      className={radius.xl}
       style={{
         shadowColor: '#000',
         shadowOpacity: isLight ? 0.1 : 0.25,
@@ -58,38 +60,38 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
         elevation: isLight ? 4 : 9,
       }}
     >
-      {/* השכבה הרחבה יוצרת את צורת חצי האליפסה */}
+      <View className={`${radius.xl} overflow-hidden`}>
+        <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <ExpoImage
+            source={images.pitchGrass}
+            contentFit="cover"
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              opacity: 0.4,
+            }}
+          />
 
-      <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        <ExpoImage
-          source={images.pitchGrass}
-          contentFit="cover"
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            opacity: 0.2,
-          }}
-        />
+          <LinearGradient
+            colors={overlayColors}
+            locations={[...overlayLocations]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+          />
 
-        <LinearGradient
-          colors={overlayColors}
-          locations={[...overlayLocations]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          }}
-        />
-
-        {children}
-      </LinearGradient>
+          {children}
+        </LinearGradient>
+      </View>
     </View>
   );
 }

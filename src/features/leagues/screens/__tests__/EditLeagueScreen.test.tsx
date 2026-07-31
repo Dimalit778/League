@@ -25,7 +25,7 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useUpdateLeague: () => ({ mutate: jest.fn(), isPending: false }),
 }));
 
-jest.mock('@/store/ActiveLeagueStore', () => ({
+jest.mock('@/store/PrimaryLeagueStore', () => ({
   useLeagueId: () => 'league-1',
 }));
 

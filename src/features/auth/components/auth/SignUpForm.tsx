@@ -28,9 +28,14 @@ export default function SignUpForm() {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<SignUpFormData>({
     resolver: yupResolver(signUpSchema),
     mode: 'onChange',
+    defaultValues: {
+      fullname: '',
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (form: SignUpFormData) => {
@@ -54,6 +59,7 @@ export default function SignUpForm() {
         control={control}
         name="fullname"
         placeholder={t('Full Name')}
+        autoComplete="name"
         icon={<UserIcon size={24} color={colors.muted} strokeWidth={1.5} />}
         error={errors.fullname}
         clearError={clearError}
@@ -63,6 +69,7 @@ export default function SignUpForm() {
         control={control}
         name="email"
         placeholder={t('Email')}
+        autoComplete="email"
         icon={<MailIcon size={24} color={colors.muted} />}
         error={errors.email}
         clearError={clearError}
@@ -72,6 +79,8 @@ export default function SignUpForm() {
         control={control}
         name="password"
         placeholder={t('Password')}
+        autoComplete="new-password"
+        textContentType="newPassword"
         secureTextEntry={!showPassword}
         icon={<LockIcon size={24} color={colors.muted} />}
         error={errors.password}

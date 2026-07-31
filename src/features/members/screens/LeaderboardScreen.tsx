@@ -1,4 +1,4 @@
-import { Error, useFloatBottomTabsInset } from '@/components/layout';
+import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { useGetLeaderboard, useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -7,7 +7,6 @@ import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 import { Share } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
 import LeaderboardSkeleton from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Pudiom';
@@ -61,7 +60,7 @@ export default function LeaderboardScreen() {
   if (!leaderboard || isLoading) return <LeaderboardSkeleton />;
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset + 16 }}>
+    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset + 16}>
       <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
 
       {rest.length > 0 ? (
@@ -73,6 +72,6 @@ export default function LeaderboardScreen() {
           inviteDisabled={!league}
         />
       )}
-    </ScrollView>
+    </Screen>
   );
 }

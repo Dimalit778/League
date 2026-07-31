@@ -55,4 +55,13 @@ describe('Button', () => {
     expect(getByText('+')).toBeTruthy();
     expect(queryByText('Add')).toBeNull();
   });
+
+  it('supports the additive label API and busy accessibility state', () => {
+    const { getByRole } = render(<Button label="Save" loading onPress={jest.fn()} />);
+
+    expect(getByRole('button', { name: 'Save' }).props.accessibilityState).toEqual({
+      busy: true,
+      disabled: true,
+    });
+  });
 });

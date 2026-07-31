@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { HeaderBackground, LogoBadge, Text } from '@/components/ui';
+import { Divider, HeaderBackground, LogoBadge, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image as ExpoImage } from 'expo-image';
@@ -9,6 +9,7 @@ import { ChevronRight, Podium, Star, Users } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 import { LeagueSummary } from '../../types';
+
 type StatBlockProps = {
   icon: React.ReactNode;
   label: string;
@@ -20,31 +21,17 @@ function StatBlock({ icon, label, value }: StatBlockProps) {
     <View className="flex-1 items-center gap-1">
       <View className="flex-row items-center justify-center gap-1.5">
         {icon}
-
         <Text numberOfLines={1} className="text-xs text-muted">
           {label}
         </Text>
       </View>
-
       <Text numberOfLines={1} className="font-semibold text-text">
         {value}
       </Text>
     </View>
   );
 }
-function Divider() {
-  const { colors } = useThemeTokens();
 
-  return (
-    <View
-      className="mx-2 h-12 w-px"
-      style={{
-        backgroundColor: colors.border,
-        opacity: 0.7,
-      }}
-    />
-  );
-}
 export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueSummary; onPress?: () => void }) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
@@ -59,95 +46,68 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
   };
 
   return (
-    <View className="px-3 mt-4">
-      <HeaderBackground>
-        <Pressable onPress={handlePress} className="flex-row gap-6 px-3 py-5 border border-border rounded-xl">
-          {/* Left Content */}
-          <View className=" items-center gap-2">
-            <View className="flex-row gap-2">
-              <Star size={22} color={colors.primary} fill={colors.primary} />
+    <HeaderBackground>
+      <Pressable onPress={handlePress} className="flex-row items-center gap-4 px-4 py-4">
+        <View className="h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-surface">
+          <LinearGradient
+            colors={['rgba(255,211,0,0.22)', 'rgba(255,211,0,0.04)']}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: 999,
+            }}
+          />
+          <ExpoImage
+            source={images.trophyGold}
+            contentFit="contain"
+            style={{
+              width: 52,
+              height: 52,
+            }}
+          />
+        </View>
 
-              <Text className="font-semibold text-primary">
-                {t('Primary')}
+        <View className="min-w-0 flex-1 justify-center gap-3">
+          <View className="flex-row items-center gap-3">
+            <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
+
+            <View className="min-w-0 flex-1 gap-0.5">
+              <Text numberOfLines={1} className="text-xl font-semibold">
+                {league.league_name}
+              </Text>
+              <Text numberOfLines={1} className="text-base text-muted">
+                {league.nickname}
               </Text>
             </View>
-            {/* Trophy */}
-            <View className=" h-24 w-24 items-center justify-center rounded-full bg-surface">
-              <LinearGradient
-                colors={['rgba(255,211,0,0.20)', 'rgba(255,211,0,0.02)']}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 999,
-                }}
-              />
 
-              <ExpoImage
-                source={images.trophyGold}
-                contentFit="contain"
-                style={{
-                  width: 115,
-                  height: 115,
-                }}
-              />
+            <View className="rounded-full border border-primary p-1">
+              <ChevronRight size={22} color={colors.primary} />
             </View>
           </View>
 
-          <View className="flex-1 flex-row items-center ">
-            {/* Right content */}
-            <View className="min-w-0 flex-1">
-              <View className="flex-row items-center gap-4">
-                <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
+          <Divider />
 
-                <View className="flex-1">
-                  <Text numberOfLines={1} className="text-2xl font-semibold">
-                    {league.league_name}
-                  </Text>
+          <View className="flex-row items-center justify-between">
+            <StatBlock icon={<Podium size={18} color={colors.primary} />} label={t('Rank')} value={`#${league.rank}`} />
 
-                  <Text className="text-xl text-muted">
-                    {league.nickname}
-                  </Text>
-                </View>
-                <View className="absolute right-3  rounded-full p-1 border border-primary">
-                  <ChevronRight size={26} color={colors.primary} />
-                </View>
-              </View>
+            <Divider orientation="vertical" className="h-10" />
 
-              <View
-                className="mx-2 my-3 h-0.5 w-full"
-                style={{
-                  backgroundColor: colors.border,
-                  opacity: 0.7,
-                }}
-              />
-              {/* Stats */}
-              <View className=" flex-row items-center justify-between">
-                <StatBlock
-                  icon={<Podium size={18} color={colors.primary} />}
-                  label={t('Rank')}
-                  value={`#${league.rank}`}
-                />
+            <StatBlock
+              icon={<Star size={18} color={colors.primary} fill={colors.primary} />}
+              label={t('Points')}
+              value={`${league.total_points} ${t('pts')}`}
+            />
 
-                <Divider />
+            <Divider orientation="vertical" className="h-10" />
 
-                <StatBlock
-                  icon={<Star size={18} color={colors.primary} fill={colors.primary} />}
-                  label={t('Points')}
-                  value={`${league.total_points} ${t('pts')}`}
-                />
-
-                <Divider />
-
-                <StatBlock
-                  icon={<Users size={18} color={colors.primary} />}
-                  label={t('Members')}
-                  value={`${league.members_count}`}
-                />
-              </View>
-            </View>
+            <StatBlock
+              icon={<Users size={18} color={colors.primary} />}
+              label={t('Members')}
+              value={`${league.members_count}`}
+            />
           </View>
-        </Pressable>
-      </HeaderBackground>
-    </View>
+        </View>
+      </Pressable>
+    </HeaderBackground>
   );
 }

@@ -1,6 +1,6 @@
 import { AvatarImage, PositionBadge } from '@/components/ui';
 import { Text } from '@/components/ui/Text';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Link } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
@@ -44,12 +44,8 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
           </View>
 
           <View className="items-end">
-            <Text className={cn('font-bold', isCurrentUser && 'text-primary')}>
-              {total_points}
-            </Text>
-            <Text className="text-sm mt-0.5 text-muted">
-              points
-            </Text>
+            <Text className={cn('font-bold', isCurrentUser && 'text-primary')}>{total_points}</Text>
+            <Text className="text-sm mt-0.5 text-muted">points</Text>
           </View>
         </View>
       </TouchableOpacity>

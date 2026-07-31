@@ -1,6 +1,6 @@
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { Pressable, View } from 'react-native';
 
 type View_ = 'groups' | 'knockout';
@@ -12,9 +12,7 @@ type Props = {
 
 const Item = ({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) => (
   <Pressable onPress={onPress} className={cn('flex-1 py-2 rounded-lg items-center', active ? 'bg-primary' : '')}>
-    <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
-      {label}
-    </Text>
+    <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>{label}</Text>
   </Pressable>
 );
 

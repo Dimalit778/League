@@ -1,4 +1,4 @@
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { View } from 'react-native';
 import { Text } from './Text';
 type Props = {
@@ -15,9 +15,7 @@ export function PositionBadge({ position, className, size = 'md', isCurrentUser 
   };
   return (
     <View className={cn(' rounded-md bg-surfaceSoft items-center justify-center ', sizeClasses[size], className)}>
-      <Text className={`text-sm font-semibold ${isCurrentUser ? 'text-primary' : 'text-muted'}`}>
-        {position}
-      </Text>
+      <Text className={`text-sm font-semibold ${isCurrentUser ? 'text-primary' : 'text-muted'}`}>{position}</Text>
     </View>
   );
 }

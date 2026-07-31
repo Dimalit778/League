@@ -4,6 +4,8 @@ import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { spacing } from '@/lib/nativewind/spacing';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
@@ -118,9 +120,9 @@ const VerifyEmailScreen = () => {
 
   if (!email) {
     return (
-      <Screen>
+      <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
         <BackButton />
-        <View className="flex-1 items-center justify-center px-5">
+        <View className="flex-1 items-center justify-center">
           <Text className="text-error text-center">Email address is missing. Please try signing up again.</Text>
         </View>
       </Screen>
@@ -128,23 +130,27 @@ const VerifyEmailScreen = () => {
   }
 
   return (
-    <Screen edges={['top']}>
+    <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
       {isLoading && <LoadingOverlay />}
 
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="items-center py-16">
-          <Text className="text-secondary font-black text-center" style={{ fontSize: 42 }}>
+        <View className="items-center py-12 sm:py-16">
+          <Text variant="display" tone="primary" className="text-center">
             Verify Email
           </Text>
-          <Text className="text-center text-muted font-bold mt-2">{t('We sent a 6-digit code to')}</Text>
-          <Text className="text-center text-secondary font-bold mt-1">{email}</Text>
-          <Text className="text-sm text-center text-muted mt-4 px-4">
+          <Text variant="label" tone="muted" className="mt-2 text-center">
+            {t('We sent a 6-digit code to')}
+          </Text>
+          <Text variant="label" tone="secondary" className="mt-1 text-center">
+            {email}
+          </Text>
+          <Text variant="bodySmall" tone="muted" className="mt-4 text-center">
             {t('Apple and Google sign-in do not require email verification.')}
           </Text>
         </View>
 
-        <View className="px-5 gap-4">
-          <View className="flex-row justify-center gap-2">
+        <View className={spacing.stack}>
+          <View className={cn('w-full flex-row justify-center', spacing.row)}>
             {code.map((digit, index) => (
               <TextInput
                 key={index}
@@ -156,11 +162,8 @@ const VerifyEmailScreen = () => {
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 keyboardType="number-pad"
                 maxLength={1}
-                className="bg-surface border border-text rounded-lg text-center text-secondary font-bold"
+                className="h-14 min-w-0 flex-1 rounded-lg border border-text bg-surface text-center text-2xl font-bold text-secondary"
                 style={{
-                  width: 50,
-                  height: 60,
-                  fontSize: 24,
                   borderColor: code[index] ? colors.secondary : colors.text,
                   borderWidth: code[index] ? 2 : 1,
                 }}

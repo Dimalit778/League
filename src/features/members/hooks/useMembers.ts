@@ -46,10 +46,12 @@ export const useUpdateMember = () => {
       if (!memberId) throw new Error('Member ID is required');
       return memberApi.updateMember(memberId, nickname);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       if (!memberId) return;
       invalidateMemberQueries(queryClient, memberId);
-      queryClient.invalidateQueries({ queryKey: KEYS.members.byId(memberId) });
+      if (data.id === memberId) {
+        usePrimaryLeagueStore.getState().patchPrimaryMember({ nickname: data.nickname });
+      }
     },
     onError: (error) => {
       Alert.alert('Error', error.message);
@@ -65,6 +67,9 @@ export const useDeleteMemberImage = () => {
     },
     onSuccess: (data) => {
       invalidateMemberQueries(queryClient, data.id, data.league_id);
+      if (usePrimaryLeagueStore.getState().memberId === data.id) {
+        usePrimaryLeagueStore.getState().patchPrimaryMember({ avatarUrl: data.avatar_url });
+      }
     },
   });
 };
@@ -77,6 +82,9 @@ export const useUploadMemberImage = () => {
     },
     onSuccess: (data) => {
       invalidateMemberQueries(queryClient, data.id, data.league_id);
+      if (usePrimaryLeagueStore.getState().memberId === data.id) {
+        usePrimaryLeagueStore.getState().patchPrimaryMember({ avatarUrl: data.avatar_url });
+      }
     },
   });
 };

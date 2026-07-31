@@ -1,5 +1,7 @@
 import { Platform } from 'react-native';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 // Web-compatible storage adapter using localStorage
 const createWebStorage = (id: string) => ({
   set: (key: string, value: string) => {

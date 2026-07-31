@@ -19,6 +19,7 @@ import {
 } from '@/providers';
 
 import * as Sentry from '@sentry/react-native';
+
 import { Asset } from 'expo-asset';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as ExpoSplashScreen from 'expo-splash-screen';

@@ -1,13 +1,15 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { LockIcon } from 'lucide-react-native';
 import { View } from 'react-native';
-export function LockedBadge() {
+export function LockedBadge({ visible }: { visible: boolean }) {
   const { colors } = useThemeTokens();
 
+  if (!visible) return null;
+
   return (
-    <View pointerEvents="none" className="absolute inset-0 z-50 items-center justify-center">
+    <View pointerEvents="none" className="absolute inset-0 z-50 items-center justify-center bg-overlay overflow-hidden">
       <View
-        className="h-10 w-10 items-center justify-center rounded-full"
+        className="h-10 w-10 items-center justify-center rounded-full overflow-hidden"
         style={{
           backgroundColor: colors.surface,
           borderWidth: 1,

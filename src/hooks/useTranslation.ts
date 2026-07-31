@@ -10,7 +10,7 @@ export const useTranslation = () => {
   const toggleLanguage = useLanguageStore((state) => state.toggleLanguage);
 
   // Also subscribe to language context to ensure re-renders
-  const { version } = useLanguageContext();
+  useLanguageContext();
   const isRTL = useIsRTL();
 
   const translate = (key: string, variables?: Record<string, string | number>) =>

@@ -14,7 +14,7 @@ export default function PredictionChart(props: PredictionChartProps) {
   const missedPercentage = stats.totalPredictions > 0 ? (stats.missedHits / stats.totalPredictions) * 100 : 0;
 
   return (
-    <Card className="p-4 mb-4">
+    <Card className="mb-4">
       <Text className="text-base font-bold mb-2">
         {t('Prediction Results')}
       </Text>

@@ -1,4 +1,4 @@
-import { BackButton, Text } from '@/components/ui';
+import { Card, Screen, Text } from '@/components/ui';
 import AppleAuth from '@/features/auth/components/AppleAuth';
 import AuthModeToggle from '@/features/auth/components/auth/AuthModeToggle';
 import SignInForm from '@/features/auth/components/auth/SignInForm';
@@ -6,10 +6,11 @@ import SignUpForm from '@/features/auth/components/auth/SignUpForm';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { spacing } from '@/lib/nativewind/spacing';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type AuthMode = 'signIn' | 'signUp';
 
@@ -23,7 +24,6 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
-  const { top } = useSafeAreaInsets();
 
   const handleModeChange = (nextMode: AuthMode) => {
     if (nextMode === mode) return;
@@ -34,46 +34,45 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
   const isSignIn = mode === 'signIn';
 
   return (
-    <>
-      {/* <Image source={require('@/assets/images/app-wallpaper.png')} className="absolute" /> */}
-
+    <Screen padding="horizontal" width="compact">
       <KeyboardAwareScrollView
         bottomOffset={62}
-        className="flex-1 bg-background"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingTop: top }}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
       >
-        <BackButton />
-
-        <View className="flex-1 px-5">
-          <View className="items-center py-16 justify-center">
-            <Text font="teko-bold" className="text-5xl text-text">
+        <View className={cn('w-full ', spacing.section)}>
+          <View className="items-center justify-center mb-8">
+            <Text variant="display" tone="primary">
               {isSignIn ? t('Welcome Back') : t('Create account')}
             </Text>
-            <Text className="text-muted">{isSignIn ? t('Sign in to your account') : t('Sign up to get started')}</Text>
+            <Text variant="subtitle" tone="muted" className="text-center">
+              {isSignIn ? t('Sign in to your account') : t('Sign up to get started')}
+            </Text>
           </View>
-          <View className="p-5 border border-border bg-surface rounded-3xl">
+
+          <Card padding="md">
             <AuthModeToggle mode={mode} onModeChange={handleModeChange} />
 
-            <View className="mt-10 gap-4 px-5">
+            <View className={cn('mt-8', spacing.stack)}>
               {isSignIn ? <SignInForm key="signIn" /> : <SignUpForm key="signUp" />}
 
               <View className="my-2 flex-row items-center">
                 <View className="h-px flex-1 bg-border" />
-                <Text className="text-xs mx-2 text-muted">
+                <Text variant="caption" tone="muted" className="mx-2">
                   {t('OR')}
                 </Text>
                 <View className="h-px flex-1 bg-border" />
               </View>
 
-              <View className="gap-3">
+              <View className={spacing.list}>
                 <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} mode={mode} />
                 <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
               </View>
             </View>
-          </View>
+          </Card>
         </View>
       </KeyboardAwareScrollView>
-    </>
+    </Screen>
   );
 }

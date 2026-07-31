@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 describe('getProfileImage', () => {
   const MOCK_URL = 'https://example.supabase.co';
 

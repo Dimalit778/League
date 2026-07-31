@@ -17,8 +17,24 @@ export default function AuthLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ animation: 'none' }} />
-        <Stack.Screen name="signIn" />
-        <Stack.Screen name="signUp" />
+        <Stack.Screen
+          name="signIn"
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        />
+        <Stack.Screen
+          name="signUp"
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        />
         <Stack.Screen name="verifyEmail" />
         <Stack.Screen name="resetPassword" />
         <Stack.Screen name="sendResetLink" />

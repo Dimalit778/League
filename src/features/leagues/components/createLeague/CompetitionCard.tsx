@@ -1,4 +1,4 @@
-import { Text, UpgardeBadge } from '@/components/ui';
+import { LockedBadge, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
@@ -38,10 +38,11 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             priority="high"
           />
           <View className="flex-1 items-center">
-            <Text className="text-sm text-muted">
-              {t(competition.area)}
-            </Text>
-            <Text style={{ color: isSelected ? colors.primary : colors.text }} className="text-base font-bold text-center">
+            <Text className="text-sm text-muted">{t(competition.area)}</Text>
+            <Text
+              style={{ color: isSelected ? colors.primary : colors.text }}
+              className="text-base font-bold text-center"
+            >
               {t(competition.name)}
             </Text>
           </View>
@@ -54,7 +55,7 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             priority="high"
           />
         </View>
-        <UpgardeBadge visible={isLocked} />
+        <LockedBadge visible={isLocked} />
       </View>
     </Pressable>
   );

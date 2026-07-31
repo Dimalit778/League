@@ -1,4 +1,4 @@
-import { getThemeTokens, ThemeName, themes } from '@/lib/nativeWind';
+import { getThemeTokens, ThemeName, themes } from '@/lib/nativewind/nativeWind';
 import { useThemeStore } from '@/store/ThemeStore';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider, Theme } from '@react-navigation/native';
 import { View } from 'react-native';

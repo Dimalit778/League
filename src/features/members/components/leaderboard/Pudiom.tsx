@@ -70,15 +70,12 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
             </View>
           </View>
 
-          <Text numberOfLines={1} ellipsizeMode="tail" className="text-sm font-semibold mt-1 w-full px-1 text-center">
+          <Text variant="subtitle" numberOfLines={1} ellipsizeMode="tail" className="mt-1 w-full px-1 text-center">
             {member.nickname}
           </Text>
 
-          <View
-            className="mt-1 mb-2 items-center rounded-full px-2.5 py-0.5"
-            style={{ backgroundColor: positionColor }}
-          >
-            <Text style={{ color: '#0F172A' }} className="text-xs font-bold">
+          <View className="mt-1 mb-2 items-center rounded-md px-2.5 py-0.5" style={{ backgroundColor: positionColor }}>
+            <Text variant="caption" tone="inverse">
               {member.total_points ?? 0} pts
             </Text>
           </View>
@@ -98,7 +95,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
           borderTopLeftRadius: 10,
         }}
       >
-        <Text font="teko-bold" style={{ color: positionColor, fontSize: 40 }}>
+        <Text variant="display" style={{ color: positionColor }}>
           {position}
         </Text>
       </View>
@@ -107,7 +104,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
 }
 export function Podium({ first, second, third }: PodiumProps) {
   return (
-    <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border">
+    <View className=" mt-4 mb-8 overflow-hidden rounded-xl border border-border">
       <HeaderBackground>
         <View className="flex-row items-end justify-center px-2 pt-9">
           <PodiumMember member={second} position={2} podiumHeight={70} />

@@ -5,7 +5,7 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable } from 'react-native';
+import { Alert, Platform, Pressable } from 'react-native';
 
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -26,6 +26,7 @@ const GoogleAuth = ({
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (Platform.OS === 'web') return;
     GoogleSignin.configure({
       webClientId: WEB_CLIENT_ID,
       offlineAccess: false,
@@ -38,9 +39,23 @@ const GoogleAuth = ({
   const label = t('Sign in with Google');
 
   const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+
     try {
       setIsLoading(true);
       setErrorMessage(null);
+
+      if (Platform.OS === 'web') {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin,
+          },
+        });
+        if (error) throw error;
+        // Browser navigates away; keep loading until then.
+        return;
+      }
 
       await GoogleSignin.hasPlayServices();
       const res = await GoogleSignin.signIn();
@@ -103,7 +118,7 @@ const GoogleAuth = ({
       <Pressable
         onPress={handleGoogleSignIn}
         disabled={isLoading}
-        className="px-4 rounded-md flex-row items-center justify-center gap-x-4 bg-background"
+        className="px-4 rounded-md flex-row items-center justify-center gap-x-4 bg-black"
         style={{ height: 44 }}
         accessibilityRole="button"
         accessibilityLabel={label}

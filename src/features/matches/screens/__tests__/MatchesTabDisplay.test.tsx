@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import { useSeasonMatches } from '@/features/matches/hooks/useSeasonMatches';
 import MatchesScreen from '@/features/matches/screens/MatchesScreen';

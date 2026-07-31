@@ -9,6 +9,30 @@ jest.mock('nativewind', () => ({
   remapProps: jest.fn(),
 }));
 
+jest.mock('@expo/vector-icons', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const MockIcon = (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+
+  return {
+    Feather: MockIcon,
+    FontAwesome6: MockIcon,
+    Ionicons: MockIcon,
+  };
+});
+
+jest.mock('@expo/vector-icons/build/FontAwesome6', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
+jest.mock('@expo/vector-icons/Entypo', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
 jest.mock('react-native-keyboard-controller', () => {
   const { ScrollView } = require('react-native');
   return {
@@ -53,18 +77,41 @@ jest.mock('expo-router', () => ({
 jest.mock('@/hooks/useThemeTokens', () => ({
   useThemeTokens: () => ({
     theme: 'dark',
+    isDark: true,
     colors: {
       primary: '#000',
+      primaryForeground: '#fff',
+      primarySoft: '#222',
       secondary: '#111',
       background: '#222',
+      backgroundSecondary: '#292929',
       surface: '#333',
+      surfaceSoft: '#3a3a3a',
+      surfaceSecondary: '#3a3a3a',
+      surfaceElevated: '#444',
       border: '#444',
+      borderStrong: '#555',
       text: '#fff',
+      textSecondary: '#ddd',
       muted: '#888',
+      mutedForeground: '#777',
       error: '#f00',
+      errorSoft: '#400',
       success: '#0f0',
+      successSoft: '#040',
+      warning: '#f90',
+      warningSoft: '#431',
+      info: '#0af',
+      infoSoft: '#034',
+      overlay: 'rgba(0,0,0,0.5)',
     },
     fonts: {},
+    gradients: {
+      hero: ['#000', '#111', '#222'],
+      premium: ['#111', '#222', '#333'],
+    },
+    spacing: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32, 10: 40, 12: 48 },
+    radius: { sm: 8, md: 12, lg: 16, xl: 24, full: 999 },
   }),
 }));
 
@@ -223,12 +270,27 @@ jest.mock('expo-image', () => {
   });
   return {
     Image: Image,
+    ImageBackground: Image,
   };
 });
 
-jest.mock('react-native-svg', () => ({
-  SvgUri: () => null,
-}));
+jest.mock('react-native-svg', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const SvgComponent = ({ children, ...props }: any) => React.createElement(View, props, children);
+
+  return {
+    __esModule: true,
+    default: SvgComponent,
+    Circle: SvgComponent,
+    Defs: SvgComponent,
+    LinearGradient: SvgComponent,
+    Path: SvgComponent,
+    Rect: SvgComponent,
+    Stop: SvgComponent,
+    SvgUri: () => null,
+  };
+});
 
 jest.mock('@assets/icons', () => {
   const MockIcon = () => null;
@@ -256,14 +318,35 @@ jest.mock('expo-haptics', () => ({
 }));
 
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
+  const React = require('react');
+  const { View } = require('react-native');
+  const AnimatedView = React.forwardRef((props: any, ref: any) => React.createElement(View, { ...props, ref }));
+  AnimatedView.displayName = 'AnimatedView';
+
   return {
-    ...Reanimated,
+    __esModule: true,
+    default: {
+      View: AnimatedView,
+      createAnimatedComponent: (Component: any) => Component,
+    },
+    cancelAnimation: jest.fn(),
+    createAnimatedComponent: (Component: any) => Component,
+    Easing: {
+      ease: jest.fn(),
+      cubic: jest.fn(),
+      in: (value: any) => value,
+      out: (value: any) => value,
+      inOut: (value: any) => value,
+    },
+    interpolate: (_value: number, _input: number[], output: number[]) => output[0],
+    interpolateColor: (_value: number, _input: number[], output: string[]) => output[0],
     useSharedValue: jest.fn((init: any) => ({ value: init })),
+    useAnimatedProps: jest.fn((factory: () => object) => factory()),
     useAnimatedStyle: jest.fn(() => ({})),
     withSpring: jest.fn((val: any) => val),
     withTiming: jest.fn((val: any) => val),
+    withRepeat: jest.fn((val: any) => val),
+    withSequence: jest.fn((...values: any[]) => values.at(-1)),
   };
 });
 
@@ -384,6 +467,7 @@ jest.mock('@/lib/supabase', () => ({
           error: null,
         })
       ),
+      signInWithOAuth: jest.fn(() => Promise.resolve({ data: { url: null, provider: 'google' }, error: null })),
       signOut: jest.fn(),
       resetPasswordForEmail: jest.fn(),
       updateUser: jest.fn(),
@@ -478,19 +562,19 @@ jest.mock('react-native-purchases', () => ({
 }));
 
 // Global form values storage for tests
-(global as any).testFormValues = {};
+globalThis.testFormValues = {};
 
 jest.mock('react-hook-form', () => ({
   useForm: jest.fn(() => ({
     control: {
-      _formValues: (global as any).testFormValues,
+      _formValues: globalThis.testFormValues,
       _fields: {},
       _defaultValues: {},
     },
     handleSubmit: jest.fn((fn) => (event?: any) => {
       event?.preventDefault?.();
       // Call the function with the current form values
-      const formData = (global as any).testFormValues || {};
+      const formData = globalThis.testFormValues || {};
       return fn(formData);
     }),
     formState: {
@@ -502,11 +586,11 @@ jest.mock('react-hook-form', () => ({
     },
     watch: jest.fn(),
     setValue: jest.fn((name: string, value: any) => {
-      (global as any).testFormValues[name] = value;
+      globalThis.testFormValues[name] = value;
     }),
-    getValues: jest.fn(() => (global as any).testFormValues),
+    getValues: jest.fn(() => globalThis.testFormValues),
     reset: jest.fn(() => {
-      (global as any).testFormValues = {};
+      globalThis.testFormValues = {};
     }),
     trigger: jest.fn(() => Promise.resolve(true)),
     register: jest.fn((name: string) => ({
@@ -519,10 +603,10 @@ jest.mock('react-hook-form', () => ({
   Controller: ({ render, name }: any) => {
     const field = {
       onChange: (value: any) => {
-        (global as any).testFormValues[name] = value;
+        globalThis.testFormValues[name] = value;
       },
       onBlur: jest.fn(),
-      value: (global as any).testFormValues[name] || '',
+      value: globalThis.testFormValues[name] || '',
       name,
       ref: jest.fn(),
     };
@@ -535,10 +619,10 @@ jest.mock('react-hook-form', () => ({
   useController: jest.fn(({ name }) => ({
     field: {
       onChange: (value: any) => {
-        (global as any).testFormValues[name] = value;
+        globalThis.testFormValues[name] = value;
       },
       onBlur: jest.fn(),
-      value: (global as any).testFormValues[name] || '',
+      value: globalThis.testFormValues[name] || '',
       name,
       ref: jest.fn(),
     },
@@ -547,14 +631,14 @@ jest.mock('react-hook-form', () => ({
   })),
   useFormContext: jest.fn(() => ({
     control: {
-      _formValues: (global as any).testFormValues,
+      _formValues: globalThis.testFormValues,
     },
     formState: { errors: {} },
   })),
 }));
 beforeEach(() => {
   // Clear form values between tests
-  (global as any).testFormValues = {};
+  globalThis.testFormValues = {};
 });
 
 afterEach(() => {

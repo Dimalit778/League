@@ -1,8 +1,16 @@
-import { cn } from '@/lib/nativeWind';
-import { Pressable, PressableProps, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { forwardRef } from 'react';
+import {
+  Pressable,
+  type PressableProps,
+  type StyleProp,
+  View,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 
-type CardVariant = 'default' | 'secondary' | 'outlined';
-type CardPadding = 'sm' | 'md' | 'lg';
+export type CardVariant = 'default' | 'soft' | 'outlined' | 'elevated' | 'interactive' | 'hero' | 'secondary';
+export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
 type BaseCardProps = {
   children: React.ReactNode;
@@ -23,40 +31,48 @@ type PressableCardProps = BaseCardProps &
     onPress: NonNullable<PressableProps['onPress']>;
   };
 
-type CardProps = StaticCardProps | PressableCardProps;
+export type CardProps = StaticCardProps | PressableCardProps;
 
 const variantClasses: Record<CardVariant, string> = {
-  default: 'border border-border bg-surface',
-  secondary: 'border border-border bg-surfaceSecondary',
-  outlined: 'border border-border bg-transparent',
+  default: 'bg-surface',
+  soft: 'bg-surfaceSoft',
+  outlined: 'border border-border bg-surface',
+  elevated: 'border border-border/50 bg-surfaceElevated shadow-sm elevation-1',
+  interactive: 'bg-surface',
+  hero: 'border border-border/50 bg-surfaceElevated rounded-3xl shadow-md elevation-3',
+  secondary: 'bg-surfaceSoft',
 };
 
 const paddingClasses: Record<CardPadding, string> = {
-  sm: 'p-1',
-  md: 'p-2',
-  lg: 'p-3',
+  none: '',
+  sm: 'p-3',
+  md: 'p-4',
+  lg: 'p-6',
 };
 
-export function Card({
-  children,
-  className,
-  contentClassName,
-
-  variant = 'default',
-  padding = 'sm',
-  style,
-  onPress,
-  ...props
-}: CardProps) {
-  const cardClassName = cn('overflow-hidden rounded-2xl', variantClasses[variant], className);
-
+export const Card = forwardRef<View, CardProps>(function Card(
+  {
+    children,
+    className,
+    contentClassName,
+    variant = 'default',
+    padding = 'md',
+    style,
+    onPress,
+    ...props
+  },
+  ref,
+) {
+  const cardClassName = cn('rounded-2xl', variantClasses[variant], className);
   const content = <View className={cn(paddingClasses[padding], contentClassName)}>{children}</View>;
 
   if (onPress) {
     return (
       <Pressable
+        ref={ref}
         {...(props as PressableProps)}
         onPress={onPress}
+        accessibilityRole="button"
         className={cn(cardClassName, 'active:opacity-90')}
         style={style}
       >
@@ -66,8 +82,8 @@ export function Card({
   }
 
   return (
-    <View {...(props as ViewProps)} className={cardClassName} style={style}>
+    <View ref={ref} {...(props as ViewProps)} className={cardClassName} style={style}>
       {content}
     </View>
   );
-}
+});

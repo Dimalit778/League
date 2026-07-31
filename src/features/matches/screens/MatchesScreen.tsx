@@ -30,12 +30,10 @@ export default function MatchesScreen() {
   const currentFixture = meta.currentFixture ?? 1;
   const currentStage = meta.currentStage ?? null;
 
-  if (!shape) {
-    return <Error error={`Unsupported competition code: ${meta.code ?? 'missing'}`} />;
-  }
+  if (!shape) return <Error error={`Unsupported competition code: ${meta.code ?? 'missing'}`} />;
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 ">
       {shape === 'REGULAR' && (
         <RegularLeagueView matches={matches} currentFixture={currentFixture} onRefresh={refetch} />
       )}

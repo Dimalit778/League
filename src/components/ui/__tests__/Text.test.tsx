@@ -1,10 +1,6 @@
 import { render } from '@testing-library/react-native';
 import { Text } from '../Text';
 
-jest.mock('@/lib/nativeWind', () => ({
-  cn: (...args: any[]) => args.filter(Boolean).join(' '),
-}));
-
 describe('Text', () => {
   it('renders text content', () => {
     const { getByText } = render(<Text>Hello World</Text>);
@@ -29,5 +25,15 @@ describe('Text', () => {
   it('passes extra TextProps through', () => {
     const { getByText } = render(<Text numberOfLines={1}>Truncated</Text>);
     expect(getByText('Truncated')).toBeTruthy();
+  });
+
+  it('supports semantic variants and tones', () => {
+    const { getByText } = render(
+      <Text variant="header" tone="primary">
+        3–1
+      </Text>,
+    );
+
+    expect(getByText('3–1')).toBeTruthy();
   });
 });

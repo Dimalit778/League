@@ -4,7 +4,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useState } from 'react';
 import { Control, Controller, FieldError } from 'react-hook-form';
-import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, TextInput, type TextInputProps, View } from 'react-native';
 
 type InputFieldProps = {
   control: Control<any>;
@@ -15,6 +15,9 @@ type InputFieldProps = {
   maxLength?: number;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoCorrect?: boolean;
+  autoComplete?: TextInputProps['autoComplete'];
+  keyboardType?: TextInputProps['keyboardType'];
+  textContentType?: TextInputProps['textContentType'];
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   onRightIconPress?: () => void;
@@ -22,8 +25,6 @@ type InputFieldProps = {
   accessibilityLabel?: string;
   accessibilityHint?: string;
 };
-
-const isIOS = Platform.OS === 'ios';
 
 export const InputField = ({
   control,
@@ -33,6 +34,9 @@ export const InputField = ({
   maxLength = 50,
   autoCapitalize = 'none',
   autoCorrect = false,
+  autoComplete,
+  keyboardType,
+  textContentType,
   error,
   icon,
   rightIcon,
@@ -60,18 +64,21 @@ export const InputField = ({
     return t('Enter {{placeholder}}', { placeholder: placeholder.toLowerCase() });
   };
 
-  const containerStyle = [
-    isIOS ? styles.iosContainer : styles.androidContainer,
-    {
-      backgroundColor: colors.surface,
-      borderWidth: isFocused ? 2 : 1,
-      borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
-    },
-  ];
+  const inferredAutoComplete = autoComplete ?? (name === 'email' ? 'email' : name === 'password' ? 'current-password' : 'name');
+  const inferredKeyboardType = keyboardType ?? (name === 'email' ? 'email-address' : 'default');
+  const inferredTextContentType =
+    textContentType ?? (name === 'email' ? 'emailAddress' : name === 'password' ? 'password' : 'name');
 
   return (
     <View className="gap-1">
-      <View style={containerStyle} className="flex-row items-center px-2">
+      <View
+        className="flex-row items-center overflow-hidden rounded-xl px-2"
+        style={{
+          backgroundColor: colors.surface,
+          borderWidth: isFocused ? 2 : 1,
+          borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
+        }}
+      >
         {icon && (
           <View className={isRTL ? 'ml-2' : 'mr-2'} accessible={false}>
             {icon}
@@ -90,6 +97,7 @@ export const InputField = ({
               style={{
                 textAlign: isRTL ? 'right' : 'left',
                 color: colors.text,
+                backgroundColor: colors.surface,
               }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
@@ -98,16 +106,16 @@ export const InputField = ({
               }}
               onChangeText={(text) => {
                 onChange(text);
-                if (name === 'email' || name === 'password') {
-                  clearError?.();
-                }
+                clearError?.();
               }}
-              value={value}
+              value={value ?? ''}
               maxLength={maxLength}
               autoCorrect={autoCorrect}
               autoCapitalize={autoCapitalize}
+              autoComplete={inferredAutoComplete}
+              keyboardType={inferredKeyboardType}
+              textContentType={inferredTextContentType}
               accessible
-              accessibilityRole="text"
               accessibilityLabel={getAccessibilityLabel()}
               accessibilityHint={getAccessibilityHint()}
               accessibilityLiveRegion="polite"
@@ -118,7 +126,7 @@ export const InputField = ({
         {rightIcon && (
           <Pressable
             onPress={onRightIconPress}
-            className={isRTL ? 'mr-2 p-1' : 'ml-2 p-1'}
+            className={isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'}
             accessible
             accessibilityRole="button"
             accessibilityLabel={t('Toggle password visibility')}
@@ -136,11 +144,3 @@ export const InputField = ({
     </View>
   );
 };
-const styles = StyleSheet.create({
-  iosContainer: {
-    borderRadius: 10,
-  },
-  androidContainer: {
-    borderRadius: 8,
-  },
-});

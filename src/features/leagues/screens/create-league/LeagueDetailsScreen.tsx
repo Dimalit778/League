@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, InputField, Text } from '@/components/ui';
+import { Button, InputField, Text } from '@/components/ui';
 import MemberOption from '@/features/leagues/components/createLeague/MemberOption';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
@@ -88,22 +88,21 @@ const LeagueDetailsScreen = () => {
   });
 
   return (
-    <Screen edges={['top', 'bottom']}>
+    <Screen padding="horizontal" edges={['bottom']}>
       {(isPending || isProcessing) && <LoadingOverlay />}
-      <BackButton title={t('League Details')} />
-      <View className="flex-1 ">
+
+      <View className="flex-1">
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="handled"
           bottomOffset={72}
           contentContainerStyle={{
-            paddingHorizontal: 16,
+            flexGrow: 1,
             paddingTop: 8,
-            paddingBottom: 24,
           }}
         >
           {/* League name */}
-          <View className="mb-8">
-            <Text className="mb-2 text-left text-muted font-semibold">{t('League Name')}</Text>
+          <View className="mb-8 gap-2">
+            <Text variant="subtitle">{t('League Name')}</Text>
             <InputField
               control={control}
               name="leagueName"
@@ -116,8 +115,8 @@ const LeagueDetailsScreen = () => {
           </View>
 
           {/* Nickname */}
-          <View className="mb-8">
-            <Text className="mb-2 text-left text-muted font-semibold">{t('Your Nickname')}</Text>
+          <View className="mb-8 gap-2">
+            <Text variant="subtitle">{t('Your Nickname')}</Text>
             <InputField
               control={control}
               name="nickname"
@@ -129,37 +128,36 @@ const LeagueDetailsScreen = () => {
           </View>
 
           {/* Members count */}
-          <View>
-            <Text className="text-sm text-muted mb-3 text-center">
-              {t('Choose how many friends can join this league.')}
-            </Text>
 
-            <View className="flex-row mt-4">
-              <MemberOption
-                value={6}
-                label="6 Members"
-                locked={false}
-                membersCount={membersCount}
-                onSelect={setMembersCount}
-                onLockedPress={handleLockedOptionPress}
-              />
+          <Text variant="body" tone="muted" className="text-center">
+            {t('Choose how many friends can join this league.')}
+          </Text>
 
-              <MemberOption
-                value={12}
-                label="12 Members"
-                locked={!isPro}
-                membersCount={membersCount}
-                onSelect={setMembersCount}
-                onLockedPress={handleLockedOptionPress}
-              />
-            </View>
+          <View className="flex-row mt-8">
+            <MemberOption
+              value={6}
+              label="6 Members"
+              locked={false}
+              membersCount={membersCount}
+              onSelect={setMembersCount}
+              onLockedPress={handleLockedOptionPress}
+            />
+
+            <MemberOption
+              value={12}
+              label="12 Members"
+              locked={!isPro}
+              membersCount={membersCount}
+              onSelect={setMembersCount}
+              onLockedPress={handleLockedOptionPress}
+            />
           </View>
         </KeyboardAwareScrollView>
 
         {/* Fixed bottom button */}
-        <View className="px-4 pb-5 pt-2 bg-background">
+        <View className="px-4 ">
           <Button
-            title={t('Create League')}
+            label={t('Create League')}
             onPress={onSubmit}
             variant="primary"
             size="lg"

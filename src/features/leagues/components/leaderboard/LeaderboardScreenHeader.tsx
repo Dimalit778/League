@@ -1,6 +1,6 @@
+import { images } from '@/assets/images';
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import Trophy from '@assets/images/Trophy-champo.png';
 import { Image } from 'expo-image';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,7 @@ export function LeaderboardScreenHeader({ leagueName }: LeaderboardScreenHeaderP
         <Text className="text-2xl font-black text-white">{leagueName}</Text>
         <Text className="text-sm text-[#97A7BF]">{t('League table')}</Text>
       </View>
-      <Image source={Trophy} contentFit="contain" style={{ width: 52, height: 52 }} />
+      <Image source={images.trophyGold} contentFit="contain" style={{ width: 52, height: 52 }} />
     </View>
   );
 }

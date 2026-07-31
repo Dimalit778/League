@@ -35,7 +35,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
   ];
 
   return (
-    <Card className="p-2 my-2 ">
+    <Card padding="sm" className="my-2">
       <View className="flex-row mb-2">
         {topRowStats.map((item) => (
           <View key={item.label} className="flex-1 px-2">

@@ -1,4 +1,4 @@
-import { getThemeTokens, ThemeName } from '@/lib/nativeWind';
+import { getThemeTokens, type ThemeName } from '@/lib/nativewind/nativeWind';
 import { useThemeStore } from '@/store/ThemeStore';
 
 export const useThemeTokens = () => {
@@ -7,7 +7,11 @@ export const useThemeTokens = () => {
 
   return {
     theme,
+    isDark: theme === 'dark',
     colors: tokens.colors,
+    gradients: tokens.gradients,
     fonts: tokens.fonts,
+    spacing: tokens.spacing,
+    radius: tokens.radius,
   } as const;
 };

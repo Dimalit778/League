@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import PredictionRank from '../match-details/PredictionRank';
 
-jest.mock('@/store/ActiveLeagueStore', () => ({
+jest.mock('@/store/PrimaryLeagueStore', () => ({
   useMemberId: () => 'm1',
 }));
 

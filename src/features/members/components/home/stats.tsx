@@ -39,7 +39,7 @@ type StatsProps = {
 export function Stats({ stats }: StatsProps) {
   const { t } = useTranslation();
 
-  const rank = stats?.position ? `#${stats.position}` : '—';
+  const rank = stats?.rank ? `#${stats.rank}` : '—';
   const points = stats?.totalPoints ?? '—';
 
   return (

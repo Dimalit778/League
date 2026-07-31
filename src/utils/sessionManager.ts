@@ -26,7 +26,7 @@ export const getSession = async (): Promise<Session | null> => {
     }
 
     return session;
-  } catch (error) {
+  } catch {
     return null;
   }
 };

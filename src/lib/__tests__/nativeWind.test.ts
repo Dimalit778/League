@@ -1,4 +1,37 @@
-import { cn, getThemeColor, getThemeTokens, themeTokens } from '../nativeWind';
+import {
+  cn,
+  getNativeWindVariables,
+  getThemeColor,
+  getThemeTokens,
+  themeTokens,
+  type ThemeColors,
+} from '../nativewind/nativeWind';
+
+const semanticColorKeys: (keyof ThemeColors)[] = [
+  'primary',
+  'primaryForeground',
+  'primarySoft',
+  'background',
+  'backgroundSecondary',
+  'surface',
+  'surfaceSoft',
+  'surfaceElevated',
+  'text',
+  'textSecondary',
+  'muted',
+  'mutedForeground',
+  'border',
+  'borderStrong',
+  'success',
+  'successSoft',
+  'warning',
+  'warningSoft',
+  'error',
+  'errorSoft',
+  'info',
+  'infoSoft',
+  'overlay',
+];
 
 describe('cn', () => {
   it('merges class names', () => {
@@ -34,28 +67,12 @@ describe('themeTokens', () => {
 
   it('light theme has all required colors', () => {
     const colors = themeTokens.light.colors;
-    expect(colors).toHaveProperty('primary');
-    expect(colors).toHaveProperty('background');
-    expect(colors).toHaveProperty('surface');
-    expect(colors).toHaveProperty('surfaceSoft');
-    expect(colors).toHaveProperty('border');
-    expect(colors).toHaveProperty('text');
-    expect(colors).toHaveProperty('muted');
-    expect(colors).toHaveProperty('error');
-    expect(colors).toHaveProperty('success');
+    semanticColorKeys.forEach((key) => expect(colors).toHaveProperty(key));
   });
 
   it('dark theme has all required colors', () => {
     const colors = themeTokens.dark.colors;
-    expect(colors).toHaveProperty('primary');
-    expect(colors).toHaveProperty('background');
-    expect(colors).toHaveProperty('surface');
-    expect(colors).toHaveProperty('surfaceSoft');
-    expect(colors).toHaveProperty('border');
-    expect(colors).toHaveProperty('text');
-    expect(colors).toHaveProperty('muted');
-    expect(colors).toHaveProperty('error');
-    expect(colors).toHaveProperty('success');
+    semanticColorKeys.forEach((key) => expect(colors).toHaveProperty(key));
   });
 
   it('light and dark themes have different background colors', () => {
@@ -65,6 +82,30 @@ describe('themeTokens', () => {
   it('both themes have color definitions', () => {
     expect(themeTokens.light.colors).toHaveProperty('primary');
     expect(themeTokens.dark.colors).toHaveProperty('primary');
+  });
+
+  it('keeps compatibility aliases mapped to semantic colors', () => {
+    expect(themeTokens.light.colors.soft).toBe(themeTokens.light.colors.backgroundSecondary);
+    expect(themeTokens.dark.colors.surfaceSecondary).toBe(themeTokens.dark.colors.surfaceSoft);
+    expect(themeTokens.dark.colors.secondary).toBe(themeTokens.dark.colors.info);
+  });
+
+  it('uses the font family names registered by Expo', () => {
+    expect(themeTokens.light.fonts).toEqual({
+      heading: 'Teko_400Regular',
+      headingBold: 'Teko_700Bold',
+    });
+  });
+});
+
+describe('NativeWind variables', () => {
+  it('maps every semantic color to a CSS variable', () => {
+    const variables = getNativeWindVariables(themeTokens.dark);
+
+    expect(Object.keys(variables)).toHaveLength(24);
+    expect(variables['--color-primary']).toBe(themeTokens.dark.colors.primary);
+    expect(variables['--color-background-secondary']).toBe(themeTokens.dark.colors.backgroundSecondary);
+    expect(variables['--color-overlay']).toBe(themeTokens.dark.colors.overlay);
   });
 });
 
@@ -93,9 +134,12 @@ describe('getThemeTokens', () => {
     expect(tokens).toBe(themeTokens.dark);
   });
 
-  it('includes colors and fonts', () => {
+  it('includes all runtime token groups', () => {
     const tokens = getThemeTokens('dark');
     expect(tokens).toHaveProperty('colors');
+    expect(tokens).toHaveProperty('gradients');
     expect(tokens).toHaveProperty('fonts');
+    expect(tokens).toHaveProperty('spacing');
+    expect(tokens).toHaveProperty('radius');
   });
 });

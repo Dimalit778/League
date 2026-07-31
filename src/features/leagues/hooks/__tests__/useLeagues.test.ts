@@ -8,17 +8,13 @@ jest.mock('@/store/AuthStore', () => ({
   useAuthStore: (selector: any) => selector({ user: { id: 'u1' } }),
 }));
 
-jest.mock('@/store/ActiveLeagueStore', () => ({
-  useActiveLeagueStore: Object.assign(
-    (selector: any) =>
-      selector({
-        initializeActiveLeague: jest.fn(),
-        clearActiveLeague: jest.fn(),
-      }),
+jest.mock('@/store/PrimaryLeagueStore', () => ({
+  usePrimaryLeagueStore: Object.assign(
+    (selector: any) => selector({ clearPrimaryLeague: jest.fn(), initializePrimaryLeague: jest.fn() }),
     {
       getState: () => ({
-        clearActiveLeague: jest.fn(),
-        initializeActiveLeague: jest.fn(),
+        clearPrimaryLeague: jest.fn(),
+        initializePrimaryLeague: jest.fn(),
       }),
     },
   ),
@@ -83,9 +79,9 @@ describe('useLeagues hooks', () => {
     await mutationConfig.mutationFn({ leagueId: 'l1' });
     await mutationConfig.onSuccess({}, { leagueId: 'l1' });
 
-    expect(leagueApi.updatePrimaryLeague).toHaveBeenCalledWith('l1');
+    expect(leagueApi.updatePrimaryLeague).toHaveBeenCalledWith('l1', 'u1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
-    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.members.primary('u1') });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.members.primaryLeague('u1') });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
   });
 

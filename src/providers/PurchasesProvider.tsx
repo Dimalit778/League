@@ -30,10 +30,6 @@ const getRevenueCatApiKey = (): string | null => {
   return null;
 };
 
-const hasProEntitlement = (customerInfo: CustomerInfo | null): boolean => {
-  return !!customerInfo?.entitlements?.active?.pro;
-};
-
 const isAnonymousRevenueCatUser = (customerInfo: CustomerInfo | null): boolean =>
   customerInfo?.originalAppUserId?.startsWith('$RCAnonymousID:') ?? true;
 

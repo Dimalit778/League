@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui/Text';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { View } from 'react-native';

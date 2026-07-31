@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as Yup from 'yup';
-import { FullLeagueType } from '../types';
+import { FullLeague } from '../types';
 
 const getSchema = (t: (key: string) => string) =>
   Yup.object().shape({
@@ -27,7 +27,7 @@ const steps = [
   'Tap "Join League" to become a member.',
 ];
 
-const FullLeagueCard = ({ league }: { league: FullLeagueType }) => {
+const FullLeagueCard = ({ league }: { league: FullLeague }) => {
   return (
     <View className="bg-border rounded-2xl p-4 mx-5">
       <View className="items-center gap-2">
@@ -96,6 +96,10 @@ export default function JoinLeagueScreen() {
   } = useForm({
     resolver: yupResolver(getSchema(t)),
     mode: 'onChange',
+    defaultValues: {
+      inviteCode: '',
+      nickname: '',
+    },
   });
   const inviteCodeValue = watch('inviteCode');
   const { data, error, isLoading } = useFindLeagueByJoinCode(inviteCodeValue);
@@ -126,7 +130,7 @@ export default function JoinLeagueScreen() {
         join_code: inviteCodeValue,
         nickname: formData.nickname,
       });
-      router.replace('/(app)/(user)');
+      router.replace('/(app)/(user)/leagues/my-leagues');
     } catch (error: any) {
       if (error?.message?.includes('Upgrade')) {
         openPaywall();

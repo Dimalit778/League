@@ -1,8 +1,6 @@
-import { MobileTopBar } from '@/components/layout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GroupsEngine from '../engines/GroupsEngine';
 import KnockoutEngine from '../engines/KnockoutEngine';
 import { TournamentViewTabs } from '../engines/shared/TournamentTabs';
@@ -19,19 +17,14 @@ export default function GroupsKnockoutView({
   onRefresh: () => void;
 }) {
   const { t } = useTranslation();
-  const { top } = useSafeAreaInsets();
   const groupMatches = useMemo(() => matches.filter((m) => isFirstPhaseStage(m.stage)), [matches]);
   const knockout = useMemo(() => matches.filter((m) => isKnockoutStage(m.stage)), [matches]);
   const [view, setView] = useState<TournamentView>(isKnockoutStage(currentStage) ? 'knockout' : 'groups');
 
   return (
     <View className="flex-1">
-      <View style={{ paddingTop: top }} className="px-3 pb-2">
-        <MobileTopBar
-          center={
-            <TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />
-          }
-        />
+      <View className="px-3 pb-2">
+        <TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />
       </View>
       {view === 'groups' ? (
         <GroupsEngine matches={groupMatches} onRefresh={onRefresh} />

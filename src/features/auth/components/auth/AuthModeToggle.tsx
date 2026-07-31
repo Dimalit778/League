@@ -1,6 +1,6 @@
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { Pressable, View } from 'react-native';
 
 type AuthMode = 'signIn' | 'signUp';

@@ -1,4 +1,3 @@
-import { TopTabBar } from '@/components/layout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -30,7 +29,7 @@ export default function LeaguePhaseKnockoutView({
 
   return (
     <View className="flex-1">
-      <TopTabBar center={<TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('League Phase')} />} />
+      <TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('League Phase')} />
 
       {view === 'groups' ? (
         <FixtureListEngine

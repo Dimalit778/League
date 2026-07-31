@@ -22,7 +22,7 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
       data={matches}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1 }}
+      contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1, paddingHorizontal: 16, gap: 10 }}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <MatchCard

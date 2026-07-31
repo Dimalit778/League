@@ -21,9 +21,6 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     }
     return;
   }
-  if (shouldApply()) {
-    useAuthStore.setState({ isAuthLoading: false });
-  }
 
   if (!shouldApply()) return;
 
@@ -34,6 +31,9 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
   } catch (fetchError) {
     // Network/transient failure — keep the existing auth state
     console.error('Failed to fetch user row:', fetchError);
+    if (shouldApply()) {
+      useAuthStore.setState({ isAuthLoading: false });
+    }
     return;
   }
 
@@ -46,6 +46,7 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
     } else {
       // Server/transient error — keep the existing auth state
       console.error('Failed to fetch user row:', error.message);
+      useAuthStore.setState({ isAuthLoading: false });
     }
     return;
   }
@@ -56,10 +57,13 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
   }
 
   const isSessionActive = isAuthSessionActive(session);
+  // Clear loading in the same update as isAuthenticated so web OAuth
+  // never flashes the landing screen between session and user row.
   useAuthStore.setState({
     user: data,
     session,
     isAuthenticated: !!data.id && isSessionActive,
+    isAuthLoading: false,
   });
 };
 

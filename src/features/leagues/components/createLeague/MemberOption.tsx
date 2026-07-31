@@ -1,4 +1,4 @@
-import { Text, UpgardeBadge } from '@/components/ui';
+import { LockedBadge, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Pressable, View } from 'react-native';
 
@@ -41,7 +41,7 @@ export default function MemberOption({
             {t(label)}
           </Text>
         </View>
-        <UpgardeBadge visible={locked} />
+        <LockedBadge visible={locked} />
       </View>
     </Pressable>
   );

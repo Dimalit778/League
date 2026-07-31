@@ -1,121 +1,91 @@
-// import { Error, Screen } from '@/components/layout';
-// import { AvatarImage, BackButton, Card, Text } from '@/components/ui';
-// import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
-// import { useGetFinishedFixtures, useGetMemberFinishedMatches } from '@/features/matches/hooks/useMatches';
-// import { mapMatchToCardProps } from '@/features/matches/utils/matchCard.mapper';
-// import { useEffect, useMemo, useState } from 'react';
-// import { View } from 'react-native';
-// import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
-// import MemberStats from '../components/memberStats';
+import { Error, Screen } from '@/components/layout';
+import { Avatar, BackButton, Card, EmptyState, Text } from '@/components/ui';
+import { useGetMember } from '@/features/members/hooks/useMembers';
+import { useMemberStats } from '@/features/members/hooks/useMemberStats';
+import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
+import { useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
+import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
+import MemberStats from '../components/memberStats';
 
-// const MemberDetailsScreen = ({ memberId }: { memberId: string }) => {
-//   const { data, error, isLoading } = useMemberDataAndStats(memberId);
-//   const { member, stats, totalFixtures = [], currentFixture = 1 } = data ?? {};
-//   const competitionId = member?.league?.competition?.id ?? 0;
+export default function MemberDetailsScreen() {
+  const { memberId = '' } = useLocalSearchParams<{ memberId: string }>();
+  const { t } = useTranslation();
+  const memberQuery = useGetMember(memberId);
+  const statsQuery = useMemberStats(memberId);
 
-//   const { data: finishedFixtures = [] } = useGetFinishedFixtures(competitionId || null);
+  if (!memberId) {
+    return (
+      <Screen padding="horizontal" edges={['top', 'bottom']}>
+        <BackButton />
+        <EmptyState variant="error" title={t('Member not found')} />
+      </Screen>
+    );
+  }
 
-//   const availableFixtures = useMemo(() => {
-//     if (finishedFixtures.length === 0) return totalFixtures;
-//     return totalFixtures.filter((fixture) => finishedFixtures.includes(fixture));
-//   }, [totalFixtures, finishedFixtures]);
+  if (memberQuery.isLoading || statsQuery.isLoading) {
+    return <MemberDetailsSkeleton />;
+  }
 
-//   const initialFixture = useMemo(() => {
-//     if (finishedFixtures.length > 0) return finishedFixtures[0];
-//     return currentFixture;
-//   }, [finishedFixtures, currentFixture]);
+  if (memberQuery.error || statsQuery.error) {
+    return <Error error={(memberQuery.error ?? statsQuery.error) as Error} />;
+  }
 
-//   const [selectedFixture, setSelectedFixture] = useState<number>(initialFixture);
-//   const [animateScroll, setAnimateScroll] = useState(false);
+  const member = memberQuery.data;
+  if (!member) {
+    return (
+      <Screen padding="horizontal" edges={['top', 'bottom']}>
+        <BackButton />
+        <EmptyState variant="empty" title={t('Member not found')} />
+      </Screen>
+    );
+  }
 
-//   useEffect(() => {
-//     setSelectedFixture(initialFixture);
-//   }, [initialFixture]);
+  const stats = statsQuery.data;
 
-//   useEffect(() => {
-//     if (availableFixtures.length > 0 && !availableFixtures.includes(selectedFixture)) {
-//       setSelectedFixture(availableFixtures[0]);
-//     }
-//   }, [availableFixtures, selectedFixture]);
+  return (
+    <Screen scroll padding="horizontal" edges={['top', 'bottom']} contentClassName={spacing.stack}>
+      <BackButton />
 
-//   const {
-//     data: matches = [],
-//     isLoading: matchesLoading,
-//     error: matchesError,
-//     refetch: refetchMatches,
-//   } = useGetMemberFinishedMatches(memberId, competitionId || null, selectedFixture);
+      <Card variant="elevated" contentClassName="items-center">
+        <Avatar
+          source={member.avatar_url}
+          fallback={member.nickname}
+          accessibilityLabel={t('{{name}} avatar', { name: member.nickname })}
+          size="xl"
+          bordered
+        />
+        <View className="mt-3 items-center">
+          <Text variant="titleLarge" className="text-center">
+            {member.nickname}
+          </Text>
+          <Text variant="bodySmall" tone="muted" className="text-center">
+            {member.league?.name ?? ''}
+          </Text>
+        </View>
+        <View className="mt-4 flex-row items-center">
+          <View className="flex-1 items-center">
+            <Text variant="caption" tone="muted">
+              {t('Rank')}
+            </Text>
+            <Text variant="title" tone="primary">
+              {stats?.rank ? `#${stats.rank}` : '—'}
+            </Text>
+          </View>
+          <View className="h-10 w-px bg-border" />
+          <View className="flex-1 items-center">
+            <Text variant="caption" tone="muted">
+              {t('Points')}
+            </Text>
+            <Text variant="title" tone="primary">
+              {stats?.totalPoints ?? 0}
+            </Text>
+          </View>
+        </View>
+      </Card>
 
-//   const handleFixturePress = (fixture: number) => {
-//     setSelectedFixture(fixture);
-//     setAnimateScroll(true);
-//   };
-
-//   const matchCards = useMemo(() => matches.map(mapMatchToCardProps), [matches]);
-
-//   if (error || matchesError) return <Error error={error || (matchesError as Error)} />;
-
-//   return (
-//     <Screen edges={['top']}>
-//       <BackButton />
-
-//       {isLoading ? (
-//         <MemberDetailsSkeleton />
-//       ) : (
-//         <>
-//           <Card className="px-3 py-1.5">
-//             <View className="flex-row items-center gap-3">
-//               <View className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden">
-//                 <AvatarImage nickname={member?.nickname ?? ''} path={member?.avatar_url || null} />
-//               </View>
-
-//               <View className="flex-1">
-//                 <Text numberOfLines={1} className="text-base font-bold">
-//                   {member?.nickname}
-//                 </Text>
-//               </View>
-//               <View className="flex-row items-center gap-4">
-//                 <View className="items-end">
-//                   <Text className="text-sm text-muted uppercase">
-//                     Points
-//                   </Text>
-//                   <Text className="text-base font-bold">
-//                     {stats?.totalPoints.toLocaleString() ?? 0}
-//                   </Text>
-//                 </View>
-//                 <View className="h-6 w-px bg-border" />
-//                 <View className="items-end">
-//                   <Text className="text-sm text-muted uppercase">
-//                     Position
-//                   </Text>
-//                   <Text className="text-base font-bold">
-//                     {stats?.position ?? '—'}
-//                   </Text>
-//                 </View>
-//               </View>
-//             </View>
-//           </Card>
-
-//           <MemberStats stats={stats} />
-//           <View className="py-1">
-//             <FixturesList
-//               fixtures={availableFixtures}
-//               selectedFixture={selectedFixture}
-//               handleFixturePress={handleFixturePress}
-//               animateScroll={animateScroll}
-//               fixtureDateRanges={[]}
-//             />
-//           </View>
-//           <View className="mt-2 min-h-0 flex-1">
-//             {matchesLoading ? (
-//               <SkeletonMatches />
-//             ) : (
-//               <MatchesList matches={matchCards} onRefresh={() => void refetchMatches()} />
-//             )}
-//           </View>
-//         </>
-//       )}
-//     </Screen>
-//   );
-// };
-
-// export default MemberDetailsScreen;
+      <MemberStats stats={stats} />
+    </Screen>
+  );
+}

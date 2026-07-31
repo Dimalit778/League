@@ -8,7 +8,7 @@ export function MemberDetailsSkeleton() {
   return (
     <Screen>
       {/* Member Header Card Skeleton */}
-      <Card className="px-3 py-1.5">
+      <Card padding="sm">
         <View className="flex-row items-center gap-3">
           {/* Avatar Skeleton */}
           <View className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-muted animate-pulse" />
@@ -34,7 +34,7 @@ export function MemberDetailsSkeleton() {
       </Card>
 
       {/* Member Stats Card Skeleton */}
-      <Card className="p-2 my-2">
+      <Card padding="sm" className="my-2">
         {/* Top Row Stats */}
         <View className="flex-row mb-2">
           {[1, 2].map((item) => (

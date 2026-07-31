@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';
 
@@ -20,7 +20,7 @@ type FixtureItemProps = {
   onPress: (fixture: number) => void;
 };
 
-const fixtureWidth = 68;
+const fixtureWidth = 70;
 const fixtureMargin = 7;
 const fixtureItemSpacing = fixtureWidth + fixtureMargin * 2;
 
@@ -41,23 +41,20 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
           } as any
         }
         className={cn(
-          'rounded-xl justify-center items-center overflow-hidden py-2',
-          isSelected
-            ? 'bg-surface border border-primary'
-            : isToday
-              ? 'bg-surface border border-text'
-              : 'bg-surface border border-border',
+          'rounded-xl justify-center items-center overflow-hidden py-2 bg-surface border',
+          isToday ? 'border-primary' : isSelected ? 'border-muted' : 'border-border',
           Platform.OS === 'web' && 'hover:scale-105 active:scale-95',
         )}
       >
-        {(isSelected || isToday) && (
-          <View className={cn('absolute inset-x-0 inset-y-0', isSelected ? 'bg-primary' : '')} style={{ height: 4 }} />
-        )}
-        <Text style={
+        {isToday && <View className="absolute inset-x-0 inset-y-0 bg-primary" style={{ height: 4 }} />}
+        <Text
+          style={
             {
               transition: Platform.OS === 'web' ? 'color 0.1s ease-in-out' : undefined,
             } as any
-          } className={cn("text-xl", isSelected || isToday ? 'text-text' : 'text-muted')}>
+          }
+          className={cn('text-xl', isToday ? 'text-primary' : isSelected ? 'text-text' : 'text-muted')}
+        >
           {fixture}
         </Text>
       </Pressable>

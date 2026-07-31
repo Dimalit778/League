@@ -37,14 +37,8 @@ export default function FixtureListEngine({
     for (const fixture of allFixtures) {
       const fixtureMatches = selectByFixture(matches, fixture).filter((m) => m.kick_off);
       if (fixtureMatches.length === 0) continue;
-      const dates = fixtureMatches
-        .map((m) => new Date(m.kick_off))
-        .sort((a, b) => a.getTime() - b.getTime());
-      ranges[fixture] = formatDateRange(
-        dates[0].toISOString(),
-        dates[dates.length - 1].toISOString(),
-        locale,
-      );
+      const dates = fixtureMatches.map((m) => new Date(m.kick_off)).sort((a, b) => a.getTime() - b.getTime());
+      ranges[fixture] = formatDateRange(dates[0].toISOString(), dates[dates.length - 1].toISOString(), locale);
     }
     return ranges;
   }, [allFixtures, matches, locale]);

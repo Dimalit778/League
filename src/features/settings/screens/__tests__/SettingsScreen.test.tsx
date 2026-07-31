@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { render } from '@testing-library/react-native';
 import SettingsScreen from '../../screens/SettingsScreen';
 

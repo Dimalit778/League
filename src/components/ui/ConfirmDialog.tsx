@@ -58,7 +58,7 @@ export const ConfirmDialog = ({
       scaleAnim.setValue(isIOS ? 0.93 : 0.95);
       opacityAnim.setValue(0);
     }
-  }, [visible]);
+  }, [opacityAnim, scaleAnim, visible]);
 
   const dialogBg = isIOS ? ios.bg : colors.surface;
 

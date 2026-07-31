@@ -10,14 +10,10 @@ const AdminUsersScreen = () => {
   const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useAdminUsersInfinite();
   const deleteUserMutation = useDeleteUser();
-  const [refetching, setRefetching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const onRefresh = useCallback(() => {
-    refetch().finally(() => {
-      setRefetching(false);
-    });
-    setRefetching(true);
+    void refetch();
   }, [refetch]);
 
   // Flatten all pages into a single array
@@ -73,6 +69,14 @@ const AdminUsersScreen = () => {
     return <LoadingOverlay />;
   }
 
+  if (error && !data) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-background px-4">
+        <Text className="text-center text-error">{error.message}</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton title="User Management" />
@@ -94,6 +98,8 @@ const AdminUsersScreen = () => {
       </View>
       <FlatList
         data={filteredUsers}
+        refreshing={isRefetching}
+        onRefresh={onRefresh}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingHorizontal: 16 }}
         onEndReached={searchQuery ? undefined : loadMore}

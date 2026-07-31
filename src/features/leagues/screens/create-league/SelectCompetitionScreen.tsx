@@ -1,5 +1,5 @@
 import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button } from '@/components/ui';
+import { Button } from '@/components/ui';
 import CompetitionCard from '@/features/leagues/components/createLeague/CompetitionCard';
 import { useGetCompetitions } from '@/features/leagues/hooks/useCompetition';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
@@ -7,7 +7,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList } from 'react-native';
+import CompetitionsSkeleton from '../../components/createLeague/CompetitionsSkeletion';
 
 type Competition = Tables<'competitions'>;
 
@@ -73,12 +74,12 @@ const SelectCompetitionScreen = () => {
 
   if (error) return <Error error={error} />;
 
-  if (isLoading) return <LoadingOverlay />;
+  if (isLoading) return <CompetitionsSkeleton />;
 
   return (
-    <Screen edges={['top', 'bottom']}>
+    <Screen edges={['bottom']}>
       {isPurchasing && <LoadingOverlay />}
-      <BackButton title={t('Select a Competition')} />
+
       <FlatList
         data={competitions ?? []}
         keyExtractor={(comp) => String(comp.id)}
@@ -87,16 +88,16 @@ const SelectCompetitionScreen = () => {
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
       />
-      <View className="p-3">
-        <Button
-          title={t('Continue')}
-          onPress={handleContinue}
-          variant="primary"
-          disabled={!selectedCompetition}
-          size="lg"
-          loading={isLoading}
-        />
-      </View>
+
+      <Button
+        label={t('Continue')}
+        onPress={handleContinue}
+        variant="primary"
+        disabled={!selectedCompetition}
+        size="lg"
+        loading={isLoading}
+        className="mx-8"
+      />
     </Screen>
   );
 };

@@ -38,4 +38,24 @@ describe('Screen', () => {
     );
     expect(getByText('No safe area')).toBeTruthy();
   });
+
+  it('supports scrollable content', () => {
+    const { getByText } = render(
+      <Screen scroll padding="horizontal" bottomInset={80}>
+        <Text>Scrollable content</Text>
+      </Screen>,
+    );
+
+    expect(getByText('Scrollable content')).toBeTruthy();
+  });
+
+  it('supports compact responsive content', () => {
+    const { getByText } = render(
+      <Screen width="compact" padding="horizontal">
+        <Text>Compact content</Text>
+      </Screen>,
+    );
+
+    expect(getByText('Compact content')).toBeTruthy();
+  });
 });

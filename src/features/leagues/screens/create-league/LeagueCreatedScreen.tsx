@@ -1,5 +1,5 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, MyImage, Text } from '@/components/ui';
+import { Button, Card, Divider, MyImage, Text } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -51,44 +51,51 @@ const LeagueCreatedScreen = () => {
   };
 
   return (
-    <Screen edges={['top']}>
+    <Screen padding="horizontal" edges={['top', 'bottom']}>
       {!leagueData && <LoadingOverlay />}
 
       <View className="items-center my-8">
-        <Text className="text-2xl font-bold text-center mb-2 text-primary">{t('League Created Successfully!')}</Text>
+        <Text variant="title" tone="primary">
+          {t('League Created Successfully!')}
+        </Text>
       </View>
 
-      <View className="px-4 py-6 mx-3 border border-border rounded-2xl">
-        <View className="items-center mb-6">
-          <View className="bg-gray-300 rounded-md p-1 w-16 h-16">
+      <Card>
+        <View className="items-center  gap-4">
+          <View className="bg-gray-300 rounded-md p-1 w-24 h-24 ">
             <MyImage source={leagueData?.competition?.logo as string} />
           </View>
 
-          <Text className="text-xl font-bold text-center text-primary my-2">{leagueData?.name}</Text>
-          <Text className="text-sm text-muted text-center">
-            {t(leagueData?.competition?.area || '')} • {t(leagueData?.competition?.name || '')}
+          <Text variant="header">{leagueData?.name}</Text>
+        </View>
+        <Divider className="my-4" />
+        <View className="items-center gap-2">
+          <Text variant="subtitle" tone="muted">
+            {t('Your Nickname')}
+          </Text>
+          <Text variant="title">{leagueData?.league_members[0]?.nickname}</Text>
+        </View>
+        <Divider className="my-4" />
+        <View className="items-center gap-3">
+          <Text variant="subtitle" tone="muted">
+            {t('League Join Code')}
+          </Text>
+
+          <TouchableOpacity onPress={handleCopyJoinCode} className=" items-center bg-surfaceElevated rounded-lg p-2 ">
+            <Text variant="header" tone="success">
+              {leagueData?.join_code}
+            </Text>
+          </TouchableOpacity>
+          <Text variant="bodySmall" tone="muted">
+            {t('Tap to copy code')}
           </Text>
         </View>
-
-        <View className="rounded-xl p-4 mb-4 border border-border">
-          <Text className="text-sm text-muted mb-1 text-center">{t('Your Nickname')}</Text>
-          <Text className="text-base font-bold text-text text-center">{leagueData?.league_members[0]?.nickname}</Text>
-        </View>
-
-        <View className="p-4">
-          <Text className="text-sm text-muted mb-3 text-center">{t('League Join Code')}</Text>
-          <TouchableOpacity onPress={handleCopyJoinCode} className=" border border-border rounded-lg p-4 mb-3">
-            <Text className="text-xl font-bold text-primary text-center tracking-[8px]">{leagueData?.join_code}</Text>
-          </TouchableOpacity>
-          <Text className="text-sm text-muted text-center">{t('Tap to copy code')}</Text>
-        </View>
-      </View>
-
+      </Card>
       {/* Action Buttons */}
       <View className="gap-5 p-5">
-        <Button onPress={handleShareJoinCode} title={t('Share Join Code')} variant="border" size="md" />
+        <Button onPress={handleShareJoinCode} label={t('Share Join Code')} variant="outline" size="md" />
 
-        <Button onPress={handleStartLeague} title={t('Start League')} variant="primary" size="lg" />
+        <Button onPress={handleStartLeague} label={t('Start League')} variant="primary" size="lg" />
       </View>
     </Screen>
   );

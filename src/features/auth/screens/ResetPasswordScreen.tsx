@@ -6,6 +6,7 @@ import {
 } from '@/features/auth/api/authApi';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
 import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Linking from 'expo-linking';
@@ -37,9 +38,13 @@ const ResetPasswordScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const passwordForm = useForm({
+  const passwordForm = useForm<PasswordFormData>({
     resolver: yupResolver(passwordSchema),
     mode: 'onChange',
+    defaultValues: {
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   // The recovery link carries the session tokens in its fragment. Capture them
@@ -88,18 +93,25 @@ const ResetPasswordScreen = () => {
   };
 
   return (
-    <Screen edges={['top']}>
+    <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="items-center py-16">
-          <Text className="text-secondary text-4xl font-bold text-center">{t('New Password')}</Text>
-
-          <Text className="text-muted text-base text-center mt-4">{t('Enter your new password')}</Text>
+        <View className="items-center py-12 sm:py-16">
+          <Text variant="display" tone="primary" className="text-center">
+            {t('New Password')}
+          </Text>
+          <Text variant="body" tone="muted" className="mt-4 text-center">
+            {t('Enter your new password')}
+          </Text>
         </View>
 
         {linkError && !recoveryTokens ? (
-          <View className="px-5 gap-4">
-            <Text className="text-error text-center">{t('Reset link is invalid or expired.')}</Text>
-            <Text className="text-muted text-center">{t('Please request a new link.')}</Text>
+          <View className={spacing.stack}>
+            <Text tone="error" className="text-center">
+              {t('Reset link is invalid or expired.')}
+            </Text>
+            <Text tone="muted" className="text-center">
+              {t('Please request a new link.')}
+            </Text>
             <Button
               title={t('Resend New Link')}
               onPress={() => router.replace('/(auth)/sendResetLink')}
@@ -108,11 +120,13 @@ const ResetPasswordScreen = () => {
             />
           </View>
         ) : (
-          <View className="px-5 gap-4">
+          <View className={spacing.stack}>
             <InputField
               control={passwordForm.control}
               name="password"
               placeholder={t('New Password')}
+              autoComplete="new-password"
+              textContentType="newPassword"
               secureTextEntry={!showPassword}
               error={passwordForm.formState.errors.password}
               icon={<LockIcon size={24} color={colors.muted} />}
@@ -130,6 +144,8 @@ const ResetPasswordScreen = () => {
               control={passwordForm.control}
               name="confirmPassword"
               placeholder={t('Confirm Password')}
+              autoComplete="new-password"
+              textContentType="newPassword"
               secureTextEntry={!showConfirmPassword}
               error={passwordForm.formState.errors.confirmPassword}
               icon={<LockIcon size={24} color={colors.muted} />}

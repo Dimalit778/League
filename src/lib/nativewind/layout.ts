@@ -1,0 +1,18 @@
+export const layout = {
+  screen: 'flex-1 bg-background',
+  screenPaddingHorizontal: 'px-4 sm:px-6 lg:px-8',
+  screenPaddingAll: 'p-4 sm:p-6 lg:p-8',
+  section: 'gap-6',
+  row: 'flex-row items-center',
+  rowBetween: 'flex-row items-center justify-between',
+  center: 'items-center justify-center',
+} as const;
+
+export const screenWidths = {
+  compact: 'max-w-sm',
+  content: 'max-w-lg',
+  wide: 'max-w-xl',
+  full: 'max-w-none',
+} as const;
+
+export type ScreenWidth = keyof typeof screenWidths;

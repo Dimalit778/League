@@ -9,6 +9,11 @@ describe('MemberStats', () => {
     missedHits: 15,
     accuracy: 70,
     totalPoints: 175,
+    pendingPredictions: 0,
+    rank: 2,
+    totalMembers: 10,
+    currentStreak: 3,
+    longestStreak: 5,
   };
 
   it('renders all stat labels', () => {

@@ -1,4 +1,4 @@
-import { getThemeTokens, type ThemeName } from '@/lib/nativeWind';
+import { getThemeTokens, type ThemeName } from '@/lib/nativewind/nativeWind';
 import { appStorage, createMMKVStorageAdapter } from '@/lib/storage';
 import { colorScheme } from 'nativewind';
 import { Platform } from 'react-native';

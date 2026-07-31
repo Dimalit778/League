@@ -47,7 +47,7 @@ export const logScheduledMatchReminders = async () => {
       body: request.content.body,
     }));
 
-  // console.log(`[match-reminders] ${reminders.length} scheduled`, reminders);
+  console.debug(`[match-reminders] ${reminders.length} scheduled`, reminders);
 };
 
 export const cancelAllMatchReminders = async () => {

@@ -1,13 +1,13 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import SignUpScreen from '../screens/SignUpScreen';
-import { mockAuthActions, mockSignUp, resetAuthMocks } from './setup';
+import { mockAuthActions, resetAuthMocks } from './setup';
 
 describe('SignUpScreen', () => {
   beforeEach(() => {
     resetAuthMocks();
     (router.push as jest.Mock).mockReset();
-    (global as any).testFormValues = {};
+    globalThis.testFormValues = {};
   });
 
   it('renders the heading and subheading', () => {

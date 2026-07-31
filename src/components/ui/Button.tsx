@@ -1,166 +1,151 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { spacing } from '@/lib/nativewind/spacing';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import * as Haptics from 'expo-haptics';
-import { ReactNode } from 'react';
-import { ActivityIndicator, Platform, Pressable } from 'react-native';
+import { forwardRef, type ReactNode } from 'react';
+import { ActivityIndicator, Platform, Pressable, type PressableProps, View } from 'react-native';
 import { Text } from './Text';
 
-interface ButtonProps {
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'success' | 'error' | 'border';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+
+export type ButtonProps = Omit<PressableProps, 'children'> & {
+  children?: ReactNode;
+  label?: string;
+  /** @deprecated Prefer label. */
   title?: string;
-  onPress: () => void;
-  color?: string;
-  variant?: 'primary' | 'error' | 'border' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  icon?: ReactNode;
-  iconPosition?: 'start' | 'end';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
   loading?: boolean;
-  disabled?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+  /** @deprecated Prefer leftIcon/rightIcon. */
+  icon?: ReactNode;
+  /** @deprecated Prefer leftIcon/rightIcon. */
+  iconPosition?: 'start' | 'end';
+  haptic?: boolean;
   className?: string;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-}
-
-const isIOS = Platform.OS === 'ios';
-
-const BORDER_RADIUS = isIOS ? 12 : 10;
-
-const RIPPLE_COLORS: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'rgba(0,0,0,0.18)',
-
-  error: 'rgba(0,0,0,0.18)',
-  border: 'rgba(0,0,0,0.18)',
-  outline: 'rgba(255,255,255,0.12)',
 };
 
-export const Button = ({
-  title,
-  onPress,
-  variant = 'primary',
-  size = 'md',
-  icon,
-  iconPosition = 'start',
-  className = '',
-  loading = false,
-  disabled = false,
-  accessibilityLabel,
-  accessibilityHint,
-}: ButtonProps) => {
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: 'min-h-11 px-3',
+  md: 'min-h-11 px-4',
+  lg: 'min-h-[52px] px-6',
+  icon: 'h-11 w-11 p-0',
+};
+
+const textSizeClasses: Record<ButtonSize, string> = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  icon: 'text-base',
+};
+
+const variantClasses: Record<ButtonVariant, string> = {
+  primary: 'bg-primary',
+  secondary: 'bg-surfaceSoft',
+  outline: 'border border-border bg-transparent',
+
+  success: 'bg-success',
+  error: 'bg-error',
+  border: 'bg-border',
+};
+
+const textToneClasses: Record<ButtonVariant, string> = {
+  primary: 'text-primaryForeground',
+  secondary: 'text-text',
+  outline: 'text-text',
+
+  success: 'text-white',
+  error: 'text-white',
+  border: 'text-text',
+};
+
+export const Button = forwardRef<View, ButtonProps>(function Button(
+  {
+    children,
+    label,
+    title,
+    variant = 'primary',
+    size = 'md',
+    fullWidth = false,
+    loading = false,
+    disabled = false,
+    leftIcon,
+    rightIcon,
+    icon,
+    iconPosition = 'start',
+    haptic = true,
+    className,
+    accessibilityLabel,
+    accessibilityHint,
+    onPress,
+    ...props
+  },
+  ref,
+) {
+  const { colors } = useThemeTokens();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
+  const buttonLabel = label ?? title;
+  const leadingIcon = leftIcon ?? (iconPosition === 'start' ? icon : undefined);
+  const trailingIcon = rightIcon ?? (iconPosition === 'end' ? icon : undefined);
+  const isDisabled = disabled || loading;
+  const accessibleLabel = accessibilityLabel ?? buttonLabel;
+  const action = buttonLabel ?? accessibilityLabel ?? t('button');
 
-  const handlePress = () => {
-    if (loading || disabled) return;
-    if (isIOS) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onPress();
+  const handlePress: NonNullable<PressableProps['onPress']> = (event) => {
+    if (isDisabled) return;
+    if (haptic && Platform.OS === 'ios') {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onPress?.(event);
   };
-
-  const label = accessibilityLabel || title;
-  const action = title || accessibilityLabel || t('button');
-  const hint =
-    accessibilityHint ||
-    (loading
-      ? t('Loading')
-      : disabled
-        ? t('Button disabled')
-        : t('Double tap to {{action}}', { action: action.toLowerCase() }));
-
-  const sizeClasses = {
-    sm: 'h-[32px]',
-    md: 'h-[44px]',
-    lg: 'h-[52px]',
-  };
-
-  const horizontalPaddingClasses = {
-    sm: 'px-4',
-    md: 'px-6',
-    lg: 'px-8',
-  };
-
-  const iconStartPaddingClasses = {
-    sm: 'pl-3 pr-4',
-    md: 'pl-5 pr-6',
-    lg: 'pl-6 pr-8',
-  };
-
-  const iconEndPaddingClasses = {
-    sm: 'pl-4 pr-3',
-    md: 'pl-6 pr-5',
-    lg: 'pl-8 pr-6',
-  };
-
-  const iconGapClasses = {
-    sm: 'gap-1',
-    md: 'gap-2',
-    lg: 'gap-2',
-  };
-
-  const textSizeClasses = {
-    sm: 'text-sm leading-[14px]',
-    md: 'text-base leading-5',
-    lg: 'text-base leading-5',
-  };
-
-  const variantClasses = {
-    primary: 'bg-primary',
-    error: 'bg-error',
-    border: 'bg-border',
-    outline: 'bg-transparent border border-muted',
-  };
-
-  const textVariantClasses = {
-    primary: 'text-white  ',
-    error: 'text-error',
-    border: 'text-text',
-    outline: 'text-text',
-  };
-
-  const iconOnly = Boolean(icon && !title);
-  const contentSpacingClass = iconOnly
-    ? 'p-0 aspect-square'
-    : icon
-      ? cn(
-          iconPosition === 'start' ? iconStartPaddingClasses[size] : iconEndPaddingClasses[size],
-          iconGapClasses[size],
-        )
-      : horizontalPaddingClasses[size];
 
   return (
     <Pressable
-      testID="button"
+      ref={ref}
+      {...props}
+      testID={props.testID ?? 'button'}
+      onPress={handlePress}
+      disabled={isDisabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibleLabel}
+      accessibilityHint={
+        accessibilityHint ??
+        (loading
+          ? t('Loading')
+          : disabled
+            ? t('Button disabled')
+            : t('Double tap to {{action}}', { action: action.toLowerCase() }))
+      }
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       className={cn(
-        'items-center justify-center flex-row overflow-hidden',
+        'flex-row items-center justify-center rounded-xl active:opacity-85',
+        spacing.row,
         sizeClasses[size],
-        contentSpacingClass,
         variantClasses[variant],
-        (disabled || loading) && 'opacity-50',
-        isIOS && 'active:opacity-50',
+        fullWidth && 'w-full',
+        isDisabled && 'opacity-50',
         className,
       )}
-      style={{ borderRadius: BORDER_RADIUS }}
-      onPress={handlePress}
-      disabled={disabled || loading}
-      android_ripple={!isIOS ? { color: RIPPLE_COLORS[variant], borderless: false } : undefined}
-      accessible
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityHint={hint}
-      accessibilityState={{ disabled: disabled || loading }}
     >
       {loading ? (
-        <ActivityIndicator color="#fff" size="small" />
+        <ActivityIndicator color={variant === 'primary' ? colors.primaryForeground : colors.text} size="small" />
       ) : (
-        <>
-          {iconPosition === 'start' && icon}
-          {title ? (
-            <Text
-              style={!isIOS ? { textTransform: 'uppercase', letterSpacing: 0.5 } : undefined}
-              className={cn('font-semibold', textSizeClasses[size], textVariantClasses[variant])}
-            >
-              {title}
-            </Text>
-          ) : null}
-          {iconPosition === 'end' && icon}
-        </>
+        <View className={cn('flex-row items-center justify-center', spacing.row, isRTL && 'flex-row-reverse')}>
+          {leadingIcon}
+          {buttonLabel ? (
+            <Text className={cn('font-semibold', textSizeClasses[size], textToneClasses[variant])}>{buttonLabel}</Text>
+          ) : (
+            children
+          )}
+          {trailingIcon}
+        </View>
       )}
     </Pressable>
   );
-};
+});

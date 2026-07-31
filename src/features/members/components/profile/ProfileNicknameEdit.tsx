@@ -90,23 +90,27 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
           />
         )}
       />
-      {errors.nickname && <Text className="mb-2 text-sm text-error">{t(errors.nickname.message as string)}</Text>}
+      {errors.nickname && (
+        <Text variant="bodySmall" tone="error" className="mb-2">
+          {t(errors.nickname.message as string)}
+        </Text>
+      )}
       <View className="flex-row gap-2">
         <Button
-          title={t('Save')}
+          label={t('Save')}
           onPress={handleSave}
-          variant="border"
+          variant="outline"
           loading={updateMember.isPending}
           disabled={!isValid || updateMember.isPending}
           className="flex-1"
         />
         <Button
-          title={t('Cancel')}
+          label={t('Cancel')}
           onPress={() => {
             setIsEditing(false);
             reset({ nickname: displayNickname });
           }}
-          variant="border"
+          variant="outline"
           disabled={updateMember.isPending}
           className="flex-1"
         />

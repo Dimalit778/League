@@ -1,6 +1,6 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import SendResetLink from '../screens/SendResetLink';
-import { mockAuthActions, mockSendResetPasswordLink, resetAuthMocks } from './setup';
+import { mockAuthActions, resetAuthMocks } from './setup';
 
 describe('SendResetLink', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { Card } from '../Card';
 
@@ -28,5 +28,17 @@ describe('Card', () => {
       </Card>
     );
     expect(getByText('No class')).toBeTruthy();
+  });
+
+  it('is interactive only when onPress is provided', () => {
+    const onPress = jest.fn();
+    const { getByRole } = render(
+      <Card onPress={onPress}>
+        <Text>Open card</Text>
+      </Card>,
+    );
+
+    fireEvent.press(getByRole('button'));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 });

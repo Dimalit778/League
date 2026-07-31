@@ -1,6 +1,6 @@
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativeWind';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useEffect, useRef } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';

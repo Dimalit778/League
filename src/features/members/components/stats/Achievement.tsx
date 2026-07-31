@@ -40,7 +40,7 @@ function buildAchievements(
   stats: MemberStatsType | undefined,
   t: (key: string, params?: Record<string, string | number>) => string,
 ): Achievement[] {
-  const position = stats?.position ?? null;
+  const position = stats?.rank ?? null;
   const totalPredictions = stats?.totalPredictions ?? 0;
   const correctPredictions = (stats?.bingoHits ?? 0) + (stats?.regularHits ?? 0);
 
