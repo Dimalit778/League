@@ -1,6 +1,7 @@
 import { Text } from '@/components/ui/Text';
 import { LeaderboardMember } from '@/features/members/types/member.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Crown } from 'lucide-react-native';
 import { View } from 'react-native';
 
@@ -29,6 +30,7 @@ function getPositionColor(
 }
 function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const positionColor = getPositionColor(position, colors);
   const avatarSize = position === 1 ? 72 : 60;
 
@@ -38,7 +40,13 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
       style={{ maxWidth: 112 }}
       accessible={!!member}
       accessibilityLabel={
-        member ? `${member.nickname}, position ${position}, ${member.total_points ?? 0} points` : undefined
+        member
+          ? t('{{name}}, position {{position}}, {{points}} points', {
+              name: member.nickname ?? '',
+              position,
+              points: member.total_points ?? 0,
+            })
+          : undefined
       }
     >
       {member && (
@@ -76,7 +84,7 @@ function PodiumMember({ member, position, podiumHeight }: PodiumMemberProps) {
 
           <View className="mt-1 mb-2 items-center rounded-md px-2.5 py-0.5" style={{ backgroundColor: positionColor }}>
             <Text variant="caption" tone="inverse">
-              {member.total_points ?? 0} pts
+              {member.total_points ?? 0} {t('pts')}
             </Text>
           </View>
         </>

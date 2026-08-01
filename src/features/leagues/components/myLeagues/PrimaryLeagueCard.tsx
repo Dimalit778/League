@@ -1,8 +1,8 @@
-import { Divider, HeaderBackground, LogoBadge, MyImage, Text } from '@/components/ui';
+import { DirectionalIcon, Divider, HeaderBackground, LogoBadge, MyImage, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
-import { ChevronRight, Podium, Star, Users } from 'lucide-react-native';
+import { Podium, Star, Users } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 import { images } from '@/assets/images';
@@ -85,7 +85,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
         </View>
         <View className="items-center justify-center">
           <View className="rounded-full border border-primary p-1">
-            <ChevronRight size={22} color={colors.primary} />
+            <DirectionalIcon size={23} color={colors.primary} />
           </View>
           <MyImage source={images.trophyGold} width={70} height={70} contentFit="contain" />
         </View>

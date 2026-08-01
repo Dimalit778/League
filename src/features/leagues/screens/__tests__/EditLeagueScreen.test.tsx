@@ -3,6 +3,10 @@ import EditLeagueScreen from '@/features/leagues/screens/EditLeagueScreen';
 
 let mockUserId = 'owner-user-1';
 
+jest.mock('expo-router', () => ({
+  Stack: { Screen: () => null },
+}));
+
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useGetLeagueAndMembers: () => ({
     data: {

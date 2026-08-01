@@ -29,7 +29,7 @@ export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) 
       <Pressable
         style={{
           position: 'absolute',
-          left: 5,
+          [isRTL ? 'right' : 'left']: 5,
           zIndex: 1000,
           height: '100%',
           width: 60,

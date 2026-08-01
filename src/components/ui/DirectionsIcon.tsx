@@ -13,6 +13,7 @@ export function DirectionalIcon({ size = 24, color, strokeWidth = 1.5 }: Directi
   const { colors } = useThemeTokens();
   const isRTL = useIsRTL();
   const iconColor = color ?? colors.muted;
+  console.log('isRTL', isRTL);
 
   return isRTL ? (
     <ChevronLeft size={size} color={iconColor} strokeWidth={strokeWidth} />

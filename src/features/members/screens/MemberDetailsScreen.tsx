@@ -4,25 +4,16 @@ import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
 import MemberStats from '../components/memberStats';
 
 export default function MemberDetailsScreen() {
-  const { memberId = '' } = useLocalSearchParams<{ memberId: string }>();
+  const { memberId } = useLocalSearchParams<{ memberId: string }>();
   const { t } = useTranslation();
   const memberQuery = useGetMember(memberId);
   const statsQuery = useMemberStats(memberId);
-
-  if (!memberId) {
-    return (
-      <Screen padding="horizontal" edges={['top', 'bottom']}>
-        <BackButton />
-        <EmptyState variant="error" title={t('Member not found')} />
-      </Screen>
-    );
-  }
 
   if (memberQuery.isLoading || statsQuery.isLoading) {
     return <MemberDetailsSkeleton />;
@@ -35,7 +26,7 @@ export default function MemberDetailsScreen() {
   const member = memberQuery.data;
   if (!member) {
     return (
-      <Screen padding="horizontal" edges={['top', 'bottom']}>
+      <Screen padding="all" bottomInset>
         <BackButton />
         <EmptyState variant="empty" title={t('Member not found')} />
       </Screen>
@@ -45,43 +36,50 @@ export default function MemberDetailsScreen() {
   const stats = statsQuery.data;
 
   return (
-    <Screen scroll padding="horizontal" edges={['top', 'bottom']} contentClassName={spacing.stack}>
-      <BackButton />
-
-      <Card variant="elevated" contentClassName="items-center">
-        <View className="h-24 w-24 overflow-hidden rounded-full border-2 border-border p-0.5">
-          <AvatarImage path={member.avatar_url} nickname={member.nickname} />
-        </View>
-        <View className="mt-3 items-center">
-          <Text variant="titleLarge" className="text-center">
-            {member.nickname}
-          </Text>
-          <Text variant="bodySmall" tone="muted" className="text-center">
-            {member.league?.name ?? ''}
-          </Text>
-        </View>
-        <View className="mt-4 flex-row items-center">
-          <View className="flex-1 items-center">
-            <Text variant="caption" tone="muted">
-              {t('Rank')}
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: member?.nickname ?? t('Member Details'),
+          headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
+      <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+        <Card variant="hero" contentClassName="items-center px-5 py-6">
+          <View className="h-24 w-24 overflow-hidden rounded-full border-[3px] border-primary bg-subtle p-0.5">
+            <AvatarImage path={member.avatar_url} nickname={member.nickname} />
+          </View>
+          <View className="mt-3 items-center">
+            <Text variant="titleLarge" className="text-center">
+              {member.nickname}
             </Text>
-            <Text variant="title" tone="primary">
-              {stats?.rank ? `#${stats.rank}` : '—'}
+            <Text variant="bodySmall" tone="muted" className="mt-1 text-center">
+              {member.league?.name ?? ''}
             </Text>
           </View>
-          <View className="h-10 w-px bg-border" />
-          <View className="flex-1 items-center">
-            <Text variant="caption" tone="muted">
-              {t('Points')}
-            </Text>
-            <Text variant="title" tone="primary">
-              {stats?.totalPoints ?? 0}
-            </Text>
+          <View className="mt-5 w-full flex-row items-center rounded-2xl bg-subtle py-3">
+            <View className="flex-1 items-center">
+              <Text variant="caption" tone="muted">
+                {t('Rank')}
+              </Text>
+              <Text variant="titleLarge" tone="primary" className="text-center">
+                {stats?.rank ? `#${stats.rank}` : '—'}
+              </Text>
+            </View>
+            <View className="h-11 w-px bg-border" />
+            <View className="flex-1 items-center">
+              <Text variant="caption" tone="muted">
+                {t('Points')}
+              </Text>
+              <Text variant="titleLarge" tone="primary" className="text-center">
+                {stats?.totalPoints ?? 0}
+              </Text>
+            </View>
           </View>
-        </View>
-      </Card>
+        </Card>
 
-      <MemberStats stats={stats} />
-    </Screen>
+        <MemberStats stats={stats} />
+      </Screen>
+    </>
   );
 }

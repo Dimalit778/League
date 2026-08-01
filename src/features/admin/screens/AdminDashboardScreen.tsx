@@ -3,6 +3,7 @@ import { Button, Card, Text } from '@/components/ui';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -53,6 +54,7 @@ const AdminDashboardScreen = () => {
   const { signOut } = useAuthActions();
   const router = useRouter();
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } = useAdminDashboard();
   const onRefresh = useCallback(() => {
@@ -68,13 +70,13 @@ const AdminDashboardScreen = () => {
         className="flex-1 p-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
-        <Text className="text-text text-center text-xl font-semibold mb-2">Platform Overview</Text>
+        <Text className="text-text text-center text-xl font-semibold mb-2">{t('Platform Overview')}</Text>
 
         <View className="flex-row flex-wrap ">
           {statsCards.map((stat) => (
             <View key={stat.key} className={`${stat.width} px-2 my-1`}>
               <Card variant="soft" padding="sm" className="gap-1 items-center">
-                <Text className="text-muted text-md ">{stat.label}</Text>
+                <Text className="text-muted text-md ">{t(stat.label)}</Text>
                 <Text className="text-text text-2xl font-semibold ">{data?.[stat.key] ?? 0}</Text>
               </Card>
             </View>
@@ -90,8 +92,8 @@ const AdminDashboardScreen = () => {
             contentClassName="flex-row justify-between"
           >
             <View className="flex-1">
-              <Text className="text-text text-lg font-semibold mb-2">{link.title}</Text>
-              <Text className="text-muted text-sm">{link.description}</Text>
+              <Text className="text-text text-lg font-semibold mb-2">{t(link.title)}</Text>
+              <Text className="text-muted text-sm">{t(link.description)}</Text>
             </View>
             <View className=" items-center justify-center">
               <Entypo name="chevron-right" size={28} color={colors.text} />
@@ -99,7 +101,7 @@ const AdminDashboardScreen = () => {
           </Card>
         ))}
       </ScrollView>
-      <Button label="Logout" onPress={() => signOut()} className="mx-auto" />
+      <Button label={t('Logout')} onPress={() => signOut()} className="mx-auto" />
     </Screen>
   );
 };

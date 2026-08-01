@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 
-import { Error, LoadingOverlay } from '@/components/layout';
+import { Error } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { DotLottie } from '@lottiefiles/dotlottie-react-native';
 
@@ -9,20 +9,22 @@ import { animations } from '@/assets/animations';
 import { images } from '@/assets/images';
 import type { PredictionFormHandle } from '@/features/predictions/components/PredictionForm';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Keyboard, Pressable, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
+import MatchDetailsSkeleton from '../components/match-details/MatchDetailsSkeleton';
 import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchData } from '../hooks/useMatchData';
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const { t } = useTranslation();
-
+  const isRTL = useIsRTL();
   const memberId = useMemberId();
   const inset = useSafeAreaInsets();
   const { height } = useWindowDimensions();
@@ -41,7 +43,7 @@ const MatchDetailScreen = () => {
 
   const { data: matchData, isLoading, error } = useGetMatchData(Number(matchId));
 
-  if (isLoading) return <LoadingOverlay />;
+  if (isLoading) return <MatchDetailsSkeleton />;
   if (error) return <Error error={error} />;
   if (!matchData) return <Error error={{ message: 'No match data found' }} />;
 
@@ -54,11 +56,7 @@ const MatchDetailScreen = () => {
   const isScheduled = !hasStarted;
 
   return (
-    <Pressable
-      className="mx-auto w-full max-w-lg flex-1 bg-background"
-      onPress={Keyboard.dismiss}
-      accessible={false}
-    >
+    <Pressable className="mx-auto w-full max-w-lg flex-1 bg-background" onPress={Keyboard.dismiss} accessible={false}>
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: height * 0.35 }}>
         <ExpoImage
           source={images.footballFieldBg}
@@ -82,9 +80,13 @@ const MatchDetailScreen = () => {
           onPress={() => router.dismiss()}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Close"
+          accessibilityLabel={t('Close')}
         >
-          <ChevronLeft size={30} color="#fff" strokeWidth={1.6} />
+          {isRTL ? (
+            <ChevronRight size={30} color="#fff" strokeWidth={1.6} />
+          ) : (
+            <ChevronLeft size={30} color="#fff" strokeWidth={1.6} />
+          )}
         </TouchableOpacity>
 
         <MatchHeader

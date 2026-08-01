@@ -1,6 +1,6 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
+import { Skeleton } from '@/components/ui';
 import { ScrollView, View } from 'react-native';
 
 function Bone({
@@ -16,7 +16,7 @@ function Bone({
 }) {
   const { colors } = useThemeTokens();
   return (
-    <AnimatedSkeleton
+    <Skeleton
       style={{
         width,
         height,

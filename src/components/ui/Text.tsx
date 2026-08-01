@@ -57,7 +57,7 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
       className={cn(typography[variant], toneClasses[tone], fontClasses[font], className)}
       style={[
         { writingDirection: isRTL ? 'rtl' : 'ltr' },
-        // Don't override className text-align (e.g. text-center)
+
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,
         style,
       ]}

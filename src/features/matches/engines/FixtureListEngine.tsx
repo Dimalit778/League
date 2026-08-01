@@ -49,7 +49,7 @@ export default function FixtureListEngine({
   );
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 ">
       <FixturesList
         fixtures={allFixtures}
         selectedFixture={selectedFixture}

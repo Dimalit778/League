@@ -1,4 +1,5 @@
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -8,6 +9,7 @@ import { Text, View } from 'react-native';
  */
 export function NetworkStatusBanner() {
   const { isConnected, isInternetReachable } = useNetworkStatus();
+  const { t } = useTranslation();
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export function NetworkStatusBanner() {
 
   return (
     <View className="bg-error px-4 py-2 items-center">
-      <Text className="text-white text-sm font-semibold">No internet connection. Some features may not work.</Text>
+      <Text className="text-white text-sm font-semibold">{t('No internet connection. Some features may not work.')}</Text>
     </View>
   );
 }

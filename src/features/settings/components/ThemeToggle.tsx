@@ -1,9 +1,8 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { useThemeStore } from '@/store/ThemeStore';
 import Feather from '@expo/vector-icons/Feather';
 import { memo, useEffect } from 'react';
-import { Pressable, View } from 'react-native';
+import { type LayoutChangeEvent, Pressable, View } from 'react-native';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -21,40 +20,47 @@ const springConfig = {
   stiffness: 150,
 };
 
-const ICON_SLOT = 32;
+const THUMB_SIZE = 36;
 const ACTIVE_ICON_COLOR = '#FFFFFF';
 
 const ThemeToggle = () => {
-  const isRTL = useIsRTL();
   const theme = useThemeStore((state) => state.theme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const isDark = theme === 'dark';
 
   const progress = useSharedValue(isDark ? 1 : 0);
+  const travel = useSharedValue(THUMB_SIZE);
 
   useEffect(() => {
     progress.value = withSpring(isDark ? 1 : 0, springConfig);
   }, [isDark, progress]);
 
-  const thumbStyle = useAnimatedStyle(() => {
-    const x = interpolate(progress.value, [0, 1], [0, ICON_SLOT]);
-    return {
-      transform: [{ translateX: isRTL ? -x : x }],
-    };
-  }, [isRTL]);
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(progress.value, [0, 1], [0, travel.value]) }],
+  }));
+
+  const onTrackLayout = (event: LayoutChangeEvent) => {
+    travel.value = Math.max(0, event.nativeEvent.layout.width - THUMB_SIZE);
+  };
 
   return (
     <Pressable
       onPress={toggleTheme}
-      className="relative flex-row items-center rounded-full bg-subtle p-0.5"
+      className="rounded-full bg-subtle p-0.5"
+      style={{ direction: 'ltr' }}
       accessible={true}
       accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} theme`}
       accessibilityRole="switch"
       accessibilityState={{ checked: isDark }}
     >
-      <Animated.View style={thumbStyle} className="absolute left-0.5 top-0.5 z-0 h-9 w-9 rounded-full bg-primary" />
-      <Icon icon="sun" progress={progress} />
-      <Icon icon="moon" progress={progress} />
+      <View className="relative flex-row items-center" onLayout={onTrackLayout}>
+        <Animated.View
+          style={[thumbStyle, { width: THUMB_SIZE, height: THUMB_SIZE }]}
+          className="absolute left-0 top-0 z-0 rounded-full bg-primary"
+        />
+        <Icon icon="sun" progress={progress} />
+        <Icon icon="moon" progress={progress} />
+      </View>
     </Pressable>
   );
 };
@@ -77,7 +83,7 @@ const Icon = memo(({ icon, progress }: { icon: 'sun' | 'moon'; progress: SharedV
   }, [colors.muted, isSun]);
 
   return (
-    <View className="relative z-10 h-9 w-9 items-center justify-center rounded-full">
+    <View style={{ width: THUMB_SIZE, height: THUMB_SIZE }} className="relative z-10 items-center justify-center">
       <AnimatedFeather animatedProps={animatedIconProps} style={animatedIconStyle} name={icon} size={22} />
     </View>
   );

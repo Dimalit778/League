@@ -1,78 +1,117 @@
 import { Card, Text } from '@/components/ui';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
+import { useIsRTL } from '@/providers/LanguageProvider';
+import { Check, Crosshair, Flame, Hourglass, Target, Trophy, X } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
-import { MemberStats as MemberStatsType } from '../types/stats.type';
+import type { MemberStats as MemberStatsType } from '../types/stats.type';
+
+type MetricProps = {
+  icon: ReactNode;
+  label: string;
+  value: number | string;
+  tone?: 'default' | 'primary' | 'success' | 'error' | 'warning';
+};
+
+function Metric({ icon, label, value, tone = 'default' }: MetricProps) {
+  return (
+    <Card variant="soft" padding="sm" className="min-w-0 flex-1" contentClassName="items-center gap-1">
+      {icon}
+      <Text variant="title" tone={tone} className="text-center">
+        {value}
+      </Text>
+      <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">
+        {label}
+      </Text>
+    </Card>
+  );
+}
 
 export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
-  const topRowStats = [
-    {
-      label: 'Predictions',
-      value: stats?.totalPredictions ?? 0,
-      color: 'text-text' as const,
-    },
-    {
-      label: 'Accuracy',
-      value: `${stats?.accuracy ?? 0}%`,
-      color: 'text-text' as const,
-    },
-  ];
-
-  const bottomRowStats = [
-    {
-      label: 'Bingo',
-      value: stats?.bingoHits ?? 0,
-      color: 'text-success' as const,
-    },
-    {
-      label: 'Hits',
-      value: stats?.regularHits ?? 0,
-      color: 'text-primary' as const,
-    },
-    {
-      label: 'Missed',
-      value: stats?.missedHits ?? 0,
-      color: 'text-error' as const,
-    },
-  ];
+  const { t } = useTranslation();
+  const { colors } = useThemeTokens();
+  const isRTL = useIsRTL();
+  const accuracy = Math.min(100, Math.max(0, stats?.accuracy ?? 0));
+  const rowDirection = { direction: 'ltr' as const, flexDirection: isRTL ? ('row-reverse' as const) : ('row' as const) };
 
   return (
-    <Card padding="sm" className="my-2">
-      <View className="flex-row mb-2">
-        {topRowStats.map((item) => (
-          <View key={item.label} className="flex-1 px-2">
-            <View
-              className={`bg-surface border border-border rounded-lg p-2 items-center justify-center ${
-                item.color || ''
-              }`}
-            >
-              <Text className="text-sm text-muted uppercase">
-                {item.label}
-              </Text>
-              <Text className={`text-base font-bold ${item.color}`}>
-                {item.value}
-              </Text>
-            </View>
+    <View className={spacing.stack}>
+      <Text variant="subtitle">{t('Prediction statistics')}</Text>
+
+      <Card variant="elevated" contentClassName="gap-4">
+        <View style={rowDirection} className="items-center gap-4">
+          <View className="h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary bg-subtle">
+            <Text variant="titleLarge" className="text-center">
+              {Math.round(accuracy)}%
+            </Text>
           </View>
-        ))}
+          <View className="min-w-0 flex-1 gap-2">
+            <View style={rowDirection} className="items-center justify-between">
+              <View style={rowDirection} className="items-center gap-2">
+                <Target size={20} color={colors.primary} />
+                <Text variant="label">{t('Accuracy')}</Text>
+              </View>
+              <View className="items-end">
+                <Text variant="title" tone="primary">
+                  {stats?.totalPredictions ?? 0}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {t('Predictions')}
+                </Text>
+              </View>
+            </View>
+            <View className="h-2 overflow-hidden rounded-full bg-border">
+              <View className="h-full rounded-full bg-primary" style={{ width: `${accuracy}%` }} />
+            </View>
+            <Text variant="bodySmall" tone="muted">
+              {t('{{count}} correct predictions', { count: (stats?.bingoHits ?? 0) + (stats?.regularHits ?? 0) })}
+            </Text>
+          </View>
+        </View>
+      </Card>
+
+      <View style={rowDirection} className={spacing.row}>
+        <Metric
+          icon={<Crosshair size={20} color={colors.primary} />}
+          label={t('Bingo')}
+          value={stats?.bingoHits ?? 0}
+          tone="primary"
+        />
+        <Metric
+          icon={<Check size={20} color={colors.success} />}
+          label={t('Hits')}
+          value={stats?.regularHits ?? 0}
+          tone="success"
+        />
+        <Metric
+          icon={<X size={20} color={colors.error} />}
+          label={t('Missed')}
+          value={stats?.missedHits ?? 0}
+          tone="error"
+        />
       </View>
 
-      <View className="flex-row">
-        {bottomRowStats.map((item) => (
-          <View key={item.label} className="flex-1 px-2">
-            <View
-              className={`bg-surface border border-border rounded-lg p-2 items-center justify-center ${
-                item.color || ''
-              }`}
-            >
-              <Text className="text-sm text-muted uppercase">
-                {item.label}
-              </Text>
-              <Text className={`text-base font-bold ${item.color}`}>
-                {item.value}
-              </Text>
-            </View>
-          </View>
-        ))}
+      <View style={rowDirection} className={spacing.row}>
+        <Metric
+          icon={<Flame size={20} color={colors.warning} />}
+          label={t('Current streak')}
+          value={stats?.currentStreak ?? 0}
+          tone="warning"
+        />
+        <Metric
+          icon={<Trophy size={20} color={colors.primary} />}
+          label={t('Longest streak')}
+          value={stats?.longestStreak ?? 0}
+          tone="primary"
+        />
+        <Metric
+          icon={<Hourglass size={20} color={colors.muted} />}
+          label={t('Pending')}
+          value={stats?.pendingPredictions ?? 0}
+        />
       </View>
-    </Card>
+    </View>
   );
 }

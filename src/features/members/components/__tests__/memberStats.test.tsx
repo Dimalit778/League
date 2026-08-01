@@ -23,6 +23,9 @@ describe('MemberStats', () => {
     expect(getByText('Bingo')).toBeTruthy();
     expect(getByText('Hits')).toBeTruthy();
     expect(getByText('Missed')).toBeTruthy();
+    expect(getByText('Current streak')).toBeTruthy();
+    expect(getByText('Longest streak')).toBeTruthy();
+    expect(getByText('Pending')).toBeTruthy();
   });
 
   it('renders stat values', () => {

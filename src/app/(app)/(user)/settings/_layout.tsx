@@ -1,9 +1,11 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Stack, router } from 'expo-router';
 
 export default function SettingsLayout() {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   return (
     <Stack
@@ -22,14 +24,14 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: 'Settings',
+          title: t('Settings'),
           headerLeft: () => <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />,
         }}
       />
-      <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
-      <Stack.Screen name="terms" options={{ title: 'Terms' }} />
-      <Stack.Screen name="help" options={{ title: 'Help' }} />
-      <Stack.Screen name="subscription" options={{ title: 'Subscription' }} />
+      <Stack.Screen name="privacy" options={{ title: t('Privacy') }} />
+      <Stack.Screen name="terms" options={{ title: t('Terms') }} />
+      <Stack.Screen name="help" options={{ title: t('Help') }} />
+      <Stack.Screen name="subscription" options={{ title: t('Subscription') }} />
     </Stack>
   );
 }

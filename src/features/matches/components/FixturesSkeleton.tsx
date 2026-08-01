@@ -1,4 +1,4 @@
-import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
+import { Skeleton } from '@/components/ui';
 import { FlatList, View } from 'react-native';
 
 const skeletonFixtures = Array.from({ length: 18 }, (_, i) => i + 1);
@@ -14,7 +14,7 @@ export default function SkeletonFixtures() {
         scrollEnabled={false}
         renderItem={() => (
           <View style={{ marginHorizontal: 5 }}>
-            <AnimatedSkeleton
+            <Skeleton
               style={{
                 width: 50,
                 height: 50,

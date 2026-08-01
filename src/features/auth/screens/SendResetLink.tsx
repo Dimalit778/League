@@ -61,7 +61,7 @@ const SendResetLink = () => {
           <InputField
             control={emailForm.control}
             name="email"
-            placeholder="Email"
+            placeholder={t('Email')}
             secureTextEntry={false}
             error={emailForm.formState.errors.email}
             icon={<MailIcon size={24} color={colors.muted} />}

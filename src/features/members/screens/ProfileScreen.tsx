@@ -3,7 +3,7 @@ import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
-import { SkeletonStats } from '@/features/members/components/stats';
+import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { Achievements } from '@/features/members/components/stats/Achievement';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
@@ -20,7 +20,7 @@ const ProfileScreen = () => {
   const { data: league, isLoading: leagueLoading } = useGetLeagueAndMembers(leagueId);
 
   if (error) return <Error error={error} />;
-  if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <SkeletonStats />;
+  if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <ProfileSkeleton />;
 
   return (
     <Screen scroll padding="horizontal" bottomInset={bottomInset} contentClassName="gap-5 pt-3">

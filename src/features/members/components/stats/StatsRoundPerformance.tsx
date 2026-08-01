@@ -1,6 +1,7 @@
 import { Text } from '@/components/ui';
 import { RoundPerformance } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { BarChart3 } from 'lucide-react-native';
 import { View } from 'react-native';
 
@@ -12,12 +13,16 @@ type StatsRoundPerformanceProps = {
 
 export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const maxPoints = Math.max(...rounds.map((r) => r.points), 1);
 
   if (rounds.length === 0) {
     return (
       <View className="mx-3 mt-5">
-        <View className="mb-3 flex-row items-center gap-2">
+        <View
+          className="mb-3 flex-row items-center gap-2"
+          style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+        >
           <BarChart3 size={16} color={GOLD} />
           <Text className="text-base font-bold text-white">{t('Performance by round')}</Text>
         </View>
@@ -30,7 +35,10 @@ export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
 
   return (
     <View className="mx-3 mt-5">
-      <View className="mb-3 flex-row items-center gap-2">
+      <View
+        className="mb-3 flex-row items-center gap-2"
+        style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+      >
         <BarChart3 size={16} color={GOLD} />
         <Text className="text-base font-bold text-white">{t('Performance by round')}</Text>
       </View>
@@ -40,7 +48,10 @@ export function StatsRoundPerformance({ rounds }: StatsRoundPerformanceProps) {
           const barWidth = `${Math.max(8, (round.points / maxPoints) * 100)}%`;
           return (
             <View key={round.round} className={index < rounds.length - 1 ? 'mb-3' : ''}>
-              <View className="mb-1 flex-row items-center justify-between">
+              <View
+                className="mb-1 flex-row items-center justify-between"
+                style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+              >
                 <Text className="text-xs text-muted">{t('Round {{n}}', { n: round.round })}</Text>
                 <Text className="text-xs font-semibold text-white">
                   {round.points} {t('pts')}

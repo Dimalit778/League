@@ -1,3 +1,4 @@
+import { Row, Section } from '@/components/layout';
 import { Card, Text } from '@/components/ui';
 import { MemberStats as MemberStatsType } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -15,16 +16,9 @@ type Achievement = {
 
 function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
-    <Card
-      padding="none"
-      variant="outlined"
-      className="flex-1"
-      style={{ opacity: achievement.unlocked ? 1 : 0.5 }}
-    >
+    <Card padding="none" variant="outlined" className="flex-1" style={{ opacity: achievement.unlocked ? 1 : 0.5 }}>
       <View className="items-center px-2 py-3">
-        <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-subtle">
-          {achievement.icon}
-        </View>
+        <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-subtle">{achievement.icon}</View>
         <Text className="text-center text-sm font-bold text-text">{achievement.title}</Text>
         <Text className="mt-1 text-center text-[10px] leading-4 text-muted">{achievement.description}</Text>
       </View>
@@ -76,13 +70,14 @@ export function Achievements({ stats }: AchievementsProps) {
   const achievements = buildAchievements(stats, t, colors.primary);
 
   return (
-    <View>
-      <Text variant="subtitle" className="mb-3">{t('Your achievements')}</Text>
-      <View className="flex-row gap-2">
+    <Section title={t('Your achievements')} contentClassName="gap-2">
+      <Row className="gap-2">
         {achievements.map((achievement) => (
-          <AchievementCard key={achievement.id} achievement={achievement} />
+          <View key={achievement.id} className="flex-1">
+            <AchievementCard achievement={achievement} />
+          </View>
         ))}
-      </View>
-    </View>
+      </Row>
+    </Section>
   );
 }

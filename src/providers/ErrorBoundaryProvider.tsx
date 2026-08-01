@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import * as Sentry from '@sentry/react-native';
 import { router } from 'expo-router';
 import { ErrorInfo } from 'react';
@@ -14,6 +15,7 @@ type ErrorFallbackProps = {
 
 export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   const handleGoHome = () => {
     resetErrorBoundary();
@@ -28,14 +30,14 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
     <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <View className="flex-1 justify-center items-center px-6">
         <Text className="text-error text-4xl mb-4">⚠️</Text>
-        <Text className="text-text text-2xl font-headBold text-center mb-2">Something went wrong</Text>
+        <Text className="text-text text-2xl font-headBold text-center mb-2">{t('Something went wrong')}</Text>
         <Text className="text-muted text-base text-center mb-6">
-          We encountered an unexpected error. Don't worry, your data is safe.
+          {t("We encountered an unexpected error. Don't worry, your data is safe.")}
         </Text>
 
         {__DEV__ && (
           <View className="bg-surface border border-border rounded-lg p-4 mb-6 w-full">
-            <Text className="text-error text-sm font-semibold mb-2">Error Details (Dev Only):</Text>
+            <Text className="text-error text-sm font-semibold mb-2">{t('Error Details (Dev Only):')}</Text>
             <Text className="text-text text-xs font-mono">{error.message}</Text>
             {error.stack && (
               <Text className="text-muted text-xs font-mono mt-2">
@@ -46,8 +48,8 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
         )}
 
         <View className="w-full gap-3">
-          <Button label="Try Again" onPress={resetErrorBoundary} variant="primary" size="lg" />
-          <Button label="Go Home" onPress={handleGoHome} variant="secondary" size="lg" />
+          <Button label={t('Try Again')} onPress={resetErrorBoundary} variant="primary" size="lg" />
+          <Button label={t('Go Home')} onPress={handleGoHome} variant="secondary" size="lg" />
         </View>
       </View>
     </SafeAreaView>

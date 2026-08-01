@@ -63,10 +63,10 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
           {t('Choose {{count}} active leagues', { count: maxLeagues })}
         </Text>
         <Text className="text-base mt-2 text-muted text-center">
-          Your subscription has ended. Choose the leagues you want to keep active.
+          {t('Your subscription has ended. Choose the leagues you want to keep active.')}
         </Text>
         <Text className="text-sm mt-2 text-muted text-center">
-          Your other leagues and data will remain saved.
+          {t('Your other leagues and data will remain saved.')}
         </Text>
       </View>
       <View className="mt-3 flex-row items-center justify-between">

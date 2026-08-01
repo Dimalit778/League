@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { Text } from '../Text';
+import { ListItem } from '../ListItem';
+import { Section } from '@/components/layout/Section';
 
 jest.mock('@/providers/LanguageProvider', () => ({
   useIsRTL: () => true,
@@ -28,5 +30,23 @@ describe('RTL primitives', () => {
     const styles = getByText('3 – 1').props.style;
 
     expect(styles.at(-1)).toEqual(expect.objectContaining({ writingDirection: 'ltr' }));
+  });
+
+  it('right-aligns shared list item labels', () => {
+    const { getByText } = render(<ListItem title="פרטי הליגה" trailing={<Text>ערך</Text>} />);
+    const style = StyleSheet.flatten(getByText('פרטי הליגה').props.style);
+
+    expect(style.textAlign).toBe('right');
+  });
+
+  it('right-aligns section headers', () => {
+    const { getByText } = render(
+      <Section title="סטטיסטיקה">
+        <Text>תוכן</Text>
+      </Section>,
+    );
+    const style = StyleSheet.flatten(getByText('סטטיסטיקה').props.style);
+
+    expect(style.textAlign).toBe('right');
   });
 });

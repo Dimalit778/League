@@ -147,7 +147,7 @@ const LeagueDetailsScreen = () => {
           <View className="flex-row mt-8">
             <MemberOption
               value={6}
-              label="6 Members"
+              label={t('6 Members')}
               locked={false}
               membersCount={membersCount}
               onSelect={setMembersCount}
@@ -156,7 +156,7 @@ const LeagueDetailsScreen = () => {
 
             <MemberOption
               value={12}
-              label="12 Members"
+              label={t('12 Members')}
               locked={!isPro}
               membersCount={membersCount}
               onSelect={setMembersCount}

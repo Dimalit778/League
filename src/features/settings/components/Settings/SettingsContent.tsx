@@ -1,3 +1,4 @@
+import { Section } from '@/components/layout';
 import { ListItem, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -88,7 +89,11 @@ const SettingsContent = () => {
       key: 'notification',
       label: t('Notification'),
       icon: <Bell size={iconSize} color={colors.text} strokeWidth={1.5} />,
-      rightContent: <Text className="text-sm font-medium text-primary">{t('Enabled')}</Text>,
+      rightContent: (
+        <Text variant="bodySmall" tone="success">
+          {t('Enabled')}
+        </Text>
+      ),
     },
   ];
 
@@ -114,31 +119,24 @@ const SettingsContent = () => {
   ];
 
   const renderSection = (items: SettingsItem[], title?: string) => (
-    <View>
-      {title && (
-        <Text className="text-xl my-2 px-1">
-          {title}
-        </Text>
-      )}
-      <View className="overflow-hidden rounded-xl border border-border bg-surface ">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+    <Section title={title} contentClassName="overflow-hidden rounded-xl border border-border bg-surface ">
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
 
-          return (
-            <ListItem
-              key={item.key}
-              leading={<View className="items-center justify-center rounded-md bg-subtle p-2">{item.icon}</View>}
-              title={item.label}
-              trailing={item.rightContent}
-              right={item.path ? 'chevron' : 'none'}
-              divider={!isLast}
-              className="px-3"
-              onPress={item.path ? () => router.push(item.path!) : undefined}
-            />
-          );
-        })}
-      </View>
-    </View>
+        return (
+          <ListItem
+            key={item.key}
+            leading={<View className="items-center justify-center rounded-md bg-subtle p-2">{item.icon}</View>}
+            title={item.label}
+            trailing={item.rightContent}
+            right={item.path ? 'chevron' : 'none'}
+            divider={!isLast}
+            className="px-3"
+            onPress={item.path ? () => router.push(item.path!) : undefined}
+          />
+        );
+      })}
+    </Section>
   );
 
   return (

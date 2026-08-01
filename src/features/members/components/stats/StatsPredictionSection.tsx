@@ -2,6 +2,7 @@ import { Card, Text } from '@/components/ui';
 import { type MemberStats } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { Check, Crosshair, Flame, X } from 'lucide-react-native';
@@ -73,7 +74,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
 
 function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
-    <Card padding="sm" className="min-w-0 flex-1" contentClassName="items-center gap-1">
+    <Card padding="sm" className="min-w-0 flex-1" contentClassName="flex-1 items-center justify-center gap-1">
       {icon}
       <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">
         {label}
@@ -88,10 +89,14 @@ function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: stri
 export function StatsPredictionSection({ stats }: { stats: MemberStats }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const isRTL = useIsRTL();
   const { bingoHits, missedHits, regularHits, currentStreak, accuracy } = stats;
 
   return (
-    <View className={cn('flex-row', spacing.list)}>
+    <View
+      className={cn('flex-row', spacing.list)}
+      style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+    >
       <AccuracyGauge accuracy={accuracy} />
       <View className={cn('min-w-0 flex-1', spacing.list)}>
         <MetricTile

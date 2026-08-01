@@ -2,6 +2,7 @@
 import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { useSidebarStore } from '@/store/SidebarStore';
 import { ArrowLeftIcon, LeagueIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
@@ -22,6 +23,7 @@ export function SidebarMenu() {
   const isOpen = useSidebarStore((s) => s.isOpen);
   const closeSidebar = useSidebarStore((s) => s.closeSidebar);
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
   const isWeb = Platform.OS === 'web';
 
@@ -70,10 +72,15 @@ export function SidebarMenu() {
       />
 
       {/* Sidebar */}
-      <View className="absolute top-0 left-0 bottom-0 w-52  z-50 bg-background">
+      <View
+        className="absolute bottom-0 top-0 z-50 w-52 bg-background"
+        style={{ [isRTL ? 'right' : 'left']: 0, direction: isRTL ? 'rtl' : 'ltr' }}
+      >
         <View className="p-4 flex-row items-center justify-between">
-          <Pressable onPress={closeSidebar} className=" ml-1 hover:bg-border rounded-lg">
-            <ArrowLeftIcon size={24} color={colors.muted} />
+          <Pressable onPress={closeSidebar} className="ms-1 rounded-lg hover:bg-border">
+            <View style={{ transform: [{ rotate: isRTL ? '180deg' : '0deg' }] }}>
+              <ArrowLeftIcon size={24} color={colors.muted} />
+            </View>
           </Pressable>
         </View>
         <ScrollView className="flex-1">
@@ -94,7 +101,7 @@ export function SidebarMenu() {
                   }`}
                 >
                   <Icon size={24} color={isActive ? colors.primary : colors.muted} />
-                  <Text className={`text-base ml-3  ${isActive ? 'text-primary' : 'text-muted'}`}>
+                  <Text className={`ms-3 text-base ${isActive ? 'text-primary' : 'text-muted'}`}>
                     {t(route.label)}
                   </Text>
                 </Pressable>

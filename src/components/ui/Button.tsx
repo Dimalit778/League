@@ -118,7 +118,10 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
       {loading ? (
         <ActivityIndicator color={variant === 'primary' ? colors.onPrimary : colors.text} size="small" />
       ) : (
-        <View className={cn('flex-row items-center justify-center', spacing.row, isRTL && 'flex-row-reverse')}>
+        <View
+          className={cn('flex-row items-center justify-center', spacing.row)}
+          style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+        >
           {leftIcon}
           {label ? (
             <Text className={cn('font-semibold', textSizeClasses[size], textToneClasses[variant])}>{label}</Text>

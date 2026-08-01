@@ -1,6 +1,7 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, Card, Text } from '@/components/ui';
 import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@/features/admin/hooks/useAdmin';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, TextInput, View } from 'react-native';
@@ -21,6 +22,7 @@ type FormState = typeof initialFormState;
 
 const AdminCompetitionsScreen = () => {
   const isFocused = useIsFocused();
+  const { t } = useTranslation();
   const { data, isLoading, isRefetching, refetch, error } = useAdminCompetitions();
   const addCompetition = useAddCompetition();
   const removeCompetition = useRemoveCompetition();
@@ -98,10 +100,10 @@ const AdminCompetitionsScreen = () => {
 
   const handleRemove = useCallback(
     (id: number, name: string) => {
-      Alert.alert('Remove competition', `Are you sure you want to remove ${name}?`, [
-        { text: 'Cancel', style: 'cancel' },
+      Alert.alert(t('Remove competition'), t('Are you sure you want to remove {{name}}?', { name }), [
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('Remove'),
           style: 'destructive',
           onPress: () => {
             removeCompetition.mutate(id);
@@ -109,7 +111,7 @@ const AdminCompetitionsScreen = () => {
         },
       ]);
     },
-    [removeCompetition],
+    [removeCompetition, t],
   );
 
   const isBusy = useMemo(
@@ -123,13 +125,13 @@ const AdminCompetitionsScreen = () => {
 
   return (
     <Screen safeArea>
-      <BackButton title="Competitions" />
+      <BackButton title={t('Competitions')} />
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
         <Card className="mb-6">
-          <Text className="text-text text-lg font-semibold mb-4">Add New Competition</Text>
+          <Text className="text-text text-lg font-semibold mb-4">{t('Add New Competition')}</Text>
           <View className="space-y-4">
             {[
               { key: 'id', label: 'Competition ID', keyboardType: 'numeric' },
@@ -147,23 +149,23 @@ const AdminCompetitionsScreen = () => {
               },
             ].map((field) => (
               <View key={field.key}>
-                <Text className="text-text text-sm mb-1">{field.label}</Text>
+                <Text className="text-text text-sm mb-1">{t(field.label)}</Text>
                 <TextInput
                   value={form[field.key as keyof FormState]}
                   onChangeText={(value) => handleChange(field.key as keyof FormState, value)}
                   keyboardType={field.keyboardType === 'numeric' ? 'numeric' : 'default'}
                   className="bg-background border border-border rounded-xl px-3 py-3 text-text"
-                  placeholder={field.label}
+                  placeholder={t(field.label)}
                   placeholderTextColor="#888"
                   editable={!isBusy}
                 />
               </View>
             ))}
           </View>
-          {validationError && <Text className="text-error text-sm mt-3">{validationError}</Text>}
+          {validationError && <Text className="text-error text-sm mt-3">{t(validationError)}</Text>}
           <View className="mt-4">
             <Button
-              label="Add Competition"
+              label={t('Add Competition')}
               onPress={handleSubmit}
               loading={addCompetition.isPending}
               disabled={isBusy}
@@ -173,10 +175,10 @@ const AdminCompetitionsScreen = () => {
 
         {error ? (
           <Text className="text-error text-base mb-4">
-            Unable to load competitions. Pull to refresh to try again.
+            {t('Unable to load competitions. Pull to refresh to try again.')}
           </Text>
         ) : (
-          <Text className="text-text text-sm mb-4">Showing {data?.length ?? 0} competitions.</Text>
+          <Text className="text-text text-sm mb-4">{t('Showing {{count}} competitions.', { count: data?.length ?? 0 })}</Text>
         )}
 
         <View className="space-y-4 pb-16">
@@ -186,10 +188,10 @@ const AdminCompetitionsScreen = () => {
                 <View className="flex-1 mr-4">
                   <Text className="text-text text-lg font-semibold">{competition.name}</Text>
                   <Text className="text-text/70 text-sm">{competition.area}</Text>
-                  <Text className="text-text/50 text-xs">ID: {competition.id}</Text>
+                  <Text className="text-text/50 text-xs">{t('ID: {{id}}', { id: competition.id })}</Text>
                 </View>
                 <Button
-                  label="Remove"
+                  label={t('Remove')}
                   onPress={() => handleRemove(competition.id, competition.name)}
                   variant="error"
                   disabled={isBusy}
@@ -199,13 +201,13 @@ const AdminCompetitionsScreen = () => {
 
               <View className="flex-row justify-between">
                 <View className="flex-1 mr-4">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">Logo URL</Text>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Logo URL')}</Text>
                   <Text className="text-text text-xs" numberOfLines={2}>
                     {competition.logo}
                   </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">Flag URL</Text>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Flag URL')}</Text>
                   <Text className="text-text text-xs" numberOfLines={2}>
                     {competition.flag}
                   </Text>
@@ -214,15 +216,15 @@ const AdminCompetitionsScreen = () => {
 
               <View className="flex-row justify-between mt-3">
                 <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">Type</Text>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Type')}</Text>
                   <Text className="text-text text-sm">{competition.type ?? 'N/A'}</Text>
                 </View>
                 <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">Display</Text>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Display')}</Text>
                   <Text className="text-text text-sm">{competition.current_stage ?? 'LEAGUE'}</Text>
                 </View>
                 <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">Season</Text>
+                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Season')}</Text>
                   <Text className="text-text text-sm">{competition.season_id ?? 'N/A'}</Text>
                 </View>
               </View>

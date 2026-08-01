@@ -63,9 +63,13 @@ const SettingsScreen = () => {
           contentClassName="items-center"
           className="border-error/40"
         >
-          <Text className="font-bold text-error">{t('Delete Account')}</Text>
+          <Text variant="title" tone="error">
+            {t('Delete Account')}
+          </Text>
 
-          <Text className="mt-1 text-muted">{t('Permanently delete your account and all your data.')}</Text>
+          <Text variant="bodySmall" className="text-muted">
+            {t('Permanently delete your account and all your data.')}
+          </Text>
         </Card>
       </View>
     </Screen>
