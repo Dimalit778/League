@@ -46,7 +46,7 @@ const textSizeClasses: Record<ButtonSize, string> = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-primary',
-  secondary: 'bg-surfaceSoft',
+  secondary: 'bg-subtle',
   outline: 'border border-border bg-transparent',
 
   success: 'bg-success',
@@ -55,7 +55,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const textToneClasses: Record<ButtonVariant, string> = {
-  primary: 'text-primaryForeground',
+  primary: 'text-onPrimary',
   secondary: 'text-text',
   outline: 'text-text',
 
@@ -134,7 +134,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
       )}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.primaryForeground : colors.text} size="small" />
+        <ActivityIndicator color={variant === 'primary' ? colors.onPrimary : colors.text} size="small" />
       ) : (
         <View className={cn('flex-row items-center justify-center', spacing.row, isRTL && 'flex-row-reverse')}>
           {leadingIcon}

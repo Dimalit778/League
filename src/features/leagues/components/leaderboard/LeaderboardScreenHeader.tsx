@@ -17,7 +17,7 @@ export function LeaderboardScreenHeader({ leagueName }: LeaderboardScreenHeaderP
     <View style={{ paddingTop: insets.top }} className="flex-row items-center justify-between px-4 pb-2 pt-1">
       <View>
         <Text className="text-2xl font-black text-white">{leagueName}</Text>
-        <Text className="text-sm text-[#97A7BF]">{t('League table')}</Text>
+        <Text className="text-sm text-muted">{t('League table')}</Text>
       </View>
       <Image source={images.trophyGold} contentFit="contain" style={{ width: 52, height: 52 }} />
     </View>

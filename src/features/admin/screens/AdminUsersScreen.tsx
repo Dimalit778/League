@@ -1,10 +1,9 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, Card, Text } from '@/components/ui';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import TrashIcon from '@assets/icons/TrashIcon';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Alert, FlatList, TextInput, View } from 'react-native';
 
 const AdminUsersScreen = () => {
   const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -71,14 +70,14 @@ const AdminUsersScreen = () => {
 
   if (error && !data) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background px-4">
+      <Screen safeArea padding="all" contentClassName="items-center justify-center">
         <Text className="text-center text-error">{error.message}</Text>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen safeArea>
       <BackButton title="User Management" />
       <View className="px-4 mb-4">
         <TextInput
@@ -120,24 +119,26 @@ const AdminUsersScreen = () => {
           </View>
         }
         renderItem={({ item: user }) => (
-          <View className="bg-surface border border-border rounded-2xl p-4 my-2">
+          <Card className="my-2">
             <View className="flex-row justify-between items-start mb-2">
               <View className="flex-1">
                 <Text className="text-text text-lg font-semibold mb-1">{user.full_name || 'Unnamed User'}</Text>
                 <Text className="text-muted text-sm mb-4">{user.email}</Text>
               </View>
-              <TouchableOpacity
+              <Button
                 onPress={() => handleDeleteUser(user.id, user.full_name || user.email || 'this user')}
                 disabled={deleteUserMutation.isPending}
-                className="p-2 bg-red-500/10 rounded-lg"
+                accessibilityLabel="Delete user"
+                variant="secondary"
+                size="icon"
               >
                 <TrashIcon size={20} color="#ef4444" />
-              </TouchableOpacity>
+              </Button>
             </View>
-          </View>
+          </Card>
         )}
       />
-    </SafeAreaView>
+    </Screen>
   );
 };
 

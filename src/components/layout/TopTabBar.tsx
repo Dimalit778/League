@@ -20,7 +20,7 @@ export function TopTabBar({ title }: TopTabBarProps) {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="My leagues"
-        className="h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surfaceSoft"
+        className="h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-subtle"
         hitSlop={4}
         onPress={() => router.replace('/(app)/(user)/leagues/my-leagues')}
       >

@@ -1,10 +1,9 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, Text } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, Card, Text } from '@/components/ui';
 import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const initialFormState = {
   id: '',
@@ -123,13 +122,13 @@ const AdminCompetitionsScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen safeArea>
       <BackButton title="Competitions" />
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
-        <View className="bg-surface border border-border rounded-2xl p-4 mb-6">
+        <Card className="mb-6">
           <Text className="text-text text-lg font-semibold mb-4">Add New Competition</Text>
           <View className="space-y-4">
             {[
@@ -170,7 +169,7 @@ const AdminCompetitionsScreen = () => {
               disabled={isBusy}
             />
           </View>
-        </View>
+        </Card>
 
         {error ? (
           <Text className="text-error text-base mb-4">
@@ -182,7 +181,7 @@ const AdminCompetitionsScreen = () => {
 
         <View className="space-y-4 pb-16">
           {data?.map((competition) => (
-            <View key={competition.id} className="bg-surface border border-border rounded-2xl p-4">
+            <Card key={competition.id}>
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1 mr-4">
                   <Text className="text-text text-lg font-semibold">{competition.name}</Text>
@@ -227,11 +226,11 @@ const AdminCompetitionsScreen = () => {
                   <Text className="text-text text-sm">{competition.season_id ?? 'N/A'}</Text>
                 </View>
               </View>
-            </View>
+            </Card>
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

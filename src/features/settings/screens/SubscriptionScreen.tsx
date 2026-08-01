@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, Text } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useManageSubscription, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -33,7 +33,6 @@ export default function SubscriptionScreen() {
 
   return (
     <Screen edges={['top']}>
-      <BackButton title={t('Subscription')} />
       <View className="flex-1 px-4 pt-6 gap-4">
         <View className="rounded-2xl border border-border bg-surface p-5 gap-3">
           <Text className="text-2xl">{subscription.isActive ? t('PRO') : t('FREE')}</Text>
@@ -43,9 +42,7 @@ export default function SubscriptionScreen() {
               : t('Upgrade to create more leagues and unlock more competitions.')}
           </Text>
           {isOffline && (
-            <Text className="text-sm text-muted">
-              {t('Subscription status may be outdated while offline.')}
-            </Text>
+            <Text className="text-sm text-muted">{t('Subscription status may be outdated while offline.')}</Text>
           )}
         </View>
 

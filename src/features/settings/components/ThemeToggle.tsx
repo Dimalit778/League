@@ -46,7 +46,7 @@ const ThemeToggle = () => {
   return (
     <Pressable
       onPress={toggleTheme}
-      className="relative flex-row items-center rounded-full bg-surfaceSecondary p-0.5"
+      className="relative flex-row items-center rounded-full bg-subtle p-0.5"
       accessible={true}
       accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} theme`}
       accessibilityRole="switch"

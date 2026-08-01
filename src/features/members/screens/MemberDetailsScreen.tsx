@@ -1,5 +1,5 @@
 import { Error, Screen } from '@/components/layout';
-import { Avatar, BackButton, Card, EmptyState, Text } from '@/components/ui';
+import { AvatarImage, BackButton, Card, EmptyState, Text } from '@/components/ui';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -49,13 +49,9 @@ export default function MemberDetailsScreen() {
       <BackButton />
 
       <Card variant="elevated" contentClassName="items-center">
-        <Avatar
-          source={member.avatar_url}
-          fallback={member.nickname}
-          accessibilityLabel={t('{{name}} avatar', { name: member.nickname })}
-          size="xl"
-          bordered
-        />
+        <View className="h-24 w-24 overflow-hidden rounded-full border-2 border-border p-0.5">
+          <AvatarImage path={member.avatar_url} nickname={member.nickname} />
+        </View>
         <View className="mt-3 items-center">
           <Text variant="titleLarge" className="text-center">
             {member.nickname}

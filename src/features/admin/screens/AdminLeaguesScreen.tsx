@@ -1,10 +1,9 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Text } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Card, Text } from '@/components/ui';
 import { useAdminLeagues } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AdminLeaguesScreen = () => {
   const isFocused = useIsFocused();
@@ -19,7 +18,7 @@ const AdminLeaguesScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen safeArea>
       <BackButton title="League Management" />
       <ScrollView
         className="flex-1 px-4 pt-4"
@@ -33,7 +32,7 @@ const AdminLeaguesScreen = () => {
 
         <View className="space-y-4 pb-16">
           {data?.map((league) => (
-            <View key={league.id} className="bg-surface border border-border rounded-2xl p-4">
+            <Card key={league.id}>
               <View className="flex-row justify-between items-start mb-4">
                 <View className="flex-1 mr-4">
                   <Text className="text-text text-lg font-semibold">{league.name}</Text>
@@ -68,11 +67,11 @@ const AdminLeaguesScreen = () => {
                   <Text className="text-text text-sm">{new Date(league.created_at).toLocaleString()}</Text>
                 </View>
               </View>
-            </View>
+            </Card>
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

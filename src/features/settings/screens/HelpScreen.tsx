@@ -1,12 +1,10 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Card } from '@/components/ui';
-import { Text } from '@/components/ui/Text';
+import { Button, Card, Text } from '@/components/ui';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
-import { Linking, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Linking, View } from 'react-native';
+
 const SUPPORT_EMAIL = 'support@leaguechampion.app';
 const HelpScreen = () => {
   const handleEmailPress = () => {
@@ -140,101 +138,66 @@ const HelpScreen = () => {
       ],
     },
   ];
-
-  const edges = useSafeAreaInsets();
-
   return (
-    <Screen edges={['top', 'bottom']}>
-      <BackButton title={t('Help & Support')} />
-      <ScrollView
-        className="flex-1 "
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 10, paddingHorizontal: 10 }}
-      >
-        {/* Welcome Section */}
-        <Card className="mb-6">
-          <Text className="text-xl mb-2">
-            {t('Welcome to League Champion')}
-          </Text>
-          <Text className="text-base leading-6">
-            {t(
-              'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
-            )}
-          </Text>
-        </Card>
-
-        {/* Help Sections */}
-        {helpSections.map((section) => (
-          <View key={section.title} className="mb-6">
-            <Text className="text-xl mb-3">
-              {t(section.title)}
-            </Text>
-            {section.items.map((item, index) => (
-              <Card key={index} className="mb-3">
-                <Text className="text-base mb-2">
-                  {t(item.question)}
-                </Text>
-                <Text className="text-base leading-5 text-muted">
-                  {t(item.answer)}
-                </Text>
-              </Card>
-            ))}
-          </View>
-        ))}
-
-        {/* Contact Support */}
-        <Card className="mb-6">
-          <Text className="text-xl mb-3">
-            {t('Contact Support')}
-          </Text>
-          <Text className="text-base leading-6 text-muted mb-4">
-            {t(
-              "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
-            )}
-          </Text>
-          <TouchableOpacity
-            onPress={handleEmailPress}
-            className="flex-row items-center justify-center bg-primary rounded-lg py-3 px-4"
-          >
-            <FontAwesome6 name="envelope" size={16} color="white" />
-            <Text className="text-base text-white ml-2">
-              {t('Email Support')}{' '}
-            </Text>
-          </TouchableOpacity>
-          <Text className="text-xs text-muted mt-2 text-center">
-            {SUPPORT_EMAIL}
-          </Text>
-        </Card>
-
-        {/* App Information */}
-        <View className="mb-6">
-          <Text className="text-xl mb-3">
-            {t('App Information')}
-          </Text>
-          <Card>
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-base text-muted">
-                {t('Version')}
-              </Text>
-              <Text className="text-base text-text">
-                1.0.0
-              </Text>
-            </View>
-            <View className="flex-row justify-between items-center">
-              <Text className="text-base text-muted">
-                {t('Platform')}
-              </Text>
-              <Text className="text-base text-text">
-                {t('iOS & Android')}
-              </Text>
-            </View>
-          </Card>
-        </View>
-
-        <Text className="text-xs text-muted">
-          {t("Thank you for using League! We're constantly working to improve your experience.")}
+    <Screen scroll padding="horizontal" bottomInset>
+      {/* Welcome Section */}
+      <Card className="mb-6">
+        <Text className="text-xl mb-2">{t('Welcome to League Champion')}</Text>
+        <Text className="text-base leading-6">
+          {t(
+            'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
+          )}
         </Text>
-      </ScrollView>
+      </Card>
+
+      {/* Help Sections */}
+      {helpSections.map((section) => (
+        <View key={section.title} className="mb-6">
+          <Text className="text-xl mb-3">{t(section.title)}</Text>
+          {section.items.map((item, index) => (
+            <Card key={index} className="mb-3">
+              <Text className="text-base mb-2">{t(item.question)}</Text>
+              <Text className="text-base leading-5 text-muted">{t(item.answer)}</Text>
+            </Card>
+          ))}
+        </View>
+      ))}
+
+      {/* Contact Support */}
+      <Card className="mb-6">
+        <Text className="text-xl mb-3">{t('Contact Support')}</Text>
+        <Text className="text-base leading-6 text-muted mb-4">
+          {t(
+            "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
+          )}
+        </Text>
+        <Button
+          onPress={handleEmailPress}
+          label={t('Email Support')}
+          leftIcon={<FontAwesome6 name="envelope" size={16} color="white" />}
+          fullWidth
+        />
+        <Text className="text-xs text-muted mt-2 text-center">{SUPPORT_EMAIL}</Text>
+      </Card>
+
+      {/* App Information */}
+      <View className="mb-6">
+        <Text className="text-xl mb-3">{t('App Information')}</Text>
+        <Card>
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-base text-muted">{t('Version')}</Text>
+            <Text className="text-base text-text">1.0.0</Text>
+          </View>
+          <View className="flex-row justify-between items-center">
+            <Text className="text-base text-muted">{t('Platform')}</Text>
+            <Text className="text-base text-text">{t('iOS & Android')}</Text>
+          </View>
+        </Card>
+      </View>
+
+      <Text className="text-xs text-muted">
+        {t("Thank you for using League! We're constantly working to improve your experience.")}
+      </Text>
     </Screen>
   );
 };

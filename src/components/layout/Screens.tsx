@@ -9,7 +9,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { type Edge, SafeAreaView } from 'react-native-safe-area-context';
+import { type Edge, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type ScreenProps = {
   children: ReactNode;
@@ -23,7 +23,8 @@ export type ScreenProps = {
   refreshControl?: ReactElement<RefreshControlProps>;
   keyboardShouldPersistTaps?: ScrollViewProps['keyboardShouldPersistTaps'];
   contentContainerStyle?: StyleProp<ViewStyle>;
-  bottomInset?: number;
+  /** `true` → safe-area bottom; number → explicit paddingBottom */
+  bottomInset?: boolean | number;
   showsVerticalScrollIndicator?: boolean;
 };
 
@@ -45,13 +46,16 @@ export function Screen({
   refreshControl,
   keyboardShouldPersistTaps,
   contentContainerStyle,
-  bottomInset = 0,
+  bottomInset,
   showsVerticalScrollIndicator = false,
 }: ScreenProps) {
+  const insets = useSafeAreaInsets();
   const usesSafeArea = safeArea ?? edges !== undefined;
   const Root = usesSafeArea ? SafeAreaView : View;
   const rootClassName = cn('flex-1 bg-background', className);
   const contentClass = cn('mx-auto w-full', screenWidths[width], paddingClasses[padding], contentClassName);
+  const paddingBottom = bottomInset === true ? insets.bottom : typeof bottomInset === 'number' ? bottomInset : 0;
+  const bottomInsetStyle = paddingBottom > 0 ? { paddingBottom } : undefined;
 
   if (scroll) {
     return (
@@ -59,7 +63,7 @@ export function Screen({
         <ScrollView
           className="flex-1"
           contentContainerClassName={contentClass}
-          contentContainerStyle={[bottomInset > 0 ? { paddingBottom: bottomInset } : null, contentContainerStyle]}
+          contentContainerStyle={[bottomInsetStyle, contentContainerStyle]}
           refreshControl={refreshControl}
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
@@ -72,10 +76,7 @@ export function Screen({
 
   return (
     <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
-      <View
-        className={cn('flex-1 min-h-0', contentClass)}
-        style={bottomInset > 0 ? { paddingBottom: bottomInset } : undefined}
-      >
+      <View className={cn('flex-1 min-h-0', contentClass)} style={bottomInsetStyle}>
         {children}
       </View>
     </Root>

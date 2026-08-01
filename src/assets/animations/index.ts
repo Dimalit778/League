@@ -1,3 +1,7 @@
+import SliderBallAnimation from './Slider-ball.lottie';
+import successAnimation from './Success-animation.lottie';
+
 export const animations = {
-    success: require('./Success-animation.lottie'),
-  };
+  success: successAnimation,
+  pending: SliderBallAnimation,
+} as const;

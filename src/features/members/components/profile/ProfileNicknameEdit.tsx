@@ -79,7 +79,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
 
   return (
     <View className="mx-3 mt-3 rounded-xl border border-border bg-background p-4">
-      <Text className="mb-2 text-xs text-[#97A7BF]">{t('Edit nickname')}</Text>
+      <Text className="mb-2 text-xs text-muted">{t('Edit nickname')}</Text>
       <Controller
         control={control}
         name="nickname"

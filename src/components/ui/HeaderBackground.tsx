@@ -6,26 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode, useMemo } from 'react';
 import { ColorValue, View } from 'react-native';
 
-const DARK_GRADIENT = ['#0B1B33', '#081325'] as const;
-
-/** Vignette: darker at edges, grass clear in the middle. */
-const DARK_OVERLAY = [
-  'rgba(6,12,24,0.9)',
-  'rgba(6,12,24,0.9)',
-  'rgba(6,12,24,0.1)',
-  'rgba(6,12,24,0.45)',
-  'rgba(6,12,24,0.92)',
-] as const;
-const DARK_OVERLAY_LOCATIONS = [0, 0.2, 0.5, 0.8, 1] as const;
-
-const LIGHT_OVERLAY = [
-  'rgba(255,255,255,0.9)',
-  'rgba(255,255,255,0.1)',
-  'rgba(255,255,255,0.15)',
-  'rgba(255,255,255,0.2)',
-  'rgba(255,255,255,0.92)',
-] as const;
-const LIGHT_OVERLAY_LOCATIONS = [0, 0.2, 0.5, 0.8, 1] as const;
+const DARK_OVERLAY = ['rgba(7,21,37,0.78)', 'rgba(7,21,37,0.62)', 'rgba(7,21,37,0.84)'] as const;
+const LIGHT_OVERLAY = ['rgba(248,249,247,0.72)', 'rgba(248,249,247,0.52)', 'rgba(248,249,247,0.82)'] as const;
+const OVERLAY_LOCATIONS = [0, 0.5, 1] as const;
 
 type HeaderBackgroundProps = {
   children: ReactNode;
@@ -35,17 +18,10 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
   const { theme, colors } = useThemeTokens();
   const isLight = theme === 'light';
 
-  const gradientColors = useMemo<readonly [ColorValue, ColorValue, ...ColorValue[]]>(
-    () => (isLight ? [colors.surfaceSoft, colors.surface, colors.background] : DARK_GRADIENT),
-    [colors.background, colors.surface, colors.surfaceSoft, isLight],
-  );
-
   const overlayColors = useMemo<readonly [ColorValue, ColorValue, ...ColorValue[]]>(
     () => (isLight ? LIGHT_OVERLAY : DARK_OVERLAY),
     [isLight],
   );
-  const overlayLocations = isLight ? LIGHT_OVERLAY_LOCATIONS : DARK_OVERLAY_LOCATIONS;
-
   return (
     <View
       className={radius.xl}
@@ -61,7 +37,7 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
       }}
     >
       <View className={`${radius.xl} overflow-hidden`}>
-        <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <View style={{ backgroundColor: colors.surface }}>
           <ExpoImage
             source={images.pitchGrass}
             contentFit="cover"
@@ -71,13 +47,13 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
               right: 0,
               bottom: 0,
               left: 0,
-              opacity: 0.4,
+              opacity: isLight ? 0.82 : 0.68,
             }}
           />
 
           <LinearGradient
             colors={overlayColors}
-            locations={[...overlayLocations]}
+            locations={[...OVERLAY_LOCATIONS]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={{
@@ -90,7 +66,7 @@ export function HeaderBackground({ children }: HeaderBackgroundProps) {
           />
 
           {children}
-        </LinearGradient>
+        </View>
       </View>
     </View>
   );

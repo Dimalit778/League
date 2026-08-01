@@ -98,7 +98,7 @@ export default function SignInForm() {
       />
 
       <Link href="/sendResetLink" asChild>
-        <Text className="text-sm text-secondary text-center">
+        <Text className="text-sm text-info text-center">
           {t('Forgot Password')}
         </Text>
       </Link>

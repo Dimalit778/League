@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Card, Text } from '@/components/ui';
 import { MemberStats as MemberStatsType } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,8 +17,9 @@ type Achievement = {
 
 function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
-    <View
-      className="flex-1 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A]"
+    <Card
+      padding="none"
+      className="flex-1 overflow-hidden"
       style={{ opacity: achievement.unlocked ? 1 : 0.45 }}
     >
       <LinearGradient
@@ -26,13 +27,13 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
         style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
       />
       <View className="items-center px-2 py-4">
-        <View className="mb-2 h-12 w-12 items-center justify-center rounded-xl border border-[#D5B13F]/30 bg-[#1A2740]">
+        <View className="mb-2 h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-subtle">
           {achievement.icon}
         </View>
-        <Text className="text-center text-sm font-bold text-white">{achievement.title}</Text>
-        <Text className="mt-1 text-center text-[10px] leading-4 text-[#97A7BF]">{achievement.description}</Text>
+        <Text className="text-center text-sm font-bold text-text">{achievement.title}</Text>
+        <Text className="mt-1 text-center text-[10px] leading-4 text-muted">{achievement.description}</Text>
       </View>
-    </View>
+    </Card>
   );
 }
 
@@ -79,7 +80,7 @@ export function Achievements({ stats }: AchievementsProps) {
 
   return (
     <View className="mx-3 mt-5">
-      <Text className="mb-3 text-base font-bold text-white">{t('Your achievements')}</Text>
+      <Text variant="subtitle" className="mb-3">{t('Your achievements')}</Text>
       <View className="flex-row gap-2">
         {achievements.map((achievement) => (
           <AchievementCard key={achievement.id} achievement={achievement} />

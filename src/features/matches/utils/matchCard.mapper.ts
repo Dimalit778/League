@@ -10,7 +10,7 @@ export type MatchCardTeam = {
   score: number | null;
 };
 
-export type PredictionDisplayStatus = 'none' | 'pending' | 'correct' | 'incorrect';
+export type PredictionDisplayStatus = 'none' | 'correct' | 'incorrect';
 
 export type MatchCardData = {
   id: number;
@@ -35,7 +35,7 @@ function getPredictionDisplayStatus(
   }
 
   if (!isMatchFinished(match.status) || !prediction.is_finished) {
-    return 'pending';
+    return 'none';
   }
 
   return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';

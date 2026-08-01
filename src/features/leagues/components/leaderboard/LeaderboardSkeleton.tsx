@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TopThreeSkeleton = () => {
   return (
-    <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] p-4">
+    <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-border bg-surface p-4">
       <AnimatedSkeleton style={{ width: 60, height: 14, marginBottom: 16, borderRadius: 4 }} />
       <View className="flex-row items-end justify-center gap-3">
         <View className="flex-1 items-center">
@@ -51,7 +51,7 @@ export default function LeagueSkeleton() {
         <AnimatedSkeleton style={{ width: 80, height: 14, borderRadius: 4 }} />
       </View>
 
-      <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] px-4 py-3">
+      <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-border bg-surface px-4 py-3">
         <View className="flex-row items-center justify-between">
           {Array.from({ length: 3 }).map((_, i) => (
             <View key={i} className="flex-1 items-center">

@@ -1,10 +1,9 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Text } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Card, Text } from '@/components/ui';
 import { useAdminPredictions } from '@/features/admin/hooks/useAdmin';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AdminPredictionsScreen = () => {
   const isFocused = useIsFocused();
@@ -19,7 +18,7 @@ const AdminPredictionsScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen safeArea>
       <BackButton title="Predictions" />
       <ScrollView
         className="flex-1 px-4 pt-4"
@@ -35,7 +34,7 @@ const AdminPredictionsScreen = () => {
 
         <View className="space-y-4 pb-16">
           {data?.map((prediction) => (
-            <View key={prediction.id} className="bg-surface border border-border rounded-2xl p-4">
+            <Card key={prediction.id}>
               <View className="flex-row justify-between items-start mb-3">
                 <View className="flex-1 mr-4">
                   <Text className="text-text text-lg font-semibold">
@@ -75,11 +74,11 @@ const AdminPredictionsScreen = () => {
                   <Text className="text-text text-sm">{new Date(prediction.created_at ?? '').toLocaleString()}</Text>
                 </View>
               </View>
-            </View>
+            </Card>
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 };
 

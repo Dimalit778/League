@@ -16,7 +16,7 @@ const SettingsRow = ({ icon, label, rightContent, showDivider = true, onPress }:
     <>
       <View className="h-14 flex-row items-center justify-between px-3">
         <View className="flex-row items-center gap-3">
-          <View className="items-center justify-center bg-surfaceSecondary rounded-md p-2">{icon}</View>
+          <View className="items-center justify-center bg-subtle rounded-md p-2">{icon}</View>
           <Text>{label}</Text>
         </View>
 

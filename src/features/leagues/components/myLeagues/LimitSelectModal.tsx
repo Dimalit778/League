@@ -70,7 +70,7 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
         </Text>
       </View>
       <View className="mt-3 flex-row items-center justify-between">
-        <View className="bg-surfaceSecondary rounded-lg px-3 py-2">
+        <View className="bg-subtle rounded-lg px-3 py-2">
           <Text className={`font-semibold ${selectedCount > maxLeagues ? 'text-error' : 'text-text'}`}>
             {selectedCount}/{maxLeagues}
           </Text>

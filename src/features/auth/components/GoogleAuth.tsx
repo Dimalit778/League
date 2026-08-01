@@ -5,9 +5,9 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useEffect, useState } from 'react';
-import { Alert, Platform, Pressable } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
-import { Text } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -115,19 +115,15 @@ const GoogleAuth = ({
 
   return (
     <>
-      <Pressable
+      <Button
+        testID="google-sign-in-button"
         onPress={handleGoogleSignIn}
         disabled={isLoading}
-        className="px-4 rounded-md flex-row items-center justify-center gap-x-4 bg-black"
-        style={{ height: 44 }}
-        accessibilityRole="button"
-        accessibilityLabel={label}
-      >
-        <GoogleLogoIcon size={22} />
-        <Text numberOfLines={1} className="font-semibold text-text">
-          {label}
-        </Text>
-      </Pressable>
+        label={label}
+        leftIcon={<GoogleLogoIcon size={22} />}
+        variant="secondary"
+        fullWidth
+      />
       {errorMessage && <Text className="text-error text-sm text-center mt-2">{errorMessage}</Text>}
     </>
   );

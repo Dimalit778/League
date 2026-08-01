@@ -28,7 +28,7 @@ function StatItem({
         {icon}
         <Text className={`text-base font-bold ${valueClassName ?? 'text-white'}`}>{value}</Text>
       </View>
-      <Text className="text-[10px] uppercase tracking-wide text-[#97A7BF]">{label}</Text>
+      <Text className="text-[10px] uppercase tracking-wide text-muted">{label}</Text>
     </View>
   );
 }
@@ -37,7 +37,7 @@ export function LeaderboardStatsBar({ membersCount, yourRank }: LeaderboardStats
   const { t } = useTranslation();
 
   return (
-    <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-[#223554] bg-[#101A2A] px-4 py-3">
+    <View className="mx-3 mb-3 overflow-hidden rounded-2xl border border-border bg-surface px-4 py-3">
       <View className="flex-row items-center">
         <StatItem icon={<Users size={14} color={GOLD} />} label={t('Members')} value={String(membersCount)} />
         <View className="mx-2 h-8 w-px bg-[#223554]" />
@@ -47,7 +47,7 @@ export function LeaderboardStatsBar({ membersCount, yourRank }: LeaderboardStats
           icon={<BarChart3 size={14} color={GOLD} />}
           label={t('Your rank')}
           value={yourRank != null ? `#${yourRank}` : '—'}
-          valueClassName="text-[#E3B421]"
+          valueClassName="text-primary"
         />
       </View>
     </View>

@@ -33,14 +33,14 @@ const fontClasses: Record<FontFamily, string> = {
 
 const toneClasses: Record<TextTone, string> = {
   default: 'text-text',
-  secondary: 'text-textSecondary',
+  secondary: 'text-muted',
   muted: 'text-muted',
   primary: 'text-primary',
   success: 'text-success',
   warning: 'text-warning',
   error: 'text-error',
   info: 'text-info',
-  inverse: 'text-primaryForeground',
+  inverse: 'text-onPrimary',
 };
 
 export const Text = forwardRef<RNText, AppTextProps>(function Text(

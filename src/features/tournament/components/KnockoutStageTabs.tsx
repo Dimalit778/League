@@ -1,7 +1,6 @@
-import { Text } from '@/components/ui';
+import { Chip } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativewind/nativeWind';
-import { Pressable, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { WCKnockoutStage } from '../types';
 
 const STAGES: { key: WCKnockoutStage; label: string }[] = [
@@ -27,16 +26,13 @@ export default function KnockoutStageTabs({ selected, onSelect }: Props) {
       {STAGES.map((s) => {
         const active = selected === s.key;
         return (
-          <Pressable
+          <Chip
             key={s.key}
             onPress={() => onSelect(s.key)}
-            className={cn(
-              'rounded-lg justify-center items-center mx-1 px-4 py-1.5',
-              active ? 'bg-primary' : 'border border-border',
-            )}
-          >
-            <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>{t(s.label)}</Text>
-          </Pressable>
+            label={t(s.label)}
+            variant={active ? 'selected' : 'default'}
+            className="mx-1"
+          />
         );
       })}
     </ScrollView>

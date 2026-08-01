@@ -110,7 +110,7 @@ export function ProfileHeroCard() {
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel={t('Manage League')}
-            className="absolute top-2 end-2 z-10 h-9 w-9 items-center justify-center rounded-full bg-surfaceSecondary"
+            className="absolute top-2 end-2 z-10 h-9 w-9 items-center justify-center rounded-full bg-subtle"
             hitSlop={6}
           >
             <Settings size={18} color={colors.primary} strokeWidth={2} />
@@ -120,8 +120,8 @@ export function ProfileHeroCard() {
         <View className="flex-row items-center gap-4">
           {/* Avatar with gold ring */}
           <View className="relative">
-            <View className="h-24 w-24 items-center justify-center rounded-full border-2 bg-surfaceSecondary border-primary">
-              <View className="h-[88px] w-[88px] overflow-hidden rounded-full bg-[#091425]">
+            <View className="h-24 w-24 items-center justify-center rounded-full border-2 bg-subtle border-primary">
+              <View className="h-[88px] w-[88px] overflow-hidden rounded-full bg-background">
                 {previewImage ? (
                   <ExpoImage
                     source={{ uri: previewImage }}
@@ -141,7 +141,7 @@ export function ProfileHeroCard() {
                 <TouchableOpacity
                   onPress={handleCancelPreview}
                   disabled={uploadImage.isPending}
-                  className="absolute -bottom-1 -left-1 rounded-full border-2 border-border bg-surfaceSecondary p-2"
+                  className="absolute -bottom-1 -left-1 rounded-full border-2 border-border bg-subtle p-2"
                   accessibilityLabel={t('Cancel image selection')}
                 >
                   <FontAwesome6 name="xmark" size={12} color="white" />
@@ -149,7 +149,7 @@ export function ProfileHeroCard() {
                 <TouchableOpacity
                   onPress={handleSavePreview}
                   disabled={uploadImage.isPending}
-                  className="absolute -top-1 -right-1 rounded-full border-2 border-border bg-surfaceSecondary p-2"
+                  className="absolute -top-1 -right-1 rounded-full border-2 border-border bg-subtle p-2"
                   accessibilityLabel={t('Save profile picture')}
                 >
                   <FontAwesome6 name="check" size={12} color="white" />
@@ -159,7 +159,7 @@ export function ProfileHeroCard() {
               <TouchableOpacity
                 onPress={handleImagePicker}
                 disabled={uploadImage.isPending || deleteImage.isPending}
-                className="absolute -bottom-1 -right-1 h-8 w-8 items-center justify-center rounded-full bg-surfaceSecondary border border-primary "
+                className="absolute -bottom-1 -right-1 h-8 w-8 items-center justify-center rounded-full bg-subtle border border-primary "
                 accessibilityLabel={t('Change profile picture')}
               >
                 <Camera size={18} color={colors.primary} strokeWidth={2.5} />

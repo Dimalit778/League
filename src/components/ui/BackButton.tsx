@@ -7,7 +7,7 @@ import { Text } from './Text';
 
 interface BackButtonProps {
   title?: string;
-  textColor?: 'text-text' | 'text-primary' | 'text-secondary';
+  textColor?: 'text-text' | 'text-primary' | 'text-info';
   includeSafeArea?: boolean;
 }
 

@@ -35,7 +35,7 @@ export const LeagueDetailsSection = ({
     <Card>
       {/* Header */}
       <View className="flex-row items-center gap-3">
-        <View className="h-10 w-10 items-center justify-center rounded-full border border-border bg-surfaceSecondary">
+        <View className="h-10 w-10 items-center justify-center rounded-full border border-border bg-subtle">
           <Shield size={18} color={colors.primary} />
         </View>
         <Text className="flex-1 text-base font-bold text-text">{t('League details')}</Text>

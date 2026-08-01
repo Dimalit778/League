@@ -9,27 +9,17 @@ import {
 
 const semanticColorKeys: (keyof ThemeColors)[] = [
   'primary',
-  'primaryForeground',
-  'primarySoft',
+  'onPrimary',
   'background',
-  'backgroundSecondary',
   'surface',
-  'surfaceSoft',
-  'surfaceElevated',
+  'subtle',
   'text',
-  'textSecondary',
   'muted',
-  'mutedForeground',
   'border',
-  'borderStrong',
   'success',
-  'successSoft',
   'warning',
-  'warningSoft',
   'error',
-  'errorSoft',
   'info',
-  'infoSoft',
   'overlay',
 ];
 
@@ -84,10 +74,9 @@ describe('themeTokens', () => {
     expect(themeTokens.dark.colors).toHaveProperty('primary');
   });
 
-  it('keeps compatibility aliases mapped to semantic colors', () => {
-    expect(themeTokens.light.colors.soft).toBe(themeTokens.light.colors.backgroundSecondary);
-    expect(themeTokens.dark.colors.surfaceSecondary).toBe(themeTokens.dark.colors.surfaceSoft);
-    expect(themeTokens.dark.colors.secondary).toBe(themeTokens.dark.colors.info);
+  it('keeps the palette intentionally small', () => {
+    expect(Object.keys(themeTokens.light.colors)).toEqual(semanticColorKeys);
+    expect(Object.keys(themeTokens.dark.colors)).toEqual(semanticColorKeys);
   });
 
   it('uses the font family names registered by Expo', () => {
@@ -102,9 +91,9 @@ describe('NativeWind variables', () => {
   it('maps every semantic color to a CSS variable', () => {
     const variables = getNativeWindVariables(themeTokens.dark);
 
-    expect(Object.keys(variables)).toHaveLength(24);
+    expect(Object.keys(variables)).toHaveLength(semanticColorKeys.length);
     expect(variables['--color-primary']).toBe(themeTokens.dark.colors.primary);
-    expect(variables['--color-background-secondary']).toBe(themeTokens.dark.colors.backgroundSecondary);
+    expect(variables['--color-subtle']).toBe(themeTokens.dark.colors.subtle);
     expect(variables['--color-overlay']).toBe(themeTokens.dark.colors.overlay);
   });
 });

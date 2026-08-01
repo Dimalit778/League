@@ -44,7 +44,7 @@ export function ProfileSkeleton() {
         contentContainerStyle={{ paddingBottom: bottomTabsInset + 16 }}
       >
         {/* ProfileHeroCard */}
-        <View className="mx-3 mt-1 overflow-hidden rounded-3xl border border-border bg-surfaceSecondary">
+        <View className="mx-3 mt-1 overflow-hidden rounded-3xl border border-border bg-subtle">
           <View className="p-4">
             <View className="flex-row items-center gap-4">
               <View className="h-24 w-24 items-center justify-center rounded-full border-2 border-border bg-surface">

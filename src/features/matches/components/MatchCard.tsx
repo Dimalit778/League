@@ -66,29 +66,32 @@ const PredictionBlock = ({
   prediction,
   predictionStatus,
   top,
+  height,
 }: {
   prediction?: { home?: number | null; away?: number | null } | null;
   predictionStatus: PredictionDisplayStatus;
   top: number;
+  height: number;
 }) => {
-  const predictionText =
+  const { colors } = useThemeTokens();
+  const hasPrediction =
     prediction?.home !== null &&
     prediction?.home !== undefined &&
     prediction?.away !== null &&
-    prediction?.away !== undefined ? (
-      `${prediction?.home} - ${prediction?.away}`
-    ) : (
-      <CirclePlus size={20} color="grey" strokeWidth={1.6} />
-    );
+    prediction?.away !== undefined;
 
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
 
   return (
-    <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <Text className={`${predictionTextClass} font-semibold`} numberOfLines={1}>
-        {predictionText}
-      </Text>
+    <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top, height }}>
+      {hasPrediction ? (
+        <Text className={`${predictionTextClass} font-semibold leading-5`} numberOfLines={1}>
+          {`${prediction.home} - ${prediction.away}`}
+        </Text>
+      ) : (
+        <CirclePlus size={20} color={colors.muted} strokeWidth={1.8} />
+      )}
     </View>
   );
 };
@@ -168,6 +171,7 @@ export const MatchCard = memo(function MatchCard({
     contentTop: mainContentTop,
     headerTop,
     predictionTop,
+    predictionHeight,
     logoBoxSize,
   } = getMatchCardMetrics(screenWidth);
 
@@ -176,8 +180,6 @@ export const MatchCard = memo(function MatchCard({
   const logoContentFit = logoVariant === 'flag' ? 'cover' : 'contain';
 
   const hasScore = home.score !== null && home.score !== undefined && away.score !== null && away.score !== undefined;
-
-  const isFinished = status === 'FINISHED';
 
   const scoreLabel = hasScore ? `${home.score} - ${away.score}` : (time ?? '');
 
@@ -188,7 +190,7 @@ export const MatchCard = memo(function MatchCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${id}`))}
-      className={` w-full items-center ${isFinished ? 'opacity-60' : ''}`}
+      className="w-full items-center"
     >
       <View
         style={{
@@ -233,7 +235,12 @@ export const MatchCard = memo(function MatchCard({
           />
         </View>
 
-        <PredictionBlock prediction={prediction} predictionStatus={predictionStatus} top={predictionTop} />
+        <PredictionBlock
+          prediction={prediction}
+          predictionStatus={predictionStatus}
+          top={predictionTop}
+          height={predictionHeight}
+        />
       </View>
     </Pressable>
   );

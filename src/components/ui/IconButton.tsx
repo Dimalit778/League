@@ -26,10 +26,10 @@ const defaultIconSizes: Record<IconButtonSize, number> = { sm: 18, md: 20, lg: 2
 
 const variantClasses: Record<IconButtonVariant, string> = {
   ghost: 'bg-transparent',
-  soft: 'bg-surfaceSoft',
+  soft: 'bg-subtle',
   outline: 'border border-border bg-transparent',
   primary: 'bg-primary',
-  danger: 'bg-errorSoft',
+  danger: 'bg-subtle',
 };
 
 export const IconButton = forwardRef<View, IconButtonProps>(function IconButton(
@@ -41,7 +41,7 @@ export const IconButton = forwardRef<View, IconButtonProps>(function IconButton(
     ghost: colors.text,
     soft: colors.text,
     outline: colors.text,
-    primary: colors.primaryForeground,
+    primary: colors.onPrimary,
     danger: colors.error,
   }[variant];
 

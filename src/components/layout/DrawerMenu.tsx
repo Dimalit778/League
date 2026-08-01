@@ -69,7 +69,7 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
               <MenuIcon size={24} color={colors.primary} />
             </TouchableOpacity>
             {/* Navigation Items */}
-            <View className="flex-1 pt-4 bg-secondary">
+            <View className="flex-1 pt-4 bg-info">
               {drawerRoutes.map((route) => {
                 const IconComponent = route.icon;
                 return (

@@ -31,7 +31,7 @@ export default function LeaguesUsageCard({
         >
           <View
             style={{ width: progressWidth }}
-            className={`h-full rounded-full ${reachedLimit ? 'bg-yellow-500' : 'bg-primary'}`}
+            className={`h-full rounded-full ${reachedLimit ? 'bg-warning' : 'bg-primary'}`}
           />
         </View>
 
@@ -43,7 +43,7 @@ export default function LeaguesUsageCard({
               +{inactiveCount}
             </Text>
           )}
-          <Text className={`font-bold ${reachedLimit ? 'text-yellow-500' : 'text-text'}`}>
+          <Text className={`font-bold ${reachedLimit ? 'text-warning' : 'text-text'}`}>
             {leaguesCount}
           </Text>
           <Text className="text-muted">/</Text>

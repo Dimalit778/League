@@ -1,6 +1,6 @@
-import { LockedBadge, Text } from '@/components/ui';
+import { Card, LockedBadge, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 type MemberOptionProps = {
   value: number;
@@ -23,7 +23,7 @@ export default function MemberOption({
   const isActive = membersCount === value;
 
   return (
-    <Pressable
+    <Card
       onPress={async () => {
         if (locked) {
           await onLockedPress();
@@ -31,7 +31,8 @@ export default function MemberOption({
         }
         onSelect(value);
       }}
-      className="flex-1 mx-1"
+      padding="none"
+      className="flex-1 mx-1 border-0"
     >
       <View className="relative overflow-hidden rounded-2xl">
         <View
@@ -43,6 +44,6 @@ export default function MemberOption({
         </View>
         <LockedBadge visible={locked} />
       </View>
-    </Pressable>
+    </Card>
   );
 }

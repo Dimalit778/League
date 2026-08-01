@@ -60,7 +60,7 @@ const getColorForType = (type: string, colors: any) => {
       return colors.success;
     case 'info':
     default:
-      return colors.secondary;
+      return colors.info;
   }
 };
 

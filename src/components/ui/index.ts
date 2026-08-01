@@ -1,7 +1,6 @@
 
 export { Screen } from '../layout/Screens';
 export { AlertDialog } from './AlertDialog';
-export { Avatar } from './Avatar';
 export { AvatarImage } from './AvatarImage';
 export { BackButton } from './BackButton';
 export { Badge } from './Badge';

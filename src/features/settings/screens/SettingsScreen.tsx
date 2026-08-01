@@ -1,5 +1,5 @@
 import { Screen } from '@/components/layout';
-import { BackButton, Button, Text } from '@/components/ui';
+import { Button, Card, Text } from '@/components/ui';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
@@ -7,8 +7,7 @@ import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
-import { Alert, Pressable, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Alert, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
@@ -43,43 +42,34 @@ const SettingsScreen = () => {
   };
 
   return (
-    <Screen edges={['top']}>
-      <BackButton title={t('Settings')} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: insets.bottom,
-          paddingHorizontal: 12,
-        }}
-      >
-        <View className="mt-2">
-          <SettingsContent />
+    <Screen scroll padding="horizontal" bottomInset>
+      <View className="mt-2">
+        <SettingsContent />
+      </View>
+
+      {isAdmin && (
+        <View className="mt-8 px-6">
+          <Button
+            label={t('Open Admin Dashboard')}
+            onPress={() => router.push('/(app)/(admin)/competitions')}
+            variant="outline"
+          />
         </View>
+      )}
+      <Button size="md" variant="outline" label={t('Sign Out')} onPress={handleSignOut} className="mt-10 " />
 
-        {isAdmin && (
-          <View className="mt-8 px-6">
-            <Button
-              title={t('Open Admin Dashboard')}
-              onPress={() => router.push('/(app)/(admin)/competitions')}
-              variant="outline"
-            />
-          </View>
-        )}
-        <Button size="md" variant="outline" title={t('Sign Out')} onPress={handleSignOut} className="mt-10 " />
+      <View className="mt-8">
+        <Card
+          onPress={handleDeleteAccountPress}
+          variant="soft"
+          contentClassName="items-center"
+          className="border-error/40"
+        >
+          <Text className="font-bold text-error">{t('Delete Account')}</Text>
 
-        <View className="mt-8">
-          <Pressable
-            onPress={handleDeleteAccountPress}
-            className="items-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-4"
-          >
-            <Text className="font-bold text-red-400">
-              {t('Delete Account')}
-            </Text>
-
-            <Text className="mt-1 text-muted">{t('Permanently delete your account and all your data.')}</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+          <Text className="mt-1 text-muted">{t('Permanently delete your account and all your data.')}</Text>
+        </Card>
+      </View>
     </Screen>
   );
 };

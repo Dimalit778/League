@@ -46,8 +46,8 @@ function ScoreCard({
       )}
       {['IN_PLAY'].includes(matchStatus) && (
         <Row className="items-center justify-center">
-          <View className="mb-2 rounded-full bg-red-500/20 px-2.5 py-1">
-            <Text className="text-xs font-bold text-red-400">LIVE</Text>
+          <View className="mb-2 rounded-full bg-error/20 px-2.5 py-1">
+            <Text className="text-xs font-bold text-error">LIVE</Text>
           </View>
           <Text className="text-2xl font-bold text-white">
             {homeScore} : {awayScore}

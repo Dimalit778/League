@@ -16,18 +16,18 @@ export type BadgeProps = ViewProps & {
 };
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-surfaceSoft',
-  primary: 'bg-primarySoft',
-  success: 'bg-successSoft',
-  warning: 'bg-warningSoft',
-  error: 'bg-errorSoft',
-  info: 'bg-infoSoft',
-  live: 'bg-errorSoft',
-  locked: 'bg-surfaceSoft',
+  default: 'bg-subtle',
+  primary: 'bg-subtle',
+  success: 'bg-subtle',
+  warning: 'bg-subtle',
+  error: 'bg-subtle',
+  info: 'bg-subtle',
+  live: 'bg-subtle',
+  locked: 'bg-subtle',
 };
 
 const textClasses: Record<BadgeVariant, string> = {
-  default: 'text-textSecondary',
+  default: 'text-muted',
   primary: 'text-primary',
   success: 'text-success',
   warning: 'text-warning',

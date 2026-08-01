@@ -35,7 +35,7 @@ export function EmptyState({
 
   return (
     <View {...props} className={cn('items-center justify-center px-6 py-6', className)}>
-      <View className="mb-4 h-14 w-14 items-center justify-center rounded-2xl bg-surfaceSoft">
+      <View className="mb-4 h-14 w-14 items-center justify-center rounded-2xl bg-subtle">
         <Icon size={32} color={iconColor} strokeWidth={2} />
       </View>
       <Text variant="title" className="text-center">

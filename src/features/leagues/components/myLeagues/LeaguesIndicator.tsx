@@ -22,7 +22,7 @@ export default function LeaguesIndicator({ used, limit }: LeaguesIndicatorProps)
           <Text variant="header" numberOfLines={1} className="shrink">
             {t('My Leagues')}
           </Text>
-          <View className="rounded-md bg-surfaceSoft px-3 py-1">
+          <View className="rounded-md bg-subtle px-3 py-1">
             <Text variant="label" tone="muted" className="font-bold">
               {used}/{limit}
             </Text>
@@ -33,7 +33,7 @@ export default function LeaguesIndicator({ used, limit }: LeaguesIndicatorProps)
           onPress={() => router.push('/(app)/(user)/settings')}
           accessibilityRole="button"
           accessibilityLabel={t('Settings')}
-          className="h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surfaceSoft"
+          className="h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-subtle"
           hitSlop={4}
           style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
         >

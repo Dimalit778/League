@@ -1,9 +1,9 @@
-import { LockedBadge, Text } from '@/components/ui';
+import { Card, LockedBadge, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
 import { Image as ExpoImage } from 'expo-image';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 type Competition = Tables<'competitions'>;
 
@@ -19,9 +19,9 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
   const { t } = useTranslation();
 
   return (
-    <Pressable
+    <Card
       onPress={() => onPress(competition)}
-      style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+      padding="none"
       className="mb-3"
     >
       <View className="relative overflow-hidden rounded-xl">
@@ -57,6 +57,6 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
         </View>
         <LockedBadge visible={isLocked} />
       </View>
-    </Pressable>
+    </Card>
   );
 }

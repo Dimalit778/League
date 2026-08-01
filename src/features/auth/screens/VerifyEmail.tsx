@@ -162,9 +162,9 @@ const VerifyEmailScreen = () => {
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 keyboardType="number-pad"
                 maxLength={1}
-                className="h-14 min-w-0 flex-1 rounded-lg border border-text bg-surface text-center text-2xl font-bold text-secondary"
+                className="h-14 min-w-0 flex-1 rounded-lg border border-text bg-surface text-center text-2xl font-bold text-info"
                 style={{
-                  borderColor: code[index] ? colors.secondary : colors.text,
+                  borderColor: code[index] ? colors.info : colors.text,
                   borderWidth: code[index] ? 2 : 1,
                 }}
                 selectTextOnFocus
@@ -183,13 +183,13 @@ const VerifyEmailScreen = () => {
 
           {successMessage && (
             <View className="">
-              <Text className="text-green-500 text-center font-bold">Email verified successfully!</Text>
+              <Text className="text-success text-center font-bold">Email verified successfully!</Text>
             </View>
           )}
 
           {resendSuccess && (
             <View className="">
-              <Text className="text-green-500 text-center">Code resent successfully!</Text>
+              <Text className="text-success text-center">Code resent successfully!</Text>
             </View>
           )}
 
@@ -215,7 +215,7 @@ const VerifyEmailScreen = () => {
                 accessibilityLabel="Resend verification code"
                 accessibilityHint="Resend the verification code to your email"
               >
-                <Text className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</Text>
+                <Text className="text-info font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</Text>
               </Pressable>
             )}
           </View>
@@ -225,7 +225,7 @@ const VerifyEmailScreen = () => {
               {t('Prefer not to wait?')}
             </Text>
             <Link href="/signIn" replace>
-              <Text className="text-sm text-secondary font-bold">
+              <Text className="text-sm text-info font-bold">
                 {t('Sign in with Apple or Google')}
               </Text>
             </Link>

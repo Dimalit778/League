@@ -22,30 +22,30 @@ export default function PredictionChart(props: PredictionChartProps) {
       <View className="h-6 flex-row rounded-md overflow-hidden mb-2">
         {stats.totalPredictions > 0 ? (
           <>
-            <View style={{ width: `${bingoPercentage}%` }} className="bg-green-500 border-1 border-black" />
-            <View style={{ width: `${regularPercentage}%` }} className="bg-gray-500 " />
-            <View style={{ width: `${missedPercentage}%` }} className="bg-red-500 " />
+            <View style={{ width: `${bingoPercentage}%` }} className="bg-success border-1 border-black" />
+            <View style={{ width: `${regularPercentage}%` }} className="bg-muted " />
+            <View style={{ width: `${missedPercentage}%` }} className="bg-error " />
           </>
         ) : (
-          <View className="flex-1 bg-gray-300" />
+          <View className="flex-1 bg-subtle" />
         )}
       </View>
 
       <View className="flex-row justify-between">
         <View className="flex-row items-center">
-          <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
+          <View className="w-3 h-3 rounded-full bg-success mr-2" />
           <Text>
             {t('Bingo')} ({stats.bingoHits})
           </Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-3 h-3 rounded-full bg-gray-500 mr-2" />
+          <View className="w-3 h-3 rounded-full bg-muted mr-2" />
           <Text>
             {t('Regular')} ({stats.regularHits})
           </Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
+          <View className="w-3 h-3 rounded-full bg-error mr-2" />
           <Text>
             {t('Missed')} ({stats.missedHits})
           </Text>

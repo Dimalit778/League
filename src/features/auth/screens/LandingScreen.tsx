@@ -1,10 +1,10 @@
 import { images } from '@/assets/images';
-import { Screen, Text } from '@/components/ui';
+import { Button, Screen, Text } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { ImageBackground } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function LandingScreen() {
   return (
@@ -45,11 +45,7 @@ export default function LandingScreen() {
 
           <View className={cn('mt-auto', spacing.stack)}>
             <Link href="/(auth)/signIn" asChild>
-              <Pressable className="min-h-11 items-center justify-center rounded-xl bg-primary px-4 active:opacity-85">
-                <Text variant="label" tone="inverse" className="text-center">
-                  Get Started
-                </Text>
-              </Pressable>
+              <Button label="Get Started" fullWidth />
             </Link>
           </View>
         </View>

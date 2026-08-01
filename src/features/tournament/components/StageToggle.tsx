@@ -1,7 +1,6 @@
-import { Text } from '@/components/ui';
+import { Chip } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativewind/nativeWind';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 type View_ = 'groups' | 'knockout';
 
@@ -11,9 +10,7 @@ type Props = {
 };
 
 const Item = ({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) => (
-  <Pressable onPress={onPress} className={cn('flex-1 py-2 rounded-lg items-center', active ? 'bg-primary' : '')}>
-    <Text className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>{label}</Text>
-  </Pressable>
+  <Chip onPress={onPress} label={label} variant={active ? 'selected' : 'default'} className="flex-1 border-0" />
 );
 
 export default function StageToggle({ value, onChange }: Props) {

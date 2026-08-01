@@ -20,7 +20,7 @@ function StatCell({ icon, label, value, showDivider = true }: StatCellProps) {
     <>
       <View className="flex-1 items-center px-0.5">
         {icon}
-        <Text className="mt-0.5 text-[8px] uppercase tracking-wide text-[#97A7BF]" numberOfLines={1}>
+        <Text className="mt-0.5 text-[8px] uppercase tracking-wide text-muted" numberOfLines={1}>
           {label}
         </Text>
         <Text className="text-sm font-bold text-white" numberOfLines={1}>
@@ -44,7 +44,7 @@ export function Stats({ stats }: StatsProps) {
 
   return (
     <View className="flex-1 gap-3 px-4">
-      <View className="flex-1 flex-row rounded-2xl border border-[#223554] bg-[#091425]/60 py-2">
+      <View className="flex-1 flex-row rounded-2xl border border-border bg-background/60 py-2">
         <StatCell icon={<BarChart3 size={12} color={GOLD} />} label={t('Rank')} value={rank} />
         <StatCell icon={<Star size={12} color={GOLD} fill={GOLD} />} label={t('pts')} value={points} />
         <StatCell icon={<Crosshair size={12} color={SUCCESS} />} label={t('Bingo')} value={stats?.bingoHits ?? 0} />
