@@ -6,7 +6,7 @@ export default function LeagueLayout() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="match/[matchId]" />
       <Stack.Screen name="member/[memberId]" />
-      <Stack.Screen name="edit" />
+      <Stack.Screen name="edit-league" />
     </Stack>
   );
 }

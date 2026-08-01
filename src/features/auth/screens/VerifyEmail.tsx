@@ -1,5 +1,5 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, Text, Screen } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, Text } from '@/components/ui';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -194,7 +194,7 @@ const VerifyEmailScreen = () => {
           )}
 
           <Button
-            title="Verify Email"
+            label="Verify Email"
             onPress={handleSubmit}
             loading={isLoading}
             disabled={!isCodeValid || isLoading}

@@ -13,7 +13,7 @@ const PILL_HEIGHT = 64;
 const PILL_BOTTOM_GAP = 8;
 const CONTENT_BOTTOM_GAP = 16;
 
-export const getFloatBottomTabsInset = (safeAreaBottom: number) =>
+const getFloatBottomTabsInset = (safeAreaBottom: number) =>
   PILL_HEIGHT + safeAreaBottom + PILL_BOTTOM_GAP + CONTENT_BOTTOM_GAP;
 
 export const useFloatBottomTabsInset = () => {

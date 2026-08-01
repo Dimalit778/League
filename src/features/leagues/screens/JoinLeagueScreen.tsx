@@ -180,7 +180,7 @@ export default function JoinLeagueScreen() {
                     <Text className="text-sm text-center text-muted">
                       {t('This league is full. Upgrade to create larger leagues.')}
                     </Text>
-                    <Button title={t('Upgrade')} variant="primary" onPress={openPaywall} />
+                    <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />
                   </View>
                 ) : (
                   <>
@@ -192,7 +192,7 @@ export default function JoinLeagueScreen() {
                       error={errors.nickname}
                     />
                     <Button
-                      title={t('Join League')}
+                      label={t('Join League')}
                       variant="primary"
                       loading={joinLeague.isPending}
                       onPress={handleSubmit(onClickJoinLeague)}

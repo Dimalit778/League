@@ -3,15 +3,15 @@ import { Text } from 'react-native';
 import { Button } from '../Button';
 
 describe('Button', () => {
-  it('renders the provided title', () => {
-    const { getByText } = render(<Button title="Submit" onPress={jest.fn()} />);
+  it('renders the provided label', () => {
+    const { getByText } = render(<Button label="Submit" onPress={jest.fn()} />);
 
     expect(getByText('Submit')).toBeTruthy();
   });
 
   it('invokes onPress when pressed', () => {
     const onPress = jest.fn();
-    const { getByText } = render(<Button title="Press me" onPress={onPress} />);
+    const { getByText } = render(<Button label="Press me" onPress={onPress} />);
 
     fireEvent.press(getByText('Press me'));
 
@@ -21,7 +21,7 @@ describe('Button', () => {
   it('does not invoke onPress when loading', () => {
     const onPress = jest.fn();
     const { getByTestId } = render(
-      <Button title="Loading" onPress={onPress} loading />
+      <Button label="Loading" onPress={onPress} loading />
     );
 
     // When loading, the button shows ActivityIndicator instead of text
@@ -31,16 +31,16 @@ describe('Button', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
-  it('renders an icon before or after the title', () => {
+  it('renders icons before or after the label', () => {
     const { getByText, rerender } = render(
-      <Button title="Next" icon={<Text>+</Text>} onPress={jest.fn()} />,
+      <Button label="Next" leftIcon={<Text>+</Text>} onPress={jest.fn()} />,
     );
 
     expect(getByText('+')).toBeTruthy();
     expect(getByText('Next')).toBeTruthy();
 
     rerender(
-      <Button title="Next" icon={<Text>+</Text>} iconPosition="end" onPress={jest.fn()} />,
+      <Button label="Next" rightIcon={<Text>+</Text>} onPress={jest.fn()} />,
     );
 
     expect(getByText('+')).toBeTruthy();
@@ -48,7 +48,9 @@ describe('Button', () => {
 
   it('supports an accessible icon-only button', () => {
     const { getByRole, getByText, queryByText } = render(
-      <Button icon={<Text>+</Text>} accessibilityLabel="Add" onPress={jest.fn()} />,
+      <Button accessibilityLabel="Add" onPress={jest.fn()}>
+        <Text>+</Text>
+      </Button>,
     );
 
     expect(getByRole('button', { name: 'Add' })).toBeTruthy();

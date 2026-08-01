@@ -1,5 +1,5 @@
-import { HeaderChrome } from '@/components/layout';
-import { Card, Screen, Skeleton, TextSkeleton } from '@/components/ui';
+import { HeaderChrome, Screen } from '@/components/layout';
+import { Card, Skeleton, TextSkeleton } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';

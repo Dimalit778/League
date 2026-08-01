@@ -1,4 +1,4 @@
-import { Screen } from '@/components/ui';
+import { Screen } from '@/components/layout';
 import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -3,6 +3,7 @@ import { cn } from '@/lib/nativewind/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { View } from 'react-native';
+import { LoadingOverlay } from '../layout';
 
 type AvatarImageProps = {
   nickname?: string | null;
@@ -12,9 +13,10 @@ type AvatarImageProps = {
   src?: string | null;
   style?: ImageStyle;
   className?: string;
+  loading?: boolean;
 };
 
-export const AvatarImage = ({ nickname, path, src, style, className }: AvatarImageProps) => {
+export const AvatarImage = ({ nickname, path, src, style, className, loading }: AvatarImageProps) => {
   const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
   const profileImage = getProfileImage(path ?? src);
 
@@ -25,6 +27,7 @@ export const AvatarImage = ({ nickname, path, src, style, className }: AvatarIma
         className,
       )}
     >
+      {loading && <LoadingOverlay />}
       {profileImage ? (
         <ExpoImage
           source={{ uri: profileImage }}

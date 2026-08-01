@@ -59,13 +59,13 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
 
   if (!isEditing) {
     return (
-      <View className="mx-3 mt-3">
+      <View>
         <Pressable
           onPress={() => {
             reset({ nickname: displayNickname });
             setIsEditing(true);
           }}
-          className="flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 active:opacity-80"
+          className="flex-row items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 active:opacity-80"
         >
           <View>
             <Text className="text-xs text-muted">{t('Nickname')}</Text>
@@ -78,7 +78,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
   }
 
   return (
-    <View className="mx-3 mt-3 rounded-xl border border-border bg-background p-4">
+    <View className="rounded-xl border border-border bg-surface p-4">
       <Text className="mb-2 text-xs text-muted">{t('Edit nickname')}</Text>
       <Controller
         control={control}

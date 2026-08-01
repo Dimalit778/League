@@ -9,7 +9,6 @@ import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLeagueId, useMemberId } from '@/store/PrimaryLeagueStore';
-import { View } from 'react-native';
 
 const ProfileScreen = () => {
   const memberId = useMemberId();
@@ -24,15 +23,13 @@ const ProfileScreen = () => {
   if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <SkeletonStats />;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomInset} contentClassName="gap-4 pt-2">
+    <Screen scroll padding="horizontal" bottomInset={bottomInset} contentClassName="gap-5 pt-3">
       <ProfileHeroCard />
       <ProfileNicknameEdit initialNickname={member.nickname} />
 
       <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />
 
       <Achievements stats={stats} />
-
-      <View className="h-4" />
     </Screen>
   );
 };

@@ -1,11 +1,9 @@
 import { Card, Text } from '@/components/ui';
 import { MemberStats as MemberStatsType } from '@/features/members/types/stats.type';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Award, Crosshair, Trophy } from 'lucide-react-native';
 import { View } from 'react-native';
-
-const GOLD = '#E3B421';
 
 type Achievement = {
   id: string;
@@ -19,15 +17,12 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
     <Card
       padding="none"
-      className="flex-1 overflow-hidden"
-      style={{ opacity: achievement.unlocked ? 1 : 0.45 }}
+      variant="outlined"
+      className="flex-1"
+      style={{ opacity: achievement.unlocked ? 1 : 0.5 }}
     >
-      <LinearGradient
-        colors={['rgba(227,180,33,0.12)', 'rgba(227,180,33,0.02)']}
-        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
-      />
-      <View className="items-center px-2 py-4">
-        <View className="mb-2 h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-subtle">
+      <View className="items-center px-2 py-3">
+        <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-subtle">
           {achievement.icon}
         </View>
         <Text className="text-center text-sm font-bold text-text">{achievement.title}</Text>
@@ -40,6 +35,7 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
 function buildAchievements(
   stats: MemberStatsType | undefined,
   t: (key: string, params?: Record<string, string | number>) => string,
+  accentColor: string,
 ): Achievement[] {
   const position = stats?.rank ?? null;
   const totalPredictions = stats?.totalPredictions ?? 0;
@@ -48,21 +44,21 @@ function buildAchievements(
   return [
     {
       id: 'top10',
-      icon: <Trophy size={22} color={GOLD} />,
+      icon: <Trophy size={20} color={accentColor} />,
       title: t('Top 10'),
       description: t('Reached top 10 in the table'),
       unlocked: position != null && position <= 10,
     },
     {
       id: 'consistent',
-      icon: <Award size={22} color={GOLD} />,
+      icon: <Award size={20} color={accentColor} />,
       title: t('Consistent'),
       description: t('{{count}} matches played', { count: totalPredictions }),
       unlocked: totalPredictions >= 7,
     },
     {
       id: 'predictor',
-      icon: <Crosshair size={22} color={GOLD} />,
+      icon: <Crosshair size={20} color={accentColor} />,
       title: t('Predictor'),
       description: t('{{count}} correct predictions', { count: correctPredictions }),
       unlocked: correctPredictions >= 50,
@@ -76,10 +72,11 @@ type AchievementsProps = {
 
 export function Achievements({ stats }: AchievementsProps) {
   const { t } = useTranslation();
-  const achievements = buildAchievements(stats, t);
+  const { colors } = useThemeTokens();
+  const achievements = buildAchievements(stats, t, colors.primary);
 
   return (
-    <View className="mx-3 mt-5">
+    <View>
       <Text variant="subtitle" className="mb-3">{t('Your achievements')}</Text>
       <View className="flex-row gap-2">
         {achievements.map((achievement) => (

@@ -1,30 +1,23 @@
-import { LoadingOverlay } from '@/components/layout';
-import { AvatarImage, Text } from '@/components/ui';
-import { HeaderBackground } from '@/components/ui/HeaderBackground';
+import { AvatarImage, Button } from '@/components/ui';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { useLeagueId, useMemberId } from '@/store/PrimaryLeagueStore';
-import { formatNameCapitalize } from '@/utils/formats';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { Link } from 'expo-router';
-import { Camera, Settings, Shield } from 'lucide-react-native';
+import { Check, ImagePlus, Trash2, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
 export function ProfileHeroCard() {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
   const memberId = useMemberId();
-  const leagueId = useLeagueId();
   const { data: member } = useGetMember(memberId);
   const nickname = member?.nickname ?? '';
   const avatarUrl = member?.avatar_url ?? null;
-  const leagueName = member?.league?.name ?? '';
   const { colors } = useThemeTokens();
   const [image, setImage] = useState<string | null>(avatarUrl);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -80,7 +73,7 @@ export function ProfileHeroCard() {
   };
 
   const handleSavePreview = async () => {
-    if (!pickedAsset || !memberId || !leagueId) return;
+    if (!pickedAsset || !memberId) return;
     previousImageRef.current = image;
 
     try {
@@ -99,88 +92,100 @@ export function ProfileHeroCard() {
     }
   };
 
-  const displayName = formatNameCapitalize(nickname);
+  const handleDeleteImage = () => {
+    if (!memberId || !image) return;
+
+    showAlert({
+      title: t('Delete Profile Picture'),
+      message: t('Are you sure you want to delete your profile picture?'),
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        {
+          text: t('Delete'),
+          style: 'destructive',
+          onPress: () => {
+            void deleteImage
+              .mutateAsync({ memberId, currentPath: image })
+              .then(() => setImage(null))
+              .catch(() => {
+                showAlert({
+                  title: t('Error'),
+                  message: t('Failed to delete image'),
+                  type: 'error',
+                  buttons: [{ text: t('OK') }],
+                });
+              });
+          },
+        },
+      ],
+    });
+  };
 
   return (
-    <HeaderBackground>
-      <View className="p-4">
-        {(deleteImage.isPending || uploadImage.isPending) && <LoadingOverlay />}
-
-        <Link href="/(app)/(league)/edit" asChild>
-          <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityLabel={t('Manage League')}
-            className="absolute top-2 end-2 z-10 h-9 w-9 items-center justify-center rounded-full bg-subtle"
-            hitSlop={6}
-          >
-            <Settings size={18} color={colors.primary} strokeWidth={2} />
-          </TouchableOpacity>
-        </Link>
-
-        <View className="flex-row items-center gap-4">
-          {/* Avatar with gold ring */}
-          <View className="relative">
-            <View className="h-24 w-24 items-center justify-center rounded-full border-2 bg-subtle border-primary">
-              <View className="h-[88px] w-[88px] overflow-hidden rounded-full bg-background">
-                {previewImage ? (
-                  <ExpoImage
-                    source={{ uri: previewImage }}
-                    style={{ width: '100%', height: '100%' }}
-                    contentFit="cover"
-                    cachePolicy="none"
-                  />
-                ) : (
-                  <AvatarImage nickname={nickname} path={image} />
-                )}
-              </View>
-            </View>
-
-            {/* Camera / save / cancel controls */}
-            {previewImage ? (
-              <>
-                <TouchableOpacity
-                  onPress={handleCancelPreview}
-                  disabled={uploadImage.isPending}
-                  className="absolute -bottom-1 -left-1 rounded-full border-2 border-border bg-subtle p-2"
-                  accessibilityLabel={t('Cancel image selection')}
-                >
-                  <FontAwesome6 name="xmark" size={12} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleSavePreview}
-                  disabled={uploadImage.isPending}
-                  className="absolute -top-1 -right-1 rounded-full border-2 border-border bg-subtle p-2"
-                  accessibilityLabel={t('Save profile picture')}
-                >
-                  <FontAwesome6 name="check" size={12} color="white" />
-                </TouchableOpacity>
-              </>
-            ) : (
-              <TouchableOpacity
-                onPress={handleImagePicker}
-                disabled={uploadImage.isPending || deleteImage.isPending}
-                className="absolute -bottom-1 -right-1 h-8 w-8 items-center justify-center rounded-full bg-subtle border border-primary "
-                accessibilityLabel={t('Change profile picture')}
-              >
-                <Camera size={18} color={colors.primary} strokeWidth={2.5} />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* User info */}
-          <View className="min-w-0 flex-1">
-            <Text variant="titleLarge" numberOfLines={1}>
-              {displayName}
-            </Text>
-            <View className="mt-1.5 flex-row items-center gap-1.5">
-              <Shield size={13} color={colors.primary} strokeWidth={2.5} />
-              <Text variant="bodySmall" tone="muted">
-                {t('Member of {{name}}', { name: leagueName })}
-              </Text>
-            </View>
-          </View>
+    <View className="items-center py-2">
+      <View className="relative mb-3">
+        <View className="h-40 w-40 overflow-hidden rounded-full">
+          {previewImage ? (
+            <ExpoImage
+              source={{ uri: previewImage }}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+              cachePolicy="none"
+            />
+          ) : (
+            <AvatarImage nickname={nickname} path={image} loading={deleteImage.isPending || uploadImage.isPending} />
+          )}
         </View>
+
+        {previewImage ? (
+          <>
+            <Button
+              accessibilityLabel={t('Cancel')}
+              variant="outline"
+              size="icon"
+              className="absolute -bottom-2 -left-2 rounded-full bg-surface"
+              onPress={handleCancelPreview}
+              disabled={uploadImage.isPending}
+            >
+              <X size={19} color={colors.text} />
+            </Button>
+            <Button
+              accessibilityLabel={t('Save')}
+              size="icon"
+              className="absolute -bottom-2 -right-2 rounded-full"
+              onPress={handleSavePreview}
+              loading={uploadImage.isPending}
+            >
+              <Check size={19} color={colors.onPrimary} />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              accessibilityLabel={t('Choose Image')}
+              size="icon"
+              className="absolute -bottom-2 -left-2 rounded-full"
+              onPress={handleImagePicker}
+              disabled={deleteImage.isPending}
+            >
+              <ImagePlus size={18} color={colors.onPrimary} />
+            </Button>
+            {image ? (
+              <Button
+                accessibilityLabel={t('Delete')}
+                variant="outline"
+                size="icon"
+                className="absolute -bottom-2 -right-2 rounded-full bg-surface"
+                onPress={handleDeleteImage}
+                loading={deleteImage.isPending}
+              >
+                <Trash2 size={18} color={colors.error} />
+              </Button>
+            ) : null}
+          </>
+        )}
       </View>
-    </HeaderBackground>
+    </View>
   );
 }

@@ -125,7 +125,7 @@ export default function LimitSelectModal({
             })}
           </ScrollView>
 
-          <Button title={t('Save active leagues')} size="lg" onPress={onSave} loading={isSaving} disabled={!canSave} />
+          <Button label={t('Save active leagues')} size="lg" onPress={onSave} loading={isSaving} disabled={!canSave} />
         </View>
       </View>
     </Modal>

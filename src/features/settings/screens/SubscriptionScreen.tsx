@@ -47,7 +47,7 @@ export default function SubscriptionScreen() {
         </View>
 
         <Button
-          title={subscription.isActive ? t('Manage Subscription') : t('Upgrade')}
+          label={subscription.isActive ? t('Manage Subscription') : t('Upgrade')}
           variant="primary"
           size="lg"
           loading={isLoading}
@@ -57,7 +57,7 @@ export default function SubscriptionScreen() {
 
         {Platform.OS !== 'web' && (
           <Button
-            title={t('Restore Purchases')}
+            label={t('Restore Purchases')}
             variant="outline"
             size="lg"
             loading={isRestoring}

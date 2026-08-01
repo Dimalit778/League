@@ -88,7 +88,7 @@ export default function SignInForm() {
       )}
 
       <Button
-        title={t('Sign In')}
+        label={t('Sign In')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}

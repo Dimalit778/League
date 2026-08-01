@@ -8,11 +8,9 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
   const { data: isAdmin } = useIsAdmin();
-  const insets = useSafeAreaInsets();
   const deleteUserMutation = useDeleteUser();
   const { signOut } = useAuthActions();
   const { t } = useTranslation();

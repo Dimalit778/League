@@ -81,7 +81,7 @@ const PredictionBlock = ({
     prediction?.away !== undefined;
 
   const predictionTextClass =
-    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
+    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-info';
 
   return (
     <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top, height }}>
@@ -90,7 +90,7 @@ const PredictionBlock = ({
           {`${prediction.home} - ${prediction.away}`}
         </Text>
       ) : (
-        <CirclePlus size={20} color={colors.muted} strokeWidth={1.8} />
+        <CirclePlus size={20} color={colors.info} strokeWidth={1.8} />
       )}
     </View>
   );

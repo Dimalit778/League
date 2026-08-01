@@ -30,7 +30,7 @@ const LockedStats = () => {
         <Text className="text-sm mt-3 text-center text-muted">{t('Upgrade to Pro to unlock match statistics')}</Text>
 
         <Button
-          title={t('Upgrade to Pro')}
+          label={t('Upgrade to Pro')}
           onPress={() => router.push('/(app)/(user)/settings')}
           className="mt-6 w-full"
         />

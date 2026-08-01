@@ -21,7 +21,7 @@ export function TextSkeleton({ className }: { className?: string }) {
   return <Skeleton className={cn('h-4 w-32', className)} />;
 }
 
-export function AvatarSkeleton({ className }: { className?: string }) {
+function AvatarSkeleton({ className }: { className?: string }) {
   return <Skeleton className={cn('h-11 w-11 rounded-full', className)} />;
 }
 

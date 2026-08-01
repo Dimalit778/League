@@ -135,6 +135,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Manage League': 'Manage League',
       'Invite friends': 'Invite friends',
       'Invite code': 'Invite code',
+      'Danger zone': 'Danger zone',
+      'Deleting a league cannot be undone.': 'Deleting a league cannot be undone.',
+      'You will lose access to this league.': 'You will lose access to this league.',
+      'Save changes': 'Save changes',
       "That's the whole leaderboard for now": "That's the whole leaderboard for now",
       'Invite more friends and make the league more competitive.':
         'Invite more friends and make the league more competitive.',
@@ -850,6 +854,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Manage League': 'ניהול ליגה',
       'Invite friends': 'הזמנת חברים',
       'Invite code': 'קוד הצטרפות',
+      'Danger zone': 'אזור מסוכן',
+      'Deleting a league cannot be undone.': 'לא ניתן לבטל את מחיקת הליגה.',
+      'You will lose access to this league.': 'לאחר העזיבה לא תהיה לך גישה לליגה הזו.',
+      'Save changes': 'שמירת שינויים',
       "That's the whole leaderboard for now": 'זה כל הדירוג בינתיים',
       'Invite more friends and make the league more competitive.':
         'הזמינו חברים נוספים והפכו את הליגה לתחרותית יותר.',

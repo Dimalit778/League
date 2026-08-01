@@ -1,9 +1,31 @@
 import { PredictionDisplayStatus } from '@/features/matches/utils/matchCard.mapper';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
 export const MATCH_CARD_VIEWBOX_WIDTH = 360;
 export const MATCH_CARD_VIEWBOX_HEIGHT = 110;
+
+// ponytail: shared silhouette so shadow keeps the prediction notch (plain Rect leaked a stripe under it)
+const MATCH_CARD_PATH = `
+  M 32 6
+  H 108
+  C 124 8 132 30 144 30
+  H 216
+  C 228 30 236 8 252 6
+  H 328
+  C 342 6 352 15 352 26
+  V 82
+  C 352 95 344 104 328 104
+  H 240
+  C 227 102 220 76 210 76
+  H 150
+  C 140 76 133 102 120 104
+  H 32
+  C 16 104 8 95 8 82
+  V 26
+  C 8 15 18 6 32 6
+  Z
+`;
 
 const MATCH_CARD_HORIZONTAL_PADDING = 32;
 const MATCH_CARD_HEIGHT_SCALE = 0.945;
@@ -14,7 +36,7 @@ const MATCH_CARD_LOGO_MAX = 38;
 export const MATCH_CARD_LAYOUT = {
   dateTabCenterY: 18 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabTopY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
-  predictionTabHeight: 25 / MATCH_CARD_VIEWBOX_HEIGHT,
+  predictionTabHeight: 28 / MATCH_CARD_VIEWBOX_HEIGHT,
   contentTopY: 32 / MATCH_CARD_VIEWBOX_HEIGHT,
   contentBottomY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
 
@@ -66,11 +88,7 @@ type Props = {
 export function MatchCardBg({ width, height, predictionStatus = 'none' }: Props) {
   const { theme, colors } = useThemeTokens();
   const predictionColor =
-    predictionStatus === 'correct'
-      ? colors.success
-      : predictionStatus === 'incorrect'
-        ? colors.error
-        : colors.border;
+    predictionStatus === 'correct' ? colors.success : predictionStatus === 'incorrect' ? colors.error : colors.border;
 
   return (
     <Svg
@@ -106,44 +124,16 @@ export function MatchCardBg({ width, height, predictionStatus = 'none' }: Props)
         </LinearGradient>
       </Defs>
 
-      {/* Shadow */}
-      <Rect x="9" y="9" width="342" height="96" rx="22" fill={colors.text} opacity={theme === 'dark' ? 0.2 : 0.08} />
+      {/* Shadow — same notch as card so it doesn't peek under the prediction tab */}
+      <Path
+        d={MATCH_CARD_PATH}
+        transform="translate(1, 1.5)"
+        fill={colors.text}
+        opacity={theme === 'dark' ? 0.2 : 0.08}
+      />
 
       {/* Main card */}
-      <Path
-        d="
-          M 32 6
-
-          H 108
-          C 124 8 132 30 144 30
-
-          H 216
-          C 228 30 236 8 252 6
-
-          H 328
-          C 342 6 352 15 352 26
-
-          V 82
-          C 352 95 344 104 328 104
-
-          H 240
-          C 227 102 220 76 210 76
-
-          H 150
-          C 140 76 133 102 120 104
-
-          H 32
-          C 16 104 8 95 8 82
-
-          V 26
-          C 8 15 18 6 32 6
-
-          Z
-        "
-        fill="url(#match-card-background)"
-        stroke={colors.border}
-        strokeWidth="1.25"
-      />
+      <Path d={MATCH_CARD_PATH} fill="url(#match-card-background)" stroke={colors.border} strokeWidth="1.25" />
 
       {/* Subtle top highlight */}
       <Path
@@ -185,22 +175,18 @@ export function MatchCardBg({ width, height, predictionStatus = 'none' }: Props)
         strokeWidth="1.2"
       />
 
-      {/* Prediction tab */}
+      {/* Prediction tab — bottom edge matches card notch (y=104) */}
       <Path
         d="
-          M 126 101
-
-          C 136 84 141 76 150 76
-
+          M 120 104
+          C 133 102 140 76 150 76
           H 210
-
-          C 219 76 224 84 234 101
-
+          C 220 76 227 102 240 104
           Z
         "
         fill="url(#match-prediction-background)"
         stroke={predictionColor}
-        strokeWidth="1.4"
+        strokeWidth="0.5"
       />
     </Svg>
   );

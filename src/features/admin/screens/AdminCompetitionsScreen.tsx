@@ -163,7 +163,7 @@ const AdminCompetitionsScreen = () => {
           {validationError && <Text className="text-error text-sm mt-3">{validationError}</Text>}
           <View className="mt-4">
             <Button
-              title="Add Competition"
+              label="Add Competition"
               onPress={handleSubmit}
               loading={addCompetition.isPending}
               disabled={isBusy}
@@ -189,7 +189,7 @@ const AdminCompetitionsScreen = () => {
                   <Text className="text-text/50 text-xs">ID: {competition.id}</Text>
                 </View>
                 <Button
-                  title="Remove"
+                  label="Remove"
                   onPress={() => handleRemove(competition.id, competition.name)}
                   variant="error"
                   disabled={isBusy}

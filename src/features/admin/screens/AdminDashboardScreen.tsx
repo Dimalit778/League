@@ -99,7 +99,7 @@ const AdminDashboardScreen = () => {
           </Card>
         ))}
       </ScrollView>
-      <Button title="Logout" onPress={() => signOut()} className="mx-auto" />
+      <Button label="Logout" onPress={() => signOut()} className="mx-auto" />
     </Screen>
   );
 };

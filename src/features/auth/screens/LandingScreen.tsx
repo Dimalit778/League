@@ -1,5 +1,6 @@
 import { images } from '@/assets/images';
-import { Button, Screen, Text } from '@/components/ui';
+import { Screen } from '@/components/layout';
+import { Button, Text } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { ImageBackground } from 'expo-image';

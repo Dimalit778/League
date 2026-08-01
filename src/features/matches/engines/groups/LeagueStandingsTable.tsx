@@ -1,4 +1,4 @@
-import { Text, TeamBadge } from '@/components/ui';
+import { LogoBadge, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollView, View } from 'react-native';
 import { ComputedStandingRow } from '../../utils/tournamentMatches';
@@ -84,10 +84,12 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
               <Text className="text-sm font-bold text-text">{row.position}</Text>
             </View>
             <View className="flex-1 flex-row items-center gap-2">
-              <TeamBadge
+              <LogoBadge
                 source={row.team.logo}
                 width={20}
                 height={20}
+                backgroundColor="rgba(0, 0, 0, 0.50)"
+                className="rounded-full"
               />
               <Text numberOfLines={1} className="text-sm font-bold text-text">
                 {row.team.shortName ?? row.team.tla ?? row.team.name}

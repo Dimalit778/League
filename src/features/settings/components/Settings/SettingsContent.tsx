@@ -1,4 +1,4 @@
-import { DirectionalIcon, Text } from '@/components/ui';
+import { ListItem, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RelativePathString, useRouter } from 'expo-router';
@@ -22,7 +22,6 @@ import { useAuthStore } from '@/store/AuthStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
-import SettingsRow from './SettingsRow';
 
 type SettingsItem = {
   key: string;
@@ -125,15 +124,15 @@ const SettingsContent = () => {
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
 
-          const rightContent = item.rightContent ?? (item.path ? <DirectionalIcon size={24} /> : null);
-
           return (
-            <SettingsRow
+            <ListItem
               key={item.key}
-              icon={item.icon}
-              label={item.label}
-              rightContent={rightContent}
-              showDivider={!isLast}
+              leading={<View className="items-center justify-center rounded-md bg-subtle p-2">{item.icon}</View>}
+              title={item.label}
+              trailing={item.rightContent}
+              right={item.path ? 'chevron' : 'none'}
+              divider={!isLast}
+              className="px-3"
               onPress={item.path ? () => router.push(item.path!) : undefined}
             />
           );
