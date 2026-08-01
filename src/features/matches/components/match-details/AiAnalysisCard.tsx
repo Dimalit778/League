@@ -1,147 +1,168 @@
-import { Button, TeamBadge, Text } from '@/components/ui';
+import { Row, Screen } from '@/components/layout';
+import { Badge, Button, Card, Divider, Text } from '@/components/ui';
+import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import type { ThemeName } from '@/lib/nativewind/nativeWind';
 import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useLanguageStore } from '@/store/LanguageStore';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
-
-type Logo = string | number | { uri: string; headers?: Record<string, string> };
+import { StyleSheet, View } from 'react-native';
 
 type AiAnalysisCardProps = {
-  summaryEn: string;
-  summaryHe: string;
-  predictedHomeScore: number;
-  predictedAwayScore: number;
-  homeTeamName: string;
-  awayTeamName: string;
-  homeTeamLogo?: Logo;
-  awayTeamLogo?: Logo;
+  match: MatchWithPredictions;
 };
 
-export default function AiAnalysisCard({
-  summaryEn,
-  summaryHe,
-  predictedHomeScore,
-  predictedAwayScore,
-  homeTeamName,
-  awayTeamName,
-  homeTeamLogo,
-  awayTeamLogo,
-}: AiAnalysisCardProps) {
+type AiScoreCardProps = {
+  teams: { home: string; away: string };
+  score: { home: number; away: number };
+};
+
+type AiSummaryCardProps = {
+  summary: string;
+  isPro: boolean;
+  theme: ThemeName;
+};
+
+function teamName(team: TeamType | null, fallback: string) {
+  return team?.shortName ?? team?.name ?? fallback;
+}
+
+function AiEyebrow() {
+  const { t } = useTranslation();
+  const { colors } = useThemeTokens();
+
+  return (
+    <Badge
+      variant="primary"
+      size="lg"
+      label={t('AI Prediction')}
+      className="self-center "
+      leftIcon={<Ionicons name="sparkles" size={13} color={colors.primary} />}
+    />
+  );
+}
+
+function AiScoreCard({ teams, score }: AiScoreCardProps) {
+  return (
+    <Card variant="default" padding="sm" className="overflow-hidden ">
+      <Row>
+        <View className="min-w-0 flex-1 items-center">
+          <Text variant="bodySmall" numberOfLines={2} className="text-center">
+            {teams.home}
+          </Text>
+        </View>
+
+        <View className="flex-row items-center">
+          <Text variant="title" tone="primary">
+            {score.home}
+          </Text>
+          <Text variant="bodySmall" tone="muted" className="mx-2">
+            :
+          </Text>
+          <Text variant="title" tone="primary">
+            {score.away}
+          </Text>
+        </View>
+
+        <View className="min-w-0 flex-1 items-center px-1">
+          <Text variant="bodySmall" numberOfLines={2} className="text-center">
+            {teams.away}
+          </Text>
+        </View>
+      </Row>
+    </Card>
+  );
+}
+
+function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
+  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
+
+  return (
+    <View>
+      <Row className="items-center justify-center gap-2">
+        <Ionicons name="analytics" size={18} color={colors.primary} />
+
+        <Text variant="subtitle" className="font-semibold">
+          {t('AI match analysis')}
+        </Text>
+      </Row>
+
+      <View className="px-4 py-4">
+        <Text variant="body" className="leading-7 text-text">
+          {summary}
+        </Text>
+      </View>
+
+      {!isPro && (
+        <BlurView intensity={24} tint={theme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
+          <View className="flex-1 items-center justify-center gap-3 px-6 py-8">
+            <View className="h-14 w-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
+              <Feather name="lock" size={22} color={colors.primary} />
+            </View>
+            <View className="gap-1">
+              <Text variant="body" className="text-center font-semibold">
+                {t('Unlock the full AI analysis with Pro')}
+              </Text>
+              <Text variant="bodySmall" tone="muted" className="text-center">
+                {t('Get the full breakdown behind every prediction.')}
+              </Text>
+            </View>
+            <Button label={t('Upgrade to Pro')} onPress={() => router.push('/(app)/(user)/settings')} fullWidth />
+          </View>
+        </BlurView>
+      )}
+    </View>
+  );
+}
+
+function AiDisclaimer() {
+  const { t } = useTranslation();
+  const { colors } = useThemeTokens();
+
+  return (
+    <Row className="items-center justify-center gap-3">
+      <Ionicons name="shield-checkmark-outline" size={14} color={colors.muted} />
+      <Text variant="caption" tone="muted">
+        {t('AI-generated preview based on available match data.')}
+      </Text>
+    </Row>
+  );
+}
+
+export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
-  const summary = language === 'he' ? summaryHe : summaryEn;
-  const { theme, colors } = useThemeTokens();
+  const summary =
+    language === 'he'
+      ? (match.ai_summary_he ?? match.ai_summary_en ?? '')
+      : (match.ai_summary_en ?? match.ai_summary_he ?? '');
+  const { theme } = useThemeTokens();
   const { subscription } = useRevenueCatSubscription();
   const isPro = subscription.isActive;
 
+  const teams = {
+    home: teamName(match.home_team, t('Home')),
+    away: teamName(match.away_team, t('Away')),
+  };
+
+  const score = {
+    home: match.ai_predicted_home_score ?? 0,
+    away: match.ai_predicted_away_score ?? 0,
+  };
+
   return (
-    <ScrollView
-      className="flex-1"
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ flexGrow: 1, padding: 16, paddingBottom: 32 }}
-    >
-      <View className="flex-1 justify-center">
-        {/* Eyebrow */}
-        <View className="mb-5 items-center">
-          <View className="flex-row items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5">
-            <Ionicons name="sparkles" size={13} color={colors.primary} />
-            <Text className="text-xs font-semibold ml-1.5 uppercase tracking-widest text-primary">
-              {t('AI Prediction')}
-            </Text>
-          </View>
-        </View>
-
-        {/* Predicted scoreline — the hero */}
-        <View className="overflow-hidden rounded-3xl border border-primary/20 bg-surfaceSoft">
-          <View className="items-center border-b border-border/60 py-2.5">
-            <Text className="text-xs font-semibold uppercase tracking-[2px] text-muted">
-              {t('Predicted Score')}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center px-3 py-6">
-            <View className="min-w-0 flex-1 items-center">
-              {homeTeamLogo ? <TeamBadge source={homeTeamLogo} width={52} height={52} /> : null}
-              <Text numberOfLines={2} className="font-semibold mt-2 text-center">
-                {homeTeamName}
-              </Text>
-            </View>
-
-            <View className="flex-row items-center px-1">
-              <Text font="teko-bold" style={{ fontSize: 58, lineHeight: 60 }} className="text-primary">
-                {predictedHomeScore}
-              </Text>
-              <Text font="teko" style={{ fontSize: 30, lineHeight: 60 }} className="mx-1.5 text-muted">
-                :
-              </Text>
-              <Text font="teko-bold" style={{ fontSize: 58, lineHeight: 60 }} className="text-primary">
-                {predictedAwayScore}
-              </Text>
-            </View>
-
-            <View className="min-w-0 flex-1 items-center">
-              {awayTeamLogo ? <TeamBadge source={awayTeamLogo} width={52} height={52} /> : null}
-              <Text numberOfLines={2} className="font-semibold mt-2 text-center">
-                {awayTeamName}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* AI analysis */}
-        <View className="relative mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
-          <View className="p-5">
-            <View className="mb-3 flex-row items-center">
-              <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                <Ionicons name="analytics" size={16} color={colors.primary} />
-              </View>
-              <Text className="font-semibold ml-2">
-                {t('AI match analysis')}
-              </Text>
-            </View>
-
-            <Text className="text-base leading-7 text-text">
-              {summary}
-            </Text>
-          </View>
-
-          {!isPro && (
-            <BlurView
-              intensity={30}
-              tint={theme === 'dark' ? 'dark' : 'light'}
-              style={StyleSheet.absoluteFill}
-              className="items-center justify-center px-6"
-            >
-              <View className="h-14 w-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
-                <Feather name="lock" size={24} color={colors.primary} />
-              </View>
-              <Text className="font-semibold mt-3 text-center">
-                {t('Unlock the full AI analysis with Pro')}
-              </Text>
-              <Text className="text-xs mt-1 text-center text-muted">
-                {t('Get the full breakdown behind every prediction.')}
-              </Text>
-              <Button
-                title={t('Upgrade to Pro')}
-                onPress={() => router.push('/(app)/(user)/settings')}
-                className="mt-4 w-full"
-              />
-            </BlurView>
-          )}
-        </View>
-
-        {/* Disclaimer */}
-        <View className="mt-4 flex-row items-center justify-center px-4">
-          <Ionicons name="shield-checkmark-outline" size={13} color={colors.muted} />
-          <Text className="text-xs ml-1.5 text-center text-muted">
-            {t('AI-generated preview based on available match data.')}
-          </Text>
-        </View>
+    <Screen padding="all" contentClassName="flex-1 justify-between">
+      <View className="gap-5">
+        <AiEyebrow />
+        <Divider />
+        <AiScoreCard teams={teams} score={score} />
+        <AiSummaryCard summary={summary} isPro={isPro} theme={theme} />
       </View>
-    </ScrollView>
+      <AiDisclaimer />
+    </Screen>
   );
 }

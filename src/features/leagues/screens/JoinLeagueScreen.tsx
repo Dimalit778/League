@@ -16,8 +16,11 @@ import { FullLeague } from '../types';
 
 const getSchema = (t: (key: string) => string) =>
   Yup.object().shape({
-    inviteCode: Yup.string().min(7).max(7).required(t('Invite code is required')),
-    nickname: Yup.string().min(3).max(20).required(t('Nickname is required')),
+    inviteCode: Yup.string()
+      .trim()
+      .matches(/^[A-Za-z0-9]{7}$/, t('Invite code is required'))
+      .required(t('Invite code is required')),
+    nickname: Yup.string().trim().min(2).max(20).required(t('Nickname is required')),
   });
 
 const steps = [
@@ -185,6 +188,7 @@ export default function JoinLeagueScreen() {
                       control={control}
                       name="nickname"
                       placeholder={t('Enter your nickname')}
+                      maxLength={20}
                       error={errors.nickname}
                     />
                     <Button

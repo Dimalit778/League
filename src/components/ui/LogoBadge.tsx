@@ -1,8 +1,13 @@
+import { cn } from '@/lib/nativewind/nativeWind';
 import { ImageContentFit } from 'expo-image';
 import { View } from 'react-native';
 import { MyImage } from './MyImage';
 
 type Src = string | number | { uri: string; headers?: Record<string, string> };
+
+const LOGO_BACKDROP = '#D8E1EA';
+
+const LOGO_PAD = 4;
 
 interface LogoBadgeProps {
   source: Src;
@@ -17,12 +22,19 @@ export const LogoBadge = ({
   source,
   width = 40,
   height = 40,
-  className = '',
-  contentFit = 'cover',
+  backgroundColor = LOGO_BACKDROP,
+  className,
+  contentFit = 'contain',
 }: LogoBadgeProps) => {
+  const innerWidth = Math.max(width - LOGO_PAD * 2, 0);
+  const innerHeight = Math.max(height - LOGO_PAD * 2, 0);
+
   return (
-    <View className={` rounded-md items-center justify-center ${className}`} style={{ width, height }}>
-      <MyImage source={source} width={width * 0.9} height={height * 0.9} contentFit={contentFit} />
+    <View
+      className={cn('items-center justify-center overflow-hidden rounded-md border border-border', className)}
+      style={{ width, height, backgroundColor }}
+    >
+      <MyImage source={source} width={innerWidth} height={innerHeight} contentFit={contentFit} />
     </View>
   );
 };

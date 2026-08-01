@@ -12,7 +12,11 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
-  password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
+  password: yup
+    .string()
+    .min(8, 'Minimum 8 characters')
+    .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Password must contain at least one letter and one number')
+    .required('Password is required'),
   fullname: yup.string().required('Full name is required').min(3, 'Full name must be at least 3 characters'),
 });
 

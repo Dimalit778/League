@@ -1,7 +1,7 @@
 import { MyImage, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { router } from 'expo-router';
-import { Clock, Plus } from 'lucide-react-native';
+import { CirclePlus, Clock } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import { StatusType } from '../types';
@@ -78,14 +78,15 @@ const PredictionBlock = ({
     prediction?.away !== undefined ? (
       `${prediction?.home} - ${prediction?.away}`
     ) : (
-      <Plus size={22} color="gold" strokeWidth={2.2} />
+      <CirclePlus size={20} color="grey" strokeWidth={1.6} />
     );
+
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
 
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <Text className={`text-base font-semibold ${predictionTextClass}`} numberOfLines={1}>
+      <Text className={`${predictionTextClass} font-semibold`} numberOfLines={1}>
         {predictionText}
       </Text>
     </View>
@@ -96,7 +97,7 @@ const ScoreBlock = ({ score, time, hasScore }: { score: string; time?: string; h
 
   if (hasScore) {
     return (
-      <Text className="w-full text-center text-2xl font-semibold text-text" numberOfLines={1}>
+      <Text variant="title" className="w-full text-center text-text" numberOfLines={1}>
         {score}
       </Text>
     );

@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { createRequestId, monitoredErrorResponse } from '../_shared/monitoring.ts';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
@@ -9,7 +10,11 @@ const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   }
 });
 Deno.serve(async (req)=>{
+  const requestId = createRequestId(req);
   try {
+    if (req.method !== 'POST') {
+      return json({ error: 'Method not allowed' }, 405);
+    }
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) return json({
       error: 'Missing authorization header'
@@ -54,11 +59,7 @@ Deno.serve(async (req)=>{
       success: true
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('delete-account error:', message);
-    return json({
-      error: message
-    }, 500);
+    return monitoredErrorResponse('delete-account', err, 500, requestId);
   }
 });
 function json(data, status = 200) {

@@ -2,14 +2,25 @@
 // Syncs competition, teams, and matches for FIFA World Cup.
 // Run once every 4 years at the start of the tournament.
 // Order: competition → teams → matches (required by FK constraints)
-import { createClient } from "npm:@supabase/supabase-js@2";
+import {
+  createServiceClient,
+  errorResponse,
+  FD_BASE,
+  fdFetch,
+  jsonResponse,
+  lockedResponse,
+  must,
+  releaseSyncLock,
+  requireSyncAuth,
+  tryAcquireSyncLock,
+} from "../_shared/sync.ts";
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-sync-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json"
 };
-const FD_BASE = "https://api.football-data.org/v4";
+const JOB = "v2-start-worldcup-sync";
 const WC_CODE = "WC";
 const WC_NAME = "FIFA World Cup";
 // Statuses that mean the match has NOT kicked off yet
@@ -35,45 +46,8 @@ const STAGE_ORDER = [
   "FINAL"
 ];
 const CHUNK_SIZE = 500;
-const FETCH_TIMEOUT_MS = 20_000;
 // ─── Utils ────────────────────────────────────────────────────────────────────
 const nowIso = ()=>new Date().toISOString();
-const must = (key)=>{
-  const v = Deno.env.get(key);
-  if (!v) throw new Error(`${key} is not set`);
-  return v;
-};
-const sleep = (ms)=>new Promise((r)=>setTimeout(r, ms));
-async function retry(fn, retries = 2, baseDelay = 300) {
-  let i = 0;
-  while(true){
-    try {
-      return await fn();
-    } catch (e) {
-      if (i++ >= retries) throw e;
-      await sleep(baseDelay * 2 ** (i - 1));
-    }
-  }
-}
-async function fdFetch(url, fdKey) {
-  return retry(async ()=>{
-    const ctrl = new AbortController();
-    const to = setTimeout(()=>ctrl.abort(), FETCH_TIMEOUT_MS);
-    try {
-      const res = await fetch(url, {
-        headers: {
-          "X-Auth-Token": fdKey,
-          Accept: "application/json"
-        },
-        signal: ctrl.signal
-      });
-      if (!res.ok) throw new Error(`FD API ${res.status}: ${await res.text()}`);
-      return res.json();
-    } finally{
-      clearTimeout(to);
-    }
-  });
-}
 function inferExt(url, ct) {
   const fromUrl = url.toLowerCase().match(/\.(svg|png|webp|jpe?g)(?:\?|#|$)/)?.[1];
   if (fromUrl) return fromUrl;
@@ -183,7 +157,7 @@ async function bulkUpsert(supabase, table, rows) {
 // ─── Step 1: Sync competition ────────────────────────────────────────────────
 async function syncCompetition(supabase, fdKey, matches) {
   console.info("🏆 Step 1: Syncing World Cup competition...");
-  const apiComp = await fdFetch(`${FD_BASE}/competitions/${WC_CODE}`, fdKey);
+  const apiComp = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}`, fdKey);
   const season = apiComp.currentSeason ?? null;
   const progress = deriveCupProgress(matches);
   console.info(`📊 Progress: stage=${progress.current_stage}, fixture=${progress.current_fixture}, total=${matches.length}`);
@@ -219,7 +193,7 @@ async function syncCompetition(supabase, fdKey, matches) {
 // ─── Step 2: Sync teams ───────────────────────────────────────────────────────
 async function syncTeams(supabase, fdKey) {
   console.info("⚽ Step 2: Syncing World Cup teams...");
-  const payload = await fdFetch(`${FD_BASE}/competitions/${WC_CODE}/teams`, fdKey);
+  const payload = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}/teams`, fdKey);
   const rawTeams = Array.isArray(payload?.teams) ? payload.teams : [];
   console.info(`Found ${rawTeams.length} teams`);
   const mappedTeams = await Promise.all(rawTeams.map(async (t)=>{
@@ -281,14 +255,18 @@ Deno.serve(async (req)=>{
   if (req.method === "OPTIONS") return new Response("ok", {
     headers: CORS_HEADERS
   });
+  if (req.method !== "POST") return jsonResponse({ success: false, message: "Method not allowed" }, 405);
+  const denied = requireSyncAuth(req);
+  if (denied) return denied;
   try {
-    const SUPABASE_URL = must("SUPABASE_URL");
-    const SERVICE_ROLE = must("SUPABASE_SERVICE_ROLE_KEY");
     const FD_KEY = must("FOOTBALL_ORG_API_KEY");
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-    console.info("🚀 World Cup sync started");
-    // Fetch matches once — reused by both syncCompetition and syncMatches
-    const matchPayload = await fdFetch(`${FD_BASE}/competitions/${WC_CODE}/matches`, FD_KEY);
+    const supabase = createServiceClient();
+    if (!(await tryAcquireSyncLock(supabase, JOB, 3600))) return lockedResponse(JOB);
+
+    try {
+      console.info("🚀 World Cup sync started");
+      // Fetch matches once — reused by both syncCompetition and syncMatches
+      const matchPayload = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}/matches`, FD_KEY);
     const matches = Array.isArray(matchPayload?.matches) ? matchPayload.matches : [];
     console.info(`Fetched ${matches.length} World Cup matches`);
     // Step 1: competition (FK anchor for teams + matches)
@@ -301,6 +279,7 @@ Deno.serve(async (req)=>{
       ...teamErrors,
       ...matchErrors
     ];
+    await releaseSyncLock(supabase, JOB, allErrors.length === 0 ? "success" : "partial");
     console.info(`✅ World Cup sync complete — teams: ${teamsCount}, matches: ${matchesCount}`);
     return new Response(JSON.stringify({
       success: allErrors.length === 0,
@@ -310,15 +289,11 @@ Deno.serve(async (req)=>{
     }), {
       headers: CORS_HEADERS
     });
+    } catch (error) {
+      await releaseSyncLock(supabase, JOB, "error");
+      throw error;
+    }
   } catch (e) {
-    const err = e instanceof Error ? e : new Error(String(e));
-    console.error("❌ World Cup sync failed:", err.message);
-    return new Response(JSON.stringify({
-      success: false,
-      error: err.message
-    }), {
-      status: 500,
-      headers: CORS_HEADERS
-    });
+    return errorResponse(JOB, e);
   }
 });

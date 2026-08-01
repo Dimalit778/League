@@ -1,4 +1,4 @@
-import { Section } from '@/components/layout';
+import { Row, Section } from '@/components/layout';
 import { Card, EmptyState, LockedBadge, LogoBadge, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -31,37 +31,35 @@ function LeagueCard({ league, onPress }: { league: LeagueSummary; onPress: () =>
 
   return (
     <Card
-      className="mx-8"
-      padding="none"
+      className="mx-8 relative overflow-hidden rounded-2xl"
+      padding="sm"
       onPress={onPress}
       accessibilityLabel={league.league_name ?? undefined}
       accessibilityHint={isLocked ? (t('Upgrade to Pro') ?? undefined) : undefined}
     >
-      <View className="relative overflow-hidden rounded-2xl p-4">
-        <View className={isLocked ? 'opacity-50' : undefined}>
-          <View className="flex-row items-center">
-            <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={36} height={36} />
-            <View className="mx-3 h-10 w-px bg-border" />
-            <View className="min-w-0 flex-1">
-              <Text numberOfLines={1} className="text-xl font-semibold">
-                {league.league_name}
-              </Text>
-              <Text className="text-muted">{league.nickname}</Text>
-            </View>
-            <View className="mx-2 flex-row gap-2">
-              <StatBlock icon={<Podium size={15} color={colors.primary} />} value={`#${league.rank}`} />
-              <View className="mx-2 h-12 w-px bg-border" />
-              <StatBlock
-                icon={<Star size={15} color={colors.primary} fill={colors.primary} />}
-                value={`${league.total_points ?? 0}`}
-              />
-              <View className="mx-2 h-12 w-px bg-border" />
-              <StatBlock icon={<Users size={15} color={colors.primary} />} value={`${league.members_count ?? 0}`} />
-            </View>
+      <View className={isLocked ? 'opacity-50' : undefined}>
+        <View className="flex-row items-center">
+          <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={36} height={36} />
+          <View className="mx-3 h-10 w-px bg-border" />
+          <View className="min-w-0 flex-1">
+            <Text numberOfLines={1} className="text-xl font-semibold">
+              {league.league_name}
+            </Text>
+            <Text className="text-muted">{league.nickname}</Text>
+          </View>
+          <View className="mx-2 flex-row gap-2">
+            <StatBlock icon={<Podium size={15} color={colors.primary} />} value={`#${league.rank}`} />
+            <View className="mx-2 h-12 w-px bg-border" />
+            <StatBlock
+              icon={<Star size={15} color={colors.primary} fill={colors.primary} />}
+              value={`${league.total_points ?? 0}`}
+            />
+            <View className="mx-2 h-12 w-px bg-border" />
+            <StatBlock icon={<Users size={15} color={colors.primary} />} value={`${league.members_count ?? 0}`} />
           </View>
         </View>
-        <LockedBadge visible={isLocked} />
       </View>
+      <LockedBadge visible={isLocked} />
     </Card>
   );
 }
@@ -117,23 +115,20 @@ export function Leagues({ upgrade }: { upgrade: () => Promise<void> }) {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerClassName={cn(spacing.section, 'flex-grow pb-4 pt-2')}
+      contentContainerClassName={cn(spacing.section, 'flex-grow pb-4 pt-2 ')}
     >
-      <View className={spacing.list}>
-        <View className="flex-row items-center gap-2">
-          <Star size={16} color={colors.primary} fill={colors.primary} />
+      <View className={spacing.section}>
+        <Row className="gap-2">
+          <Star size={22} color={colors.primary} fill={colors.primary} />
           <Text variant="subtitle" tone="primary">
             {t('Primary League')}
           </Text>
-        </View>
+        </Row>
         <PrimaryLeagueCard league={primaryLeague} />
       </View>
 
       {otherLeagues.length > 0 && (
-        <Section
-          title={t('Other Leagues')}
-          description={t('Select a league to make it your primary league')}
-        >
+        <Section title={t('Other Leagues')}>
           <View className={spacing.list}>
             {otherLeagues.map((league) => (
               <LeagueCard key={league.league_id} league={league} onPress={() => handleLeaguePress(league)} />

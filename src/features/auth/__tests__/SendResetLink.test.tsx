@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import SendResetLink from '../screens/SendResetLink';
 import { mockAuthActions, resetAuthMocks } from './setup';
+import SendResetLink from '../screens/SendResetLink';
 
 describe('SendResetLink', () => {
   beforeEach(() => {
@@ -55,5 +55,13 @@ describe('SendResetLink', () => {
     // Should not find any error message
     expect(queryByText('User not found')).toBeNull();
     expect(queryByText('Invalid email')).toBeNull();
+  });
+
+  it('renders an auth error inside a Text component', () => {
+    mockAuthActions.errorMessage = 'Too many reset attempts';
+
+    const { getByText } = render(<SendResetLink />);
+
+    expect(getByText('Too many reset attempts')).toBeTruthy();
   });
 });

@@ -101,7 +101,8 @@ export default function EditLeagueScreen() {
     });
   };
   const trimmedLeagueName = editedLeagueName.trim();
-  const canSaveLeagueName = league && trimmedLeagueName.length > 0 && trimmedLeagueName !== league.name;
+  const canSaveLeagueName =
+    league && trimmedLeagueName.length >= 2 && trimmedLeagueName.length <= 20 && trimmedLeagueName !== league.name;
 
   const handleCopyJoinCode = async () => {
     if (typeof league?.join_code === 'string') {
@@ -163,8 +164,8 @@ export default function EditLeagueScreen() {
 
   const handleSaveLeague = () => {
     const trimmedName = editedLeagueName.trim();
-    if (!trimmedName) {
-      Alert.alert(t('Validation'), t('League name cannot be empty.'));
+    if (trimmedName.length < 2 || trimmedName.length > 20) {
+      Alert.alert(t('Validation'), t('League name must be between 2 and 20 characters.'));
       return;
     }
 
@@ -209,6 +210,7 @@ export default function EditLeagueScreen() {
                 autoCapitalize="words"
                 autoCorrect={false}
                 autoComplete="off"
+                maxLength={20}
               />
             ) : (
               <Text className="text-base font-bold px-3 py-3">

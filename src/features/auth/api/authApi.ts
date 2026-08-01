@@ -198,11 +198,15 @@ export const parseRecoveryTokensFromUrl = (
     return { tokens: null, error: params.error_description };
   }
 
+  if (params.type !== 'recovery') {
+    return { tokens: null, error: 'Invalid password recovery link.' };
+  }
+
   const accessToken = params.access_token;
   const refreshToken = params.refresh_token;
 
   if (!accessToken || !refreshToken) {
-    return { tokens: null, error: null };
+    return { tokens: null, error: 'Invalid password recovery link.' };
   }
 
   return { tokens: { accessToken, refreshToken }, error: null };

@@ -4,52 +4,81 @@ import { PredictionWithMemberType } from '@/features/matches/types';
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
-import { useEffect, useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { Keyboard, TextInput, View } from 'react-native';
+
+const SCORE_INPUT_SIZE = 46;
+const SCORE_FONT_SIZE = 24;
+
+export type PredictionDraftState = {
+  hasChanges: boolean;
+  isPending: boolean;
+};
+
+export type PredictionFormHandle = {
+  save: () => Promise<void>;
+};
+
 type PredictionFormProps = {
   prediction?: PredictionWithMemberType;
   matchId: number;
+  onSaveSuccess?: () => void;
+  onDraftChange?: (state: PredictionDraftState) => void;
 };
 
 type ScoreInputProps = {
   value: number;
   accessibilityLabel: string;
   onChange: (value: number) => void;
-  onEditingEnd: () => void;
+  onDigitEntered?: () => void;
 };
 
-const ScoreInput = ({ value, accessibilityLabel, onChange, onEditingEnd }: ScoreInputProps) => {
+const ScoreInput = forwardRef<TextInput, ScoreInputProps>(function ScoreInput(
+  { value, accessibilityLabel, onChange, onDigitEntered },
+  ref,
+) {
   const handleChangeText = (text: string) => {
-    const digitsOnly = text.replace(/\D/g, '');
-    onChange(digitsOnly ? Math.min(Number(digitsOnly), 99) : 0);
+    const digit = text.replace(/\D/g, '').slice(-1);
+    onChange(digit ? Number(digit) : 0);
+
+    if (digit) {
+      onDigitEntered?.();
+    }
   };
 
   return (
     <TextInput
-      value={value.toString()}
+      ref={ref}
+      value={value === 0 ? '' : value.toString()}
+      placeholderTextColor="rgba(255,255,255,0.45)"
       onChangeText={handleChangeText}
-      onBlur={onEditingEnd}
-      onEndEditing={onEditingEnd}
       keyboardType="number-pad"
-      maxLength={2}
+      maxLength={1}
       selectTextOnFocus
-      className="h-12 w-12 rounded-xl border border-white/40 bg-black/20 text-center text-xl font-bold text-white"
+      className="rounded-xl border border-white/40 bg-black/20 text-center font-bold text-white"
+      style={{
+        width: SCORE_INPUT_SIZE,
+        height: SCORE_INPUT_SIZE,
+        fontSize: SCORE_FONT_SIZE,
+      }}
       accessibilityLabel={accessibilityLabel}
+      accessibilityValue={{ text: value.toString() }}
     />
   );
-};
+});
 
-export default function PredictionForm({ prediction, matchId }: PredictionFormProps) {
+const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(function PredictionForm(
+  { prediction, matchId, onSaveSuccess, onDraftChange },
+  ref,
+) {
   const { t } = useTranslation();
   const memberId = useMemberId();
-  const scoresRef = useRef({ homeScore: 0, awayScore: 0 });
-  const lastSubmittedRef = useRef<{ homeScore: number | null; awayScore: number | null }>({
-    homeScore: null,
-    awayScore: null,
-  });
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [homeScore, setHomeScore] = useState<number>(0);
-  const [awayScore, setAwayScore] = useState<number>(0);
+  const awayScoreInputRef = useRef<TextInput>(null);
+  const [homeScore, setHomeScore] = useState(0);
+  const [awayScore, setAwayScore] = useState(0);
+  const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
+    prediction ? { home: prediction.home_score, away: prediction.away_score } : null,
+  );
 
   const upsertPrediction = useUpsertPrediction();
 
@@ -57,104 +86,61 @@ export default function PredictionForm({ prediction, matchId }: PredictionFormPr
     if (prediction) {
       setHomeScore(prediction.home_score);
       setAwayScore(prediction.away_score);
-      scoresRef.current = { homeScore: prediction.home_score, awayScore: prediction.away_score };
-      lastSubmittedRef.current = { homeScore: prediction.home_score, awayScore: prediction.away_score };
+      setSavedScores({ home: prediction.home_score, away: prediction.away_score });
     } else {
       setHomeScore(0);
       setAwayScore(0);
-      scoresRef.current = { homeScore: 0, awayScore: 0 };
-      lastSubmittedRef.current = { homeScore: null, awayScore: null };
+      setSavedScores(null);
     }
   }, [prediction]);
 
+  const hasChanges = savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away;
+
   useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
+    onDraftChange?.({ hasChanges, isPending: upsertPrediction.isPending });
+  }, [hasChanges, onDraftChange, upsertPrediction.isPending]);
 
-  const handleSave = async () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = null;
-    }
-
-    if (!matchId || !memberId) {
-      return;
-    }
-
-    const currentScores = scoresRef.current;
-    if (
-      lastSubmittedRef.current.homeScore === currentScores.homeScore &&
-      lastSubmittedRef.current.awayScore === currentScores.awayScore
-    ) {
-      return;
-    }
-
-    lastSubmittedRef.current = { ...currentScores };
+  const handleSave = useCallback(async () => {
+    if (!matchId || !memberId || !hasChanges || upsertPrediction.isPending) return;
 
     try {
       await upsertPrediction.mutateAsync({
         match_id: matchId,
-        home_score: currentScores.homeScore,
-        away_score: currentScores.awayScore,
+        home_score: homeScore,
+        away_score: awayScore,
         league_member_id: memberId,
       });
+      setSavedScores({ home: homeScore, away: awayScore });
+      onSaveSuccess?.();
     } catch {
-      lastSubmittedRef.current = {
-        homeScore: prediction?.home_score ?? null,
-        awayScore: prediction?.away_score ?? null,
-      };
+      // Alert handled in useUpsertPrediction
     }
-  };
+  }, [awayScore, hasChanges, homeScore, matchId, memberId, onSaveSuccess, upsertPrediction]);
 
-  const scheduleSave = () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      handleSave();
-    }, 600);
-  };
-
-  const handleHomeScoreChange = (value: number) => {
-    scoresRef.current = { ...scoresRef.current, homeScore: value };
-    setHomeScore(value);
-    scheduleSave();
-  };
-
-  const handleAwayScoreChange = (value: number) => {
-    scoresRef.current = { ...scoresRef.current, awayScore: value };
-    setAwayScore(value);
-    scheduleSave();
-  };
+  useImperativeHandle(ref, () => ({ save: handleSave }), [handleSave]);
 
   return (
     <View className="items-center justify-center">
-      <Text className="text-xs font-semibold mb-2 text-center text-white/70">
-        {t('My Prediction')}
-      </Text>
-
       <View className="flex-row items-center justify-center">
         <ScoreInput
           value={homeScore}
-          onChange={handleHomeScoreChange}
-          onEditingEnd={handleSave}
+          onChange={setHomeScore}
           accessibilityLabel={t('Home score')}
+          onDigitEntered={() => awayScoreInputRef.current?.focus()}
         />
-        <Text className="text-2xl mx-1.5 text-white/70">
+        <Text variant="label" className="mx-1.5 text-2xl text-white/70">
           -
         </Text>
         <ScoreInput
+          ref={awayScoreInputRef}
           value={awayScore}
-          onChange={handleAwayScoreChange}
-          onEditingEnd={handleSave}
+          onChange={setAwayScore}
           accessibilityLabel={t('Away score')}
+          onDigitEntered={Keyboard.dismiss}
         />
       </View>
     </View>
   );
-}
+});
+
+export default PredictionForm;

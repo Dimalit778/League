@@ -1,13 +1,12 @@
-import { images } from '@/assets/images';
-import { Divider, HeaderBackground, LogoBadge, Text } from '@/components/ui';
+import { Divider, HeaderBackground, LogoBadge, MyImage, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Image as ExpoImage } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ChevronRight, Podium, Star, Users } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
+import { images } from '@/assets/images';
+import { Row } from '@/components/layout';
 import { LeagueSummary } from '../../types';
 
 type StatBlockProps = {
@@ -48,27 +47,8 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
   return (
     <HeaderBackground>
       <Pressable onPress={handlePress} className="flex-row items-center gap-4 px-4 py-4">
-        <View className="h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-surface">
-          <LinearGradient
-            colors={['rgba(255,211,0,0.22)', 'rgba(255,211,0,0.04)']}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: 999,
-            }}
-          />
-          <ExpoImage
-            source={images.trophyGold}
-            contentFit="contain"
-            style={{
-              width: 52,
-              height: 52,
-            }}
-          />
-        </View>
-
         <View className="min-w-0 flex-1 justify-center gap-3">
-          <View className="flex-row items-center gap-3">
+          <Row className="items-center gap-3">
             <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
 
             <View className="min-w-0 flex-1 gap-0.5">
@@ -79,11 +59,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
                 {league.nickname}
               </Text>
             </View>
-
-            <View className="rounded-full border border-primary p-1">
-              <ChevronRight size={22} color={colors.primary} />
-            </View>
-          </View>
+          </Row>
 
           <Divider />
 
@@ -106,6 +82,12 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
               value={`${league.members_count}`}
             />
           </View>
+        </View>
+        <View className="items-center justify-center">
+          <View className="rounded-full border border-primary p-1">
+            <ChevronRight size={22} color={colors.primary} />
+          </View>
+          <MyImage source={images.trophyGold} width={70} height={70} contentFit="contain" />
         </View>
       </Pressable>
     </HeaderBackground>

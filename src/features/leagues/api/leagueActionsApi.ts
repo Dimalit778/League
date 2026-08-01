@@ -9,10 +9,10 @@ export const leagueActionsApi = {
     avatar_url?: string;
   }) {
     const { data, error } = await supabase.rpc('create_new_league', {
-      league_name: params.league_name,
+      league_name: params.league_name.trim(),
       max_members: params.max_members,
       competition_id: params.competition_id,
-      nickname: params.nickname,
+      nickname: params.nickname.trim(),
       avatar_url: params.avatar_url,
     });
 
@@ -22,8 +22,8 @@ export const leagueActionsApi = {
   },
   async joinLeague(joinCode: string, nickname: string) {
     const { data, error } = await supabase.rpc('join_league', {
-      league_join_code: joinCode,
-      user_nickname: nickname,
+      league_join_code: joinCode.trim().toUpperCase(),
+      user_nickname: nickname.trim(),
     });
 
     if (error) {

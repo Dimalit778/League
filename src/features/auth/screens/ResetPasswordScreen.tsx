@@ -20,7 +20,11 @@ import * as yup from 'yup';
 type PasswordFormData = yup.InferType<typeof passwordSchema>;
 
 const passwordSchema = yup.object().shape({
-  password: yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
+  password: yup
+    .string()
+    .min(8, 'Minimum 8 characters')
+    .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Password must contain at least one letter and one number')
+    .required('Password is required'),
   confirmPassword: yup
     .string()
     .required('Please confirm your password')

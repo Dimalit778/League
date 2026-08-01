@@ -26,12 +26,8 @@ const LockedStats = () => {
           <Feather name="lock" size={30} color={colors.primary} />
         </View>
 
-        <Text className="text-xl text-center text-text">
-          {t('Premium stats only')}
-        </Text>
-        <Text className="text-sm mt-3 text-center text-muted">
-          {t('Upgrade to Pro to unlock match statistics')}
-        </Text>
+        <Text className="text-xl text-center text-text">{t('Premium stats only')}</Text>
+        <Text className="text-sm mt-3 text-center text-muted">{t('Upgrade to Pro to unlock match statistics')}</Text>
 
         <Button
           title={t('Upgrade to Pro')}

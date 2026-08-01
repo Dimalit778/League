@@ -1,5 +1,7 @@
 // supabase/functions/generate-match-analysis/index.ts
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { errorResponse, jsonResponse, requireSyncAuth } from '../_shared/sync.ts';
+import { captureException, logStructured } from '../_shared/monitoring.ts';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const GEMINI_API_KEY = Deno.env.get('GEMINI_KEY') ?? '';
@@ -337,17 +339,24 @@ async function processMatch(match) {
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`Failed to analyze match ${match.id} ${home} vs ${away}:`, message);
+    logStructured('error', 'match_analysis.failed', { matchId: match.id, message });
+    await captureException('generate-match-analysis', err, { matchId: match.id });
     return {
       matchId: match.id,
       homeTeam: home,
       awayTeam: away,
       status: 'error',
-      error: message.slice(0, 500)
+      error: 'Analysis failed'
     };
   }
 }
-Deno.serve(async (_req)=>{
+Deno.serve(async (req)=>{
+  if (req.method !== 'POST') {
+    return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
+  }
+  const denied = requireSyncAuth(req);
+  if (denied) return denied;
+
   try {
     const matches = await fetchMatchesToAnalyze();
     if (matches.length === 0) {
@@ -382,15 +391,6 @@ Deno.serve(async (_req)=>{
       }
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('generate-match-analysis fatal error:', message);
-    return new Response(JSON.stringify({
-      error: message
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    return errorResponse('generate-match-analysis', err);
   }
 });

@@ -19,7 +19,7 @@ export const MATCH_CARD_LAYOUT = {
   contentBottomY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
 
   dateTabTextOffset: 8,
-  predictionTabTextOffset: 8,
+  predictionTabTextOffset: 10,
 } as const;
 
 export function getMatchCardMetrics(screenWidth: number) {

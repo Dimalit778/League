@@ -32,3 +32,8 @@ declare module "*.otf" {
   const value: any;
   export default value;
 }
+
+declare module "*.lottie" {
+  const value: number;
+  export default value;
+}

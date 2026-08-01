@@ -90,6 +90,24 @@ Deno.serve(async (req) => {
     return json({ error: 'Unauthorized' }, 401);
   }
 
+  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { data: allowed, error: rateLimitError } = await adminClient.rpc(
+    'consume_subscription_sync_attempt',
+    { p_user_id: user.id, p_cooldown_seconds: 30 },
+  );
+
+  if (rateLimitError) {
+    console.error('Subscription sync rate-limit error:', rateLimitError.message);
+    return json({ error: 'Failed to check sync limit' }, 500);
+  }
+
+  if (!allowed) {
+    return json({ error: 'Too many requests. Try again shortly.' }, 429);
+  }
+
   const rcResponse = await fetch(
     `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(user.id)}`,
     {
@@ -109,10 +127,6 @@ Deno.serve(async (req) => {
   const rcData = (await rcResponse.json()) as RevenueCatSubscriberResponse;
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
-
-  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 
   const { error } = await adminClient.from('user_subscriptions').upsert(
     {

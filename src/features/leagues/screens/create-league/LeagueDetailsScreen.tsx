@@ -13,8 +13,18 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  leagueName: yup.string().required('League name is required').min(2, 'League name must be at least 2 characters long'),
-  nickname: yup.string().required('Nickname is required').min(2, 'Nickname must be at least 2 characters long'),
+  leagueName: yup
+    .string()
+    .trim()
+    .required('League name is required')
+    .min(2, 'League name must be at least 2 characters long')
+    .max(20, 'League name must be at most 20 characters long'),
+  nickname: yup
+    .string()
+    .trim()
+    .required('Nickname is required')
+    .min(2, 'Nickname must be at least 2 characters long')
+    .max(20, 'Nickname must be at most 20 characters long'),
 });
 
 const DEFAULT_MEMBERS_COUNT = 6;
@@ -107,7 +117,7 @@ const LeagueDetailsScreen = () => {
               control={control}
               name="leagueName"
               placeholder={t('Enter league name')}
-              maxLength={50}
+              maxLength={20}
               autoCorrect={false}
               autoCapitalize="words"
               error={errors.leagueName}
@@ -121,6 +131,7 @@ const LeagueDetailsScreen = () => {
               control={control}
               name="nickname"
               placeholder={t('Enter your nickname')}
+              maxLength={20}
               autoCorrect={false}
               autoCapitalize="words"
               error={errors.nickname}

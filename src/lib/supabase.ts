@@ -1,6 +1,7 @@
 import { Database } from '@/types/database.types';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import { authStorage, createMMKVStorageAdapter } from './storage';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -20,11 +21,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Convert synchronous MMKV adapter to Promise-based for Supabase
 const mmkvAdapter = createMMKVStorageAdapter(authStorage);
+const reportStorageError = (operation: string, error: unknown) => {
+  if (__DEV__) {
+    console.warn(`[auth-storage] ${operation} failed`, error);
+    return;
+  }
+  Sentry.captureException(error, { tags: { subsystem: 'auth-storage', operation } });
+};
 const MMKVStorage = {
   getItem: (key: string): Promise<string | null> => {
     try {
       return Promise.resolve(mmkvAdapter.getItem(key));
-    } catch {
+    } catch (error) {
+      reportStorageError('read', error);
       return Promise.resolve(null);
     }
   },
@@ -32,7 +41,8 @@ const MMKVStorage = {
     try {
       mmkvAdapter.setItem(key, value);
       return Promise.resolve();
-    } catch {
+    } catch (error) {
+      reportStorageError('write', error);
       return Promise.resolve();
     }
   },
@@ -40,7 +50,8 @@ const MMKVStorage = {
     try {
       mmkvAdapter.removeItem(key);
       return Promise.resolve();
-    } catch {
+    } catch (error) {
+      reportStorageError('remove', error);
       return Promise.resolve();
     }
   },

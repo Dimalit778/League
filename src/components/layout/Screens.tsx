@@ -59,7 +59,7 @@ export function Screen({
         <ScrollView
           className="flex-1"
           contentContainerClassName={contentClass}
-          contentContainerStyle={[{ paddingBottom: bottomInset }, contentContainerStyle]}
+          contentContainerStyle={[bottomInset > 0 ? { paddingBottom: bottomInset } : null, contentContainerStyle]}
           refreshControl={refreshControl}
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
@@ -72,7 +72,10 @@ export function Screen({
 
   return (
     <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
-      <View className={cn('flex-1 min-h-0', contentClass)} style={{ paddingBottom: bottomInset }}>
+      <View
+        className={cn('flex-1 min-h-0', contentClass)}
+        style={bottomInset > 0 ? { paddingBottom: bottomInset } : undefined}
+      >
         {children}
       </View>
     </Root>

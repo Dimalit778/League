@@ -14,6 +14,7 @@ import {
   isRetryableStatus,
   parseRetryAfterMs,
 } from "./rateLimit.ts";
+import { createRequestId, logStructured, monitoredErrorResponse } from "./monitoring.ts";
 
 export const FD_BASE = "https://api.football-data.org/v4";
 
@@ -51,8 +52,16 @@ export const requireSyncAuth = (req: Request): Response | null => {
   const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
   if (bearer && bearer === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")) return null;
 
-  console.warn("sync auth rejected: missing/invalid x-sync-secret");
-  return jsonResponse({ success: false, message: "Unauthorized" }, 401);
+  const requestId = createRequestId(req);
+  logStructured("warning", "function.auth_rejected", {
+    requestId,
+    path: new URL(req.url).pathname,
+    status: 401,
+  });
+  return new Response(JSON.stringify({ success: false, requestId, message: "Unauthorized" }), {
+    status: 401,
+    headers: { ...JSON_HEADERS, "x-error-id": requestId },
+  });
 };
 
 // ── Overlap guard ────────────────────────────────────────────────────────────
@@ -152,11 +161,6 @@ export const fdFetch = async (supabase: any, job: string, url: string, fdKey: st
 // ── Common error response ────────────────────────────────────────────────────
 export const errorResponse = (tag: string, err: unknown) => {
   const e = err instanceof Error ? err : new Error(String(err));
-  const reqId = crypto.randomUUID();
-  console.error(JSON.stringify({ tag, reqId, message: e.message }));
   const status = e instanceof BudgetExhaustedError ? 429 : 500;
-  return new Response(JSON.stringify({ success: false, reqId, message: e.message }), {
-    status,
-    headers: { ...JSON_HEADERS, "x-error-id": reqId },
-  });
+  return monitoredErrorResponse(tag, e, status);
 };

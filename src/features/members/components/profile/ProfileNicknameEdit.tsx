@@ -33,7 +33,12 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
   } = useForm({
     resolver: yupResolver(
       yup.object().shape({
-        nickname: yup.string().min(2, t('Nickname must be at least 2 characters')).required(t('Nickname is required')),
+        nickname: yup
+          .string()
+          .trim()
+          .min(2, t('Nickname must be at least 2 characters'))
+          .max(20, t('Nickname must be at most 20 characters'))
+          .required(t('Nickname is required')),
       }),
     ),
     mode: 'onChange',
@@ -86,6 +91,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
             value={value}
             placeholder={t('Nickname')}
             placeholderTextColor={colors.muted}
+            maxLength={20}
             autoFocus
           />
         )}

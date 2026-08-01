@@ -75,14 +75,13 @@ const SendResetLink = () => {
             variant="secondary"
             size="lg"
           />
-          {errorMessage ||
-            (message && (
-              <View className="mt-4">
-                <Text className={`text-center ${errorMessage ? 'text-error' : 'text-success'}`}>
-                  {errorMessage || message}
-                </Text>
-              </View>
-            ))}
+          {(errorMessage || message) && (
+            <View className="mt-4">
+              <Text className={`text-center ${errorMessage ? 'text-error' : 'text-success'}`}>
+                {errorMessage || message}
+              </Text>
+            </View>
+          )}
         </View>
       </KeyboardAwareScrollView>
     </Screen>

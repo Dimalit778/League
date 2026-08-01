@@ -27,10 +27,9 @@ export const mockAuthActions = {
 jest.mock('@/features/auth/hooks/useAuthActions', () => ({
   useAuthActions: () => ({
     ...mockAuthActions,
-    // Return the current state of mockAuthActions
-    get errorMessage() { return mockAuthActions.errorMessage; },
-    get isLoading() { return mockAuthActions.isLoading; },
-    get isError() { return mockAuthActions.isError; },
+    errorMessage: mockAuthActions.errorMessage,
+    isLoading: mockAuthActions.isLoading,
+    isError: mockAuthActions.isError,
   }),
 }));
 
@@ -47,6 +46,7 @@ jest.mock('@assets/icons', () => {
   const MockIcon = () => null;
   return {
     EmailIcon: MockIcon,
+    MailIcon: MockIcon,
     LockIcon: MockIcon,
     UserIcon: MockIcon,
     EyeOpenIcon: MockIcon,

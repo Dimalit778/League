@@ -1,13 +1,24 @@
 // /supabase/functions/sync_teams/index.ts
 // deno-lint-ignore-file no-explicit-any
-import { createClient } from "npm:@supabase/supabase-js@2";
+import {
+  createServiceClient,
+  errorResponse,
+  FD_BASE,
+  fdFetch,
+  jsonResponse,
+  lockedResponse,
+  must,
+  releaseSyncLock,
+  requireSyncAuth,
+  tryAcquireSyncLock,
+} from "../_shared/sync.ts";
 /** ---------- Config ---------- */ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-sync-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json"
 };
-const FD_BASE = "https://api.football-data.org/v4";
+const JOB = "sync-all-competitions-teams";
 const COMPETITIONS = [
   {
     name: "Premier League",
@@ -33,23 +44,7 @@ const COMPETITIONS = [
 const TEAMS_BUCKET = "teams_logo";
 const BULK_CHUNK = 500; // upsert chunk size
 const FETCH_TIMEOUT_MS = 15000;
-/** ---------- Utils ---------- */ const must = (k)=>{
-  const v = Deno.env.get(k);
-  if (!v) throw new Error(`${k} is not set`);
-  return v;
-};
-const sleep = (ms)=>new Promise((r)=>setTimeout(r, ms));
-async function retry(fn, retries = 2, baseDelay = 300) {
-  let i = 0;
-  while(true){
-    try {
-      return await fn();
-    } catch (e) {
-      if (i++ >= retries) throw e;
-      await sleep(baseDelay * 2 ** (i - 1));
-    }
-  }
-}
+/** ---------- Utils ---------- */
 async function timedFetch(url, init, timeoutMs = FETCH_TIMEOUT_MS) {
   const ctrl = new AbortController();
   const to = setTimeout(()=>ctrl.abort(), timeoutMs);
@@ -114,43 +109,35 @@ function mapTeam(t, logoUrl) {
   if (req.method === "OPTIONS") return new Response("ok", {
     headers: CORS_HEADERS
   });
+  if (req.method !== "POST") return jsonResponse({ success: false, message: "Method not allowed" }, 405);
+  const denied = requireSyncAuth(req);
+  if (denied) return denied;
   try {
-    const SUPABASE_URL = must("SUPABASE_URL");
-    const SERVICE_ROLE = must("SUPABASE_SERVICE_ROLE_KEY");
     const FD_KEY = must("FOOTBALL_ORG_API_KEY");
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-    // 1) Fetch teams for all competitions in parallel (with retry/timeout)
-    const fetches = await Promise.allSettled(COMPETITIONS.map(async (c)=>{
-      const url = `${FD_BASE}/competitions/${c.code}/teams`;
-      const res = await retry(async ()=>{
-        const r = await timedFetch(url, {
-          headers: {
-            "X-Auth-Token": FD_KEY,
-            Accept: "application/json"
+    const supabase = createServiceClient();
+    if (!(await tryAcquireSyncLock(supabase, JOB, 3600))) return lockedResponse(JOB);
+
+    try {
+      // 1) Fetch teams sequentially through the shared DB-backed API budget.
+      const teamsById = new Map();
+      const fetchErrors = [];
+      for (const c of COMPETITIONS) {
+        try {
+          const payload = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${c.code}/teams`, FD_KEY);
+          const teams = Array.isArray(payload?.teams) ? payload.teams : [];
+          console.info(`${c.code}: Found ${teams.length} teams`);
+          for (const t of teams) {
+            if (t?.id && !teamsById.has(t.id)) teamsById.set(t.id, t);
           }
-        });
-        if (!r.ok) throw new Error(`FD API ${r.status}: ${await r.text()}`);
-        return r.json();
-      });
-      const teams = Array.isArray(res?.teams) ? res.teams : [];
-      console.info(`${c.code}: Found ${teams.length} teams`);
-      return teams;
-    }));
-    // 2) Dedupe teams (same team won’t be inserted twice if it appears in multiple calls)
-    const teamsById = new Map();
-    const fetchErrors = [];
-    for (const r of fetches){
-      if (r.status === "fulfilled") {
-        for (const t of r.value){
-          if (t?.id && !teamsById.has(t.id)) teamsById.set(t.id, t);
+        } catch (error) {
+          fetchErrors.push(`${c.code}: ${error instanceof Error ? error.message : String(error)}`);
         }
-      } else {
-        fetchErrors.push(r.reason instanceof Error ? r.reason.message : String(r.reason));
       }
-    }
+      // 2) Dedupe teams (same team won’t be inserted twice if it appears in multiple calls)
     const rawTeams = Array.from(teamsById.values());
     console.info(`Total unique teams collected: ${rawTeams.length}`);
     if (rawTeams.length === 0) {
+      await releaseSyncLock(supabase, JOB, fetchErrors.length === 0 ? "success" : "error");
       return new Response(JSON.stringify({
         success: fetchErrors.length === 0,
         synced: 0,
@@ -210,25 +197,16 @@ function mapTeam(t, logoUrl) {
         db: dbErrors.length ? dbErrors : undefined
       } : undefined
     };
+    await releaseSyncLock(supabase, JOB, body.success ? "success" : "partial");
     console.info(`✅ Synced ${synced} teams, uploaded ${uploadedLogos} logos`);
     return new Response(JSON.stringify(body), {
       headers: CORS_HEADERS
     });
+    } catch (err) {
+      await releaseSyncLock(supabase, JOB, "error");
+      throw err;
+    }
   } catch (err) {
-    const e = err instanceof Error ? err : new Error(String(err));
-    const reqId = crypto.randomUUID();
-    console.error("❌ Competition sync failed:", {
-      reqId,
-      message: e.message,
-      stack: e.stack
-    });
-    return new Response(JSON.stringify({
-      success: false,
-      reqId,
-      message: e.message
-    }), {
-      status: 500,
-      headers: CORS_HEADERS
-    });
+    return errorResponse(JOB, err);
   }
 });

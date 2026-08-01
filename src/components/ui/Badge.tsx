@@ -1,10 +1,11 @@
 import { cn } from '@/lib/nativewind/nativeWind';
+import { type TextVariant } from '@/lib/nativewind/typography';
 import { type ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 import { Text } from './Text';
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'live' | 'locked';
-export type BadgeSize = 'sm' | 'md';
+export type BadgeSize = 'sm' | 'md' | 'lg';
 
 export type BadgeProps = ViewProps & {
   label: string;
@@ -36,21 +37,27 @@ const textClasses: Record<BadgeVariant, string> = {
   locked: 'text-muted',
 };
 
+const textVariants: Record<BadgeSize, TextVariant> = {
+  sm: 'caption',
+  md: 'body',
+  lg: 'subtitle',
+};
+
 export function Badge({ label, variant = 'default', size = 'sm', leftIcon, className, ...props }: BadgeProps) {
   return (
     <View
       {...props}
       accessibilityLabel={props.accessibilityLabel ?? label}
       className={cn(
-        'self-start flex-row items-center gap-1 rounded-lg',
-        size === 'sm' ? 'min-h-6 px-2 py-0.5' : 'min-h-8 px-3 py-1',
+        'self-start flex-row items-center gap-1 rounded-full',
+        size === 'sm' ? 'min-h-6 px-2 py-0.5' : size === 'lg' ? 'min-h-10 px-4 py-1.5' : 'min-h-8 px-3 py-1',
         variantClasses[variant],
         className,
       )}
     >
       {variant === 'live' ? <View className="h-1.5 w-1.5 rounded-full bg-error" /> : null}
       {leftIcon}
-      <Text variant="caption" className={cn('font-semibold', textClasses[variant])}>
+      <Text variant={textVariants[size]} className={cn('font-semibold', textClasses[variant])}>
         {label}
       </Text>
     </View>
