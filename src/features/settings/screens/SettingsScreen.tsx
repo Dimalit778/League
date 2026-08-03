@@ -68,7 +68,7 @@ const SettingsScreen = () => {
           </Text>
 
           <Text variant="bodySmall" className="text-muted">
-            {t('Permanently delete your account and all your data.')}
+            {t('Delete personal data while keeping anonymized league history.')}
           </Text>
         </Card>
       </View>

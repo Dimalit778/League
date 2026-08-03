@@ -25,14 +25,14 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'min-h-11 px-3',
+  sm: 'min-h-9 px-3',
   md: 'min-h-11 px-4',
   lg: 'min-h-[52px] px-6',
   icon: 'h-11 w-11 p-0',
 };
 
 const textSizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-sm',
+  sm: 'text-base',
   md: 'text-base',
   lg: 'text-lg',
   icon: 'text-base',

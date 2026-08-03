@@ -18,6 +18,7 @@ type RowProps = {
 function Row({ user, rank, isCurrentUser, isLast }: RowProps) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const displayName = user.user_id ? user.nickname : t('Deleted Player');
 
   return (
     <View
@@ -32,10 +33,10 @@ function Row({ user, rank, isCurrentUser, isLast }: RowProps) {
       </View>
       <View className={cn('min-w-0 flex-1 flex-row items-center', spacing.row)}>
         <View className="h-7 w-7 overflow-hidden rounded-full">
-          <AvatarImage nickname={user.nickname} path={user.avatar_url} />
+          <AvatarImage nickname={displayName} path={user.avatar_url} />
         </View>
         <Text numberOfLines={1} className={cn('font-semibold text-xs', 'flex-1', colors.text)}>
-          {user.nickname}
+          {displayName}
         </Text>
       </View>
 
@@ -59,7 +60,12 @@ export function TopLeaderboardCard({ users, currentMemberId }: Props) {
     <View>
       <View className="flex-row px-4 py-2">
         <Link href="/(app)/(league)/(tabs)/Leaderboard" asChild>
-          <Pressable accessibilityRole="button" className={cn('flex-row items-center', spacing.micro)}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('Top leaderboard')}
+            hitSlop={8}
+            className={cn('min-h-11 flex-row items-center', spacing.micro)}
+          >
             <Text className="font-semibold">{t('Top leaderboard')}</Text>
             <DirectionalIcon size={16} color={colors.muted} strokeWidth={2} />
           </Pressable>

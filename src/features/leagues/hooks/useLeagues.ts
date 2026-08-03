@@ -4,7 +4,7 @@ import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/reac
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
 import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
-import { usePaywall } from '@/lib/revenuecat/purchases';
+import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { leagueActionsApi } from '../api/leagueActionsApi';
-import { MyLeague } from '../types';
+import { LeagueSummary, MyLeague, MyLeaguesResponse } from '../types';
 
 export const useMyLeagues = () => {
   const userId = useAuthStore((s) => s.user?.id);
@@ -63,7 +63,7 @@ export const useUpdatePrimaryLeague = () => {
         throw new Error('User not authenticated');
       }
 
-      return leagueApi.updatePrimaryLeague(leagueId, userId);
+      return leagueApi.updatePrimaryLeague(leagueId);
     },
 
     onSuccess: async (_data, { leagueId }) => {
@@ -95,7 +95,9 @@ export const useUpdatePrimaryLeague = () => {
   });
 };
 
-export const useUpdateLeagueActivation = () => {
+export const useUpdateLeagueActivation = ({
+  reinitializePrimaryLeague = true,
+}: { reinitializePrimaryLeague?: boolean } = {}) => {
   const userId = useAuthStore((s) => s.user?.id);
   const queryClient = useQueryClient();
   const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
@@ -103,53 +105,86 @@ export const useUpdateLeagueActivation = () => {
   return useMutation({
     mutationFn: (activeMemberIds: string[]) => {
       if (!userId) throw new Error('User not authenticated');
-      return leagueApi.updateMyLeagueActivation(userId, activeMemberIds);
+      return leagueApi.updateMyLeagueActivation(activeMemberIds);
+    },
+    onMutate: async (activeMemberIds) => {
+      if (!userId) return undefined;
+
+      const leaguesKey = KEYS.users.leagues(userId);
+      const summaryKey = KEYS.users.leaguesSummary(userId);
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: leaguesKey }),
+        queryClient.cancelQueries({ queryKey: summaryKey }),
+      ]);
+
+      const previousLeagues = queryClient.getQueryData<MyLeaguesResponse>(leaguesKey);
+      const previousSummary = queryClient.getQueryData<LeagueSummary[]>(summaryKey);
+      const activeIds = new Set(activeMemberIds);
+
+      queryClient.setQueryData<MyLeaguesResponse>(leaguesKey, (current) => {
+        if (!current) return current;
+
+        const memberships = [
+          ...(current.primaryLeague ? [current.primaryLeague] : []),
+          ...current.leagues,
+          ...current.inactiveLeagues,
+        ].map((league) => ({ ...league, active: activeIds.has(league.id) }));
+
+        return {
+          primaryLeague: memberships.find((league) => league.is_primary) ?? null,
+          leagues: memberships.filter((league) => !league.is_primary && league.active),
+          inactiveLeagues: memberships.filter((league) => !league.is_primary && !league.active),
+          total: memberships.length,
+        };
+      });
+      queryClient.setQueryData<LeagueSummary[]>(summaryKey, (current) =>
+        current?.map((league) => ({
+          ...league,
+          active: league.member_id ? activeIds.has(league.member_id) : league.active,
+        })),
+      );
+
+      return { previousLeagues, previousSummary };
     },
     onSuccess: async () => {
+      if (reinitializePrimaryLeague) await initializePrimaryLeague();
+    },
+    onError: (error, _activeMemberIds, context) => {
+      if (userId && context) {
+        queryClient.setQueryData(KEYS.users.leagues(userId), context.previousLeagues);
+        queryClient.setQueryData(KEYS.users.leaguesSummary(userId), context.previousSummary);
+      }
+      Alert.alert('Error', error.message);
+    },
+    onSettled: () => {
       if (!userId) return;
 
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: KEYS.users.leagues(userId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: KEYS.members.primaryLeague(userId),
-        }),
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: KEYS.users.leagues(userId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.users.leaguesSummary(userId) }),
+        queryClient.invalidateQueries({ queryKey: KEYS.members.primaryLeague(userId) }),
       ]);
-      await initializePrimaryLeague();
-    },
-    onError: (error) => {
-      Alert.alert('Error', error.message);
     },
   });
 };
 
 export const useReactivateLeaguesAfterProUpgrade = () => {
   const openPaywall = usePaywall();
-  const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation();
-  const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
+  const { subscription } = useRevenueCatSubscription();
+  const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation({ reinitializePrimaryLeague: false });
 
   return useCallback(
     async (leagues: MyLeague[]) => {
-      const purchased = await openPaywall();
-      if (!purchased) return false;
+      const hasProAccess = subscription.isActive || (await openPaywall());
+      if (!hasProAccess) return false;
 
       const memberIds = leagues.map((league) => league.id).slice(0, PLAN_LIMITS.PRO.maxLeagues);
       if (memberIds.length === 0) return true;
 
       await updateLeagueActivation(memberIds);
-
-      const preferredPrimary =
-        leagues.find((league) => league.is_primary && memberIds.includes(league.id)) ??
-        leagues.find((league) => memberIds.includes(league.id));
-
-      if (preferredPrimary) {
-        await updatePrimaryLeague({ leagueId: preferredPrimary.league.id });
-      }
-
       return true;
     },
-    [openPaywall, updateLeagueActivation, updatePrimaryLeague],
+    [openPaywall, subscription.isActive, updateLeagueActivation],
   );
 };
 

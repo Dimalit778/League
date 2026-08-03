@@ -46,7 +46,12 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
 
   return (
     <HeaderBackground>
-      <Pressable onPress={handlePress} className="flex-row items-center gap-4 px-4 py-4">
+      <Pressable
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel={`${league.league_name}, ${league.nickname}`}
+        className="min-h-11 flex-row items-center gap-4 px-4 py-4"
+      >
         <View className="min-w-0 flex-1 justify-center gap-3">
           <Row className="items-center gap-3">
             <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />

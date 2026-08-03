@@ -120,8 +120,9 @@ export function useMyLeaguesScreen() {
   const upgrade = useCallback(async () => {
     const upgraded = await reactivateLeaguesAfterProUpgrade(allLeagues);
     if (upgraded) {
-      await refetch();
+      void refetch();
     }
+    return upgraded;
   }, [allLeagues, reactivateLeaguesAfterProUpgrade, refetch]);
 
   return {
@@ -129,6 +130,7 @@ export function useMyLeaguesScreen() {
     error,
     allLeagues,
     activeCount,
+    isPro,
     maxLeagues,
     hasPrimaryLeague: !!memberId && !!leagueId && !!competitionId,
     selectLeague,

@@ -1,54 +1,27 @@
-import { Button, Text } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { MatchWithPredictions } from '../../types';
-import MatchStats from './MatchStats';
+import AiAnalysisCard from './AiAnalysisCard';
 import PredictionRank from './PredictionRank';
 
 const tabs = [
-  { id: 0, title: 'PREDICTIONS', icon: 'users' as const },
-  { id: 1, title: 'STATS', icon: 'bar-chart-2' as const },
+  { id: 0, title: 'Predictions', icon: 'users' as const },
+  { id: 1, title: 'AI Analysis', icon: 'cpu' as const },
 ];
 
-const LockedStats = () => {
+export default function TabsContent({ match }: { match: MatchWithPredictions }) {
   const { t } = useTranslation();
-  const { colors } = useThemeTokens();
-
-  return (
-    <View className="flex-1 bg-background px-6 pt-14">
-      <View className="items-center rounded-2xl border border-border bg-surface px-6 py-8">
-        <View className="mb-5 h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <Feather name="lock" size={30} color={colors.primary} />
-        </View>
-
-        <Text className="text-xl text-center text-text">{t('Premium stats only')}</Text>
-        <Text className="text-sm mt-3 text-center text-muted">{t('Upgrade to Pro to unlock match statistics')}</Text>
-
-        <Button
-          label={t('Upgrade to Pro')}
-          onPress={() => router.push('/(app)/(user)/settings')}
-          className="mt-6 w-full"
-        />
-      </View>
-    </View>
-  );
-};
-
-export default function TabsContent({ predictions }: { predictions: MatchWithPredictions['predictions'] }) {
-  const { t } = useTranslation();
-  const { subscription } = useRevenueCatSubscription();
   const [activeTab, setActiveTab] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const isScrollingProgrammatically = useRef(false);
   const { colors } = useThemeTokens();
   const { width } = useWindowDimensions();
   const [containerWidth, setContainerWidth] = useState(0);
-  const canViewStats = subscription.isActive;
+  const predictions = match.predictions ?? [];
 
   const onTabPress = (index: number) => {
     isScrollingProgrammatically.current = true;
@@ -108,9 +81,9 @@ export default function TabsContent({ predictions }: { predictions: MatchWithPre
           })}
           renderItem={({ item }) => {
             return (
-              <View style={{ width: containerWidth }}>
+              <View style={{ width: containerWidth }} className="flex-1">
                 {item.id === 0 && <PredictionRank predictions={predictions} />}
-                {item.id === 1 && (canViewStats ? <MatchStats stats={[]} /> : <LockedStats />)}
+                {item.id === 1 && <AiAnalysisCard match={match} />}
               </View>
             );
           }}

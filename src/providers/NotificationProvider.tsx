@@ -1,13 +1,28 @@
 import { MATCH_REMINDER_TYPE } from '@/features/notifications/utils/matchReminders';
 import { cancelAllMatchReminders, syncMatchReminders } from '@/features/notifications/utils/reminderScheduler';
-import { ensureNotificationPermission, setupAndroidNotificationChannel } from '@/lib/notifications';
+import {
+  getNotificationPermissionSnapshot,
+  INITIAL_NOTIFICATION_PERMISSION,
+  NotificationPermissionSnapshot,
+  requestNotificationPermission,
+  setupAndroidNotificationChannel,
+} from '@/lib/notifications';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLanguageStore } from '@/store/LanguageStore';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import * as Sentry from '@sentry/react-native';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { AppState, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -21,6 +36,21 @@ Notifications.setNotificationHandler({
 });
 
 const FOREGROUND_RESYNC_MIN_INTERVAL_MS = 15 * 60 * 1000;
+
+type NotificationPermissionContextValue = {
+  permission: NotificationPermissionSnapshot;
+  isRequesting: boolean;
+  refreshPermission: () => Promise<NotificationPermissionSnapshot>;
+  requestPermission: () => Promise<NotificationPermissionSnapshot>;
+};
+
+const NotificationPermissionContext = createContext<NotificationPermissionContextValue | null>(null);
+
+export const useNotificationPermission = () => {
+  const context = useContext(NotificationPermissionContext);
+  if (!context) throw new Error('useNotificationPermission must be used inside NotificationProvider');
+  return context;
+};
 
 const getReminderMatchId = (response: Notifications.NotificationResponse | null): number | null => {
   const data = response?.notification?.request?.content?.data;
@@ -36,8 +66,10 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
   const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
   const language = useLanguageStore((s) => s.language);
 
-  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermissionSnapshot>(INITIAL_NOTIFICATION_PERMISSION);
+  const [isRequesting, setIsRequesting] = useState(false);
   const [pendingMatchId, setPendingMatchId] = useState<number | null>(null);
+  const permissionGranted = permission.status === 'granted';
 
   // Serialize sync/cancel work so a logout can't interleave with an in-flight sync
   const syncChainRef = useRef<Promise<void>>(Promise.resolve());
@@ -48,23 +80,37 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     setupAndroidNotificationChannel().catch(() => {});
   }, []);
 
-  // Ask for permission once, on the first logged-in open
+  const refreshPermission = useCallback(async () => {
+    const nextPermission = await getNotificationPermissionSnapshot();
+    setPermission(nextPermission);
+    return nextPermission;
+  }, []);
+
+  const requestPermission = useCallback(async () => {
+    setIsRequesting(true);
+    try {
+      const nextPermission = await requestNotificationPermission();
+      setPermission(nextPermission);
+      return nextPermission;
+    } finally {
+      setIsRequesting(false);
+    }
+  }, []);
+
+  // Read the real OS status without prompting. Refresh it after returning from
+  // Settings so changes made outside the app are reflected immediately.
   useEffect(() => {
     if (Platform.OS === 'web' || !isLoggedIn) return;
-    let cancelled = false;
 
-    ensureNotificationPermission()
-      .then((granted) => {
-        if (!cancelled) setPermissionGranted(granted);
-      })
-      .catch(() => {
-        if (!cancelled) setPermissionGranted(false);
-      });
+    void refreshPermission().catch(() => {
+      setPermission({ status: 'unavailable', canAskAgain: false });
+    });
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void refreshPermission().catch(() => {});
+    });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [isLoggedIn]);
+    return () => subscription.remove();
+  }, [isLoggedIn, refreshPermission]);
 
   // Keep scheduled reminders in step with auth state, primary league and language
   useEffect(() => {
@@ -139,5 +185,10 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     });
   }, [pendingMatchId, isLoggedIn, memberId]);
 
-  return <>{children}</>;
+  const permissionContext = useMemo(
+    () => ({ permission, isRequesting, refreshPermission, requestPermission }),
+    [permission, isRequesting, refreshPermission, requestPermission],
+  );
+
+  return <NotificationPermissionContext.Provider value={permissionContext}>{children}</NotificationPermissionContext.Provider>;
 };

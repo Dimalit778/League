@@ -1,8 +1,8 @@
+import { Row } from '@/components/layout';
 import { Card, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { Check, Crosshair, Flame, Hourglass, Target, Trophy, X } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -32,24 +32,25 @@ function Metric({ icon, label, value, tone = 'default' }: MetricProps) {
 export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const isRTL = useIsRTL();
+
   const accuracy = Math.min(100, Math.max(0, stats?.accuracy ?? 0));
-  const rowDirection = { direction: 'ltr' as const, flexDirection: isRTL ? ('row-reverse' as const) : ('row' as const) };
 
   return (
     <View className={spacing.stack}>
-      <Text variant="subtitle">{t('Prediction statistics')}</Text>
+      <Row>
+        <Text variant="subtitle">{t('Prediction statistics')}</Text>
+      </Row>
 
       <Card variant="elevated" contentClassName="gap-4">
-        <View style={rowDirection} className="items-center gap-4">
+        <Row className="items-center gap-4">
           <View className="h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary bg-subtle">
             <Text variant="titleLarge" className="text-center">
               {Math.round(accuracy)}%
             </Text>
           </View>
           <View className="min-w-0 flex-1 gap-2">
-            <View style={rowDirection} className="items-center justify-between">
-              <View style={rowDirection} className="items-center gap-2">
+            <Row className="items-center justify-between">
+              <View className="items-center gap-2">
                 <Target size={20} color={colors.primary} />
                 <Text variant="label">{t('Accuracy')}</Text>
               </View>
@@ -61,7 +62,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
                   {t('Predictions')}
                 </Text>
               </View>
-            </View>
+            </Row>
             <View className="h-2 overflow-hidden rounded-full bg-border">
               <View className="h-full rounded-full bg-primary" style={{ width: `${accuracy}%` }} />
             </View>
@@ -69,10 +70,10 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
               {t('{{count}} correct predictions', { count: (stats?.bingoHits ?? 0) + (stats?.regularHits ?? 0) })}
             </Text>
           </View>
-        </View>
+        </Row>
       </Card>
 
-      <View style={rowDirection} className={spacing.row}>
+      <Row className={spacing.row}>
         <Metric
           icon={<Crosshair size={20} color={colors.primary} />}
           label={t('Bingo')}
@@ -91,9 +92,9 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
           value={stats?.missedHits ?? 0}
           tone="error"
         />
-      </View>
+      </Row>
 
-      <View style={rowDirection} className={spacing.row}>
+      <Row className={spacing.row}>
         <Metric
           icon={<Flame size={20} color={colors.warning} />}
           label={t('Current streak')}
@@ -111,7 +112,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
           label={t('Pending')}
           value={stats?.pendingPredictions ?? 0}
         />
-      </View>
+      </Row>
     </View>
   );
 }

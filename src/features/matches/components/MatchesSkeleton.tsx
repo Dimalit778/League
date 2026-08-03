@@ -1,6 +1,6 @@
+import { Skeleton } from '@/components/ui';
 import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { Skeleton } from '@/components/ui';
 import { useWindowDimensions, View } from 'react-native';
 
 const SKELETON_COUNT = 6;
@@ -35,7 +35,7 @@ export const MatchCardSkeleton = () => {
           <MatchCardBg width={cardWidth} height={cardHeight} />
         </View>
 
-        <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top: headerTop }}>
+        <View className="absolute left-0 right-0 z-10 items-center justify-center pt-1" style={{ top: headerTop }}>
           <Skeleton
             style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
           />
@@ -83,7 +83,7 @@ export const MatchCardSkeleton = () => {
           </View>
         </View>
 
-        <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
+        <View className="absolute left-0 right-0 z-10 items-center pt-2" style={{ top: predictionTop }}>
           <Skeleton
             style={{ width: cardWidth * 0.13, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
           />

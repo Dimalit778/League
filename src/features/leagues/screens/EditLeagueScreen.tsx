@@ -16,8 +16,8 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import * as Clipboard from 'expo-clipboard';
-import { Stack } from 'expo-router';
-import { Copy, LogOut, Trash2, UserPlus } from 'lucide-react-native';
+import { Stack, useRouter } from 'expo-router';
+import { Copy, Flag, LogOut, Trash2, UserPlus } from 'lucide-react-native';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Share, View } from 'react-native';
@@ -63,6 +63,7 @@ export default function EditLeagueScreen() {
   const userId = useAuthStore((s) => s.user?.id);
   const leagueId = useLeagueId();
   const { t } = useTranslation();
+  const router = useRouter();
   const { colors } = useThemeTokens();
   const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId);
 
@@ -74,13 +75,15 @@ export default function EditLeagueScreen() {
   const isOwner = !!userId && userId === league?.owner_id;
 
   const sortedMembers = useMemo(() => {
-    return [...(league?.league_members ?? [])].sort((a, b) => {
-      const aIsOwner = a.user_id === league?.owner_id;
-      const bIsOwner = b.user_id === league?.owner_id;
-      if (aIsOwner && !bIsOwner) return -1;
-      if (!aIsOwner && bIsOwner) return 1;
-      return 0;
-    });
+    return (league?.league_members ?? [])
+      .filter((member) => member.active && member.user_id)
+      .sort((a, b) => {
+        const aIsOwner = a.user_id === league?.owner_id;
+        const bIsOwner = b.user_id === league?.owner_id;
+        if (aIsOwner && !bIsOwner) return -1;
+        if (!aIsOwner && bIsOwner) return 1;
+        return 0;
+      });
   }, [league?.league_members, league?.owner_id]);
 
   const { control, watch, reset } = useForm<{ leagueName: string }>({
@@ -152,7 +155,8 @@ export default function EditLeagueScreen() {
   };
 
   const confirmDeleteLeague = () => {
-    if (!leagueId || !league) return;
+    if (!leagueId || !league?.owner_id) return;
+    const ownerId = league.owner_id;
     showAlert({
       title: t('Delete League'),
       message: t('Are you sure you want to delete this league?'),
@@ -162,7 +166,7 @@ export default function EditLeagueScreen() {
         {
           text: t('Delete'),
           style: 'destructive',
-          onPress: () => deleteLeague.mutate({ leagueId, ownerId: league.owner_id }),
+          onPress: () => deleteLeague.mutate({ leagueId, ownerId }),
         },
       ],
     });
@@ -269,6 +273,21 @@ export default function EditLeagueScreen() {
                   leftIcon={<UserPlus size={18} color={colors.primary} />}
                   onPress={handleInviteFriends}
                 />
+                {!isOwner ? (
+                  <Button
+                    label={t('Report league name')}
+                    variant="outline"
+                    fullWidth
+                    className="mt-3"
+                    leftIcon={<Flag size={18} color={colors.error} />}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(app)/(league)/report-content',
+                        params: { contentType: 'league_name', leagueId: league.id },
+                      })
+                    }
+                  />
+                ) : null}
               </View>
 
               <View>
@@ -298,7 +317,7 @@ export default function EditLeagueScreen() {
             </View>
 
             <View className="mt-auto pt-8 pb-4">
-              <View className="rounded-2xl border border-error/40 bg-surface p-4">
+              <View className="rounded-2xl items-center border border-error/40 bg-surface p-4">
                 <Text variant="subtitle" tone="error">
                   {t('Danger zone')}
                 </Text>

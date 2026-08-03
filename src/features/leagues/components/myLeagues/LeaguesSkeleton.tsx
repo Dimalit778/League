@@ -1,27 +1,12 @@
-import { HeaderChrome, Screen } from '@/components/layout';
 import { Card, Skeleton, TextSkeleton } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
 
-function LeaguesIndicatorSkeleton() {
-  return (
-    <HeaderChrome>
-      <View className="w-full flex-row items-center justify-between gap-3">
-        <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <TextSkeleton className="h-7 w-28" />
-          <Skeleton className="h-7 w-16 rounded-full" />
-        </View>
-        <Skeleton className="h-11 w-11 rounded-full" />
-      </View>
-    </HeaderChrome>
-  );
-}
-
 function PrimaryLeagueSkeleton() {
   return (
     <View className={spacing.list}>
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row justify-center items-center gap-2">
         <Skeleton className="h-4 w-4 rounded-full" />
         <TextSkeleton className="h-5 w-28" />
       </View>
@@ -83,13 +68,12 @@ function LeagueCardSkeleton() {
 
 export default function LeaguesSkeleton() {
   return (
-    <Screen edges={['bottom']} padding="none" className="flex-1">
-      <LeaguesIndicatorSkeleton />
+    <>
       <View className={cn('flex-1 px-4 pt-2 sm:px-6 lg:px-8', spacing.section)}>
         <PrimaryLeagueSkeleton />
         <LeagueCardSkeleton />
         <LeagueCardSkeleton />
       </View>
-    </Screen>
+    </>
   );
 }

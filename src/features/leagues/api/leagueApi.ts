@@ -40,6 +40,7 @@ const LEAGUE_WITH_MEMBERS_SELECT = `
   ${LEAGUE_WITH_COMPETITION_SELECT},
   league_members(
     active,
+    anonymized_at,
     avatar_url,
     created_at,
     id,
@@ -151,87 +152,26 @@ export const leagueApi = {
     return data ;
   },
 
-  async updatePrimaryLeague(leagueId: string, userId: string) {
-    const { data: membership, error: membershipError } = await supabase
-      .from('league_members')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('league_id', leagueId)
-      .maybeSingle();
+  async updatePrimaryLeague(leagueId: string) {
+    const { data, error } = await supabase.rpc('set_primary_league', {
+      p_league_id: leagueId,
+    });
 
-    if (membershipError) throw new Error(membershipError.message);
-    if (!membership) throw new Error('User is not a member of this league');
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Failed to set primary league');
 
-    const { error: clearError } = await supabase
-      .from('league_members')
-      .update({ is_primary: false })
-      .eq('user_id', userId)
-      .eq('is_primary', true);
-
-    if (clearError) throw new Error(clearError.message);
-
-    const { data: primaryLeague, error: primaryLeagueError } = await supabase
-      .from('league_members')
-      .update({ is_primary: true })
-      .eq('id', membership.id)
-      .select('id, league_id, is_primary')
-      .single();
-
-    if (primaryLeagueError) throw new Error(primaryLeagueError.message);
-    if (!primaryLeague?.is_primary) throw new Error('Failed to set primary league');
-
-    return primaryLeague;
+    return data;
   },
 
-  async updateMyLeagueActivation(userId: string, activeMemberIds: string[]) {
-    const { data: memberships, error: membershipsError } = await supabase
-      .from('league_members')
-      .select('id, league_id, active, is_primary')
-      .eq('user_id', userId);
+  async updateMyLeagueActivation(activeMemberIds: string[]) {
+    const { data, error } = await supabase.rpc('update_my_league_activation', {
+      p_active_member_ids: activeMemberIds,
+    });
 
-    if (membershipsError) throw new Error(membershipsError.message);
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Failed to update active leagues');
 
-    const selectedIds = new Set(activeMemberIds);
-    const invalidSelection = activeMemberIds.some((memberId) => !memberships?.some((member) => member.id === memberId));
-    if (invalidSelection) throw new Error('Invalid league selection');
-
-    const idsToActivate = (memberships ?? [])
-      .filter((member) => selectedIds.has(member.id) && !member.active)
-      .map((member) => member.id);
-    const idsToDeactivate = (memberships ?? [])
-      .filter((member) => !selectedIds.has(member.id) && member.active)
-      .map((member) => member.id);
-
-    if (idsToDeactivate.length > 0) {
-      const { error } = await supabase
-        .from('league_members')
-        .update({ active: false, is_primary: false })
-        .eq('user_id', userId)
-        .in('id', idsToDeactivate);
-
-      if (error) throw new Error(error.message);
-    }
-
-    if (idsToActivate.length > 0) {
-      const { error } = await supabase
-        .from('league_members')
-        .update({ active: true })
-        .eq('user_id', userId)
-        .in('id', idsToActivate);
-
-      if (error) throw new Error(error.message);
-    }
-
-    const selectedPrimary = (memberships ?? []).find((member) => member.is_primary && selectedIds.has(member.id));
-    const fallbackPrimary = (memberships ?? []).find((member) => selectedIds.has(member.id));
-
-    if (!selectedPrimary && fallbackPrimary) {
-      await this.updatePrimaryLeague(fallbackPrimary.league_id, userId);
-    }
-
-    return {
-      primaryLeagueId: selectedPrimary?.league_id ?? fallbackPrimary?.league_id ?? null,
-    };
+    return data;
   },
   async findLeagueByJoinCode(joinCode: string) {
     const { data, error } = await supabase.rpc('find_league_by_code', {

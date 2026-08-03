@@ -15,8 +15,9 @@ type LeaderboardRowProps = {
 
 export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardRowProps) {
   const { t } = useTranslation();
-  const { nickname, avatar_url, member_id, total_points, league_id } = member;
+  const { nickname, avatar_url, member_id, total_points, league_id, user_id } = member;
   if (!league_id || !member_id) return null;
+  const displayName = user_id ? (nickname ?? t('Unknown User')) : t('Deleted Player');
 
   return (
     <Link
@@ -26,7 +27,15 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
       }}
       asChild
     >
-      <TouchableOpacity activeOpacity={0.7}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t('{{name}}, position {{position}}, {{points}} points', {
+          name: displayName,
+          position,
+          points: total_points ?? 0,
+        })}
+      >
         <Row
           className={cn(
             'items-center p-3 rounded-xl border border-border',
@@ -38,11 +47,11 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
           </View>
 
           <View className="mx-3 h-11 w-11">
-            <AvatarImage path={avatar_url} nickname={nickname} />
+            <AvatarImage path={avatar_url} nickname={displayName} />
           </View>
 
           <Text numberOfLines={1} className={cn('font-semibold flex-1', isCurrentUser && 'text-primary')}>
-            {nickname}
+            {displayName}
           </Text>
 
           <View className="items-end ">

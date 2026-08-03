@@ -28,6 +28,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Error: 'Error',
       OK: 'OK',
       Save: 'Save',
+      'Enter prediction': 'Enter prediction',
       Success: 'Success',
       Update: 'Update',
       Remove: 'Remove',
@@ -43,6 +44,12 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Unknown: 'Unknown',
       'Not assigned': 'Not assigned',
       'Copied!': 'Copied!',
+      'Deleted Player': 'Deleted Player',
+      'Member Details': 'Member Details',
+      '{{name}} profile picture': '{{name}} profile picture',
+      'User profile picture': 'User profile picture',
+      '{{name}} profile placeholder, {{initial}}': '{{name}} profile placeholder, {{initial}}',
+      'User profile placeholder, {{initial}}': 'User profile placeholder, {{initial}}',
       
       'An unexpected error occurred': 'An unexpected error occurred',
       'An unexpected error occurred. Please try again.': 'An unexpected error occurred. Please try again.',
@@ -65,8 +72,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete Account': 'Delete Account',
       
       'Delete account confirmation message':
-        'Are you sure you want to delete your account? This action cannot be undone. Deleting your account does not cancel your App Store subscription — cancel it in Apple ID → Subscriptions.',
-      'Permanently delete your account and all your data.': 'Permanently delete your account and all your data.',
+        'Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone. Deleting your account does not cancel your App Store subscription — cancel it in Apple ID → Subscriptions.',
+      'Delete personal data while keeping anonymized league history.':
+        'Delete personal data while keeping anonymized league history.',
       'Sign In': 'Sign In',
       'Sign Up': 'Sign Up',
       'Sign Out': 'Sign Out',
@@ -150,6 +158,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'League Name': 'League Name',
       'League name': 'League name',
       'League details': 'League details',
+      'League Details': 'League Details',
+      'Select Competition': 'Select Competition',
       'Enter league name': 'Enter league name',
       
       'League name is required': 'League name is required',
@@ -285,10 +295,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       
       'AI match analysis': 'AI match analysis',
-      'AI-generated preview based on available match data.':
-        'AI-generated preview based on available match data.',
       'Unlock the full AI analysis with Pro': 'Unlock the full AI analysis with Pro',
       'AI Prediction': 'AI Prediction',
+      'AI Analysis': 'AI Analysis',
       'Get the full breakdown behind every prediction.':
         'Get the full breakdown behind every prediction.',
       
@@ -330,7 +339,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Help: 'Help',
       'Contact Us': 'Contact Us',
       Info: 'Info',
-      Camera: 'Camera',
       
       'Choose Image': 'Choose Image',
       
@@ -338,7 +346,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       
       
-      'We need access to your photos.': 'We need access to your photos.',
       
       
       'Failed to pick image': 'Failed to pick image',
@@ -408,7 +415,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.':
         'Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.',
       'How do I manage notifications?': 'How do I manage notifications?',
-      
+      'Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.':
+        'Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.',
       'Subscription & Premium': 'Subscription & Premium',
       'What are the subscription benefits?': 'What are the subscription benefits?',
       'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.':
@@ -423,7 +431,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
         "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
       'Email Support': 'Email Support',
-      'support@leaguechampion.app': 'support@leaguechampion.app',
       'App Information': 'App Information',
       Version: 'Version',
       Platform: 'Platform',
@@ -470,6 +477,74 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       
       
+    },
+
+    moderation: {
+      Nickname: 'Nickname',
+      'Profile photo': 'Profile photo',
+      'Report content': 'Report content',
+      'Choose a reason for this report.': 'Choose a reason for this report.',
+      'Report submitted': 'Report submitted',
+      'Thank you. Our moderation team will review this report.':
+        'Thank you. Our moderation team will review this report.',
+      'Help keep Champo safe': 'Help keep Champo safe',
+      'Reports are confidential. The reported user will not see who submitted the report.':
+        'Reports are confidential. The reported user will not see who submitted the report.',
+      'What are you reporting?': 'What are you reporting?',
+      Reason: 'Reason',
+      'Harassment or bullying': 'Harassment or bullying',
+      'Hate speech': 'Hate speech',
+      'Sexual content': 'Sexual content',
+      'Violence or threats': 'Violence or threats',
+      'Spam or scam': 'Spam or scam',
+      Impersonation: 'Impersonation',
+      'Privacy violation': 'Privacy violation',
+      Other: 'Other',
+      'Additional details': 'Additional details',
+      'Describe what happened (optional)': 'Describe what happened (optional)',
+      'Additional report details': 'Additional report details',
+      'Submit report': 'Submit report',
+      'Safety actions': 'Safety actions',
+      Report: 'Report',
+      Block: 'Block',
+      Unblock: 'Unblock',
+      'Blocked users': 'Blocked users',
+      'Blocked users and their content are hidden from your leagues.':
+        'Blocked users and their content are hidden from your leagues.',
+      'Unable to load blocked users.': 'Unable to load blocked users.',
+      'You have not blocked anyone': 'You have not blocked anyone',
+      'Block user': 'Block user',
+      'Their profile, predictions and leaderboard entries will be hidden from you.':
+        'Their profile, predictions and leaderboard entries will be hidden from you.',
+      'User blocked': 'User blocked',
+      'This user’s content is now hidden.': 'This user’s content is now hidden.',
+      'User unblocked': 'User unblocked',
+      'You can see this user’s content again.': 'You can see this user’s content again.',
+      'Report league name': 'Report league name',
+      'Pending Reports': 'Pending Reports',
+      'Content Reports': 'Content Reports',
+      'Review reported nicknames, profile photos and league names.':
+        'Review reported nicknames, profile photos and league names.',
+      Pending: 'Pending',
+      Resolved: 'Resolved',
+      Dismissed: 'Dismissed',
+      'Dismiss report': 'Dismiss report',
+      'Remove member': 'Remove member',
+      'Remove reported content': 'Remove reported content',
+      'Mark this report as reviewed with no action?': 'Mark this report as reviewed with no action?',
+      'Remove this member and their predictions from the league?':
+        'Remove this member and their predictions from the league?',
+      'Replace or hide the reported content immediately?': 'Replace or hide the reported content immediately?',
+      Dismiss: 'Dismiss',
+      Confirm: 'Confirm',
+      'Unable to load content reports. Pull to refresh to try again.':
+        'Unable to load content reports. Pull to refresh to try again.',
+      'No reports in this queue': 'No reports in this queue',
+      'Reported content': 'Reported content',
+      'Reporter details': 'Reporter details',
+      'Reported user': 'Reported user',
+      'Reported by': 'Reported by',
+      'Remove content': 'Remove content',
     },
 
     // Admin screens
@@ -678,7 +753,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Leaderboard: 'Leaderboard',
       'View all': 'View all',
       'Show less': 'Show less',
-      World: 'World',
+      
     },
     leagueOverview: {
       'Primary league': 'Primary league',
@@ -698,6 +773,16 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Match starts soon': 'Match starts soon',
       'match-reminder-body': '{{home}} vs {{away}} starts soon, enter your prediction for the match',
     },
+    aiAnalysis: {
+      'AI analysis is not available': 'AI analysis is not available',
+      'There is not enough reliable match data to show a prediction yet.':
+        'There is not enough reliable match data to show a prediction yet.',
+      'Updated {{date}}': 'Updated {{date}}',
+      'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.':
+        'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.',
+      'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}':
+        'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}',
+    },
     activeUi: {
       'An email has been sent to your email address with a link to reset your password.': 'An email has been sent to your email address with a link to reset your password.',
       'Are you sure you want to delete your profile picture?': 'Are you sure you want to delete your profile picture?',
@@ -714,6 +799,28 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Edit league': 'Edit league',
       'Edit nickname': 'Edit nickname',
       Enabled: 'Enabled',
+      'Checking...': 'Checking...',
+      Blocked: 'Blocked',
+      'Not requested': 'Not requested',
+      Unavailable: 'Unavailable',
+      'Match reminders': 'Match reminders',
+      'Never miss a prediction': 'Never miss a prediction',
+      'Get a reminder one hour before upcoming matches so you have time to enter your prediction. Notifications are optional and can be changed at any time.':
+        'Get a reminder one hour before upcoming matches so you have time to enter your prediction. Notifications are optional and can be changed at any time.',
+      'Not now': 'Not now',
+      'Enable reminders': 'Enable reminders',
+      'Notifications enabled': 'Notifications enabled',
+      'Match reminders will be scheduled for upcoming matches.':
+        'Match reminders will be scheduled for upcoming matches.',
+      'Notifications are enabled. You can change this permission in device settings.':
+        'Notifications are enabled. You can change this permission in device settings.',
+      'Enable notifications from your device settings to receive match reminders.':
+        'Enable notifications from your device settings to receive match reminders.',
+      'Open Settings': 'Open Settings',
+      'Unable to open device settings.': 'Unable to open device settings.',
+      'Unable to update notification permission. Please try again.':
+        'Unable to update notification permission. Please try again.',
+      'Notifications are unavailable on this device.': 'Notifications are unavailable on this device.',
       'Enter your email address': 'Enter your email address',
       "Enter your email address and we'll send you a reset link": "Enter your email address and we'll send you a reset link",
       'Enter your new password': 'Enter your new password',
@@ -840,6 +947,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Error: 'שגיאה',
       OK: 'OK',
       Save: 'שמור',
+      'Enter prediction': 'הכנס תוצאה',
       Success: 'הצלחה',
       Update: 'עדכון',
       Remove: 'הסר',
@@ -855,6 +963,12 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Unknown: 'לא ידוע',
       'Not assigned': 'לא מוקצה',
       'Copied!': 'הועתק!',
+      'Deleted Player': 'שחקן שנמחק',
+      'Member Details': 'פרטי חבר',
+      '{{name}} profile picture': 'תמונת הפרופיל של {{name}}',
+      'User profile picture': 'תמונת פרופיל של משתמש',
+      '{{name}} profile placeholder, {{initial}}': 'מציין מקום לפרופיל של {{name}}, האות {{initial}}',
+      'User profile placeholder, {{initial}}': 'מציין מקום לפרופיל, האות {{initial}}',
       
       'An unexpected error occurred': 'אירעה שגיאה בלתי צפויה. נסו שנית.',
       'An unexpected error occurred. Please try again.': 'אירעה שגיאה בלתי צפויה. נסו שנית.',
@@ -966,6 +1080,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'League Created Successfully!': 'ליגה נוצרה בהצלחה!',
       'League name': 'שם הליגה',
       'League details': 'פרטי הליגה',
+      'League Details': 'פרטי הליגה',
+      'Select Competition': 'בחירת ליגה',
       'Ask the league owner for the invite code': 'קבלו ממנהל הליגה קוד הזמנה',
       'Enter league name': 'הזן שם הליגה',
       
@@ -1091,10 +1207,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Coming Soon...': 'בקרוב ...',
       
       'AI match analysis': 'ניתוח המשחק באמצעות AI',
-      'AI-generated preview based on available match data.':
-        'התחזית נוצרה באמצעות AI על סמך נתוני המשחק הזמינים.',
       'Unlock the full AI analysis with Pro': 'ניתוח ה-AI המלא זמין למנויי פרו',
       'AI Prediction': 'תחזית AI',
+      'AI Analysis': 'ניתוח AI',
       'Get the full breakdown behind every prediction.':
         'קבל את הניתוח המלא שמאחורי כל תחזית.',
       
@@ -1132,7 +1247,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Help: 'עזרה',
       'Contact Us': 'יצירת קשר',
       Info: 'מידע',
-      Camera: 'מצלמה',
       
       'Choose Image': 'בחירת תמונה',
       
@@ -1140,7 +1254,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       
       
-      'We need access to your photos.': 'אנו צריכים גישה לתמונותיך.',
       
       
       'Failed to pick image': 'שגיאה בבחירת תמונה',
@@ -1152,8 +1265,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Delete Account': 'מחיקת חשבון',
       
       'Delete account confirmation message':
-        'האם אתה בטוח שברצונך למחוק את החשבון? לא ניתן לבטל פעולה זו. מחיקת החשבון לא מבטלת מנוי App Store — בטל/י בהגדרות Apple ID → מנויים.',
-      'Permanently delete your account and all your data.': 'מחיקת חשבון וכל הנתונים שלך.',
+        'האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו. מחיקת החשבון לא מבטלת מנוי App Store — יש לבטל אותו בהגדרות Apple ID ← מנויים.',
+      'Delete personal data while keeping anonymized league history.':
+        'מחיקת מידע אישי תוך שמירת היסטוריית ליגה אנונימית.',
     },
 
     // Help & Support
@@ -1212,7 +1326,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.':
         'לא ניתן לשנות כתובות דוא"ל מתוך האפליקציה. אנא צור קשר עם התמיכה אם אתה צריך לעדכן את כתובת הדוא"ל שלך.',
       'How do I manage notifications?': 'איך אני מנהל התראות?',
-      
+      'Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.':
+        'פתחו את ההגדרות והקישו על תזכורות למשחקים. Champo תציג הסבר לפני בקשת ההרשאה, וניתן לשנות אותה בהמשך בהגדרות המכשיר.',
       'Subscription & Premium': 'מנוי ופרימיום',
       'What are the subscription benefits?': 'מהם היתרונות של המנוי?',
       'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.':
@@ -1227,7 +1342,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
         'עדיין יש לך שאלות? צוות התמיכה שלנו כאן כדי לעזור. פנה אלינו ונחזור אליך בהקדם האפשרי.',
       'Email Support': 'תמיכה בדוא"ל',
-      'support@leaguechampion.app': 'support@leaguechampion.app',
       'App Information': 'מידע על האפליקציה',
       Version: 'גרסה',
       Platform: 'פלטפורמה',
@@ -1284,6 +1398,72 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       
       
+    },
+
+    moderation: {
+      Nickname: 'כינוי',
+      'Profile photo': 'תמונת פרופיל',
+      'Report content': 'דיווח על תוכן',
+      'Choose a reason for this report.': 'בחר סיבה לדיווח.',
+      'Report submitted': 'הדיווח נשלח',
+      'Thank you. Our moderation team will review this report.': 'תודה. צוות הניהול יבדוק את הדיווח.',
+      'Help keep Champo safe': 'עזרו לנו לשמור על Champo בטוחה',
+      'Reports are confidential. The reported user will not see who submitted the report.':
+        'הדיווח חסוי. המשתמש שעליו דיווחת לא יראה מי שלח את הדיווח.',
+      'What are you reporting?': 'על מה ברצונך לדווח?',
+      Reason: 'סיבה',
+      'Harassment or bullying': 'הטרדה או בריונות',
+      'Hate speech': 'דברי שנאה',
+      'Sexual content': 'תוכן מיני',
+      'Violence or threats': 'אלימות או איומים',
+      'Spam or scam': 'ספאם או הונאה',
+      Impersonation: 'התחזות',
+      'Privacy violation': 'פגיעה בפרטיות',
+      Other: 'אחר',
+      'Additional details': 'פרטים נוספים',
+      'Describe what happened (optional)': 'תאר מה קרה (אופציונלי)',
+      'Additional report details': 'פרטים נוספים לדיווח',
+      'Submit report': 'שליחת דיווח',
+      'Safety actions': 'פעולות בטיחות',
+      Report: 'דיווח',
+      Block: 'חסימה',
+      Unblock: 'ביטול חסימה',
+      'Blocked users': 'משתמשים חסומים',
+      'Blocked users and their content are hidden from your leagues.':
+        'משתמשים חסומים והתוכן שלהם מוסתרים מהליגות שלך.',
+      'Unable to load blocked users.': 'לא ניתן לטעון משתמשים חסומים.',
+      'You have not blocked anyone': 'לא חסמת אף משתמש',
+      'Block user': 'חסימת משתמש',
+      'Their profile, predictions and leaderboard entries will be hidden from you.':
+        'הפרופיל, הניחושים והמיקום של המשתמש יוסתרו ממך.',
+      'User blocked': 'המשתמש נחסם',
+      'This user’s content is now hidden.': 'התוכן של המשתמש מוסתר כעת.',
+      'User unblocked': 'החסימה בוטלה',
+      'You can see this user’s content again.': 'ניתן לראות שוב את התוכן של המשתמש.',
+      'Report league name': 'דיווח על שם הליגה',
+      'Pending Reports': 'דיווחים ממתינים',
+      'Content Reports': 'דיווחי תוכן',
+      'Review reported nicknames, profile photos and league names.':
+        'בדיקת כינויים, תמונות פרופיל ושמות ליגה שדווחו.',
+      Pending: 'ממתינים',
+      Resolved: 'טופלו',
+      Dismissed: 'נדחו',
+      'Dismiss report': 'דחיית דיווח',
+      'Remove member': 'הסרת חבר',
+      'Remove reported content': 'הסרת התוכן המדווח',
+      'Mark this report as reviewed with no action?': 'לסמן את הדיווח כבדוק ללא פעולה?',
+      'Remove this member and their predictions from the league?': 'להסיר את החבר ואת ניחושיו מהליגה?',
+      'Replace or hide the reported content immediately?': 'להחליף או להסתיר את התוכן המדווח מיד?',
+      Dismiss: 'דחייה',
+      Confirm: 'אישור',
+      'Unable to load content reports. Pull to refresh to try again.':
+        'לא ניתן לטעון דיווחי תוכן. משוך לרענון ונסה שוב.',
+      'No reports in this queue': 'אין דיווחים בתור זה',
+      'Reported content': 'התוכן המדווח',
+      'Reporter details': 'פרטי המדווח',
+      'Reported user': 'המשתמש המדווח',
+      'Reported by': 'דווח על ידי',
+      'Remove content': 'הסרת תוכן',
     },
 
     // Admin screens
@@ -1506,7 +1686,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Leaderboard: 'טבלת חברים',
       'View all': 'הצג הכל',
       'Show less': 'הצג פחות',
-      World: 'עולם',
+      
     },
     leagueOverview: {
       'Primary league': 'ליגה ראשית',
@@ -1526,6 +1706,16 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Match starts soon': 'המשחק מתחיל בקרוב',
       'match-reminder-body': '{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק',
     },
+    aiAnalysis: {
+      'AI analysis is not available': 'ניתוח ה־AI אינו זמין',
+      'There is not enough reliable match data to show a prediction yet.':
+        'עדיין אין מספיק נתוני משחק אמינים כדי להציג תחזית.',
+      'Updated {{date}}': 'עודכן {{date}}',
+      'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.':
+        'הניתוח נוצר באמצעות AI ומיועד לבידור בלבד. הוא עלול להיות שגוי ואינו מהווה ייעוץ להימורים.',
+      'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}':
+        'תחזית AI: {{home}} {{homeScore}}, {{away}} {{awayScore}}',
+    },
     activeUi: {
       'An email has been sent to your email address with a link to reset your password.': 'נשלח אליך אימייל עם קישור לאיפוס הסיסמה.',
       Away: 'חוץ',
@@ -1536,6 +1726,27 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Edit league': 'עריכת ליגה',
       'Edit nickname': 'עריכת כינוי',
       Enabled: 'פעיל',
+      'Checking...': 'בודק...',
+      Blocked: 'חסום',
+      'Not requested': 'טרם התבקשה הרשאה',
+      Unavailable: 'לא זמין',
+      'Match reminders': 'תזכורות למשחקים',
+      'Never miss a prediction': 'לא מפספסים ניחוש',
+      'Get a reminder one hour before upcoming matches so you have time to enter your prediction. Notifications are optional and can be changed at any time.':
+        'קבלו תזכורת שעה לפני משחקים קרובים, כדי שיישאר לכם זמן להזין ניחוש. ההתראות אינן חובה וניתן לשנות את ההרשאה בכל עת.',
+      'Not now': 'לא עכשיו',
+      'Enable reminders': 'הפעלת תזכורות',
+      'Notifications enabled': 'ההתראות הופעלו',
+      'Match reminders will be scheduled for upcoming matches.': 'תזכורות יתוזמנו עבור המשחקים הקרובים.',
+      'Notifications are enabled. You can change this permission in device settings.':
+        'ההתראות פעילות. ניתן לשנות את ההרשאה בהגדרות המכשיר.',
+      'Enable notifications from your device settings to receive match reminders.':
+        'כדי לקבל תזכורות למשחקים, יש להפעיל התראות בהגדרות המכשיר.',
+      'Open Settings': 'פתיחת הגדרות',
+      'Unable to open device settings.': 'לא ניתן לפתוח את הגדרות המכשיר.',
+      'Unable to update notification permission. Please try again.':
+        'לא ניתן לעדכן את הרשאת ההתראות. נסו שוב.',
+      'Notifications are unavailable on this device.': 'התראות אינן זמינות במכשיר הזה.',
       'Enter your email address': 'הזנת כתובת אימייל',
       "Enter your email address and we'll send you a reset link": 'הזינו את כתובת האימייל ונשלח אליכם קישור לאיפוס',
       'Enter your new password': 'הזנת הסיסמה החדשה',

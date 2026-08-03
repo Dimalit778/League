@@ -5,6 +5,7 @@ let mockUserId = 'owner-user-1';
 
 jest.mock('expo-router', () => ({
   Stack: { Screen: () => null },
+  useRouter: () => ({ push: jest.fn() }),
 }));
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
@@ -52,5 +53,6 @@ describe('EditLeagueScreen permissions', () => {
     expect(queryByText('Leave league')).toBeTruthy();
     expect(queryByText('ABC123')).toBeTruthy();
     expect(queryByText('Delete League')).toBeNull();
+    expect(queryByText('Report league name')).toBeTruthy();
   });
 });

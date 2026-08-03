@@ -2,9 +2,9 @@ import { Card, Text } from '@/components/ui';
 import { type MemberStats } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { Check, Crosshair, Flame, X } from 'lucide-react-native';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -104,7 +104,7 @@ export function StatsPredictionSection({ stats }: { stats: MemberStats }) {
           label={t('Current streak')}
           value={currentStreak}
         />
-        <View className={cn('flex-row', spacing.row)}>
+        <View className={cn('flex-1 flex-row', spacing.row)}>
           <MetricTile
             icon={<Crosshair size={18} color={colors.primary} strokeWidth={2} />}
             label={t('Bingo')}

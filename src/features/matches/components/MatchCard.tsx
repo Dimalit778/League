@@ -48,7 +48,7 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
           source={logo}
           width={logoWidth}
           height={logoHeight}
-          contentFit={logoContentFit}
+          contentFit="contain"
           cachePolicy="memory-disk"
           transition={0}
         />
@@ -108,7 +108,7 @@ const ScoreBlock = ({ score, time, hasScore }: { score: string; time?: string; h
 
   return (
     <View className="flex-row items-center justify-center gap-1.5">
-      <Clock size={16} color={colors.muted} />
+      <Clock size={13} color={colors.muted} />
       <Text variant="bodySmall" tone="muted" numberOfLines={1}>
         {time}
       </Text>

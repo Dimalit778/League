@@ -20,10 +20,10 @@ function StatCell({ icon, label, value, showDivider = true }: StatCellProps) {
     <>
       <View className="flex-1 items-center px-0.5">
         {icon}
-        <Text className="mt-0.5 text-[8px] uppercase tracking-wide text-muted" numberOfLines={1}>
+        <Text variant="caption" className="mt-0.5 uppercase tracking-wide text-muted" numberOfLines={2}>
           {label}
         </Text>
-        <Text className="text-sm font-bold text-white" numberOfLines={1}>
+        <Text variant="bodySmall" className="font-bold text-white" numberOfLines={1}>
           {value}
         </Text>
       </View>

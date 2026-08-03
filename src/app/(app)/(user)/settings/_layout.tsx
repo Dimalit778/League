@@ -11,7 +11,7 @@ export default function SettingsLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerShadowVisible: false,
+
         headerBackButtonDisplayMode: 'minimal',
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
@@ -32,6 +32,7 @@ export default function SettingsLayout() {
       <Stack.Screen name="terms" options={{ title: t('Terms') }} />
       <Stack.Screen name="help" options={{ title: t('Help') }} />
       <Stack.Screen name="subscription" options={{ title: t('Subscription') }} />
+      <Stack.Screen name="blocked-users" options={{ title: t('Blocked users') }} />
     </Stack>
   );
 }

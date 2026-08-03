@@ -19,7 +19,7 @@ export function HeaderChrome({ children }: HeaderChromeProps) {
 
   const content = (
     <View style={{ paddingTop: insets.top, direction: isRTL ? 'rtl' : 'ltr' }} className="bg-background">
-      <View className="flex-row items-center px-4 pb-2">{children}</View>
+      <View className="mx-auto w-full max-w-4xl flex-row items-center px-4 pb-2 sm:px-6 lg:px-8">{children}</View>
     </View>
   );
 

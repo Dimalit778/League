@@ -13,7 +13,7 @@ import { KnockoutStageTabs } from './shared/TournamentTabs';
 function TieBlock({ tie }: { tie: Tie }) {
   const { t } = useTranslation();
   return (
-    <View className="mb-3 rounded-2xl border border-border ">
+    <>
       {tie.legs.map((leg) => {
         const card = mapMatchToCardData(leg);
         return (
@@ -36,7 +36,7 @@ function TieBlock({ tie }: { tie: Tie }) {
           {t('Aggregate')}: {tie.aggregate.home}–{tie.aggregate.away}
         </Text>
       )}
-    </View>
+    </>
   );
 }
 

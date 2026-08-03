@@ -14,6 +14,7 @@ let mockScreenState = {
   error: null as Error | null,
   allLeagues: [] as unknown[],
   activeCount: 0,
+  isPro: false,
   maxLeagues: 1,
   hasPrimaryMember: false,
   selectLeague: jest.fn(),
@@ -32,6 +33,7 @@ describe('MyLeagueScreen', () => {
       error: null,
       allLeagues: [],
       activeCount: 0,
+      isPro: false,
       maxLeagues: 1,
       hasPrimaryMember: false,
       selectLeague: jest.fn(),
@@ -65,5 +67,18 @@ describe('MyLeagueScreen', () => {
     const progressViews = UNSAFE_root.findAll((node: TestNode) => node.props?.style?.width !== undefined);
 
     expect(progressViews.some((node: TestNode) => node.props.style?.width === 'Infinity%')).toBe(false);
+  });
+
+  it('does not show Upgrade to Pro for pro users at their league limit', () => {
+    mockScreenState = {
+      ...mockScreenState,
+      isPro: true,
+      activeCount: 5,
+      maxLeagues: 5,
+    };
+
+    const { queryByText, getAllByText } = render(<MyLeagueScreen />);
+    expect(queryByText('Upgrade to Pro')).toBeNull();
+    expect(getAllByText('Create League').length).toBeGreaterThan(0);
   });
 });

@@ -34,17 +34,8 @@ export function ProfileHeroCard() {
 
   const handleImagePicker = async () => {
     try {
-      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!perm.granted) {
-        showAlert({
-          title: t('Permission required'),
-          message: t('We need access to your photos.'),
-          type: 'warning',
-          buttons: [{ text: 'OK' }],
-        });
-        return;
-      }
-
+      // iOS 15.4+ and modern Android use the system photo picker, which lets
+      // the user choose a single image without granting broad library access.
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,

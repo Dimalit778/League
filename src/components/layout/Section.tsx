@@ -40,12 +40,7 @@ export function Section({
         </Text>
       ) : null}
       {description ? (
-        <Text
-          variant="bodySmall"
-          tone="muted"
-          className="w-full"
-          style={{ textAlign: isRTL ? 'right' : 'left' }}
-        >
+        <Text variant="bodySmall" tone="muted" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
           {description}
         </Text>
       ) : null}
@@ -57,7 +52,7 @@ export function Section({
       accessibilityRole="button"
       accessibilityLabel={actionLabel ?? title}
       hitSlop={8}
-      className={cn('min-h-11 flex-row items-center active:opacity-70', spacing.inline)}
+      className={cn('min-h-9 flex-row items-center active:opacity-70', spacing.inline)}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
       {actionLabel ? (
@@ -70,17 +65,20 @@ export function Section({
   ) : null;
 
   return (
-    <View {...props} style={[props.style, { direction: isRTL ? 'rtl' : 'ltr' }]} className={cn(spacing.list, className)}>
+    <View
+      {...props}
+      style={[props.style, { direction: isRTL ? 'rtl' : 'ltr' }]}
+      className={cn(spacing.list, className)}
+    >
       {hasHeader ? (
-        <View
-          className={cn('flex-row items-center justify-between', spacing.list)}
-          style={{ direction: 'ltr' }}
-        >
+        <View className={cn('flex-row items-center justify-between', spacing.list)} style={{ direction: 'ltr' }}>
           {isRTL ? headerAction : headerText}
           {isRTL ? headerText : headerAction}
         </View>
       ) : null}
-      <View className={contentClassName} style={{ direction: isRTL ? 'rtl' : 'ltr' }}>{children}</View>
+      <View className={contentClassName} style={{ direction: isRTL ? 'rtl' : 'ltr' }}>
+        {children}
+      </View>
     </View>
   );
 }

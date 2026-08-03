@@ -1,9 +1,19 @@
-import { appStorage } from '@/lib/storage';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-const PERMISSION_REQUESTED_KEY = 'notifications:permission-requested';
 export const MATCH_REMINDERS_CHANNEL_ID = 'match-reminders';
+
+export type NotificationPermissionStatus = 'loading' | 'granted' | 'denied' | 'undetermined' | 'unavailable';
+
+export type NotificationPermissionSnapshot = {
+  status: NotificationPermissionStatus;
+  canAskAgain: boolean;
+};
+
+export const INITIAL_NOTIFICATION_PERMISSION: NotificationPermissionSnapshot = {
+  status: Platform.OS === 'web' ? 'unavailable' : 'loading',
+  canAskAgain: false,
+};
 
 export const setupAndroidNotificationChannel = async () => {
   if (Platform.OS !== 'android') return;
@@ -15,27 +25,33 @@ export const setupAndroidNotificationChannel = async () => {
   });
 };
 
-// Ask for notification permission at most once (first logged-in open).
-// Returns whether notifications are currently allowed.
-export const ensureNotificationPermission = async (): Promise<boolean> => {
-  if (Platform.OS === 'web') return false;
+const toPermissionSnapshot = (
+  permission: Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>,
+): NotificationPermissionSnapshot => {
+  const iosStatus = permission.ios?.status;
+  const isAllowed =
+    permission.granted ||
+    iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    iosStatus === Notifications.IosAuthorizationStatus.EPHEMERAL;
 
-  const current = await Notifications.getPermissionsAsync();
-  if (current.granted) return true;
-
-  const alreadyRequested = appStorage.getString(PERMISSION_REQUESTED_KEY) === 'true';
-  if (alreadyRequested || !current.canAskAgain) return false;
-
-  const result = await Notifications.requestPermissionsAsync();
-  // Only remember the ask after the request actually completed, so a failed
-  // request can't suppress the prompt forever.
-  appStorage.set(PERMISSION_REQUESTED_KEY, 'true');
-  return result.granted;
+  if (isAllowed) return { status: 'granted', canAskAgain: permission.canAskAgain };
+  if (permission.status === Notifications.PermissionStatus.UNDETERMINED) {
+    return { status: 'undetermined', canAskAgain: permission.canAskAgain };
+  }
+  return { status: 'denied', canAskAgain: permission.canAskAgain };
 };
 
-// Whether notifications are allowed without prompting the user.
-export const hasNotificationPermission = async (): Promise<boolean> => {
-  if (Platform.OS === 'web') return false;
-  const current = await Notifications.getPermissionsAsync();
-  return current.granted;
+// Read-only: this never displays the system permission prompt.
+export const getNotificationPermissionSnapshot = async (): Promise<NotificationPermissionSnapshot> => {
+  if (Platform.OS === 'web') return { status: 'unavailable', canAskAgain: false };
+  return toPermissionSnapshot(await Notifications.getPermissionsAsync());
 };
+
+// Call only after the user accepts the in-app explanation.
+export const requestNotificationPermission = async (): Promise<NotificationPermissionSnapshot> => {
+  if (Platform.OS === 'web') return { status: 'unavailable', canAskAgain: false };
+  return toPermissionSnapshot(await Notifications.requestPermissionsAsync());
+};
+
+export const hasNotificationPermission = async (): Promise<boolean> =>
+  (await getNotificationPermissionSnapshot()).status === 'granted';

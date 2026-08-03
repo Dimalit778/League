@@ -36,4 +36,11 @@ describe('Text', () => {
 
     expect(getByText('3–1')).toBeTruthy();
   });
+
+  it('supports Dynamic Type with a safe default ceiling', () => {
+    const { getByText } = render(<Text>Scalable</Text>);
+
+    expect(getByText('Scalable').props.allowFontScaling).toBe(true);
+    expect(getByText('Scalable').props.maxFontSizeMultiplier).toBe(2);
+  });
 });

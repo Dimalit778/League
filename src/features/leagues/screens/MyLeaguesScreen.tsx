@@ -60,20 +60,21 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
 };
 
 export default function MyLeaguesScreen() {
-  const { isLoading, error, activeCount, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
+  const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
 
   if (isLoading) return <LoadingBall />;
   if (error) return <Error error={error as Error} />;
 
   const reachedLimit = activeCount >= maxLeagues;
+  const maxLeague = isPro && activeCount === maxLeagues;
 
   return (
     <Screen edges={['bottom']} padding="none" className="flex-1">
       <LeaguesIndicator used={activeCount} limit={maxLeagues} />
 
-      <View className="flex-1 px-4 sm:px-6 lg:px-8">
-        <Leagues upgrade={upgrade} />
-        <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />
+      <View className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-6 lg:px-8">
+        <Leagues isPro={isPro} upgrade={upgrade} />
+        {!maxLeague && <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />}
       </View>
       {limitSelect && <LimitSelectModal {...limitSelect} />}
     </Screen>

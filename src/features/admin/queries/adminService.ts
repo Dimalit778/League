@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { ContentReportWithRelations, ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { Tables, TablesInsert } from '@/types/database.types';
 
 type DashboardCounts = {
@@ -7,6 +8,7 @@ type DashboardCounts = {
   leagueMembers: number;
   predictions: number;
   subscriptions: number;
+  pendingReports: number;
 };
 
 type LeagueWithRelations = Tables<'leagues'> & {
@@ -51,16 +53,61 @@ export const adminService = {
       return count ?? 0;
     };
 
-    const [users, leagues, leagueMembers, predictions, subscriptions] =
+    const [users, leagues, leagueMembers, predictions, subscriptions, pendingReportsResult] =
       await Promise.all([
         countTable('users'),
         countTable('leagues'),
         countTable('league_members'),
         countTable('predictions'),
         countTable('user_subscriptions'),
+        supabase
+          .from('content_reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending'),
       ]);
 
-    return { users, leagues, leagueMembers, predictions, subscriptions };
+    if (pendingReportsResult.error) throw pendingReportsResult.error;
+
+    return {
+      users,
+      leagues,
+      leagueMembers,
+      predictions,
+      subscriptions,
+      pendingReports: pendingReportsResult.count ?? 0,
+    };
+  },
+
+  async getContentReports(status: ReportStatus) {
+    const { data, error } = await supabase
+      .from('content_reports')
+      .select(
+        `*,
+        reporter:users!content_reports_reporter_user_id_fkey(id, full_name, email),
+        target:users!content_reports_target_user_id_fkey(id, full_name, email),
+        league:leagues(id, name),
+        member:league_members(id, nickname, avatar_url)
+      `,
+      )
+      .eq('status', status)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+    return (data ?? []) as ContentReportWithRelations[];
+  },
+
+  async moderateContentReport(reportId: string, decision: ModerationDecision, notes?: string | null) {
+    const params = {
+      p_report_id: reportId,
+      p_decision: decision,
+      ...(notes?.trim() ? { p_notes: notes.trim() } : {}),
+    };
+    const { data, error } = await supabase.rpc('moderate_content_report', params);
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Failed to moderate report');
+    return data;
   },
 
   async getUsers(page = 0, limit = 50) {
@@ -210,4 +257,3 @@ export type {
   LeagueWithRelations,
   PredictionWithRelations
 };
-

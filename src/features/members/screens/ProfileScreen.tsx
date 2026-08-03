@@ -7,8 +7,11 @@ import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { Achievements } from '@/features/members/components/stats/Achievement';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { spacing } from '@/lib/nativewind/spacing';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLeagueId, useMemberId } from '@/store/PrimaryLeagueStore';
+import { View } from 'react-native';
 
 const ProfileScreen = () => {
   const memberId = useMemberId();
@@ -23,13 +26,15 @@ const ProfileScreen = () => {
   if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <ProfileSkeleton />;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomInset} contentClassName="gap-5 pt-3">
-      <ProfileHeroCard />
-      <ProfileNicknameEdit initialNickname={member.nickname} />
+    <Screen scroll padding="horizontal" bottomInset={bottomInset}>
+      <View className={cn(spacing.section)}>
+        <ProfileHeroCard />
+        <ProfileNicknameEdit initialNickname={member.nickname} />
 
-      <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />
+        <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />
 
-      <Achievements stats={stats} />
+        <Achievements stats={stats} />
+      </View>
     </Screen>
   );
 };

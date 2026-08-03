@@ -1,5 +1,6 @@
 import { layout, type ScreenWidth, screenWidths } from '@/lib/nativewind/layout';
 import { cn } from '@/lib/nativewind/nativeWind';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { type ReactElement, type ReactNode } from 'react';
 import {
   type RefreshControlProps,
@@ -23,7 +24,6 @@ export type ScreenProps = {
   refreshControl?: ReactElement<RefreshControlProps>;
   keyboardShouldPersistTaps?: ScrollViewProps['keyboardShouldPersistTaps'];
   contentContainerStyle?: StyleProp<ViewStyle>;
-  /** `true` → safe-area bottom; number → explicit paddingBottom */
   bottomInset?: boolean | number;
   showsVerticalScrollIndicator?: boolean;
 };
@@ -50,25 +50,31 @@ export function Screen({
   showsVerticalScrollIndicator = false,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
+  const isRTL = useIsRTL();
   const usesSafeArea = safeArea ?? edges !== undefined;
   const Root = usesSafeArea ? SafeAreaView : View;
   const rootClassName = cn('flex-1 bg-background', className);
-  const contentClass = cn('mx-auto w-full', screenWidths[width], paddingClasses[padding], contentClassName);
+  const containerClass = cn('mx-auto w-full', screenWidths[width], paddingClasses[padding]);
   const paddingBottom = bottomInset === true ? insets.bottom : typeof bottomInset === 'number' ? bottomInset : 0;
   const bottomInsetStyle = paddingBottom > 0 ? { paddingBottom } : undefined;
+  const directionStyle = { direction: isRTL ? ('rtl' as const) : ('ltr' as const) };
+
+  const centeringStyle = { direction: 'ltr' as const };
 
   if (scroll) {
     return (
       <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
         <ScrollView
           className="flex-1"
-          contentContainerClassName={contentClass}
-          contentContainerStyle={[bottomInsetStyle, contentContainerStyle]}
+          contentContainerClassName={containerClass}
+          contentContainerStyle={[centeringStyle, bottomInsetStyle, contentContainerStyle]}
           refreshControl={refreshControl}
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         >
-          {children}
+          <View className={cn('min-h-0 w-full flex-grow', contentClassName)} style={directionStyle}>
+            {children}
+          </View>
         </ScrollView>
       </Root>
     );
@@ -76,8 +82,10 @@ export function Screen({
 
   return (
     <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
-      <View className={cn('flex-1 min-h-0', contentClass)} style={bottomInsetStyle}>
-        {children}
+      <View className={cn('min-h-0 flex-1', containerClass)} style={[centeringStyle, bottomInsetStyle]}>
+        <View className={cn('min-h-0 w-full flex-1', contentClassName)} style={directionStyle}>
+          {children}
+        </View>
       </View>
     </Root>
   );

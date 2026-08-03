@@ -94,9 +94,132 @@ export type Database = {
         }
         Relationships: []
       }
+      content_reports: {
+        Row: {
+          content_snapshot: string
+          content_type: string
+          created_at: string
+          details: string | null
+          id: string
+          league_id: string | null
+          league_member_id: string | null
+          moderator_user_id: string | null
+          reason: string
+          reporter_user_id: string | null
+          resolution_action: string | null
+          resolution_notes: string | null
+          reviewed_at: string | null
+          status: string
+          target_user_id: string | null
+        }
+        Insert: {
+          content_snapshot: string
+          content_type: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          league_id?: string | null
+          league_member_id?: string | null
+          moderator_user_id?: string | null
+          reason: string
+          reporter_user_id?: string | null
+          resolution_action?: string | null
+          resolution_notes?: string | null
+          reviewed_at?: string | null
+          status?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          content_snapshot?: string
+          content_type?: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          league_id?: string | null
+          league_member_id?: string | null
+          moderator_user_id?: string | null
+          reason?: string
+          reporter_user_id?: string | null
+          resolution_action?: string | null
+          resolution_notes?: string | null
+          reviewed_at?: string | null
+          status?: string
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "league_leaderboard_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "content_reports_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "league_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: false
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "content_reports_moderator_user_id_fkey"
+            columns: ["moderator_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reporter_user_id_fkey"
+            columns: ["reporter_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      football_api_calls: {
+        Row: {
+          called_at: string
+          id: number
+          job: string | null
+        }
+        Insert: {
+          called_at?: string
+          id?: never
+          job?: string | null
+        }
+        Update: {
+          called_at?: string
+          id?: never
+          job?: string | null
+        }
+        Relationships: []
+      }
       league_members: {
         Row: {
           active: boolean
+          anonymized_at: string | null
           avatar_url: string | null
           created_at: string
           id: string
@@ -104,10 +227,11 @@ export type Database = {
           league_id: string
           nickname: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           active?: boolean
+          anonymized_at?: string | null
           avatar_url?: string | null
           created_at?: string
           id?: string
@@ -115,10 +239,11 @@ export type Database = {
           league_id: string
           nickname: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           active?: boolean
+          anonymized_at?: string | null
           avatar_url?: string | null
           created_at?: string
           id?: string
@@ -126,7 +251,7 @@ export type Database = {
           league_id?: string
           nickname?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -153,7 +278,7 @@ export type Database = {
           join_code: string
           max_members: number
           name: string
-          owner_id: string
+          owner_id: string | null
           updated_at: string
         }
         Insert: {
@@ -163,7 +288,7 @@ export type Database = {
           join_code: string
           max_members?: number
           name: string
-          owner_id: string
+          owner_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -173,7 +298,7 @@ export type Database = {
           join_code?: string
           max_members?: number
           name?: string
-          owner_id?: string
+          owner_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -373,6 +498,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_sync_attempts: {
+        Row: {
+          last_attempt_at: string
+          user_id: string
+        }
+        Insert: {
+          last_attempt_at?: string
+          user_id: string
+        }
+        Update: {
+          last_attempt_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sync_locks: {
+        Row: {
+          job: string
+          last_finished_at: string | null
+          last_status: string | null
+          locked_at: string
+          locked_until: string
+        }
+        Insert: {
+          job: string
+          last_finished_at?: string | null
+          last_status?: string | null
+          locked_at?: string
+          locked_until: string
+        }
+        Update: {
+          job?: string
+          last_finished_at?: string | null
+          last_status?: string | null
+          locked_at?: string
+          locked_until?: string
+        }
+        Relationships: []
+      }
       teams: {
         Row: {
           clubColors: string | null
@@ -408,6 +572,42 @@ export type Database = {
           venue?: string | null
         }
         Relationships: []
+      }
+      user_blocks: {
+        Row: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_user_id?: string
+          blocker_user_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_blocked_user_id_fkey"
+            columns: ["blocked_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_user_id_fkey"
+            columns: ["blocker_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_subscriptions: {
         Row: {
@@ -535,6 +735,19 @@ export type Database = {
       }
     }
     Functions: {
+      anonymize_user_account: {
+        Args: { p_revenuecat_app_user_id?: string; p_user_id: string }
+        Returns: Json
+      }
+      block_user: { Args: { p_target_user_id: string }; Returns: Json }
+      consume_football_api_budget: {
+        Args: { p_calls: number; p_job?: string; p_limit?: number }
+        Returns: boolean
+      }
+      consume_subscription_sync_attempt: {
+        Args: { p_cooldown_seconds?: number; p_user_id: string }
+        Returns: boolean
+      }
       create_new_league: {
         Args: {
           avatar_url?: string
@@ -545,7 +758,6 @@ export type Database = {
         }
         Returns: string
       }
-      delete_own_account: { Args: never; Returns: undefined }
       delete_owned_league: { Args: { p_league_id: string }; Returns: Json }
       find_league_by_code: {
         Args: { p_join_code: string }
@@ -561,6 +773,16 @@ export type Database = {
           owner_nickname: string
         }[]
       }
+      get_blocked_users: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          blocked_user_id: string
+          created_at: string
+          display_name: string
+          id: string
+        }[]
+      }
       get_plan_limits: {
         Args: { p_plan: string }
         Returns: {
@@ -569,6 +791,7 @@ export type Database = {
         }[]
       }
       get_user_plan: { Args: { p_user_id: string }; Returns: string }
+      has_blocked_user: { Args: { p_target_user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_league_member: { Args: { league_id_param: string }; Returns: boolean }
       is_league_owner: { Args: { league_id_param: string }; Returns: boolean }
@@ -584,6 +807,7 @@ export type Database = {
         }
         Returns: {
           active: boolean
+          anonymized_at: string | null
           avatar_url: string | null
           created_at: string
           id: string
@@ -591,7 +815,7 @@ export type Database = {
           league_id: string
           nickname: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -601,9 +825,62 @@ export type Database = {
         }
       }
       leave_league: { Args: { p_league_id: string }; Returns: Json }
+      moderate_content_report: {
+        Args: { p_decision: string; p_notes?: string; p_report_id: string }
+        Returns: Json
+      }
+      release_sync_lock: {
+        Args: { p_job: string; p_status?: string }
+        Returns: undefined
+      }
+      remove_league_member: { Args: { p_member_id: string }; Returns: Json }
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
       rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
+      submit_content_report: {
+        Args: {
+          p_content_type: string
+          p_details?: string
+          p_league_id?: string
+          p_league_member_id?: string
+          p_reason: string
+        }
+        Returns: Json
+      }
+      try_acquire_sync_lock: {
+        Args: { p_job: string; p_lease_seconds?: number }
+        Returns: boolean
+      }
+      unblock_user: { Args: { p_target_user_id: string }; Returns: Json }
+      update_my_league_activation: {
+        Args: { p_active_member_ids: string[] }
+        Returns: Json
+      }
+      upsert_own_prediction: {
+        Args: {
+          p_away_score: number
+          p_home_score: number
+          p_league_member_id: string
+          p_match_id: number
+        }
+        Returns: {
+          away_score: number
+          created_at: string
+          home_score: number
+          id: string
+          is_finished: boolean
+          league_member_id: string
+          match_id: number
+          points: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "predictions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       user_exists: { Args: { uid: string }; Returns: boolean }
     }
     Enums: {

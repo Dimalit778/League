@@ -53,7 +53,13 @@ export default function WCLeaderboardPreview({ members }: Props) {
           {t('Leaderboard')}
         </Text>
         {members.length > 3 && (
-          <Pressable onPress={() => setExpanded((v) => !v)}>
+          <Pressable
+            onPress={() => setExpanded((v) => !v)}
+            accessibilityRole="button"
+            accessibilityLabel={expanded ? t('Show less') : t('View all')}
+            accessibilityState={{ expanded }}
+            className="min-h-11 justify-center px-2"
+          >
             <Text className="text-sm text-primary">
               {expanded ? t('Show less') : t('View all')}
             </Text>

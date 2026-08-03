@@ -1,14 +1,10 @@
-import { Screen } from '@/components/layout';
 import { Card, Skeleton, TextSkeleton } from '@/components/ui';
-import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
 
 export function MemberDetailsSkeleton() {
   return (
-    <Screen scroll padding="horizontal" edges={['top', 'bottom']} contentClassName={spacing.stack}>
-      <Skeleton className="h-11 w-40" />
-
-      <Card variant="hero" contentClassName="items-center px-5 py-6">
+    <View className="flex-1 gap-4  p-4 sm:px-6 lg:px-8">
+      <Card variant="hero" contentClassName="items-center ">
         <Skeleton className="h-24 w-24 rounded-full" />
         <TextSkeleton className="mt-3 h-6 w-32" />
         <TextSkeleton className="mt-2 w-24" />
@@ -46,7 +42,7 @@ export function MemberDetailsSkeleton() {
           ))}
         </View>
       ))}
-    </Screen>
+    </View>
   );
 }
 

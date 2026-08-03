@@ -38,7 +38,7 @@ export function StatsBestCategory({ bestCategory }: StatsBestCategoryProps) {
             {t('{{count}} correct', { count: bestCategory.value })}
           </Text>
           {bestCategory.topPercent != null && (
-            <Text className="mt-0.5 text-[11px] text-muted">
+            <Text variant="bodySmall" className="mt-0.5 text-muted">
               {t("You're in the top {{percent}}% of the league", { percent: bestCategory.topPercent })}
             </Text>
           )}

@@ -478,6 +478,9 @@ jest.mock('@/lib/supabase', () => ({
       onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
     },
     rpc: jest.fn(() => Promise.resolve({ data: null, error: null })),
+    functions: {
+      invoke: jest.fn(() => Promise.resolve({ data: { success: true }, error: null })),
+    },
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
       insert: jest.fn().mockReturnThis(),

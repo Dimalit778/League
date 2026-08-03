@@ -27,7 +27,7 @@ export const LeagueDetailsSection = ({
     }
   };
   const owner = useMemo(() => {
-    return league.league_members.find((member: { user_id: string }) => member.user_id === league.owner_id);
+    return league.league_members.find((member) => member.user_id === league.owner_id);
   }, [league.league_members, league.owner_id]);
 
   return (

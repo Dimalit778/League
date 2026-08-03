@@ -1,4 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
+import { LoadingOverlay, Row, Screen } from '@/components/layout';
 import { Button, InputField, Text } from '@/components/ui';
 import MemberOption from '@/features/leagues/components/createLeague/MemberOption';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
@@ -112,7 +112,9 @@ const LeagueDetailsScreen = () => {
         >
           {/* League name */}
           <View className="mb-8 gap-2">
-            <Text variant="subtitle">{t('League Name')}</Text>
+            <Row>
+              <Text variant="subtitle">{t('League Name')}</Text>
+            </Row>
             <InputField
               control={control}
               name="leagueName"
@@ -126,7 +128,9 @@ const LeagueDetailsScreen = () => {
 
           {/* Nickname */}
           <View className="mb-8 gap-2">
-            <Text variant="subtitle">{t('Your Nickname')}</Text>
+            <Row>
+              <Text variant="subtitle">{t('Your Nickname')}</Text>
+            </Row>
             <InputField
               control={control}
               name="nickname"

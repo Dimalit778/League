@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/Text';
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
@@ -17,6 +18,7 @@ type AvatarImageProps = {
 };
 
 export const AvatarImage = ({ nickname, path, src, style, className, loading }: AvatarImageProps) => {
+  const { t } = useTranslation();
   const initial = nickname?.charAt(0)?.toUpperCase() ?? '?';
   const profileImage = getProfileImage(path ?? src);
 
@@ -38,14 +40,18 @@ export const AvatarImage = ({ nickname, path, src, style, className, loading }: 
           style={[{ width: '100%', height: '100%', borderRadius: 9999 }, style]}
           accessible={true}
           accessibilityRole="image"
-          accessibilityLabel={nickname ? `${nickname}'s avatar` : 'User avatar'}
+          accessibilityLabel={nickname ? t('{{name}} profile picture', { name: nickname }) : t('User profile picture')}
         />
       ) : (
         <View
           className="items-center justify-center"
           accessible={true}
           accessibilityRole="text"
-          accessibilityLabel={nickname ? `${nickname}'s avatar initial ${initial}` : `Avatar initial ${initial}`}
+          accessibilityLabel={
+            nickname
+              ? t('{{name}} profile placeholder, {{initial}}', { name: nickname, initial })
+              : t('User profile placeholder, {{initial}}', { initial })
+          }
         >
           <Text className="font-semibold">{initial}</Text>
         </View>

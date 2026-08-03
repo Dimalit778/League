@@ -28,7 +28,7 @@ function StatItem({
         {icon}
         <Text className={`text-base font-bold ${valueClassName ?? 'text-white'}`}>{value}</Text>
       </View>
-      <Text className="text-[10px] uppercase tracking-wide text-muted">{label}</Text>
+      <Text variant="caption" className="uppercase tracking-wide text-muted">{label}</Text>
     </View>
   );
 }

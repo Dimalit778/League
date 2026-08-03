@@ -44,7 +44,7 @@ export const MATCH_CARD_LAYOUT = {
 } as const;
 
 export function getMatchCardMetrics(screenWidth: number) {
-  const width = screenWidth - MATCH_CARD_HORIZONTAL_PADDING;
+  const width = Math.min(screenWidth - MATCH_CARD_HORIZONTAL_PADDING, 640);
 
   const height = Math.round(width * (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) * MATCH_CARD_HEIGHT_SCALE);
 

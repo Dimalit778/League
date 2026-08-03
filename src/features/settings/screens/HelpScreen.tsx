@@ -1,11 +1,12 @@
-import { Screen } from '@/components/layout';
+import { Screen, Section } from '@/components/layout';
 import { Button, Card, Text } from '@/components/ui';
 
 import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
 import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
 import { Linking, View } from 'react-native';
 
-const SUPPORT_EMAIL = 'support@leaguechampion.app';
+const SUPPORT_EMAIL = 'support@champoapp.com';
 const HelpScreen = () => {
   const handleEmailPress = () => {
     Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Help Request`);
@@ -113,7 +114,7 @@ const HelpScreen = () => {
         {
           question: 'How do I manage notifications?',
           answer:
-            'Push notifications are not currently available in League Champion. If we add them in a future update, you will control permission from your device settings.',
+            'Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.',
         },
       ],
     },
@@ -139,11 +140,13 @@ const HelpScreen = () => {
     },
   ];
   return (
-    <Screen scroll padding="horizontal" bottomInset>
+    <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
       {/* Welcome Section */}
-      <Card className="mb-6">
-        <Text className="text-xl mb-2">{t('Welcome to League Champion')}</Text>
-        <Text className="text-base leading-6">
+      <Card variant="elevated" contentClassName="gap-3">
+        <Text variant="title" className="text-center text-primary">
+          {t('Welcome to League Champion')}
+        </Text>
+        <Text variant="body" className=" text-center">
           {t(
             'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
           )}
@@ -152,15 +155,18 @@ const HelpScreen = () => {
 
       {/* Help Sections */}
       {helpSections.map((section) => (
-        <View key={section.title} className="mb-6">
-          <Text className="text-xl mb-3">{t(section.title)}</Text>
+        <Section key={section.title} title={t(section.title)}>
           {section.items.map((item, index) => (
-            <Card key={index} className="mb-3">
-              <Text className="text-base mb-2">{t(item.question)}</Text>
-              <Text className="text-base leading-5 text-muted">{t(item.answer)}</Text>
+            <Card key={index} className="mb-3" contentClassName="gap-2">
+              <Text variant="title" tone="primary">
+                {t(item.question)}
+              </Text>
+              <Text variant="body" tone="muted" className="leading-6">
+                {t(item.answer)}
+              </Text>
             </Card>
           ))}
-        </View>
+        </Section>
       ))}
 
       {/* Contact Support */}

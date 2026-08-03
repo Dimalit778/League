@@ -18,8 +18,9 @@ const statsCards = [
   {
     label: 'Active Subscriptions',
     key: 'subscriptions' as const,
-    width: 'w-full',
+    width: 'w-1/2',
   },
+  { label: 'Pending Reports', key: 'pendingReports' as const, width: 'w-1/2' },
 ];
 
 const navigationLinks = [
@@ -42,6 +43,11 @@ const navigationLinks = [
     title: 'Predictions',
     description: 'Audit recent predictions submitted by users.',
     route: '/predictions',
+  },
+  {
+    title: 'Content Reports',
+    description: 'Review reported nicknames, profile photos and league names.',
+    route: '/reports',
   },
   {
     title: 'Competitions',

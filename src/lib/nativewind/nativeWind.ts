@@ -35,7 +35,7 @@ export type ThemeTokens = {
 };
 
 const lightColors = {
-  primary: '#B8860B',
+  primary: '#7A5800',
   onPrimary: '#FFFFFF',
   background: '#F8F9F7',
   surface: '#FFFFFF',
@@ -43,10 +43,10 @@ const lightColors = {
   text: '#0F172A',
   muted: '#64748B',
   border: '#E2E8F0',
-  success: '#16A34A',
-  warning: '#D97706',
+  success: '#087A35',
+  warning: '#92400E',
   error: '#DC2626',
-  info: '#0284C7',
+  info: '#0369A1',
   overlay: 'rgba(15,23,42,0.35)',
 } as const;
 
@@ -61,7 +61,7 @@ const darkColors = {
   border: '#1F3A52',
   success: '#22C55E',
   warning: '#F59E0B',
-  error: '#EF4444',
+  error: '#F87171',
   info: '#38BDF8',
   overlay: 'rgba(0,0,0,0.55)',
 } as const;

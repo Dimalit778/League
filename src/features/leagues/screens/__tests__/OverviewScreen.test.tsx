@@ -34,6 +34,10 @@ jest.mock('../../hooks/useLeagueOverview', () => ({
   useLeagueOverview: () => mockOverview,
 }));
 
+jest.mock('@/store/PrimaryLeagueStore', () => ({
+  useMemberId: () => 'member-1',
+}));
+
 jest.mock('@/components/ui/HeaderBackground', () => {
   const { View } = jest.requireActual<typeof import('react-native')>('react-native');
   return {
@@ -58,7 +62,6 @@ describe('OverviewScreen', () => {
     const { getAllByText, getByText } = render(<OverviewScreen />);
 
     expect(getByText('Today matches')).toBeTruthy();
-    expect(getByText('Quick access')).toBeTruthy();
     expect(getAllByText('Stats').length).toBeGreaterThan(0);
     expect(getByText('Current form')).toBeTruthy();
   });

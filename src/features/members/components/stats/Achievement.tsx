@@ -16,11 +16,21 @@ type Achievement = {
 
 function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
-    <Card padding="none" variant="outlined" className="flex-1" style={{ opacity: achievement.unlocked ? 1 : 0.5 }}>
+    <Card
+      padding="none"
+      variant="outlined"
+      className="flex-1"
+      style={{ opacity: achievement.unlocked ? 1 : 0.5 }}
+      accessible
+      accessibilityLabel={`${achievement.title}. ${achievement.description}`}
+      accessibilityState={{ disabled: !achievement.unlocked }}
+    >
       <View className="items-center px-2 py-3">
         <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-subtle">{achievement.icon}</View>
         <Text className="text-center text-sm font-bold text-text">{achievement.title}</Text>
-        <Text className="mt-1 text-center text-[10px] leading-4 text-muted">{achievement.description}</Text>
+        <Text variant="caption" className="mt-1 text-center text-muted">
+          {achievement.description}
+        </Text>
       </View>
     </Card>
   );

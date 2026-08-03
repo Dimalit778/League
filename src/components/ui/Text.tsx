@@ -44,7 +44,16 @@ const toneClasses: Record<TextTone, string> = {
 };
 
 export const Text = forwardRef<RNText, AppTextProps>(function Text(
-  { variant = 'body', tone = 'default', font = 'system', className, style, ...rest },
+  {
+    variant = 'body',
+    tone = 'default',
+    font = 'system',
+    className,
+    style,
+    allowFontScaling = true,
+    maxFontSizeMultiplier = 2,
+    ...rest
+  },
   ref,
 ) {
   const isRTL = useIsRTL();
@@ -54,10 +63,11 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
     <RNText
       ref={ref}
       {...rest}
+      allowFontScaling={allowFontScaling}
+      maxFontSizeMultiplier={maxFontSizeMultiplier}
       className={cn(typography[variant], toneClasses[tone], fontClasses[font], className)}
       style={[
         { writingDirection: isRTL ? 'rtl' : 'ltr' },
-
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,
         style,
       ]}

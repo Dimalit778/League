@@ -3,7 +3,6 @@ import { DirectionalIcon } from '@/components/ui';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
@@ -23,12 +22,7 @@ export default function OverviewScreen() {
   if (isLoading) return <OverviewSkeleton />;
 
   return (
-    <Screen
-      scroll
-      padding="horizontal"
-      bottomInset={bottomTabsInset + 16}
-      contentClassName={cn(spacing.section, 'pt-3')}
-    >
+    <Screen scroll padding="all" bottomInset={bottomTabsInset} contentClassName={spacing.section}>
       <LeagueSummary leagueSummary={leagueSummary} />
 
       <Section title={t('Current form')}>
@@ -36,7 +30,7 @@ export default function OverviewScreen() {
       </Section>
       <Section
         title={t('Stats')}
-        actionIcon={<DirectionalIcon size={20} color={colors.primary} />}
+        actionIcon={<DirectionalIcon size={20} color={colors.text} />}
         onActionPress={() => {
           if (!memberId) return;
           router.push({

@@ -1,8 +1,7 @@
-import { Screen } from '@/components/layout';
-import { Card, Text } from '@/components/ui';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { Row, Screen } from '@/components/layout';
+import { Badge, Card, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Ionicons } from '@expo/vector-icons';
+import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
 import { legalContent } from '../content/legalContent';
 
@@ -12,50 +11,50 @@ type LegalDocumentScreenProps = {
 
 const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
   const { language } = useTranslation();
-  const { colors } = useThemeTokens();
   const content = legalContent[language][document];
 
   return (
-    <Screen scroll padding="horizontal">
-      <Text variant="title">{content.title}</Text>
-      <Text variant="bodySmall" className="text-muted">
-        {content.updatedAt}
-      </Text>
-      <Text variant="body" className="text-muted">
-        {content.intro}
-      </Text>
-      {content.sections.map((section) => (
-        <Card key={section.title} className="mb-4">
-          <View className="mb-3 flex-row items-center">
-            <View
-              className="me-3 h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: colors.primary + '18' }}
-            >
-              <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+    <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+      <Card variant="elevated" contentClassName="gap-3">
+        <Badge size="sm" label={content.updatedAt} className="self-center" />
+        <Text variant="body" className="leading-7">
+          {content.intro}
+        </Text>
+      </Card>
+
+      {content.sections.map((section, index) => (
+        <Card key={section.title} contentClassName="gap-3">
+          <Row className="items-start gap-3">
+            <View className="size-7 items-center justify-center rounded-full bg-primary">
+              <Text variant="label" className="text-center text-on-primary">
+                {index + 1}
+              </Text>
             </View>
-            <Text variant="title" className="flex-1">
+            <Text variant="subtitle" className="min-w-0 flex-1 pt-0.5">
               {section.title}
             </Text>
-          </View>
+          </Row>
 
-          {section.body.map((paragraph) => (
-            <View key={paragraph} className="mb-2 flex-row">
-              <Text variant="bodySmall" className="text-muted">
-                •
-              </Text>
-              <Text variant="bodySmall" className="flex-1 text-muted">
-                {paragraph}
-              </Text>
-            </View>
-          ))}
+          <View className="gap-3">
+            {section.body.map((paragraph) => (
+              <Row key={paragraph} className="items-start gap-2.5">
+                <Text variant="bodySmall" tone="muted" className="mt-0.5 leading-6">
+                  •
+                </Text>
+                <Text variant="bodySmall" tone="secondary" className="min-w-0 flex-1 leading-6">
+                  {paragraph}
+                </Text>
+              </Row>
+            ))}
+          </View>
         </Card>
       ))}
 
-      <View className="mt-1 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
-        <Text variant="bodySmall" className="text-muted">
+      <Card variant="soft" contentClassName="gap-1">
+        <Text variant="bodySmall" tone="muted" className="leading-6 text-center">
           {content.footer}
         </Text>
-      </View>
+      </Card>
     </Screen>
   );
 };

@@ -79,7 +79,7 @@ describe('useLeagues hooks', () => {
     await mutationConfig.mutationFn({ leagueId: 'l1' });
     await mutationConfig.onSuccess({}, { leagueId: 'l1' });
 
-    expect(leagueApi.updatePrimaryLeague).toHaveBeenCalledWith('l1', 'u1');
+    expect(leagueApi.updatePrimaryLeague).toHaveBeenCalledWith('l1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.members.primaryLeague('u1') });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });

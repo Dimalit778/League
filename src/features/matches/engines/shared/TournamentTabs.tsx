@@ -157,7 +157,11 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
               active ? 'bg-primary' : 'border border-border',
             )}
           >
-            <Text numberOfLines={1} className={`text-base font-bold ${active ? 'text-background' : 'text-text'}`}>
+            <Text
+              variant="body"
+              numberOfLines={1}
+              className={cn('font-semibold', active ? 'text-background' : 'text-text')}
+            >
               {option.label}
             </Text>
           </Pressable>

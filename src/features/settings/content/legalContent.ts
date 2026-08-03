@@ -17,18 +17,18 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
   en: {
     privacy: {
       title: 'Privacy Policy',
-      updatedAt: 'Last updated: May 25, 2026',
+      updatedAt: 'Last updated: August 2, 2026',
       intro:
-        'League Champion is a football prediction app for creating leagues, joining friends, submitting predictions, viewing rankings, and managing subscriptions. This policy explains what information we collect, how we use it, and the choices available to you.',
+        'Champo is a football prediction app for creating leagues, joining friends, submitting predictions, viewing rankings, and managing subscriptions. This policy explains what information we collect, how we use it, and the choices available to you.',
       sections: [
         {
           title: 'Information We Collect',
           body: [
             'Account information: name, email address, authentication provider details, and basic profile details you provide when signing in or managing your account.',
             'League and prediction content: leagues you create or join, nicknames, invite codes, predictions, scores, rankings, and related in-app activity.',
-            'Profile media: avatar images or other photos you choose to upload. Photo library access is requested only when you choose to add or update profile media.',
+            'Profile media: avatar images or other photos you choose to upload. The system photo picker opens only when you choose to add or update profile media; Champo does not request broad photo-library access in advance.',
             'Subscription information: subscription status, product identifiers, purchase or renewal status, and receipt-related metadata processed through Apple and RevenueCat. We do not receive your full payment card details.',
-            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays. Push notification tokens are not collected because push notifications are not currently enabled in the app.',
+            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays. Match reminders are scheduled locally on your device; Champo does not currently collect push notification tokens.',
             'Support communications: messages, attachments, and contact details you send when requesting help.',
           ],
         },
@@ -54,16 +54,17 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Data Retention and Deletion',
           body: [
-            'We keep account, league, prediction, and subscription records for as long as needed to provide the service, maintain league history, meet legal obligations, resolve disputes, and prevent abuse.',
-            'You can request access, correction, export, or deletion of your personal data by contacting support@leaguechampion.app.',
-            'After a deletion request, we delete or anonymize personal data unless retention is required for legal, security, billing, fraud-prevention, or legitimate operational reasons.',
+            'You can delete your account in Settings. We delete your authentication account, profile details and profile images, and remove the customer record held for us by RevenueCat. Sign in with Apple authorization is revoked when applicable.',
+            'Past predictions, points, and the minimum league-member record needed to preserve standings are retained without a user ID, profile image, or personal nickname. They appear as “Deleted Player”, are inactive, cannot be used to sign in, and are no longer linked to your account.',
+            'Deleting your Champo account does not cancel an Apple subscription. You must cancel it separately in your Apple Account subscription settings. Apple may retain transaction records under its own policy and legal obligations.',
+            'You can request access, correction, export, or deletion of your personal data by contacting support@champoapp.com. Limited records may still be retained when required by law, security, billing, or fraud-prevention obligations.',
           ],
         },
         {
           title: 'Your Choices',
           body: [
             'You can update profile details in the app where supported.',
-            'Push notifications are not currently offered in the app. If we add them later, you will be able to control permission from your device settings.',
+            'You may optionally enable local match reminders after reviewing an in-app explanation. You can change notification permission at any time in your device settings.',
             'You can manage or cancel Apple subscriptions from your Apple Account subscription settings.',
             'Where consent is required, you may withdraw it by changing device permissions, app settings, or contacting us.',
           ],
@@ -71,7 +72,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Children',
           body: [
-            'League Champion is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe a child provided personal information, contact us and we will take appropriate steps to delete it.',
+            'Champo is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe a child provided personal information, contact us and we will take appropriate steps to delete it.',
           ],
         },
         {
@@ -89,7 +90,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         },
         {
           title: 'Contact Us',
-          body: ['For privacy questions or data requests, contact support@leaguechampion.app.'],
+          body: ['For privacy questions or data requests, contact support@champoapp.com.'],
         },
       ],
       footer:
@@ -97,14 +98,14 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
     },
     terms: {
       title: 'Terms of Service',
-      updatedAt: 'Last updated: May 25, 2026',
+      updatedAt: 'Last updated: August 2, 2026',
       intro:
-        'These Terms of Service govern your use of League Champion. By creating an account, joining a league, submitting predictions, purchasing a subscription, or otherwise using the app, you agree to these terms.',
+        'These Terms of Service govern your use of Champo. By creating an account, joining a league, submitting predictions, purchasing a subscription, or otherwise using the app, you agree to these terms.',
       sections: [
         {
           title: 'Eligibility and Accounts',
           body: [
-            'You must be at least 13 years old to use League Champion.',
+            'You must be at least 13 years old to use Champo.',
             'You are responsible for keeping your account credentials secure and for activity that occurs under your account.',
             'You agree to provide accurate account information and to keep it up to date.',
           ],
@@ -112,7 +113,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'App Use',
           body: [
-            'League Champion lets users create or join football prediction leagues, invite members, submit score predictions, view rankings, and follow football fixtures and standings.',
+            'Champo lets users create or join football prediction leagues, invite members, submit score predictions, view rankings, and follow football fixtures and standings.',
             'You may not misuse the app, interfere with its operation, attempt unauthorized access, scrape data, reverse engineer protected parts of the service, or use the app for unlawful activity.',
             'You are responsible for content you submit, including league names, nicknames, profile images, and predictions. Do not submit content that is illegal, abusive, infringing, misleading, or harmful.',
           ],
@@ -120,7 +121,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Predictions and Football Data',
           body: [
-            'Predictions are for entertainment and social competition. League Champion does not provide betting, gambling, financial advice, or guaranteed match outcomes.',
+            'Predictions are for entertainment and social competition. Champo does not provide betting, gambling, financial advice, or guaranteed match outcomes.',
             'Fixtures, scores, events, standings, team information, and related football data may come from third-party sources and may be delayed, incomplete, or inaccurate.',
             'We may correct scoring, rankings, or match data when errors are detected.',
           ],
@@ -171,7 +172,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'Changes and Contact',
           body: [
             'We may update these terms from time to time. Continued use after the effective date of updated terms means you accept the updated terms.',
-            'For questions about these terms, contact support@leaguechampion.app.',
+            'For questions about these terms, contact support@champoapp.com.',
           ],
         },
       ],
@@ -181,18 +182,18 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
   he: {
     privacy: {
       title: 'מדיניות פרטיות',
-      updatedAt: 'עודכן לאחרונה: 25 במאי 2026',
+      updatedAt: 'עודכן לאחרונה: 2 באוגוסט 2026',
       intro:
-        'League Champion היא אפליקציית ניחושי כדורגל ליצירת ליגות, הצטרפות לחברים, שליחת ניחושים, צפייה בדירוגים וניהול מנויים. מדיניות זו מסבירה איזה מידע אנו אוספים, כיצד אנו משתמשים בו, ומהן הבחירות שעומדות לרשותך.',
+        'Champo היא אפליקציית ניחושי כדורגל ליצירת ליגות, הצטרפות לחברים, שליחת ניחושים, צפייה בדירוגים וניהול מנויים. מדיניות זו מסבירה איזה מידע אנו אוספים, כיצד אנו משתמשים בו, ומהן הבחירות שעומדות לרשותך.',
       sections: [
         {
           title: 'מידע שאנו אוספים',
           body: [
             'מידע חשבון: שם, כתובת אימייל, פרטי ספק התחברות ופרטי פרופיל בסיסיים שאתה מוסר בעת התחברות או ניהול החשבון.',
             'תוכן ליגות וניחושים: ליגות שאתה יוצר או מצטרף אליהן, כינויים, קודי הזמנה, ניחושים, ניקוד, דירוגים ופעילות קשורה באפליקציה.',
-            'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. גישה לספריית התמונות מתבקשת רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל.',
+            'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. בורר התמונות של המערכת נפתח רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל; Champo אינה מבקשת מראש גישה רחבה לספריית התמונות.',
             'מידע מנוי: סטטוס מנוי, מזהי מוצרים, סטטוס רכישה או חידוש ומטא-דאטה שקשור לקבלות, דרך Apple ו-RevenueCat. איננו מקבלים את פרטי כרטיס האשראי המלאים שלך.',
-            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים ולוגים לצורכי אבטחה. אבחון קריסות וסשנים עשוי להיאסף דרך Sentry עם הסתרת טקסט ותמונות. אסימוני התראות push אינם נאספים כי התראות push אינן מופעלות כרגע באפליקציה.',
+            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים ולוגים לצורכי אבטחה. אבחון קריסות וסשנים עשוי להיאסף דרך Sentry עם הסתרת טקסט ותמונות. תזכורות למשחקים מתוזמנות מקומית במכשיר; Champo אינה אוספת כרגע אסימוני התראות Push.',
             'פניות תמיכה: הודעות, קבצים מצורפים ופרטי קשר שאתה שולח כאשר אתה מבקש עזרה.',
           ],
         },
@@ -218,16 +219,17 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'שמירת מידע ומחיקה',
           body: [
-            'אנו שומרים רשומות חשבון, ליגות, ניחושים ומנויים כל עוד נדרש כדי לספק את השירות, לשמור היסטוריית ליגה, לעמוד בחובות משפטיות, לפתור מחלוקות ולמנוע שימוש לרעה.',
-            'ניתן לבקש גישה, תיקון, ייצוא או מחיקה של המידע האישי שלך באמצעות פנייה אל support@leaguechampion.app.',
-            'לאחר בקשת מחיקה, נמחק או נאפשר אנונימיזציה של מידע אישי, אלא אם נדרשת שמירה לצורכי חוק, אבטחה, חיוב, מניעת הונאה או פעילות תפעולית לגיטימית.',
+            'ניתן למחוק את החשבון דרך ההגדרות. אנו מוחקים את חשבון ההתחברות, פרטי הפרופיל ותמונות הפרופיל, ומסירים את רשומת הלקוח שמוחזקת עבורנו ב־RevenueCat. הרשאת Sign in with Apple מבוטלת כאשר הדבר רלוונטי.',
+            'ניחושים וניקוד מהעבר, ורשומת החבר המינימלית שנדרשת לשמירת הדירוג, נשמרים ללא מזהה משתמש, תמונת פרופיל או כינוי אישי. הם מוצגים בשם „שחקן שנמחק”, אינם פעילים, אינם מאפשרים התחברות ואינם מקושרים עוד לחשבון שלך.',
+            'מחיקת חשבון Champo אינה מבטלת מנוי Apple. יש לבטל אותו בנפרד בהגדרות המנויים בחשבון Apple. ‏Apple עשויה לשמור רשומות עסקה לפי המדיניות והחובות המשפטיות שלה.',
+            'ניתן לבקש גישה, תיקון, ייצוא או מחיקה של המידע האישי שלך באמצעות פנייה אל support@champoapp.com. מידע מוגבל עשוי להישמר כאשר הדבר נדרש לפי דין או לצורכי אבטחה, חיוב ומניעת הונאה.',
           ],
         },
         {
           title: 'הבחירות שלך',
           body: [
             'ניתן לעדכן פרטי פרופיל באפליקציה במקומות שבהם הדבר נתמך.',
-            'התראות Push אינן מוצעות כרגע באפליקציה. אם נוסיף אותן בעתיד, תוכל לשלוט בהרשאה דרך הגדרות המכשיר.',
+            'ניתן להפעיל תזכורות מקומיות למשחקים לאחר הצגת הסבר באפליקציה. אפשר לשנות את הרשאת ההתראות בכל עת בהגדרות המכשיר.',
             'ניתן לנהל או לבטל מנויי Apple דרך הגדרות המנויים בחשבון Apple שלך.',
             'כאשר נדרשת הסכמה, ניתן למשוך אותה באמצעות שינוי הרשאות מכשיר, הגדרות באפליקציה או פנייה אלינו.',
           ],
@@ -235,7 +237,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'ילדים',
           body: [
-            'League Champion אינה מיועדת לילדים מתחת לגיל 13. איננו אוספים ביודעין מידע אישי מילדים מתחת לגיל 13. אם לדעתך ילד מסר מידע אישי, פנה אלינו ונפעל למחיקתו לפי הצורך.',
+            'Champo אינה מיועדת לילדים מתחת לגיל 13. איננו אוספים ביודעין מידע אישי מילדים מתחת לגיל 13. אם לדעתך ילד מסר מידע אישי, פנה אלינו ונפעל למחיקתו לפי הצורך.',
           ],
         },
         {
@@ -253,21 +255,21 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         },
         {
           title: 'יצירת קשר',
-          body: ['לשאלות פרטיות או בקשות מידע, ניתן לפנות אל support@leaguechampion.app.'],
+          body: ['לשאלות פרטיות או בקשות מידע, ניתן לפנות אל support@champoapp.com.'],
         },
       ],
       footer: 'מדיניות זו נועדה לתמוך בדרישות App Store ובשקיפות מול משתמשים. היא אינה ייעוץ משפטי.',
     },
     terms: {
       title: 'תנאי שימוש',
-      updatedAt: 'עודכן לאחרונה: 25 במאי 2026',
+      updatedAt: 'עודכן לאחרונה: 2 באוגוסט 2026',
       intro:
-        'תנאי שימוש אלה מסדירים את השימוש שלך ב-League Champion. יצירת חשבון, הצטרפות לליגה, שליחת ניחושים, רכישת מנוי או שימוש אחר באפליקציה מהווים הסכמה לתנאים אלה.',
+        'תנאי שימוש אלה מסדירים את השימוש שלך ב-Champo. יצירת חשבון, הצטרפות לליגה, שליחת ניחושים, רכישת מנוי או שימוש אחר באפליקציה מהווים הסכמה לתנאים אלה.',
       sections: [
         {
           title: 'כשירות וחשבונות',
           body: [
-            'עליך להיות בן 13 לפחות כדי להשתמש ב-League Champion.',
+            'עליך להיות בן 13 לפחות כדי להשתמש ב-Champo.',
             'אתה אחראי לשמירה על פרטי ההתחברות שלך ולפעילות שמתבצעת בחשבונך.',
             'אתה מסכים למסור פרטי חשבון מדויקים ולעדכן אותם לפי הצורך.',
           ],
@@ -275,7 +277,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'שימוש באפליקציה',
           body: [
-            'League Champion מאפשרת ליצור או להצטרף לליגות ניחושי כדורגל, להזמין חברים, לשלוח ניחושי תוצאה, לצפות בדירוגים ולעקוב אחר משחקים וטבלאות.',
+            'Champo מאפשרת ליצור או להצטרף לליגות ניחושי כדורגל, להזמין חברים, לשלוח ניחושי תוצאה, לצפות בדירוגים ולעקוב אחר משחקים וטבלאות.',
             'אין לעשות שימוש לרעה באפליקציה, להפריע לפעולתה, לנסות גישה לא מורשית, לגרד נתונים, לבצע הנדסה לאחור לחלקים מוגנים של השירות או להשתמש בה לפעילות בלתי חוקית.',
             'אתה אחראי לתוכן שאתה מוסר, כולל שמות ליגות, כינויים, תמונות פרופיל וניחושים. אין לשלוח תוכן בלתי חוקי, פוגעני, מפר זכויות, מטעה או מזיק.',
           ],
@@ -283,7 +285,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'ניחושים ונתוני כדורגל',
           body: [
-            'הניחושים מיועדים לבידור ולתחרות חברתית. League Champion אינה מספקת הימורים, פעילות גיימבלינג, ייעוץ פיננסי או תוצאות משחק מובטחות.',
+            'הניחושים מיועדים לבידור ולתחרות חברתית. Champo אינה מספקת הימורים, פעילות גיימבלינג, ייעוץ פיננסי או תוצאות משחק מובטחות.',
             'משחקים, תוצאות, אירועים, טבלאות, מידע קבוצות ונתוני כדורגל קשורים עשויים להגיע ממקורות צד שלישי ועלולים להיות באיחור, חלקיים או לא מדויקים.',
             'אנו עשויים לתקן ניקוד, דירוגים או נתוני משחק כאשר מתגלות שגיאות.',
           ],
@@ -334,7 +336,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'שינויים ויצירת קשר',
           body: [
             'אנו עשויים לעדכן תנאים אלה מעת לעת. המשך שימוש לאחר מועד התחילה של תנאים מעודכנים מהווה הסכמה לתנאים המעודכנים.',
-            'לשאלות לגבי תנאים אלה, ניתן לפנות אל support@leaguechampion.app.',
+            'לשאלות לגבי תנאים אלה, ניתן לפנות אל support@champoapp.com.',
           ],
         },
       ],

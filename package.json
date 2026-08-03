@@ -11,10 +11,13 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest --watchAll",
+    "test:ci": "jest --runInBand",
     "audit:i18n": "node scripts/audit-i18n.cjs",
+    "audit:ios-privacy": "node scripts/audit-ios-privacy.cjs",
     "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
     "seed:app-reviewer": "node scripts/seed-app-reviewer.mjs",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "expo-doctor",
+    "doctor:react": "npx react-doctor@latest"
   },
   "dependencies": {
     "@expo-google-fonts/teko": "^0.4.1",
@@ -53,7 +56,6 @@
     "expo-image-picker": "~55.0.22",
     "expo-linear-gradient": "~55.0.16",
     "expo-linking": "~55.0.16",
-    "expo-modules-core": "~55.0.25",
     "expo-notifications": "~55.0.25",
     "expo-router": "~55.0.17",
     "expo-secure-store": "~55.0.16",
@@ -99,6 +101,7 @@
     "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.1",
+    "expo-doctor": "1.20.1",
     "expo-module-scripts": "^5.0.7",
     "jest": "~29.7.0",
     "jest-expo": "~55.0.20",
