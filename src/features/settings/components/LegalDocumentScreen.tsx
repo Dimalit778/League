@@ -17,9 +17,11 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
       <Card variant="elevated" contentClassName="gap-3">
         <Badge size="sm" label={content.updatedAt} className="self-center" />
-        <Text variant="body" className="leading-7">
-          {content.intro}
-        </Text>
+        <Row>
+          <Text variant="body" className="leading-7">
+            {content.intro}
+          </Text>
+        </Row>
       </Card>
 
       {content.sections.map((section, index) => (

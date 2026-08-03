@@ -47,3 +47,8 @@ jobs:
 
       - name: Jest
         run: npm run test:ci
+
+      - name: iOS bundle smoke test
+        run: npx expo export --platform ios --output-dir /tmp/champo-ios-export
+        env:
+          CI: true

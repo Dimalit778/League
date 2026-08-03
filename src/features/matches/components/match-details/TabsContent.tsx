@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import { useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { MatchWithPredictions } from '../../types';

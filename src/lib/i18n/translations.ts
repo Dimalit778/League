@@ -753,7 +753,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Leaderboard: 'Leaderboard',
       'View all': 'View all',
       'Show less': 'Show less',
-      
+
     },
     leagueOverview: {
       'Primary league': 'Primary league',
@@ -1686,7 +1686,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Leaderboard: 'טבלת חברים',
       'View all': 'הצג הכל',
       'Show less': 'הצג פחות',
-      
+
     },
     leagueOverview: {
       'Primary league': 'ליגה ראשית',

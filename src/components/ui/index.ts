@@ -6,7 +6,6 @@ export { Badge } from './Badge';
 export { Button } from './Button';
 export { Card } from './Card';
 export { Chip } from './Chip';
-export { ConfirmDialog } from './ConfirmDialog';
 export { DirectionalIcon } from './DirectionsIcon';
 export { Divider } from './Divider';
 export { EmptyState } from './EmptyState';

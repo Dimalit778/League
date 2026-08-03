@@ -1,10 +1,11 @@
-import { Screen, Section } from '@/components/layout';
+import { Row, Screen, Section } from '@/components/layout';
 import { Button, Card, Text } from '@/components/ui';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import FontAwesome6 from '@expo/vector-icons/build/FontAwesome6';
-import { Linking, View } from 'react-native';
+import { MailIcon } from 'lucide-react-native';
+import { Linking } from 'react-native';
+import { version as appVersion } from '../../../../package.json';
 
 const SUPPORT_EMAIL = 'support@champoapp.com';
 const HelpScreen = () => {
@@ -158,52 +159,58 @@ const HelpScreen = () => {
         <Section key={section.title} title={t(section.title)}>
           {section.items.map((item, index) => (
             <Card key={index} className="mb-3" contentClassName="gap-2">
-              <Text variant="title" tone="primary">
-                {t(item.question)}
-              </Text>
-              <Text variant="body" tone="muted" className="leading-6">
-                {t(item.answer)}
-              </Text>
+              <Row>
+                <Text variant="title" tone="primary">
+                  {t(item.question)}
+                </Text>
+              </Row>
+              <Row>
+                <Text variant="body" tone="muted" className="leading-6">
+                  {t(item.answer)}
+                </Text>
+              </Row>
             </Card>
           ))}
         </Section>
       ))}
 
       {/* Contact Support */}
-      <Card className="mb-6">
-        <Text className="text-xl mb-3">{t('Contact Support')}</Text>
-        <Text className="text-base leading-6 text-muted mb-4">
-          {t(
-            "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
-          )}
-        </Text>
-        <Button
-          onPress={handleEmailPress}
-          label={t('Email Support')}
-          leftIcon={<FontAwesome6 name="envelope" size={16} color="white" />}
-          fullWidth
-        />
-        <Text className="text-xs text-muted mt-2 text-center">{SUPPORT_EMAIL}</Text>
-      </Card>
+      <Section title={t('Contact Support')} contentClassName="gap-2">
+        <Card contentClassName="gap-3">
+          <Row>
+            <Text variant="body">
+              {t(
+                "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
+              )}
+            </Text>
+          </Row>
+          <Button
+            onPress={handleEmailPress}
+            label={t('Email Support')}
+            leftIcon={<MailIcon size={16} strokeWidth={2} />}
+            fullWidth
+          />
+        </Card>
+      </Section>
 
       {/* App Information */}
-      <View className="mb-6">
-        <Text className="text-xl mb-3">{t('App Information')}</Text>
-        <Card>
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-base text-muted">{t('Version')}</Text>
-            <Text className="text-base text-text">1.0.0</Text>
-          </View>
-          <View className="flex-row justify-between items-center">
-            <Text className="text-base text-muted">{t('Platform')}</Text>
-            <Text className="text-base text-text">{t('iOS & Android')}</Text>
-          </View>
+      <Section title={t('App Information')} contentClassName="gap-2">
+        <Card contentClassName="gap-2">
+          <Row className="justify-between">
+            <Text variant="body">{t('Version')}</Text>
+            <Text variant="body">{appVersion}</Text>
+          </Row>
+          <Row className="justify-between">
+            <Text variant="body">{t('Platform')}</Text>
+            <Text variant="body">{t('iOS & Android')}</Text>
+          </Row>
         </Card>
-      </View>
-
-      <Text className="text-xs text-muted">
-        {t("Thank you for using League! We're constantly working to improve your experience.")}
-      </Text>
+      </Section>
+      <Row className="justify-center my-2 mx-1">
+        <Text variant="label" className="text-muted">
+          {t("Thank you for using League! We're constantly working to improve your experience.")}
+        </Text>
+      </Row>
     </Screen>
   );
 };

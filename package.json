@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest --watchAll",
-    "test:ci": "jest --runInBand",
+    "test:ci": "jest --runInBand --no-watchman",
     "audit:i18n": "node scripts/audit-i18n.cjs",
     "audit:ios-privacy": "node scripts/audit-ios-privacy.cjs",
     "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 import { AvatarImage } from '../AvatarImage';
 
-jest.mock('@/lib/nativeWind', () => ({
+jest.mock('@/lib/nativewind/nativeWind', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 

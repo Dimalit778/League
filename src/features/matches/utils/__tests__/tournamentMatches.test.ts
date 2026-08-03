@@ -116,9 +116,9 @@ describe('tournamentMatches utils', () => {
   it('maps known stage labels and prettifies unknown labels', () => {
     expect(getStageLabel('REGULAR_SEASON')).toBe('League Phase');
     expect(getStageLabel('ROUND_OF_16')).toBe('Round of 16');
-    expect(getStageLabel('LAST_32')).toBe('Last 32');
-    expect(getStageLabel('LAST_16')).toBe('Last 16');
-    expect(getStageLabel('LAST_8')).toBe('Last 8');
+    expect(getStageLabel('LAST_32')).toBe('32');
+    expect(getStageLabel('LAST_16')).toBe('16');
+    expect(getStageLabel('LAST_8')).toBe('8');
     expect(getStageLabel('QUARTER_FINALS')).toBe('Quarter Finals');
     expect(getStageLabel('SEMI_FINALS')).toBe('Semi Finals');
     expect(getStageLabel('THIRD_PLACE')).toBe('Third-Fourth');

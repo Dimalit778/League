@@ -69,7 +69,7 @@ describe('MyLeagueScreen', () => {
     expect(progressViews.some((node: TestNode) => node.props.style?.width === 'Infinity%')).toBe(false);
   });
 
-  it('does not show Upgrade to Pro for pro users at their league limit', () => {
+  it('hides create and upgrade actions for pro users at their league limit', () => {
     mockScreenState = {
       ...mockScreenState,
       isPro: true,
@@ -77,8 +77,8 @@ describe('MyLeagueScreen', () => {
       maxLeagues: 5,
     };
 
-    const { queryByText, getAllByText } = render(<MyLeagueScreen />);
+    const { queryByText } = render(<MyLeagueScreen />);
     expect(queryByText('Upgrade to Pro')).toBeNull();
-    expect(getAllByText('Create League').length).toBeGreaterThan(0);
+    expect(queryByText('Create League')).toBeNull();
   });
 });

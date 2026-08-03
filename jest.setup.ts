@@ -302,7 +302,7 @@ jest.mock('@assets/icons', () => {
   );
 });
 
-jest.mock('@assets/app-icon.png', () => 1);
+jest.mock('@assets/app-icon-ios.png', () => 1);
 
 jest.mock('expo-clipboard', () => ({
   setStringAsync: jest.fn(),
@@ -354,16 +354,6 @@ jest.mock('@/providers/AlertProvider', () => ({
   useAlert: () => ({
     show: jest.fn(),
     hide: jest.fn(),
-  }),
-}));
-
-jest.mock('@/hooks/useConfirmDialog', () => ({
-  useConfirmDialog: () => ({
-    visible: false,
-    show: jest.fn(),
-    hide: jest.fn(),
-    confirm: jest.fn(),
-    cancel: jest.fn(),
   }),
 }));
 
