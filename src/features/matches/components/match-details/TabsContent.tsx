@@ -2,12 +2,11 @@ import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import Feather from '@expo/vector-icons/Feather';
-import { useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { MatchWithPredictions } from '../../types';
 import AiAnalysisCard from './AiAnalysisCard';
 import PredictionRank from './PredictionRank';
-
 const tabs = [
   { id: 0, title: 'Predictions', icon: 'users' as const },
   { id: 1, title: 'AI Analysis', icon: 'cpu' as const },
@@ -44,7 +43,17 @@ export default function TabsContent({ match }: { match: MatchWithPredictions }) 
       setActiveTab(viewableItems[0].index!);
     }
   }).current;
+  const pageStyle = useMemo(() => ({ width: containerWidth }), [containerWidth]);
 
+  const renderItem = useCallback(
+    ({ item }: { item: { id: number } }) => (
+      <View style={pageStyle} className="flex-1">
+        {item.id === 0 && <PredictionRank predictions={predictions} />}
+        {item.id === 1 && <AiAnalysisCard match={match} />}
+      </View>
+    ),
+    [pageStyle, predictions, match],
+  );
   return (
     <View className="flex-1 " onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
       <View className="flex-row justify-around pt-4">
@@ -79,14 +88,7 @@ export default function TabsContent({ match }: { match: MatchWithPredictions }) 
             offset: containerWidth * index,
             index,
           })}
-          renderItem={({ item }) => {
-            return (
-              <View style={{ width: containerWidth }} className="flex-1">
-                {item.id === 0 && <PredictionRank predictions={predictions} />}
-                {item.id === 1 && <AiAnalysisCard match={match} />}
-              </View>
-            );
-          }}
+          renderItem={renderItem}
         />
       )}
     </View>
