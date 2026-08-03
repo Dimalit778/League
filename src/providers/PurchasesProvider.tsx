@@ -2,11 +2,15 @@ import { KEYS } from '@/lib/queryClient';
 import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
 import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
-import { useLanguageStore } from '@/store/LanguageStore';
+import { SupportedLanguage, useLanguageStore } from '@/store/LanguageStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
+
+/** Map app language → RevenueCat paywall locale (must match dashboard locales). */
+const toRevenueCatLocale = (language: SupportedLanguage): string =>
+  language === 'he' ? 'he' : 'en-US';
 
 type PurchasesContextValue = {
   isReady: boolean;
@@ -159,7 +163,10 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
         const isConfigured = await Purchases.isConfigured();
         if (!isConfigured) {
-          Purchases.configure({ apiKey });
+          Purchases.configure({
+            apiKey,
+            preferredUILocaleOverride: toRevenueCatLocale(useLanguageStore.getState().language),
+          });
         }
 
         isConfiguredRef.current = true;
@@ -304,7 +311,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
 
-    Purchases.overridePreferredLocale(language).catch((localeError) => {
+    Purchases.overridePreferredLocale(toRevenueCatLocale(language)).catch((localeError) => {
       console.warn('[RevenueCat] Failed to override paywall locale:', localeError);
     });
   }, [isReady, language]);
