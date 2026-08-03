@@ -1,4 +1,5 @@
-import { Button, Text, InputField, Screen } from '@/components/ui';
+import { Screen } from '@/components/layout';
+import { Button, InputField, Text } from '@/components/ui';
 import {
   parseRecoveryTokensFromUrl,
   updatePasswordWithRecoveryTokens,
@@ -117,7 +118,7 @@ const ResetPasswordScreen = () => {
               {t('Please request a new link.')}
             </Text>
             <Button
-              title={t('Resend New Link')}
+              label={t('Resend New Link')}
               onPress={() => router.replace('/(auth)/sendResetLink')}
               variant="secondary"
               size="lg"
@@ -170,7 +171,7 @@ const ResetPasswordScreen = () => {
             )}
 
             <Button
-              title={t('Save New Password')}
+              label={t('Save New Password')}
               onPress={passwordForm.handleSubmit(handleResetPassword)}
               loading={isSubmitting}
               disabled={!passwordForm.formState.isValid || isSubmitting}

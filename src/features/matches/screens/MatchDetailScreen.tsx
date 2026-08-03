@@ -1,47 +1,36 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { Error, LoadingOverlay } from '@/components/layout';
-import { Button } from '@/components/ui';
+import { Error, Screen } from '@/components/layout';
 import { DotLottie } from '@lottiefiles/dotlottie-react-native';
 
 import { animations } from '@/assets/animations';
 import { images } from '@/assets/images';
-import type { PredictionFormHandle } from '@/features/predictions/components/PredictionForm';
+import { DirectionalIcon } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronLeft } from 'lucide-react-native';
 import { Keyboard, Pressable, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
+import MatchDetailsSkeleton from '../components/match-details/MatchDetailsSkeleton';
 import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchData } from '../hooks/useMatchData';
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
   const { t } = useTranslation();
-
+  const isRTL = useIsRTL();
   const memberId = useMemberId();
   const inset = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
-  const predictionFormRef = useRef<PredictionFormHandle>(null);
+  const { height, width, fontScale } = useWindowDimensions();
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
-  const [canSavePrediction, setCanSavePrediction] = useState(false);
-  const [isSavingPrediction, setIsSavingPrediction] = useState(false);
-
-  const handlePredictionDraftChange = useCallback(
-    ({ hasChanges, isPending }: { hasChanges: boolean; isPending: boolean }) => {
-      setCanSavePrediction(hasChanges);
-      setIsSavingPrediction(isPending);
-    },
-    [],
-  );
 
   const { data: matchData, isLoading, error } = useGetMatchData(Number(matchId));
 
-  if (isLoading) return <LoadingOverlay />;
+  if (isLoading) return <MatchDetailsSkeleton />;
   if (error) return <Error error={error} />;
   if (!matchData) return <Error error={{ message: 'No match data found' }} />;
 
@@ -52,83 +41,73 @@ const MatchDetailScreen = () => {
   const kickOff = new Date(matchData.kick_off);
   const hasStarted = kickOff <= now || ['IN_PLAY', 'PAUSED', 'FINISHED'].includes(matchData.status ?? '');
   const isScheduled = !hasStarted;
+  const isTablet = width >= 768;
+  const heroHeight = Math.min(
+    height * 0.5,
+    Math.max(height * 0.4 + Math.max(0, fontScale - 1) * 72, isTablet ? 360 : 280),
+  );
 
   return (
-    <Pressable
-      className="mx-auto w-full max-w-lg flex-1 bg-background"
-      onPress={Keyboard.dismiss}
-      accessible={false}
-    >
-      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: height * 0.35 }}>
-        <ExpoImage
-          source={images.footballFieldBg}
-          contentFit="cover"
-          cachePolicy="memory-disk"
-          priority="high"
-          transition={0}
-          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
-        />
-        <LinearGradient
-          colors={['rgba(4,10,20,0.38)', 'rgba(4,10,20,0.5)', 'rgba(4,10,20,0.72)']}
-          locations={[0, 0.55, 1]}
-          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
-        />
-      </View>
-
-      <View style={{ height: height * 0.35, paddingTop: inset.top }}>
-        <TouchableOpacity
-          className="absolute left-4 z-20 h-11 w-11 items-center justify-center rounded-full border-2 border-text"
-          style={{ top: inset.top + 8 }}
-          onPress={() => router.dismiss()}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-        >
-          <ChevronLeft size={30} color="#fff" strokeWidth={1.6} />
-        </TouchableOpacity>
-
-        <MatchHeader
-          match={matchData}
-          memberPrediction={memberPrediction}
-          isScheduled={isScheduled}
-          predictionFormRef={predictionFormRef}
-          onPredictionDraftChange={handlePredictionDraftChange}
-          onPredictionSaved={() => setShowSuccessAnimation(true)}
-        />
-      </View>
-
-      <View className="-mt-5 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background">
-        <MatchContent match={matchData} isScheduled={isScheduled} />
-      </View>
-
-      {isScheduled && (
-        <View
-          className="border-t border-border bg-background px-4 pt-3"
-          style={{ paddingBottom: Math.max(inset.bottom, 12) }}
-        >
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            label={t('Save')}
-            onPress={() => predictionFormRef.current?.save()}
-            loading={isSavingPrediction}
-            disabled={!canSavePrediction || isSavingPrediction}
+    <Screen edges={['bottom']}>
+      <Pressable
+        className="mx-auto w-full flex-1 bg-background"
+        style={{ maxWidth: isTablet ? 768 : 512 }}
+        onPress={Keyboard.dismiss}
+        accessible={false}
+      >
+        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: heroHeight }}>
+          <ExpoImage
+            source={images.footballFieldBg}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            priority="high"
+            transition={0}
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+          />
+          <LinearGradient
+            colors={['rgba(4,10,20,0.38)', 'rgba(4,10,20,0.5)', 'rgba(4,10,20,0.72)']}
+            locations={[0, 0.55, 1]}
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           />
         </View>
-      )}
-      {showSuccessAnimation && (
-        <View className="absolute inset-0 z-50 items-center justify-center bg-black/45" pointerEvents="none">
-          <DotLottie
-            source={animations.success}
-            autoplay
-            loop={false}
-            onComplete={() => setShowSuccessAnimation(false)}
-            style={{ width: 180, height: 180 }}
+
+        <View style={{ height: heroHeight, paddingTop: inset.top }}>
+          <TouchableOpacity
+            className="absolute z-20 h-11 w-11 items-center justify-center rounded-full border-2 border-white"
+            style={[{ top: inset.top + 8 }, isRTL ? { right: 16 } : { left: 16 }]}
+            onPress={() => router.dismiss()}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('Close')}
+          >
+            <DirectionalIcon size={30} color="#fff" strokeWidth={2} />
+          </TouchableOpacity>
+
+          <MatchHeader
+            match={matchData}
+            memberPrediction={memberPrediction}
+            isScheduled={isScheduled}
+            onPredictionSaved={() => setShowSuccessAnimation(true)}
           />
         </View>
-      )}
-    </Pressable>
+
+        <View className="-mt-5 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background">
+          <MatchContent match={matchData} isScheduled={isScheduled} />
+        </View>
+
+        {showSuccessAnimation && (
+          <View className="absolute inset-0 z-50 items-center justify-center bg-black/45" pointerEvents="none">
+            <DotLottie
+              source={animations.success}
+              autoplay
+              loop={false}
+              onComplete={() => setShowSuccessAnimation(false)}
+              style={{ width: isTablet ? 220 : 180, height: isTablet ? 220 : 180 }}
+            />
+          </View>
+        )}
+      </Pressable>
+    </Screen>
   );
 };
 

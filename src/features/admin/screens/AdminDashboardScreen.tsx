@@ -1,14 +1,14 @@
-import { Error, LoadingOverlay } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { Error, LoadingOverlay, Screen } from '@/components/layout';
+import { Button, Card, Text } from '@/components/ui';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { RefreshControl, ScrollView, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 const statsCards = [
   { label: 'Users', key: 'users' as const, width: 'w-1/2' },
@@ -18,8 +18,9 @@ const statsCards = [
   {
     label: 'Active Subscriptions',
     key: 'subscriptions' as const,
-    width: 'w-full',
+    width: 'w-1/2',
   },
+  { label: 'Pending Reports', key: 'pendingReports' as const, width: 'w-1/2' },
 ];
 
 const navigationLinks = [
@@ -44,6 +45,11 @@ const navigationLinks = [
     route: '/predictions',
   },
   {
+    title: 'Content Reports',
+    description: 'Review reported nicknames, profile photos and league names.',
+    route: '/reports',
+  },
+  {
     title: 'Competitions',
     description: 'Add or remove competitions from the platform.',
     route: '/competitions',
@@ -54,6 +60,7 @@ const AdminDashboardScreen = () => {
   const { signOut } = useAuthActions();
   const router = useRouter();
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } = useAdminDashboard();
   const onRefresh = useCallback(() => {
@@ -64,42 +71,44 @@ const AdminDashboardScreen = () => {
   if (isLoading && !data) return <LoadingOverlay />;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen safeArea>
       <ScrollView
         className="flex-1 p-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
       >
-        <Text className="text-text text-center text-xl font-semibold mb-2">Platform Overview</Text>
+        <Text className="text-text text-center text-xl font-semibold mb-2">{t('Platform Overview')}</Text>
 
         <View className="flex-row flex-wrap ">
           {statsCards.map((stat) => (
             <View key={stat.key} className={`${stat.width} px-2 my-1`}>
-              <View className="bg-border border border-border rounded-xl gap-1 p-2 justify-center items-center">
-                <Text className="text-muted text-md ">{stat.label}</Text>
+              <Card variant="soft" padding="sm" className="gap-1 items-center">
+                <Text className="text-muted text-md ">{t(stat.label)}</Text>
                 <Text className="text-text text-2xl font-semibold ">{data?.[stat.key] ?? 0}</Text>
-              </View>
+              </Card>
             </View>
           ))}
         </View>
 
         {navigationLinks.map((link) => (
-          <TouchableOpacity
+          <Card
             key={link.route}
             onPress={() => router.push(link.route as any)}
-            className="bg-surface border border-border rounded-2xl p-4 my-2 flex-row justify-between"
+            variant="interactive"
+            className="my-2"
+            contentClassName="flex-row justify-between"
           >
             <View className="flex-1">
-              <Text className="text-text text-lg font-semibold mb-2">{link.title}</Text>
-              <Text className="text-muted text-sm">{link.description}</Text>
+              <Text className="text-text text-lg font-semibold mb-2">{t(link.title)}</Text>
+              <Text className="text-muted text-sm">{t(link.description)}</Text>
             </View>
             <View className=" items-center justify-center">
               <Entypo name="chevron-right" size={28} color={colors.text} />
             </View>
-          </TouchableOpacity>
+          </Card>
         ))}
       </ScrollView>
-      <Button title="Logout" onPress={() => signOut()} className="mx-auto" />
-    </SafeAreaView>
+      <Button label={t('Logout')} onPress={() => signOut()} className="mx-auto" />
+    </Screen>
   );
 };
 

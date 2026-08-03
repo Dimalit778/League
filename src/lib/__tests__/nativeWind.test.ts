@@ -9,29 +9,34 @@ import {
 
 const semanticColorKeys: (keyof ThemeColors)[] = [
   'primary',
-  'primaryForeground',
-  'primarySoft',
+  'onPrimary',
   'background',
-  'backgroundSecondary',
   'surface',
-  'surfaceSoft',
-  'surfaceElevated',
+  'subtle',
   'text',
-  'textSecondary',
   'muted',
-  'mutedForeground',
   'border',
-  'borderStrong',
   'success',
-  'successSoft',
   'warning',
-  'warningSoft',
   'error',
-  'errorSoft',
   'info',
-  'infoSoft',
   'overlay',
 ];
+
+const relativeLuminance = (hex: string) => {
+  const channels = hex
+    .slice(1)
+    .match(/.{2}/g)!
+    .map((value) => parseInt(value, 16) / 255)
+    .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+};
+
+const contrastRatio = (foreground: string, background: string) => {
+  const light = Math.max(relativeLuminance(foreground), relativeLuminance(background));
+  const dark = Math.min(relativeLuminance(foreground), relativeLuminance(background));
+  return (light + 0.05) / (dark + 0.05);
+};
 
 describe('cn', () => {
   it('merges class names', () => {
@@ -84,10 +89,9 @@ describe('themeTokens', () => {
     expect(themeTokens.dark.colors).toHaveProperty('primary');
   });
 
-  it('keeps compatibility aliases mapped to semantic colors', () => {
-    expect(themeTokens.light.colors.soft).toBe(themeTokens.light.colors.backgroundSecondary);
-    expect(themeTokens.dark.colors.surfaceSecondary).toBe(themeTokens.dark.colors.surfaceSoft);
-    expect(themeTokens.dark.colors.secondary).toBe(themeTokens.dark.colors.info);
+  it('keeps the palette intentionally small', () => {
+    expect(Object.keys(themeTokens.light.colors)).toEqual(semanticColorKeys);
+    expect(Object.keys(themeTokens.dark.colors)).toEqual(semanticColorKeys);
   });
 
   it('uses the font family names registered by Expo', () => {
@@ -96,15 +100,23 @@ describe('themeTokens', () => {
       headingBold: 'Teko_700Bold',
     });
   });
+
+  it.each(['light', 'dark'] as const)('keeps semantic text colors WCAG AA on the %s surface', (theme) => {
+    const { colors } = themeTokens[theme];
+    const textColors = ['primary', 'text', 'muted', 'success', 'warning', 'error', 'info'] as const;
+
+    textColors.forEach((color) => expect(contrastRatio(colors[color], colors.surface)).toBeGreaterThanOrEqual(4.5));
+    expect(contrastRatio(colors.onPrimary, colors.primary)).toBeGreaterThanOrEqual(4.5);
+  });
 });
 
 describe('NativeWind variables', () => {
   it('maps every semantic color to a CSS variable', () => {
     const variables = getNativeWindVariables(themeTokens.dark);
 
-    expect(Object.keys(variables)).toHaveLength(24);
+    expect(Object.keys(variables)).toHaveLength(semanticColorKeys.length);
     expect(variables['--color-primary']).toBe(themeTokens.dark.colors.primary);
-    expect(variables['--color-background-secondary']).toBe(themeTokens.dark.colors.backgroundSecondary);
+    expect(variables['--color-subtle']).toBe(themeTokens.dark.colors.subtle);
     expect(variables['--color-overlay']).toBe(themeTokens.dark.colors.overlay);
   });
 });

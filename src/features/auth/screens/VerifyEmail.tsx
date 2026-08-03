@@ -1,5 +1,5 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton, Button, Text, Screen } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, Text } from '@/components/ui';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -123,7 +123,7 @@ const VerifyEmailScreen = () => {
       <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
         <BackButton />
         <View className="flex-1 items-center justify-center">
-          <Text className="text-error text-center">Email address is missing. Please try signing up again.</Text>
+          <Text className="text-error text-center">{t('Email address is missing. Please try signing up again.')}</Text>
         </View>
       </Screen>
     );
@@ -136,7 +136,7 @@ const VerifyEmailScreen = () => {
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="items-center py-12 sm:py-16">
           <Text variant="display" tone="primary" className="text-center">
-            Verify Email
+            {t('Verify Email')}
           </Text>
           <Text variant="label" tone="muted" className="mt-2 text-center">
             {t('We sent a 6-digit code to')}
@@ -162,15 +162,15 @@ const VerifyEmailScreen = () => {
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 keyboardType="number-pad"
                 maxLength={1}
-                className="h-14 min-w-0 flex-1 rounded-lg border border-text bg-surface text-center text-2xl font-bold text-secondary"
+                className="h-14 min-w-0 flex-1 rounded-lg border border-text bg-surface text-center text-2xl font-bold text-info"
                 style={{
-                  borderColor: code[index] ? colors.secondary : colors.text,
+                  borderColor: code[index] ? colors.info : colors.text,
                   borderWidth: code[index] ? 2 : 1,
                 }}
                 selectTextOnFocus
                 accessible={true}
-                accessibilityLabel={`Verification code digit ${index + 1}`}
-                accessibilityHint="Enter a single digit"
+                accessibilityLabel={t('Verification code digit {{number}}', { number: index + 1 })}
+                accessibilityHint={t('Enter a single digit')}
               />
             ))}
           </View>
@@ -183,18 +183,18 @@ const VerifyEmailScreen = () => {
 
           {successMessage && (
             <View className="">
-              <Text className="text-green-500 text-center font-bold">Email verified successfully!</Text>
+              <Text className="text-success text-center font-bold">{t('Email verified successfully!')}</Text>
             </View>
           )}
 
           {resendSuccess && (
             <View className="">
-              <Text className="text-green-500 text-center">Code resent successfully!</Text>
+              <Text className="text-success text-center">{t('Code resent successfully!')}</Text>
             </View>
           )}
 
           <Button
-            title="Verify Email"
+            label={t('Verify Email')}
             onPress={handleSubmit}
             loading={isLoading}
             disabled={!isCodeValid || isLoading}
@@ -203,19 +203,19 @@ const VerifyEmailScreen = () => {
           />
 
           <View className="flex-row items-center justify-center mt-4 gap-2">
-            <Text className="text-muted text-center">Didn't receive the code?</Text>
+            <Text className="text-muted text-center">{t("Didn't receive the code?")}</Text>
             {resendCoolDown > 0 ? (
-              <Text className="text-muted text-center">Resend in {resendCoolDown}s</Text>
+              <Text className="text-muted text-center">{t('Resend in {{count}}s', { count: resendCoolDown })}</Text>
             ) : (
               <Pressable
                 onPress={handleResend}
                 disabled={resendLoading || resendCoolDown > 0 || !email}
                 accessible={true}
                 accessibilityRole="button"
-                accessibilityLabel="Resend verification code"
-                accessibilityHint="Resend the verification code to your email"
+                accessibilityLabel={t('Resend verification code')}
+                accessibilityHint={t('Resend the verification code to your email')}
               >
-                <Text className="text-secondary font-bold">{resendLoading ? 'Sending...' : 'Resend Code'}</Text>
+                <Text className="text-info font-bold">{resendLoading ? t('Sending...') : t('Resend Code')}</Text>
               </Pressable>
             )}
           </View>
@@ -225,7 +225,7 @@ const VerifyEmailScreen = () => {
               {t('Prefer not to wait?')}
             </Text>
             <Link href="/signIn" replace>
-              <Text className="text-sm text-secondary font-bold">
+              <Text className="text-sm text-info font-bold">
                 {t('Sign in with Apple or Google')}
               </Text>
             </Link>

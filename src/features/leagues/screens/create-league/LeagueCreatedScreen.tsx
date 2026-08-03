@@ -1,11 +1,11 @@
 import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Card, Divider, MyImage, Text } from '@/components/ui';
+import { Button, Card, Divider, LogoBadge, Text } from '@/components/ui';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import * as Clipboard from 'expo-clipboard';
 import { Href, useLocalSearchParams, useRouter } from 'expo-router';
-import { Share, TouchableOpacity, View } from 'react-native';
+import { Share, View } from 'react-native';
 
 const LeagueCreatedScreen = () => {
   const { leagueId } = useLocalSearchParams<{ leagueId: string }>();
@@ -62,37 +62,35 @@ const LeagueCreatedScreen = () => {
 
       <Card>
         <View className="items-center  gap-4">
-          <View className="bg-gray-300 rounded-md p-1 w-24 h-24 ">
-            <MyImage source={leagueData?.competition?.logo as string} />
-          </View>
+          <LogoBadge source={{ uri: leagueData?.competition?.logo as string }} width={84} height={84} />
 
           <Text variant="header">{leagueData?.name}</Text>
         </View>
         <Divider className="my-4" />
         <View className="items-center gap-2">
-          <Text variant="subtitle" tone="muted">
+          <Text variant="label" tone="muted">
             {t('Your Nickname')}
           </Text>
           <Text variant="title">{leagueData?.league_members[0]?.nickname}</Text>
         </View>
         <Divider className="my-4" />
         <View className="items-center gap-3">
-          <Text variant="subtitle" tone="muted">
+          <Text variant="label" tone="muted">
             {t('League Join Code')}
           </Text>
 
-          <TouchableOpacity onPress={handleCopyJoinCode} className=" items-center bg-surfaceElevated rounded-lg p-2 ">
+          <Card onPress={handleCopyJoinCode} variant="soft" padding="sm" contentClassName="items-center">
             <Text variant="header" tone="success">
               {leagueData?.join_code}
             </Text>
-          </TouchableOpacity>
-          <Text variant="bodySmall" tone="muted">
+          </Card>
+          <Text variant="caption" tone="muted">
             {t('Tap to copy code')}
           </Text>
         </View>
       </Card>
       {/* Action Buttons */}
-      <View className="gap-5 p-5">
+      <View className="mt-8 gap-5 p-5">
         <Button onPress={handleShareJoinCode} label={t('Share Join Code')} variant="outline" size="md" />
 
         <Button onPress={handleStartLeague} label={t('Start League')} variant="primary" size="lg" />

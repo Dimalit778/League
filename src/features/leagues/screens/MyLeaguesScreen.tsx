@@ -1,11 +1,11 @@
 import { Error, LoadingBall, Row, Screen } from '@/components/layout';
-import { Button, Card, Text } from '@/components/ui';
+import { Button, Card, DirectionalIcon, Text } from '@/components/ui';
 import { LeaguesIndicator, LimitSelectModal } from '@/features/leagues/components/myLeagues';
 import { useMyLeaguesScreen } from '@/features/leagues/hooks/useMyLeaguesScreen';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
-import { ChevronRight, Sparkles } from 'lucide-react-native';
+import { Sparkles } from 'lucide-react-native';
 import { View } from 'react-native';
 import { Leagues } from '../components/myLeagues/Leagues';
 
@@ -23,7 +23,7 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
         accessibilityLabel={t('Upgrade to Pro')}
         accessibilityHint={t('You have reached the max number of leagues') ?? undefined}
       >
-        <View className="flex-row items-center ">
+        <Row className=" gap-4 ">
           <View className="h-10 w-10  justify-center">
             <Sparkles size={22} color={colors.primary} strokeWidth={1.75} />
           </View>
@@ -35,8 +35,8 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
             </Text>
           </View>
 
-          <ChevronRight size={18} color={colors.primary} strokeWidth={1.75} />
-        </View>
+          <DirectionalIcon size={18} color={colors.primary} />
+        </Row>
       </Card>
     );
   }
@@ -60,20 +60,21 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
 };
 
 export default function MyLeaguesScreen() {
-  const { isLoading, error, activeCount, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
+  const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
 
   if (isLoading) return <LoadingBall />;
   if (error) return <Error error={error as Error} />;
 
   const reachedLimit = activeCount >= maxLeagues;
+  const maxLeague = isPro && activeCount === maxLeagues;
 
   return (
     <Screen edges={['bottom']} padding="none" className="flex-1">
       <LeaguesIndicator used={activeCount} limit={maxLeagues} />
 
-      <View className="flex-1 px-4 sm:px-6 lg:px-8">
-        <Leagues upgrade={upgrade} />
-        <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />
+      <View className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-6 lg:px-8">
+        <Leagues isPro={isPro} upgrade={upgrade} />
+        {!maxLeague && <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />}
       </View>
       {limitSelect && <LimitSelectModal {...limitSelect} />}
     </Screen>

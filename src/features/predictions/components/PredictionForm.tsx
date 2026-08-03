@@ -7,7 +7,7 @@ import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 
-const SCORE_INPUT_SIZE = 46;
+const SCORE_INPUT_SIZE = 48;
 const SCORE_FONT_SIZE = 24;
 
 export type PredictionDraftState = {
@@ -27,9 +27,9 @@ type PredictionFormProps = {
 };
 
 type ScoreInputProps = {
-  value: number;
+  value: number | null;
   accessibilityLabel: string;
-  onChange: (value: number) => void;
+  onChange: (value: number | null) => void;
   onDigitEntered?: () => void;
 };
 
@@ -39,22 +39,27 @@ const ScoreInput = forwardRef<TextInput, ScoreInputProps>(function ScoreInput(
 ) {
   const handleChangeText = (text: string) => {
     const digit = text.replace(/\D/g, '').slice(-1);
-    onChange(digit ? Number(digit) : 0);
 
-    if (digit) {
-      onDigitEntered?.();
+    if (!digit) {
+      onChange(null);
+      return;
     }
+
+    onChange(Number(digit));
+    onDigitEntered?.();
   };
 
   return (
     <TextInput
       ref={ref}
-      value={value === 0 ? '' : value.toString()}
+      value={value === null ? '' : String(value)}
       placeholderTextColor="rgba(255,255,255,0.45)"
       onChangeText={handleChangeText}
       keyboardType="number-pad"
       maxLength={1}
       selectTextOnFocus
+      allowFontScaling
+      maxFontSizeMultiplier={1.5}
       className="rounded-xl border border-white/40 bg-black/20 text-center font-bold text-white"
       style={{
         width: SCORE_INPUT_SIZE,
@@ -62,7 +67,7 @@ const ScoreInput = forwardRef<TextInput, ScoreInputProps>(function ScoreInput(
         fontSize: SCORE_FONT_SIZE,
       }}
       accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ text: value.toString() }}
+      accessibilityValue={{ text: value === null ? '' : String(value) }}
     />
   );
 });
@@ -74,34 +79,34 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
   const { t } = useTranslation();
   const memberId = useMemberId();
   const awayScoreInputRef = useRef<TextInput>(null);
-  const [homeScore, setHomeScore] = useState(0);
-  const [awayScore, setAwayScore] = useState(0);
+  const [homeScore, setHomeScore] = useState<number | null>(prediction?.home_score ?? null);
+
+  const [awayScore, setAwayScore] = useState<number | null>(prediction?.away_score ?? null);
   const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
     prediction ? { home: prediction.home_score, away: prediction.away_score } : null,
   );
 
   const upsertPrediction = useUpsertPrediction();
 
-  useEffect(() => {
-    if (prediction) {
-      setHomeScore(prediction.home_score);
-      setAwayScore(prediction.away_score);
-      setSavedScores({ home: prediction.home_score, away: prediction.away_score });
-    } else {
-      setHomeScore(0);
-      setAwayScore(0);
-      setSavedScores(null);
-    }
-  }, [prediction]);
-
-  const hasChanges = savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away;
+  const bothScoresSet = homeScore !== null && awayScore !== null;
+  const hasChanges =
+    bothScoresSet && (savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away);
 
   useEffect(() => {
     onDraftChange?.({ hasChanges, isPending: upsertPrediction.isPending });
   }, [hasChanges, onDraftChange, upsertPrediction.isPending]);
 
   const handleSave = useCallback(async () => {
-    if (!matchId || !memberId || !hasChanges || upsertPrediction.isPending) return;
+    if (
+      !matchId ||
+      !memberId ||
+      !hasChanges ||
+      homeScore === null ||
+      awayScore === null ||
+      upsertPrediction.isPending
+    ) {
+      return;
+    }
 
     try {
       await upsertPrediction.mutateAsync({

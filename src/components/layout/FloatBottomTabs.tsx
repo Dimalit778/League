@@ -1,5 +1,6 @@
 import { MatchesIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
@@ -13,7 +14,7 @@ const PILL_HEIGHT = 64;
 const PILL_BOTTOM_GAP = 8;
 const CONTENT_BOTTOM_GAP = 16;
 
-export const getFloatBottomTabsInset = (safeAreaBottom: number) =>
+const getFloatBottomTabsInset = (safeAreaBottom: number) =>
   PILL_HEIGHT + safeAreaBottom + PILL_BOTTOM_GAP + CONTENT_BOTTOM_GAP;
 
 export const useFloatBottomTabsInset = () => {
@@ -56,6 +57,7 @@ const tabsConfig: Record<string, TabConfig> = {
 
 export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
   const { theme, colors } = useThemeTokens();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const isDark = theme === 'dark';
@@ -98,8 +100,8 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
         key={route.key}
         onPress={onPress}
         onLongPress={onLongPress}
-        accessibilityRole="button"
-        accessibilityLabel={config.label}
+        accessibilityRole="tab"
+        accessibilityLabel={t(config.label)}
         accessibilityState={isFocused ? { selected: true } : {}}
         hitSlop={6}
         style={styles.item}
@@ -199,19 +201,11 @@ const styles = StyleSheet.create({
 
   shadowWrapper: {
     width: '100%',
+    maxWidth: 720,
     height: PILL_HEIGHT,
     borderRadius: 24,
     borderWidth: 1,
-
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 18,
-
-    elevation: 18,
+    boxShadow: '0 -6px 18px rgba(0, 0, 0, 0.4)',
   },
 
   pill: {

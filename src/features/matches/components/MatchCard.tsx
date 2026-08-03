@@ -48,7 +48,7 @@ function TeamBlock({ name, logo, width, logoWidth, logoHeight, logoContentFit }:
           source={logo}
           width={logoWidth}
           height={logoHeight}
-          contentFit={logoContentFit}
+          contentFit="contain"
           cachePolicy="memory-disk"
           transition={0}
         />
@@ -66,29 +66,32 @@ const PredictionBlock = ({
   prediction,
   predictionStatus,
   top,
+  height,
 }: {
   prediction?: { home?: number | null; away?: number | null } | null;
   predictionStatus: PredictionDisplayStatus;
   top: number;
+  height: number;
 }) => {
-  const predictionText =
+  const { colors } = useThemeTokens();
+  const hasPrediction =
     prediction?.home !== null &&
     prediction?.home !== undefined &&
     prediction?.away !== null &&
-    prediction?.away !== undefined ? (
-      `${prediction?.home} - ${prediction?.away}`
-    ) : (
-      <CirclePlus size={20} color="grey" strokeWidth={1.6} />
-    );
+    prediction?.away !== undefined;
 
   const predictionTextClass =
-    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-muted';
+    predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-info';
 
   return (
-    <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <Text className={`${predictionTextClass} font-semibold`} numberOfLines={1}>
-        {predictionText}
-      </Text>
+    <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top, height }}>
+      {hasPrediction ? (
+        <Text className={`${predictionTextClass} font-semibold leading-5`} numberOfLines={1}>
+          {`${prediction.home} - ${prediction.away}`}
+        </Text>
+      ) : (
+        <CirclePlus size={20} color={colors.info} strokeWidth={1.8} />
+      )}
     </View>
   );
 };
@@ -105,7 +108,7 @@ const ScoreBlock = ({ score, time, hasScore }: { score: string; time?: string; h
 
   return (
     <View className="flex-row items-center justify-center gap-1.5">
-      <Clock size={16} color={colors.muted} />
+      <Clock size={13} color={colors.muted} />
       <Text variant="bodySmall" tone="muted" numberOfLines={1}>
         {time}
       </Text>
@@ -168,6 +171,7 @@ export const MatchCard = memo(function MatchCard({
     contentTop: mainContentTop,
     headerTop,
     predictionTop,
+    predictionHeight,
     logoBoxSize,
   } = getMatchCardMetrics(screenWidth);
 
@@ -176,8 +180,6 @@ export const MatchCard = memo(function MatchCard({
   const logoContentFit = logoVariant === 'flag' ? 'cover' : 'contain';
 
   const hasScore = home.score !== null && home.score !== undefined && away.score !== null && away.score !== undefined;
-
-  const isFinished = status === 'FINISHED';
 
   const scoreLabel = hasScore ? `${home.score} - ${away.score}` : (time ?? '');
 
@@ -188,7 +190,7 @@ export const MatchCard = memo(function MatchCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${id}`))}
-      className={` w-full items-center ${isFinished ? 'opacity-60' : ''}`}
+      className="w-full items-center"
     >
       <View
         style={{
@@ -233,7 +235,12 @@ export const MatchCard = memo(function MatchCard({
           />
         </View>
 
-        <PredictionBlock prediction={prediction} predictionStatus={predictionStatus} top={predictionTop} />
+        <PredictionBlock
+          prediction={prediction}
+          predictionStatus={predictionStatus}
+          top={predictionTop}
+          height={predictionHeight}
+        />
       </View>
     </Pressable>
   );

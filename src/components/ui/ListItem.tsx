@@ -21,6 +21,19 @@ export type ListItemProps = Omit<PressableProps, 'children'> & {
   className?: string;
 };
 
+function asNode(value: ReactNode) {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return (
+      <View className="min-w-0 max-w-40 shrink">
+        <Text variant="bodySmall" tone="muted" numberOfLines={1} ellipsizeMode="tail">
+          {value}
+        </Text>
+      </View>
+    );
+  }
+  return value;
+}
+
 export function ListItem({
   icon: Icon,
   title,
@@ -38,23 +51,29 @@ export function ListItem({
   const { colors } = useThemeTokens();
   const isRTL = useIsRTL();
   const Chevron = isRTL ? ChevronLeft : ChevronRight;
+  const leadingContent = leading ?? (Icon ? <Icon size={20} color={colors.muted} strokeWidth={2} /> : null);
+  const trailingContent = (
+    <View className={cn('min-w-0 shrink flex-row items-center', spacing.inline)} style={{ direction: 'ltr' }}>
+      {asNode(badge)}
+      {asNode(trailing)}
+      {right === 'chevron' ? <Chevron size={18} color={colors.muted} strokeWidth={2} /> : null}
+    </View>
+  );
   const content = (
     <>
-      <View className={cn('min-h-14 flex-row items-center py-2', spacing.list, isRTL && 'flex-row-reverse')}>
-        {leading ?? (Icon ? <Icon size={20} color={colors.muted} strokeWidth={2} /> : null)}
+      <View className={cn('min-h-14 flex-row items-center py-2', spacing.list)} style={{ direction: 'ltr' }}>
+        {isRTL ? trailingContent : leadingContent}
         <View className="min-w-0 flex-1">
           <Text variant="body" numberOfLines={1}>
             {title}
           </Text>
           {description ? (
-            <Text variant="bodySmall" tone="muted" numberOfLines={2}>
+            <Text variant="bodySmall" tone="muted">
               {description}
             </Text>
           ) : null}
         </View>
-        {badge}
-        {trailing}
-        {right === 'chevron' ? <Chevron size={18} color={colors.muted} strokeWidth={2} /> : null}
+        {isRTL ? leadingContent : trailingContent}
       </View>
       {divider ? <Divider /> : null}
     </>

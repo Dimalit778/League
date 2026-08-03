@@ -1,5 +1,6 @@
 import { KEYS } from '@/lib/queryClient';
 import { TablesInsert } from '@/types/database.types';
+import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../queries/adminService';
 
@@ -56,6 +57,30 @@ export const useAdminCompetitions = () => {
   return useQuery({
     queryKey: KEYS.admin.competitions,
     queryFn: () => adminService.getCompetitions(),
+  });
+};
+
+export const useAdminContentReports = (status: ReportStatus) =>
+  useQuery({
+    queryKey: KEYS.admin.reports(status),
+    queryFn: () => adminService.getContentReports(status),
+  });
+
+export const useModerateContentReport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ reportId, decision }: { reportId: string; decision: ModerationDecision }) =>
+      adminService.moderateContentReport(reportId, decision),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: KEYS.admin.dashboard }),
+        queryClient.invalidateQueries({ queryKey: KEYS.admin.reports('pending') }),
+        queryClient.invalidateQueries({ queryKey: KEYS.admin.reports('resolved') }),
+        queryClient.invalidateQueries({ queryKey: KEYS.admin.reports('dismissed') }),
+        queryClient.invalidateQueries({ queryKey: KEYS.members.all }),
+        queryClient.invalidateQueries({ queryKey: KEYS.leagues.all }),
+      ]),
   });
 };
 

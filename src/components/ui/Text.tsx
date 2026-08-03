@@ -33,18 +33,27 @@ const fontClasses: Record<FontFamily, string> = {
 
 const toneClasses: Record<TextTone, string> = {
   default: 'text-text',
-  secondary: 'text-textSecondary',
+  secondary: 'text-muted',
   muted: 'text-muted',
   primary: 'text-primary',
   success: 'text-success',
   warning: 'text-warning',
   error: 'text-error',
   info: 'text-info',
-  inverse: 'text-primaryForeground',
+  inverse: 'text-onPrimary',
 };
 
 export const Text = forwardRef<RNText, AppTextProps>(function Text(
-  { variant = 'body', tone = 'default', font = 'system', className, style, ...rest },
+  {
+    variant = 'body',
+    tone = 'default',
+    font = 'system',
+    className,
+    style,
+    allowFontScaling = true,
+    maxFontSizeMultiplier = 2,
+    ...rest
+  },
   ref,
 ) {
   const isRTL = useIsRTL();
@@ -54,10 +63,11 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
     <RNText
       ref={ref}
       {...rest}
+      allowFontScaling={allowFontScaling}
+      maxFontSizeMultiplier={maxFontSizeMultiplier}
       className={cn(typography[variant], toneClasses[tone], fontClasses[font], className)}
       style={[
         { writingDirection: isRTL ? 'rtl' : 'ltr' },
-        // Don't override className text-align (e.g. text-center)
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,
         style,
       ]}

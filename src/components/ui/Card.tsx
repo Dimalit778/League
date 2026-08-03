@@ -1,13 +1,6 @@
 import { cn } from '@/lib/nativewind/nativeWind';
 import { forwardRef } from 'react';
-import {
-  Pressable,
-  type PressableProps,
-  type StyleProp,
-  View,
-  type ViewProps,
-  type ViewStyle,
-} from 'react-native';
+import { Pressable, type PressableProps, type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
 
 export type CardVariant = 'default' | 'soft' | 'outlined' | 'elevated' | 'interactive' | 'hero' | 'secondary';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
@@ -35,12 +28,12 @@ export type CardProps = StaticCardProps | PressableCardProps;
 
 const variantClasses: Record<CardVariant, string> = {
   default: 'bg-surface',
-  soft: 'bg-surfaceSoft',
+  soft: 'bg-subtle',
   outlined: 'border border-border bg-surface',
-  elevated: 'border border-border/50 bg-surfaceElevated shadow-sm elevation-1',
+  elevated: 'border border-border/50 bg-surface shadow-sm elevation-1',
   interactive: 'bg-surface',
-  hero: 'border border-border/50 bg-surfaceElevated rounded-3xl shadow-md elevation-3',
-  secondary: 'bg-surfaceSoft',
+  hero: 'border border-border/50 bg-surface rounded-3xl shadow-md elevation-3',
+  secondary: 'bg-subtle',
 };
 
 const paddingClasses: Record<CardPadding, string> = {
@@ -51,19 +44,10 @@ const paddingClasses: Record<CardPadding, string> = {
 };
 
 export const Card = forwardRef<View, CardProps>(function Card(
-  {
-    children,
-    className,
-    contentClassName,
-    variant = 'default',
-    padding = 'md',
-    style,
-    onPress,
-    ...props
-  },
+  { children, className, contentClassName, variant = 'default', padding = 'md', style, onPress, ...props },
   ref,
 ) {
-  const cardClassName = cn('rounded-2xl', variantClasses[variant], className);
+  const cardClassName = cn('rounded-2xl border border-border', variantClasses[variant], className);
   const content = <View className={cn(paddingClasses[padding], contentClassName)}>{children}</View>;
 
   if (onPress) {

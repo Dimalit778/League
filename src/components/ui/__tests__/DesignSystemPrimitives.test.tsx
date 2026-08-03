@@ -1,15 +1,19 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { Settings } from 'lucide-react-native';
 import { Badge } from '../Badge';
+import { Button } from '../Button';
 import { Chip } from '../Chip';
 import { EmptyState } from '../EmptyState';
-import { IconButton } from '../IconButton';
 import { ListItem } from '../ListItem';
 
 describe('design system primitives', () => {
   it('provides accessible icon buttons', () => {
     const onPress = jest.fn();
-    const { getByRole } = render(<IconButton icon={Settings} label="Settings" onPress={onPress} />);
+    const { getByRole } = render(
+      <Button size="icon" variant="outline" accessibilityLabel="Settings" onPress={onPress}>
+        <Settings size={20} />
+      </Button>,
+    );
 
     fireEvent.press(getByRole('button', { name: 'Settings' }));
     expect(onPress).toHaveBeenCalledTimes(1);

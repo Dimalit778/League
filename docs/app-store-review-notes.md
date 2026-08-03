@@ -1,4 +1,4 @@
-# App Store Review Notes — League Champion
+# App Store Review Notes — Champo
 
 Use this when submitting to App Store Connect. Paste the **Review Notes** block below into the submission form and replace placeholders after running the seed script.
 
@@ -36,7 +36,7 @@ The script is idempotent: safe to re-run before each submission to reset the pas
 ## 2. Paste into App Store Connect → App Review Information → Notes
 
 ```
-League Champion is an unofficial social football prediction app. Users join private leagues, predict match scores, and view leaderboards. There is no betting, gambling, or real-money prizes.
+Champo is an unofficial social football prediction app. Users join private leagues, predict match scores, and view leaderboards. There is no betting, gambling, or real-money prizes.
 
 DEMO ACCOUNT (email/password)
 Email: reviewer@leaguechampion.app
@@ -60,19 +60,32 @@ SUBSCRIPTIONS (optional)
 Settings → Subscription → Upgrade (RevenueCat / Apple IAP).
 PRO adds more leagues, larger leagues, and more competitions. Cancel via Apple ID → Subscriptions.
 
+AI MATCH ANALYSIS
+Some match detail screens include an AI-generated score preview and analysis. The card shows its update time and states that the content is for entertainment only, may be inaccurate, and is not betting advice. If the summary, both predicted scores, or generation timestamp are missing, the app shows "AI analysis is not available" and does not fabricate a 0:0 prediction. Full written analysis may require PRO.
+
 ACCOUNT DELETION (Guideline 5.1.1v)
 My Leagues → Settings (gear, top-left) → Delete Account → confirm.
+The account and personal profile data are deleted. Sign in with Apple authorization is revoked when applicable. Historical predictions and points remain only as an unlinked "Deleted Player" record so league standings stay accurate. Deleting the account does not cancel an Apple subscription.
 Do NOT delete the demo account during review unless testing deletion; re-run `npm run seed:app-reviewer` to recreate it.
+
+USER-GENERATED CONTENT SAFETY (Guideline 1.2)
+League names, member nicknames and profile photos are user-generated.
+- Report a nickname or profile photo: open a member from the leaderboard → Safety actions → Report.
+- Report a league name: Profile → Manage League → Report league name (non-owner members).
+- Block a user: open the member → Safety actions → Block. Their profile, predictions and leaderboard entry are hidden.
+- Manage blocked users: Settings → Blocked users.
+- League owners can remove a member from Profile → Manage League.
+Reports enter a private moderation queue available only to administrators. Moderators can dismiss a report, remove the reported content, or remove the member.
 
 PRIVACY & LEGAL
 Privacy Policy: https://[YOUR_DOMAIN]/privacy-policy/
 Terms: https://[YOUR_DOMAIN]/terms-of-service/
 In-app: Settings → Privacy Policy / Terms of Service
-Support: support@leaguechampion.app
+Support: support@champoapp.com
 
 PERMISSIONS
 Photo library: optional, only when updating profile avatar.
-Push notifications: not currently requested or collected.
+Notifications: optional local match reminders. Permission is requested only after the user opens Settings → Match reminders, reviews the explanation, and taps Enable reminders. Champo does not collect remote push tokens.
 No IDFA / no cross-app tracking.
 
 ADMIN FEATURES
@@ -95,7 +108,8 @@ Supabase (auth/data), RevenueCat + Apple IAP (subscriptions), Sentry (crash diag
 - [ ] Password in Review Notes matches the seeded account
 - [ ] Demo account is **not** an admin user (seed script removes admin access automatically)
 - [ ] App Store age rating set to **13+**
-- [ ] App Privacy labels do not declare push notifications unless the feature is enabled
+- [ ] Notification permission status and the pre-permission explanation were verified on TestFlight
+- [ ] AI available/unavailable states, update time and disclaimer were verified in English and Hebrew
 
 ## 4. App Store Connect metadata
 
@@ -105,7 +119,7 @@ Supabase (auth/data), RevenueCat + Apple IAP (subscriptions), Sentry (crash diag
 
 ### App Privacy questionnaire (steps 8 & 20)
 - Declare Sentry crash/diagnostics data
-- Do **not** declare push notification data until NotificationProvider is enabled in production
+- Local match reminders do not collect notification tokens; verify the final binary and App Privacy answers remain consistent with this behavior
 - Photo library: declare only if you collect photos (optional avatar upload)
 
 ## 5. After review

@@ -60,7 +60,7 @@ export default function LeaderboardScreen() {
   if (!leaderboard || isLoading) return <LeaderboardSkeleton />;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset + 16}>
+    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
       <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
 
       {rest.length > 0 ? (

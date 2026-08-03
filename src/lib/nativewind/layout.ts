@@ -10,8 +10,8 @@ export const layout = {
 
 export const screenWidths = {
   compact: 'max-w-sm',
-  content: 'max-w-lg',
-  wide: 'max-w-xl',
+  content: 'max-w-2xl',
+  wide: 'max-w-4xl',
   full: 'max-w-none',
 } as const;
 

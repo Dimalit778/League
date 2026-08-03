@@ -1,6 +1,6 @@
+import { Skeleton } from '@/components/ui';
 import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
 import { useWindowDimensions, View } from 'react-native';
 
 const SKELETON_COUNT = 6;
@@ -35,8 +35,8 @@ export const MatchCardSkeleton = () => {
           <MatchCardBg width={cardWidth} height={cardHeight} />
         </View>
 
-        <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top: headerTop }}>
-          <AnimatedSkeleton
+        <View className="absolute left-0 right-0 z-10 items-center justify-center pt-1" style={{ top: headerTop }}>
+          <Skeleton
             style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
           />
         </View>
@@ -46,7 +46,7 @@ export const MatchCardSkeleton = () => {
           style={{ top: mainContentTop, height: contentHeight, gap }}
         >
           <View style={{ width: teamWidth }} className="items-center gap-1.5">
-            <AnimatedSkeleton
+            <Skeleton
               style={{
                 width: logoBoxSize,
                 height: logoBoxSize,
@@ -54,17 +54,17 @@ export const MatchCardSkeleton = () => {
                 backgroundColor: boneColor,
               }}
             />
-            <AnimatedSkeleton
+            <Skeleton
               style={{ width: teamWidth * 0.5, height: cardHeight * 0.12, borderRadius: 4, backgroundColor: boneColor }}
             />
           </View>
 
           <View style={{ width: centerWidth }} className="items-center justify-center">
-            <AnimatedSkeleton style={{ width: 40, height: 24, borderRadius: 6, backgroundColor: boneColor }} />
+            <Skeleton style={{ width: 40, height: 24, borderRadius: 6, backgroundColor: boneColor }} />
           </View>
 
           <View style={{ width: teamWidth }} className="items-center gap-1.5">
-            <AnimatedSkeleton
+            <Skeleton
               style={{
                 width: logoBoxSize,
                 height: logoBoxSize,
@@ -72,7 +72,7 @@ export const MatchCardSkeleton = () => {
                 backgroundColor: boneColor,
               }}
             />
-            <AnimatedSkeleton
+            <Skeleton
               style={{
                 width: teamWidth * 0.6,
                 height: cardHeight * 0.12,
@@ -83,8 +83,8 @@ export const MatchCardSkeleton = () => {
           </View>
         </View>
 
-        <View className="absolute left-0 right-0 z-10 items-center" style={{ top: predictionTop }}>
-          <AnimatedSkeleton
+        <View className="absolute left-0 right-0 z-10 items-center pt-2" style={{ top: predictionTop }}>
+          <Skeleton
             style={{ width: cardWidth * 0.13, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
           />
         </View>

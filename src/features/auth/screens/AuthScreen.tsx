@@ -1,4 +1,5 @@
-import { Card, Screen, Text } from '@/components/ui';
+import { Screen } from '@/components/layout';
+import { Card, Text } from '@/components/ui';
 import AppleAuth from '@/features/auth/components/AppleAuth';
 import AuthModeToggle from '@/features/auth/components/auth/AuthModeToggle';
 import SignInForm from '@/features/auth/components/auth/SignInForm';

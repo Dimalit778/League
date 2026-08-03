@@ -1,4 +1,5 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { BlurView } from 'expo-blur';
 import { type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -14,10 +15,11 @@ type HeaderChromeProps = {
 export function HeaderChrome({ children }: HeaderChromeProps) {
   const { colors, theme } = useThemeTokens();
   const insets = useSafeAreaInsets();
+  const isRTL = useIsRTL();
 
   const content = (
-    <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="flex-row items-center px-4 pb-2">{children}</View>
+    <View style={{ paddingTop: insets.top, direction: isRTL ? 'rtl' : 'ltr' }} className="bg-background">
+      <View className="mx-auto w-full max-w-4xl flex-row items-center px-4 pb-2 sm:px-6 lg:px-8">{children}</View>
     </View>
   );
 

@@ -1,67 +1,48 @@
-import { Screen } from '@/components/layout';
-import { Card } from '@/components/ui';
-import SkeletonFixtures from '@/features/matches/components/FixturesSkeleton';
-import SkeletonMatches from '@/features/matches/components/MatchesSkeleton';
+import { Card, Skeleton, TextSkeleton } from '@/components/ui';
 import { View } from 'react-native';
 
 export function MemberDetailsSkeleton() {
   return (
-    <Screen>
-      {/* Member Header Card Skeleton */}
-      <Card padding="sm">
-        <View className="flex-row items-center gap-3">
-          {/* Avatar Skeleton */}
-          <View className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-muted animate-pulse" />
-
-          {/* Name Section Skeleton */}
-          <View className="flex-1">
-            <View className="w-32 h-5 bg-muted rounded animate-pulse" />
+    <View className="flex-1 gap-4  p-4 sm:px-6 lg:px-8">
+      <Card variant="hero" contentClassName="items-center ">
+        <Skeleton className="h-24 w-24 rounded-full" />
+        <TextSkeleton className="mt-3 h-6 w-32" />
+        <TextSkeleton className="mt-2 w-24" />
+        <View className="mt-5 w-full flex-row items-center rounded-2xl bg-subtle py-3">
+          <View className="flex-1 items-center gap-2">
+            <TextSkeleton className="w-12" />
+            <Skeleton className="h-7 w-10" />
           </View>
-
-          {/* Stats Section Skeleton */}
-          <View className="flex-row items-center gap-4">
-            <View className="items-end">
-              <View className="w-12 h-3 bg-muted rounded animate-pulse mb-1" />
-              <View className="w-8 h-4 bg-muted rounded animate-pulse" />
-            </View>
-            <View className="h-6 w-px bg-border" />
-            <View className="items-end">
-              <View className="w-16 h-3 bg-muted rounded animate-pulse mb-1" />
-              <View className="w-6 h-4 bg-muted rounded animate-pulse" />
-            </View>
+          <View className="h-11 w-px bg-border" />
+          <View className="flex-1 items-center gap-2">
+            <TextSkeleton className="w-14" />
+            <Skeleton className="h-7 w-12" />
           </View>
         </View>
       </Card>
 
-      {/* Member Stats Card Skeleton */}
-      <Card padding="sm" className="my-2">
-        {/* Top Row Stats */}
-        <View className="flex-row mb-2">
-          {[1, 2].map((item) => (
-            <View key={item} className="flex-1 px-2">
-              <View className="bg-surface border border-border rounded-lg p-2 items-center justify-center">
-                <View className="w-16 h-3 bg-muted rounded animate-pulse mb-1" />
-                <View className="w-8 h-4 bg-muted rounded animate-pulse" />
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Bottom Row Stats */}
-        <View className="flex-row">
-          {[1, 2, 3].map((item) => (
-            <View key={item} className="flex-1 px-2">
-              <View className="bg-surface border border-border rounded-lg p-2 items-center justify-center">
-                <View className="w-12 h-3 bg-muted rounded animate-pulse mb-1" />
-                <View className="w-6 h-4 bg-muted rounded animate-pulse" />
-              </View>
-            </View>
-          ))}
+      <TextSkeleton className="h-6 w-40" />
+      <Card variant="elevated" contentClassName="flex-row items-center gap-4">
+        <Skeleton className="h-24 w-24 rounded-full" />
+        <View className="min-w-0 flex-1 gap-3">
+          <TextSkeleton className="w-24" />
+          <Skeleton className="h-2 w-full rounded-full" />
+          <TextSkeleton className="w-32" />
         </View>
       </Card>
-      <SkeletonFixtures />
-      <SkeletonMatches />
-    </Screen>
+
+      {[0, 1].map((row) => (
+        <View key={row} className="flex-row gap-2">
+          {[0, 1, 2].map((item) => (
+            <Card key={item} variant="soft" padding="sm" className="flex-1" contentClassName="items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-6 w-8" />
+              <TextSkeleton className="w-14" />
+            </Card>
+          ))}
+        </View>
+      ))}
+    </View>
   );
 }
 

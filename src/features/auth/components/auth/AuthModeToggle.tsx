@@ -30,10 +30,11 @@ export default function AuthModeToggle({
               key={option.key}
               onPress={() => onModeChange(option.key)}
               className={cn(
-                'flex-1 items-center justify-center rounded-xl py-2',
+                'min-h-11 flex-1 items-center justify-center rounded-xl px-3 py-2',
                 active && 'bg-border border border-muted',
               )}
               accessibilityRole="tab"
+              accessibilityLabel={option.label}
               accessibilityState={{ selected: active }}
             >
               <Text className={cn('text-center', active ? 'text-text' : 'text-muted')}>{option.label}</Text>

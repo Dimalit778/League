@@ -24,7 +24,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
       <View className="flex-row items-center gap-3 flex-1">
         {/* Position pill */}
         <View className="w-7 h-7 rounded-full border border-border items-center justify-center">
-          <Text className="text-xs text-secondary">{index}</Text>
+          <Text className="text-xs text-info">{index}</Text>
         </View>
 
         {/* Avatar */}

@@ -90,4 +90,33 @@ describe('adminService', () => {
       expect(supabase.from).toHaveBeenCalledWith('competitions');
     });
   });
+
+  describe('content moderation', () => {
+    it('loads the selected report queue', async () => {
+      const mockData = [{ id: 'r1', status: 'pending' }];
+      (supabase.from as jest.Mock).mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+      });
+
+      const result = await adminService.getContentReports('pending');
+
+      expect(supabase.from).toHaveBeenCalledWith('content_reports');
+      expect(result).toEqual(mockData);
+    });
+
+    it('moderates a report through the admin rpc', async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: { success: true }, error: null });
+      (supabase as any).rpc = mockRpc;
+
+      await adminService.moderateContentReport('r1', 'remove_content');
+
+      expect(mockRpc).toHaveBeenCalledWith('moderate_content_report', {
+        p_report_id: 'r1',
+        p_decision: 'remove_content',
+      });
+    });
+  });
 });

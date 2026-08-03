@@ -42,6 +42,7 @@ export type MatchBaseType = Pick<
   | 'ai_summary_he'
   | 'ai_predicted_home_score'
   | 'ai_predicted_away_score'
+  | 'ai_generated_at'
 > & {
   status: StatusType;
   score: ScoreType | null;

@@ -106,7 +106,7 @@ export default function SignUpForm() {
       )}
 
       <Button
-        title={t('Sign Up')}
+        label={t('Sign Up')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}

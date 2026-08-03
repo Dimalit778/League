@@ -1,6 +1,7 @@
 import { Badge, Card, Divider, Text } from '@/components/ui';
 import { type RecentFormEntry } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
@@ -17,12 +18,16 @@ const resultVariant = {
 
 export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const totalPoints = results.reduce((sum, result) => sum + result.points, 0);
 
   return (
     <Card>
-      <View className={cn('flex-row items-center', spacing.stack)}>
-        <View className={cn('min-w-0 flex-1', spacing.list)}>
+      <View
+        className={cn('flex-row items-center', spacing.stack)}
+        style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+      >
+        <View className={cn('min-w-0 flex-1', spacing.list, isRTL ? 'items-end' : 'items-start')}>
           <Text variant="caption" tone="muted">
             {t('Last 5 finished predictions')}
           </Text>

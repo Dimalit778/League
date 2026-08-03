@@ -2,7 +2,7 @@
 import { useLanguageStore } from '@/store/LanguageStore';
 import * as Updates from 'expo-updates';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { DevSettings, I18nManager, Platform } from 'react-native';
+import { DevSettings, I18nManager, Platform, View } from 'react-native';
 
 const LanguageContext = createContext<{ language: string; version: number; isRTL: boolean }>({
   language: 'en',
@@ -62,8 +62,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   );
 };
 
-function LanguageWrapper({ children }: { children: React.ReactNode; isRTL: boolean }) {
-  return <>{children}</>;
+function LanguageWrapper({ children, isRTL }: { children: React.ReactNode; isRTL: boolean }) {
+  return <View style={{ flex: 1, direction: isRTL ? 'rtl' : 'ltr' }}>{children}</View>;
 }
 
 export const useLanguageContext = () => {

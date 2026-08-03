@@ -88,7 +88,7 @@ export default function SignInForm() {
       )}
 
       <Button
-        title={t('Sign In')}
+        label={t('Sign In')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}
@@ -98,7 +98,7 @@ export default function SignInForm() {
       />
 
       <Link href="/sendResetLink" asChild>
-        <Text className="text-sm text-secondary text-center">
+        <Text className="text-sm text-info text-center">
           {t('Forgot Password')}
         </Text>
       </Link>

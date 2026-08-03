@@ -1,9 +1,9 @@
-import { LockedBadge, Text } from '@/components/ui';
+import { Card, LockedBadge, LogoBadge, MyImage, Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { Tables } from '@/types/database.types';
-import { Image as ExpoImage } from 'expo-image';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 type Competition = Tables<'competitions'>;
 
@@ -17,46 +17,42 @@ type CompetitionCardProps = {
 export default function CompetitionCard({ competition, isSelected, isLocked, onPress }: CompetitionCardProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
+  const flag = competition.flag ?? '';
+  const isSvgFlag = flag.toLowerCase().includes('.svg');
 
   return (
-    <Pressable
-      onPress={() => onPress(competition)}
-      style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
-      className="mb-3"
-    >
+    <Card onPress={() => onPress(competition)} padding="none">
       <View className="relative overflow-hidden rounded-xl">
         <View
           className="flex-row items-center p-4 border-2 bg-surface rounded-xl"
           style={{ borderColor: isSelected ? colors.primary : colors.border }}
         >
-          <ExpoImage
-            source={competition.flag}
-            style={{ width: 48, height: 48 }}
+          <MyImage
+            source={flag}
+            width={48}
+            height={48}
             cachePolicy="memory-disk"
             contentFit="contain"
-            transition={120}
             priority="high"
+            forceSvg={isSvgFlag}
           />
+
           <View className="flex-1 items-center">
-            <Text className="text-sm text-muted">{t(competition.area)}</Text>
+            <Text variant="bodySmall" tone="muted">
+              {t(competition.area)}
+            </Text>
             <Text
-              style={{ color: isSelected ? colors.primary : colors.text }}
-              className="text-base font-bold text-center"
+              variant="body"
+              numberOfLines={1}
+              className={cn('font-semibold text-center', isSelected ? 'text-primary' : 'text-text')}
             >
               {t(competition.name)}
             </Text>
           </View>
-          <ExpoImage
-            source={competition.logo}
-            style={{ width: 52, height: 52 }}
-            cachePolicy="memory-disk"
-            contentFit="contain"
-            transition={120}
-            priority="high"
-          />
+          <LogoBadge source={{ uri: competition.logo ?? '' }} width={48} height={48} />
         </View>
         <LockedBadge visible={isLocked} />
       </View>
-    </Pressable>
+    </Card>
   );
 }

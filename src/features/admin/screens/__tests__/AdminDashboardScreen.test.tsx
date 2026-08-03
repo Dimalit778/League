@@ -16,6 +16,7 @@ jest.mock('@/features/admin/hooks/useAdmin', () => ({
       leagueMembers: 200,
       predictions: 5000,
       subscriptions: 10,
+      pendingReports: 3,
     },
     isLoading: false,
     error: null,
@@ -49,6 +50,7 @@ describe('AdminDashboardScreen', () => {
     expect(getByText('User Management')).toBeTruthy();
     expect(getByText('League Management')).toBeTruthy();
     expect(getByText('Competitions')).toBeTruthy();
+    expect(getByText('Content Reports')).toBeTruthy();
   });
 
   it('renders Logout button', () => {

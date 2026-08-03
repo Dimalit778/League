@@ -4,6 +4,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
+
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { Podium, Star, Users } from 'lucide-react-native';
@@ -15,7 +16,7 @@ import PrimaryLeagueCard from './PrimaryLeagueCard';
 
 function StatBlock({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <View className="items-center justify-center gap-1">
+    <View className="min-w-6 items-center justify-center gap-1">
       <View>{icon}</View>
       <Text numberOfLines={1} className="font-semibold text-center text-muted">
         {value}
@@ -24,21 +25,28 @@ function StatBlock({ icon, value }: { icon: React.ReactNode; value: string }) {
   );
 }
 
-function LeagueCard({ league, onPress }: { league: LeagueSummary; onPress: () => void }) {
+function LeagueCard({
+  league,
+  isLocked,
+  onPress,
+}: {
+  league: LeagueSummary;
+  isLocked: boolean;
+  onPress: () => void;
+}) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
-  const isLocked = !league.active;
 
   return (
     <Card
-      className="mx-8 relative overflow-hidden rounded-2xl"
+      className="mx-4 relative overflow-hidden rounded-2xl"
       padding="sm"
       onPress={onPress}
       accessibilityLabel={league.league_name ?? undefined}
       accessibilityHint={isLocked ? (t('Upgrade to Pro') ?? undefined) : undefined}
     >
       <View className={isLocked ? 'opacity-50' : undefined}>
-        <View className="flex-row items-center">
+        <Row className="flex-row items-center">
           <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={36} height={36} />
           <View className="mx-3 h-10 w-px bg-border" />
           <View className="min-w-0 flex-1">
@@ -57,7 +65,7 @@ function LeagueCard({ league, onPress }: { league: LeagueSummary; onPress: () =>
             <View className="mx-2 h-12 w-px bg-border" />
             <StatBlock icon={<Users size={15} color={colors.primary} />} value={`${league.members_count ?? 0}`} />
           </View>
-        </View>
+        </Row>
       </View>
       <LockedBadge visible={isLocked} />
     </Card>
@@ -75,7 +83,7 @@ function EmptyLeagues() {
   );
 }
 
-export function Leagues({ upgrade }: { upgrade: () => Promise<void> }) {
+export function Leagues({ isPro, upgrade }: { isPro: boolean; upgrade: () => Promise<boolean> }) {
   const { data: myLeagues, isLoading } = useGetMyLeaguesSummary();
   const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const primaryLeagueId = usePrimaryLeagueStore((state) => state.leagueId);
@@ -86,8 +94,8 @@ export function Leagues({ upgrade }: { upgrade: () => Promise<void> }) {
   const handleLeaguePress = async (league: LeagueSummary) => {
     if (!league.member_id || !league.league_id || !league.competition_id) return;
     if (!league.active) {
-      await upgrade();
-      return;
+      const upgraded = await upgrade();
+      if (!upgraded) return;
     }
     setPrimaryLeague({
       memberId: league.member_id,
@@ -117,21 +125,26 @@ export function Leagues({ upgrade }: { upgrade: () => Promise<void> }) {
       showsVerticalScrollIndicator={false}
       contentContainerClassName={cn(spacing.section, 'flex-grow pb-4 pt-2 ')}
     >
-      <View className={spacing.section}>
-        <Row className="gap-2">
+      <View className={spacing.list}>
+        <Row className="justify-center gap-2">
           <Star size={22} color={colors.primary} fill={colors.primary} />
-          <Text variant="subtitle" tone="primary">
+          <Text variant="title" tone="primary">
             {t('Primary League')}
           </Text>
         </Row>
-        <PrimaryLeagueCard league={primaryLeague} />
+        <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />
       </View>
 
       {otherLeagues.length > 0 && (
         <Section title={t('Other Leagues')}>
           <View className={spacing.list}>
             {otherLeagues.map((league) => (
-              <LeagueCard key={league.league_id} league={league} onPress={() => handleLeaguePress(league)} />
+              <LeagueCard
+                key={league.league_id}
+                league={league}
+                isLocked={!league.active && !isPro}
+                onPress={() => handleLeaguePress(league)}
+              />
             ))}
           </View>
         </Section>

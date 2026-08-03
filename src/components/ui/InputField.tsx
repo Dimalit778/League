@@ -24,6 +24,7 @@ type InputFieldProps = {
   clearError?: () => void;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  textAlign?: 'left' | 'right' | 'center';
 };
 
 export const InputField = ({
@@ -44,6 +45,7 @@ export const InputField = ({
   clearError,
   accessibilityLabel,
   accessibilityHint,
+  textAlign,
 }: InputFieldProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
@@ -74,6 +76,8 @@ export const InputField = ({
       <View
         className="flex-row items-center overflow-hidden rounded-xl px-2"
         style={{
+          direction: 'ltr',
+          flexDirection: isRTL ? 'row-reverse' : 'row',
           backgroundColor: colors.surface,
           borderWidth: isFocused ? 2 : 1,
           borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
@@ -95,7 +99,7 @@ export const InputField = ({
               secureTextEntry={secureTextEntry}
               className="flex-1 text-text py-4 px-2"
               style={{
-                textAlign: isRTL ? 'right' : 'left',
+                textAlign: textAlign ?? (isRTL ? 'right' : 'left'),
                 color: colors.text,
                 backgroundColor: colors.surface,
               }}

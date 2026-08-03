@@ -16,13 +16,6 @@ jest.mock('@/features/auth/hooks/useAuthActions', () => ({
   }),
 }));
 
-jest.mock('@/features/subscription/hooks/useSubscription', () => ({
-  useSubscription: () => ({
-    data: { subscription_type: 'FREE' },
-    isLoading: false,
-  }),
-}));
-
 jest.mock('@/features/settings/components/Settings/SettingsContent', () => {
   const { Text } = require('react-native');
   return {

@@ -12,6 +12,5 @@ export default function MatchContent({ match, isScheduled }: MatchContentProps) 
     return <AiAnalysisCard match={match} />;
   }
 
-  const predictions = match.predictions ?? [];
-  return <TabsContent predictions={predictions} />;
+  return <TabsContent match={match} />;
 }

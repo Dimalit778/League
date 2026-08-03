@@ -1,8 +1,10 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Stack } from 'expo-router';
 
 export default function LeaguesLayout() {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   return (
     <Stack
@@ -22,14 +24,14 @@ export default function LeaguesLayout() {
         name="create-league/competitions"
         options={{
           headerShown: true,
-          title: 'Select Competition',
+          title: t('Select Competition'),
         }}
       />
       <Stack.Screen
         name="create-league/details"
         options={{
           headerShown: true,
-          title: 'League Details',
+          title: t('League Details'),
         }}
       />
       <Stack.Screen

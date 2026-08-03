@@ -83,7 +83,7 @@ const SelectCompetitionScreen = () => {
       <FlatList
         data={competitions ?? []}
         keyExtractor={(comp) => String(comp.id)}
-        contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 18, gap: 12, paddingBottom: 16 }}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}

@@ -1,4 +1,5 @@
-import { BackButton, Button, InputField, Screen, Text } from '@/components/ui';
+import { Screen } from '@/components/layout';
+import { BackButton, Button, InputField, Text } from '@/components/ui';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -60,7 +61,7 @@ const SendResetLink = () => {
           <InputField
             control={emailForm.control}
             name="email"
-            placeholder="Email"
+            placeholder={t('Email')}
             secureTextEntry={false}
             error={emailForm.formState.errors.email}
             icon={<MailIcon size={24} color={colors.muted} />}
@@ -68,7 +69,7 @@ const SendResetLink = () => {
           />
 
           <Button
-            title={t('Send Reset Link')}
+            label={t('Send Reset Link')}
             onPress={emailForm.handleSubmit(handleSendResetLink)}
             loading={isLoading}
             disabled={!emailForm.formState.isValid || isLoading}

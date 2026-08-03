@@ -1,4 +1,5 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { useEffect, useRef } from 'react';
 import { Animated, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -60,12 +61,13 @@ const getColorForType = (type: string, colors: any) => {
       return colors.success;
     case 'info':
     default:
-      return colors.secondary;
+      return colors.info;
   }
 };
 
 export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPress, onDismiss }: AlertDialogProps) => {
   const { colors, theme } = useThemeTokens();
+  const isRTL = useIsRTL();
   const ios = IOS_COLORS[theme];
   const scaleAnim = useRef(new Animated.Value(isIOS ? 0.93 : 0.95)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -117,17 +119,17 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
             isIOS ? iosDialogShadow : { elevation: 6 },
           ]}
         >
-          <View className={`px-5 pt-5 pb-4 ${isIOS ? 'items-center' : 'items-start'}`}>
+          <View className={`px-5 pt-5 pb-4 ${isIOS ? 'items-center' : isRTL ? 'items-end' : 'items-start'}`}>
             <Text
-              className={`font-bold mb-1.5 leading-[22px] ${isIOS ? 'text-[17px] text-center' : 'text-xl text-left'}`}
-              style={{ color: isIOS ? ios.title : colors.text }}
+              className={`font-bold mb-1.5 leading-[22px] ${isIOS ? 'text-[17px] text-center' : 'text-xl'}`}
+              style={{ color: isIOS ? ios.title : colors.text, textAlign: isIOS ? 'center' : isRTL ? 'right' : 'left' }}
             >
               {title}
             </Text>
             {message && (
               <Text
-                className={`leading-[18px] ${isIOS ? 'text-[13px] text-center' : 'text-sm text-left'}`}
-                style={{ color: isIOS ? ios.message : colors.muted }}
+                className={`leading-[18px] ${isIOS ? 'text-[13px] text-center' : 'text-sm'}`}
+                style={{ color: isIOS ? ios.message : colors.muted, textAlign: isIOS ? 'center' : isRTL ? 'right' : 'left' }}
               >
                 {message}
               </Text>
@@ -162,7 +164,10 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
               })}
             </View>
           ) : (
-            <View className="flex-row justify-end px-2 pb-2 gap-1">
+            <View
+              className="flex-row justify-end px-2 pb-2 gap-1"
+              style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
+            >
               {buttons.map((button, index) => {
                 const isPrimary = !button.style || button.style === 'default';
                 return (

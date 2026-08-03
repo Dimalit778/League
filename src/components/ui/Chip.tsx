@@ -27,7 +27,7 @@ export const Chip = forwardRef<View, ChipProps>(function Chip(
       accessibilityState={{ disabled: isDisabled, selected: variant === 'selected' }}
       className={cn(
         'min-h-11 items-center justify-center rounded-xl border px-4 active:opacity-75',
-        variant === 'selected' ? 'border-primary bg-primarySoft' : 'border-border bg-surfaceSoft',
+        variant === 'selected' ? 'border-primary bg-subtle' : 'border-border bg-subtle',
         isDisabled && 'opacity-50',
         className,
       )}

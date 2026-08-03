@@ -11,4 +11,26 @@ module.exports = [
   {
     ignores: ['dist/*'],
   },
+  {
+    files: ['src/features/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'react-native',
+              importNames: ['Text'],
+              message: 'Use Text from @/components/ui so typography and theme colors stay consistent.',
+            },
+            {
+              name: 'react-native-safe-area-context',
+              importNames: ['SafeAreaView'],
+              message: 'Use Screen from @/components/layout so safe areas and screen widths stay consistent.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];

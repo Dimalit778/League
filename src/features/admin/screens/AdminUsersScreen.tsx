@@ -1,15 +1,56 @@
-import { LoadingOverlay } from '@/components/layout';
-import { BackButton } from '@/components/ui';
+import { LoadingOverlay, Screen } from '@/components/layout';
+import { BackButton, Button, Card, Text } from '@/components/ui';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
+import { useTranslation } from '@/hooks/useTranslation';
+import type { Tables } from '@/types/database.types';
 import TrashIcon from '@assets/icons/TrashIcon';
-import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, type ListRenderItemInfo, TextInput, View } from 'react-native';
+
+type AdminUser = Tables<'users'>;
+
+type AdminUserRowProps = {
+  id: string;
+  fullName: string | null;
+  email: string | null;
+  isDeleting: boolean;
+  onDelete: (userId: string, userName: string) => void;
+};
+
+const AdminUserRow = memo(function AdminUserRow({ id, fullName, email, isDeleting, onDelete }: AdminUserRowProps) {
+  const { t } = useTranslation();
+  const handlePress = useCallback(() => {
+    onDelete(id, fullName || email || t('this user'));
+  }, [email, fullName, id, onDelete, t]);
+
+  return (
+    <Card className="my-2">
+      <View className="flex-row justify-between items-start mb-2">
+        <View className="flex-1">
+          <Text className="text-text text-lg font-semibold mb-1">{fullName || t('Unnamed User')}</Text>
+          <Text className="text-muted text-sm mb-4">{email}</Text>
+        </View>
+        <Button
+          onPress={handlePress}
+          disabled={isDeleting}
+          accessibilityLabel={t('Delete user')}
+          variant="secondary"
+          size="icon"
+        >
+          <TrashIcon size={20} color="#ef4444" />
+        </Button>
+      </View>
+    </Card>
+  );
+});
+
+const keyExtractor = (user: AdminUser) => user.id;
 
 const AdminUsersScreen = () => {
   const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useAdminUsersInfinite();
-  const deleteUserMutation = useDeleteUser();
+  const { isPending: isDeleting, mutate: deleteUser } = useDeleteUser();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const onRefresh = useCallback(() => {
@@ -41,28 +82,41 @@ const AdminUsersScreen = () => {
 
   const handleDeleteUser = useCallback(
     (userId: string, userName: string) => {
-      Alert.alert('Delete User', `Are you sure you want to delete ${userName}? This action cannot be undone.`, [
+      Alert.alert(t('Delete User'), t('Are you sure you want to delete {{name}}? This action cannot be undone.', { name: userName }), [
         {
-          text: 'Cancel',
+          text: t('Cancel'),
           style: 'cancel',
         },
         {
-          text: 'Delete',
+          text: t('Delete'),
           style: 'destructive',
           onPress: () => {
-            deleteUserMutation.mutate(userId, {
+            deleteUser(userId, {
               onSuccess: () => {
-                Alert.alert('Success', 'User deleted successfully');
+                Alert.alert(t('Success'), t('User deleted successfully'));
               },
               onError: (error) => {
-                Alert.alert('Error', `Failed to delete user: ${error.message}`);
+                Alert.alert(t('Error'), t('Failed to delete user: {{message}}', { message: error.message }));
               },
             });
           },
         },
       ]);
     },
-    [deleteUserMutation],
+    [deleteUser, t],
+  );
+
+  const renderUser = useCallback(
+    ({ item: user }: ListRenderItemInfo<AdminUser>) => (
+      <AdminUserRow
+        id={user.id}
+        fullName={user.full_name}
+        email={user.email}
+        isDeleting={isDeleting}
+        onDelete={handleDeleteUser}
+      />
+    ),
+    [handleDeleteUser, isDeleting],
   );
 
   if (isLoading && !data) {
@@ -71,18 +125,18 @@ const AdminUsersScreen = () => {
 
   if (error && !data) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background px-4">
+      <Screen safeArea padding="all" contentClassName="items-center justify-center">
         <Text className="text-center text-error">{error.message}</Text>
-      </SafeAreaView>
+      </Screen>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <BackButton title="User Management" />
+    <Screen safeArea>
+      <BackButton title={t('User Management')} />
       <View className="px-4 mb-4">
         <TextInput
-          placeholder="Search by name or email..."
+          placeholder={t('Search by name or email...')}
           placeholderTextColor="#aaa"
           className="bg-surface text-text border border-border rounded-lg px-4 py-3"
           value={searchQuery}
@@ -92,7 +146,7 @@ const AdminUsersScreen = () => {
         />
         {filteredUsers.length > 0 && (
           <Text className="text-muted text-sm mt-2">
-            {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} found
+            {t('{{count}} users found', { count: filteredUsers.length })}
           </Text>
         )}
       </View>
@@ -100,7 +154,7 @@ const AdminUsersScreen = () => {
         data={filteredUsers}
         refreshing={isRefetching}
         onRefresh={onRefresh}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         contentContainerStyle={{ paddingHorizontal: 16 }}
         onEndReached={searchQuery ? undefined : loadMore}
         onEndReachedThreshold={0.5}
@@ -108,36 +162,20 @@ const AdminUsersScreen = () => {
           isFetchingNextPage ? (
             <View className="py-4 items-center">
               <ActivityIndicator color="#666" size="small" />
-              <Text className="text-muted text-sm mt-2">Loading more users...</Text>
+              <Text className="text-muted text-sm mt-2">{t('Loading more users...')}</Text>
             </View>
           ) : null
         }
         ListEmptyComponent={
           <View className="items-center justify-center py-8">
             <Text className="text-muted text-center">
-              {searchQuery ? 'No users found matching your search' : 'No users found'}
+              {searchQuery ? t('No users found matching your search') : t('No users found')}
             </Text>
           </View>
         }
-        renderItem={({ item: user }) => (
-          <View className="bg-surface border border-border rounded-2xl p-4 my-2">
-            <View className="flex-row justify-between items-start mb-2">
-              <View className="flex-1">
-                <Text className="text-text text-lg font-semibold mb-1">{user.full_name || 'Unnamed User'}</Text>
-                <Text className="text-muted text-sm mb-4">{user.email}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => handleDeleteUser(user.id, user.full_name || user.email || 'this user')}
-                disabled={deleteUserMutation.isPending}
-                className="p-2 bg-red-500/10 rounded-lg"
-              >
-                <TrashIcon size={20} color="#ef4444" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        renderItem={renderUser}
       />
-    </SafeAreaView>
+    </Screen>
   );
 };
 

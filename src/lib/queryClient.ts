@@ -58,9 +58,18 @@ export const KEYS = {
 
   // ==================== PREDICTIONS ====================
   predictions: {
+    all: ['predictions'] as const,
     // Member's predictions across all fixtures
     byMember: (memberId: string) => ['predictions', 'member', memberId] as const,
     byLeague: (leagueId: string) => ['predictions', 'league', leagueId] as const,
+  },
+
+  // ==================== MODERATION ====================
+  moderation: {
+    myReports: ['moderation', 'reports', 'me'] as const,
+    blockedUsers: ['moderation', 'blocks'] as const,
+    blockStatus: (targetUserId?: string | null) =>
+      ['moderation', 'blocks', targetUserId ?? 'disabled'] as const,
   },
 
   // ==================== COMPETITIONS ====================
@@ -79,5 +88,6 @@ export const KEYS = {
     leagueMembers: ['admin', 'league-members'] as const,
     predictions: ['admin', 'predictions'] as const,
     competitions: ['admin', 'competitions'] as const,
+    reports: (status: string) => ['admin', 'reports', status] as const,
   },
 } as const;

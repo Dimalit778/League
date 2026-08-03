@@ -1,12 +1,15 @@
 import { images } from '@/assets/images';
-import { Screen, Text } from '@/components/ui';
+import { Screen } from '@/components/layout';
+import { Button, Text } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
+import { useTranslation } from '@/hooks/useTranslation';
 import { ImageBackground } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function LandingScreen() {
+  const { t } = useTranslation();
   return (
     <>
       <ImageBackground
@@ -35,21 +38,17 @@ export default function LandingScreen() {
 
             <View className="mt-3 items-center">
               <Text variant="bodySmall" tone="muted" className="uppercase">
-                Football Prediction
+                {t('Football Prediction')}
               </Text>
               <Text variant="subtitle" className="w-full pt-12 text-center sm:pt-16">
-                Predict. Compete. Win.
+                {t('Predict. Compete. Win.')}
               </Text>
             </View>
           </View>
 
           <View className={cn('mt-auto', spacing.stack)}>
             <Link href="/(auth)/signIn" asChild>
-              <Pressable className="min-h-11 items-center justify-center rounded-xl bg-primary px-4 active:opacity-85">
-                <Text variant="label" tone="inverse" className="text-center">
-                  Get Started
-                </Text>
-              </Pressable>
+              <Button label={t('Get Started')} fullWidth />
             </Link>
           </View>
         </View>

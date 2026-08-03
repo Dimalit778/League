@@ -89,21 +89,15 @@ export const memberApi = {
   },
  
   async removeMember(memberId: string) {
-    const { data: memberData, error: memberError } = await supabase
-      .from('league_members')
-      .select('id, league_id')
-      .eq('id', memberId)
-      .single();
-
-    if (memberError) throw new Error(memberError.message);
-    if (!memberData) throw new Error('Member not found');
-
-    const leagueId = memberData.league_id;
-
-    const { data, error } = await supabase.from('league_members').delete().eq('id', memberId);
+    const { data, error } = await supabase.rpc('remove_league_member', {
+      p_member_id: memberId,
+    });
     if (error) throw new Error(error.message);
 
-    return { data, leagueId };
+    const result = data as { league_id?: string } | null;
+    if (!result?.league_id) throw new Error('Failed to remove member');
+
+    return { data, leagueId: result.league_id };
   },
   async getMyMemberByLeague(userId: string, leagueId: string) {
     const { data, error } = await supabase

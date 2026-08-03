@@ -1,6 +1,6 @@
 import { useFloatBottomTabsInset } from '@/components/layout';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import AnimatedSkeleton from '@/utils/AnimatedSkeleton';
+import { Skeleton } from '@/components/ui';
 import { ScrollView, View } from 'react-native';
 
 function Bone({
@@ -16,7 +16,7 @@ function Bone({
 }) {
   const { colors } = useThemeTokens();
   return (
-    <AnimatedSkeleton
+    <Skeleton
       style={{
         width,
         height,
@@ -54,7 +54,7 @@ function PodiumMemberSkeleton({ avatarSize, podiumHeight }: { avatarSize: number
 
 function PodiumSkeleton() {
   return (
-    <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border bg-surfaceSoft">
+    <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border bg-subtle">
       <View className="flex-row items-end justify-center px-2 pt-9">
         <PodiumMemberSkeleton avatarSize={60} podiumHeight={55} />
         <PodiumMemberSkeleton avatarSize={72} podiumHeight={75} />

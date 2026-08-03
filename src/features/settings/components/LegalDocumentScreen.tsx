@@ -1,12 +1,8 @@
-import { Screen } from '@/components/layout';
-import { BackButton, Card, Text } from '@/components/ui';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { Row, Screen } from '@/components/layout';
+import { Badge, Card, Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativewind/nativeWind';
-import { Ionicons } from '@expo/vector-icons';
+import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { legalContent } from '../content/legalContent';
 
 type LegalDocumentScreenProps = {
@@ -14,54 +10,57 @@ type LegalDocumentScreenProps = {
 };
 
 const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
-  const { language, isRTL } = useTranslation();
-  const { colors } = useThemeTokens();
-  const edges = useSafeAreaInsets();
+  const { language } = useTranslation();
   const content = legalContent[language][document];
-  const textAlignClass = isRTL ? 'text-right' : 'text-left';
-  const directionClass = isRTL ? 'flex-row-reverse' : 'flex-row';
-  const iconMarginClass = isRTL ? 'ml-3' : 'mr-3';
 
   return (
-    <Screen edges={['top', 'bottom']}>
-      <BackButton title={content.title} />
+    <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+      <Text variant="title" accessibilityRole="header" className="text-center">
+        {content.title}
+      </Text>
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: edges.bottom + 24, paddingHorizontal: 10 }}
-      >
-        <View className="mb-5 mt-3">
-          <Text className={cn('text-2xl', textAlignClass)}>{content.title}</Text>
-          <Text className={`text-sm mt-1 text-muted ${textAlignClass}`}>{content.updatedAt}</Text>
-          <Text className={`text-base mt-4 text-muted ${textAlignClass}`}>{content.intro}</Text>
-        </View>
+      <Card variant="elevated" contentClassName="gap-3">
+        <Badge size="sm" label={content.updatedAt} className="self-center" />
+        <Row>
+          <Text variant="body" className="leading-7">
+            {content.intro}
+          </Text>
+        </Row>
+      </Card>
 
-        {content.sections.map((section) => (
-          <Card key={section.title} className="mb-4">
-            <View className={`mb-3 items-center ${directionClass}`}>
-              <View
-                className={`h-10 w-10 items-center justify-center rounded-full ${iconMarginClass}`}
-                style={{ backgroundColor: colors.primary + '18' }}
-              >
-                <Ionicons name="document-text-outline" size={20} color={colors.primary} />
-              </View>
-              <Text className={`text-xl flex-1 ${textAlignClass}`}>{section.title}</Text>
+      {content.sections.map((section, index) => (
+        <Card key={section.title} contentClassName="gap-3">
+          <Row className="items-start gap-3">
+            <View className="size-7 items-center justify-center rounded-full bg-primary">
+              <Text variant="label" className="text-center text-on-primary">
+                {index + 1}
+              </Text>
             </View>
+            <Text variant="subtitle" className="min-w-0 flex-1 pt-0.5">
+              {section.title}
+            </Text>
+          </Row>
 
+          <View className="gap-3">
             {section.body.map((paragraph) => (
-              <View key={paragraph} className={`mb-2 ${directionClass}`}>
-                <Text className={`text-base text-muted ${isRTL ? 'ml-2' : 'mr-2'}`}>•</Text>
-                <Text className={`text-base flex-1 text-muted ${textAlignClass}`}>{paragraph}</Text>
-              </View>
+              <Row key={paragraph} className="items-start gap-2.5">
+                <Text variant="bodySmall" tone="muted" className="mt-0.5 leading-6">
+                  •
+                </Text>
+                <Text variant="bodySmall" tone="secondary" className="min-w-0 flex-1 leading-6">
+                  {paragraph}
+                </Text>
+              </Row>
             ))}
-          </Card>
-        ))}
+          </View>
+        </Card>
+      ))}
 
-        <View className="mt-1 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
-          <Text className={`text-sm text-muted ${textAlignClass}`}>{content.footer}</Text>
-        </View>
-      </ScrollView>
+      <Card variant="soft" contentClassName="gap-1">
+        <Text variant="bodySmall" tone="muted" className="leading-6 text-center">
+          {content.footer}
+        </Text>
+      </Card>
     </Screen>
   );
 };

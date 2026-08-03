@@ -19,6 +19,7 @@ const AdminLayout = () => {
       <Stack.Screen name="league-members" />
       <Stack.Screen name="predictions" />
       <Stack.Screen name="competitions" />
+      <Stack.Screen name="reports" />
     </Stack>
   );
 };

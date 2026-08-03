@@ -1,28 +1,30 @@
 import { Error, Screen } from '@/components/layout';
-import { Avatar, BackButton, Card, EmptyState, Text } from '@/components/ui';
+import { AvatarImage, BackButton, Button, Card, EmptyState, Text } from '@/components/ui';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
+import { useBlockStatus, useBlockUser, useUnblockUser } from '@/features/moderation/hooks/useModeration';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useLocalSearchParams } from 'expo-router';
-import { View } from 'react-native';
+import { useAuthStore } from '@/store/AuthStore';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Flag, ShieldBan, ShieldCheck } from 'lucide-react-native';
+import { Alert, View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
 import MemberStats from '../components/memberStats';
 
 export default function MemberDetailsScreen() {
-  const { memberId = '' } = useLocalSearchParams<{ memberId: string }>();
+  const { memberId } = useLocalSearchParams<{ memberId: string }>();
   const { t } = useTranslation();
+  const { colors } = useThemeTokens();
+  const router = useRouter();
+  const currentUserId = useAuthStore((state) => state.user?.id);
   const memberQuery = useGetMember(memberId);
   const statsQuery = useMemberStats(memberId);
-
-  if (!memberId) {
-    return (
-      <Screen padding="horizontal" edges={['top', 'bottom']}>
-        <BackButton />
-        <EmptyState variant="error" title={t('Member not found')} />
-      </Screen>
-    );
-  }
+  const targetUserId = memberQuery.data?.user_id;
+  const blockStatus = useBlockStatus(targetUserId);
+  const blockUser = useBlockUser();
+  const unblockUser = useUnblockUser();
 
   if (memberQuery.isLoading || statsQuery.isLoading) {
     return <MemberDetailsSkeleton />;
@@ -35,7 +37,7 @@ export default function MemberDetailsScreen() {
   const member = memberQuery.data;
   if (!member) {
     return (
-      <Screen padding="horizontal" edges={['top', 'bottom']}>
+      <Screen padding="all" bottomInset>
         <BackButton />
         <EmptyState variant="empty" title={t('Member not found')} />
       </Screen>
@@ -43,47 +45,101 @@ export default function MemberDetailsScreen() {
   }
 
   const stats = statsQuery.data;
+  const displayName = member.user_id ? member.nickname : t('Deleted Player');
+  const canModerate = !!member.user_id && member.user_id !== currentUserId;
+  const isBlocked = blockStatus.data === true;
+
+  const handleReport = () => {
+    router.push({
+      pathname: '/(app)/(league)/report-content',
+      params: { memberId: member.id, leagueId: member.league_id },
+    });
+  };
+
+  const handleBlockToggle = () => {
+    if (!member.user_id) return;
+
+    if (isBlocked) {
+      unblockUser.mutate(member.user_id, {
+        onSuccess: () => Alert.alert(t('User unblocked'), t('You can see this user’s content again.')),
+        onError: (error) => Alert.alert(t('Error'), error.message),
+      });
+      return;
+    }
+
+    Alert.alert(t('Block user'), t('Their profile, predictions and leaderboard entries will be hidden from you.'), [
+      { text: t('Cancel'), style: 'cancel' },
+      {
+        text: t('Block'),
+        style: 'destructive',
+        onPress: () =>
+          blockUser.mutate(member.user_id!, {
+            onSuccess: () => {
+              Alert.alert(t('User blocked'), t('This user’s content is now hidden.'));
+              router.back();
+            },
+            onError: (error) => Alert.alert(t('Error'), error.message),
+          }),
+      },
+    ]);
+  };
 
   return (
-    <Screen scroll padding="horizontal" edges={['top', 'bottom']} contentClassName={spacing.stack}>
-      <BackButton />
-
-      <Card variant="elevated" contentClassName="items-center">
-        <Avatar
-          source={member.avatar_url}
-          fallback={member.nickname}
-          accessibilityLabel={t('{{name}} avatar', { name: member.nickname })}
-          size="xl"
-          bordered
-        />
+    <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+      <Card variant="hero" contentClassName="items-center px-5 py-6">
+        <View className="h-24 w-24 overflow-hidden rounded-full border-[3px] border-primary bg-subtle p-0.5">
+          <AvatarImage path={member.avatar_url} nickname={displayName} />
+        </View>
         <View className="mt-3 items-center">
           <Text variant="titleLarge" className="text-center">
-            {member.nickname}
+            {displayName}
           </Text>
-          <Text variant="bodySmall" tone="muted" className="text-center">
+          <Text variant="bodySmall" tone="muted" className="mt-1 text-center">
             {member.league?.name ?? ''}
           </Text>
         </View>
-        <View className="mt-4 flex-row items-center">
+        <View className="mt-5 w-full flex-row items-center rounded-2xl bg-subtle py-3">
           <View className="flex-1 items-center">
             <Text variant="caption" tone="muted">
               {t('Rank')}
             </Text>
-            <Text variant="title" tone="primary">
+            <Text variant="titleLarge" tone="primary" className="text-center">
               {stats?.rank ? `#${stats.rank}` : '—'}
             </Text>
           </View>
-          <View className="h-10 w-px bg-border" />
+          <View className="h-11 w-px bg-border" />
           <View className="flex-1 items-center">
             <Text variant="caption" tone="muted">
               {t('Points')}
             </Text>
-            <Text variant="title" tone="primary">
+            <Text variant="titleLarge" tone="primary" className="text-center">
               {stats?.totalPoints ?? 0}
             </Text>
           </View>
         </View>
       </Card>
+
+      {canModerate && (
+        <View className="flex-row gap-3">
+          <Button
+            label={t('Report')}
+            variant="outline"
+            className="flex-1"
+            leftIcon={<Flag size={18} color={colors.text} />}
+            onPress={handleReport}
+          />
+          <Button
+            label={isBlocked ? t('Unblock') : t('Block')}
+            variant={isBlocked ? 'outline' : 'error'}
+            className="flex-1"
+            leftIcon={
+              isBlocked ? <ShieldCheck size={18} color={colors.text} /> : <ShieldBan size={18} color="#FFFFFF" />
+            }
+            onPress={handleBlockToggle}
+            loading={blockUser.isPending || unblockUser.isPending}
+          />
+        </View>
+      )}
 
       <MemberStats stats={stats} />
     </Screen>
