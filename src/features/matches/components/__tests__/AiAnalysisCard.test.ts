@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { MatchWithPredictions } from '../../types';
-import AiAnalysisCard, { resolveAiAnalysis } from '../match-details/AiAnalysisCard';
+import { resolveAiAnalysis } from '../../model/aiAnalysis';
+import AiAnalysisCard from '../match-details/AiAnalysisCard';
 
 const createMatch = (overrides: Partial<MatchWithPredictions> = {}) =>
   ({

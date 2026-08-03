@@ -1,5 +1,6 @@
 import { Row } from '@/components/layout';
 import { Badge, Button, Card, Divider, Text } from '@/components/ui';
+import { resolveAiAnalysis } from '@/features/matches/model/aiAnalysis';
 import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -27,45 +28,22 @@ type AiSummaryCardProps = {
   theme: ThemeName;
 };
 
-export type AiAnalysisState =
-  | { status: 'unavailable' }
-  | {
-      status: 'available';
-      summary: string;
-      score: { home: number; away: number };
-      generatedAt: Date;
-    };
-
-const isValidPredictedScore = (value: number | null): value is number =>
-  typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 20;
-
-export function resolveAiAnalysis(match: MatchWithPredictions, language: 'en' | 'he'): AiAnalysisState {
-  const summary =
-    language === 'he'
-      ? (match.ai_summary_he ?? match.ai_summary_en ?? '').trim()
-      : (match.ai_summary_en ?? match.ai_summary_he ?? '').trim();
-  const generatedAt = match.ai_generated_at ? new Date(match.ai_generated_at) : null;
-
-  if (
-    !summary ||
-    !isValidPredictedScore(match.ai_predicted_home_score) ||
-    !isValidPredictedScore(match.ai_predicted_away_score) ||
-    !generatedAt ||
-    Number.isNaN(generatedAt.getTime())
-  ) {
-    return { status: 'unavailable' };
-  }
-
-  return {
-    status: 'available',
-    summary,
-    score: {
-      home: match.ai_predicted_home_score,
-      away: match.ai_predicted_away_score,
-    },
-    generatedAt,
-  };
-}
+const AI_UPDATED_AT_FORMATTERS: Record<'en' | 'he', Intl.DateTimeFormat> = {
+  en: new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }),
+  he: new Intl.DateTimeFormat('he-IL', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }),
+};
 
 function teamName(team: TeamType | null, fallback: string) {
   return team?.shortName ?? team?.name ?? fallback;
@@ -227,13 +205,7 @@ function AiUnavailableState() {
 
 function AiUpdatedAt({ date, language }: { date: Date; language: 'en' | 'he' }) {
   const { t } = useTranslation();
-  const formatted = new Intl.DateTimeFormat(language === 'he' ? 'he-IL' : 'en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
+  const formatted = AI_UPDATED_AT_FORMATTERS[language].format(date);
 
   return (
     <Text variant="caption" tone="muted" className="text-center">

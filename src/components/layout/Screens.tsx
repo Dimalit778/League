@@ -34,6 +34,8 @@ const paddingClasses: Record<NonNullable<ScreenProps['padding']>, string> = {
   all: layout.screenPaddingAll,
 };
 
+const CENTERING_STYLE = { direction: 'ltr' as const };
+
 export function Screen({
   children,
   scroll = false,
@@ -59,15 +61,13 @@ export function Screen({
   const bottomInsetStyle = paddingBottom > 0 ? { paddingBottom } : undefined;
   const directionStyle = { direction: isRTL ? ('rtl' as const) : ('ltr' as const) };
 
-  const centeringStyle = { direction: 'ltr' as const };
-
   if (scroll) {
     return (
       <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
         <ScrollView
           className="flex-1"
           contentContainerClassName={containerClass}
-          contentContainerStyle={[centeringStyle, bottomInsetStyle, contentContainerStyle]}
+          contentContainerStyle={[CENTERING_STYLE, bottomInsetStyle, contentContainerStyle]}
           refreshControl={refreshControl}
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
@@ -82,7 +82,7 @@ export function Screen({
 
   return (
     <Root {...(usesSafeArea && edges ? { edges } : {})} className={rootClassName}>
-      <View className={cn('min-h-0 flex-1', containerClass)} style={[centeringStyle, bottomInsetStyle]}>
+      <View className={cn('min-h-0 flex-1', containerClass)} style={[CENTERING_STYLE, bottomInsetStyle]}>
         <View className={cn('min-h-0 w-full flex-1', contentClassName)} style={directionStyle}>
           {children}
         </View>

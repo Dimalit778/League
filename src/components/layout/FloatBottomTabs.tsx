@@ -205,16 +205,7 @@ const styles = StyleSheet.create({
     height: PILL_HEIGHT,
     borderRadius: 24,
     borderWidth: 1,
-
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 18,
-
-    elevation: 18,
+    boxShadow: '0 -6px 18px rgba(0, 0, 0, 0.4)',
   },
 
   pill: {

@@ -2,14 +2,54 @@ import { LoadingOverlay, Screen } from '@/components/layout';
 import { BackButton, Button, Card, Text } from '@/components/ui';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
+import type { Tables } from '@/types/database.types';
 import TrashIcon from '@assets/icons/TrashIcon';
-import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, TextInput, View } from 'react-native';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, type ListRenderItemInfo, TextInput, View } from 'react-native';
+
+type AdminUser = Tables<'users'>;
+
+type AdminUserRowProps = {
+  id: string;
+  fullName: string | null;
+  email: string | null;
+  isDeleting: boolean;
+  onDelete: (userId: string, userName: string) => void;
+};
+
+const AdminUserRow = memo(function AdminUserRow({ id, fullName, email, isDeleting, onDelete }: AdminUserRowProps) {
+  const { t } = useTranslation();
+  const handlePress = useCallback(() => {
+    onDelete(id, fullName || email || t('this user'));
+  }, [email, fullName, id, onDelete, t]);
+
+  return (
+    <Card className="my-2">
+      <View className="flex-row justify-between items-start mb-2">
+        <View className="flex-1">
+          <Text className="text-text text-lg font-semibold mb-1">{fullName || t('Unnamed User')}</Text>
+          <Text className="text-muted text-sm mb-4">{email}</Text>
+        </View>
+        <Button
+          onPress={handlePress}
+          disabled={isDeleting}
+          accessibilityLabel={t('Delete user')}
+          variant="secondary"
+          size="icon"
+        >
+          <TrashIcon size={20} color="#ef4444" />
+        </Button>
+      </View>
+    </Card>
+  );
+});
+
+const keyExtractor = (user: AdminUser) => user.id;
 
 const AdminUsersScreen = () => {
   const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useAdminUsersInfinite();
-  const deleteUserMutation = useDeleteUser();
+  const { isPending: isDeleting, mutate: deleteUser } = useDeleteUser();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -51,7 +91,7 @@ const AdminUsersScreen = () => {
           text: t('Delete'),
           style: 'destructive',
           onPress: () => {
-            deleteUserMutation.mutate(userId, {
+            deleteUser(userId, {
               onSuccess: () => {
                 Alert.alert(t('Success'), t('User deleted successfully'));
               },
@@ -63,7 +103,20 @@ const AdminUsersScreen = () => {
         },
       ]);
     },
-    [deleteUserMutation, t],
+    [deleteUser, t],
+  );
+
+  const renderUser = useCallback(
+    ({ item: user }: ListRenderItemInfo<AdminUser>) => (
+      <AdminUserRow
+        id={user.id}
+        fullName={user.full_name}
+        email={user.email}
+        isDeleting={isDeleting}
+        onDelete={handleDeleteUser}
+      />
+    ),
+    [handleDeleteUser, isDeleting],
   );
 
   if (isLoading && !data) {
@@ -101,7 +154,7 @@ const AdminUsersScreen = () => {
         data={filteredUsers}
         refreshing={isRefetching}
         onRefresh={onRefresh}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         contentContainerStyle={{ paddingHorizontal: 16 }}
         onEndReached={searchQuery ? undefined : loadMore}
         onEndReachedThreshold={0.5}
@@ -120,25 +173,7 @@ const AdminUsersScreen = () => {
             </Text>
           </View>
         }
-        renderItem={({ item: user }) => (
-          <Card className="my-2">
-            <View className="flex-row justify-between items-start mb-2">
-              <View className="flex-1">
-                <Text className="text-text text-lg font-semibold mb-1">{user.full_name || t('Unnamed User')}</Text>
-                <Text className="text-muted text-sm mb-4">{user.email}</Text>
-              </View>
-              <Button
-                onPress={() => handleDeleteUser(user.id, user.full_name || user.email || t('this user'))}
-                disabled={deleteUserMutation.isPending}
-                accessibilityLabel={t('Delete user')}
-                variant="secondary"
-                size="icon"
-              >
-                <TrashIcon size={20} color="#ef4444" />
-              </Button>
-            </View>
-          </Card>
-        )}
+        renderItem={renderUser}
       />
     </Screen>
   );

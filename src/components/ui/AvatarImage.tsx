@@ -4,7 +4,7 @@ import { cn } from '@/lib/nativewind/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { View } from 'react-native';
-import { LoadingOverlay } from '../layout';
+import { LoadingOverlay } from '../layout/LoadingOverlay';
 
 type AvatarImageProps = {
   nickname?: string | null;

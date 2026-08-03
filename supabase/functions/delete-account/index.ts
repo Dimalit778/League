@@ -137,13 +137,19 @@ async function deleteProfileImages(userId: string) {
 
   // Older uploads use a member-id filename. Listing by prefix also removes
   // superseded/orphaned profile images that are no longer referenced by a row.
-  for (const membership of memberships ?? []) {
-    const { data: files, error: listError } = await adminClient.storage
-      .from(PROFILE_IMAGES_BUCKET)
-      .list('', { search: `${membership.id}_`, limit: 100 });
+  const membershipFiles = await Promise.all(
+    (memberships ?? []).map(async (membership) => {
+      const { data: files, error: listError } = await adminClient.storage
+        .from(PROFILE_IMAGES_BUCKET)
+        .list('', { search: `${membership.id}_`, limit: 100 });
 
-    if (listError) throw new Error(listError.message);
-    for (const file of files ?? []) storedPaths.add(file.name);
+      if (listError) throw new Error(listError.message);
+      return files ?? [];
+    }),
+  );
+
+  for (const files of membershipFiles) {
+    for (const file of files) storedPaths.add(file.name);
   }
 
   if (storedPaths.size === 0) return 0;
