@@ -15,7 +15,6 @@
       "icon": "./src/assets/app-icon-ios.png",
       "privacyManifests": {
         "NSPrivacyTracking": false,
-        "supportsTablet": false,
         "NSPrivacyAccessedAPITypes": [
           {
             "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",

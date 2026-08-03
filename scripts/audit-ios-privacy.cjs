@@ -20,9 +20,15 @@ const secureStoreOptions = Array.isArray(secureStore) ? secureStore[1] : {};
 if (secureStoreOptions?.faceIDPermission !== false) fail('Face ID permission must stay disabled.');
 
 const manifest = appConfig.ios?.privacyManifests;
+if (appConfig.ios?.supportsTablet !== false) {
+  fail('The iOS release must remain iPhone-only (ios.supportsTablet=false).');
+}
 if (!manifest) {
   fail('ios.privacyManifests is missing.');
 } else {
+  if (Object.prototype.hasOwnProperty.call(manifest, 'supportsTablet')) {
+    fail('supportsTablet belongs under ios, not inside ios.privacyManifests.');
+  }
   if (manifest.NSPrivacyTracking !== false) fail('NSPrivacyTracking must be false.');
   if ((manifest.NSPrivacyTrackingDomains ?? []).length > 0) fail('Tracking domains must be empty.');
 

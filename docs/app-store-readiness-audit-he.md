@@ -3,19 +3,19 @@
 **תאריך הבדיקה:** 2 באוגוסט 2026  
 **גרסה שנבדקה:** `1.0.0`  
 **Bundle ID:** `com.dimalit778.champo`  
-**יעד:** הפצה עולמית, iPhone ו־iPad, אנגלית ועברית, מנוי PRO וניתוח AI פעילים ב־1.0  
+**יעד:** הפצה עולמית ל־iPhone בלבד, אנגלית ועברית, מנוי PRO וניתוח AI פעילים ב־1.0
 **החלטה:** **NO-GO — אין להגיש עדיין ל־App Review**  
 **ציון כולל:** **6.2/10**
 
 > זהו audit הנדסי, מוצרי ותפעולי, ולא ייעוץ משפטי. סעיפי GDPR, UK GDPR, תנאי שימוש וזכויות תוכן צריכים לעבור אישור של עורך דין המתמחה במוצרי תוכנה ובשווקי היעד.
 
-> **עדכון לאחר הבדיקה — 2 באוגוסט 2026:** המיגרציות של `SEC-01`, `DATA-01` וסכמת `PRIV-01` נפרסו ל־production ו־DB lint עבר ללא שגיאות. כתיבת ניחוש הועברה ל־RPC שמונע שינוי `points`/`is_finished`, בודק בעלות, תחרות ו־kickoff ומחשב מחדש ניקוד קנוני; שינוי `active`/`is_primary` הועבר ל־RPCs אטומיים עם מגבלת תוכנית ו־unique index לליגה ראשית אחת. גרסת `delete-account` החדשה עדיין לא נפרסה משום שחסרים Apple ו־RevenueCat API secrets; לכן מחיקת חשבון ותרחישי שני משתמשים נשארים **לא אומתו** עד השלמת התצורה ובדיקת E2E. נוסף גם hardening לניתוח AI ולנגישות/iPad: אין יותר ברירת מחדל מזויפת של 0:0, קיימים מצב “לא זמין”, זמן עדכון וגילוי נאות; נוספו רוחבי תוכן מותאמים, Dynamic Type, צבעי AA, labels/roles ומידות מגע. QA native מלא עדיין נדרש.
+> **עדכון לאחר הבדיקה — 3 באוגוסט 2026:** המיגרציות של `SEC-01`, `DATA-01` וסכמת `PRIV-01` נפרסו ל־production ו־DB lint עבר ללא שגיאות. כתיבת ניחוש הועברה ל־RPC שמונע שינוי `points`/`is_finished`, בודק בעלות, תחרות ו־kickoff ומחשב מחדש ניקוד קנוני; שינוי `active`/`is_primary` הועבר ל־RPCs אטומיים עם מגבלת תוכנית ו־unique index לליגה ראשית אחת. גרסת `delete-account` החדשה עדיין לא נפרסה משום שחסרים Apple ו־RevenueCat API secrets; לכן מחיקת חשבון ותרחישי שני משתמשים נשארים **לא אומתו** עד השלמת התצורה ובדיקת E2E. נוסף hardening לניתוח AI ולנגישות, ויעד ההפצה נקבע ל־iPhone בלבד עם `ios.supportsTablet:false`. QA native מלא עדיין נדרש.
 
 ## תקציר מנהלים
 
 Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו אב־טיפוס. לשפה העיצובית הכחולה־זהובה יש זהות חזקה, מבנה האפליקציה מסודר, ה־backend משתמש ב־RLS, לוגיקת הליגות והטורנירים עשירה, קיימים מצבי טעינה ושגיאה רבים, ה־session נשמר מוצפן, וה־iOS JavaScript bundle נבנה בהצלחה. כל 450 בדיקות Jest עוברות, TypeScript ו־lint נקיים, ונוסף CI לכל PR ו־push ל־main, כולל smoke test ל־iOS bundle. בהרצה הנוכחית Expo Doctor השלים 17 בדיקות מקומיות; שתי בדיקות הרשת לא אומתו כי הגישה ל־Expo API ול־React Native Directory נחסמה בסביבה.
 
-עם זאת, הגרסה אינה מוכנה להגשה. קיימת פרצת שלמות נתונים קריטית שמאפשרת ללקוח זדוני לכתוב `points` ו־`is_finished` בניחוש לפני kickoff; מחיקת חשבון אינה מבטלת טוקן Sign in with Apple ואינה מוחקת בוודאות את קובץ תמונת הפרופיל; הדומיין וה־URLs המשפטיים אינם פעילים; אין דיווח/חסימה/מודרציה לתוכן משתמש; אין סט נכסי iPad וצילומי 6.9″; ולא ניתן היה לאמת build חתום, TestFlight, מוצרי IAP, webhooks, Privacy Labels וחשבון reviewer ב־App Store Connect.
+עם זאת, הגרסה אינה מוכנה להגשה. עדיין נדרשים אימות E2E לתיקוני שלמות הנתונים, פריסת מחיקת החשבון הסופית, דומיין ו־URLs משפטיים פעילים, QA תפעולי למערכת UGC, צילומי iPhone ‏6.9″, build חתום, TestFlight, מוצרי IAP, webhooks, Privacy Labels וחשבון reviewer ב־App Store Connect.
 
 המשמעות המעשית: המוצר טוב מספיק כדי להיכנס ל־release hardening, אך עדיין לא בטוח ולא שלם מספיק להפצה עולמית בתשלום.
 
@@ -25,7 +25,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 2. **מחיקת חשבון — אימות פריסה חסר:** התיקון קיים מקומית, אך נדרשים secrets, פריסת migration/function ובדיקת E2E מול Apple, RevenueCat, Storage ו־Supabase production.
 3. **פרטיות ומשפטי:** `champoapp.com` לא נפתר ב־DNS; המדיניות והתנאים עדיין ממותגים League Champion ומכילים מידע שגוי לגבי התראות.
 4. **UGC — נפרס, QA תפעולי חסר:** קיימים דיווח על כינוי/תמונה/שם ליגה, חסימת משתמש, הסרת חבר ותור moderation לאדמין. נדרשים מבחן E2E עם שני משתמשים, SLA וכתובת support חיה לפני סגירה מלאה.
-5. **iPad ונכסי חנות:** `supportsTablet` פעיל, אך אין בדיקת TestFlight מלאה ב־iPad ואין צילומי iPad 13″; גם אין סט 6.9″ תקין בשתי השפות.
+5. **iPhone ונכסי חנות:** `ios.supportsTablet:false` מגדיר הפצת iPhone בלבד; עדיין חסרים QA מלא על iPhone קטן/גדול וצילומי 6.9″ תקינים בשתי השפות.
 6. **סביבת הפצה לא אומתה:** אין session פעיל ב־App Store Connect/RevenueCat ולכן build, IAP, entitlement, offering, webhook, Privacy Labels, DSA וחשבון reviewer עדיין שערי שחרור פתוחים.
 
 ## מקרא ומתודולוגיה
@@ -38,9 +38,9 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 - **P2:** חשוב ליציבות ולאיכות, אך ניתן לשקול לאחר סגירת P0/P1.
 - **P3:** שיפור תחזוקה או polish.
 
-הבדיקה כללה קריאת קוד ומיגרציות, השוואה לפרויקט Supabase המקושר, הרצת TypeScript/lint/Jest/coverage/Expo Doctor/Expo export/npm audit, בדיקת Expo config הסופי, בחינת Privacy Manifests של Pods, מדידת נכסים וצילומי מסך, smoke test של גרסת web במידות iPhone ו־iPad, ובדיקת דרישות Apple העדכניות. לאחר ה־audit בוצעו תיקוני קוד ממוקדים; שינויי AI/iPad/נגישות הם מקומיים ודורשים build חדש ו־QA native לפני הגשה.
+הבדיקה כללה קריאת קוד ומיגרציות, השוואה לפרויקט Supabase המקושר, הרצת TypeScript/lint/Jest/coverage/Expo Doctor/Expo export/npm audit, בדיקת Expo config הסופי, בחינת Privacy Manifests של Pods, מדידת נכסים וצילומי מסך, smoke tests של גרסת web במספר רוחבים, ובדיקת דרישות Apple העדכניות. לאחר ה־audit בוצעו תיקוני קוד ממוקדים; שינויי AI ונגישות דורשים build חדש ו־QA native לפני הגשה.
 
-לא היו sessions מחוברים ל־App Store Connect, RevenueCat או TestFlight. ה־smoke test ב־iPad בוצע בגרסת web והוא אינדיקציה בלבד, לא תחליף לבדיקה על build native.
+לא היו sessions מחוברים ל־App Store Connect, RevenueCat או TestFlight. בדיקות web ברוחב גדול הן אינדיקציה לרספונסיביות בלבד ואינן משנות את יעד ההפצה שנקבע ל־iPhone בלבד.
 
 ## ציון וחוות דעת בעשר קטגוריות
 
@@ -49,7 +49,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 | ערך מוצר ובידול | 8.3 | עבר חלקית | הצעת הערך ברורה: ליגות פרטיות, ניחושים, דירוגים, מספר תחרויות ו־AI. שילוב חברתי + תוכן משחקים נותן סיבה לחזור לאפליקציה. |
 | עיצוב ושפה חזותית | 8.2 | עבר חלקית | מיתוג כחול־זהב, כרטיסים, אייקונים והיררכיה עקביים ומרשימים. חלק מהמסכים צפופים והטיפוגרפיה הקטנה פוגעת בנגישות. |
 | UX ומסעות מרכזיים | 6.7 | לא אומת במלואו | מסכי הכניסה נראים נקיים ומצבי loading/error רבים קיימים. המסעות המחוברים, מחיקה, PRO והתראות לא עברו E2E על build הפצה. |
-| נגישות, RTL ולוקליזציה | 7.2 | עבר חלקית / QA native חסר | 565 מפתחות קיימים בכל שפה ללא חסרים; נוספו Dynamic Type, צבעי AA, RTL יציב, labels/roles/states ומידות מגע. עדיין חסר מעבר VoiceOver/AX Inspector מלא על iPhone ו־iPad. |
+| נגישות, RTL ולוקליזציה | 7.2 | עבר חלקית / QA native חסר | 565 מפתחות קיימים בכל שפה ללא חסרים; נוספו Dynamic Type, צבעי AA, RTL יציב, labels/roles/states ומידות מגע. עדיין חסר מעבר VoiceOver/AX Inspector מלא על מכשירי iPhone נתמכים. |
 | איכות הנדסית וארכיטקטורה | 8.0 | עבר חלקית | feature slices, TanStack Query, Zustand ומפתחות query מרכזיים הם בסיס טוב. TypeScript, lint ו־Expo Doctor ירוקים; עדיין קיים drift תפעולי. |
 | בדיקות, CI ואמינות | 7.7 | עבר חלקית | 450/450 בדיקות עוברות ונוסף CI ל־typecheck/lint/i18n/privacy/Expo Doctor/Jest/iOS export. coverage נשאר 56.72% שורות ואין E2E native. |
 | Backend, DB ותפעול נתונים | 7.0 | עבר חלקית | migrations תואמות ו־DB lint נקי; יש אינדקסים ו־RLS. seed חסר, cron/backup/alerts לא אומתו וקיימת פונקציה פרוסה ללא מקור מקומי. |
@@ -69,7 +69,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 |---|---|---|---|
 | `npm run typecheck` | exit 0 | עבר | ללא שגיאות TypeScript. |
 | `npm run lint` | exit 0 | עבר | ללא שגיאות ESLint. |
-| `npm run test:ci` | 72/72 suites; 450/450 tests | עבר | כל הבדיקות עוברות, כולל AI ללא 0:0 מזויף, 0:0 אמיתי, התאמת רוחב כרטיס ב־iPad, contrast tokens ו־Dynamic Type. |
+| `npm run test:ci` | 72/72 suites; 450/450 tests | עבר | כל הבדיקות עוברות, כולל AI ללא 0:0 מזויף, 0:0 אמיתי, wide-layout safeguards, contrast tokens ו־Dynamic Type. |
 | Jest coverage | 54.65% statements, 47.76% branches, 45.87% functions, 56.72% lines | נכשל | APIs, providers, auth/matches/members/notifications אינם מכוסים מספיק ביחס לסיכון. |
 | `npm run audit:i18n` | 565/565 מפתחות | עבר | אין מפתחות חסרים בעברית או באנגלית; קיימות 29 קריאות דינמיות שדורשות smoke tests. |
 | `npm run audit:ios-privacy` | exit 0 | עבר | tracking כבוי, שמונת סוגי המידע הנדרשים קיימים, Camera/Microphone/Face ID חסומים וה־avatar אינו מבקש broad library access. ה־gate נוסף ל־CI. |
@@ -93,7 +93,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 | LEGAL-01 | P0 | נכשל | `champoapp.com` לא נפתר ב־DNS ו־Review Notes עדיין מכילים `[YOUR_DOMAIN]`. מסמכי הפרטיות המקומיים עודכנו ל־Champo, `support@champoapp.com` ותזכורות מקומיות, אך עדיין קיימים שרידי League Champion במסכי עזרה/metadata. | אין Privacy Policy URL/Support URL פונקציונליים; סיבת דחייה ישירה לפי App Completeness ו־Privacy. | להפעיל HTTPS ב־`champoapp.com`; לפרסם `/privacy`, `/terms`, `/support`, `/privacy-choices`; להשלים ניקוי מיתוג ולבדוק קישורים מחוץ לחשבון. | M + משפטי |
 | UGC-01 | P0 | נפרס / אימות E2E ותפעול חסרים | `20260802120000_add_ugc_moderation.sql` נפרס ל־production. משתמש יכול לדווח על nickname/avatar/league name לפי קטגוריה, לחסום ולהסיר חסימה דרך Settings; חסימה מסתירה membership, predictions ו־leaderboard. בעל ליגה מסיר חבר דרך RPC אטומי. אדמין מקבל תור pending/resolved/dismissed ויכול לדחות, להסיר תוכן או חבר. RPCs קיימים ב־PostgREST וחסומים ל־anon. | ללא מבחן שני משתמשים, SLA ו־support URL פעיל עדיין אין ראיה תפעולית מלאה ל־Guideline 1.2. | להריץ E2E report/block/unblock/remove/moderate, להגדיר owner תפעולי ו־SLA, ולפרסם support/contact לפני סימון “עבר”. | L |
 | STORE-01 | P0 | לא אומת | App Store Connect פתח מסך login; לא היה session. build, TestFlight, metadata, age rating, content rights, App Privacy, DSA, agreements וחשבון reviewer לא נבדקו. | לא ניתן להוכיח יכולת הגשה או רכישה. | לבצע checklist הדשבורד תחת חשבון Admin/App Manager ולצרף ראיות לכל שער; אין לסמן Go לפני שכל השורות עברו. | M |
-| STORE-02 | P0 | תוקן חלקית / QA ונכסים חסרים | `supportsTablet:true`; נוספו רוחבי תוכן 672/896, כרטיסי משחק מוגבלים ל־640, bottom tabs מוגבלים ל־720, hero רספונסיבי ומרכוז RTL יציב. smoke web ב־1024×1366 הציג landing ממורכז וללא runtime errors. עדיין אין QA native portrait/landscape ואין צילומי iPad 13″; רוב הנכסים הקיימים אינם במידות הנדרשות. | בסיס ה־layout מותאם יותר, אך ללא build native ונכסי חנות אי אפשר לסגור את שער ה־iPad. | להריץ TestFlight על iPad קטן ו־13″ בעברית/אנגלית, portrait/landscape ו־Dynamic Type; לתקן מסכים שנשברים ולצלם 2064×2752/2048×2732. | M–L |
+| STORE-02 | P0 | תוקן בקוד / IPA ו־QA חסרים | `ios.supportsTablet:false` מגדיר את גרסה 1.0 כ־iPhone-only. הוסר שדה `supportsTablet` לא חוקי מתוך Privacy Manifest ונוסף audit שמונע החזרת השגיאה. | אין צורך בצילומי iPad או QA להפצת iPad, אך יש לוודא שה־IPA מסומן iPhone-only ושמסעות הליבה עוברים ב־iPhone קטן וגדול. | לבדוק `UIDeviceFamily` בבינארי הסופי, להריץ TestFlight על iPhone קטן/גדול בעברית ובאנגלית ולהכין צילומי 6.9″. | M |
 | PRIV-02 | P0 | תוקן בקוד / App Store ו־IPA לא אומתו | `ios.privacyManifests` ו־`ios/league/PrivacyInfo.xcprivacy` מצהירים כעת על Name, Email, Photos, Gameplay/Other User Content, User ID, Purchase History ו־Product Interaction, עם linking/purposes ו־tracking=false. manifests של RevenueCat ו־Sentry נמצאו ב־Pods. נוצרה מטריצת App Privacy מדויקת ב־`docs/app-store-connect-app-privacy-he.md`. | הסתירה המקומית נסגרה; עדיין אין ראיה שה־IPA הסופי ממזג את כל manifests ושאותן בחירות הוזנו ב־App Store Connect. | ליצור archive, להפיק Xcode Privacy Report, להשוות למטריצה ולהזין את אותן תשובות ב־App Store Connect. | S–M |
 | QA-01 | P1 | עבר | mocks והציפיות המיושנות עודכנו לאחר שינויי assets, מסכים משפטיים, מגבלות ליגה ושלבי טורניר; 72 suites ו־450 tests עוברים. | release gate ירוק. | לשמור את `npm run test:ci` כחובה ב־CI. | S |
 | DATA-01 | P1 | נפרס / אימות E2E חסר | `20260802110000_secure_league_membership_state.sql` נפרס ל־production; הוא מסיר הרשאת UPDATE רחבה, מגן על `active`/`is_primary`, מוסיף unique partial index ו־check ש־primary חייב להיות active, ומעביר את השינויים ל־RPCs אטומיים. ה־RPCs נטענו ב־PostgREST וחסומים ל־anon. | נדרש מבחן מחובר עם שני משתמשים ובקשות מקבילות לפני סגירה מלאה. | לבדוק שינוי ישיר שנחסם, בחירת membership זר, חריגה ממגבלת תוכנית ושתי בקשות מקבילות, ורק אז לסמן “עבר”. | M |
@@ -150,14 +150,14 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 - contrast tokens עומדים כעת ב־4.5:1 בבדיקה אוטומטית; צבעים hardcoded במסכים שטרם נסקרו נשארים יעד ל־AX/visual audit.
 - לא בוצע מסע מלא בעברית לפני login, ושפת ברירת המחדל היא English ללא locale detection.
 - שינוי RTL מפעיל reload; יש לבדוק שמצב טופס/מסע לא הולך לאיבוד.
-- iPad web ב־1024×1366 עבר לאחר התאמת max-width, hero, tabs וכרטיסים. native portrait/landscape עדיין לא אומת ולכן נשאר release gate.
+- web ברוחב 1024 עבר לאחר התאמת max-width, hero, tabs וכרטיסים; אין בכך הפעלת תמיכה ב־iPad.
 
 ### בדיקות נגישות חובה
 
 - VoiceOver לפי סדר פוקוס בכל מסך, כולל tabs, score steppers, modal, charts ו־paywall.
-- Dynamic Type ב־AX5 לפחות, עברית ואנגלית, portrait ו־landscape ב־iPad.
+- Dynamic Type ב־AX5 לפחות, בעברית ובאנגלית על iPhone קטן וגדול.
 - Reduce Motion, Bold Text, Increase Contrast, grayscale ו־dark/light.
-- keyboard traversal ב־iPad עם מקלדת חיצונית וב־web.
+- keyboard traversal ב־web ובמסכים שבהם קיימת הזנת טקסט.
 - כל icon-only action עם label/hint/state; alerts מודיעים על שינוי ולא מסתמכים רק על צבע.
 - אזור מגע 44×44 לפחות וטקסט גוף מעשי 14–16pt ומעלה.
 
@@ -215,7 +215,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 - Info.plist ללא Camera/Microphone/Face ID/Photo Add אם אינם בשימוש.
 - PrivacyInfo.xcprivacy ממוזג, signatures של required SDKs והיעדר warnings ב־App Store upload.
 - icon בכל appearance, splash, display name, version/build, URL schemes ו־deep links.
-- install נקי ושדרוג TestFlight על iOS 15.4 ועל iOS/iPadOS העדכניים.
+- install נקי ושדרוג TestFlight על iOS 15.4 ועל גרסת iOS העדכנית.
 - login Apple/Google במכשיר אמיתי, email verification ו־password reset דרך `champo://resetPassword`.
 - paywall production מציג title, duration, localized price, renewal terms, Privacy ו־Terms; restore עובד.
 - Sentry symbols/source maps והפרדת environment/release.
@@ -249,7 +249,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 Apple מאפשרת 1–10 screenshots לכל גודל. עבור יעד ההשקה שנבחר יש להכין לפחות:
 
 - 6.9″ portrait: 1290×2796 או אחת המידות המאושרות המקבילות.
-- iPad 13″ portrait: 2064×2752 או 2048×2732; להוסיף landscape אם החוויה נתמכת.
+- אין להעלות צילומי iPad לגרסה 1.0; יש לוודא שהבינארי מסומן iPhone-only.
 - סט נפרד English ו־Hebrew, ללא ערבוב שפות.
 - מומלץ 6 פריימים: My Leagues, Create/Join, Match + Prediction, Fixtures/Stages, Leaderboard, Stats/Profile + PRO/AI.
 - overlay copy קצר ולא מטעה; אין להציג פיצ'ר שלא קיים או מחיר קשיח שאינו מחיר storefront.
@@ -305,7 +305,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 |---|---|---|
 | install נקי על iPhone קטן/גדול | לא אומת | launch ללא crash, splash תקין, onboarding מלא. |
 | upgrade דרך TestFlight | לא אומת | session, theme, language ו־primary league נשמרים; migrations מקומיות תקינות. |
-| iPad portrait/landscape | עבר חלקית / native לא אומת | baseline רספונסיבי ו־smoke web 1024×1366 עברו; כל המסעות עדיין חייבים לעבור native ללא שטחים חריגים/truncation. |
+| הגדרת מכשירים | תוקן בקוד / IPA לא אומת | `ios.supportsTablet:false`; יש לאמת ב־IPA ש־Device Family כולל iPhone בלבד. |
 | English/Hebrew + RTL | עבר חלקית | כל route, alerts, dates, football stages ו־paywall מקומיים; אין key גולמי. |
 | dark/light | עבר חלקית | ניגודיות תקינה וללא hardcoded colors בכל מסך. |
 | VoiceOver/Dynamic Type | עבר סטטית / native לא אומת | קיימים scaling defaults ו־labels/roles/states מרכזיים; נדרש AX audit מלא, focus order ו־AX5 ללא חסימת פעולה. |
@@ -341,7 +341,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 - [ ] UGC-01: report/block/moderation/contact פעילים.
 - [ ] `champoapp.com` פעיל ב־HTTPS עם Privacy/Terms/Support/Choices בשתי שפות.
 - [ ] כל League Champion/placeholder URL/email הוחלף או הופנה באופן תקין.
-- [ ] החלטת iPad מיושמת; לפי היקף זה — QA והתאמת iPad, לא הסרת התמיכה.
+- [x] החלטת מכשירים מיושמת בקוד: iPhone-only עם `ios.supportsTablet:false`; נותר אימות מה־IPA.
 - [x] Jest ירוק: 450/450; TypeScript, lint, i18n, privacy ו־iOS bundle export ירוקים.
 - [ ] להריץ Expo Doctor עם גישת רשת ולוודא 19/19 לפני build candidate.
 - [x] Privacy Manifest ומטריצת App Privacy תואמים לקוד ול־SDK manifests המקומיים.
@@ -350,7 +350,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 ### חובה לפני השקה
 
 - [ ] EAS production build ללא test RevenueCat fallback.
-- [ ] TestFlight clean install + upgrade על iPhone קטן/גדול ו־iPad.
+- [ ] TestFlight clean install + upgrade על iPhone קטן וגדול.
 - [ ] Sandbox IAP matrix מלאה ו־webhook replay.
 - [ ] Apple/Google/email/reset flows במכשיר אמיתי.
 - [ ] VoiceOver, Dynamic Type, contrast, RTL, dark/light.
@@ -360,7 +360,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 - [ ] שני משתמשים/שתי ליגות: RLS ו־business rules adversarial.
 - [ ] cron, monitoring, backup/PITR ו־restore drill מתועדים.
 - [ ] store metadata EN/HE, content rights, age rating, encryption, DSA trader status.
-- [ ] צילומי 6.9″ ו־iPad 13″ בשתי שפות, icon ו־subscription artwork/metadata.
+- [ ] צילומי iPhone ‏6.9″ בשתי שפות, icon ו־subscription artwork/metadata.
 - [ ] reviewer account + review notes נבדקו יום לפני Submit.
 - [ ] Sentry release/symbols/environment ו־alerts מופעלים.
 
@@ -387,7 +387,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 
 1. triage לתלויות שנותרו והרחבת CI ל־native E2E/export.
 2. notification device QA, AI empty/error state, auth legal/language.
-3. iPad responsive native + accessibility + RTL/light/dark.
+3. QA נגישות מלא על iPhone קטן/גדול: RTL, light/dark ו־Dynamic Type.
 4. performance pass ותמונות.
 
 **Exit criteria:** candidate build עובר automated gates ו־device matrix ללא P1 פתוח.
@@ -414,7 +414,7 @@ If a scheduled fixture has already kicked off during review, please select anoth
 אפשר לשנות ל־**GO** רק כאשר:
 
 - כל P0 נסגר ונבדק מחדש;
-- אין P1 פתוח שמשפיע על אבטחה, תשלום, מחיקה, iPad, accessibility או App Review;
+- אין P1 פתוח שמשפיע על אבטחה, תשלום, מחיקה, accessibility או App Review;
 - automated suite ירוק;
 - TestFlight production candidate עבר את מטריצת המכשירים והמסעות;
 - App Store Connect, RevenueCat, Privacy Labels, DSA ו־IAP אומתו בפועל;
