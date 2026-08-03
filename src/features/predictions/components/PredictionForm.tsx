@@ -79,37 +79,32 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
   const { t } = useTranslation();
   const memberId = useMemberId();
   const awayScoreInputRef = useRef<TextInput>(null);
-  const [homeScore, setHomeScore] = useState<number | null>(null);
-  const [awayScore, setAwayScore] = useState<number | null>(null);
+  const [homeScore, setHomeScore] = useState<number | null>(prediction?.home_score ?? null);
+
+  const [awayScore, setAwayScore] = useState<number | null>(prediction?.away_score ?? null);
   const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
     prediction ? { home: prediction.home_score, away: prediction.away_score } : null,
   );
 
   const upsertPrediction = useUpsertPrediction();
 
-  useEffect(() => {
-    if (prediction) {
-      setHomeScore(prediction.home_score);
-      setAwayScore(prediction.away_score);
-      setSavedScores({ home: prediction.home_score, away: prediction.away_score });
-    } else {
-      setHomeScore(null);
-      setAwayScore(null);
-      setSavedScores(null);
-    }
-  }, [prediction]);
-
   const bothScoresSet = homeScore !== null && awayScore !== null;
   const hasChanges =
-    bothScoresSet &&
-    (savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away);
+    bothScoresSet && (savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away);
 
   useEffect(() => {
     onDraftChange?.({ hasChanges, isPending: upsertPrediction.isPending });
   }, [hasChanges, onDraftChange, upsertPrediction.isPending]);
 
   const handleSave = useCallback(async () => {
-    if (!matchId || !memberId || !hasChanges || homeScore === null || awayScore === null || upsertPrediction.isPending) {
+    if (
+      !matchId ||
+      !memberId ||
+      !hasChanges ||
+      homeScore === null ||
+      awayScore === null ||
+      upsertPrediction.isPending
+    ) {
       return;
     }
 

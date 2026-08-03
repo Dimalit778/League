@@ -157,8 +157,8 @@ const HelpScreen = () => {
       {/* Help Sections */}
       {helpSections.map((section) => (
         <Section key={section.title} title={t(section.title)}>
-          {section.items.map((item, index) => (
-            <Card key={index} className="mb-3" contentClassName="gap-2">
+          {section.items.map((item) => (
+            <Card key={`${section.title}-${item.question}`} className="mb-3" contentClassName="gap-2">
               <Row>
                 <Text variant="title" tone="primary">
                   {t(item.question)}
