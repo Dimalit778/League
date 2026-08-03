@@ -15,6 +15,10 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
 
   return (
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+      <Text variant="title" accessibilityRole="header" className="text-center">
+        {content.title}
+      </Text>
+
       <Card variant="elevated" contentClassName="gap-3">
         <Badge size="sm" label={content.updatedAt} className="self-center" />
         <Row>
