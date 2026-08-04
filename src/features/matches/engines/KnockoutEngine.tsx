@@ -15,47 +15,56 @@ import { KnockoutStageTabs } from './shared/TournamentTabs';
 
 function TieBlock({ tie }: { tie: Tie }) {
   const { width: screenWidth } = useWindowDimensions();
+  const { t } = useTranslation();
   const isRTL = useIsRTL();
   const { height: cardHeight, width: cardWidth } = getMatchCardMetrics(screenWidth);
   const cardsGap = 8;
   const cards = tie.legs.map((leg) => {
     const card = mapMatchToCardData(leg);
     return (
-      <MatchCard
+      <View
         key={leg.id}
-        id={card.id}
-        home={card.home}
-        away={card.away}
-        prediction={card.prediction}
-        predictionStatus={card.predictionStatus}
-        status={card.status}
-        date={card.date}
-        time={card.time}
-        onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
-      />
+        style={{ width: cardWidth, alignSelf: isRTL ? 'flex-start' : 'flex-end' }}
+      >
+        <MatchCard
+          id={card.id}
+          home={card.home}
+          away={card.away}
+          prediction={card.prediction}
+          predictionStatus={card.predictionStatus}
+          status={card.status}
+          date={card.date}
+          time={card.time}
+          onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
+        />
+      </View>
     );
   });
+  const aggregateScore = tie.aggregate && (
+    <Text className="text-sm text-muted mt-1 text-center">
+      {t('Aggregate')}: {tie.aggregate.home}–{tie.aggregate.away}
+    </Text>
+  );
 
   if (tie.legs.length !== 2) {
-    return <>{cards}</>;
+    return (
+      <>
+        {cards}
+        {aggregateScore}
+      </>
+    );
   }
 
-  const sidePadding = Math.max(0, (screenWidth - cardWidth) / 2);
-  const minRail = 28;
-  const railWidth = Math.max(sidePadding, minRail);
-  const nudge = Math.max(0, railWidth - sidePadding);
+  const railWidth = Math.max(0, screenWidth - cardWidth);
 
   return (
-    <View
-      style={{
-        position: 'relative',
-        paddingLeft: !isRTL ? nudge : 0,
-        paddingRight: isRTL ? nudge : 0,
-      }}
-    >
-      <View style={{ gap: cardsGap }}>{cards}</View>
-      <TieBracketConnector cardHeight={cardHeight} cardsGap={cardsGap} railWidth={railWidth} />
-    </View>
+    <>
+      <View style={{ position: 'relative' }}>
+        <View style={{ gap: cardsGap }}>{cards}</View>
+        <TieBracketConnector cardHeight={cardHeight} cardsGap={cardsGap} railWidth={railWidth} />
+      </View>
+      {aggregateScore}
+    </>
   );
 }
 
