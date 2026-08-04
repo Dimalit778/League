@@ -20,6 +20,11 @@ const syncSubscriptionAfterChange = async () => {
 
 const purchasesService = {
   async openPaywall(): Promise<boolean> {
+    // ponytail: PurchasesProvider never configures RC on web
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
     const result = await RevenueCatUI.presentPaywallIfNeeded({
       requiredEntitlementIdentifier: PRO_ENTITLEMENT,
     });
@@ -35,6 +40,10 @@ const purchasesService = {
     return purchased;
   },
   async restorePurchases(): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
     const customerInfo = await Purchases.restorePurchases();
     await Purchases.invalidateCustomerInfoCache();
     return hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT);
@@ -50,6 +59,9 @@ const purchasesService = {
     }
   },
 };
+
+export const openStoreSubscriptionManagement = () =>
+  purchasesService.openSubscriptionManagement();
 
 export const usePaywall = () => {
   const { refreshCustomerInfo } = usePurchasesContext();

@@ -4,11 +4,13 @@ import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../queries/adminService';
 
+const ADMIN_STALE_TIME = 60 * 1000; // 1 minute
+
 export const useAdminDashboard = () => {
   return useQuery({
     queryKey: KEYS.admin.dashboard,
     queryFn: () => adminService.getDashboardCounts(),
-    staleTime: 60 * 1000,
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 export const useIsAdmin = () => {
@@ -17,7 +19,7 @@ export const useIsAdmin = () => {
   return useQuery({
     queryKey: KEYS.admin.isAdmin,
     queryFn: () => adminService.isAdmin(),
-    staleTime: 60 * 1000,
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 export const useAdminUsersInfinite = () => {
@@ -36,6 +38,7 @@ export const useAdminLeagues = () => {
   return useQuery({
     queryKey: KEYS.admin.leagues,
     queryFn: () => adminService.getLeagues(),
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 
@@ -43,6 +46,7 @@ export const useAdminLeagueMembers = () => {
   return useQuery({
     queryKey: KEYS.admin.leagueMembers,
     queryFn: () => adminService.getLeagueMembers(),
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 
@@ -50,6 +54,7 @@ export const useAdminPredictions = () => {
   return useQuery({
     queryKey: KEYS.admin.predictions,
     queryFn: () => adminService.getPredictions(),
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 
@@ -57,6 +62,7 @@ export const useAdminCompetitions = () => {
   return useQuery({
     queryKey: KEYS.admin.competitions,
     queryFn: () => adminService.getCompetitions(),
+    staleTime: ADMIN_STALE_TIME,
   });
 };
 
@@ -64,6 +70,7 @@ export const useAdminContentReports = (status: ReportStatus) =>
   useQuery({
     queryKey: KEYS.admin.reports(status),
     queryFn: () => adminService.getContentReports(status),
+    staleTime: ADMIN_STALE_TIME,
   });
 
 export const useModerateContentReport = () => {

@@ -50,7 +50,7 @@ export default function LeaderboardScreen() {
       showAlert({
         title: t('Error'),
         message: t('Failed to share invite code'),
-        type: 'error',
+        type: 'warning',
         buttons: [{ text: 'OK' }],
       });
     }

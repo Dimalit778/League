@@ -34,6 +34,20 @@ const mockLeagues = [
     rank: 2,
     total_points: 5,
   },
+  {
+    active: false,
+    competition_id: 3,
+    competition_logo: null,
+    competition_season_id: 2026,
+    is_primary: false,
+    league_id: 'second-locked-league',
+    league_name: 'Second Locked League',
+    member_id: 'second-locked-member',
+    members_count: 4,
+    nickname: 'Second locked player',
+    rank: 3,
+    total_points: 2,
+  },
 ];
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
@@ -76,5 +90,23 @@ describe('Leagues', () => {
     );
     expect(router.replace).toHaveBeenCalledWith('/(app)/(league)/(tabs)');
     expect(mockUpdatePrimaryLeague).toHaveBeenCalledWith({ leagueId: 'locked-league' });
+  });
+
+  it('selects an inactive league for activation instead of opening the paywall when a seat is available', async () => {
+    const upgrade = jest.fn().mockResolvedValue(false);
+    const onToggleLeague = jest.fn();
+    const { getByText } = render(
+      <Leagues
+        isPro={false}
+        upgrade={upgrade}
+        activationSelection={{ selectedMemberIds: [], onToggleLeague }}
+      />,
+    );
+
+    fireEvent.press(getByText('Locked League'));
+
+    await waitFor(() => expect(onToggleLeague).toHaveBeenCalledWith('locked-member'));
+    expect(upgrade).not.toHaveBeenCalled();
+    expect(mockSetPrimaryLeague).not.toHaveBeenCalled();
   });
 });

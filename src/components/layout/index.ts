@@ -1,4 +1,4 @@
-export { DrawerHeader, DrawerToggleButton } from './DrawerHeader';
+export { DrawerHeader } from './DrawerHeader';
 export { Error } from './Error';
 export { FloatBottomTabs, useFloatBottomTabsInset } from './FloatBottomTabs';
 export { HeaderChrome } from './HeaderChrome';
@@ -8,6 +8,6 @@ export { NetworkStatusBanner } from './NetworkStatusBanner';
 export { Row } from './Row';
 export { Screen } from './Screens';
 export { Section } from './Section';
-export { SidebarMenu } from './SidebarMenu';
 export { TabsHeader } from './TabsHeader';
 export { TopTabBar } from './TopTabBar';
+

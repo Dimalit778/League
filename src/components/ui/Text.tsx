@@ -15,20 +15,10 @@ export type TextTone =
   | 'info'
   | 'inverse';
 
-type FontFamily = 'system' | 'teko' | 'teko-bold';
-
 export type AppTextProps = TextProps & {
   variant?: TextVariant;
   tone?: TextTone;
-  /** @deprecated Prefer a semantic variant. */
-  font?: FontFamily;
   className?: string;
-};
-
-const fontClasses: Record<FontFamily, string> = {
-  system: '',
-  teko: 'font-teko',
-  'teko-bold': 'font-teko-bold',
 };
 
 const toneClasses: Record<TextTone, string> = {
@@ -47,7 +37,6 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
   {
     variant = 'body',
     tone = 'default',
-    font = 'system',
     className,
     style,
     allowFontScaling = true,
@@ -65,7 +54,7 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
       {...rest}
       allowFontScaling={allowFontScaling}
       maxFontSizeMultiplier={maxFontSizeMultiplier}
-      className={cn(typography[variant], toneClasses[tone], fontClasses[font], className)}
+      className={cn(typography[variant], toneClasses[tone], className)}
       style={[
         { writingDirection: isRTL ? 'rtl' : 'ltr' },
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,

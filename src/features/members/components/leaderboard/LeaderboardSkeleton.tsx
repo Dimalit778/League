@@ -1,7 +1,7 @@
-import { useFloatBottomTabsInset } from '@/components/layout';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { Screen, useFloatBottomTabsInset } from '@/components/layout';
 import { Skeleton } from '@/components/ui';
-import { ScrollView, View } from 'react-native';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { View } from 'react-native';
 
 function Bone({
   width,
@@ -88,11 +88,7 @@ export default function LeaderboardSkeleton() {
   const bottomTabsInset = useFloatBottomTabsInset();
 
   return (
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset + 16 }}
-      scrollEnabled={false}
-    >
+    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
       <PodiumSkeleton />
 
       <View className="mx-2 rounded-md border border-border bg-surface">
@@ -100,6 +96,6 @@ export default function LeaderboardSkeleton() {
           <LeaderboardRowSkeleton key={index} />
         ))}
       </View>
-    </ScrollView>
+    </Screen>
   );
 }

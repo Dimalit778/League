@@ -17,10 +17,16 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
   en: {
     privacy: {
       title: 'Privacy Policy',
-      updatedAt: 'Last updated: August 2, 2026',
+      updatedAt: 'Last updated: August 4, 2026',
       intro:
         'Champo is a football prediction app for creating leagues, joining friends, submitting predictions, viewing rankings, and managing subscriptions. This policy explains what information we collect, how we use it, and the choices available to you.',
       sections: [
+        {
+          title: 'Who We Are',
+          body: [
+            'Champo is operated by the developer identified on Champo’s App Store product page (referred to in this policy as “Champo”, “we”, or “us”). For privacy questions or requests, contact support@champoapp.com.',
+          ],
+        },
         {
           title: 'Information We Collect',
           body: [
@@ -37,7 +43,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'To provide the app experience, including authentication, league creation, prediction submission, standings, profile display, and member management.',
             'To operate subscriptions, restore purchases, enforce plan limits, and provide access to paid features.',
-            'To send service messages such as account notices, subscription updates, and support responses within the app or by email.',
+            'To send transactional messages such as email verification, password reset messages, important account notices, and replies to support requests.',
             'To secure the service, prevent abuse, debug errors, improve reliability, and understand how core features are used.',
             'To comply with legal obligations, App Store requirements, and enforce our Terms of Service.',
           ],
@@ -47,6 +53,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'We do not sell your personal information.',
             'We share information only with providers needed to run the app, such as Supabase for authentication/database/storage, Apple and RevenueCat for in-app purchases, Sentry for diagnostics, and authentication providers such as Apple or Google when you choose those sign-in methods.',
+            'Gemini and Tavily may be used to prepare AI-assisted match previews from public football information. The current implementation does not send account details, names, email addresses, profile images, league memberships, or predictions to these services.',
             'These providers may process information on our behalf and must protect it consistently with this policy and applicable law.',
             'We may disclose information if required by law, to protect rights and safety, or as part of a business transfer such as a merger or acquisition.',
           ],
@@ -54,9 +61,10 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Data Retention and Deletion',
           body: [
-            'You can delete your account in Settings. We delete your authentication account, profile details and profile images, and remove the customer record held for us by RevenueCat. Sign in with Apple authorization is revoked when applicable.',
-            'Past predictions, points, and the minimum league-member record needed to preserve standings are retained without a user ID, profile image, or personal nickname. They appear as “Deleted Player”, are inactive, cannot be used to sign in, and are no longer linked to your account.',
+            'Account and profile information is retained while your account is active. You can delete your account in Settings. We then delete your authentication account, profile details and profile images, remove the customer record held for us by RevenueCat, revoke Sign in with Apple authorization when applicable, and attempt to revoke a connected Google sign-in grant on supported devices.',
+            'Past predictions, points, and the minimum league-member record needed to preserve standings are retained for as long as the related league history or service is maintained. They are de-identified by removing the user ID, profile image, and personal nickname; appear as “Deleted Player”; and cannot be used to identify or sign in to your former account.',
             'Deleting your Champo account does not cancel an Apple subscription. You must cancel it separately in your Apple Account subscription settings. Apple may retain transaction records under its own policy and legal obligations.',
+            'Support communications are retained only as long as reasonably needed to resolve the request and meet security or legal obligations. Diagnostic, purchase, and transaction records are retained according to our configured provider retention periods and applicable legal requirements.',
             'You can request access, correction, export, or deletion of your personal data by contacting support@champoapp.com. Limited records may still be retained when required by law, security, billing, or fraud-prevention obligations.',
           ],
         },
@@ -93,12 +101,11 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: ['For privacy questions or data requests, contact support@champoapp.com.'],
         },
       ],
-      footer:
-        'This policy is intended to support App Store review requirements and user transparency. It is not legal advice.',
+      footer: 'Privacy questions and data requests: support@champoapp.com',
     },
     terms: {
       title: 'Terms of Service',
-      updatedAt: 'Last updated: August 2, 2026',
+      updatedAt: 'Last updated: August 4, 2026',
       intro:
         'These Terms of Service govern your use of Champo. By creating an account, joining a league, submitting predictions, purchasing a subscription, or otherwise using the app, you agree to these terms.',
       sections: [
@@ -116,6 +123,8 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'Champo lets users create or join football prediction leagues, invite members, submit score predictions, view rankings, and follow football fixtures and standings.',
             'You may not misuse the app, interfere with its operation, attempt unauthorized access, scrape data, reverse engineer protected parts of the service, or use the app for unlawful activity.',
             'You are responsible for content you submit, including league names, nicknames, profile images, and predictions. Do not submit content that is illegal, abusive, infringing, misleading, or harmful.',
+            'Champo may apply automated text filters, accept user reports, restrict visibility, remove content or members, and suspend accounts to protect users. You may report objectionable content and block users from the relevant profile or league screens.',
+            'You retain ownership of content you submit. You grant Champo a limited, non-exclusive license to host, display, process, and moderate that content only as needed to operate, secure, and improve the service. This license ends when the content is deleted, except for de-identified league history described in the Privacy Policy.',
           ],
         },
         {
@@ -145,7 +154,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Third-Party Services',
           body: [
-            'The app may rely on third-party services such as Apple, Google, Supabase, RevenueCat, Sentry, notification services, and sports data providers. Your use of those services may also be governed by their own terms and policies.',
+            'The app may rely on third-party services such as Apple, Google, Supabase, RevenueCat, Sentry, Gemini, Tavily, notification services, and sports data providers. Your use of those services may also be governed by their own terms and policies.',
           ],
         },
         {
@@ -169,6 +178,14 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
         {
+          title: 'General Legal Terms',
+          body: [
+            'These terms supplement the standard Apple App Store license terms. Mandatory consumer rights in your country are not limited by these terms.',
+            'If any provision is found unenforceable, the remaining provisions continue in effect. Failure to enforce a provision is not a waiver of the right to enforce it later.',
+            'The laws applicable to the Champo operator in its place of establishment govern these terms, except where mandatory local consumer law gives you additional rights or requires another forum.',
+          ],
+        },
+        {
           title: 'Changes and Contact',
           body: [
             'We may update these terms from time to time. Continued use after the effective date of updated terms means you accept the updated terms.',
@@ -176,16 +193,22 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
       ],
-      footer: 'These terms are intended for product transparency and App Store compliance. They are not legal advice.',
+      footer: 'Questions about these terms: support@champoapp.com',
     },
   },
   he: {
     privacy: {
       title: 'מדיניות פרטיות',
-      updatedAt: 'עודכן לאחרונה: 2 באוגוסט 2026',
+      updatedAt: 'עודכן לאחרונה: 4 באוגוסט 2026',
       intro:
         'Champo היא אפליקציית ניחושי כדורגל ליצירת ליגות, הצטרפות לחברים, שליחת ניחושים, צפייה בדירוגים וניהול מנויים. מדיניות זו מסבירה איזה מידע אנו אוספים, כיצד אנו משתמשים בו, ומהן הבחירות שעומדות לרשותך.',
       sections: [
+        {
+          title: 'מי אנחנו',
+          body: [
+            'Champo מופעלת על ידי המפתח שמופיע בעמוד המוצר של Champo ב-App Store (במדיניות זו: „Champo”, „אנחנו” או „אנו”). לשאלות או בקשות בנושא פרטיות ניתן לפנות אל support@champoapp.com.',
+          ],
+        },
         {
           title: 'מידע שאנו אוספים',
           body: [
@@ -202,7 +225,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'כדי לספק את חוויית האפליקציה, כולל התחברות, יצירת ליגות, שליחת ניחושים, טבלאות דירוג, הצגת פרופיל וניהול חברים.',
             'כדי להפעיל מנויים, לשחזר רכישות, לאכוף מגבלות תוכנית ולספק גישה לתכונות בתשלום.',
-            'כדי לשלוח הודעות שירות כגון הודעות חשבון, עדכוני מנוי ותשובות תמיכה בתוך האפליקציה או בדוא"ל.',
+            'כדי לשלוח הודעות תפעוליות כגון אימות דוא"ל, איפוס סיסמה, הודעות חשבון חשובות ותשובות לפניות תמיכה.',
             'כדי לאבטח את השירות, למנוע שימוש לרעה, לתקן תקלות, לשפר אמינות ולהבין כיצד משתמשים בתכונות המרכזיות.',
             'כדי לעמוד בדרישות חוק, בדרישות App Store ולאכוף את תנאי השירות שלנו.',
           ],
@@ -212,6 +235,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'איננו מוכרים את המידע האישי שלך.',
             'אנו משתפים מידע רק עם ספקים שנדרשים להפעלת האפליקציה, כגון Supabase לאימות/מסד נתונים/אחסון, Apple ו-RevenueCat לרכישות בתוך האפליקציה, Sentry לאבחון תקלות, וספקי התחברות כגון Apple או Google כאשר אתה בוחר בהם.',
+            'Gemini ו-Tavily עשויים לשמש להכנת תצוגות מקדימות של משחקים בעזרת AI, על בסיס מידע כדורגל ציבורי. במימוש הנוכחי איננו שולחים אליהם פרטי חשבון, שמות, כתובות דוא"ל, תמונות פרופיל, חברות בליגות או ניחושים.',
             'ספקים אלה עשויים לעבד מידע מטעמנו ונדרשים להגן עליו בהתאם למדיניות זו ולחוק החל.',
             'אנו עשויים לחשוף מידע אם הדבר נדרש לפי דין, כדי להגן על זכויות ובטיחות, או כחלק מהעברה עסקית כגון מיזוג או רכישה.',
           ],
@@ -219,9 +243,10 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'שמירת מידע ומחיקה',
           body: [
-            'ניתן למחוק את החשבון דרך ההגדרות. אנו מוחקים את חשבון ההתחברות, פרטי הפרופיל ותמונות הפרופיל, ומסירים את רשומת הלקוח שמוחזקת עבורנו ב־RevenueCat. הרשאת Sign in with Apple מבוטלת כאשר הדבר רלוונטי.',
-            'ניחושים וניקוד מהעבר, ורשומת החבר המינימלית שנדרשת לשמירת הדירוג, נשמרים ללא מזהה משתמש, תמונת פרופיל או כינוי אישי. הם מוצגים בשם „שחקן שנמחק”, אינם פעילים, אינם מאפשרים התחברות ואינם מקושרים עוד לחשבון שלך.',
+            'מידע החשבון והפרופיל נשמר כל עוד החשבון פעיל. ניתן למחוק את החשבון דרך ההגדרות. לאחר מכן אנו מוחקים את חשבון ההתחברות, פרטי הפרופיל ותמונות הפרופיל, מסירים את רשומת הלקוח ב-RevenueCat, מבטלים הרשאת Sign in with Apple כאשר הדבר רלוונטי, ומנסים לבטל הרשאת Google מחוברת במכשירים נתמכים.',
+            'ניחושים וניקוד מהעבר, ורשומת החבר המינימלית שנדרשת לשמירת הדירוג, נשמרים כל עוד נשמרת היסטוריית הליגה הקשורה או שהשירות פעיל. הם עוברים הסרת זיהוי: מזהה המשתמש, תמונת הפרופיל והכינוי האישי מוסרים, והם מוצגים בשם „שחקן שנמחק”.',
             'מחיקת חשבון Champo אינה מבטלת מנוי Apple. יש לבטל אותו בנפרד בהגדרות המנויים בחשבון Apple. ‏Apple עשויה לשמור רשומות עסקה לפי המדיניות והחובות המשפטיות שלה.',
+            'פניות תמיכה נשמרות רק כל עוד הדבר נדרש באופן סביר לטיפול בפנייה ולעמידה בחובות אבטחה או דין. נתוני אבחון, רכישה ועסקאות נשמרים לפי תקופות השמירה שהוגדרו אצל הספקים ולפי דרישות הדין.',
             'ניתן לבקש גישה, תיקון, ייצוא או מחיקה של המידע האישי שלך באמצעות פנייה אל support@champoapp.com. מידע מוגבל עשוי להישמר כאשר הדבר נדרש לפי דין או לצורכי אבטחה, חיוב ומניעת הונאה.',
           ],
         },
@@ -258,11 +283,11 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: ['לשאלות פרטיות או בקשות מידע, ניתן לפנות אל support@champoapp.com.'],
         },
       ],
-      footer: 'מדיניות זו נועדה לתמוך בדרישות App Store ובשקיפות מול משתמשים. היא אינה ייעוץ משפטי.',
+      footer: 'לשאלות פרטיות ובקשות מידע: support@champoapp.com',
     },
     terms: {
       title: 'תנאי שימוש',
-      updatedAt: 'עודכן לאחרונה: 2 באוגוסט 2026',
+      updatedAt: 'עודכן לאחרונה: 4 באוגוסט 2026',
       intro:
         'תנאי שימוש אלה מסדירים את השימוש שלך ב-Champo. יצירת חשבון, הצטרפות לליגה, שליחת ניחושים, רכישת מנוי או שימוש אחר באפליקציה מהווים הסכמה לתנאים אלה.',
       sections: [
@@ -280,6 +305,8 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'Champo מאפשרת ליצור או להצטרף לליגות ניחושי כדורגל, להזמין חברים, לשלוח ניחושי תוצאה, לצפות בדירוגים ולעקוב אחר משחקים וטבלאות.',
             'אין לעשות שימוש לרעה באפליקציה, להפריע לפעולתה, לנסות גישה לא מורשית, לגרד נתונים, לבצע הנדסה לאחור לחלקים מוגנים של השירות או להשתמש בה לפעילות בלתי חוקית.',
             'אתה אחראי לתוכן שאתה מוסר, כולל שמות ליגות, כינויים, תמונות פרופיל וניחושים. אין לשלוח תוכן בלתי חוקי, פוגעני, מפר זכויות, מטעה או מזיק.',
+            'Champo רשאית להפעיל מסנני טקסט אוטומטיים, לקבל דיווחים, להגביל תצוגה, להסיר תוכן או חברים ולהשעות חשבונות כדי להגן על המשתמשים. ניתן לדווח על תוכן פוגעני ולחסום משתמשים ממסכי הפרופיל או הליגה הרלוונטיים.',
+            'הבעלות בתוכן שמסרת נשארת שלך. אתה מעניק ל-Champo רישיון מוגבל ולא בלעדי לאחסן, להציג, לעבד ולמתן את התוכן רק ככל שנדרש להפעלה, לאבטחה ולשיפור השירות. הרישיון מסתיים עם מחיקת התוכן, למעט היסטוריית ליגה שעברה הסרת זיהוי כמתואר במדיניות הפרטיות.',
           ],
         },
         {
@@ -309,7 +336,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'שירותי צד שלישי',
           body: [
-            'האפליקציה עשויה להסתמך על שירותי צד שלישי כגון Apple, Google, Supabase, RevenueCat, Sentry, שירותי התראות וספקי נתוני ספורט. השימוש בשירותים אלה עשוי להיות כפוף גם לתנאים ולמדיניות שלהם.',
+            'האפליקציה עשויה להסתמך על שירותי צד שלישי כגון Apple, Google, Supabase, RevenueCat, Sentry, Gemini, Tavily, שירותי התראות וספקי נתוני ספורט. השימוש בשירותים אלה עשוי להיות כפוף גם לתנאים ולמדיניות שלהם.',
           ],
         },
         {
@@ -333,6 +360,14 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
         {
+          title: 'תנאים משפטיים כלליים',
+          body: [
+            'תנאים אלה משלימים את תנאי הרישיון הסטנדרטיים של Apple App Store. זכויות צרכניות מחייבות במדינתך אינן מוגבלות על ידי תנאים אלה.',
+            'אם הוראה כלשהי תימצא בלתי אכיפה, יתר ההוראות ימשיכו לעמוד בתוקף. הימנעות מאכיפת הוראה אינה ויתור על הזכות לאכוף אותה בעתיד.',
+            'על תנאים אלה יחול הדין החל על מפעיל Champo במקום פעילותו, למעט כאשר דין צרכני מקומי מחייב מעניק לך זכויות נוספות או מחייב פורום אחר.',
+          ],
+        },
+        {
           title: 'שינויים ויצירת קשר',
           body: [
             'אנו עשויים לעדכן תנאים אלה מעת לעת. המשך שימוש לאחר מועד התחילה של תנאים מעודכנים מהווה הסכמה לתנאים המעודכנים.',
@@ -340,7 +375,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
       ],
-      footer: 'תנאים אלה נועדו לשקיפות מוצרית ולעמידה בדרישות App Store. הם אינם ייעוץ משפטי.',
+      footer: 'לשאלות לגבי התנאים: support@champoapp.com',
     },
   },
 };

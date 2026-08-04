@@ -87,26 +87,49 @@ function getPlanFromEvent(event) {
   return subRow?.user_id ?? null;
 }
 /**
- * Store RevenueCat event for debugging / later retry.
+ * Idempotency guard for duplicate webhook deliveries.
  *
- * Requires this table:
+ * RevenueCat may deliver the same event more than once (retries, at-least-once
+ * delivery). Every event carries a stable `event.id`; if we have already seen
+ * it, skip re-processing so a re-delivered stale event can't regress state
+ * (e.g. an old RENEWAL arriving after an EXPIRATION). Backed by the partial
+ * unique index on revenuecat_events(event_id).
+ */ async function isDuplicateEvent(supabase, eventId) {
+  if (!eventId) return false;
+  const { data, error } = await supabase.from('revenuecat_events').select('id').eq('event_id', eventId).limit(1).maybeSingle();
+  if (error) {
+    console.warn('Failed checking for duplicate event:', error);
+    return false;
+  }
+  return !!data;
+}
+/**
+ * Store RevenueCat event for debugging / idempotency / later retry.
+ *
+ * Requires this table (see migration add_revenuecat_events_event_id):
  *
  * create table if not exists public.revenuecat_events (
  *   id uuid primary key default gen_random_uuid(),
  *   app_user_id text,
  *   event_type text,
+ *   event_id text,
  *   payload jsonb not null,
  *   processed boolean default false,
  *   created_at timestamptz default now()
  * );
+ * create unique index revenuecat_events_event_id_key
+ *   on public.revenuecat_events (event_id) where event_id is not null;
  */ async function storeRevenueCatEvent(supabase, params) {
   const { error } = await supabase.from('revenuecat_events').insert({
     app_user_id: params.appUserId,
     event_type: params.eventType,
+    event_id: params.eventId ?? null,
     payload: params.payload,
     processed: params.processed
   });
   if (error) {
+    // A 23505 unique violation here means a concurrent duplicate delivery raced
+    // us past isDuplicateEvent — safe to ignore, the other delivery stored it.
     console.warn('Failed to store RevenueCat event:', error);
   }
 }
@@ -127,7 +150,7 @@ async function findSubscriptionByRcIds(supabase, rcIds) {
   }).limit(1).maybeSingle();
   return byUserId ?? null;
 }
-async function handleTransferEvent(supabase, event, body) {
+async function handleTransferEvent(supabase, event, body, eventId) {
   const transferredFrom = event.transferred_from ?? [];
   const transferredTo = event.transferred_to ?? [];
   const sourceSubscription = await findSubscriptionByRcIds(supabase, transferredFrom);
@@ -170,6 +193,7 @@ async function handleTransferEvent(supabase, event, body) {
   await storeRevenueCatEvent(supabase, {
     appUserId: transferredTo[0] ?? null,
     eventType: 'TRANSFER',
+    eventId,
     payload: body,
     processed
   });
@@ -204,9 +228,19 @@ Deno.serve(async (req)=>{
   }
   const eventType = event.type;
   const appUserId = event.app_user_id;
+  const eventId = event.id ?? null;
   if (!eventType) {
     return new Response('Missing event type', {
       status: 400
+    });
+  }
+  /**
+   * Idempotency: bail out early on a duplicate delivery before touching
+   * user_subscriptions. Returns 200 so RevenueCat marks it delivered.
+   */ if (await isDuplicateEvent(supabase, eventId)) {
+    console.log(`Duplicate RevenueCat event ignored: ${eventId} (${eventType})`);
+    return new Response('Duplicate event ignored', {
+      status: 200
     });
   }
   if (!HANDLED_EVENTS.has(eventType)) {
@@ -214,6 +248,7 @@ Deno.serve(async (req)=>{
     await storeRevenueCatEvent(supabase, {
       appUserId: appUserId ?? null,
       eventType,
+      eventId,
       payload: body,
       processed: true
     });
@@ -222,7 +257,7 @@ Deno.serve(async (req)=>{
     });
   }
   if (eventType === 'TRANSFER') {
-    const processed = await handleTransferEvent(supabase, event, body);
+    const processed = await handleTransferEvent(supabase, event, body, eventId);
     return new Response(processed ? 'TRANSFER processed' : 'TRANSFER stored', {
       status: 200
     });
@@ -231,6 +266,7 @@ Deno.serve(async (req)=>{
     await storeRevenueCatEvent(supabase, {
       appUserId: null,
       eventType,
+      eventId,
       payload: body,
       processed: false
     });
@@ -248,6 +284,7 @@ Deno.serve(async (req)=>{
     await storeRevenueCatEvent(supabase, {
       appUserId,
       eventType,
+      eventId,
       payload: body,
       processed: false
     });
@@ -278,6 +315,7 @@ Deno.serve(async (req)=>{
     await storeRevenueCatEvent(supabase, {
       appUserId,
       eventType,
+      eventId,
       payload: body,
       processed: false
     });
@@ -288,6 +326,7 @@ Deno.serve(async (req)=>{
   await storeRevenueCatEvent(supabase, {
     appUserId,
     eventType,
+    eventId,
     payload: body,
     processed: true
   });

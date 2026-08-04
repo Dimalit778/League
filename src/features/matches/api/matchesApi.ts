@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { MatchCardRawType, MatchCardType, MatchWithAllPredictionsType } from '../types';
 
+const UPCOMING_MATCHES_LIMIT = 10;
+
 const TEAM_LIST_FIELDS = `
   id,
   shortName,
@@ -178,15 +180,22 @@ export const matchesApi = {
     seasonId: number,
     memberId: string,
   ): Promise<MatchCardType[]> {
+    // Local calendar day — not "from now onward".
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
     const { data, error } = await supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
       .eq('competition_id', competitionId)
       .eq('season_id', seasonId)
-      .gte('kick_off', new Date().toISOString())
-      .lte('kick_off', new Date().toISOString())
+      .gte('kick_off', startOfDay.toISOString())
+      .lte('kick_off', endOfDay.toISOString())
       .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
+      .order('kick_off', { ascending: true })
+      .limit(UPCOMING_MATCHES_LIMIT);
 
     if (error) throw error;
     if (!data) return [];

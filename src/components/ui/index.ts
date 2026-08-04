@@ -17,5 +17,6 @@ export { LockedBadge } from './LockedBadge';
 export { LogoBadge } from './LogoBadge';
 export { MyImage } from './MyImage';
 export { PositionBadge } from './PositionBadge';
-export { CardSkeleton, MatchCardSkeleton, Skeleton, TextSkeleton } from './Skeleton';
+export { BoxSkeleton, CardSkeleton, MatchCardSkeleton, Skeleton, TextSkeleton } from './Skeleton';
 export { Text } from './Text';
+

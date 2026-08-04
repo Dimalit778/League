@@ -64,6 +64,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Leave: 'Leave',
       'Privacy Policy': 'Privacy Policy',
       'Terms of Service': 'Terms of Service',
+      'By creating an account, you agree to:': 'By creating an account, you agree to:',
       
     },
 
@@ -75,6 +76,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone. Deleting your account does not cancel your App Store subscription — cancel it in Apple ID → Subscriptions.',
       'Delete personal data while keeping anonymized league history.':
         'Delete personal data while keeping anonymized league history.',
+      'Check your subscription first': 'Check your subscription first',
+      'Deleting your Champo account does not cancel an active App Store subscription.':
+        'Deleting your Champo account does not cancel an active App Store subscription.',
+      'Continue deletion': 'Continue deletion',
       'Sign In': 'Sign In',
       'Sign Up': 'Sign Up',
       'Sign Out': 'Sign Out',
@@ -152,6 +157,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Join League': 'Join League',
       
       'Save active leagues': 'Save active leagues',
+      'Activate league': 'Activate league',
+      'Activate leagues': 'Activate leagues',
+      'Select league to activate': 'Select league to activate',
       
       '{{count}} inactive leagues kept in your account': '{{count}} inactive leagues kept in your account',
 
@@ -393,7 +401,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'Open any league from "My Leagues" to see the current rankings. Points are updated automatically after matches finish.',
       'Can I leave a league?': 'Can I leave a league?',
       'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.':
-        'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.',
+        'Yes, you can leave a league at any time from the Profile tab. Note that your predictions and points will remain in the league history.',
       'Matches & Fixtures': 'Matches & Fixtures',
       'How do I view upcoming matches?': 'How do I view upcoming matches?',
       'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':
@@ -982,6 +990,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       Validation: 'אימות',
       'Privacy Policy': 'מדיניות פרטיות',
       'Terms of Service': 'תנאי שימוש',
+      'By creating an account, you agree to:': 'ביצירת חשבון, הנך מסכים/ה ל:',
       'Terms': 'תנאי שימוש',
       'Privacy': 'פרטיות',
     },
@@ -1071,6 +1080,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Join League': 'הצטרפות לליגה',
       
       'Save active leagues': 'שמור ליגות פעילות',
+      'Activate league': 'הפעל ליגה',
+      'Activate leagues': 'הפעל ליגות',
+      'Select league to activate': 'בחר ליגה להפעלה',
       
       '{{count}} inactive leagues kept in your account': '{{count}} ליגות לא פעילות נשמרות בחשבון שלך',
       'Leave League': 'עזוב ליגה',
@@ -1268,6 +1280,10 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו. מחיקת החשבון לא מבטלת מנוי App Store — יש לבטל אותו בהגדרות Apple ID ← מנויים.',
       'Delete personal data while keeping anonymized league history.':
         'מחיקת מידע אישי תוך שמירת היסטוריית ליגה אנונימית.',
+      'Check your subscription first': 'לפני המחיקה, חשוב לבדוק את המינוי',
+      'Deleting your Champo account does not cancel an active App Store subscription.':
+        'מחיקת חשבון Champo אינה מבטלת מינוי פעיל ב-App Store.',
+      'Continue deletion': 'המשך למחיקה',
     },
 
     // Help & Support
@@ -1304,7 +1320,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'פתח כל ליגה מ-"הליגות שלי" כדי לראות את הדירוגים הנוכחיים. הנקודות מתעדכנות אוטומטית לאחר שהמשחקים מסתיימים.',
       'Can I leave a league?': 'האם אני יכול לעזוב ליגה?',
       'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.':
-        'כן, אתה יכול לעזוב ליגה בכל עת ממסך פרטי הליגה. שים לב שהחיזויים והנקודות שלך יישארו בהיסטוריית הליגה.',
+        'כן, אתה יכול לעזוב ליגה בכל עת מלשונית הפרופיל. שים לב שהחיזויים והנקודות שלך יישארו בהיסטוריית הליגה.',
       'Matches & Fixtures': 'משחקים ותחרויות',
       'How do I view upcoming matches?': 'איך אני רואה משחקים קרובים?',
       'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':

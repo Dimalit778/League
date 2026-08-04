@@ -1,6 +1,6 @@
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect } from 'react';
 import { type StyleProp, View, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -15,12 +15,16 @@ export function Skeleton({ className, style }: { className?: string; style?: Sty
 
   const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
+  // ponytail: Reanimated Animated.View drops NativeWind sizing on web — keep layout on a plain View
   return (
-    <Animated.View
-      accessibilityRole="progressbar"
-      className={cn('rounded-md bg-border', className)}
-      style={[style, animatedStyle]}
-    />
+    <Animated.View testID="skeleton-pulse" style={animatedStyle}>
+      <View
+        testID="skeleton-bone"
+        accessibilityRole="progressbar"
+        className={cn('rounded-md bg-border', className)}
+        style={style}
+      />
+    </Animated.View>
   );
 }
 
@@ -37,10 +41,18 @@ export function CardSkeleton({ className }: { className?: string }) {
   return (
     <Card className={className} accessibilityLabel={t('Loading card')}>
       <View className={spacing.list}>
-        <TextSkeleton className="h-5 w-2/3" />
-        <TextSkeleton className="w-full" />
-        <TextSkeleton className="w-4/5" />
+        <TextSkeleton className="h-5 w-12" />
+        <TextSkeleton />
+        <TextSkeleton />
       </View>
+    </Card>
+  );
+}
+export function BoxSkeleton({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  return (
+    <Card padding="lg" className={className} accessibilityLabel={t('Loading card')}>
+      <Skeleton className={cn('h-28 w-full', className)} />
     </Card>
   );
 }

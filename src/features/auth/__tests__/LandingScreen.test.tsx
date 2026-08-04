@@ -9,8 +9,7 @@ describe('LandingScreen', () => {
   it('renders the app title', () => {
     const { getByText } = render(<LandingScreen />);
 
-    expect(getByText('League')).toBeTruthy();
-    expect(getByText('Champion')).toBeTruthy();
+    expect(getByText('Champo')).toBeTruthy();
   });
 
   it('renders the tagline', () => {

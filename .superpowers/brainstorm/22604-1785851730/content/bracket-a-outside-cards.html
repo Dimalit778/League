@@ -1,0 +1,50 @@
+<h2>Confirmed: Classic C-bracket</h2>
+<p class="subtitle">Lines start at the card edge — they never enter the card. Gap of a few px between card border and the stub.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Hebrew (RTL) → lines to the right</div>
+    <div class="mockup-body" style="background:#0f1419;padding:20px 12px;">
+      <div style="position:relative;">
+        <!-- cards inset from right so connector lives in gutter -->
+        <div style="margin-right:48px;">
+          <div style="background:#1e293b;border:1px solid #475569;border-radius:12px;height:64px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:13px;">Leg 1 · Home</div>
+          <div style="background:#1e293b;border:1px solid #475569;border-radius:12px;height:64px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:13px;">Leg 2 · Away</div>
+        </div>
+        <!-- connector in the right gutter; stubs start AFTER card edge -->
+        <svg viewBox="0 0 56 140" width="56" height="140" style="position:absolute;right:0;top:0;overflow:visible;">
+          <!-- small gap from card: stub starts at x=4 -->
+          <path d="M4 32 H18 V70 H56" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path d="M4 108 H18 V70" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <!-- tiny tick marks showing "not inside card" -->
+          <circle cx="4" cy="32" r="2" fill="#94a3b8"/>
+          <circle cx="4" cy="108" r="2" fill="#94a3b8"/>
+        </svg>
+      </div>
+      <p style="margin-top:12px;font-size:11px;color:#94a3b8;text-align:center;">● = line starts outside the card edge</p>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">English (LTR) → lines to the left</div>
+    <div class="mockup-body" style="background:#0f1419;padding:20px 12px;">
+      <div style="position:relative;">
+        <div style="margin-left:48px;">
+          <div style="background:#1e293b;border:1px solid #475569;border-radius:12px;height:64px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:13px;">Leg 1 · Home</div>
+          <div style="background:#1e293b;border:1px solid #475569;border-radius:12px;height:64px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:13px;">Leg 2 · Away</div>
+        </div>
+        <svg viewBox="0 0 56 140" width="56" height="140" style="position:absolute;left:0;top:0;overflow:visible;">
+          <path d="M52 32 H38 V70 H0" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path d="M52 108 H38 V70" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <circle cx="52" cy="32" r="2" fill="#94a3b8"/>
+          <circle cx="52" cy="108" r="2" fill="#94a3b8"/>
+        </svg>
+      </div>
+      <p style="margin-top:12px;font-size:11px;color:#94a3b8;text-align:center;">● = line starts outside the card edge</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <p class="subtitle">Does this match what you want? Reply yes to lock the design, or tell me what to tweak (gap size, how far the exit line goes, etc.).</p>
+</div>

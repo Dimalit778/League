@@ -65,7 +65,7 @@ export const ConfirmDialog = ({
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onCancel}>
       <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={onCancel} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
         <Animated.View
           style={[
             styles.dialog,

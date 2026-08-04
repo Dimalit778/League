@@ -27,7 +27,7 @@ const MATCH_CARD_PATH = `
   Z
 `;
 
-const MATCH_CARD_HORIZONTAL_PADDING = 32;
+export const MATCH_CARD_HORIZONTAL_PADDING = 32;
 const MATCH_CARD_HEIGHT_SCALE = 0.945;
 const MATCH_CARD_GAP = 8;
 const MATCH_CARD_CENTER_WIDTH = 82;
@@ -44,7 +44,7 @@ export const MATCH_CARD_LAYOUT = {
 } as const;
 
 export function getMatchCardMetrics(screenWidth: number) {
-  const width = Math.min(screenWidth - MATCH_CARD_HORIZONTAL_PADDING, 640);
+  const width = Math.min(screenWidth - MATCH_CARD_HORIZONTAL_PADDING, 450);
 
   const height = Math.round(width * (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) * MATCH_CARD_HEIGHT_SCALE);
 

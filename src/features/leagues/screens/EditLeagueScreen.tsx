@@ -135,7 +135,7 @@ export default function EditLeagueScreen() {
       showAlert({
         title: t('Error'),
         message: t('Failed to share invite code'),
-        type: 'error',
+        type: 'warning',
         buttons: [{ text: 'OK' }],
       });
     }

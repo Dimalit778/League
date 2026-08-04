@@ -1,0 +1,108 @@
+<h2>Which bracket connector shape?</h2>
+<p class="subtitle">Two match cards (home + away). Thin border-colored lines. Hebrew → right edge, English → left edge. Click to select.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1419;padding:16px 12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:11px;color:#94a3b8;letter-spacing:0.04em;">A · HEBREW (RTL)</span>
+      </div>
+      <!-- RTL classic C-bracket -->
+      <div style="position:relative;padding-right:28px;">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 1 · Home</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 2 · Away</div>
+        <!-- connector overlay -->
+        <svg viewBox="0 0 40 124" width="40" height="124" style="position:absolute;right:0;top:0;overflow:visible;">
+          <!-- stub from card 1 mid -->
+          <path d="M0 26 H14 V62 H40" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          <!-- stub from card 2 mid -->
+          <path d="M0 98 H14 V62" fill="none" stroke="#64748b" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;color:#94a3b8;">EN (LTR)</span>
+        <div style="flex:1;position:relative;padding-left:28px;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;margin-bottom:6px;"></div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;"></div>
+          <svg viewBox="0 0 40 68" width="28" height="68" style="position:absolute;left:0;top:0;overflow:visible;">
+            <path d="M40 14 H26 V34 H0" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M40 54 H26 V34" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Classic C-bracket</h3>
+      <p>Horizontal stubs from each card mid → vertical join → one line to screen edge. Tournament standard.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1419;padding:16px 12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:11px;color:#94a3b8;letter-spacing:0.04em;">B · HEBREW (RTL)</span>
+      </div>
+      <div style="position:relative;padding-right:36px;">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 1 · Home</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 2 · Away</div>
+        <svg viewBox="0 0 48 124" width="48" height="124" style="position:absolute;right:0;top:0;overflow:visible;">
+          <path d="M0 26 Q28 26 36 62 H48" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          <path d="M0 98 Q28 98 36 62" fill="none" stroke="#64748b" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;color:#94a3b8;">EN (LTR)</span>
+        <div style="flex:1;position:relative;padding-left:36px;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;margin-bottom:6px;"></div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;"></div>
+          <svg viewBox="0 0 48 68" width="36" height="68" style="position:absolute;left:0;top:0;overflow:visible;">
+            <path d="M48 14 Q20 14 12 34 H0" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M48 54 Q20 54 12 34" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Soft Y-merge</h3>
+      <p>Curved lines from each card that blend into one. Softer, less “bracket diagram”.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1419;padding:16px 12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:11px;color:#94a3b8;letter-spacing:0.04em;">C · HEBREW (RTL)</span>
+      </div>
+      <div style="position:relative;padding-right:28px;">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 1 · Home</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:12px;">Leg 2 · Away</div>
+        <svg viewBox="0 0 40 124" width="40" height="124" style="position:absolute;right:0;top:0;overflow:visible;">
+          <!-- short stubs + full vertical spine + exit -->
+          <path d="M0 26 H14" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          <path d="M0 98 H14" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          <path d="M14 26 V98" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          <path d="M14 62 H40" fill="none" stroke="#64748b" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;color:#94a3b8;">EN (LTR)</span>
+        <div style="flex:1;position:relative;padding-left:28px;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;margin-bottom:6px;"></div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;height:28px;"></div>
+          <svg viewBox="0 0 40 68" width="28" height="68" style="position:absolute;left:0;top:0;overflow:visible;">
+            <path d="M40 14 H26" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M40 54 H26" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M26 14 V54" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M26 34 H0" fill="none" stroke="#64748b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Spine + exit</h3>
+      <p>Short stubs into a continuous vertical spine, then one line out. Same idea as A, slightly heavier vertical.</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:8px;">Recommended: <strong>A · Classic C-bracket</strong> — clearest “two legs → one advance” signal, matches how football brackets look, simplest to implement with Views.</p>

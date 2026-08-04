@@ -23,7 +23,7 @@ export default function GroupsKnockoutView({
 
   return (
     <View className="flex-1">
-      <View className="px-3 pb-2">
+      <View className="shrink-0 px-3 pb-2">
         <TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />
       </View>
       {view === 'groups' ? (

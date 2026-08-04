@@ -6,10 +6,14 @@ import {
   useUpdatePrimaryLeague,
 } from '@/features/leagues/hooks/useLeagues';
 import { MyLeague, MyLeaguesResponse } from '@/features/leagues/types';
+import {
+  resolveVacantLeagueSlots,
+  toggleLeagueActivationSelection,
+} from '@/features/leagues/model/leagueActivation';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 function flattenMyLeagues(myLeagues?: MyLeaguesResponse | null): MyLeague[] {
   if (!myLeagues) return [];
@@ -50,7 +54,57 @@ export function useMyLeaguesScreen() {
 
   const allLeagues = useMemo(() => flattenMyLeagues(myLeagues), [myLeagues]);
   const activeCount = allLeagues.filter((league) => league.active).length;
+  const inactiveLeagues = useMemo(() => allLeagues.filter((league) => !league.active), [allLeagues]);
   const requiresLeagueActivation = !isPro && activeCount > maxLeagues;
+  const { availableSlots: availableActivationSlots, requiresSelection } = resolveVacantLeagueSlots({
+    isPro,
+    activeCount,
+    inactiveCount: inactiveLeagues.length,
+    maxLeagues,
+  });
+  const canChooseInactiveLeagues =
+    !requiresLeagueActivation &&
+    requiresSelection;
+  const [selectedInactiveMemberIds, setSelectedInactiveMemberIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!canChooseInactiveLeagues) {
+      setSelectedInactiveMemberIds([]);
+      return;
+    }
+
+    setSelectedInactiveMemberIds((current) =>
+      current.filter((memberId) => inactiveLeagues.some((league) => league.id === memberId)),
+    );
+  }, [canChooseInactiveLeagues, inactiveLeagues]);
+
+  const toggleInactiveLeague = useCallback(
+    (memberId: string) => {
+      if (!canChooseInactiveLeagues || !inactiveLeagues.some((league) => league.id === memberId)) return;
+
+      setSelectedInactiveMemberIds((current) =>
+        toggleLeagueActivationSelection(current, memberId, availableActivationSlots),
+      );
+    },
+    [availableActivationSlots, canChooseInactiveLeagues, inactiveLeagues],
+  );
+
+  const activateSelectedLeagues = useCallback(async () => {
+    if (!canChooseInactiveLeagues || selectedInactiveMemberIds.length !== availableActivationSlots) return;
+
+    const activeMemberIds: string[] = [];
+    for (const league of allLeagues) {
+      if (league.active) activeMemberIds.push(league.id);
+    }
+    await updateLeagueActivation([...activeMemberIds, ...selectedInactiveMemberIds]);
+    setSelectedInactiveMemberIds([]);
+  }, [
+    allLeagues,
+    availableActivationSlots,
+    canChooseInactiveLeagues,
+    selectedInactiveMemberIds,
+    updateLeagueActivation,
+  ]);
 
   const leagueActivationResolution = useLeagueActivationResolution({
     leagues: allLeagues,
@@ -135,6 +189,16 @@ export function useMyLeaguesScreen() {
     hasPrimaryLeague: !!memberId && !!leagueId && !!competitionId,
     selectLeague,
     upgrade,
+    activationSelection: canChooseInactiveLeagues
+      ? {
+          availableSlots: availableActivationSlots,
+          selectedMemberIds: selectedInactiveMemberIds,
+          isSaving: isUpdatingLeagueActivation,
+          canSave: selectedInactiveMemberIds.length === availableActivationSlots,
+          onToggleLeague: toggleInactiveLeague,
+          onSave: activateSelectedLeagues,
+        }
+      : null,
     limitSelect: requiresLeagueActivation
       ? {
           leagues: allLeagues,

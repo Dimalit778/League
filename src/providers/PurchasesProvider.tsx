@@ -2,10 +2,15 @@ import { KEYS } from '@/lib/queryClient';
 import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
 import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
+import { SupportedLanguage, useLanguageStore } from '@/store/LanguageStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
+
+/** Map app language → RevenueCat paywall locale (must match dashboard locales). */
+const toRevenueCatLocale = (language: SupportedLanguage): string =>
+  language === 'he' ? 'he' : 'en-US';
 
 type PurchasesContextValue = {
   isReady: boolean;
@@ -19,15 +24,22 @@ type PurchasesContextValue = {
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
 
 const getRevenueCatApiKey = (): string | null => {
-  if (Platform.OS === 'ios') {
-    return process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
+  const platformKey =
+    Platform.OS === 'ios'
+      ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
+      : Platform.OS === 'android'
+        ? process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY
+        : undefined;
+
+  // Production must use a real store key. Never ship the RevenueCat Test Store
+  // key: reject a missing OR a `test_`-prefixed key so a misconfigured release
+  // build fails loudly instead of silently pointing purchases at the sandbox.
+  if (!__DEV__) {
+    return platformKey && !platformKey.startsWith('test_') ? platformKey : null;
   }
 
-  if (Platform.OS === 'android') {
-    return process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
-  }
-
-  return null;
+  // Local development: fall back to the shared test key for convenience.
+  return platformKey ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
 };
 
 const isAnonymousRevenueCatUser = (customerInfo: CustomerInfo | null): boolean =>
@@ -65,6 +77,7 @@ function purchasesReducer(state: PurchasesState, action: PurchasesAction): Purch
 
 export const PurchasesProvider = ({ children }: { children: React.ReactNode }) => {
   const userId = useAuthStore((s) => s.user?.id ?? null);
+  const language = useLanguageStore((s) => s.language);
 
   const queryClient = useQueryClient();
   const isConfiguredRef = useRef(false);
@@ -150,7 +163,10 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
         const isConfigured = await Purchases.isConfigured();
         if (!isConfigured) {
-          Purchases.configure({ apiKey });
+          Purchases.configure({
+            apiKey,
+            preferredUILocaleOverride: toRevenueCatLocale(useLanguageStore.getState().language),
+          });
         }
 
         isConfiguredRef.current = true;
@@ -287,6 +303,18 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
       Purchases.removeCustomerInfoUpdateListener(applyCustomerInfo);
     };
   }, [applyCustomerInfo, isReady]);
+
+  // Keep the RevenueCat paywall in the app's selected language rather than the
+  // device locale, so the in-app language toggle also drives the paywall. The
+  // paywall must have a matching localization in RevenueCat (falls back to its
+  // default locale otherwise).
+  useEffect(() => {
+    if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
+
+    Purchases.overridePreferredLocale(toRevenueCatLocale(language)).catch((localeError) => {
+      console.warn('[RevenueCat] Failed to override paywall locale:', localeError);
+    });
+  }, [isReady, language]);
 
   const value = useMemo(
     () => ({

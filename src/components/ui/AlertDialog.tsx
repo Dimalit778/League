@@ -1,7 +1,10 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useIsRTL } from '@/providers/LanguageProvider';
-import { useEffect, useRef } from 'react';
-import { Animated, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { cn, themes } from '@/lib/nativewind/nativeWind';
+import { AlertCircle, Check, HelpCircle } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { Text } from './Text';
 
 interface AlertButton {
   text: string;
@@ -9,187 +12,157 @@ interface AlertButton {
   style?: 'default' | 'cancel' | 'destructive';
 }
 
+type AlertType = 'info' | 'warning' | 'success';
+
 interface AlertDialogProps {
   visible: boolean;
   title: string;
   message?: string;
   buttons: AlertButton[];
-  type: 'info' | 'warning' | 'error' | 'success';
+  type: AlertType;
   onButtonPress: (button: AlertButton) => void;
   onDismiss: () => void;
 }
 
-const isIOS = Platform.OS === 'ios';
+const typeIcon = {
+  info: HelpCircle,
+  warning: AlertCircle,
+  success: Check,
+} as const;
 
-// iOS system alert colors — these are fixed UIKit values, not theme tokens
-const IOS_COLORS = {
-  dark: {
-    bg: '#2c2c2e',
-    title: '#ffffff',
-    message: 'rgba(235,235,245,0.6)',
-    divider: 'rgba(84,84,88,1)',
-    blue: '#0a84ff',
-    red: '#ff453a',
-  },
-  light: {
-    bg: '#ffffff',
-    title: '#000000',
-    message: 'rgba(60,60,67,0.6)',
-    divider: 'rgba(60,60,67,0.36)',
-    blue: '#007aff',
-    red: '#ff3b30',
-  },
-};
+const typeColor = {
+  info: '#007AFF',
+  warning: '#FF3B30',
+  success: '#34C759',
+} as const;
 
-const iosDialogShadow =
-  Platform.select({
-    ios: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 16,
-    },
-  }) ?? {};
+function AlertHeader({ title, type, color }: { title: string; type: AlertType; color: string }) {
+  const Icon = typeIcon[type];
 
-const getColorForType = (type: string, colors: any) => {
-  switch (type) {
-    case 'error':
-      return colors.error;
-    case 'warning':
-      return '#f59e0b';
-    case 'success':
-      return colors.success;
-    case 'info':
-    default:
-      return colors.info;
-  }
-};
+  return (
+    <View className="gap-3">
+      <View
+        className="items-center justify-center self-center rounded-full p-3"
+        style={{ backgroundColor: `${color}22` }}
+      >
+        <View className="h-14 w-14 items-center justify-center rounded-full" style={{ backgroundColor: color }}>
+          <Icon size={28} color="#FFFFFF" strokeWidth={2.4} />
+        </View>
+      </View>
+
+      <Text variant="title" className="px-2 text-center">
+        {title}
+      </Text>
+    </View>
+  );
+}
+
+function AlertMessage({ message }: { message: string }) {
+  return (
+    <Text variant="body" tone="muted" className="px-1 text-center">
+      {message}
+    </Text>
+  );
+}
+
+function AlertButtons({
+  buttons,
+  color,
+  onButtonPress,
+}: {
+  buttons: AlertButton[];
+  color: string;
+  onButtonPress: (button: AlertButton) => void;
+}) {
+  return (
+    <View className="mt-3 w-full flex-row gap-3">
+      {buttons.map((button) => {
+        const outline = button.style === 'cancel';
+
+        return (
+          <Pressable
+            key={`${button.style ?? 'default'}:${button.text}`}
+            className={`min-h-12 flex-1 items-center justify-center rounded-xl px-3 py-3 active:opacity-70 ${
+              outline ? 'border border-border' : ''
+            }`}
+            style={{ backgroundColor: outline ? 'transparent' : color }}
+            onPress={() => onButtonPress(button)}
+          >
+            <Text variant="body" className={cn('text-center font-medium', outline ? 'text-text' : 'text-white')}>
+              {button.text}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPress, onDismiss }: AlertDialogProps) => {
   const { colors, theme } = useThemeTokens();
-  const isRTL = useIsRTL();
-  const ios = IOS_COLORS[theme];
-  const scaleAnim = useRef(new Animated.Value(isIOS ? 0.93 : 0.95)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useSharedValue(0.95);
+  const opacityAnim = useSharedValue(0);
+  const color = typeColor[type];
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({ opacity: opacityAnim.value }));
+  const cardAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scaleAnim.value }] }));
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }),
-        Animated.timing(opacityAnim, { toValue: 1, duration: 180, useNativeDriver: true }),
-      ]).start();
+      scaleAnim.value = withSpring(1, { stiffness: 300, damping: 20 });
+      opacityAnim.value = withTiming(1, { duration: 180 });
     } else {
-      scaleAnim.setValue(isIOS ? 0.93 : 0.95);
-      opacityAnim.setValue(0);
+      scaleAnim.value = 0.95;
+      opacityAnim.value = 0;
     }
   }, [visible, scaleAnim, opacityAnim]);
 
-  const typeColor = getColorForType(type, colors);
-
-  const handleBackdropPress = () => {
-    if (buttons.length <= 1) onDismiss();
-  };
-
-  const getIOSButtonColor = (button: AlertButton) => {
-    if (button.style === 'destructive') return ios.red;
-    return ios.blue;
-  };
-
-  const getAndroidButtonColor = (button: AlertButton, isPrimary: boolean) => {
-    if (button.style === 'destructive') return colors.error;
-    if (button.style === 'cancel') return colors.muted;
-    if (isPrimary) return typeColor;
-    return colors.text;
-  };
-
+  // ponytail: Modal portals outside ThemeProvider on web — re-apply CSS vars here
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onDismiss}>
-      <Animated.View
-        className="flex-1 justify-center items-center p-10"
-        style={{ backgroundColor: 'rgba(0,0,0,0.5)', opacity: opacityAnim }}
-      >
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={handleBackdropPress} />
+      <View testID="alert-theme" style={[themes[theme], styles.themeRoot]}>
+        <Animated.View testID="alert-overlay" style={[styles.overlay, overlayAnimatedStyle]}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={onDismiss} />
 
-        <Animated.View
-          className={
-            isIOS ? 'w-[270px] rounded-[14px] overflow-hidden' : 'w-full min-w-[280px] max-w-[400px] rounded-[28px]'
-          }
-          style={[
-            { backgroundColor: isIOS ? ios.bg : colors.surface, transform: [{ scale: scaleAnim }] },
-            isIOS ? iosDialogShadow : { elevation: 6 },
-          ]}
-        >
-          <View className={`px-5 pt-5 pb-4 ${isIOS ? 'items-center' : isRTL ? 'items-end' : 'items-start'}`}>
-            <Text
-              className={`font-bold mb-1.5 leading-[22px] ${isIOS ? 'text-[17px] text-center' : 'text-xl'}`}
-              style={{ color: isIOS ? ios.title : colors.text, textAlign: isIOS ? 'center' : isRTL ? 'right' : 'left' }}
-            >
-              {title}
-            </Text>
-            {message && (
-              <Text
-                className={`leading-[18px] ${isIOS ? 'text-[13px] text-center' : 'text-sm'}`}
-                style={{ color: isIOS ? ios.message : colors.muted, textAlign: isIOS ? 'center' : isRTL ? 'right' : 'left' }}
-              >
-                {message}
-              </Text>
-            )}
-          </View>
-
-          {isIOS ? (
-            <View
-              className="flex-row min-h-[44px] self-stretch"
-              style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: ios.divider }}
-            >
-              {buttons.map((button, index) => {
-                const isPrimary = !button.style || button.style === 'default';
-                return (
-                  <Pressable
-                    key={index}
-                    className="flex-1 items-center justify-center py-3"
-                    style={({ pressed }) => [
-                      index > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: ios.divider },
-                      { opacity: pressed ? 0.4 : 1 },
-                    ]}
-                    onPress={() => onButtonPress(button)}
-                  >
-                    <Text
-                      className={`text-[17px] ${isPrimary || button.style === 'destructive' ? 'font-semibold' : 'font-normal'}`}
-                      style={{ color: getIOSButtonColor(button) }}
-                    >
-                      {button.text}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          ) : (
-            <View
-              className="flex-row justify-end px-2 pb-2 gap-1"
-              style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-            >
-              {buttons.map((button, index) => {
-                const isPrimary = !button.style || button.style === 'default';
-                return (
-                  <Pressable
-                    key={index}
-                    className="py-2.5 px-3 rounded"
-                    android_ripple={{ color: colors.border, borderless: true }}
-                    onPress={() => onButtonPress(button)}
-                  >
-                    <Text
-                      className="text-sm font-semibold"
-                      style={{ color: getAndroidButtonColor(button, isPrimary), letterSpacing: 0.4 }}
-                    >
-                      {button.text.toUpperCase()}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          )}
+          <Animated.View
+            testID="alert-card"
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+              cardAnimatedStyle,
+            ]}
+          >
+            <AlertHeader title={title} type={type} color={color} />
+            {message ? <AlertMessage message={message} /> : null}
+            <AlertButtons buttons={buttons} color={color} onButtonPress={onButtonPress} />
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
+      </View>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  themeRoot: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 360,
+    gap: 24,
+    padding: 16,
+    borderRadius: 24,
+    borderWidth: 1,
+    boxShadow: '0 12px 24px rgba(0, 0, 0, 0.12)',
+  },
+});

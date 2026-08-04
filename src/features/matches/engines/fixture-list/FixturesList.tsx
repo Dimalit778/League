@@ -121,8 +121,9 @@ export default function FixturesList({
       data={fixtures}
       onLayout={onLayout}
       horizontal
-      contentContainerStyle={{ paddingVertical: 5, flexGrow: 1 }}
+      contentContainerStyle={{ paddingVertical: 5, paddingTop: 5 }}
       showsHorizontalScrollIndicator={false}
+      className="shrink-0 grow-0"
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => (
         <FixtureItem
