@@ -13,10 +13,6 @@ export default function MatchDetailsSkeleton() {
   return (
     <View className="mx-auto w-full max-w-lg flex-1 bg-background" accessibilityLabel={t('Loading match details')}>
       <View style={{ height: heroHeight, paddingTop: inset.top }} className="bg-surface">
-        <View className="absolute left-4 z-20 h-14 w-14 items-center justify-center" style={{ top: inset.top }}>
-          <Skeleton className="h-12 w-12  rounded-full" />
-        </View>
-
         <View className="flex-1 items-center justify-center gap-6 px-4">
           <View className="w-full flex-row items-center justify-center">
             <View className="min-w-0 flex-1 items-center gap-2">

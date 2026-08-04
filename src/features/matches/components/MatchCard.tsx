@@ -29,6 +29,8 @@ type MatchCardProps = {
   date: string;
   time?: string;
   onPress?: () => void;
+  /** When set, card metrics use this width instead of the window width. */
+  layoutWidth?: number;
 };
 
 type TeamBlockProps = {
@@ -172,8 +174,10 @@ export const MatchCard = memo(function MatchCard({
   date,
   time,
   onPress,
+  layoutWidth,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
+
   const {
     width: cardWidth,
     height: cardHeight,
@@ -186,7 +190,7 @@ export const MatchCard = memo(function MatchCard({
     predictionTop,
     predictionHeight,
     logoBoxSize,
-  } = getMatchCardMetrics(screenWidth);
+  } = getMatchCardMetrics(layoutWidth ?? screenWidth);
 
   const logoWidth = logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : logoBoxSize;

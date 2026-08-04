@@ -70,16 +70,19 @@ Do NOT delete the demo account during review unless testing deletion; re-run `np
 
 USER-GENERATED CONTENT SAFETY (Guideline 1.2)
 League names, member nicknames and profile photos are user-generated.
+- League names and nicknames pass through a server-side objectionable-content and contact-information filter before publication.
 - Report a nickname or profile photo: open a member from the leaderboard → Safety actions → Report.
 - Report a league name: Profile → Manage League → Report league name (non-owner members).
 - Block a user: open the member → Safety actions → Block. Their profile, predictions and leaderboard entry are hidden.
 - Manage blocked users: Settings → Blocked users.
 - League owners can remove a member from Profile → Manage League.
 Reports enter a private moderation queue available only to administrators. Moderators can dismiss a report, remove the reported content, or remove the member.
+Safety reports are acknowledged within 24 hours and targeted for review within 72 hours; urgent safety concerns are prioritized.
 
 PRIVACY & LEGAL
-Privacy Policy: https://[YOUR_DOMAIN]/privacy-policy/
-Terms: https://[YOUR_DOMAIN]/terms-of-service/
+Privacy Policy: https://champoapp.com/privacy-policy/
+Terms: https://champoapp.com/terms-of-service/
+Support URL: https://champoapp.com/support/
 In-app: Settings → Privacy Policy / Terms of Service
 Support: support@champoapp.com
 

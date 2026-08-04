@@ -61,7 +61,9 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
 };
 
 export default function MyLeaguesScreen() {
-  const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
+  const { t } = useTranslation();
+  const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, activationSelection, limitSelect } =
+    useMyLeaguesScreen();
 
   if (isLoading) return <LeaguesSkeleton />;
   if (error) return <Error error={error as Error} />;
@@ -74,8 +76,18 @@ export default function MyLeaguesScreen() {
       <LeaguesIndicator used={activeCount} limit={maxLeagues} />
 
       <View className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-6 lg:px-8">
-        <Leagues isPro={isPro} upgrade={upgrade} />
-        {!maxLeague && <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />}
+        <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
+        {activationSelection?.selectedMemberIds.length ? (
+          <Button
+            className="mb-6"
+            label={t(activationSelection.availableSlots === 1 ? 'Activate league' : 'Activate leagues')}
+            onPress={activationSelection.onSave}
+            loading={activationSelection.isSaving}
+            disabled={!activationSelection.canSave}
+          />
+        ) : !maxLeague && !activationSelection ? (
+          <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />
+        ) : null}
       </View>
       {limitSelect && <LimitSelectModal {...limitSelect} />}
     </Screen>

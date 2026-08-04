@@ -43,6 +43,14 @@ describe('SignUpScreen', () => {
     expect(getByText('Sign in with Google')).toBeTruthy();
   });
 
+  it('shows legal acknowledgement before account creation', () => {
+    const { getByText } = render(<SignUpScreen />);
+
+    expect(getByText('By creating an account, you agree to:')).toBeTruthy();
+    expect(getByText('Privacy Policy')).toBeTruthy();
+    expect(getByText('Terms of Service')).toBeTruthy();
+  });
+
   it('calls signUp and navigates to verifyEmail on success', async () => {
     // For now, let's test that the component renders and the button exists
     // This test needs more complex mocking to work properly

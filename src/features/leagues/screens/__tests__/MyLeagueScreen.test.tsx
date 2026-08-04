@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import MyLeagueScreen from '../MyLeaguesScreen';
 
 type TestNode = {
@@ -19,6 +19,14 @@ let mockScreenState = {
   hasPrimaryMember: false,
   selectLeague: jest.fn(),
   upgrade: jest.fn(),
+  activationSelection: null as null | {
+    availableSlots: number;
+    selectedMemberIds: string[];
+    isSaving: boolean;
+    canSave: boolean;
+    onToggleLeague: jest.Mock;
+    onSave: jest.Mock;
+  },
   limitSelect: null as null,
 };
 
@@ -38,6 +46,7 @@ describe('MyLeagueScreen', () => {
       hasPrimaryMember: false,
       selectLeague: jest.fn(),
       upgrade: jest.fn(),
+      activationSelection: null,
       limitSelect: null,
     };
   });
@@ -80,5 +89,27 @@ describe('MyLeagueScreen', () => {
     const { queryByText } = render(<MyLeagueScreen />);
     expect(queryByText('Upgrade to Pro')).toBeNull();
     expect(queryByText('Create League')).toBeNull();
+  });
+
+  it('shows the activate button after an inactive league is selected', () => {
+    const onSave = jest.fn();
+    mockScreenState = {
+      ...mockScreenState,
+      activeCount: 1,
+      maxLeagues: 2,
+      activationSelection: {
+        availableSlots: 1,
+        selectedMemberIds: ['inactive-member'],
+        isSaving: false,
+        canSave: true,
+        onToggleLeague: jest.fn(),
+        onSave,
+      },
+    };
+
+    const { getByText } = render(<MyLeagueScreen />);
+    fireEvent.press(getByText('Activate league'));
+
+    expect(onSave).toHaveBeenCalledTimes(1);
   });
 });

@@ -228,7 +228,7 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   };
 
   return (
-    <View className="flex-1 ">
+    <View className="flex-1 border-r border-l  border-border ">
       <View className="py-4">
         <AiEyebrow />
       </View>

@@ -90,13 +90,21 @@
     <main>
       <header>
         <h1>Privacy Policy</h1>
-        <p class="updated">Champo | Last updated: August 2, 2026</p>
+        <p class="updated">Champo | Last updated: August 4, 2026</p>
         <p>
           Champo is a football prediction app for creating leagues, joining friends, submitting
           predictions, viewing rankings, and managing subscriptions. This policy explains what information we
           collect, how we use it, and the choices available to you.
         </p>
       </header>
+
+      <section>
+        <h2>Who We Are</h2>
+        <p>
+          Champo is operated by the developer identified on Champo's App Store product page. For privacy
+          questions or requests, contact <a href="mailto:support@champoapp.com">support@champoapp.com</a>.
+        </p>
+      </section>
 
       <section>
         <h2>Information We Collect</h2>
@@ -115,7 +123,7 @@
         <ul>
           <li>To provide authentication, league creation, prediction submission, standings, profile display, and member management.</li>
           <li>To operate subscriptions, restore purchases, enforce plan limits, and provide access to paid features.</li>
-          <li>To send service messages such as account notices, league updates, match reminders, subscription updates, and support responses.</li>
+          <li>To send transactional messages such as email verification, password resets, important account notices, and replies to support requests.</li>
           <li>To secure the service, prevent abuse, debug errors, improve reliability, and understand how core features are used.</li>
           <li>To comply with legal obligations, App Store requirements, and enforce our Terms of Service.</li>
         </ul>
@@ -126,9 +134,18 @@
         <p>We do not sell your personal information.</p>
         <p>
           We share information only with providers needed to run the app, such as Supabase for
-          authentication/database/storage,           Apple and RevenueCat for in-app purchases, Sentry for diagnostics,
+          authentication/database/storage, Apple and RevenueCat for in-app purchases, Sentry for diagnostics,
           and authentication providers such as Apple or Google when you choose those sign-in
           methods.
+        </p>
+        <p>
+          Gemini and Tavily may be used to prepare AI-assisted match previews from public football information. The
+          current implementation does not send account details, names, email addresses, profile images, league
+          memberships, or predictions to these services.
+        </p>
+        <p>
+          These providers may process information on our behalf and must protect it consistently with this policy
+          and applicable law.
         </p>
         <p>
           We may disclose information if required by law, to protect rights and safety, or as part of a business
@@ -139,14 +156,21 @@
       <section>
         <h2>Data Retention and Deletion</h2>
         <p>
-          You can delete your account in Settings. We delete your authentication account, profile details and profile
-          images, remove the customer record held for us by RevenueCat, and revoke Sign in with Apple authorization
-          when applicable.
+          Account and profile information is retained while your account is active. You can delete your account in
+          Settings. We then delete your authentication account, profile details and profile images, remove the
+          customer record held for us by RevenueCat, revoke Sign in with Apple authorization when applicable, and
+          attempt to revoke a connected Google sign-in grant on supported devices.
         </p>
         <p>
           Past predictions, points, and the minimum league-member record needed to preserve standings are retained
-          without a user ID, profile image, or personal nickname. They appear as “Deleted Player”, are inactive,
-          cannot be used to sign in, and are no longer linked to your account.
+          for as long as the related league history or service is maintained. They are de-identified by removing the
+          user ID, profile image, and personal nickname; appear as “Deleted Player”; and cannot be used to identify
+          or sign in to your former account.
+        </p>
+        <p>
+          Support communications are retained only as long as reasonably needed to resolve the request and meet
+          security or legal obligations. Diagnostic, purchase, and transaction records are retained according to
+          our configured provider retention periods and applicable legal requirements.
         </p>
         <p>
           Deleting your Champo account does not cancel an Apple subscription. You must cancel it separately in your
@@ -205,8 +229,7 @@
       </section>
 
       <footer>
-        This policy is intended to support App Store review requirements and user transparency. It is not legal
-        advice.
+        Privacy questions and data requests: <a href="mailto:support@champoapp.com">support@champoapp.com</a>
       </footer>
     </main>
   </body>

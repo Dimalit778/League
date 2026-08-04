@@ -1,11 +1,15 @@
-import { computeTieBracketGeometry, computeTieBracketRailWidth } from '../tieBracketGeometry';
+import {
+  buildTieBracketPath,
+  computeTieBracketGeometry,
+  TIE_BRACKET_RAIL_WIDTH,
+} from '../tieBracketGeometry';
 
 describe('computeTieBracketGeometry', () => {
   const base = { cardHeight: 100, cardsGap: 8 };
 
-  it('places connector on the right for RTL and left for LTR', () => {
-    expect(computeTieBracketGeometry({ ...base, isRTL: true }).side).toBe('right');
-    expect(computeTieBracketGeometry({ ...base, isRTL: false }).side).toBe('left');
+  it('places connector on the right for LTR and left for RTL', () => {
+    expect(computeTieBracketGeometry({ ...base, isRTL: false }).side).toBe('right');
+    expect(computeTieBracketGeometry({ ...base, isRTL: true }).side).toBe('left');
   });
 
   it('centers stubs on each card and merges midway', () => {
@@ -24,13 +28,38 @@ describe('computeTieBracketGeometry', () => {
   });
 });
 
-describe('computeTieBracketRailWidth', () => {
-  it('reserves both outer margins and caps the rail on wide viewports', () => {
-    expect(computeTieBracketRailWidth(390, 350)).toBe(24);
-    expect(computeTieBracketRailWidth(1024, 600)).toBe(48);
+describe('buildTieBracketPath', () => {
+  const base = { cardHeight: 100, cardsGap: 8 };
+
+  it('draws a C opening to the card then an exit to the LTR (right) edge', () => {
+    const g = computeTieBracketGeometry({ ...base, isRTL: false });
+    const d = buildTieBracketPath(g, TIE_BRACKET_RAIL_WIDTH);
+    const spineX = g.gapFromCard + g.stubLength;
+    const cardX = g.gapFromCard;
+
+    expect(d).toContain(`M ${cardX} ${g.topStubCenterY}`);
+    expect(d).toContain(`H ${spineX}`);
+    expect(d).toContain(`V ${g.bottomStubCenterY}`);
+    expect(d).toContain(`M ${spineX} ${g.mergeY}`);
+    expect(d).toContain(`H ${TIE_BRACKET_RAIL_WIDTH}`);
   });
 
-  it('collapses the rail when the card consumes the padded width', () => {
-    expect(computeTieBracketRailWidth(390, 374)).toBe(0);
+  it('draws a C opening to the card then an exit to the RTL (left) edge', () => {
+    const g = computeTieBracketGeometry({ ...base, isRTL: true });
+    const d = buildTieBracketPath(g, TIE_BRACKET_RAIL_WIDTH);
+    const spineX = TIE_BRACKET_RAIL_WIDTH - g.gapFromCard - g.stubLength;
+    const cardX = TIE_BRACKET_RAIL_WIDTH - g.gapFromCard;
+
+    expect(d).toContain(`M ${cardX} ${g.topStubCenterY}`);
+    expect(d).toContain(`H ${spineX}`);
+    expect(d).toContain(`V ${g.bottomStubCenterY}`);
+    expect(d).toContain(`M ${spineX} ${g.mergeY}`);
+    expect(d).toContain(`H 0`);
+  });
+
+  it('keeps room for a visible exit beyond the spine', () => {
+    const g = computeTieBracketGeometry({ ...base, isRTL: false });
+    const spineX = g.gapFromCard + g.stubLength;
+    expect(TIE_BRACKET_RAIL_WIDTH - spineX).toBeGreaterThan(8);
   });
 });

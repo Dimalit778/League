@@ -1,6 +1,7 @@
 import { Screen } from '@/components/layout';
 import { Card, Text } from '@/components/ui';
 import AppleAuth from '@/features/auth/components/AppleAuth';
+import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import AuthModeToggle from '@/features/auth/components/auth/AuthModeToggle';
 import SignInForm from '@/features/auth/components/auth/SignInForm';
 import SignUpForm from '@/features/auth/components/auth/SignUpForm';
@@ -72,6 +73,9 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
               </View>
             </View>
           </Card>
+          <View className="mt-5">
+            <AuthLegalLinks showConsent={!isSignIn} />
+          </View>
         </View>
       </KeyboardAwareScrollView>
     </Screen>

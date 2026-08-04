@@ -5,6 +5,7 @@ import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
+import { openStoreSubscriptionManagement } from '@/lib/revenuecat/purchases';
 import { useAlert } from '@/providers/AlertProvider';
 import { router } from 'expo-router';
 import { Alert, View } from 'react-native';
@@ -16,7 +17,7 @@ const SettingsScreen = () => {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
 
-  const handleDeleteAccountPress = () => {
+  const confirmDeleteAccount = () => {
     showAlert({
       title: t('Delete Account'),
       message: t('Delete account confirmation message'),
@@ -24,6 +25,21 @@ const SettingsScreen = () => {
       buttons: [
         { text: t('Cancel'), style: 'cancel' },
         { text: t('Delete'), style: 'destructive', onPress: () => deleteUserMutation.mutate() },
+      ],
+    });
+  };
+
+  const handleDeleteAccountPress = () => {
+    showAlert({
+      title: t('Check your subscription first'),
+      message: t('Deleting your Champo account does not cancel an active App Store subscription.'),
+      type: 'warning',
+      buttons: [
+        {
+          text: t('Manage Subscription'),
+          onPress: () => void openStoreSubscriptionManagement(),
+        },
+        { text: t('Continue deletion'), style: 'destructive', onPress: confirmDeleteAccount },
       ],
     });
   };

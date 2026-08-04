@@ -50,7 +50,7 @@ export function useLeagueOverview(): LeagueOverview {
       recentForm: stats?.recentForm ?? [],
     },
     upcomingMatches: (upcomingMatches ?? []).map(mapMatchToCardData),
-    // Don't block the whole screen on matches — they sit below the fold.
+ 
     isLoading: memberLoading || leagueLoading || statsLoading,
   };
 }

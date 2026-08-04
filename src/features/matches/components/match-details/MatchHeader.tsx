@@ -16,11 +16,11 @@ function TeamCard({ team, width, height }: { team: TeamType | null; width: numbe
   if (!team) return <View className="flex-1" />;
   const shortName = team.shortName || team.name;
   return (
-    <View className="min-w-0 flex-1 items-center justify-center gap-2" accessible accessibilityLabel={shortName}>
+    <View className="min-w-0 flex-1 items-center justify-center gap-2 mx-3" accessible accessibilityLabel={shortName}>
       <View style={{ width, height }} className="items-center justify-center overflow-hidden">
         <MyImage source={team.logo} width={width} height={height} contentFit="contain" />
       </View>
-      <Text variant="subtitle" numberOfLines={2} className="text-center text-white">
+      <Text variant="subtitle" numberOfLines={2} className="text-center text-white ">
         {shortName}
       </Text>
     </View>
@@ -126,7 +126,7 @@ type MatchHeaderProps = {
 export default function MatchHeader({ match, memberPrediction, isScheduled, onPredictionSaved }: MatchHeaderProps) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
-  const badgeSize = width >= 768 ? 100 : 68;
+  const badgeSize = width >= 768 ? 100 : 62;
   const predictionFormRef = useRef<PredictionFormHandle>(null);
   const [draft, setDraft] = useState<PredictionDraftState>({ hasChanges: false, isPending: false });
 
@@ -140,9 +140,9 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
   const status = match.status;
 
   return (
-    <View className="flex-1 px-4 md:px-8">
+    <View className="flex-1  md:px-8">
       <MatchDate kickoff={match.kick_off} venue={venue} status={status} />
-      <View className="flex-1 mt-8">
+      <View className="flex-1 justify-center">
         <Row className="items-center justify-center">
           <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
 
@@ -168,7 +168,7 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
           <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />
         </Row>
         {isScheduled && (
-          <View className="w-1/2 mx-auto px-4">
+          <View className="w-1/2 mx-auto px-4 mt-2">
             {draft.hasChanges ? (
               <Button
                 size="sm"

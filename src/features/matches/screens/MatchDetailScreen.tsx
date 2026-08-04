@@ -73,7 +73,7 @@ const MatchDetailScreen = () => {
 
         <View style={{ height: heroHeight, paddingTop: inset.top }}>
           <TouchableOpacity
-            className="absolute z-20 p-1 items-center justify-center rounded-full border-2 border-white"
+            className="absolute z-20 p-1 items-center justify-center rounded-full border border-white"
             style={[{ top: inset.top + 8 }, isRTL ? { right: 16 } : { left: 16 }]}
             onPress={() => router.dismiss()}
             hitSlop={8}
@@ -81,9 +81,9 @@ const MatchDetailScreen = () => {
             accessibilityLabel={t('Close')}
           >
             {isRTL ? (
-              <ChevronLeftIcon size={30} color="#fff" strokeWidth={2} />
+              <ChevronLeftIcon size={30} color="#fff" strokeWidth={1.5} />
             ) : (
-              <ChevronLeftIcon size={30} color="#fff" strokeWidth={2} />
+              <ChevronLeftIcon size={30} color="#fff" strokeWidth={1.5} />
             )}
           </TouchableOpacity>
 
@@ -102,11 +102,11 @@ const MatchDetailScreen = () => {
         {showSuccessAnimation && (
           <View className="absolute inset-0 z-50 items-center justify-center bg-black/45" pointerEvents="none">
             <DotLottie
-              source={animations.success}
+              source={animations.ball}
               autoplay
               loop={false}
               onComplete={() => setShowSuccessAnimation(false)}
-              style={{ width: isTablet ? 220 : 180, height: isTablet ? 220 : 180 }}
+              style={{ width: 300, height: 300 }}
             />
           </View>
         )}

@@ -60,6 +60,7 @@ Apple אינה מחשיבה פרטי כרטיס אשראי כמידע שהאפל
 
 - Privacy Policy URL: `https://champoapp.com/privacy-policy/`
 - Privacy Choices URL: `https://champoapp.com/privacy-choices/`
+- Support URL: `https://champoapp.com/support/`
 
 Privacy Policy URL הוא חובה. Privacy Choices URL הוא אופציונלי; אם מזינים אותו, גם הוא חייב להיות ציבורי, ב־HTTPS ונגיש ללא התחברות.
 
