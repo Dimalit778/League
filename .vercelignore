@@ -1,0 +1,13 @@
+.expo/
+.git/
+.github/
+android/
+coverage/
+dist/
+docs/
+ios/
+node_modules/
+scripts/
+src/
+supabase/
+*.log
