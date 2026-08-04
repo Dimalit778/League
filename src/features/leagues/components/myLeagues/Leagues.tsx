@@ -8,6 +8,7 @@ import { spacing } from '@/lib/nativewind/spacing';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { Podium, Star, Users } from 'lucide-react-native';
+import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useGetMyLeaguesSummary, useUpdatePrimaryLeague } from '../../hooks/useLeagues';
 import { LeagueSummary } from '../../types';
@@ -126,6 +127,10 @@ export function Leagues({
   const setPrimaryLeague = usePrimaryLeagueStore((state) => state.setPrimaryLeague);
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const selectedMemberIds = useMemo(
+    () => new Set(activationSelection?.selectedMemberIds ?? []),
+    [activationSelection?.selectedMemberIds],
+  );
 
   const handleLeaguePress = async (league: LeagueSummary) => {
     if (!league.member_id || !league.league_id || !league.competition_id) return;
@@ -185,7 +190,7 @@ export function Leagues({
                 league={league}
                 isLocked={!league.active && !isPro && !activationSelection}
                 isSelectable={!league.active && !!activationSelection}
-                isSelected={!!league.member_id && !!activationSelection?.selectedMemberIds.includes(league.member_id)}
+                isSelected={!!league.member_id && selectedMemberIds.has(league.member_id)}
                 onPress={() => handleLeaguePress(league)}
               />
             ))}

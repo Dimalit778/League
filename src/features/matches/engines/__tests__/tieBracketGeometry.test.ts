@@ -5,7 +5,7 @@ import {
 } from '../tieBracketGeometry';
 
 describe('computeTieBracketGeometry', () => {
-  const base = { cardHeight: 100, cardsGap: 8 };
+  const base = { cardHeight: 100 };
 
   it('places connector on the right for LTR and left for RTL', () => {
     expect(computeTieBracketGeometry({ ...base, isRTL: false }).side).toBe('right');
@@ -15,9 +15,9 @@ describe('computeTieBracketGeometry', () => {
   it('centers stubs on each card and merges midway', () => {
     const g = computeTieBracketGeometry({ ...base, isRTL: false });
     expect(g.topStubCenterY).toBe(50);
-    expect(g.bottomStubCenterY).toBe(100 + 8 + 50);
+    expect(g.bottomStubCenterY).toBe(100 + 50);
     expect(g.mergeY).toBe((g.topStubCenterY + g.bottomStubCenterY) / 2);
-    expect(g.totalHeight).toBe(100 + 8 + 100);
+    expect(g.totalHeight).toBe(100 + 100);
   });
 
   it('keeps a positive gap from the card and a usable stub length', () => {
@@ -29,7 +29,7 @@ describe('computeTieBracketGeometry', () => {
 });
 
 describe('buildTieBracketPath', () => {
-  const base = { cardHeight: 100, cardsGap: 8 };
+  const base = { cardHeight: 100 };
 
   it('draws a C opening to the card then an exit to the LTR (right) edge', () => {
     const g = computeTieBracketGeometry({ ...base, isRTL: false });

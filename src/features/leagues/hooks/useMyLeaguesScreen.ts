@@ -92,7 +92,10 @@ export function useMyLeaguesScreen() {
   const activateSelectedLeagues = useCallback(async () => {
     if (!canChooseInactiveLeagues || selectedInactiveMemberIds.length !== availableActivationSlots) return;
 
-    const activeMemberIds = allLeagues.filter((league) => league.active).map((league) => league.id);
+    const activeMemberIds: string[] = [];
+    for (const league of allLeagues) {
+      if (league.active) activeMemberIds.push(league.id);
+    }
     await updateLeagueActivation([...activeMemberIds, ...selectedInactiveMemberIds]);
     setSelectedInactiveMemberIds([]);
   }, [

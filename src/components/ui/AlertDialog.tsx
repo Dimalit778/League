@@ -1,8 +1,9 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { cn, themes } from '@/lib/nativewind/nativeWind';
 import { AlertCircle, Check, HelpCircle } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Text } from './Text';
 
 interface AlertButton {
@@ -75,12 +76,12 @@ function AlertButtons({
 }) {
   return (
     <View className="mt-3 w-full flex-row gap-3">
-      {buttons.map((button, index) => {
+      {buttons.map((button) => {
         const outline = button.style === 'cancel';
 
         return (
           <Pressable
-            key={`${button.text}-${index}`}
+            key={`${button.style ?? 'default'}:${button.text}`}
             className={`min-h-12 flex-1 items-center justify-center rounded-xl px-3 py-3 active:opacity-70 ${
               outline ? 'border border-border' : ''
             }`}
@@ -99,19 +100,20 @@ function AlertButtons({
 
 export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPress, onDismiss }: AlertDialogProps) => {
   const { colors, theme } = useThemeTokens();
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useSharedValue(0.95);
+  const opacityAnim = useSharedValue(0);
   const color = typeColor[type];
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({ opacity: opacityAnim.value }));
+  const cardAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scaleAnim.value }] }));
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }),
-        Animated.timing(opacityAnim, { toValue: 1, duration: 180, useNativeDriver: true }),
-      ]).start();
+      scaleAnim.value = withSpring(1, { stiffness: 300, damping: 20 });
+      opacityAnim.value = withTiming(1, { duration: 180 });
     } else {
-      scaleAnim.setValue(0.95);
-      opacityAnim.setValue(0);
+      scaleAnim.value = 0.95;
+      opacityAnim.value = 0;
     }
   }, [visible, scaleAnim, opacityAnim]);
 
@@ -119,7 +121,7 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onDismiss}>
       <View testID="alert-theme" style={[themes[theme], styles.themeRoot]}>
-        <Animated.View testID="alert-overlay" style={[styles.overlay, { opacity: opacityAnim }]}>
+        <Animated.View testID="alert-overlay" style={[styles.overlay, overlayAnimatedStyle]}>
           <Pressable style={StyleSheet.absoluteFill} onPress={onDismiss} />
 
           <Animated.View
@@ -129,8 +131,8 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
               {
                 backgroundColor: colors.surface,
                 borderColor: colors.border,
-                transform: [{ scale: scaleAnim }],
               },
+              cardAnimatedStyle,
             ]}
           >
             <AlertHeader title={title} type={type} color={color} />
@@ -161,10 +163,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 24,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 8,
+    boxShadow: '0 12px 24px rgba(0, 0, 0, 0.12)',
   },
 });

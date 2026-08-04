@@ -29,7 +29,7 @@ export function Skeleton({ className, style }: { className?: string; style?: Sty
 }
 
 export function TextSkeleton({ className }: { className?: string }) {
-  return <Skeleton className={cn('h-4 ', className)} />;
+  return <Skeleton className={cn('h-4 w-32', className)} />;
 }
 
 function AvatarSkeleton({ className }: { className?: string }) {
