@@ -2,9 +2,13 @@ import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { LeagueOverview } from '@/features/leagues/types';
 import { useGetUpcomingMatches } from '@/features/matches/hooks/useUpcomingMatches';
 import { mapMatchToCardData } from '@/features/matches/utils/matchCard.mapper';
-import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
-import { useCompetitionId, useLeagueId, useMemberId } from '@/store/PrimaryLeagueStore';
+import {
+  useCompetitionId,
+  useLeagueId,
+  useMemberId,
+  usePrimaryLeagueStore,
+} from '@/store/PrimaryLeagueStore';
 
 // Zero-state so the screen always receives a defined stats object,
 // matching how leagueSummary/upcomingMatches are normalized below.
@@ -15,8 +19,12 @@ export function useLeagueOverview(): LeagueOverview {
   const leagueId = useLeagueId();
   const competitionId = useCompetitionId();
 
-  // All three can start in parallel — IDs already live in the active-league store.
-  const { data: member, isLoading: memberLoading } = useGetMember(memberId);
+  // nickname/avatar already live in the active-league store (populated on login
+  // and patched on profile mutations) — no need to refetch the member here.
+  const nickname = usePrimaryLeagueStore((state) => state.nickname);
+  const avatarUrl = usePrimaryLeagueStore((state) => state.avatarUrl);
+
+  // Both can start in parallel — IDs already live in the active-league store.
   const { data: league, isLoading: leagueLoading } = useGetLeagueAndMembers(leagueId);
   const { data: stats, isLoading: statsLoading } = useMemberStats(memberId);
   const { data: upcomingMatches } = useGetUpcomingMatches({
@@ -26,8 +34,8 @@ export function useLeagueOverview(): LeagueOverview {
 
   return {
     leagueSummary: {
-      nickname: member?.nickname ?? '',
-      avatarUrl: member?.avatar_url ?? null,
+      nickname: nickname ?? '',
+      avatarUrl: avatarUrl ?? null,
       leagueName: league?.name ?? '',
       logoUrl: league?.competition?.logo ?? '',
       flagUrl: league?.competition?.flag ?? '',
@@ -51,6 +59,6 @@ export function useLeagueOverview(): LeagueOverview {
     },
     upcomingMatches: (upcomingMatches ?? []).map(mapMatchToCardData),
  
-    isLoading: memberLoading || leagueLoading || statsLoading,
+    isLoading: leagueLoading || statsLoading,
   };
 }
