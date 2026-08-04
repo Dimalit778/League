@@ -22,22 +22,18 @@ function TieBlock({ tie }: { tie: Tie }) {
   const cards = tie.legs.map((leg) => {
     const card = mapMatchToCardData(leg);
     return (
-      <View
+      <MatchCard
         key={leg.id}
-        style={{ width: cardWidth, alignSelf: isRTL ? 'flex-start' : 'flex-end' }}
-      >
-        <MatchCard
-          id={card.id}
-          home={card.home}
-          away={card.away}
-          prediction={card.prediction}
-          predictionStatus={card.predictionStatus}
-          status={card.status}
-          date={card.date}
-          time={card.time}
-          onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
-        />
-      </View>
+        id={card.id}
+        home={card.home}
+        away={card.away}
+        prediction={card.prediction}
+        predictionStatus={card.predictionStatus}
+        status={card.status}
+        date={card.date}
+        time={card.time}
+        onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
+      />
     );
   });
   const aggregateScore = tie.aggregate && (
@@ -60,7 +56,16 @@ function TieBlock({ tie }: { tie: Tie }) {
   return (
     <>
       <View style={{ position: 'relative' }}>
-        <View style={{ gap: cardsGap }}>{cards}</View>
+        <View style={{ gap: cardsGap }}>
+          {cards.map((card, index) => (
+            <View
+              key={tie.legs[index].id}
+              style={{ width: cardWidth, alignSelf: isRTL ? 'flex-start' : 'flex-end' }}
+            >
+              {card}
+            </View>
+          ))}
+        </View>
         <TieBracketConnector cardHeight={cardHeight} cardsGap={cardsGap} railWidth={railWidth} />
       </View>
       {aggregateScore}
