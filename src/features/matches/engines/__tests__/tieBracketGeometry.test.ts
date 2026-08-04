@@ -1,4 +1,4 @@
-import { computeTieBracketGeometry } from '../tieBracketGeometry';
+import { computeTieBracketGeometry, computeTieBracketRailWidth } from '../tieBracketGeometry';
 
 describe('computeTieBracketGeometry', () => {
   const base = { cardHeight: 100, cardsGap: 8 };
@@ -21,5 +21,16 @@ describe('computeTieBracketGeometry', () => {
     expect(g.gapFromCard).toBeGreaterThan(0);
     expect(g.stubLength).toBeGreaterThan(g.gapFromCard);
     expect(g.strokeWidth).toBeGreaterThan(0);
+  });
+});
+
+describe('computeTieBracketRailWidth', () => {
+  it('reserves both outer margins and caps the rail on wide viewports', () => {
+    expect(computeTieBracketRailWidth(390, 350)).toBe(24);
+    expect(computeTieBracketRailWidth(1024, 600)).toBe(48);
+  });
+
+  it('collapses the rail when the card consumes the padded width', () => {
+    expect(computeTieBracketRailWidth(390, 374)).toBe(0);
   });
 });

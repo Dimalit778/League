@@ -1,6 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useIsRTL } from '@/providers/LanguageProvider';
-import { View } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 import { computeTieBracketGeometry } from './tieBracketGeometry';
 
 type Props = {
@@ -22,7 +22,7 @@ export function TieBracketConnector({ cardHeight, cardsGap, railWidth }: Props) 
   const spineCenterX = geometry.gapFromCard + stubWidth;
   const exitWidth = Math.max(0, railWidth - spineCenterX);
   const spineHeight = geometry.bottomStubCenterY - geometry.topStubCenterY;
-  const bar = (style: object) => ({
+  const bar = (style: ViewStyle): ViewStyle => ({
     position: 'absolute' as const,
     backgroundColor: colors.border,
     ...style,
@@ -69,8 +69,8 @@ export function TieBracketConnector({ cardHeight, cardsGap, railWidth }: Props) 
       />
       <View
         style={bar({
-          top: geometry.topStubCenterY,
-          height: spineHeight,
+          top: geometry.topStubCenterY - geometry.strokeWidth / 2,
+          height: spineHeight + geometry.strokeWidth,
           width: geometry.strokeWidth,
           ...spineSide,
         })}

@@ -14,6 +14,17 @@ export type TieBracketGeometry = {
 const DEFAULT_STROKE = 1.5;
 const DEFAULT_GAP_FROM_CARD = 4;
 const DEFAULT_STUB_LENGTH = 14;
+const DEFAULT_OUTER_MARGIN = 8;
+const DEFAULT_MAX_RAIL_WIDTH = 48;
+
+export function computeTieBracketRailWidth(
+  screenWidth: number,
+  cardWidth: number,
+  outerMargin = DEFAULT_OUTER_MARGIN,
+  maxRailWidth = DEFAULT_MAX_RAIL_WIDTH,
+) {
+  return Math.min(maxRailWidth, Math.max(0, screenWidth - outerMargin * 2 - cardWidth));
+}
 
 export function computeTieBracketGeometry(params: {
   isRTL: boolean;

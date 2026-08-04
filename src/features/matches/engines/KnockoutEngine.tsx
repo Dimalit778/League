@@ -1,6 +1,5 @@
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
@@ -11,12 +10,14 @@ import type { MatchCardType } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import { getKnockoutStages, getStageLabel } from '../utils/tournamentMatches';
 import { TieBracketConnector } from './TieBracketConnector';
+import { computeTieBracketRailWidth } from './tieBracketGeometry';
 import { KnockoutStageTabs } from './shared/TournamentTabs';
+
+const TIE_OUTER_MARGIN = 8;
 
 function TieBlock({ tie }: { tie: Tie }) {
   const { width: screenWidth } = useWindowDimensions();
   const { t } = useTranslation();
-  const isRTL = useIsRTL();
   const { height: cardHeight, width: cardWidth } = getMatchCardMetrics(screenWidth);
   const cardsGap = 8;
   const cards = tie.legs.map((leg) => {
@@ -51,19 +52,14 @@ function TieBlock({ tie }: { tie: Tie }) {
     );
   }
 
-  const railWidth = Math.max(0, screenWidth - cardWidth);
+  const railWidth = computeTieBracketRailWidth(screenWidth, cardWidth, TIE_OUTER_MARGIN);
 
   return (
     <>
-      <View style={{ position: 'relative' }}>
-        <View style={{ gap: cardsGap }}>
+      <View style={{ position: 'relative', paddingHorizontal: TIE_OUTER_MARGIN }}>
+        <View style={{ width: cardWidth, gap: cardsGap, alignSelf: 'flex-end' }}>
           {cards.map((card, index) => (
-            <View
-              key={tie.legs[index].id}
-              style={{ width: cardWidth, alignSelf: isRTL ? 'flex-start' : 'flex-end' }}
-            >
-              {card}
-            </View>
+            <View key={tie.legs[index].id}>{card}</View>
           ))}
         </View>
         <TieBracketConnector cardHeight={cardHeight} cardsGap={cardsGap} railWidth={railWidth} />
