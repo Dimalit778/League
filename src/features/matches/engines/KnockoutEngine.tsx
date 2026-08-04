@@ -1,42 +1,61 @@
 import { Text } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
+import { getMatchCardMetrics } from '../components/MatchCardBg';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
 import type { MatchCardType } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import { getKnockoutStages, getStageLabel } from '../utils/tournamentMatches';
+import { TieBracketConnector } from './TieBracketConnector';
 import { KnockoutStageTabs } from './shared/TournamentTabs';
 
 function TieBlock({ tie }: { tie: Tie }) {
-  const { t } = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
+  const isRTL = useIsRTL();
+  const { height: cardHeight, width: cardWidth } = getMatchCardMetrics(screenWidth);
+  const cardsGap = 8;
+  const cards = tie.legs.map((leg) => {
+    const card = mapMatchToCardData(leg);
+    return (
+      <MatchCard
+        key={leg.id}
+        id={card.id}
+        home={card.home}
+        away={card.away}
+        prediction={card.prediction}
+        predictionStatus={card.predictionStatus}
+        status={card.status}
+        date={card.date}
+        time={card.time}
+        onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
+      />
+    );
+  });
+
+  if (tie.legs.length !== 2) {
+    return <>{cards}</>;
+  }
+
+  const sidePadding = Math.max(0, (screenWidth - cardWidth) / 2);
+  const minRail = 28;
+  const railWidth = Math.max(sidePadding, minRail);
+  const nudge = Math.max(0, railWidth - sidePadding);
+
   return (
-    <>
-      {tie.legs.map((leg) => {
-        const card = mapMatchToCardData(leg);
-        return (
-          <MatchCard
-            key={leg.id}
-            id={card.id}
-            home={card.home}
-            away={card.away}
-            prediction={card.prediction}
-            predictionStatus={card.predictionStatus}
-            status={card.status}
-            date={card.date}
-            time={card.time}
-            onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
-          />
-        );
-      })}
-      {tie.aggregate && (
-        <Text className="text-sm text-muted mt-1 text-center">
-          {t('Aggregate')}: {tie.aggregate.home}–{tie.aggregate.away}
-        </Text>
-      )}
-    </>
+    <View
+      style={{
+        position: 'relative',
+        paddingLeft: !isRTL ? nudge : 0,
+        paddingRight: isRTL ? nudge : 0,
+      }}
+    >
+      <View style={{ gap: cardsGap }}>{cards}</View>
+      <TieBracketConnector cardHeight={cardHeight} cardsGap={cardsGap} railWidth={railWidth} />
+    </View>
   );
 }
 
@@ -72,7 +91,8 @@ export default function KnockoutEngine({
         data={stageTies}
         renderItem={({ item }) => <TieBlock tie={item} />}
         keyExtractor={(item) => item.key}
-        contentContainerStyle={{ paddingBottom: 100, flexGrow: 1, paddingHorizontal: 16 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
       />
     </View>
   );
