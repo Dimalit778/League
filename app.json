@@ -178,7 +178,7 @@
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
-          "project": "leaguechampion",
+          "project": "champoapp",
           "organization": "dima-apps"
         }
       ],
