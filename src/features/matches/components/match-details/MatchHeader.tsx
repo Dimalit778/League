@@ -17,7 +17,9 @@ function TeamCard({ team, width, height }: { team: TeamType | null; width: numbe
   const shortName = team.shortName || team.name;
   return (
     <View className="min-w-0 flex-1 items-center justify-center gap-2" accessible accessibilityLabel={shortName}>
-      <MyImage source={team.logo} width={width} height={height} />
+      <View style={{ width, height }} className="items-center justify-center overflow-hidden">
+        <MyImage source={team.logo} width={width} height={height} contentFit="contain" />
+      </View>
       <Text variant="subtitle" numberOfLines={2} className="text-center text-white">
         {shortName}
       </Text>
@@ -76,18 +78,16 @@ function MatchDate({
   status: StatusType;
 }) {
   const displayStatus = getMatchStatus(status);
-
+  const isFinished = displayStatus === 'FINISHED';
   return (
-    <View className="items-center">
-      <Row className="min-w-24 rounded-full border border-border bg-surface-muted px-3 py-1.5 gap-1 justify-center">
-        {displayStatus === 'FINISHED' ? (
-          <Text className="text-white font-bold">FT</Text>
-        ) : (
+    <View className="items-center pt-5">
+      <Row className="min-w-24 rounded-full border border-border px-3 py-1.5 gap-1.5 justify-center">
+        <Calendar size={14} color="#9ca3af" strokeWidth={2.2} />
+        <Text variant="label" className="text-gray-400 font-semibold">
+          {dateFormat(kickoff)}
+        </Text>
+        {!isFinished && (
           <>
-            <Calendar size={14} color="#9ca3af" strokeWidth={1.6} />
-            <Text variant="label" className="text-gray-400">
-              {dateFormat(kickoff)}
-            </Text>
             <Divider orientation="vertical" className="mx-1" />
             <Text variant="label" className="text-gray-400">
               {formatTime(kickoff)}
@@ -97,14 +97,21 @@ function MatchDate({
         )}
       </Row>
 
-      {venue ? (
+      {venue && (
         <View className="flex-row items-center justify-center px-10">
           <MapPin size={15} color="#fff" strokeWidth={1.6} />
           <Text numberOfLines={1} className="text-xs ml-1 text-white/70">
             {venue}
           </Text>
         </View>
-      ) : null}
+      )}
+      {isFinished && (
+        <View className="flex-row items-center justify-center bg-gray-500/50 px-3 mt-3 rounded-xl py-1">
+          <Text variant="subtitle" className="text-white">
+            FT
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -127,16 +134,15 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
     setDraft(state);
   }, []);
 
-  // Teams can be null for future knockout matches where opponents aren't decided yet
   const homeTeam = match.home_team ?? null;
   const awayTeam = match.away_team ?? null;
   const venue = homeTeam?.venue;
   const status = match.status;
 
   return (
-    <View className="flex-1   px-4 md:px-8">
+    <View className="flex-1 px-4 md:px-8">
       <MatchDate kickoff={match.kick_off} venue={venue} status={status} />
-      <View className="flex-1 justify-center">
+      <View className="flex-1 mt-8">
         <Row className="items-center justify-center">
           <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
 

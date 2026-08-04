@@ -11,7 +11,7 @@ interface AlertOptions {
   title: string;
   message?: string;
   buttons?: AlertButton[];
-  type?: 'info' | 'warning' | 'error' | 'success';
+  type?: 'info' | 'warning' | 'success';
 }
 
 interface AlertContextType {
@@ -85,7 +85,7 @@ export const createAlertReplacer = (showAlert: (options: AlertOptions) => void) 
       lowerTitle.includes('failed') ||
       lowerMessage.includes('failed')
     ) {
-      type = 'error';
+      type = 'warning';
     } else if (
       lowerTitle.includes('success') ||
       lowerMessage.includes('success') ||

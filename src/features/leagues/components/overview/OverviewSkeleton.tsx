@@ -1,5 +1,5 @@
 import { Screen, Section, useFloatBottomTabsInset } from '@/components/layout';
-import { Card, CardSkeleton, MatchCardSkeleton, Skeleton, TextSkeleton } from '@/components/ui';
+import { BoxSkeleton, Card, CardSkeleton, Skeleton, TextSkeleton } from '@/components/ui';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';
@@ -9,9 +9,9 @@ function LeagueHeroSkeleton() {
     <Card variant="hero">
       <View className={cn('flex-row items-center', spacing.list)}>
         <Skeleton className="h-14 w-14 rounded-full" />
-        <View className={cn('flex-1', spacing.row)}>
-          <TextSkeleton className="h-7 w-2/3" />
-          <TextSkeleton className="w-1/2" />
+        <View className={cn(' flex-1', spacing.row)}>
+          <TextSkeleton className="h-7 w-40" />
+          <TextSkeleton className="w-28" />
         </View>
       </View>
       <Skeleton className="my-4 h-px w-full" />
@@ -28,7 +28,7 @@ function LeagueHeroSkeleton() {
   );
 }
 
-function QuickAccessSkeleton() {
+function StatsSkeleton() {
   return (
     <View className={cn('flex-row', spacing.list)}>
       {Array.from({ length: 3 }).map((_, index) => (
@@ -42,28 +42,19 @@ export default function OverviewSkeleton() {
   const bottomTabsInset = useFloatBottomTabsInset();
 
   return (
-    <Screen
-      scroll
-      padding="horizontal"
-      bottomInset={bottomTabsInset + 16}
-      contentClassName={cn(spacing.section, 'pt-3')}
-    >
+    <Screen padding="horizontal" bottomInset={bottomTabsInset + 16} contentClassName={cn(spacing.section, 'pt-3')}>
       <LeagueHeroSkeleton />
-      <Section>
-        <TextSkeleton className="mb-3 h-6 w-32" />
-        <MatchCardSkeleton />
-      </Section>
-      <Section>
-        <TextSkeleton className="mb-3 h-6 w-28" />
-        <QuickAccessSkeleton />
-      </Section>
-      <Section>
-        <TextSkeleton className="mb-3 h-6 w-20" />
+      <Section contentClassName="gap-3 ">
+        <TextSkeleton className="w-20" />
         <CardSkeleton />
       </Section>
-      <Section>
-        <TextSkeleton className="mb-3 h-6 w-28" />
-        <CardSkeleton />
+      <Section contentClassName="gap-3">
+        <TextSkeleton className="w-20" />
+        <StatsSkeleton />
+      </Section>
+      <Section contentClassName="gap-3">
+        <TextSkeleton className="w-20" />
+        <BoxSkeleton />
       </Section>
     </Screen>
   );

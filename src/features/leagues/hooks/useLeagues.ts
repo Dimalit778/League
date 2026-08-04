@@ -14,11 +14,14 @@ import { Alert } from 'react-native';
 import { leagueActionsApi } from '../api/leagueActionsApi';
 import { LeagueSummary, MyLeague, MyLeaguesResponse } from '../types';
 
+const STALE_TIME = 1000 * 60 * 5; // 5 minutes
+
 export const useMyLeagues = () => {
   const userId = useAuthStore((s) => s.user?.id);
   return useQuery({
     queryKey: userId ? KEYS.users.leagues(userId) : (['users', 'leagues', 'disabled'] as const),
     queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
+    staleTime: STALE_TIME,
   });
 };
 
@@ -49,6 +52,7 @@ export const useGetLeagueAndMembers = (leagueId?: string | null) => {
       ? KEYS.leagues.members(leagueId)
       : (['leagues', 'unknown', 'full'] as const),
     queryFn: leagueId ? () => leagueApi.getLeagueAndMembers(leagueId) : skipToken,
+    staleTime: STALE_TIME,
   });
 };
 
@@ -219,6 +223,9 @@ export const useCreateLeague = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
+          queryKey: KEYS.users.leaguesSummary(userId),
+        }),
+        queryClient.invalidateQueries({
           queryKey: KEYS.members.primaryLeague(userId),
         }),
       ]);
@@ -251,6 +258,9 @@ export const useJoinLeague = () => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leaguesSummary(userId),
         }),
         queryClient.invalidateQueries({
           queryKey: KEYS.members.primaryLeague(userId),
@@ -312,6 +322,9 @@ export const useLeaveLeague = () => {
           queryKey: KEYS.users.leagues(userId),
         }),
         queryClient.invalidateQueries({
+          queryKey: KEYS.users.leaguesSummary(userId),
+        }),
+        queryClient.invalidateQueries({
           queryKey: KEYS.members.primaryLeague(userId),
         }),
         queryClient.removeQueries({ queryKey: KEYS.leagues.members(leagueId) }),
@@ -349,6 +362,9 @@ export const useDeleteLeague = () => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: KEYS.users.leagues(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: KEYS.users.leaguesSummary(userId),
         }),
         queryClient.invalidateQueries({
             queryKey: KEYS.members.primaryLeague(userId),

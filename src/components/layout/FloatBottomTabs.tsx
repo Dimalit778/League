@@ -11,11 +11,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const isIOS = Platform.OS === 'ios';
 
 const PILL_HEIGHT = 64;
-const PILL_BOTTOM_GAP = 8;
+
 const CONTENT_BOTTOM_GAP = 16;
 
-const getFloatBottomTabsInset = (safeAreaBottom: number) =>
-  PILL_HEIGHT + safeAreaBottom + PILL_BOTTOM_GAP + CONTENT_BOTTOM_GAP;
+const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + safeAreaBottom + CONTENT_BOTTOM_GAP;
 
 export const useFloatBottomTabsInset = () => {
   const insets = useSafeAreaInsets();
@@ -65,9 +64,7 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
   const tabs = state.routes.map((route, index) => {
     const config = tabsConfig[route.name];
 
-    if (!config) {
-      return null;
-    }
+    if (!config) return null;
 
     const isFocused = state.index === index;
     const Icon = config.icon;
@@ -124,7 +121,7 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
     );
   });
 
-  const bottomPadding = Math.max(insets.bottom, PILL_BOTTOM_GAP) + PILL_BOTTOM_GAP;
+  const bottomPadding = Math.max(insets.bottom, CONTENT_BOTTOM_GAP);
 
   const borderColor = isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(15, 23, 42, 0.10)';
 
@@ -138,7 +135,7 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
         <View
           pointerEvents="none"
           style={[
-            StyleSheet.absoluteFillObject,
+            StyleSheet.absoluteFill,
             {
               backgroundColor: overlayColor,
             },

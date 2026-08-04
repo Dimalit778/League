@@ -52,11 +52,13 @@ export const MyImage = ({
         ? source.uri
         : undefined;
 
-  // Only use SvgUri when explicitly requested — ExpoImage caches SVGs too.
+  // ExpoImage's native SVG coders drop percentage-based fills (Brazil flag's
+  // green rect uses x/y="-50%"). Prefer SvgUri for .svg URLs; forceSvg still
+  // covers non-.svg URIs that need the same path.
   const isSvg =
-    forceSvg &&
     typeof uri === 'string' &&
-    (uri.toLowerCase().includes('.svg') ||
+    (forceSvg ||
+      uri.toLowerCase().includes('.svg') ||
       uri.startsWith('data:image/svg+xml'));
 
   // Only inject size style if provided (so NativeWind className can control size)

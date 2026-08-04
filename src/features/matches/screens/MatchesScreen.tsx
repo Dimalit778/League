@@ -1,7 +1,6 @@
-import { Error } from '@/components/layout';
+import { Error, Screen } from '@/components/layout';
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import { useCompetitionId, useMemberId } from '@/store/PrimaryLeagueStore';
-import { View } from 'react-native';
 import MatchesSkeleton from '../components/MatchesSkeleton';
 import { useSeasonMatches } from '../hooks/useSeasonMatches';
 import { resolveCompetitionShape } from '../model/competitionShape';
@@ -12,6 +11,7 @@ import RegularLeagueView from '../views/RegularLeagueView';
 export default function MatchesScreen() {
   const memberId = useMemberId();
   const competitionId = useCompetitionId();
+
   const { data: meta, isLoading: metaLoading, error: metaError } = useGetCompetitionsDetails();
 
   const {
@@ -33,7 +33,7 @@ export default function MatchesScreen() {
   if (!shape) return <Error error={`Unsupported competition code: ${meta.code ?? 'missing'}`} />;
 
   return (
-    <View className="flex-1 ">
+    <Screen>
       {shape === 'REGULAR' && (
         <RegularLeagueView matches={matches} currentFixture={currentFixture} onRefresh={refetch} />
       )}
@@ -48,6 +48,6 @@ export default function MatchesScreen() {
       {shape === 'GROUPS_KO' && (
         <GroupsKnockoutView matches={matches} currentStage={currentStage} onRefresh={refetch} />
       )}
-    </View>
+    </Screen>
   );
 }

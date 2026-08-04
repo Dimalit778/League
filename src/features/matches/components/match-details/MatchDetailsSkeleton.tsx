@@ -12,7 +12,7 @@ export default function MatchDetailsSkeleton() {
 
   return (
     <View className="mx-auto w-full max-w-lg flex-1 bg-background" accessibilityLabel={t('Loading match details')}>
-      <View style={{ height: heroHeight, paddingTop: inset.top }} className="bg-subtle">
+      <View style={{ height: heroHeight, paddingTop: inset.top }} className="bg-surface">
         <View className="absolute left-4 z-20 h-14 w-14 items-center justify-center" style={{ top: inset.top }}>
           <Skeleton className="h-12 w-12  rounded-full" />
         </View>
@@ -40,7 +40,7 @@ export default function MatchDetailsSkeleton() {
         </View>
       </View>
 
-      <View className="-mt-5 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-surface px-4 pt-5">
+      <View className="-mt-5 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background px-4 pt-5">
         <View className="gap-4">
           <Skeleton className="mx-auto h-7 w-32 rounded-full" />
           <Skeleton className="h-28 w-full rounded-2xl" />
@@ -50,7 +50,7 @@ export default function MatchDetailsSkeleton() {
       </View>
 
       <View
-        className="border-t border-border bg-surface px-4 pt-3"
+        className="border-t border-border bg-background px-4 pt-3"
         style={{ paddingBottom: Math.max(inset.bottom, 12) }}
       >
         <Skeleton className="h-12 w-full rounded-xl" />

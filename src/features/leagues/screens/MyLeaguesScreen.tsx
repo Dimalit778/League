@@ -1,4 +1,4 @@
-import { Error, LoadingBall, Row, Screen } from '@/components/layout';
+import { Error, Row, Screen } from '@/components/layout';
 import { Button, Card, DirectionalIcon, Text } from '@/components/ui';
 import { LeaguesIndicator, LimitSelectModal } from '@/features/leagues/components/myLeagues';
 import { useMyLeaguesScreen } from '@/features/leagues/hooks/useMyLeaguesScreen';
@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import { Sparkles } from 'lucide-react-native';
 import { View } from 'react-native';
 import { Leagues } from '../components/myLeagues/Leagues';
+import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
 const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reachedLimit: boolean }) => {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reached
 export default function MyLeaguesScreen() {
   const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, limitSelect } = useMyLeaguesScreen();
 
-  if (isLoading) return <LoadingBall />;
+  if (isLoading) return <LeaguesSkeleton />;
   if (error) return <Error error={error as Error} />;
 
   const reachedLimit = activeCount >= maxLeagues;

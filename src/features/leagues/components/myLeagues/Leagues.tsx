@@ -25,15 +25,7 @@ function StatBlock({ icon, value }: { icon: React.ReactNode; value: string }) {
   );
 }
 
-function LeagueCard({
-  league,
-  isLocked,
-  onPress,
-}: {
-  league: LeagueSummary;
-  isLocked: boolean;
-  onPress: () => void;
-}) {
+function LeagueCard({ league, isLocked, onPress }: { league: LeagueSummary; isLocked: boolean; onPress: () => void }) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
 

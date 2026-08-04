@@ -72,7 +72,7 @@ All TanStack Query keys are defined in [src/lib/queryClient.ts](src/lib/queryCli
 - `AuthStore` — `session`, `user`, `isAuthenticated`, `isAuthLoading`. `user`/`isAuthenticated` persisted via MMKV; the session itself lives only in Supabase's encrypted auth storage.
 - `MemberStore` — `primaryMember` (member + league + competition of the primary league membership). Drives most of the app; `(app)/_layout.tsx` calls `initializeMember()` after login, which queries Supabase for the `is_primary` + `active` league_member row. Selectors like `selectMemberId`/`selectLeagueId` live in the store file.
 - `LanguageStore` — current language (`en` | `he`) + RTL flag.
-- `ThemeStore`, `SidebarStore` — UI state.
+- `ThemeStore` — UI state.
 
 ### Competition/match display logic
 

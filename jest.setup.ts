@@ -352,8 +352,7 @@ jest.mock('react-native-reanimated', () => {
 
 jest.mock('@/providers/AlertProvider', () => ({
   useAlert: () => ({
-    show: jest.fn(),
-    hide: jest.fn(),
+    showAlert: jest.fn(),
   }),
 }));
 

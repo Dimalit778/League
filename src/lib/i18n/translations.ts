@@ -393,7 +393,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'Open any league from "My Leagues" to see the current rankings. Points are updated automatically after matches finish.',
       'Can I leave a league?': 'Can I leave a league?',
       'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.':
-        'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.',
+        'Yes, you can leave a league at any time from the Profile tab. Note that your predictions and points will remain in the league history.',
       'Matches & Fixtures': 'Matches & Fixtures',
       'How do I view upcoming matches?': 'How do I view upcoming matches?',
       'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':
@@ -1304,7 +1304,7 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
         'פתח כל ליגה מ-"הליגות שלי" כדי לראות את הדירוגים הנוכחיים. הנקודות מתעדכנות אוטומטית לאחר שהמשחקים מסתיימים.',
       'Can I leave a league?': 'האם אני יכול לעזוב ליגה?',
       'Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.':
-        'כן, אתה יכול לעזוב ליגה בכל עת ממסך פרטי הליגה. שים לב שהחיזויים והנקודות שלך יישארו בהיסטוריית הליגה.',
+        'כן, אתה יכול לעזוב ליגה בכל עת מלשונית הפרופיל. שים לב שהחיזויים והנקודות שלך יישארו בהיסטוריית הליגה.',
       'Matches & Fixtures': 'משחקים ותחרויות',
       'How do I view upcoming matches?': 'איך אני רואה משחקים קרובים?',
       'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':

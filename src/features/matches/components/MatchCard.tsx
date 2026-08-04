@@ -67,11 +67,13 @@ const PredictionBlock = ({
   predictionStatus,
   top,
   height,
+  matchStatus,
 }: {
   prediction?: { home?: number | null; away?: number | null } | null;
   predictionStatus: PredictionDisplayStatus;
   top: number;
   height: number;
+  matchStatus?: StatusType | null;
 }) => {
   const { colors } = useThemeTokens();
   const hasPrediction =
@@ -80,6 +82,17 @@ const PredictionBlock = ({
     prediction?.away !== null &&
     prediction?.away !== undefined;
 
+  const finishedAndNoPrediction = matchStatus === 'FINISHED' && !hasPrediction;
+
+  if (finishedAndNoPrediction) {
+    return (
+      <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top, height }}>
+        <Text variant="caption" tone="muted" numberOfLines={1}>
+          No Prediction
+        </Text>
+      </View>
+    );
+  }
   const predictionTextClass =
     predictionStatus === 'correct' ? 'text-success' : predictionStatus === 'incorrect' ? 'text-error' : 'text-info';
 
@@ -240,6 +253,7 @@ export const MatchCard = memo(function MatchCard({
           predictionStatus={predictionStatus}
           top={predictionTop}
           height={predictionHeight}
+          matchStatus={status}
         />
       </View>
     </Pressable>

@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { MatchCardRawType, MatchCardType, MatchWithAllPredictionsType } from '../types';
 
+const UPCOMING_MATCHES_LIMIT = 10;
+
 const TEAM_LIST_FIELDS = `
   id,
   shortName,
@@ -184,9 +186,9 @@ export const matchesApi = {
       .eq('competition_id', competitionId)
       .eq('season_id', seasonId)
       .gte('kick_off', new Date().toISOString())
-      .lte('kick_off', new Date().toISOString())
       .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
+      .order('kick_off', { ascending: true })
+      .limit(UPCOMING_MATCHES_LIMIT);
 
     if (error) throw error;
     if (!data) return [];

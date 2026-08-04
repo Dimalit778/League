@@ -12,8 +12,8 @@ describe('Text', () => {
     expect(getByText('Heading')).toBeTruthy();
   });
 
-  it('renders with font prop', () => {
-    const { getByText } = render(<Text font="teko-bold">Score</Text>);
+  it('renders with display variant (teko)', () => {
+    const { getByText } = render(<Text variant="display">Score</Text>);
     expect(getByText('Score')).toBeTruthy();
   });
 

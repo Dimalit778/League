@@ -10,6 +10,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dimalit778.champo",
+      "buildNumber": "1",
       "userInterfaceStyle": "dark",
       "usesAppleSignIn": true,
       "icon": "./src/assets/app-icon-ios.png",

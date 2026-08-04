@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 function DetailRowSkeleton() {
   return (
-    <View className="flex-row items-center justify-between py-3">
+    <View className="flex-row items-center justify-between py-4">
       <TextSkeleton className="w-28" />
       <TextSkeleton className="w-20" />
     </View>
@@ -15,18 +15,9 @@ export function ProfileSkeleton() {
   const bottomTabsInset = useFloatBottomTabsInset();
 
   return (
-    <Screen
-      scroll
-      padding="horizontal"
-      bottomInset={bottomTabsInset}
-      contentClassName="gap-5 pt-3"
-    >
+    <Screen padding="horizontal" bottomInset={bottomTabsInset} contentClassName="gap-5 pt-3">
       <View className="items-center py-2">
         <Skeleton className="h-40 w-40 rounded-full" />
-        <View className="-mt-9 flex-row gap-16">
-          <Skeleton className="h-11 w-11 rounded-full" />
-          <Skeleton className="h-11 w-11 rounded-full" />
-        </View>
       </View>
 
       <View className="flex-row items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
@@ -42,7 +33,7 @@ export function ProfileSkeleton() {
           <Skeleton className="h-9 w-9 rounded-full" />
           <TextSkeleton className="w-28" />
         </View>
-        {Array.from({ length: 7 }).map((_, index) => (
+        {Array.from({ length: 6 }).map((_, index) => (
           <View key={index} className={index < 6 ? 'border-b border-border' : ''}>
             <DetailRowSkeleton />
           </View>

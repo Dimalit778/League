@@ -6,12 +6,12 @@ import { DotLottie } from '@lottiefiles/dotlottie-react-native';
 
 import { animations } from '@/assets/animations';
 import { images } from '@/assets/images';
-import { DirectionalIcon } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronLeftIcon } from 'lucide-react-native';
 import { Keyboard, Pressable, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
@@ -43,8 +43,8 @@ const MatchDetailScreen = () => {
   const isScheduled = !hasStarted;
   const isTablet = width >= 768;
   const heroHeight = Math.min(
-    height * 0.5,
-    Math.max(height * 0.4 + Math.max(0, fontScale - 1) * 72, isTablet ? 360 : 280),
+    height * 0.4,
+    Math.max(height * 0.38 + Math.max(0, fontScale - 1) * 72, isTablet ? 360 : 280),
   );
 
   return (
@@ -73,14 +73,18 @@ const MatchDetailScreen = () => {
 
         <View style={{ height: heroHeight, paddingTop: inset.top }}>
           <TouchableOpacity
-            className="absolute z-20 h-11 w-11 items-center justify-center rounded-full border-2 border-white"
+            className="absolute z-20 p-1 items-center justify-center rounded-full border-2 border-white"
             style={[{ top: inset.top + 8 }, isRTL ? { right: 16 } : { left: 16 }]}
             onPress={() => router.dismiss()}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('Close')}
           >
-            <DirectionalIcon size={30} color="#fff" strokeWidth={2} />
+            {isRTL ? (
+              <ChevronLeftIcon size={30} color="#fff" strokeWidth={2} />
+            ) : (
+              <ChevronLeftIcon size={30} color="#fff" strokeWidth={2} />
+            )}
           </TouchableOpacity>
 
           <MatchHeader

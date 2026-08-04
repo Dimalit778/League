@@ -34,7 +34,7 @@ export const TournamentViewTabs = ({
   ];
 
   return (
-    <View className="flex-row px-8">
+    <View className="shrink-0 flex-row px-8">
       {options.map((option) => {
         const active = value === option.value;
 
@@ -137,7 +137,7 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
         flexDirection: 'row',
         direction: isRTL ? 'rtl' : 'ltr',
       }}
-      className="flex-grow-0"
+      className="shrink-0 grow-0"
     >
       {options.map((option) => {
         const active = value === option.value;

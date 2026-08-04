@@ -2,19 +2,30 @@ import { KEYS } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { leagueActionsApi } from '../../api/leagueActionsApi';
 import { leagueApi } from '../../api/leagueApi';
-import { useDeleteLeague, useFindLeagueByJoinCode, useUpdatePrimaryLeague } from '../useLeagues';
+import {
+  useCreateLeague,
+  useDeleteLeague,
+  useFindLeagueByJoinCode,
+  useUpdatePrimaryLeague,
+} from '../useLeagues';
 
 jest.mock('@/store/AuthStore', () => ({
   useAuthStore: (selector: any) => selector({ user: { id: 'u1' } }),
 }));
 
+const mockInitializePrimaryLeague = jest.fn().mockResolvedValue(undefined);
+
 jest.mock('@/store/PrimaryLeagueStore', () => ({
   usePrimaryLeagueStore: Object.assign(
-    (selector: any) => selector({ clearPrimaryLeague: jest.fn(), initializePrimaryLeague: jest.fn() }),
+    (selector: any) =>
+      selector({
+        clearPrimaryLeague: jest.fn(),
+        initializePrimaryLeague: mockInitializePrimaryLeague,
+      }),
     {
       getState: () => ({
         clearPrimaryLeague: jest.fn(),
-        initializePrimaryLeague: jest.fn(),
+        initializePrimaryLeague: mockInitializePrimaryLeague,
       }),
     },
   ),
@@ -33,8 +44,13 @@ jest.mock('../../api/leagueApi', () => ({
 
 jest.mock('../../api/leagueActionsApi', () => ({
   leagueActionsApi: {
+    createLeague: jest.fn().mockResolvedValue('new-league-id'),
     deleteLeague: jest.fn().mockResolvedValue({ success: true }),
   },
+}));
+
+jest.mock('expo-router', () => ({
+  router: { replace: jest.fn() },
 }));
 
 describe('useLeagues hooks', () => {
@@ -64,6 +80,29 @@ describe('useLeagues hooks', () => {
     );
   });
 
+  it('invalidates leagues summary after creating a league', async () => {
+    let mutationConfig: any;
+    jest.mocked(useMutation).mockImplementationOnce((config: any) => {
+      mutationConfig = config;
+      return { mutate: jest.fn(), mutateAsync: jest.fn(), isPending: false } as any;
+    });
+
+    const queryClient = { invalidateQueries: jest.fn() };
+    jest.mocked(useQueryClient).mockReturnValueOnce(queryClient as any);
+
+    useCreateLeague();
+
+    await mutationConfig.onSuccess('new-league-id');
+
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: KEYS.users.leaguesSummary('u1'),
+    });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: KEYS.members.primaryLeague('u1'),
+    });
+  });
+
   it('uses the atomic primary-league mutation and targeted invalidation', async () => {
     let mutationConfig: any;
     jest.mocked(useMutation).mockImplementationOnce((config: any) => {
@@ -83,6 +122,7 @@ describe('useLeagues hooks', () => {
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.members.primaryLeague('u1') });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leaguesSummary('u1') });
   });
 
   it('uses the atomic delete mutation and targeted invalidation', async () => {
@@ -102,6 +142,7 @@ describe('useLeagues hooks', () => {
 
     expect(leagueActionsApi.deleteLeague).toHaveBeenCalledWith('l1');
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leagues('u1') });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: KEYS.users.leaguesSummary('u1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.detail('l1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.members('l1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });

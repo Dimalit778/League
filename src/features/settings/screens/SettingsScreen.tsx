@@ -5,8 +5,8 @@ import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAlert } from '@/providers/AlertProvider';
 import { router } from 'expo-router';
-import { useCallback } from 'react';
 import { Alert, View } from 'react-native';
 
 const SettingsScreen = () => {
@@ -14,20 +14,19 @@ const SettingsScreen = () => {
   const deleteUserMutation = useDeleteUser();
   const { signOut } = useAuthActions();
   const { t } = useTranslation();
+  const { showAlert } = useAlert();
 
-  const handleDeleteAccountPress = useCallback(() => {
-    Alert.alert(t('Delete Account'), t('Delete account confirmation message'), [
-      {
-        text: t('Cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('Delete'),
-        style: 'destructive',
-        onPress: () => deleteUserMutation.mutate(),
-      },
-    ]);
-  }, [deleteUserMutation, t]);
+  const handleDeleteAccountPress = () => {
+    showAlert({
+      title: t('Delete Account'),
+      message: t('Delete account confirmation message'),
+      type: 'warning',
+      buttons: [
+        { text: t('Cancel'), style: 'cancel' },
+        { text: t('Delete'), style: 'destructive', onPress: () => deleteUserMutation.mutate() },
+      ],
+    });
+  };
 
   const handleSignOut = async () => {
     const result = await signOut();

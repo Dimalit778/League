@@ -98,89 +98,90 @@ const LeagueDetailsScreen = () => {
   });
 
   return (
-    <Screen padding="horizontal" edges={['bottom']}>
-      {(isPending || isProcessing) && <LoadingOverlay />}
+    <>
+      <Screen padding="horizontal" edges={['bottom']}>
+        {(isPending || isProcessing) && <LoadingOverlay />}
+        <View className="flex-1">
+          <KeyboardAwareScrollView
+            keyboardShouldPersistTaps="handled"
+            bottomOffset={72}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingTop: 8,
+            }}
+          >
+            {/* League name */}
+            <View className="mb-8 gap-2">
+              <Row>
+                <Text variant="subtitle">{t('League Name')}</Text>
+              </Row>
+              <InputField
+                control={control}
+                name="leagueName"
+                placeholder={t('Enter league name')}
+                maxLength={20}
+                autoCorrect={false}
+                autoCapitalize="words"
+                error={errors.leagueName}
+              />
+            </View>
 
-      <View className="flex-1">
-        <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="handled"
-          bottomOffset={72}
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingTop: 8,
-          }}
-        >
-          {/* League name */}
-          <View className="mb-8 gap-2">
-            <Row>
-              <Text variant="subtitle">{t('League Name')}</Text>
-            </Row>
-            <InputField
-              control={control}
-              name="leagueName"
-              placeholder={t('Enter league name')}
-              maxLength={20}
-              autoCorrect={false}
-              autoCapitalize="words"
-              error={errors.leagueName}
+            {/* Nickname */}
+            <View className="mb-8 gap-2">
+              <Row>
+                <Text variant="subtitle">{t('Your Nickname')}</Text>
+              </Row>
+              <InputField
+                control={control}
+                name="nickname"
+                placeholder={t('Enter your nickname')}
+                maxLength={20}
+                autoCorrect={false}
+                autoCapitalize="words"
+                error={errors.nickname}
+              />
+            </View>
+
+            {/* Members count */}
+
+            <Text variant="body" tone="muted" className="text-center">
+              {t('Choose how many friends can join this league.')}
+            </Text>
+
+            <View className="flex-row mt-8">
+              <MemberOption
+                value={6}
+                label={t('6 Members')}
+                locked={false}
+                membersCount={membersCount}
+                onSelect={setMembersCount}
+                onLockedPress={handleLockedOptionPress}
+              />
+
+              <MemberOption
+                value={12}
+                label={t('12 Members')}
+                locked={!isPro}
+                membersCount={membersCount}
+                onSelect={setMembersCount}
+                onLockedPress={handleLockedOptionPress}
+              />
+            </View>
+          </KeyboardAwareScrollView>
+
+          {/* Fixed bottom button */}
+          <View className="px-4 ">
+            <Button
+              label={t('Create League')}
+              onPress={onSubmit}
+              variant="primary"
+              size="lg"
+              disabled={!isValid || isPending || isProcessing}
             />
           </View>
-
-          {/* Nickname */}
-          <View className="mb-8 gap-2">
-            <Row>
-              <Text variant="subtitle">{t('Your Nickname')}</Text>
-            </Row>
-            <InputField
-              control={control}
-              name="nickname"
-              placeholder={t('Enter your nickname')}
-              maxLength={20}
-              autoCorrect={false}
-              autoCapitalize="words"
-              error={errors.nickname}
-            />
-          </View>
-
-          {/* Members count */}
-
-          <Text variant="body" tone="muted" className="text-center">
-            {t('Choose how many friends can join this league.')}
-          </Text>
-
-          <View className="flex-row mt-8">
-            <MemberOption
-              value={6}
-              label={t('6 Members')}
-              locked={false}
-              membersCount={membersCount}
-              onSelect={setMembersCount}
-              onLockedPress={handleLockedOptionPress}
-            />
-
-            <MemberOption
-              value={12}
-              label={t('12 Members')}
-              locked={!isPro}
-              membersCount={membersCount}
-              onSelect={setMembersCount}
-              onLockedPress={handleLockedOptionPress}
-            />
-          </View>
-        </KeyboardAwareScrollView>
-
-        {/* Fixed bottom button */}
-        <View className="px-4 ">
-          <Button
-            label={t('Create League')}
-            onPress={onSubmit}
-            variant="primary"
-            size="lg"
-            disabled={!isValid || isPending || isProcessing}
-          />
         </View>
-      </View>
-    </Screen>
+      </Screen>
+    </>
   );
 };
 
