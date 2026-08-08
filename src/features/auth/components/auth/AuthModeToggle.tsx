@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { Pressable, View } from 'react-native';

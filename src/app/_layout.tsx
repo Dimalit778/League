@@ -3,7 +3,7 @@ import '../../global.css';
 import '@/lib/i18n/autoTranslate';
 
 import { images } from '@/assets/images';
-import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
+import { LoadingBall, NetworkStatusBanner } from '@/components';
 import { useAppFonts } from '@/hooks/useAppFonts';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {

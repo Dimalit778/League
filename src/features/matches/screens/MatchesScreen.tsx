@@ -1,4 +1,4 @@
-import { Error, Screen } from '@/components/layout';
+import { Error, Screen } from '@/components';
 import { useGetCompetitionsDetails } from '@/features/leagues/hooks/useCompetition';
 import { useCompetitionId, useMemberId } from '@/store/PrimaryLeagueStore';
 import MatchesSkeleton from '../components/MatchesSkeleton';

@@ -20,19 +20,13 @@ export default function AuthLayout() {
         <Stack.Screen
           name="signIn"
           options={{
-            headerShown: true,
-            headerTitle: '',
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="signUp"
           options={{
-            headerShown: true,
-            headerTitle: '',
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
+            headerShown: false,
           }}
         />
         <Stack.Screen name="verifyEmail" />

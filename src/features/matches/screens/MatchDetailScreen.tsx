@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
-import { Error, Screen } from '@/components/layout';
+import { Error, Screen } from '@/components';
 import { DotLottie } from '@lottiefiles/dotlottie-react-native';
 
 import { animations } from '@/assets/animations';

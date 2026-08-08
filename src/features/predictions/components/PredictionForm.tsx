@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { PredictionWithMemberType } from '@/features/matches/types';
 
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';

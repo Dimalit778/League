@@ -94,9 +94,9 @@ const AppleAuth = ({
   return (
     <AppleAuthentication.AppleAuthenticationButton
       buttonType={buttonType}
-      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-      cornerRadius={8}
-      style={{ width: '100%', height: 44, opacity: isLoading ? 0.6 : 1 }}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+      cornerRadius={14}
+      style={{ width: '100%', height: 56, opacity: isLoading ? 0.6 : 1 }}
       onPress={handleAppleSignIn}
     />
   );

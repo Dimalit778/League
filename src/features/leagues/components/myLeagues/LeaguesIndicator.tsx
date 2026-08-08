@@ -1,5 +1,4 @@
-import { HeaderChrome } from '@/components/layout';
-import { Text } from '@/components/ui';
+import { HeaderChrome, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';

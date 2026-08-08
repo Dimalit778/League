@@ -1,4 +1,4 @@
-import { AlertDialog } from '@/components/ui';
+import { AlertDialog } from '@/components';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 export interface AlertButton {

@@ -11,7 +11,7 @@ jest.mock('@/store/PrimaryLeagueStore', () => ({
 jest.mock('@/features/leagues/hooks/useCompetition', () => ({ useGetCompetitionsDetails: jest.fn() }));
 jest.mock('@/features/matches/hooks/useSeasonMatches', () => ({ useSeasonMatches: jest.fn() }));
 
-jest.mock('@/components/layout', () => {
+jest.mock('@/components', () => {
   const { View, Text } = require('react-native');
   return {
     Screen: ({ children }: any) => <View>{children}</View>,

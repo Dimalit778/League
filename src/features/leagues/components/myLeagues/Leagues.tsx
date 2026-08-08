@@ -1,5 +1,4 @@
-import { Row, Section } from '@/components/layout';
-import { Card, EmptyState, LockedBadge, LogoBadge, Text } from '@/components/ui';
+import { Card, EmptyState, LockedBadge, LogoBadge, Row, Section, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';

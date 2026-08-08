@@ -1,6 +1,6 @@
-import { Screen } from '@/components/layout';
-import { Text } from '@/components/ui';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { Text } from '../ui/Text';
+import { Screen } from './Screens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { Href, usePathname, useRouter } from 'expo-router';

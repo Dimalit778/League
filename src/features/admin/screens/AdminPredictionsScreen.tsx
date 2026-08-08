@@ -1,5 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Card, Text } from '@/components/ui';
+import { BackButton, Card, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminPredictions } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';

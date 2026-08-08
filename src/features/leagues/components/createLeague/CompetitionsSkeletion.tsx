@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Skeleton, TextSkeleton } from '@/components/ui';
+import { Screen, Skeleton, TextSkeleton } from '@/components';
 import { View } from 'react-native';
 
 function CompetitionCardSkeleton() {

@@ -1,5 +1,4 @@
-import { Row, Screen } from '@/components/layout';
-import { Badge, Card, Text } from '@/components/ui';
+import { Badge, Card, Row, Screen, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';

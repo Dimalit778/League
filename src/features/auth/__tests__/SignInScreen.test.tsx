@@ -14,7 +14,7 @@ describe('SignInScreen', () => {
     const { getByText } = render(<SignInScreen />);
 
     expect(getByText('Welcome Back')).toBeTruthy();
-    expect(getByText('Sign in to your account')).toBeTruthy();
+    expect(getByText('Sign in to continue your predictions')).toBeTruthy();
   });
 
   it('renders email and password input fields', () => {
@@ -49,6 +49,13 @@ describe('SignInScreen', () => {
     const { getByText } = render(<SignInScreen />);
 
     expect(getByText('Sign in with Google')).toBeTruthy();
+  });
+
+  it('renders a mode-switch prompt for new users', () => {
+    const { getByText } = render(<SignInScreen />);
+
+    expect(getByText("Don't have an account?")).toBeTruthy();
+    expect(getByText('Sign Up')).toBeTruthy();
   });
 
   it('renders sign in button as enabled when form is valid', async () => {

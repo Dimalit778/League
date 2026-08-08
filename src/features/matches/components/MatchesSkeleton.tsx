@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui';
+import { Skeleton } from '@/components';
 import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useWindowDimensions, View } from 'react-native';

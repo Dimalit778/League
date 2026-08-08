@@ -1,4 +1,4 @@
-import { LogoBadge, Text } from '@/components/ui';
+import { LogoBadge, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollView, View } from 'react-native';
 import { ComputedStandingRow } from '../../utils/tournamentMatches';

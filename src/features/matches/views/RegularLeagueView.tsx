@@ -1,4 +1,4 @@
-import { useFloatBottomTabsInset } from '@/components/layout';
+import { useFloatBottomTabsInset } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';

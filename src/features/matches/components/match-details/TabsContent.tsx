@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import Feather from '@expo/vector-icons/Feather';

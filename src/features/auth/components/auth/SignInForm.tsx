@@ -1,6 +1,5 @@
 import { EyeClosedIcon, EyeOpenIcon, LockIcon, MailIcon } from '@/assets/icons';
-import { Button, Text } from '@/components/ui';
-import { InputField } from '@/components/ui/InputField';
+import { Button, InputField, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -55,6 +54,7 @@ export default function SignInForm() {
         control={control}
         name="email"
         placeholder={t('Email')}
+        variant="auth"
         autoComplete="email"
         secureTextEntry={false}
         error={errors.email}
@@ -66,6 +66,7 @@ export default function SignInForm() {
         control={control}
         name="password"
         placeholder={t('Password')}
+        variant="auth"
         autoComplete="current-password"
         secureTextEntry={!showPassword}
         icon={<LockIcon size={24} color={colors.muted} />}
@@ -81,27 +82,25 @@ export default function SignInForm() {
         clearError={clearError}
       />
 
-      {errorMessage && (
-        <Text className="text-xs text-error text-center">
-          {errorMessage}
+      {errorMessage && <Text className="text-center text-xs text-error">{errorMessage}</Text>}
+
+      <Link href="/sendResetLink" asChild>
+        <Text accessibilityRole="link" tone="info">
+          {t('Forgot Password')}
         </Text>
-      )}
+      </Link>
 
       <Button
-        label={t('Sign In')}
+        accessibilityLabel={t('Sign In')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}
         variant="primary"
         size="lg"
-        className="focus:outline-none focus:ring-0"
-      />
-
-      <Link href="/sendResetLink" asChild>
-        <Text className="text-sm text-info text-center">
-          {t('Forgot Password')}
-        </Text>
-      </Link>
+        className="min-h-[58px] rounded-2xl border border-[#FFD566] bg-[#FFB31A] focus:outline-none focus:ring-0"
+      >
+        <Text className="text-center text-xl font-black text-[#081322]">{t('Sign In')}</Text>
+      </Button>
     </>
   );
 }

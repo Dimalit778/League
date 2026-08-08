@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
 import { FlatList, RefreshControl } from 'react-native';

@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Button, InputField, Text } from '@/components/ui';
+import { Button, InputField, Screen, Text } from '@/components';
 import {
   parseRecoveryTokensFromUrl,
   updatePasswordWithRecoveryTokens,

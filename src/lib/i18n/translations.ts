@@ -95,6 +95,24 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Welcome to League': 'Welcome to League',
       
       'Get Started': 'Get Started',
+      'Every match is a challenge': 'Every match is a challenge',
+      'Predict scores, compete with friends, and climb the table.':
+        'Predict scores, compete with friends, and climb the table.',
+      'My prediction': 'My prediction',
+      'Predicted score': 'Predicted score',
+      'Already have an account?': 'Already have an account?',
+      'Create your Champo account': 'Create your Champo account',
+      Back: 'Back',
+      'Join the challenge': 'Join the challenge',
+      'Sign in to continue your predictions': 'Sign in to continue your predictions',
+      'Create one account and keep all your predictions in one place.':
+        'Create one account and keep all your predictions in one place.',
+      'Predict. Compete. Climb.': 'Predict. Compete. Climb.',
+      "Don't have an account?": "Don't have an account?",
+      'Password strength': 'Password strength',
+      'Strong password': 'Strong password',
+      'At least 8 characters with a letter and a number':
+        'At least 8 characters with a letter and a number',
       'Reset Password': 'Reset Password',
       
       
@@ -115,22 +133,20 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Email is required': 'Email is required',
       'Invalid email': 'Invalid email',
       'Password is required': 'Password is required',
-      
-      
-      
+    
       'New Password': 'New Password',
       
-      
-      
-      
-      
-      
-      
+  
       'Failed to sign out': 'Failed to sign out',
       'Failed to update password': 'Failed to update password',
       
       'Sign in with Apple': 'Sign in with Apple',
-      
+      // form errors
+      'Please enter a valid email address': 'Please enter a valid email address',
+      'Minimum 8 characters': 'Minimum 8 characters',
+      'Password must contain at least one letter and one number': 'Password must contain at least one letter and one number',
+      'Full name is required': 'Full name is required',
+      'Full name must be at least 3 characters': 'Full name must be at least 3 characters',
     },
 
     // Leagues screens
@@ -265,29 +281,14 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
     // Matches and Predictions
     matches: {
       Matches: 'Matches',
-      
-      
-      
-      
-      
-      
       Prediction: 'Prediction',
-      
-      
-      
+
       'Predicted Score': 'Predicted Score',
       'Prediction Results': 'Prediction Results',
       'No prediction': 'No prediction',
       
       'Unable to load predictions. Pull to refresh to try again.':
-        'Unable to load predictions. Pull to refresh to try again.',
-      
-      
-      
-      
-      
-      
-      
+      'Unable to load predictions. Pull to refresh to try again.',
       pts: 'pts',
       Points: 'Points',
       'Total Points': 'Total Points',
@@ -875,9 +876,20 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       '{{count}} correct predictions': '{{count}} correct predictions',
       '{{count}} matches played': '{{count}} matches played',
       'Code resent successfully!': 'Code resent successfully!',
+      'Back to Sign In': 'Back to Sign In',
+      'Change email address': 'Change email address',
+      'Confirm and continue': 'Confirm and continue',
       "Didn't receive the code?": "Didn't receive the code?",
       'Email address is missing. Please try signing up again.': 'Email address is missing. Please try signing up again.',
       'Email verified successfully!': 'Email verified successfully!',
+      'Enter the code': 'Enter the code',
+      'Enter the code to finish creating your account.': 'Enter the code to finish creating your account.',
+      'Forgot your password?': 'Forgot your password?',
+      'Get back in the game': 'Get back in the game',
+      'If an account exists for this email, a reset link will arrive shortly.':
+        'If an account exists for this email, a reset link will arrive shortly.',
+      'If an account exists for this email, the link may take a few minutes to arrive.':
+        'If an account exists for this email, the link may take a few minutes to arrive.',
       'Error Details (Dev Only):': 'Error Details (Dev Only):',
       'Football Prediction': 'Football Prediction',
       'Go Home': 'Go Home',
@@ -886,9 +898,13 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Resend Code': 'Resend Code',
       'Resend in {{count}}s': 'Resend in {{count}}s',
       'Sending...': 'Sending...',
+      'Secure your predictions': 'Secure your predictions',
+      'Still need help?': 'Still need help?',
+      'Contact support': 'Contact support',
       'Something went wrong': 'Something went wrong',
       'Try Again': 'Try Again',
       'Verify Email': 'Verify Email',
+      'The code is single-use and expires shortly.': 'The code is single-use and expires shortly.',
       "We encountered an unexpected error. Don't worry, your data is safe.": "We encountered an unexpected error. Don't worry, your data is safe.",
       'Your other leagues and data will remain saved.': 'Your other leagues and data will remain saved.',
       'Your subscription has ended. Choose the leagues you want to keep active.': 'Your subscription has ended. Choose the leagues you want to keep active.',
@@ -1020,6 +1036,23 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Welcome to League': 'ברוכים הבאים לליגה',
       
       'Get Started': 'התחילו',
+      'Every match is a challenge': 'כל משחק הוא אתגר',
+      'Predict scores, compete with friends, and climb the table.':
+        'חוזים תוצאות, מתחרים עם חברים ומטפסים בטבלה.',
+      'My prediction': 'התחזית שלי',
+      'Predicted score': 'התוצאה שלי',
+      'Already have an account?': 'כבר יש לך חשבון?',
+      'Create your Champo account': 'יצירת חשבון Champo',
+      Back: 'חזרה',
+      'Join the challenge': 'מצטרפים לאתגר',
+      'Sign in to continue your predictions': 'מתחברים כדי להמשיך לתחזיות שלך',
+      'Create one account and keep all your predictions in one place.':
+        'פותחים חשבון ושומרים את כל התחזיות במקום אחד.',
+      'Predict. Compete. Climb.': 'חוזים. מתחרים. מטפסים.',
+      "Don't have an account?": 'אין לך חשבון?',
+      'Password strength': 'חוזק הסיסמה',
+      'Strong password': 'סיסמה חזקה',
+      'At least 8 characters with a letter and a number': 'לפחות 8 תווים, כולל אות ומספר',
       'Reset Password': 'איפוס סיסמה',
       
       
@@ -1801,9 +1834,20 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       '{{count}} correct predictions': '{{count}} ניחושים נכונים',
       '{{count}} matches played': '{{count}} משחקים שוחקו',
       'Code resent successfully!': 'הקוד נשלח מחדש בהצלחה!',
+      'Back to Sign In': 'חזרה לכניסה',
+      'Change email address': 'שינוי כתובת האימייל',
+      'Confirm and continue': 'אימות והמשך',
       "Didn't receive the code?": 'לא קיבלתם את הקוד?',
       'Email address is missing. Please try signing up again.': 'כתובת האימייל חסרה. נסו להירשם מחדש.',
       'Email verified successfully!': 'האימייל אומת בהצלחה!',
+      'Enter the code': 'הקלידו את הקוד',
+      'Enter the code to finish creating your account.': 'הקלידו את הקוד כדי להשלים את יצירת החשבון.',
+      'Forgot your password?': 'שכחתם את הסיסמה?',
+      'Get back in the game': 'חוזרים למשחק',
+      'If an account exists for this email, a reset link will arrive shortly.':
+        'אם קיים חשבון עבור כתובת האימייל הזו, קישור לאיפוס יגיע בקרוב.',
+      'If an account exists for this email, the link may take a few minutes to arrive.':
+        'אם קיים חשבון עבור כתובת האימייל הזו, הקישור עשוי להגיע תוך כמה דקות.',
       'Error Details (Dev Only):': 'פרטי שגיאה (פיתוח בלבד):',
       'Football Prediction': 'ניחושי כדורגל',
       'Go Home': 'חזרה לבית',
@@ -1812,9 +1856,13 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Resend Code': 'שליחת הקוד מחדש',
       'Resend in {{count}}s': 'שליחה מחדש בעוד {{count}} שניות',
       'Sending...': 'שולח...',
+      'Secure your predictions': 'שומרים על הניחושים שלכם',
+      'Still need help?': 'עדיין צריכים עזרה?',
+      'Contact support': 'פנייה לתמיכה',
       'Something went wrong': 'משהו השתבש',
       'Try Again': 'ניסיון נוסף',
       'Verify Email': 'אימות אימייל',
+      'The code is single-use and expires shortly.': 'הקוד מיועד לשימוש חד־פעמי ותוקפו יפוג בקרוב.',
       "We encountered an unexpected error. Don't worry, your data is safe.": 'אירעה שגיאה בלתי צפויה. הנתונים שלכם שמורים.',
       'Your other leagues and data will remain saved.': 'הליגות והנתונים האחרים שלכם יישארו שמורים.',
       'Your subscription has ended. Choose the leagues you want to keep active.': 'המינוי שלכם הסתיים. בחרו את הליגות שיישארו פעילות.',

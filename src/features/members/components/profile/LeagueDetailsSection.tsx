@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { Button, Divider, ListItem, LogoBadge, MyImage, Text } from '@/components/ui';
+import { Button, Divider, ListItem, LogoBadge, MyImage, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';

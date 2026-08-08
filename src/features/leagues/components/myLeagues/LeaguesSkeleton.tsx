@@ -1,4 +1,4 @@
-import { Card, Skeleton, TextSkeleton } from '@/components/ui';
+import { Card, Skeleton, TextSkeleton } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';

@@ -1,6 +1,6 @@
-import { Text } from '@/components/ui';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { View } from 'react-native';
+import { Text } from '../ui/Text';
 
 type ErrorProps = {
   error: string | Error | { message: string };

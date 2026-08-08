@@ -1,15 +1,16 @@
 import { EyeClosedIcon, EyeOpenIcon, LockIcon, MailIcon } from '@/assets/icons';
-import { Button, Text } from '@/components/ui';
-import { InputField } from '@/components/ui/InputField';
+import { Button, InputField, Row, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { UserIcon } from 'lucide-react-native';
+import { Check, UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Pressable, View } from 'react-native';
 import * as yup from 'yup';
+import AuthLegalLinks from '../AuthLegalLinks';
 const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup
@@ -27,10 +28,12 @@ export default function SignUpForm() {
   const { t } = useTranslation();
   const { signUp, isLoading, errorMessage, clearError } = useAuthActions();
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors, isValid },
   } = useForm<SignUpFormData>({
     resolver: yupResolver(signUpSchema),
@@ -41,6 +44,13 @@ export default function SignUpForm() {
       password: '',
     },
   });
+  const password = watch('password') ?? '';
+  const passwordStrength = [
+    password.length > 0,
+    password.length >= 8,
+    /[A-Za-z]/.test(password) && /\d/.test(password),
+    password.length >= 10 && /[^A-Za-z0-9]/.test(password),
+  ].filter(Boolean).length;
 
   const onSubmit = async (form: SignUpFormData) => {
     const email = form.email.trim().toLowerCase();
@@ -63,6 +73,7 @@ export default function SignUpForm() {
         control={control}
         name="fullname"
         placeholder={t('Full Name')}
+        variant="auth"
         autoComplete="name"
         icon={<UserIcon size={24} color={colors.muted} strokeWidth={1.5} />}
         error={errors.fullname}
@@ -73,6 +84,7 @@ export default function SignUpForm() {
         control={control}
         name="email"
         placeholder={t('Email')}
+        variant="auth"
         autoComplete="email"
         icon={<MailIcon size={24} color={colors.muted} />}
         error={errors.email}
@@ -83,6 +95,7 @@ export default function SignUpForm() {
         control={control}
         name="password"
         placeholder={t('Password')}
+        variant="auth"
         autoComplete="new-password"
         textContentType="newPassword"
         secureTextEntry={!showPassword}
@@ -99,20 +112,55 @@ export default function SignUpForm() {
         clearError={clearError}
       />
 
-      {errorMessage && (
-        <Text className="text-xs text-error text-center">
-          {errorMessage}
+      <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2 px-1">
+        <View className="flex-row gap-2" style={{ direction: 'ltr' }}>
+          {[1, 2, 3, 4].map((segment) => (
+            <View
+              key={segment}
+              className="h-1.5 flex-1 rounded-full"
+              style={{ backgroundColor: segment <= passwordStrength ? '#FFB31A' : '#33435F' }}
+            />
+          ))}
+        </View>
+        <Text className="text-sm text-[#C0C8D8]">
+          {passwordStrength >= 4 ? t('Strong password') : t('At least 8 characters with a letter and a number')}
         </Text>
-      )}
+      </View>
+
+      <Pressable
+        onPress={() => setAcceptedTerms((accepted) => !accepted)}
+        accessibilityRole="checkbox"
+        accessibilityLabel={t('By creating an account, you agree to:')}
+        accessibilityState={{ checked: acceptedTerms }}
+        className="min-h-12 flex-row items-center gap-3 rounded-xl py-1 active:opacity-75"
+      >
+        <View
+          className="size-7 items-center justify-center rounded-md border-2"
+          style={{ borderColor: '#FFB31A', backgroundColor: acceptedTerms ? '#FFB31A' : 'transparent' }}
+        >
+          {acceptedTerms ? <Check size={18} color="#081322" strokeWidth={3} /> : null}
+        </View>
+        <Row>
+          <Text className="min-w-0 flex-1 text-sm leading-5 text-[#C0C8D8]">
+            {t('By creating an account, you agree to:')}
+          </Text>
+          <AuthLegalLinks />
+        </Row>
+      </Pressable>
+
+      {errorMessage && <Text className="text-center text-xs text-error">{errorMessage}</Text>}
 
       <Button
-        label={t('Sign Up')}
+        accessibilityLabel={t('Sign Up')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
-        disabled={!isValid || isLoading}
+        disabled={!isValid || !acceptedTerms || isLoading}
         variant="primary"
         size="lg"
-      />
+        className="min-h-[58px] rounded-2xl border border-[#FFD566] bg-[#FFB31A]"
+      >
+        <Text className="text-center text-xl font-black text-[#081322]">{t('Sign Up')}</Text>
+      </Button>
     </>
   );
 }

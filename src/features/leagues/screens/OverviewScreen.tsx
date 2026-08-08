@@ -1,5 +1,4 @@
-import { Screen, Section, useFloatBottomTabsInset } from '@/components/layout';
-import { DirectionalIcon } from '@/components/ui';
+import { DirectionalIcon, Screen, Section, useFloatBottomTabsInset } from '@/components';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

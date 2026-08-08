@@ -1,4 +1,4 @@
-import { AvatarImage, Button } from '@/components/ui';
+import { AvatarImage, Button } from '@/components';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

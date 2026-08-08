@@ -1,5 +1,4 @@
-import { Section } from '@/components/layout';
-import { ListItem, Text } from '@/components/ui';
+import { ListItem, Section, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useNotificationPermission } from '@/providers/NotificationProvider';

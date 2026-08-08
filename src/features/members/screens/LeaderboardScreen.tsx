@@ -1,4 +1,4 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
+import { Error, Screen, useFloatBottomTabsInset } from '@/components';
 import { useGetLeaderboard, useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';

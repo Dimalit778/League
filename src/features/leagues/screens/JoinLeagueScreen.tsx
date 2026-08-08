@@ -1,7 +1,4 @@
-import { Screen } from '@/components/layout';
-import { BackButton, Button, InputField, LogoBadge, MyImage } from '@/components/ui';
-import { Text } from '@/components/ui/Text';
-
+import { BackButton, Button, InputField, LogoBadge, MyImage, Screen, Text } from '@/components';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall } from '@/lib/revenuecat/purchases';

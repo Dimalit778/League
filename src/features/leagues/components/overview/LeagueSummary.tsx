@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { AvatarImage, Divider, HeaderBackground, Text } from '@/components/ui';
+import { AvatarImage, Divider, HeaderBackground, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';

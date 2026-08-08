@@ -1,5 +1,4 @@
-import { Error, Row, Screen } from '@/components/layout';
-import { Button, Card, DirectionalIcon, Text } from '@/components/ui';
+import { Button, Card, DirectionalIcon, Error, Row, Screen, Text } from '@/components';
 import { LeaguesIndicator, LimitSelectModal } from '@/features/leagues/components/myLeagues';
 import { useMyLeaguesScreen } from '@/features/leagues/hooks/useMyLeaguesScreen';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

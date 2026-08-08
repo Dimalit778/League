@@ -1,6 +1,6 @@
 import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
-import { FloatBottomTabs, TabsHeader } from '@/components/layout';
+import { FloatBottomTabs, TabsHeader } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Tabs } from 'expo-router';

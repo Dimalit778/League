@@ -1,5 +1,4 @@
-import { Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Skeleton, TextSkeleton } from '@/components/ui';
+import { Screen, Skeleton, TextSkeleton, useFloatBottomTabsInset } from '@/components';
 import { View } from 'react-native';
 
 function DetailRowSkeleton() {

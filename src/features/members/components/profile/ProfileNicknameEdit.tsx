@@ -1,4 +1,4 @@
-import { Button, InputField } from '@/components/ui';
+import { Button, InputField } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatNameCapitalize } from '@/utils/formats';
 import { yupResolver } from '@hookform/resolvers/yup';

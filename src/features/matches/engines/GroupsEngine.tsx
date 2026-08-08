@@ -1,4 +1,4 @@
-import { useFloatBottomTabsInset } from '@/components/layout';
+import { useFloatBottomTabsInset } from '@/components';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';

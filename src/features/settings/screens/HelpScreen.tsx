@@ -1,6 +1,4 @@
-import { Row, Screen, Section } from '@/components/layout';
-import { Button, Card, Text } from '@/components/ui';
-
+import { Button, Card, Row, Screen, Section, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
 import { MailIcon } from 'lucide-react-native';

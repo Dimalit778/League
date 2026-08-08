@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Button, Card, Text } from '@/components/ui';
+import { Button, Card, Screen, Text } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';

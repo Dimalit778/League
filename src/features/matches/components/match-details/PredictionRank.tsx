@@ -1,4 +1,4 @@
-import { AvatarImage, Text } from '@/components/ui';
+import { AvatarImage, Text } from '@/components';
 import { PredictionWithMemberType } from '@/features/matches/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';

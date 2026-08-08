@@ -1,4 +1,4 @@
-import { MyImage, Text } from '@/components/ui';
+import { MyImage, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { router } from 'expo-router';
 import { CirclePlus, Clock } from 'lucide-react-native';

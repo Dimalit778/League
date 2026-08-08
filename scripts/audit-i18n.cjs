@@ -39,13 +39,27 @@ const dynamicCalls = [];
 const rawText = [];
 const rawAttributes = [];
 const rawExpressionText = [];
-const userFacingAttributes = new Set(['accessibilityHint', 'accessibilityLabel', 'description', 'label', 'message', 'placeholder', 'title']);
+const userFacingAttributes = new Set([
+  'accessibilityHint',
+  'accessibilityLabel',
+  'description',
+  'label',
+  'message',
+  'placeholder',
+  'title',
+]);
 const rawTextAllowlist = new Set(['Champion', 'EN', 'FT', 'LIVE', 'League', 'עב']);
 const productionSource = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
 
 for (const file of files) {
   const source = fs.readFileSync(file, 'utf8');
-  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  const sourceFile = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
 
   function visit(node) {
     if (ts.isCallExpression(node)) {
@@ -70,7 +84,12 @@ for (const file of files) {
       }
     }
 
-    if (ts.isJsxAttribute(node) && userFacingAttributes.has(node.name.text) && node.initializer && ts.isStringLiteral(node.initializer)) {
+    if (
+      ts.isJsxAttribute(node) &&
+      userFacingAttributes.has(node.name.text) &&
+      node.initializer &&
+      ts.isStringLiteral(node.initializer)
+    ) {
       const text = node.initializer.text.trim();
       if (text && /[A-Za-z\u0590-\u05ff]/.test(text) && !rawTextAllowlist.has(text)) {
         rawAttributes.push(`${location(sourceFile, node)} ${node.name.text}=${JSON.stringify(text)}`);
@@ -105,7 +124,9 @@ const unused = [...enKeys]
   .filter((key) => heKeys.has(key) && !usedKeys.has(key) && !productionSource.includes(key))
   .sort();
 const sameAsEnglish = [...enKeys]
-  .filter((key) => heKeys.has(key) && translations.en[key] === translations.he[key] && /[A-Za-z]/.test(translations.en[key]))
+  .filter(
+    (key) => heKeys.has(key) && translations.en[key] === translations.he[key] && /[A-Za-z]/.test(translations.en[key]),
+  )
   .sort();
 
 const report = {

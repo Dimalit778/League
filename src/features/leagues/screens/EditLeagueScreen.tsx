@@ -1,4 +1,4 @@
-import { Error } from '@/components/layout';
+import { AvatarImage, Badge, Button, Error, InputField, ListItem, LogoBadge, Screen, Text } from '@/components';
 import {
   useDeleteLeague,
   useGetLeagueAndMembers,
@@ -9,8 +9,6 @@ import { useRemoveMember } from '@/features/members/hooks/useMembers';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLeagueId } from '@/store/PrimaryLeagueStore';
 
-import { Screen } from '@/components/layout';
-import { AvatarImage, Badge, Button, InputField, ListItem, LogoBadge, Text } from '@/components/ui';
 import { MemberType } from '@/features/members/types/member.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

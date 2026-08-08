@@ -3,12 +3,12 @@
     "name": "Champo",
     "slug": "champo",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./src/assets/app-icon-ios.png",
     "scheme": "champo",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.dimalit778.champo",
       "buildNumber": "1",
       "userInterfaceStyle": "dark",
@@ -101,7 +101,7 @@
     "android": {
       "backgroundColor": "#0f172a",
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/app-icon-android-foreground.png",
+        "foregroundImage": "./src/assets/app-icon-android.png",
         "backgroundColor": "#0f172a"
       },
       "package": "com.dimalit778.champo",
@@ -110,7 +110,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./src/assets/app-icon-android-foreground.png"
+      "favicon": "./src/assets/app-icon-android.png"
     },
     "plugins": [
       "expo-router",
@@ -140,6 +140,8 @@
         {
           "ios": {
             "deploymentTarget": "15.4",
+            "useFrameworks": "dynamic",
+            "forceStaticLinking": ["RNPurchases", "RNPaywalls"],
             "extraPods": [
               {
                 "name": "AppCheckCore",

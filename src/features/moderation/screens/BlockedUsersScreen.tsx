@@ -1,5 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { AvatarImage, Button, EmptyState, ListItem, Text } from '@/components/ui';
+import { AvatarImage, Button, EmptyState, Error, ListItem, LoadingOverlay, Screen, Text } from '@/components';
 import { useBlockedUsers, useUnblockUser } from '@/features/moderation/hooks/useModeration';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Alert, View } from 'react-native';

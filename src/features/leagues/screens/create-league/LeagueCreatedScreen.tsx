@@ -1,5 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Card, Divider, LogoBadge, Text } from '@/components/ui';
+import { Button, Card, Divider, LoadingOverlay, LogoBadge, Screen, Text } from '@/components';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';

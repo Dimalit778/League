@@ -1,5 +1,4 @@
-import { Button, Text } from '@/components/ui';
-import { LogoBadge } from '@/components/ui/LogoBadge';
+import { Button, LogoBadge, Text } from '@/components';
 import { MyLeague } from '@/features/leagues/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

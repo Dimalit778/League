@@ -1,6 +1,4 @@
-import { Row } from '@/components/layout';
-import { AvatarImage, PositionBadge } from '@/components/ui';
-import { Text } from '@/components/ui/Text';
+import { AvatarImage, PositionBadge, Row, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { useMemberId } from '@/store/PrimaryLeagueStore';

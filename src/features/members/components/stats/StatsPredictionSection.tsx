@@ -1,4 +1,4 @@
-import { Card, Text } from '@/components/ui';
+import { Card, Text } from '@/components';
 import { type MemberStats } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

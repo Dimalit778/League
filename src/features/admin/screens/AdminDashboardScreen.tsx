@@ -1,5 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Card, Text } from '@/components/ui';
+import { Button, Card, Error, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

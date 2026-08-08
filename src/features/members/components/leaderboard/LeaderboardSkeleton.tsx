@@ -1,5 +1,4 @@
-import { Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Skeleton } from '@/components/ui';
+import { Screen, Skeleton, useFloatBottomTabsInset } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { View } from 'react-native';
 

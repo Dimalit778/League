@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { Button, Screen, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useManageSubscription, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';

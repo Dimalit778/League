@@ -1,5 +1,4 @@
-import { Screen } from '@/components/layout';
-import { Button, Card, Chip, Text } from '@/components/ui';
+import { Button, Card, Chip, Screen, Text } from '@/components';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useSubmitContentReport } from '@/features/moderation/hooks/useModeration';
 import { ReportContentType, ReportReason } from '@/features/moderation/types';

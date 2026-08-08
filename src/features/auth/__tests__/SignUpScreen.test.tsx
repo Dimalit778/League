@@ -14,7 +14,7 @@ describe('SignUpScreen', () => {
     const { getByText } = render(<SignUpScreen />);
 
     expect(getByText('Create account')).toBeTruthy();
-    expect(getByText('Sign up to get started')).toBeTruthy();
+    expect(getByText('Create one account and keep all your predictions in one place.')).toBeTruthy();
   });
 
   it('renders fullname, email, and password fields', () => {
@@ -37,10 +37,10 @@ describe('SignUpScreen', () => {
     expect(getByText('Sign In')).toBeTruthy();
   });
 
-  it('renders Google Sign In option', () => {
-    const { getByText } = render(<SignUpScreen />);
+  it('keeps social sign-in out of the focused sign-up form', () => {
+    const { queryByText } = render(<SignUpScreen />);
 
-    expect(getByText('Sign in with Google')).toBeTruthy();
+    expect(queryByText('Sign in with Google')).toBeNull();
   });
 
   it('shows legal acknowledgement before account creation', () => {
@@ -49,6 +49,13 @@ describe('SignUpScreen', () => {
     expect(getByText('By creating an account, you agree to:')).toBeTruthy();
     expect(getByText('Privacy Policy')).toBeTruthy();
     expect(getByText('Terms of Service')).toBeTruthy();
+  });
+
+  it('renders password-strength guidance and consent checkbox', () => {
+    const { getByText, getByRole } = render(<SignUpScreen />);
+
+    expect(getByText('At least 8 characters with a letter and a number')).toBeTruthy();
+    expect(getByRole('checkbox')).toBeTruthy();
   });
 
   it('calls signUp and navigates to verifyEmail on success', async () => {

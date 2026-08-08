@@ -1,5 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Badge, Button, Card, Chip, EmptyState, Text } from '@/components/ui';
+import { BackButton, Badge, Button, Card, Chip, EmptyState, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminContentReports, useModerateContentReport } from '@/features/admin/hooks/useAdmin';
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { useTranslation } from '@/hooks/useTranslation';

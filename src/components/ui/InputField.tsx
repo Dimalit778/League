@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/Text';
+import { Text } from './Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
@@ -10,6 +10,8 @@ type InputFieldProps = {
   control: Control<any>;
   name: string;
   placeholder: string;
+  label?: string;
+  variant?: 'default' | 'auth';
   secureTextEntry?: boolean;
   error?: FieldError;
   maxLength?: number;
@@ -31,8 +33,10 @@ export const InputField = ({
   control,
   name,
   placeholder,
+  label,
+  variant = 'default',
   secureTextEntry,
-  maxLength = 50,
+  maxLength = 25,
   autoCapitalize = 'none',
   autoCorrect = false,
   autoComplete,
@@ -66,21 +70,42 @@ export const InputField = ({
     return t('Enter {{placeholder}}', { placeholder: placeholder.toLowerCase() });
   };
 
-  const inferredAutoComplete = autoComplete ?? (name === 'email' ? 'email' : name === 'password' ? 'current-password' : 'name');
+  const inferredAutoComplete =
+    autoComplete ?? (name === 'email' ? 'email' : name === 'password' ? 'current-password' : 'name');
   const inferredKeyboardType = keyboardType ?? (name === 'email' ? 'email-address' : 'default');
   const inferredTextContentType =
     textContentType ?? (name === 'email' ? 'emailAddress' : name === 'password' ? 'password' : 'name');
+  const isAuth = variant === 'auth';
 
   return (
-    <View className="gap-1">
+    <View className={isAuth ? 'gap-2' : 'gap-1'}>
+      {label ? (
+        <Text
+          variant="label"
+          className={isAuth ? 'px-1 text-[#AEB8D0]' : 'px-1 text-muted'}
+          style={{ textAlign: isRTL ? 'right' : 'left' }}
+        >
+          {label}
+        </Text>
+      ) : null}
       <View
-        className="flex-row items-center overflow-hidden rounded-xl px-2"
+        className={
+          isAuth
+            ? 'min-h-[58px] flex-row items-center overflow-hidden rounded-2xl px-2'
+            : 'flex-row items-center overflow-hidden rounded-xl px-2'
+        }
         style={{
           direction: 'ltr',
           flexDirection: isRTL ? 'row-reverse' : 'row',
-          backgroundColor: colors.surface,
+          backgroundColor: isAuth ? 'rgba(4, 15, 31, 0.74)' : colors.surface,
           borderWidth: isFocused ? 2 : 1,
-          borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
+          borderColor: error
+            ? colors.error
+            : isFocused
+              ? '#FFB31A'
+              : isAuth
+                ? 'rgba(170, 181, 204, 0.72)'
+                : colors.border,
         }}
       >
         {icon && (
@@ -97,11 +122,11 @@ export const InputField = ({
               placeholder={placeholder}
               placeholderTextColor={colors.muted}
               secureTextEntry={secureTextEntry}
-              className="flex-1 text-text py-4 px-2"
+              className={isAuth ? 'min-h-[56px] flex-1 px-2 py-4  text-white' : 'flex-1 px-2 py-4 text-text'}
               style={{
                 textAlign: textAlign ?? (isRTL ? 'right' : 'left'),
-                color: colors.text,
-                backgroundColor: colors.surface,
+                color: isAuth ? '#F8FAFC' : colors.text,
+                backgroundColor: 'transparent',
               }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
@@ -130,10 +155,13 @@ export const InputField = ({
         {rightIcon && (
           <Pressable
             onPress={onRightIconPress}
-            className={isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'}
+            className={
+              isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'
+            }
             accessible
             accessibilityRole="button"
             accessibilityLabel={t('Toggle password visibility')}
+            accessibilityState={{ expanded: !secureTextEntry }}
           >
             {rightIcon}
           </Pressable>
@@ -141,7 +169,12 @@ export const InputField = ({
       </View>
 
       {error && (
-        <Text accessible accessibilityRole="text" accessibilityLiveRegion="assertive" className="text-xs text-error text-center">
+        <Text
+          accessible
+          accessibilityRole="text"
+          accessibilityLiveRegion="assertive"
+          className="text-xs text-error text-center"
+        >
           {error.message && t(error.message)}
         </Text>
       )}

@@ -1,4 +1,4 @@
-import { LoadingBall } from '@/components/layout/LoadingBall';
+import { LoadingBall } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';

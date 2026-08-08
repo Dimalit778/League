@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/Text';
+import { Text } from './Text';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { getProfileImage } from '@/utils/getProfileImage';

@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { Badge, Button, Card, Divider, Text } from '@/components/ui';
+import { Badge, Button, Card, Divider, Row, Text } from '@/components';
 import { resolveAiAnalysis } from '@/features/matches/model/aiAnalysis';
 import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

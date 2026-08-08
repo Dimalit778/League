@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/Text';
+import { Text } from '../ui/Text';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { useIsRTL } from '@/providers/LanguageProvider';

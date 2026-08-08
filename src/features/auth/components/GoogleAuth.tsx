@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 
-import { Button, Text } from '@/components/ui';
+import { Button, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -119,11 +119,15 @@ const GoogleAuth = ({
         testID="google-sign-in-button"
         onPress={handleGoogleSignIn}
         disabled={isLoading}
-        label={label}
+        accessibilityLabel={label}
         leftIcon={<GoogleLogoIcon size={22} />}
-        variant="secondary"
+        variant="outline"
         fullWidth
-      />
+        size="lg"
+        className="min-h-[56px] rounded-2xl border-[#8A94A8] bg-[#07172A]/80"
+      >
+        <Text className="text-center text-base font-semibold text-white">{label}</Text>
+      </Button>
       {errorMessage && <Text className="text-error text-sm text-center mt-2">{errorMessage}</Text>}
     </>
   );

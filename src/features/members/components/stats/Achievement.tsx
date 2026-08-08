@@ -1,5 +1,4 @@
-import { Row, Section } from '@/components/layout';
-import { Card, Text } from '@/components/ui';
+import { Card, Row, Section, Text } from '@/components';
 import { MemberStats as MemberStatsType } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

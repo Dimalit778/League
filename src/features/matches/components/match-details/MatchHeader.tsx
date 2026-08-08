@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { Button, Divider, MyImage, Text } from '@/components/ui';
+import { Button, Divider, MyImage, Row, Text } from '@/components';
 import { MatchWithPredictions, PredictionWithMemberType, StatusType, TeamType } from '@/features/matches/types';
 import PredictionForm, {
   type PredictionDraftState,

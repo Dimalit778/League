@@ -1,5 +1,4 @@
-import { Screen, Section, useFloatBottomTabsInset } from '@/components/layout';
-import { BoxSkeleton, Card, CardSkeleton, Skeleton, TextSkeleton } from '@/components/ui';
+import { BoxSkeleton, Card, CardSkeleton, Screen, Section, Skeleton, TextSkeleton, useFloatBottomTabsInset } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';

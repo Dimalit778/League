@@ -1,4 +1,4 @@
-import { Card, LockedBadge, LogoBadge, MyImage, Text } from '@/components/ui';
+import { Card, LockedBadge, LogoBadge, MyImage, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';

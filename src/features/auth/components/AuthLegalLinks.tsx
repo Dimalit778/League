@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Link } from 'expo-router';
 import { View } from 'react-native';
@@ -9,9 +9,7 @@ const AuthLegalLinks = ({ showConsent = false }: { showConsent?: boolean }) => {
   return (
     <View className="items-center px-5 pb-6">
       {showConsent ? (
-        <Text className="mb-2 text-center text-sm text-muted">
-          {t('By creating an account, you agree to:')}
-        </Text>
+        <Text className="mb-2 text-center text-sm text-muted">{t('By creating an account, you agree to:')}</Text>
       ) : null}
       <View className="flex-row flex-wrap items-center justify-center gap-x-2">
         <Link href="/privacy" asChild>

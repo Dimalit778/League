@@ -1,11 +1,10 @@
-import { Text } from '@/components/ui/Text';
+import { AvatarImage, HeaderBackground, Text } from '@/components';
 import { LeaderboardMember } from '@/features/members/types/member.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Crown } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 
-import { AvatarImage, HeaderBackground } from '@/components/ui';
 import { Link } from 'expo-router';
 type PodiumProps = {
   first?: LeaderboardMember;

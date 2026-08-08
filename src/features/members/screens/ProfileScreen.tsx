@@ -1,5 +1,4 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { Button, Error, Screen, Text, useFloatBottomTabsInset } from '@/components';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';

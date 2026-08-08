@@ -1,4 +1,4 @@
-import { EmptyState } from '@/components/ui';
+import { EmptyState } from '@/components';
 import { MatchCard } from '@/features/matches/components/MatchCard';
 import { type MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useTranslation } from '@/hooks/useTranslation';

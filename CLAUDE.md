@@ -55,6 +55,7 @@ src/
 ### Feature slices
 
 Each feature under `src/features/<name>/` follows the same internal structure:
+
 - `api/` — Supabase calls (plain async functions)
 - `hooks/` — TanStack Query wrappers (`useQuery`, `useMutation`)
 - `screens/` — Screen-level components wired to hooks

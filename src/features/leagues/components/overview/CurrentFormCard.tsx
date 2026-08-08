@@ -1,4 +1,4 @@
-import { Badge, Card, Divider, Text } from '@/components/ui';
+import { Badge, Card, Divider, Text } from '@/components';
 import { type RecentFormEntry } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';

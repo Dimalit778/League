@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TouchableOpacity, View } from 'react-native';
 

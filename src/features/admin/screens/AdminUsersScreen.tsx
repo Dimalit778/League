@@ -1,5 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Button, Card, Text } from '@/components/ui';
+import { BackButton, Button, Card, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Tables } from '@/types/database.types';

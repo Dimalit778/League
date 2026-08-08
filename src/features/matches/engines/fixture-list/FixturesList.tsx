@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';

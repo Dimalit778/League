@@ -1,5 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { Button } from '@/components/ui';
+import { Button, Error, LoadingOverlay, Screen } from '@/components';
 import CompetitionCard from '@/features/leagues/components/createLeague/CompetitionCard';
 import { useGetCompetitions } from '@/features/leagues/hooks/useCompetition';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';

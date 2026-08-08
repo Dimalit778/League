@@ -1,4 +1,4 @@
-import { DirectionalIcon, Divider, HeaderBackground, LogoBadge, MyImage, Text } from '@/components/ui';
+import { DirectionalIcon, Divider, HeaderBackground, LogoBadge, MyImage, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -6,7 +6,6 @@ import { Podium, Star, Users } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 import { images } from '@/assets/images';
-import { Row } from '@/components/layout';
 import { LeagueSummary } from '../../types';
 
 type StatBlockProps = {
