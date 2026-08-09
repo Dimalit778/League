@@ -773,6 +773,17 @@ export type Database = {
           owner_nickname: string
         }[]
       }
+      get_competition_leaderboard: {
+        Args: { p_competition_id: number }
+        Returns: {
+          avatar_url: string | null
+          league_id: string | null
+          member_id: string | null
+          nickname: string | null
+          total_points: number | null
+          user_id: string | null
+        }[]
+      }
       get_blocked_users: {
         Args: never
         Returns: {
