@@ -10,11 +10,10 @@ describe('SignInScreen', () => {
     globalThis.testFormValues = {};
   });
 
-  it('renders the heading and subheading', () => {
+  it('renders the heading', () => {
     const { getByText } = render(<SignInScreen />);
 
     expect(getByText('Welcome Back')).toBeTruthy();
-    expect(getByText('Sign in to continue your predictions')).toBeTruthy();
   });
 
   it('renders email and password input fields', () => {

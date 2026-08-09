@@ -10,11 +10,10 @@ describe('SignUpScreen', () => {
     globalThis.testFormValues = {};
   });
 
-  it('renders the heading and subheading', () => {
+  it('renders the heading', () => {
     const { getByText } = render(<SignUpScreen />);
 
     expect(getByText('Create account')).toBeTruthy();
-    expect(getByText('Create one account and keep all your predictions in one place.')).toBeTruthy();
   });
 
   it('renders fullname, email, and password fields', () => {

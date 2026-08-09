@@ -86,9 +86,11 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
             ) : null}
           </View>
 
-          <View className="mt-5">
-            <AuthLegalLinks />
-          </View>
+          {isSignIn ? (
+            <View className="mt-5">
+              <AuthLegalLinks />
+            </View>
+          ) : null}
 
           <Pressable
             onPress={switchMode}

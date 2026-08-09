@@ -328,14 +328,19 @@ jest.mock('expo-haptics', () => ({
 
 jest.mock('react-native-reanimated', () => {
   const React = require('react');
-  const { View } = require('react-native');
+  const { View, ScrollView } = require('react-native');
   const AnimatedView = React.forwardRef((props: any, ref: any) => React.createElement(View, { ...props, ref }));
   AnimatedView.displayName = 'AnimatedView';
+  const AnimatedScrollView = React.forwardRef((props: any, ref: any) =>
+    React.createElement(ScrollView, { ...props, ref }),
+  );
+  AnimatedScrollView.displayName = 'AnimatedScrollView';
 
   return {
     __esModule: true,
     default: {
       View: AnimatedView,
+      ScrollView: AnimatedScrollView,
       createAnimatedComponent: (Component: any) => Component,
     },
     cancelAnimation: jest.fn(),
@@ -347,11 +352,13 @@ jest.mock('react-native-reanimated', () => {
       out: (value: any) => value,
       inOut: (value: any) => value,
     },
+    Extrapolation: { CLAMP: 'clamp', EXTEND: 'extend', IDENTITY: 'identity' },
     interpolate: (_value: number, _input: number[], output: number[]) => output[0],
     interpolateColor: (_value: number, _input: number[], output: string[]) => output[0],
     useSharedValue: jest.fn((init: any) => ({ value: init })),
     useAnimatedProps: jest.fn((factory: () => object) => factory()),
     useAnimatedStyle: jest.fn(() => ({})),
+    useAnimatedScrollHandler: jest.fn(() => jest.fn()),
     withSpring: jest.fn((val: any) => val),
     withTiming: jest.fn((val: any) => val),
     withRepeat: jest.fn((val: any) => val),

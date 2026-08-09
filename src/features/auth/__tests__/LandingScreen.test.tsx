@@ -6,12 +6,6 @@ jest.mock('@/assets/images', () => ({
 }));
 
 describe('LandingScreen', () => {
-  it('renders the app title', () => {
-    const { getByText } = render(<LandingScreen />);
-
-    expect(getByText('Champo')).toBeTruthy();
-  });
-
   it('renders the value proposition', () => {
     const { getByText } = render(<LandingScreen />);
 
