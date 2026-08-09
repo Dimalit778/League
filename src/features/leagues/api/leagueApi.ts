@@ -3,7 +3,7 @@ import { LeaderboardRow, LeagueSummary, MyLeague, MyLeaguesResponse } from '../t
 import { LeaderboardMember } from '@/features/members/types/member.type';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
-const COMPETITION_SELECT = 'id, name,area, logo, flag, type, current_stage, current_fixture, season_id';
+const COMPETITION_SELECT = 'id, name,area, logo, flag, type, current_stage, current_fixture, season_id, is_free';
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,

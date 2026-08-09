@@ -1,4 +1,4 @@
-import { Button, LogoBadge, Text } from '@/components';
+import { Button, LockedBadge, LogoBadge, Text } from '@/components';
 import { MyLeague } from '@/features/leagues/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -16,12 +16,15 @@ type LimitSelectModalProps = {
   onUpgrade: () => void;
 };
 
-const LeagueCard = ({ league, selected }: { league: MyLeague; selected: boolean }) => {
+const LeagueCard = ({ league, selected, proLocked }: { league: MyLeague; selected: boolean; proLocked: boolean }) => {
   const { t } = useTranslation();
 
   return (
     <View className="flex-row items-center gap-3">
-      <LogoBadge source={{ uri: league.league.competition?.logo }} width={48} height={48} />
+      <View className="overflow-hidden rounded-md">
+        <LogoBadge source={{ uri: league.league.competition?.logo }} width={48} height={48} />
+        <LockedBadge visible={proLocked} />
+      </View>
 
       <View className="min-w-0 flex-1">
         {league.is_primary && (
@@ -33,7 +36,7 @@ const LeagueCard = ({ league, selected }: { league: MyLeague; selected: boolean 
           {league.league.name}
         </Text>
         <Text numberOfLines={1} className="text-xs mt-0.5 text-muted">
-          {league.nickname}
+          {proLocked ? t('Requires PRO') : league.nickname}
         </Text>
       </View>
 
@@ -107,7 +110,8 @@ export default function LimitSelectModal({
           <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3 py-4">
             {leagues.map((league) => {
               const selected = selectedMemberIds.includes(league.id);
-              const cannotSelect = !selected && selectedCount >= maxLeagues;
+              const proLocked = league.league.competition?.is_free === false;
+              const cannotSelect = proLocked || (!selected && selectedCount >= maxLeagues);
 
               return (
                 <Pressable
@@ -118,7 +122,7 @@ export default function LimitSelectModal({
                     cannotSelect || !league.active ? 'opacity-50' : ''
                   }`}
                 >
-                  <LeagueCard league={league} selected={selected} />
+                  <LeagueCard league={league} selected={selected} proLocked={proLocked} />
                 </Pressable>
               );
             })}

@@ -18,13 +18,21 @@ export function useLeagueActivationResolution({
 }: UseLeagueActivationResolutionParams) {
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
+  const isEligible = useCallback(
+    (memberId: string) => {
+      const league = leagues.find((candidate) => candidate.id === memberId);
+      return !!league && league.league.competition?.is_free !== false;
+    },
+    [leagues],
+  );
+
   useEffect(() => {
     if (!enabled) return;
 
     setSelectedMemberIds((current) =>
-      current.filter((memberId) => leagues.some((league) => league.id === memberId)),
+      current.filter((memberId) => leagues.some((league) => league.id === memberId) && isEligible(memberId)),
     );
-  }, [enabled, leagues]);
+  }, [enabled, isEligible, leagues]);
 
   const toggleLeague = useCallback(
     (memberId: string) => {
@@ -33,12 +41,13 @@ export function useLeagueActivationResolution({
           return current.filter((selectedMemberId) => selectedMemberId !== memberId);
         }
 
+        if (!isEligible(memberId)) return current;
         if (current.length >= maxLeagues) return current;
 
         return [...current, memberId];
       });
     },
-    [maxLeagues],
+    [isEligible, maxLeagues],
   );
 
   const save = useCallback(async () => {
