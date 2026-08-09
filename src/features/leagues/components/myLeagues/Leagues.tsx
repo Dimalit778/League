@@ -1,4 +1,4 @@
-import { Card, EmptyState, LockedBadge, LogoBadge, Row, Section, Text } from '@/components';
+import { Card, EmptyState, LogoBadge, Row, Section, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
@@ -6,22 +6,25 @@ import { spacing } from '@/lib/nativewind/spacing';
 
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
-import { Podium, Star, Users } from 'lucide-react-native';
+import { ChevronLeft, Lock, Star, Trophy, Users } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { useGetMyLeaguesSummary, useUpdatePrimaryLeague } from '../../hooks/useLeagues';
 import { LeagueSummary } from '../../types';
 import LeaguesSkeleton from './LeaguesSkeleton';
 import PrimaryLeagueCard from './PrimaryLeagueCard';
 
-function StatBlock({ icon, value }: { icon: React.ReactNode; value: string }) {
+function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <View className="min-w-6 items-center justify-center gap-1">
-      <View>{icon}</View>
-      <Text numberOfLines={1} className="font-semibold text-center text-muted">
+    <Row keepLtr className="flex-1 justify-center gap-1">
+      {icon}
+      <Text numberOfLines={1} className="text-xs text-muted">
+        {label}
+      </Text>
+      <Text ltr numberOfLines={1} className="text-xs font-bold text-text">
         {value}
       </Text>
-    </View>
+    </Row>
   );
 }
 
@@ -42,11 +45,11 @@ function LeagueCard({
   const { t } = useTranslation();
 
   return (
-    <Row>
+    <Row className="gap-2">
       {isSelectable && (
         <View
           className={cn(
-            ' h-8 w-8 items-center justify-center rounded-full border-2',
+            'h-8 w-8 items-center justify-center rounded-full border-2',
             isSelected ? 'border-primary bg-primary' : 'border-muted bg-surface',
           )}
         >
@@ -54,8 +57,9 @@ function LeagueCard({
         </View>
       )}
       <Card
-        className="flex-1 mx-4 relative overflow-hidden rounded-2xl"
-        padding="sm"
+        variant="elevated"
+        className="flex-1 overflow-hidden rounded-2xl"
+        padding="md"
         onPress={onPress}
         accessibilityLabel={league.league_name ?? undefined}
         accessibilityHint={
@@ -66,30 +70,57 @@ function LeagueCard({
               : undefined
         }
       >
-        <View className={isLocked ? 'opacity-50' : undefined}>
-          <Row className="flex-row items-center">
-            <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={36} height={36} />
-            <View className="mx-3 h-10 w-px bg-border" />
-            <View className="min-w-0 flex-1">
-              <Text numberOfLines={1} className="text-xl font-semibold">
-                {league.league_name}
-              </Text>
-              <Text className="text-muted">{league.nickname}</Text>
-            </View>
-            <View className="mx-2 flex-row gap-2">
-              <StatBlock icon={<Podium size={15} color={colors.primary} />} value={`#${league.rank}`} />
-              <View className="mx-2 h-12 w-px bg-border" />
-              <StatBlock
-                icon={<Star size={15} color={colors.primary} fill={colors.primary} />}
-                value={`${league.total_points ?? 0}`}
-              />
-              <View className="mx-2 h-12 w-px bg-border" />
-              <StatBlock icon={<Users size={15} color={colors.primary} />} value={`${league.members_count ?? 0}`} />
-            </View>
+        <View className={cn(spacing.list, isLocked && 'opacity-60')}>
+          <Row between>
+            <Row className="min-w-0 flex-1 gap-3">
+              <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={40} height={40} />
+              <View className="min-w-0 flex-1 gap-0.5">
+                <Row className="gap-2">
+                  <Text numberOfLines={1} className="shrink text-lg font-semibold">
+                    {league.league_name}
+                  </Text>
+                  {isLocked ? (
+                    <Row keepLtr className="gap-1 rounded-full border border-primary/50 bg-primary/10 px-2 py-0.5">
+                      <Lock size={11} color={colors.primary} strokeWidth={2.5} />
+                      <Text className="text-[11px] font-bold text-primary">{t('Requires Pro')}</Text>
+                    </Row>
+                  ) : null}
+                </Row>
+                <Text numberOfLines={1} className="text-sm text-muted">
+                  {league.competition_name}
+                </Text>
+              </View>
+            </Row>
+
+            {isLocked ? (
+              <Lock size={18} color={colors.muted} strokeWidth={2} />
+            ) : (
+              <ChevronLeft size={20} color={colors.muted} strokeWidth={2} />
+            )}
+          </Row>
+
+          <View className="h-px bg-border" />
+
+          <Row>
+            <MiniStat
+              icon={<Trophy size={13} color={colors.primary} />}
+              label={t('Rank')}
+              value={league.rank ? `#${league.rank}` : '—'}
+            />
+            <View className="h-4 w-px bg-border" />
+            <MiniStat
+              icon={<Star size={13} color={colors.primary} fill={colors.primary} />}
+              label={t('pts')}
+              value={`${league.total_points ?? 0}`}
+            />
+            <View className="h-4 w-px bg-border" />
+            <MiniStat
+              icon={<Users size={13} color={colors.primary} />}
+              label={t('Members')}
+              value={`${league.members_count ?? 0}`}
+            />
           </Row>
         </View>
-
-        {!isSelectable && isLocked && <LockedBadge visible={isLocked} />}
       </Card>
     </Row>
   );
@@ -125,7 +156,6 @@ export function Leagues({
   const primaryLeagueId = usePrimaryLeagueStore((state) => state.leagueId);
   const setPrimaryLeague = usePrimaryLeagueStore((state) => state.setPrimaryLeague);
   const { t } = useTranslation();
-  const { colors } = useThemeTokens();
   const selectedMemberIds = useMemo(
     () => new Set(activationSelection?.selectedMemberIds ?? []),
     [activationSelection?.selectedMemberIds],
@@ -166,22 +196,11 @@ export function Leagues({
     .sort((a, b) => Number(b.active) - Number(a.active));
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerClassName={cn(spacing.section, 'flex-grow pb-4 pt-2 ')}
-    >
-      <View className={spacing.list}>
-        <Row className="justify-center gap-2">
-          <Star size={22} color={colors.primary} fill={colors.primary} />
-          <Text variant="title" tone="primary">
-            {t('Primary League')}
-          </Text>
-        </Row>
-        <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />
-      </View>
+    <View className={spacing.section}>
+      <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />
 
       {otherLeagues.length > 0 && (
-        <Section title={t('Other Leagues')}>
+        <Section title={t('Other Leagues')} accent>
           <View className={spacing.list}>
             {otherLeagues.map((league) => (
               <LeagueCard
@@ -196,6 +215,6 @@ export function Leagues({
           </View>
         </Section>
       )}
-    </ScrollView>
+    </View>
   );
 }

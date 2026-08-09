@@ -20,12 +20,25 @@ export type ThemeColors = {
   overlay: string;
 };
 
+export type ThemeGradients = {
+  hero: readonly [string, string, string];
+  premium: readonly [string, string, string];
+  card: readonly [string, string, string];
+};
+
+export type ThemeEffects = {
+  cardBorder: string;
+  cardHighlight: string;
+  cardShadow: string;
+  cardGlow: string;
+  cardActiveGlow: string;
+};
+
 export type ThemeTokens = {
   colors: ThemeColors;
-  gradients: {
-    hero: readonly [string, string, string];
-    premium: readonly [string, string, string];
-  };
+  gradients: ThemeGradients;
+  effects: ThemeEffects;
+
   fonts: {
     heading: string;
     headingBold: string;
@@ -66,6 +79,34 @@ const darkColors = {
   overlay: 'rgba(0,0,0,0.55)',
 } as const;
 
+const lightGradients: ThemeGradients = {
+  hero: ['#F8FAFC', '#F1F5F9', '#E2E8F0'],
+  premium: ['#FFF9E8', '#FFF4D6', '#F8FAFC'],
+  card: ['#F8FAFC', '#F1F5F9', '#E8EEF4'],
+};
+
+const darkGradients: ThemeGradients = {
+  hero: ['#071A24', '#0A1827', '#0B1120'],
+  premium: ['#061525', '#0B1B30', '#0B1120'],
+  card: ['#10283C', '#0C2032', '#091A2A'],
+};
+
+const lightEffects: ThemeEffects = {
+  cardBorder: 'rgba(15, 23, 42, 0.08)',
+  cardHighlight: 'rgba(255, 255, 255, 0.8)',
+  cardShadow: '#475569',
+  cardGlow: 'rgba(122, 88, 0, 0.1)',
+  cardActiveGlow: 'rgba(122, 88, 0, 0.1)',
+};
+
+const darkEffects: ThemeEffects = {
+  cardBorder: 'rgba(120, 155, 185, 0.18)',
+  cardHighlight: 'rgba(255, 255, 255, 0.06)',
+  cardShadow: '#000000',
+  cardGlow: 'rgba(214, 162, 30, 0.22)',
+  cardActiveGlow: 'rgba(214, 162, 30, 0.22)',
+};
+
 const sharedTokens = {
   fonts: {
     heading: 'Teko_400Regular',
@@ -77,19 +118,16 @@ const sharedTokens = {
 
 const light: ThemeTokens = {
   colors: lightColors,
-  gradients: {
-    hero: ['#F8FAFC', '#F1F5F9', '#E2E8F0'],
-    premium: ['#FFF9E8', '#FFF4D6', '#F8FAFC'],
-  },
+  gradients: lightGradients,
+  effects: lightEffects,
+
   ...sharedTokens,
 };
-
 const dark: ThemeTokens = {
   colors: darkColors,
-  gradients: {
-    hero: ['#071A24', '#0A1827', '#0B1120'],
-    premium: ['#061525', '#0B1B30', '#0B1120'],
-  },
+  gradients: darkGradients,
+  effects: darkEffects,
+
   ...sharedTokens,
 };
 

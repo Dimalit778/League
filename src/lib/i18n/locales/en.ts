@@ -778,6 +778,8 @@ export const en = {
       'No matches today': 'No matches today',
     },
     'notifications': {
+      Notifications: 'Notifications',
+      'No notifications yet': 'No notifications yet',
       'Match starts soon': 'Match starts soon',
       'match-reminder-body': '{{home}} vs {{away}} starts soon, enter your prediction for the match',
     },

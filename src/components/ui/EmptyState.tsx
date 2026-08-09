@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react-native';
 import { AlertCircle, Lock, WifiOff } from 'lucide-react-native';
 import { View, type ViewProps } from 'react-native';
 import { Button } from './Button';
+import { GlassCard } from './GlassCard';
 import { Text } from './Text';
 
 export type EmptyStateVariant = 'empty' | 'error' | 'offline' | 'locked';
@@ -34,11 +35,11 @@ export function EmptyState({
   const iconColor = variant === 'error' ? colors.error : variant === 'offline' ? colors.warning : colors.muted;
 
   return (
-    <View {...props} className={cn('items-center justify-center px-6 py-6', className)}>
+    <GlassCard {...props} contentClassName={cn('items-center justify-center px-6 py-6', className)}>
       <View className="mb-4 h-14 w-14 items-center justify-center rounded-2xl bg-subtle">
         <Icon size={32} color={iconColor} strokeWidth={2} />
       </View>
-      <Text variant="title" className="text-center">
+      <Text variant="subtitle" className="text-center">
         {title}
       </Text>
       {description ? (
@@ -54,6 +55,6 @@ export function EmptyState({
           className="mt-5"
         />
       ) : null}
-    </View>
+    </GlassCard>
   );
 }

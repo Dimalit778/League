@@ -1,10 +1,13 @@
-import { AvatarImage, PositionBadge, Row, Text } from '@/components';
+import { AvatarImage, Row, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Link } from 'expo-router';
+import { Pin } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { LeaderboardMember } from '../../types/member.type';
+
 type LeaderboardRowProps = {
   member: LeaderboardMember;
   position: number;
@@ -13,6 +16,7 @@ type LeaderboardRowProps = {
 
 export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardRowProps) {
   const { t } = useTranslation();
+  const { colors } = useThemeTokens();
   const { nickname, avatar_url, member_id, total_points, league_id, user_id } = member;
   if (!league_id || !member_id) return null;
   const displayName = user_id ? (nickname ?? t('Unknown User')) : t('Deleted Player');
@@ -36,28 +40,36 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
       >
         <Row
           className={cn(
-            'items-center p-3 rounded-xl border border-border',
-            isCurrentUser ? 'bg-surface border border-primary' : 'bg-background',
+            'rounded-2xl border p-3',
+            isCurrentUser ? 'border-primary bg-surface' : 'border-border bg-surface/40',
           )}
         >
-          <View className="w-10 items-center">
-            <PositionBadge position={position} isCurrentUser={isCurrentUser} />
+          <View className="w-7 items-center">
+            <Text ltr className={cn('font-teko-bold text-[20px]', isCurrentUser ? 'text-primary' : 'text-muted')}>
+              {position}
+            </Text>
           </View>
 
           <View className="mx-3 h-11 w-11">
             <AvatarImage path={avatar_url} nickname={displayName} />
           </View>
 
-          <Text numberOfLines={1} className={cn('font-semibold flex-1', isCurrentUser && 'text-primary')}>
+          <Text numberOfLines={1} className={cn('flex-1 font-semibold', isCurrentUser && 'text-primary')}>
             {displayName}
           </Text>
 
-          <View className="items-end ">
-            <Text className={cn('font-bold', isCurrentUser && 'text-primary')}>{total_points}</Text>
-            <Text variant="bodySmall" tone="muted">
-              {t('Pts')}
-            </Text>
-          </View>
+          <Text ltr className={cn('font-bold', isCurrentUser ? 'text-primary' : 'text-text')}>
+            {total_points ?? 0} {t('pts')}
+          </Text>
+
+          {isCurrentUser ? (
+            <Row keepLtr className="ms-2 gap-1 rounded-full bg-primary/15 px-2 py-1">
+              <Pin size={12} color={colors.primary} strokeWidth={2} fill={colors.primary} />
+              <Text variant="caption" tone="primary" className="font-semibold">
+                {t('You')}
+              </Text>
+            </Row>
+          ) : null}
         </Row>
       </TouchableOpacity>
     </Link>
@@ -67,7 +79,7 @@ export function LeaderboardRow({ member, position, isCurrentUser }: LeaderboardR
 export function LeaderboardList({ leaderboard }: { leaderboard: LeaderboardMember[] }) {
   const currentMemberId = useMemberId();
   return (
-    <View className=" gap-2 ">
+    <View className="gap-2">
       {leaderboard.map((member, index) => (
         <LeaderboardRow
           key={member.member_id}

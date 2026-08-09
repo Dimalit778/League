@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { Brand, Button, InputField, Screen, Text } from '@/components';
+import { Brand, Button, InputField, Row, Screen, Text } from '@/components';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -222,10 +222,7 @@ const SendResetLink = () => {
                         <Text className="text-center text-base font-bold text-[#8AA8FF]">{t('Back to Sign In')}</Text>
                       </Pressable>
 
-                      <View
-                        className="flex-row items-center gap-4 rounded-2xl border border-[#29476E] bg-[#0A1B30]/80 p-4"
-                        style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-                      >
+                      <Row className="gap-4 rounded-2xl border border-[#29476E] bg-[#0A1B30]/80 p-4">
                         <View className="relative" accessible={false}>
                           <Mail size={38} color="#F4F7FC" strokeWidth={1.6} />
                           <CircleCheckBig size={20} color={GOLD} fill="#0A1B30" style={styles.deliveryCheck} />
@@ -233,7 +230,7 @@ const SendResetLink = () => {
                         <Text className="flex-1 text-base leading-6 text-[#DCE4F1]">
                           {t('If an account exists for this email, the link may take a few minutes to arrive.')}
                         </Text>
-                      </View>
+                      </Row>
 
                       <Pressable
                         onPress={() => void Linking.openURL('mailto:support@champoapp.com')}

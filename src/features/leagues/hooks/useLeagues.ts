@@ -34,6 +34,16 @@ export const useGetLeaderboard = (leagueId: string) => {
   });
 };
 
+// Per-round standings. Currently mirrors the season view (see leagueApi TODO);
+// swap the queryFn's data source once a round leaderboard backend exists.
+export const useGetRoundLeaderboard = (leagueId: string) => {
+  return useQuery({
+    queryKey: KEYS.leagues.roundLeaderboard(leagueId),
+    queryFn: () => leagueApi.getRoundLeaderboardView(leagueId),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useGetMyLeaguesSummary = () => {
   const userId = useAuthStore((s) => s.user?.id);
   return useQuery({

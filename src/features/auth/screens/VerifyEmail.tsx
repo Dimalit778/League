@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { Brand, Button, LoadingOverlay, Screen, Text } from '@/components';
+import { Brand, Button, LoadingOverlay, Row, Screen, Text } from '@/components';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -263,7 +263,7 @@ const VerifyEmailScreen = () => {
                     }
                   >
                     <View className="items-center gap-6">
-                      <View className="w-full flex-row justify-center gap-2" style={{ direction: 'ltr' }}>
+                      <Row keepLtr className="w-full justify-center gap-2">
                         {code.map((digit, index) => {
                           const isFocused = focusedIndex === index;
                           const hasError = Boolean(errorMessage);
@@ -297,7 +297,7 @@ const VerifyEmailScreen = () => {
                             />
                           );
                         })}
-                      </View>
+                      </Row>
 
                       <View className="min-h-6 justify-center" accessibilityLiveRegion="polite">
                         {errorMessage ? <Text className="text-center text-error">{errorMessage}</Text> : null}
@@ -322,10 +322,7 @@ const VerifyEmailScreen = () => {
                       />
 
                       <View className="items-center gap-3">
-                        <View
-                          className="flex-row flex-wrap items-center justify-center gap-1.5"
-                          style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-                        >
+                        <Row className="flex-wrap justify-center gap-1.5">
                           <Text className="text-center text-[#9EA9BE]">{t("Didn't receive the code?")}</Text>
                           {resendCoolDown > 0 ? (
                             <Text className="text-center font-semibold text-[#FFB31A]">{timer}</Text>
@@ -344,7 +341,7 @@ const VerifyEmailScreen = () => {
                               </Text>
                             </Pressable>
                           )}
-                        </View>
+                        </Row>
 
                         <Pressable
                           onPress={() => router.replace('/signUp')}
@@ -356,12 +353,12 @@ const VerifyEmailScreen = () => {
                         </Pressable>
                       </View>
 
-                      <View className="flex-row items-center justify-center gap-2" style={{ direction: 'ltr' }}>
+                      <Row keepLtr className="justify-center gap-2">
                         <ShieldCheck size={20} color="#91A1C4" />
                         <Text className="flex-shrink text-center text-sm leading-5 text-[#91A1B8]">
                           {t('The code is single-use and expires shortly.')}
                         </Text>
-                      </View>
+                      </Row>
                     </View>
                   </View>
 

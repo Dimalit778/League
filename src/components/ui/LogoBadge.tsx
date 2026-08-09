@@ -7,7 +7,7 @@ type Src = string | number | { uri: string; headers?: Record<string, string> };
 
 const LOGO_BACKDROP = '#D8E1EA';
 
-const LOGO_PAD = 4;
+const LOGO_PAD = 3;
 
 interface LogoBadgeProps {
   source: Src;

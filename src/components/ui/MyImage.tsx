@@ -1,5 +1,5 @@
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   DimensionValue,
   ImageStyle,
@@ -7,7 +7,49 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { SvgUri } from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
+
+// react-native-svg's SvgUri has no cache: every mount re-fetches and re-parses
+// the same XML from scratch, which shows up as team crests popping in with a
+// visible delay whenever a list (e.g. switching fixture rounds) remounts them.
+// Cache resolved XML per URI for the life of the app so repeats are instant.
+const svgXmlCache = new Map<string, string>();
+const svgXmlFetches = new Map<string, Promise<string>>();
+
+function useSvgXml(uri: string | undefined) {
+  const [xml, setXml] = useState<string | null>(uri ? (svgXmlCache.get(uri) ?? null) : null);
+
+  useEffect(() => {
+    if (!uri) return;
+
+    const cached = svgXmlCache.get(uri);
+    if (cached !== undefined) {
+      setXml(cached);
+      return;
+    }
+
+    let cancelled = false;
+    let request = svgXmlFetches.get(uri);
+    if (!request) {
+      request = fetch(uri).then((res) => res.text());
+      svgXmlFetches.set(uri, request);
+    }
+
+    request
+      .then((text) => {
+        svgXmlCache.set(uri, text);
+        if (!cancelled) setXml(text);
+      })
+      .catch(() => {})
+      .finally(() => svgXmlFetches.delete(uri));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uri]);
+
+  return xml;
+}
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';
 
@@ -83,16 +125,14 @@ export const MyImage = ({
         ? 'xMidYMid slice'
         : undefined;
 
+  const svgXml = useSvgXml(isSvg ? uri : undefined);
+
   if (isSvg && uri) {
-    // Render SVG via react-native-svg (no caching; wrap to size)
     return (
       <View className={className} style={sizeStyle as StyleProp<ViewStyle>}>
-        <SvgUri
-          uri={uri}
-          width="100%"
-          height="100%"
-          preserveAspectRatio={svgPreserveAspectRatio}
-        />
+        {svgXml ? (
+          <SvgXml xml={svgXml} width="100%" height="100%" preserveAspectRatio={svgPreserveAspectRatio} />
+        ) : null}
       </View>
     );
   }

@@ -1,14 +1,13 @@
-import { Card, Text } from '@/components';
+import { GlassCard, Row, Text } from '@/components';
+import { LayeredCard } from '@/components/ui/Cards';
 import { type MemberStats } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { Check, Crosshair, Flame, X } from 'lucide-react-native';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-
 const GAUGE_SIZE = 72;
 const STROKE_WIDTH = 4;
 const RADIUS = (GAUGE_SIZE - STROKE_WIDTH) / 2;
@@ -33,7 +32,11 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
         : 'Room to improve';
 
   return (
-    <Card padding="sm" className="w-32" contentClassName={cn('items-center', spacing.row)}>
+    <GlassCard
+      padding="sm"
+      style={{ flex: 0, width: 128 }}
+      contentClassName={cn('items-center justify-center', spacing.row)}
+    >
       <Text variant="label" tone="secondary">
         {t('Accuracy')}
       </Text>
@@ -68,43 +71,40 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
       <Text variant="caption" tone="primary" className="text-center" numberOfLines={2}>
         {t(messageKey)}
       </Text>
-    </Card>
+    </GlassCard>
   );
 }
 
 function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
-    <Card padding="sm" className="min-w-0 flex-1" contentClassName="flex-1 items-center justify-center gap-1">
-      {icon}
-      <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">
-        {label}
-      </Text>
+    <LayeredCard>
+      <View className="items-center justify-center">{icon}</View>
+
       <Text variant="subtitle" className="text-center">
         {String(value)}
       </Text>
-    </Card>
+      <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">
+        {label}
+      </Text>
+    </LayeredCard>
   );
 }
 
 export function StatsPredictionSection({ stats }: { stats: MemberStats }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const isRTL = useIsRTL();
   const { bingoHits, missedHits, regularHits, currentStreak, accuracy } = stats;
 
   return (
-    <View
-      className={cn('flex-row', spacing.list)}
-      style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-    >
+    <Row className={cn('items-stretch', spacing.list)}>
       <AccuracyGauge accuracy={accuracy} />
       <View className={cn('min-w-0 flex-1', spacing.list)}>
         <MetricTile
-          icon={<Flame size={20} color={colors.warning} strokeWidth={2} />}
+          icon={<Flame size={20} color={colors.success} strokeWidth={2} />}
           label={t('Current streak')}
           value={currentStreak}
         />
-        <View className={cn('flex-1 flex-row', spacing.row)}>
+        <View className={cn('min-h-0 flex-1 flex-row', spacing.row)}>
           <MetricTile
             icon={<Crosshair size={18} color={colors.primary} strokeWidth={2} />}
             label={t('Bingo')}
@@ -122,6 +122,6 @@ export function StatsPredictionSection({ stats }: { stats: MemberStats }) {
           />
         </View>
       </View>
-    </View>
+    </Row>
   );
 }

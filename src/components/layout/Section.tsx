@@ -1,4 +1,5 @@
 import { Text } from '../ui/Text';
+import { Row } from './Row';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { useIsRTL } from '@/providers/LanguageProvider';
@@ -13,6 +14,8 @@ export type SectionProps = ViewProps & {
   /** Icon / node shown on the trailing side (requires `onActionPress`) */
   actionIcon?: ReactNode;
   onActionPress?: () => void;
+  /** Show a leading accent bar before the title for a stronger visual rhythm */
+  accent?: boolean;
   children: ReactNode;
   className?: string;
   contentClassName?: string;
@@ -24,6 +27,7 @@ export function Section({
   actionLabel,
   actionIcon,
   onActionPress,
+  accent = false,
   children,
   className,
   contentClassName,
@@ -35,9 +39,18 @@ export function Section({
   const headerText = (
     <View className="min-w-0 flex-1 gap-1" style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
       {title ? (
-        <Text variant="subtitle" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-          {title}
-        </Text>
+        accent ? (
+          <Row className="gap-2">
+            <View className="h-4 w-1 rounded-full bg-primary" />
+            <Text variant="subtitle" numberOfLines={1} style={{ textAlign: isRTL ? 'right' : 'left' }}>
+              {title}
+            </Text>
+          </Row>
+        ) : (
+          <Text variant="subtitle" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+            {title}
+          </Text>
+        )
       ) : null}
       {description ? (
         <Text variant="bodySmall" tone="muted" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>

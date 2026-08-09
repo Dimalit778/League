@@ -10,7 +10,7 @@ export default function UserLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
-        animation: 'slide_from_right',
+
         gestureEnabled: true,
         fullScreenGestureEnabled: Platform.OS === 'ios',
       }}

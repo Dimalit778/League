@@ -154,9 +154,20 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       League: 'League',
       Leagues: 'Leagues',
       'Create or join a league to get started.': 'Create or join a league to get started.',
-      
+      'Full ranking': 'Full ranking',
+      Round: 'Round',
+      'All season': 'All season',
+      You: 'You',
+      'More friends, more competition': 'More friends, more competition',
+      'Invite friends to your league and make every match more exciting.':
+        'Invite friends to your league and make every match more exciting.',
+      '{{count}} leagues': '{{count}} leagues',
+      'Enter league': 'Enter league',
+      'Requires Pro': 'Requires Pro',
+      'Want to open more leagues?': 'Want to open more leagues?',
+      'Upgrade to Pro and open up to {{count}} leagues': 'Upgrade to Pro and open up to {{count}} leagues',
       'Create League': 'Create League',
-      
+
       'Manage League': 'Manage League',
       'Invite friends': 'Invite friends',
       'Invite code': 'Invite code',
@@ -659,17 +670,18 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
     // Home
     home: {
-      
-      
-      
-      
+      Hello: 'Hello',
+      'Good morning': 'Good morning',
+      'Good afternoon': 'Good afternoon',
+      'Good evening': 'Good evening',
+      'Good night': 'Good night',
       Hits: 'Hits',
-      
+
     },
 
     // Stats
     stats: {
-      
+
       Stats: 'Stats',
       Player: 'Player',
       'Minimum 6 characters': 'Minimum 6 characters',
@@ -769,9 +781,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       USER: 'USER',
       POINTS: 'POINTS',
-      
-      
-      
+      'of {{count}} players': 'of {{count}} players',
+
+
       Table: 'Table',
       'Top leaderboard': 'Top leaderboard',
       
@@ -779,6 +791,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'No matches today': 'No matches today',
     },
     notifications: {
+      Notifications: 'Notifications',
+      'No notifications yet': 'No notifications yet',
       'Match starts soon': 'Match starts soon',
       'match-reminder-body': '{{home}} vs {{away}} starts soon, enter your prediction for the match',
     },
@@ -1094,7 +1108,19 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       League: 'ליגה',
       Leagues: 'ליגות',
       'Create or join a league to get started.': 'צור ליגה או הצטרף לליגה כדי להתחיל.',
-      
+      'Full ranking': 'הדירוג המלא',
+      Round: 'מחזור',
+      'All season': 'כל העונה',
+      You: 'אתה',
+      'More friends, more competition': 'יותר חברים, יותר תחרות',
+      'Invite friends to your league and make every match more exciting.':
+        'הזמינו חברים לליגה והפכו כל משחק למעניין יותר.',
+      '{{count}} leagues': 'ליגות {{count}}',
+      'Enter league': 'כניסה לליגה',
+      'Requires Pro': 'דורש Pro',
+      'Want to open more leagues?': 'רוצה לפתח ליגות נוספות?',
+      'Upgrade to Pro and open up to {{count}} leagues': 'שדרג ל-Pro ופתח עד {{count}} ליגות',
+
       'Create League': 'יצירת ליגה',
       
       'Manage League': 'ניהול ליגה',
@@ -1617,17 +1643,18 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
 
     // Home
     home: {
-      
-      
-      
-      
+      Hello: 'שלום',
+      'Good morning': 'בוקר טוב',
+      'Good afternoon': 'צהריים טובים',
+      'Good evening': 'ערב טוב',
+      'Good night': 'לילה טוב',
       Hits: 'פגיעות',
-      
+
     },
 
     // Stats
     stats: {
-      
+
 
       Stats: 'סטטיסטיקה',
       Player: 'שחקן',
@@ -1742,9 +1769,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       
       USER: 'משתמש',
       POINTS: 'נקודות',
-      
-      
-      
+      'of {{count}} players': 'מתוך {{count}} שחקנים',
+
+
       Table: 'טבלה',
       'Top leaderboard': 'מובילי הטבלה',
       
@@ -1752,6 +1779,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'No matches today': 'אין משחקים היום',
     },
     notifications: {
+      Notifications: 'התראות',
+      'No notifications yet': 'אין התראות עדיין',
       'Match starts soon': 'המשחק מתחיל בקרוב',
       'match-reminder-body': '{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק',
     },

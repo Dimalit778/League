@@ -150,7 +150,7 @@ export function useMyLeaguesScreen() {
         await updatePrimaryLeague({ leagueId: nextLeagueId });
       } catch {
         setPrimaryLeague(previousPrimaryLeague);
-        router.replace('/(app)/(league)/(tabs)/MyLeagues');
+        router.replace('/(app)/(user)/leagues/my-leagues');
       }
     },
     [

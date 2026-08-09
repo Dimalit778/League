@@ -804,6 +804,8 @@ export const he = {
       'No matches today': 'אין משחקים היום',
     },
     'notifications': {
+      Notifications: 'התראות',
+      'No notifications yet': 'אין התראות עדיין',
       'Match starts soon': 'המשחק מתחיל בקרוב',
       'match-reminder-body': '{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק',
     },

@@ -1,4 +1,4 @@
-import { Button } from '@/components';
+import { Button } from '@/components/ui/Button';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import * as Sentry from '@sentry/react-native';

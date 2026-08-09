@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { Brand, Button, Screen, Text } from '@/components';
+import { Brand, Button, Row, Screen, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -30,7 +30,7 @@ function PredictionCard({ compact }: { compact: boolean }) {
         style={[StyleSheet.absoluteFill, styles.nonInteractive]}
       />
       <Text className="text-center text-[13px] font-bold text-white">{t('My prediction')}</Text>
-      <View className="mt-2 flex-row items-center justify-center gap-2" style={{ direction: 'ltr' }}>
+      <Row keepLtr className="mt-2 justify-center gap-2">
         <View className="size-10 items-center justify-center rounded-full border border-[#75A7FF]/60 bg-[#153A6A]">
           <Text className="text-center text-lg font-black text-white">B</Text>
         </View>
@@ -38,7 +38,7 @@ function PredictionCard({ compact }: { compact: boolean }) {
         <View className="size-10 items-center justify-center rounded-full border border-[#FFB31A]/60 bg-[#543A10]">
           <Text className="text-center text-lg font-black text-white">G</Text>
         </View>
-      </View>
+      </Row>
       <View className="mt-2 items-center">
         <Text className="text-center text-[11px] font-semibold text-[#FFCB5B]">{t('Predicted score')}</Text>
         <View className="mt-1 min-w-[92px] rounded-xl border border-[#FFB31A]/70 bg-[#06101F]/80 px-3 py-1">
@@ -78,15 +78,15 @@ function LeaderboardCard({ compact }: { compact: boolean }) {
         end={{ x: 0, y: 1 }}
         style={[StyleSheet.absoluteFill, styles.nonInteractive]}
       />
-      <View className="mb-1 flex-row items-center justify-center gap-2" style={{ direction: 'ltr' }}>
+      <Row keepLtr className="mb-1 justify-center gap-2">
         <Text className="text-center text-[13px] font-bold text-white">{t('Leaderboard')}</Text>
         <Trophy size={16} color={GOLD} fill={GOLD} strokeWidth={1.6} />
-      </View>
+      </Row>
       {leaders.map((leader, index) => (
-        <View
+        <Row
           key={leader.rank}
-          className="flex-row items-center gap-1.5 border-b border-white/10 py-1.5 last:border-b-0"
-          style={{ direction: 'ltr' }}
+          keepLtr
+          className="gap-1.5 border-b border-white/10 py-1.5 last:border-b-0"
         >
           <View className="size-5 items-center justify-center rounded-full" style={{ backgroundColor: leader.color }}>
             <Text allowFontScaling={false} className="text-center text-[10px] font-black text-[#071525]">
@@ -107,7 +107,7 @@ function LeaderboardCard({ compact }: { compact: boolean }) {
               {leader.points}
             </Text>
           </View>
-        </View>
+        </Row>
       ))}
     </View>
   );
@@ -189,7 +189,7 @@ export default function LandingScreen() {
               </Button>
             </Link>
 
-            <View className="flex-row items-center justify-center gap-1" style={{ direction: 'ltr' }}>
+            <Row keepLtr className="justify-center gap-1">
               <Text className="text-center text-sm text-[#AAB4C6]">{t('Already have an account?')}</Text>
               <Link href="/(auth)/signIn" asChild>
                 <Pressable
@@ -201,7 +201,7 @@ export default function LandingScreen() {
                   <Text className="text-center text-sm font-bold text-[#7EA1FF]">{t('Sign In')}</Text>
                 </Pressable>
               </Link>
-            </View>
+            </Row>
           </View>
         </View>
       </Screen>

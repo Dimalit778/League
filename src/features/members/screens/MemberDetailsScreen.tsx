@@ -85,6 +85,7 @@ export default function MemberDetailsScreen() {
 
   return (
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
+      <BackButton title={t('Member Details')} />
       <Card variant="hero" contentClassName="items-center px-5 py-6">
         <View className="h-24 w-24 overflow-hidden rounded-full border-[3px] border-primary bg-subtle p-0.5">
           <AvatarImage path={member.avatar_url} nickname={displayName} />

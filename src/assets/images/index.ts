@@ -1,6 +1,6 @@
 export const images = {
 
-
+stadium: require('./stadium.jpg'),
  bgBallTrophy: require('./bg-ball-trophy.png'),
 
 

@@ -10,6 +10,7 @@ export const useThemeTokens = () => {
     isDark: theme === 'dark',
     colors: tokens.colors,
     gradients: tokens.gradients,
+    effects: tokens.effects,
     fonts: tokens.fonts,
     spacing: tokens.spacing,
     radius: tokens.radius,

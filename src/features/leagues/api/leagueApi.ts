@@ -61,6 +61,7 @@ export const leagueApi = {
       .order('total_points', { ascending: false });
 
     if (error) throw error;
+    console.log('leaderboard', JSON.stringify(data, null, 2));
 
     const rows = (data ?? []) as LeaderboardRow[];
     if (rows.length === 0) return rows;
@@ -85,6 +86,12 @@ export const leagueApi = {
       ...row,
       correct_scores: row.member_id ? (correctScoreCounts.get(row.member_id) ?? 0) : 0,
     }));
+  },
+  // TODO(backend): return per-round standings once a round leaderboard source
+  // (RPC or view) exists. Until then it mirrors the season view so the UI toggle
+  // is fully wired and only the query needs to be swapped here.
+  async getRoundLeaderboardView(leagueId: string) {
+    return leagueApi.getLeaderboardView(leagueId);
   },
   async getMyLeaguesSummary(userId: string): Promise<LeagueSummary[]> {
 

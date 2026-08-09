@@ -1,23 +1,29 @@
 import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
-import { FloatBottomTabs, TabsHeader } from '@/components';
+import { FloatBottomTabs } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useIsFocused } from '@react-navigation/native';
 import { Tabs } from 'expo-router';
+import type { ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-export default function TabLayout() {
-  const { t } = useTranslation();
-  const { colors } = useThemeTokens();
+/** RN 7 dropped unmountOnBlur — remount tab content on leave so scroll resets. */
+function UnmountOnBlur({ children }: { children: ReactNode }) {
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
+  return children;
+}
 
+export default function TabLayout() {
+  const { colors } = useThemeTokens();
   const isWeb = Platform.OS === 'web';
 
   return (
     <Tabs
       tabBar={isWeb ? () => null : (props) => <FloatBottomTabs {...props} />}
+      screenLayout={({ children }) => <UnmountOnBlur>{children}</UnmountOnBlur>}
       screenOptions={{
-        headerShown: true,
-        header: ({ options }) => <TabsHeader title={typeof options.title === 'string' ? options.title : undefined} />,
+        headerShown: false,
         sceneStyle: {
           backgroundColor: colors.background,
         },
@@ -26,28 +32,24 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t('Home'),
           tabBarIcon: ({ color, size }) => <FieldIcon size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="Matches"
         options={{
-          title: t('Matches'),
           tabBarIcon: ({ color, size }) => <MatchesIcon size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="Leaderboard"
         options={{
-          title: t('Leaderboard'),
           tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="Profile"
         options={{
-          title: t('Profile'),
           tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
         }}
       />

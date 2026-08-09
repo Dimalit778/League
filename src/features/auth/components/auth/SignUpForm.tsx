@@ -113,7 +113,7 @@ export default function SignUpForm() {
       />
 
       <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2 px-1">
-        <View className="flex-row gap-2" style={{ direction: 'ltr' }}>
+        <Row keepLtr className="gap-2">
           {[1, 2, 3, 4].map((segment) => (
             <View
               key={segment}
@@ -121,7 +121,7 @@ export default function SignUpForm() {
               style={{ backgroundColor: segment <= passwordStrength ? '#FFB31A' : '#33435F' }}
             />
           ))}
-        </View>
+        </Row>
         <Text className="text-sm text-[#C0C8D8]">
           {passwordStrength >= 4 ? t('Strong password') : t('At least 8 characters with a letter and a number')}
         </Text>

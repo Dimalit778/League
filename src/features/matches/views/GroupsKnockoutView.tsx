@@ -1,6 +1,7 @@
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { MatchesTopBar } from '../components/shared/MatchesTopBar';
 import GroupsEngine from '../engines/GroupsEngine';
 import KnockoutEngine from '../engines/KnockoutEngine';
 import { TournamentViewTabs } from '../engines/shared/TournamentTabs';
@@ -22,10 +23,9 @@ export default function GroupsKnockoutView({
   const [view, setView] = useState<TournamentView>(isKnockoutStage(currentStage) ? 'knockout' : 'groups');
 
   return (
-    <View className="flex-1">
-      <View className="shrink-0 px-3 pb-2">
-        <TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />
-      </View>
+    <View className="flex-1 ">
+      <MatchesTopBar center={<TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />} />
+
       {view === 'groups' ? (
         <GroupsEngine matches={groupMatches} onRefresh={onRefresh} />
       ) : (

@@ -109,6 +109,15 @@ jest.mock('@/hooks/useThemeTokens', () => ({
     gradients: {
       hero: ['#000', '#111', '#222'],
       premium: ['#111', '#222', '#333'],
+      card: ['#000', '#111', '#222'],
+      cardActive: ['#111', '#222', '#333'],
+    },
+    effects: {
+      cardBorder: 'rgba(255,255,255,0.2)',
+      cardHighlight: 'rgba(255,255,255,0.1)',
+      cardGlow: 'rgba(0,0,0,0.1)',
+      cardActiveGlow: 'rgba(255,200,0,0.2)',
+      cardShadow: '#000',
     },
     spacing: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32, 10: 40, 12: 48 },
     radius: { sm: 8, md: 12, lg: 16, xl: 24, full: 999 },

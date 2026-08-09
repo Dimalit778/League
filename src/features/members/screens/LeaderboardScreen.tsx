@@ -1,21 +1,60 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components';
-import { useGetLeaderboard, useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
+import { images } from '@/assets/images';
+import { CollapsibleHeader, Error, Row, Text } from '@/components';
+import { useGetLeaderboard, useGetLeagueAndMembers, useGetRoundLeaderboard } from '@/features/leagues/hooks/useLeagues';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
-import { useEffect, useMemo } from 'react';
-import { Share } from 'react-native';
+import { router } from 'expo-router';
+import { Trophy } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, Share, View } from 'react-native';
+import { InviteFriendsCard } from '../components/leaderboard/InviteFriendsCard';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
+import { LeaderboardScopeToggle, type LeaderboardScope } from '../components/leaderboard/LeaderboardScopeToggle';
 import LeaderboardSkeleton from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Pudiom';
-import { SparseLeaderboardCard } from '../components/leaderboard/SparseLeaderboardCard';
 
+const Header = ({ scope, setScope }: { scope: LeaderboardScope; setScope: (scope: LeaderboardScope) => void }) => {
+  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
+
+  return (
+    <View className="w-full ">
+      <View className="relative w-full justify-center px-2.5 h-12">
+        <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="box-none">
+          <LeaderboardScopeToggle value={scope} onChange={setScope} />
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('My leagues')}
+          hitSlop={4}
+          onPress={() => router.push('/(app)/(user)/leagues/my-leagues')}
+          className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
+          style={{
+            position: 'absolute',
+            end: 10,
+            top: 0,
+          }}
+        >
+          <Trophy color={colors.text} size={23} strokeWidth={1.5} />
+        </Pressable>
+      </View>
+    </View>
+  );
+};
 export default function LeaderboardScreen() {
   const leagueId = useLeagueId();
-  const bottomTabsInset = useFloatBottomTabsInset();
-  const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
+
+  const [scope, setScope] = useState<LeaderboardScope>('season');
+
+  const seasonQuery = useGetLeaderboard(leagueId);
+  const roundQuery = useGetRoundLeaderboard(leagueId);
+  const { data: leaderboard, isLoading, error } = scope === 'round' ? roundQuery : seasonQuery;
+
   const { data: league } = useGetLeagueAndMembers(leagueId);
   const { t } = useTranslation();
   const { showAlert } = useAlert();
@@ -60,18 +99,33 @@ export default function LeaderboardScreen() {
   if (!leaderboard || isLoading) return <LeaderboardSkeleton />;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
-      <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
+    <CollapsibleHeader
+      variant="fixed"
+      expandedHeight={280}
+      fixedBackgroundRevealStart={40}
+      fixedBackgroundRevealDistance={30}
+      backgroundImage={images.stadium}
+      overlap={200}
+      collapsedHeader={<Header scope={scope} setScope={setScope} />}
+    >
+      <View className="gap-6 px-4 pt-2">
+        <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
 
-      {rest.length > 0 ? (
-        <LeaderboardList leaderboard={rest} />
-      ) : (
-        <SparseLeaderboardCard
-          memberCount={leaderboard.length}
-          onInvite={handleInviteFriends}
-          inviteDisabled={!league}
-        />
-      )}
-    </Screen>
+        {rest.length > 0 ? (
+          <View className="gap-4">
+            <Row keepLtr className="gap-3">
+              <View className="h-px flex-1 bg-border" />
+              <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
+                {t('Full ranking')}
+              </Text>
+              <View className="h-px flex-1 bg-border" />
+            </Row>
+            <LeaderboardList leaderboard={rest} />
+          </View>
+        ) : null}
+
+        <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} />
+      </View>
+    </CollapsibleHeader>
   );
 }

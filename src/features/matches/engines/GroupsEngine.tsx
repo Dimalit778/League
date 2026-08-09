@@ -9,18 +9,9 @@ import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import LeagueStandingsTable from './groups/LeagueStandingsTable';
 import { GroupTabs } from './shared/TournamentTabs';
 
-export default function GroupsEngine({
-  matches,
-  onRefresh,
-}: {
-  matches: MatchCardType[];
-  onRefresh: () => void;
-}) {
+export default function GroupsEngine({ matches, onRefresh }: { matches: MatchCardType[]; onRefresh: () => void }) {
   const bottomInset = useFloatBottomTabsInset();
-  const { groups, matchesByGroup, standingsByGroup } = useMemo(
-    () => selectGroups(matches),
-    [matches],
-  );
+  const { groups, matchesByGroup, standingsByGroup } = useMemo(() => selectGroups(matches), [matches]);
   const [selectedGroup, setSelectedGroup] = useState(groups[0] ?? '');
   const activeGroup = groups.includes(selectedGroup) ? selectedGroup : (groups[0] ?? '');
 

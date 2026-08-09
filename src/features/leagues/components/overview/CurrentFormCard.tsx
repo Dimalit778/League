@@ -1,9 +1,11 @@
-import { Badge, Card, Divider, Text } from '@/components';
+import { Badge, Divider, Row, Text } from '@/components';
+import { FrostedGlassCard } from '@/components/ui/Cards';
+
 import { type RecentFormEntry } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { View } from 'react-native';
 
 type CurrentFormCardProps = {
@@ -22,11 +24,8 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
   const totalPoints = results.reduce((sum, result) => sum + result.points, 0);
 
   return (
-    <Card>
-      <View
-        className={cn('flex-row items-center', spacing.stack)}
-        style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-      >
+    <FrostedGlassCard>
+      <Row className={spacing.stack}>
         <View className={cn('min-w-0 flex-1', spacing.list, isRTL ? 'items-end' : 'items-start')}>
           <Text variant="caption" tone="muted">
             {t('Last 5 finished predictions')}
@@ -60,7 +59,7 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
             {t('Points')}
           </Text>
         </View>
-      </View>
-    </Card>
+      </Row>
+    </FrostedGlassCard>
   );
 }
