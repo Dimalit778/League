@@ -8,6 +8,7 @@ const invalidateVisibleContent = (queryClient: ReturnType<typeof useQueryClient>
     queryClient.invalidateQueries({ queryKey: KEYS.members.all }),
     queryClient.invalidateQueries({ queryKey: KEYS.leagues.all }),
     queryClient.invalidateQueries({ queryKey: KEYS.predictions.all }),
+    queryClient.invalidateQueries({ queryKey: KEYS.competitions.all }),
   ]);
 
 export const useSubmitContentReport = () => {

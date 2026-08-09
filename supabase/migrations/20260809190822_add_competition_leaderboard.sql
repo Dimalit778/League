@@ -44,4 +44,5 @@ as $$
   order by ranked.user_id, ranked.total_points desc;
 $$;
 
+revoke all on function public.get_competition_leaderboard(integer) from public, anon;
 grant execute on function public.get_competition_leaderboard(integer) to authenticated;

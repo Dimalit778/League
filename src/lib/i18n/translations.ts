@@ -157,6 +157,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Full ranking': 'Full ranking',
       Round: 'Round',
       'All season': 'All season',
+      Friends: 'Friends',
+      World: 'World',
       You: 'You',
       'More friends, more competition': 'More friends, more competition',
       'Invite friends to your league and make every match more exciting.':
@@ -1111,6 +1113,8 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Full ranking': 'הדירוג המלא',
       Round: 'מחזור',
       'All season': 'כל העונה',
+      Friends: 'חברים',
+      World: 'עולם',
       You: 'אתה',
       'More friends, more competition': 'יותר חברים, יותר תחרות',
       'Invite friends to your league and make every match more exciting.':

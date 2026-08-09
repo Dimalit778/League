@@ -160,4 +160,15 @@ describe('useLeagues hooks', () => {
       }),
     );
   });
+
+  it('disables the competition leaderboard query when enabled is false', () => {
+    useGetCompetitionLeaderboard(2021, false);
+
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: KEYS.competitions.leaderboard(2021),
+        enabled: false,
+      }),
+    );
+  });
 });

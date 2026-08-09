@@ -70,7 +70,7 @@ export default function LeaderboardScreen() {
 
   const seasonQuery = useGetLeaderboard(leagueId);
   const roundQuery = useGetRoundLeaderboard(leagueId);
-  const worldQuery = useGetCompetitionLeaderboard(competitionId);
+  const worldQuery = useGetCompetitionLeaderboard(competitionId, audience === 'world');
 
   const friendsQuery = scope === 'round' ? roundQuery : seasonQuery;
   const activeQuery = audience === 'world' ? worldQuery : friendsQuery;
@@ -116,8 +116,8 @@ export default function LeaderboardScreen() {
     }
   };
 
-  if (error) return <Error error={error} />;
-  if (!seasonQuery.data && seasonQuery.isLoading) return <LeaderboardSkeleton />;
+  if (friendsQuery.error) return <Error error={friendsQuery.error} />;
+  if (!friendsQuery.data && friendsQuery.isLoading) return <LeaderboardSkeleton />;
 
   const isClickable = audience === 'friends';
   const bodyIsLoading = activeIsLoading || !leaderboard;
@@ -135,7 +135,9 @@ export default function LeaderboardScreen() {
       <View className="gap-6 px-4 pt-2">
         {audience === 'friends' ? <LeaderboardScopeToggle value={scope} onChange={setScope} /> : null}
 
-        {bodyIsLoading ? (
+        {error ? (
+          <Error error={error} />
+        ) : bodyIsLoading ? (
           <LeaderboardBodySkeleton />
         ) : (
           <>

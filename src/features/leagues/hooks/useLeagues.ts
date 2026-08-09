@@ -44,11 +44,12 @@ export const useGetRoundLeaderboard = (leagueId: string) => {
   });
 };
 
-export const useGetCompetitionLeaderboard = (competitionId: number) => {
+export const useGetCompetitionLeaderboard = (competitionId: number, enabled: boolean = true) => {
   return useQuery({
     queryKey: KEYS.competitions.leaderboard(competitionId),
     queryFn: () => leagueApi.getCompetitionLeaderboard(competitionId),
     staleTime: 1000 * 60 * 5,
+    enabled,
   });
 };
 
