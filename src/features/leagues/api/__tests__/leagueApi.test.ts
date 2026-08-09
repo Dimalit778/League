@@ -52,6 +52,31 @@ describe("leagueApi", () => {
     });
   });
 
+  describe("getCompetitionLeaderboard", () => {
+    it("fetches and sorts the cross-league leaderboard for a competition", async () => {
+      const mockRpc = jest.fn().mockResolvedValue({
+        data: [
+          { member_id: "m1", league_id: "l1", user_id: "u1", nickname: "A", avatar_url: null, total_points: 10 },
+          { member_id: "m2", league_id: "l2", user_id: "u2", nickname: "B", avatar_url: null, total_points: 30 },
+        ],
+        error: null,
+      });
+      (supabase as any).rpc = mockRpc;
+
+      const result = await leagueApi.getCompetitionLeaderboard(2021);
+
+      expect(mockRpc).toHaveBeenCalledWith("get_competition_leaderboard", { p_competition_id: 2021 });
+      expect(result.map((r) => r.user_id)).toEqual(["u2", "u1"]);
+    });
+
+    it("throws on error", async () => {
+      const mockRpc = jest.fn().mockResolvedValue({ data: null, error: { message: "Error" } });
+      (supabase as any).rpc = mockRpc;
+
+      await expect(leagueApi.getCompetitionLeaderboard(2021)).rejects.toThrow("Error");
+    });
+  });
+
   describe("getMyLeagues", () => {
     it("returns grouped leagues for a user", async () => {
       const mockData = [

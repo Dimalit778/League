@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { LeaderboardRow, LeagueSummary, MyLeague, MyLeaguesResponse } from '../types';
+import { LeaderboardMember } from '@/features/members/types/member.type';
 
 const LEADERBOARD_SELECT = 'avatar_url, league_id, member_id, nickname, total_points, user_id';
 const COMPETITION_SELECT = 'id, name,area, logo, flag, type, current_stage, current_fixture, season_id';
@@ -92,6 +93,15 @@ export const leagueApi = {
   // is fully wired and only the query needs to be swapped here.
   async getRoundLeaderboardView(leagueId: string) {
     return leagueApi.getLeaderboardView(leagueId);
+  },
+  async getCompetitionLeaderboard(competitionId: number): Promise<LeaderboardMember[]> {
+    const { data, error } = await supabase.rpc('get_competition_leaderboard', {
+      p_competition_id: competitionId,
+    });
+
+    if (error) throw new Error(error.message);
+
+    return ((data ?? []) as LeaderboardMember[]).sort((a, b) => (b.total_points ?? 0) - (a.total_points ?? 0));
   },
   async getMyLeaguesSummary(userId: string): Promise<LeagueSummary[]> {
 
