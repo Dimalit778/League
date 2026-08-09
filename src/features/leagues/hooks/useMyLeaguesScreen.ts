@@ -74,13 +74,17 @@ export function useMyLeaguesScreen() {
     }
 
     setSelectedInactiveMemberIds((current) =>
-      current.filter((memberId) => inactiveLeagues.some((league) => league.id === memberId)),
+      current.filter((memberId) =>
+        inactiveLeagues.some((league) => league.id === memberId && league.league.competition?.is_free !== false),
+      ),
     );
   }, [canChooseInactiveLeagues, inactiveLeagues]);
 
   const toggleInactiveLeague = useCallback(
     (memberId: string) => {
-      if (!canChooseInactiveLeagues || !inactiveLeagues.some((league) => league.id === memberId)) return;
+      const league = inactiveLeagues.find((candidate) => candidate.id === memberId);
+      if (!canChooseInactiveLeagues || !league) return;
+      if (league.league.competition?.is_free === false) return;
 
       setSelectedInactiveMemberIds((current) =>
         toggleLeagueActivationSelection(current, memberId, availableActivationSlots),

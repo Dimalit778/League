@@ -36,7 +36,7 @@ const LeagueCard = ({ league, selected, proLocked }: { league: MyLeague; selecte
           {league.league.name}
         </Text>
         <Text numberOfLines={1} className="text-xs mt-0.5 text-muted">
-          {proLocked ? t('Requires PRO') : league.nickname}
+          {proLocked ? t('Requires Pro') : league.nickname}
         </Text>
       </View>
 

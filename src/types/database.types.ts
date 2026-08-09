@@ -704,6 +704,7 @@ export type Database = {
         Row: {
           active: boolean | null
           competition_id: number | null
+          competition_is_free: boolean | null
           competition_logo: string | null
           competition_name: string | null
           competition_season_id: number | null

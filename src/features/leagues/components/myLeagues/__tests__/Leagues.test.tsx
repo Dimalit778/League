@@ -48,6 +48,21 @@ const mockLeagues = [
     rank: 3,
     total_points: 2,
   },
+  {
+    active: false,
+    competition_id: 4,
+    competition_is_free: false,
+    competition_logo: null,
+    competition_season_id: 2026,
+    is_primary: false,
+    league_id: 'pro-only-league',
+    league_name: 'Pro Only League',
+    member_id: 'pro-only-member',
+    members_count: 5,
+    nickname: 'Pro only player',
+    rank: 4,
+    total_points: 1,
+  },
 ];
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
@@ -108,5 +123,20 @@ describe('Leagues', () => {
     await waitFor(() => expect(onToggleLeague).toHaveBeenCalledWith('locked-member'));
     expect(upgrade).not.toHaveBeenCalled();
     expect(mockSetPrimaryLeague).not.toHaveBeenCalled();
+  });
+
+  it('marks a PRO-only competition league as requiring Pro even during activation selection', () => {
+    const upgrade = jest.fn().mockResolvedValue(false);
+    const onToggleLeague = jest.fn();
+    const { getByText, getAllByText } = render(
+      <Leagues
+        isPro={false}
+        upgrade={upgrade}
+        activationSelection={{ selectedMemberIds: [], onToggleLeague }}
+      />,
+    );
+
+    expect(getByText('Pro Only League')).toBeTruthy();
+    expect(getAllByText('Requires Pro').length).toBeGreaterThan(0);
   });
 });

@@ -206,8 +206,11 @@ export function Leagues({
               <LeagueCard
                 key={league.league_id}
                 league={league}
-                isLocked={!league.active && !isPro && !activationSelection}
-                isSelectable={!league.active && !!activationSelection}
+                isLocked={
+                  !league.active &&
+                  (league.competition_is_free === false || (!isPro && !activationSelection))
+                }
+                isSelectable={!league.active && !!activationSelection && league.competition_is_free !== false}
                 isSelected={!!league.member_id && selectedMemberIds.has(league.member_id)}
                 onPress={() => handleLeaguePress(league)}
               />

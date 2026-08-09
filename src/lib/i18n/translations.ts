@@ -159,7 +159,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'All season': 'All season',
       Friends: 'Friends',
       World: 'World',
-      'Requires PRO': 'Requires PRO',
       You: 'You',
       'More friends, more competition': 'More friends, more competition',
       'Invite friends to your league and make every match more exciting.':
@@ -1116,7 +1115,6 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'All season': 'כל העונה',
       Friends: 'חברים',
       World: 'עולם',
-      'Requires PRO': 'דורש מנוי PRO',
       You: 'אתה',
       'More friends, more competition': 'יותר חברים, יותר תחרות',
       'Invite friends to your league and make every match more exciting.':
