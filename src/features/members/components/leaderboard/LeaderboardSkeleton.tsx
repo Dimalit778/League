@@ -83,11 +83,9 @@ function LeaderboardRowSkeleton() {
   );
 }
 
-export default function LeaderboardSkeleton() {
-  const bottomTabsInset = useFloatBottomTabsInset();
-
+export function LeaderboardBodySkeleton() {
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
+    <>
       <PodiumSkeleton />
 
       <View className="mx-2 rounded-md border border-border bg-surface">
@@ -95,6 +93,16 @@ export default function LeaderboardSkeleton() {
           <LeaderboardRowSkeleton key={index} />
         ))}
       </View>
+    </>
+  );
+}
+
+export default function LeaderboardSkeleton() {
+  const bottomTabsInset = useFloatBottomTabsInset();
+
+  return (
+    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
+      <LeaderboardBodySkeleton />
     </Screen>
   );
 }
