@@ -795,6 +795,13 @@ export type Database = {
           id: string
         }[]
       }
+      get_match_ai_summary: {
+        Args: { p_match_id: number }
+        Returns: {
+          ai_summary_en: string | null
+          ai_summary_he: string | null
+        }[]
+      }
       get_plan_limits: {
         Args: { p_plan: string }
         Returns: {

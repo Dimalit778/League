@@ -5,6 +5,15 @@ import { skipToken, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { matchesApi } from "../api/matchesApi";
 
+/** enabled should be `isPro && analysis.status === 'available'` — a free user can never see this, so don't fetch it for them. */
+export const useMatchAiSummary = (matchId: number, enabled: boolean) => {
+  return useQuery({
+    queryKey: KEYS.matches.aiSummary(matchId),
+    queryFn: enabled ? () => matchesApi.getMatchAiSummary(matchId) : skipToken,
+    staleTime: 1000 * 60 * 30,
+  });
+};
+
 export const useGetMatchData = (matchId: number) => {
     const leagueId = useLeagueId();
     const query = useQuery({

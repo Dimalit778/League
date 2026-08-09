@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
-import { MatchCardRawType, MatchCardType, MatchWithAllPredictionsType } from '../types';
+import { AiSummaryType, MatchCardRawType, MatchCardType, MatchWithAllPredictionsType } from '../types';
 
 const UPCOMING_MATCHES_LIMIT = 10;
 
@@ -23,10 +23,6 @@ export const MATCH_WITH_MEMBER_PREDICTION = `
   home_team_id,
   away_team_id,
   score,
-  ai_summary_en,
-  ai_summary_he,
-  ai_predicted_home_score,
-  ai_predicted_away_score,
 
   home_team:teams!matches_home_team_id_fkey(${TEAM_LIST_FIELDS}),
   away_team:teams!matches_away_team_id_fkey(${TEAM_LIST_FIELDS}),
@@ -52,10 +48,9 @@ export const MATCH_WITH_ALL_PREDICTIONS = `
   home_team_id,
   away_team_id,
   score,
-  ai_summary_en,
-  ai_summary_he,
   ai_predicted_home_score,
   ai_predicted_away_score,
+  ai_generated_at,
 
   home_team:teams!matches_home_team_id_fkey(
  ${TEAM_LIST_FIELDS}
@@ -107,6 +102,17 @@ export const matchesApi = {
 
     if (!data) throw new Error('Match not found');
     void prefetchMatchTeamLogos([data]);
+    return data;
+  },
+
+  // PRO-only: the summary text is column-gated server-side, this only
+  // succeeds for a PRO subscriber (see get_match_ai_summary in Supabase).
+  async getMatchAiSummary(matchId: number): Promise<AiSummaryType> {
+    const { data, error } = await supabase.rpc('get_match_ai_summary', { p_match_id: matchId }).single();
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('AI summary not found');
+
     return data;
   },
 

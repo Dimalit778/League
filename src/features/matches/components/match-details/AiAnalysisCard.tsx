@@ -1,5 +1,6 @@
 import { Badge, Button, Card, Divider, Row, Text } from '@/components';
-import { resolveAiAnalysis } from '@/features/matches/model/aiAnalysis';
+import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
+import { resolveAiAnalysis, resolveAiSummaryText } from '@/features/matches/model/aiAnalysis';
 import { MatchWithPredictions, TeamType } from '@/features/matches/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -216,10 +217,12 @@ function AiUpdatedAt({ date, language }: { date: Date; language: 'en' | 'he' }) 
 export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
-  const analysis = resolveAiAnalysis(match, language);
+  const analysis = resolveAiAnalysis(match);
   const { theme } = useThemeTokens();
   const { subscription } = useRevenueCatSubscription();
   const isPro = subscription.isActive;
+  const { data: aiSummary } = useMatchAiSummary(match.id, isPro && analysis.status === 'available');
+  const summary = resolveAiSummaryText(aiSummary, language);
 
   const teams = {
     home: teamName(match.home_team, t('Home')),
@@ -236,7 +239,7 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
         {analysis.status === 'available' ? (
           <>
             <AiScoreCard teams={teams} score={analysis.score} />
-            <AiSummaryCard summary={analysis.summary} isPro={isPro} theme={theme} />
+            <AiSummaryCard summary={summary} isPro={isPro} theme={theme} />
             <AiUpdatedAt date={analysis.generatedAt} language={language} />
           </>
         ) : (

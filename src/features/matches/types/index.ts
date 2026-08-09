@@ -38,8 +38,6 @@ export type MatchBaseType = Pick<
   | 'group'
   | 'home_team_id'
   | 'away_team_id'
-  | 'ai_summary_en'
-  | 'ai_summary_he'
   | 'ai_predicted_home_score'
   | 'ai_predicted_away_score'
   | 'ai_generated_at'
@@ -49,6 +47,9 @@ export type MatchBaseType = Pick<
   home_team: TeamType | null;
   away_team: TeamType | null;
 };
+
+/** ai_summary_en/he are PRO-gated server-side and fetched separately from the match row — see matchesApi.getMatchAiSummary. */
+export type AiSummaryType = Pick<Tables<'matches'>, 'ai_summary_en' | 'ai_summary_he'>;
 
 export type MatchCardType = MatchBaseType & {
   prediction: PredictionsType | null;
