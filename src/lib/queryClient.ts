@@ -77,6 +77,7 @@ export const KEYS = {
   competitions: {
     all: ['competitions'] as const,
     matchMeta: (competitionId: number) => ['competitions', competitionId.toString(), 'match-meta'] as const,
+    leaderboard: (competitionId: number) => ['competitions', competitionId.toString(), 'leaderboard'] as const,
   },
 
 

@@ -44,6 +44,14 @@ export const useGetRoundLeaderboard = (leagueId: string) => {
   });
 };
 
+export const useGetCompetitionLeaderboard = (competitionId: number) => {
+  return useQuery({
+    queryKey: KEYS.competitions.leaderboard(competitionId),
+    queryFn: () => leagueApi.getCompetitionLeaderboard(competitionId),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useGetMyLeaguesSummary = () => {
   const userId = useAuthStore((s) => s.user?.id);
   return useQuery({
