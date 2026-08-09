@@ -12,11 +12,13 @@ type PodiumProps = {
   first?: LeaderboardMember;
   second?: LeaderboardMember;
   third?: LeaderboardMember;
+  clickable?: boolean;
 };
 
 type PodiumMemberProps = {
   member?: LeaderboardMember;
   position: Position;
+  clickable: boolean;
 };
 
 const METAL: Record<Position, string> = {
@@ -28,7 +30,7 @@ const METAL: Record<Position, string> = {
 const AVATAR_SIZE: Record<Position, number> = { 1: 78, 2: 62, 3: 62 };
 const PEDESTAL_HEIGHT: Record<Position, number> = { 1: 128, 2: 108, 3: 94 };
 
-function PodiumMember({ member, position }: PodiumMemberProps) {
+function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
   const { t } = useTranslation();
   const color = METAL[position];
   const avatarSize = AVATAR_SIZE[position];
@@ -68,19 +70,23 @@ function PodiumMember({ member, position }: PodiumMemberProps) {
     <View className="min-w-0 flex-1 items-center justify-end" style={styles.column}>
       {memberId ? (
         <View style={styles.avatarLayer}>
-          <Link href={{ pathname: '/(app)/(league)/member/[memberId]', params: { memberId } }} asChild>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              accessibilityRole="button"
-              accessibilityLabel={t('{{name}}, position {{position}}, {{points}} points', {
-                name: displayName,
-                position,
-                points: member?.total_points ?? 0,
-              })}
-            >
-              {avatar}
-            </TouchableOpacity>
-          </Link>
+          {clickable ? (
+            <Link href={{ pathname: '/(app)/(league)/member/[memberId]', params: { memberId } }} asChild>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={t('{{name}}, position {{position}}, {{points}} points', {
+                  name: displayName,
+                  position,
+                  points: member?.total_points ?? 0,
+                })}
+              >
+                {avatar}
+              </TouchableOpacity>
+            </Link>
+          ) : (
+            avatar
+          )}
         </View>
       ) : null}
 
@@ -114,13 +120,13 @@ function PodiumMember({ member, position }: PodiumMemberProps) {
   );
 }
 
-export function Podium({ first, second, third }: PodiumProps) {
+export function Podium({ first, second, third, clickable = true }: PodiumProps) {
   return (
     <View className="mt-3 mb-4 overflow-hidden rounded-3xl border border-white/10">
       <View className="flex-row items-end justify-center gap-1.5 px-3 pt-10">
-        <PodiumMember member={second} position={2} />
-        <PodiumMember member={first} position={1} />
-        <PodiumMember member={third} position={3} />
+        <PodiumMember member={second} position={2} clickable={clickable} />
+        <PodiumMember member={first} position={1} clickable={clickable} />
+        <PodiumMember member={third} position={3} clickable={clickable} />
       </View>
     </View>
   );
