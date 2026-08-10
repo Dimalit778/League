@@ -1,4 +1,15 @@
-import { AvatarImage, Badge, Button, Error, InputField, ListItem, LogoBadge, Screen, Text } from '@/components';
+import {
+  AvatarImage,
+  BackButton,
+  Badge,
+  Button,
+  Error,
+  InputField,
+  ListItem,
+  LogoBadge,
+  Screen,
+  Text,
+} from '@/components';
 import {
   useDeleteLeague,
   useGetLeagueAndMembers,
@@ -14,7 +25,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import * as Clipboard from 'expo-clipboard';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Copy, Flag, LogOut, Trash2, UserPlus } from 'lucide-react-native';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -186,170 +197,156 @@ export default function EditLeagueScreen() {
       },
     );
   };
-
+  if (isLoading || !league) {
+    return <EditLeagueSkeleton title={t('Manage League')} />;
+  }
+  if (error) {
+    return <Error error={error} />;
+  }
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: league?.name ?? t('Manage League'),
-          headerBackButtonDisplayMode: 'minimal',
-        }}
-      />
-      {isLoading || !league ? (
-        <EditLeagueSkeleton />
-      ) : error ? (
-        <Error error={error} />
-      ) : (
-        <Screen padding="horizontal" bottomInset>
-          <KeyboardAwareScrollView
-            bottomOffset={canSaveLeagueName ? 110 : 62}
-            className="flex-1"
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-          >
-            <View className="gap-5 pt-4">
-              <View className="rounded-2xl border border-border bg-surface p-4">
-                <View className="mb-4 flex-row items-center gap-3">
-                  <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
-                  <View className="flex-1">
-                    <Text className="text-base font-bold">{league?.competition?.name}</Text>
-                    <Text tone="muted" variant="bodySmall">
-                      {league?.competition?.area}
-                    </Text>
-                  </View>
+    <Screen padding="horizontal" bottomInset>
+      <BackButton title={t('Manage League')} />
+      <KeyboardAwareScrollView
+        bottomOffset={canSaveLeagueName ? 110 : 62}
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="gap-5 pt-4">
+          <View className="rounded-2xl border border-border bg-surface p-4">
+            <View className="mb-4 flex-row items-center gap-3">
+              <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
+              <View className="flex-1">
+                <Text className="text-base font-bold">{league?.competition?.name}</Text>
+                <Text tone="muted" variant="bodySmall">
+                  {league?.competition?.area}
+                </Text>
+              </View>
+            </View>
+
+            {isOwner ? (
+              <View className="gap-2">
+                <View className="flex-row items-center justify-between">
+                  <Text variant="bodySmall" tone="muted">
+                    {t('League name')}
+                  </Text>
+                  <Text variant="caption" tone={editedLeagueName.length >= 20 ? 'warning' : 'muted'}>
+                    {editedLeagueName.length}/20
+                  </Text>
                 </View>
-
-                {isOwner ? (
-                  <View className="gap-2">
-                    <View className="flex-row items-center justify-between">
-                      <Text variant="bodySmall" tone="muted">
-                        {t('League name')}
-                      </Text>
-                      <Text variant="caption" tone={editedLeagueName.length >= 20 ? 'warning' : 'muted'}>
-                        {editedLeagueName.length}/20
-                      </Text>
-                    </View>
-                    <InputField
-                      control={control}
-                      name="leagueName"
-                      placeholder={t('Enter league name')}
-                      maxLength={20}
-                      autoCapitalize="words"
-                      autoCorrect={false}
-                      autoComplete="off"
-                    />
-                    {trimmedLeagueName.length > 0 && trimmedLeagueName.length < 2 ? (
-                      <Text variant="caption" tone="error" className="text-center">
-                        {t('League name must be between 2 and 20 characters.')}
-                      </Text>
-                    ) : null}
-                  </View>
-                ) : (
-                  <View>
-                    <Text variant="bodySmall" tone="muted">
-                      {t('League name')}
-                    </Text>
-                    <Text className="mt-1 text-base font-semibold">{league?.name}</Text>
-                  </View>
-                )}
-
-                <View className="mt-4 overflow-hidden rounded-xl bg-subtle px-3">
-                  <ListItem
-                    title={t('Invite code')}
-                    description={league?.join_code}
-                    onPress={handleCopyJoinCode}
-                    trailing={<Copy size={18} color={colors.primary} />}
-                  />
-                </View>
-
-                <Button
-                  label={t('Invite friends')}
-                  variant="outline"
-                  fullWidth
-                  className="mt-3"
-                  leftIcon={<UserPlus size={18} color={colors.primary} />}
-                  onPress={handleInviteFriends}
+                <InputField
+                  control={control}
+                  name="leagueName"
+                  placeholder={t('Enter league name')}
+                  maxLength={20}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  autoComplete="off"
                 />
-                {!isOwner ? (
-                  <Button
-                    label={t('Report league name')}
-                    variant="outline"
-                    fullWidth
-                    className="mt-3"
-                    leftIcon={<Flag size={18} color={colors.error} />}
-                    onPress={() =>
-                      router.push({
-                        pathname: '/(app)/(league)/report-content',
-                        params: { contentType: 'league_name', leagueId: league.id },
-                      })
-                    }
-                  />
+                {trimmedLeagueName.length > 0 && trimmedLeagueName.length < 2 ? (
+                  <Text variant="caption" tone="error" className="text-center">
+                    {t('League name must be between 2 and 20 characters.')}
+                  </Text>
                 ) : null}
               </View>
-
+            ) : (
               <View>
-                <View className="mb-2 flex-row items-center justify-between px-1">
-                  <Text variant="subtitle">{t('League Members')}</Text>
-                  <Badge label={`${sortedMembers.length}/${league.max_members}`} />
-                </View>
-                <View className="overflow-hidden rounded-2xl border border-border bg-surface px-3">
-                  {sortedMembers.map((member, index) => {
-                    const memberIsOwner = member.user_id === league?.owner_id;
-                    return (
-                      <View
-                        key={member.id}
-                        className={index < sortedMembers.length - 1 ? 'border-b border-border' : ''}
-                      >
-                        <MemberCard
-                          member={member}
-                          isOwner={memberIsOwner}
-                          canRemove={isOwner && !memberIsOwner}
-                          handleRemoveMember={handleRemoveMember}
-                        />
-                      </View>
-                    );
-                  })}
-                </View>
+                <Text variant="bodySmall" tone="muted">
+                  {t('League name')}
+                </Text>
+                <Text className="mt-1 text-base font-semibold">{league?.name}</Text>
               </View>
-            </View>
+            )}
 
-            <View className="mt-auto pt-8 pb-4">
-              <View className="rounded-2xl items-center border border-error/40 bg-surface p-4">
-                <Text variant="subtitle" tone="error">
-                  {t('Danger zone')}
-                </Text>
-                <Text variant="bodySmall" tone="muted" className="mb-4 mt-1">
-                  {isOwner ? t('Deleting a league cannot be undone.') : t('You will lose access to this league.')}
-                </Text>
-                <Button
-                  label={isOwner ? t('Delete League') : t('Leave league')}
-                  variant="outline"
-                  fullWidth
-                  onPress={isOwner ? confirmDeleteLeague : confirmLeaveLeague}
-                  disabled={isOwner ? deleteLeague.isPending : leaveLeague.isPending}
-                  loading={isOwner ? deleteLeague.isPending : leaveLeague.isPending}
-                  leftIcon={
-                    isOwner ? <Trash2 size={18} color={colors.error} /> : <LogOut size={18} color={colors.error} />
-                  }
-                  className="border-error"
-                />
-              </View>
-            </View>
-          </KeyboardAwareScrollView>
-          {isOwner && canSaveLeagueName && (
-            <View className="border-t border-border bg-surface px-4 py-3">
-              <Button
-                label={t('Save changes')}
-                onPress={handleSaveLeague}
-                loading={updateLeague.isPending}
-                disabled={updateLeague.isPending}
-                fullWidth
+            <View className="mt-4 overflow-hidden rounded-xl bg-subtle px-3">
+              <ListItem
+                title={t('Invite code')}
+                description={league?.join_code}
+                onPress={handleCopyJoinCode}
+                trailing={<Copy size={18} color={colors.primary} />}
               />
             </View>
-          )}
-        </Screen>
+
+            <Button
+              label={t('Invite friends')}
+              variant="outline"
+              fullWidth
+              className="mt-3"
+              leftIcon={<UserPlus size={18} color={colors.primary} />}
+              onPress={handleInviteFriends}
+            />
+            {!isOwner ? (
+              <Button
+                label={t('Report league name')}
+                variant="outline"
+                fullWidth
+                className="mt-3"
+                leftIcon={<Flag size={18} color={colors.error} />}
+                onPress={() =>
+                  router.push({
+                    pathname: '/(app)/(league)/report-content',
+                    params: { contentType: 'league_name', leagueId: league.id },
+                  })
+                }
+              />
+            ) : null}
+          </View>
+
+          <View>
+            <View className="mb-2 flex-row items-center justify-between px-1">
+              <Text variant="subtitle">{t('League Members')}</Text>
+              <Badge label={`${sortedMembers.length}/${league.max_members}`} />
+            </View>
+            <View className="overflow-hidden rounded-2xl border border-border bg-surface px-3">
+              {sortedMembers.map((member, index) => {
+                const memberIsOwner = member.user_id === league?.owner_id;
+                return (
+                  <View key={member.id} className={index < sortedMembers.length - 1 ? 'border-b border-border' : ''}>
+                    <MemberCard
+                      member={member}
+                      isOwner={memberIsOwner}
+                      canRemove={isOwner && !memberIsOwner}
+                      handleRemoveMember={handleRemoveMember}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+
+        <View className="mt-auto pt-8 pb-4">
+          <View className="rounded-2xl items-center border border-error/40 bg-surface p-4">
+            <Text variant="subtitle" tone="error">
+              {t('Danger zone')}
+            </Text>
+            <Text variant="bodySmall" tone="muted" className="mb-4 mt-1">
+              {isOwner ? t('Deleting a league cannot be undone.') : t('You will lose access to this league.')}
+            </Text>
+            <Button
+              label={isOwner ? t('Delete League') : t('Leave league')}
+              variant="outline"
+              fullWidth
+              onPress={isOwner ? confirmDeleteLeague : confirmLeaveLeague}
+              disabled={isOwner ? deleteLeague.isPending : leaveLeague.isPending}
+              loading={isOwner ? deleteLeague.isPending : leaveLeague.isPending}
+              leftIcon={isOwner ? <Trash2 size={18} color={colors.error} /> : <LogOut size={18} color={colors.error} />}
+              className="border-error"
+            />
+          </View>
+        </View>
+      </KeyboardAwareScrollView>
+      {isOwner && canSaveLeagueName && (
+        <View className="border-t border-border bg-surface px-4 py-3">
+          <Button
+            label={t('Save changes')}
+            onPress={handleSaveLeague}
+            loading={updateLeague.isPending}
+            disabled={updateLeague.isPending}
+            fullWidth
+          />
+        </View>
       )}
-    </>
+    </Screen>
   );
 }

@@ -10,17 +10,16 @@ export default function UserLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
-
-        gestureEnabled: true,
-        fullScreenGestureEnabled: Platform.OS === 'ios',
+        gestureEnabled: false,
+        fullScreenGestureEnabled: false,
       }}
     >
-      <Stack.Screen name="leagues" />
+      <Stack.Screen name="leagues" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
       <Stack.Screen
         name="settings"
         options={{
-          gestureEnabled: false,
-          fullScreenGestureEnabled: false,
+          gestureEnabled: true,
+          fullScreenGestureEnabled: Platform.OS === 'ios',
         }}
       />
     </Stack>

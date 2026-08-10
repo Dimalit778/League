@@ -1,8 +1,8 @@
-import { Button, LockedBadge, LogoBadge, Text } from '@/components';
+import { Button, LogoBadge, Text } from '@/components';
 import { MyLeague } from '@/features/leagues/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight, Crown, LockIcon } from 'lucide-react-native';
 import { Modal, Pressable, ScrollView, View } from 'react-native';
 
 type LimitSelectModalProps = {
@@ -17,31 +17,43 @@ type LimitSelectModalProps = {
 };
 
 const LeagueCard = ({ league, selected, proLocked }: { league: MyLeague; selected: boolean; proLocked: boolean }) => {
+  const { colors } = useThemeTokens();
   const { t } = useTranslation();
-
   return (
-    <View className="flex-row items-center gap-3">
+    <View className="flex-row  gap-3">
       <View className="overflow-hidden rounded-md">
         <LogoBadge source={{ uri: league.league.competition?.logo }} width={48} height={48} />
-        <LockedBadge visible={proLocked} />
       </View>
 
       <View className="min-w-0 flex-1">
-        {league.is_primary && <Text className="text-sm font-bold mb-0.5 text-primary">{t('Primary')}</Text>}
-        <Text numberOfLines={1} className="font-semibold text-text">
+        <Text numberOfLines={1} className="font-semibold ">
           {league.league.name}
         </Text>
-        <Text numberOfLines={1} className="text-xs mt-0.5 text-muted">
-          {proLocked ? t('Requires Pro') : league.nickname}
+        <Text variant="caption" tone="muted" numberOfLines={1} className=" text-muted">
+          {league.nickname}
         </Text>
+        {proLocked && (
+          <View className="flex-row items-center gap-1 mt-2">
+            <Crown size={12} color={colors.muted} />
+            <Text variant="caption" tone="muted" className=" font-semibold  ">
+              {t('Pro League')}
+            </Text>
+          </View>
+        )}
       </View>
 
-      <View
-        className={`h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
-          selected ? 'border-primary bg-primary' : 'border-muted'
-        }`}
-      >
-        {selected && <View className="h-2.5 w-2.5 rounded-full bg-background" />}
+      <View className="flex-row items-center ">
+        {proLocked ? (
+          <LockIcon size={24} color={colors.muted} />
+        ) : (
+          <View
+            className={`h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
+              selected ? 'border-primary bg-primary' : 'border-muted'
+            }`}
+          >
+            {selected && <View className="h-2.5 w-2.5 rounded-full bg-background" />}
+          </View>
+        )}
       </View>
     </View>
   );

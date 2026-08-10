@@ -2,6 +2,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Stack, router } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function SettingsLayout() {
   const { colors } = useThemeTokens();
@@ -11,14 +12,12 @@ export default function SettingsLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-
         headerBackButtonDisplayMode: 'minimal',
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
         contentStyle: { backgroundColor: colors.background },
         gestureEnabled: true,
-        fullScreenGestureEnabled: false,
-        animation: 'slide_from_right',
+        fullScreenGestureEnabled: Platform.OS === 'ios',
       }}
     >
       <Stack.Screen

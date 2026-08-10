@@ -823,7 +823,7 @@ export const he = {
       'An email has been sent to your email address with a link to reset your password.': 'נשלח אליך אימייל עם קישור לאיפוס הסיסמה.',
       'Away': 'חוץ',
       'Away score': 'תוצאת קבוצת החוץ',
-      'Choose {{count}} active leagues': 'בחירת {{count}} ליגות פעילות',
+      'Activate Leagues': 'הפעל ליגות',
       'Confirm Password': 'אימות סיסמה',
       'Consistent': 'עקבי',
       'Edit league': 'עריכת ליגה',

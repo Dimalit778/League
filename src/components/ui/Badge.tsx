@@ -64,7 +64,7 @@ export function Badge({
       {leftIcon}
       <Text
         variant={textVariants[size]}
-        className={cn('font-semibold', textClasses[variant])}
+        className={cn('font-semibold ', textClasses[variant])}
         style={{ textAlign: isRTL ? 'right' : 'left' }}
       >
         {label}

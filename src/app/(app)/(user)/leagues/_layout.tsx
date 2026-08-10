@@ -15,11 +15,13 @@ export default function LeaguesLayout() {
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
         contentStyle: { backgroundColor: colors.background },
+        gestureEnabled: false,
+        fullScreenGestureEnabled: false,
       }}
       initialRouteName="my-leagues"
     >
-      <Stack.Screen name="my-leagues" />
-      <Stack.Screen name="join-league" />
+      <Stack.Screen name="my-leagues" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
+      <Stack.Screen name="join-league" options={{ gestureEnabled: true, fullScreenGestureEnabled: true }} />
       <Stack.Screen
         name="create-league/competitions"
         options={{

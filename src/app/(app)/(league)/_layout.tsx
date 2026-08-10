@@ -10,7 +10,7 @@ export default function LeagueLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(tabs)" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
       <Stack.Screen name="match/[matchId]" />
       <Stack.Screen name="member/[memberId]" />
       <Stack.Screen name="edit-league" />

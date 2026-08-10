@@ -1,4 +1,4 @@
-import { Button, DirectionalIcon, Divider, GlassCard, LogoBadge, Row, Text } from '@/components';
+import { ArrowIcon, Button, Card, Divider, GlassCard, LogoBadge, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -30,7 +30,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
   };
 
   return (
-    <GlassCard variant="primary" onPress={handlePress} padding="md" contentClassName="gap-4">
+    <Card variant="secondary" padding="md" contentClassName="gap-4">
       <View className="flex-row justify-between ">
         <Row className="items-center gap-3">
           <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
@@ -82,9 +82,9 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
         fullWidth
         label={t('Enter league')}
         onPress={handlePress}
-        rightIcon={<DirectionalIcon size={18} color={colors.text} />}
+        rightIcon={<ArrowIcon size={18} color={colors.text} />}
         accessibilityLabel={`${league.league_name}, ${league.nickname}`}
       />
-    </GlassCard>
+    </Card>
   );
 }

@@ -1,9 +1,9 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
 import { Platform, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowIcon } from './ArrowIcon';
 import { Text } from './Text';
 
 interface BackButtonProps {
@@ -13,14 +13,13 @@ interface BackButtonProps {
   fallbackHref?: string;
 }
 
-const SIZE = 46;
+const SIZE = 44;
 
 export const BackButton = ({ fallbackHref, title, includeSafeArea = true }: BackButtonProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const isRTL = useIsRTL();
   const insets = useSafeAreaInsets();
-
+  const { colors } = useThemeTokens();
   if (Platform.OS === 'web') return null;
 
   const onPress = () => {
@@ -45,20 +44,14 @@ export const BackButton = ({ fallbackHref, title, includeSafeArea = true }: Back
           style={{
             width: SIZE,
             height: SIZE,
-            transform: [{ scaleX: isRTL ? -1 : 1 }],
           }}
         >
-          <ChevronLeft
-            size={38}
-            color="#F8FAFC"
-            strokeWidth={2}
-            style={{ transform: [{ translateX: isRTL ? -0.5 : 0.5 }] }}
-          />
+          <ArrowIcon size={30} color={colors.text} strokeWidth={2} />
         </Pressable>
 
         {title ? (
           <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="none">
-            <Text variant="titleLarge" numberOfLines={1} className="text-center">
+            <Text variant="title" numberOfLines={1} className="text-center">
               {title}
             </Text>
           </View>

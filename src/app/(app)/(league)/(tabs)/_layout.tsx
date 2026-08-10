@@ -2,15 +2,39 @@ import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
 
 import { FloatBottomTabs } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useNavigationState } from '@react-navigation/native';
 import { Tabs } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-/** RN 7 dropped unmountOnBlur — remount tab content on leave so scroll resets. */
+/** True when a league-stack screen (member, match, …) sits above the tabs. */
+function useLeagueStackOverlay() {
+  const navigation = useNavigation();
+
+  return useNavigationState(() => {
+    let current = navigation.getParent();
+
+    while (current) {
+      const state = current.getState();
+      if ('routeNames' in state && state.routeNames.includes('(tabs)')) {
+        return state.index > 0;
+      }
+      current = current.getParent();
+    }
+
+    return false;
+  });
+}
+
+/**
+ * RN 7 dropped unmountOnBlur — remount tab content on tab switch so scroll resets.
+ * Keep content mounted while a stack screen covers tabs so swipe-back is not blank.
+ */
 function UnmountOnBlur({ children }: { children: ReactNode }) {
   const isFocused = useIsFocused();
-  if (!isFocused) return null;
+  const isUnderStackOverlay = useLeagueStackOverlay();
+
+  if (!isFocused && !isUnderStackOverlay) return null;
   return children;
 }
 

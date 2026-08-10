@@ -1,4 +1,4 @@
-import { Screen, Skeleton, TextSkeleton } from '@/components';
+import { BackButton, Screen, Skeleton, TextSkeleton } from '@/components';
 import { View } from 'react-native';
 
 function MemberRowSkeleton() {
@@ -11,9 +11,11 @@ function MemberRowSkeleton() {
   );
 }
 
-export function EditLeagueSkeleton() {
+export function EditLeagueSkeleton({ title }: { title?: string }) {
   return (
-    <Screen scroll padding="horizontal" contentClassName="gap-5 pt-4">
+    <Screen padding="horizontal" bottomInset>
+      <BackButton title={title} />
+      <View className="flex-1 gap-5 pt-4">
       <View className="rounded-2xl border border-border bg-surface p-4">
         <View className="mb-4 flex-row items-center gap-3">
           <Skeleton className="h-10 w-10 rounded-md" />
@@ -39,6 +41,7 @@ export function EditLeagueSkeleton() {
             </View>
           ))}
         </View>
+      </View>
       </View>
     </Screen>
   );

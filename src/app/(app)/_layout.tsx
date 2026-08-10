@@ -38,9 +38,21 @@ export default function AppLayout() {
       }}
     >
       <Stack.Protected guard={hasPrimaryLeague}>
-        <Stack.Screen name="(league)" />
+        <Stack.Screen
+          name="(league)"
+          options={{
+            gestureEnabled: false,
+            fullScreenGestureEnabled: false,
+          }}
+        />
       </Stack.Protected>
-      <Stack.Screen name="(user)" />
+      <Stack.Screen
+        name="(user)"
+        options={{
+          gestureEnabled: false,
+          fullScreenGestureEnabled: false,
+        }}
+      />
 
       <Stack.Protected guard={!!isAdminUser}>
         <Stack.Screen name="(admin)" />

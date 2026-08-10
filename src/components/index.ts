@@ -15,11 +15,11 @@ export { AvatarImage } from './ui/AvatarImage';
 export { BackButton } from './ui/BackButton';
 export { Badge } from './ui/Badge';
 
+    export { ArrowIcon } from './ui/ArrowIcon';
 export { Brand } from './ui/Brand';
 export { Button } from './ui/Button';
 export { Card } from './ui/Card';
 export { Chip } from './ui/Chip';
-export { DirectionalIcon } from './ui/DirectionsIcon';
 export { Divider } from './ui/Divider';
 export { EmptyState } from './ui/EmptyState';
 export { GlassCard } from './ui/GlassCard';

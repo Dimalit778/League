@@ -9,7 +9,9 @@ import { View } from 'react-native';
 import { Leagues } from '../components/myLeagues/Leagues';
 import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
-const CreateJoinButtons = () => {
+type ActivationSelection = NonNullable<ReturnType<typeof useMyLeaguesScreen>['activationSelection']>;
+
+function CreateJoinButtons() {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
 
@@ -33,39 +35,47 @@ const CreateJoinButtons = () => {
       />
     </Row>
   );
-};
+}
 
-export default function MyLeaguesScreen() {
+function ActivateLeaguesButton({ selection }: { selection: ActivationSelection }) {
   const { t } = useTranslation();
 
+  return (
+    <Button
+      label={t(selection.availableSlots === 1 ? 'Activate league' : 'Activate leagues')}
+      onPress={selection.onSave}
+      loading={selection.isSaving}
+      disabled={!selection.canSave}
+    />
+  );
+}
+
+export default function MyLeaguesScreen() {
   const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, activationSelection, limitSelect } =
     useMyLeaguesScreen();
 
   if (isLoading) return <LeaguesSkeleton />;
   if (error) return <Error error={error as Error} />;
 
-  const maxLeague = isPro && activeCount === maxLeagues;
-  const inSelection = !!activationSelection;
+  const inSelectionMode = !!activationSelection;
+  const atLeagueLimit = activeCount === maxLeagues;
+  const showCreateJoin = !inSelectionMode && !atLeagueLimit;
+  const showProUpsell = !isPro && !inSelectionMode;
+  const showActivateButton = (activationSelection?.selectedMemberIds.length ?? 0) > 0;
 
   return (
     <View className="flex-1 bg-background">
       <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
 
-      <Screen scroll padding="all" className="flex-1" contentClassName="gap-6">
-        {inSelection ? null : maxLeague ? null : <CreateJoinButtons />}
+      <Screen scroll padding="all" className="flex-grow">
+        <View className="flex-1 gap-6 ">
+          {showCreateJoin && <CreateJoinButtons />}
 
-        <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
+          <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
 
-        {activationSelection?.selectedMemberIds.length ? (
-          <Button
-            label={t(activationSelection.availableSlots === 1 ? 'Activate league' : 'Activate leagues')}
-            onPress={activationSelection.onSave}
-            loading={activationSelection.isSaving}
-            disabled={!activationSelection.canSave}
-          />
-        ) : null}
-
-        {!isPro && !inSelection ? <ProUpsellCard onUpgrade={upgrade} /> : null}
+          {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
+        </View>
+        <View className="mt-auto bg-red-500">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
       </Screen>
 
       {limitSelect && <LimitSelectModal {...limitSelect} />}

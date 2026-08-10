@@ -6,7 +6,7 @@ import { spacing } from '@/lib/nativewind/spacing';
 
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
-import { ChevronLeft, Lock, Star, Trophy, Users } from 'lucide-react-native';
+import { Crown, Lock, Star, Users } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { useGetMyLeaguesSummary, useUpdatePrimaryLeague } from '../../hooks/useLeagues';
@@ -14,14 +14,12 @@ import { LeagueSummary } from '../../types';
 import LeaguesSkeleton from './LeaguesSkeleton';
 import PrimaryLeagueCard from './PrimaryLeagueCard';
 
-function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function MiniStat({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <Row keepLtr className="flex-1 justify-center gap-1">
+    <Row keepLtr className="flex-1 justify-center gap-2 items-center">
       {icon}
-      <Text numberOfLines={1} className="text-xs text-muted">
-        {label}
-      </Text>
-      <Text ltr numberOfLines={1} className="text-xs font-bold text-text">
+
+      <Text ltr variant="caption" tone="muted" numberOfLines={1} className=" font-bold">
         {value}
       </Text>
     </Row>
@@ -58,7 +56,7 @@ function LeagueCard({
       )}
       <Card
         variant="elevated"
-        className="flex-1 overflow-hidden rounded-2xl"
+        className="flex-1 overflow-hidden"
         padding="md"
         onPress={onPress}
         accessibilityLabel={league.league_name ?? undefined}
@@ -70,7 +68,7 @@ function LeagueCard({
               : undefined
         }
       >
-        <View className={cn(spacing.list, isLocked && 'opacity-60')}>
+        <View className={cn(spacing.list, isLocked && 'opacity-25')}>
           <Row between>
             <Row className="min-w-0 flex-1 gap-3">
               <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={40} height={40} />
@@ -79,48 +77,37 @@ function LeagueCard({
                   <Text numberOfLines={1} className="shrink text-lg font-semibold">
                     {league.league_name}
                   </Text>
-                  {isLocked ? (
-                    <Row keepLtr className="gap-1 rounded-full border border-primary/50 bg-primary/10 px-2 py-0.5">
-                      <Lock size={11} color={colors.primary} strokeWidth={2.5} />
-                      <Text className="text-[11px] font-bold text-primary">{t('Requires Pro')}</Text>
-                    </Row>
-                  ) : null}
                 </Row>
                 <Text numberOfLines={1} className="text-sm text-muted">
                   {league.competition_name}
                 </Text>
               </View>
             </Row>
-
-            {isLocked ? (
-              <Lock size={18} color={colors.muted} strokeWidth={2} />
-            ) : (
-              <ChevronLeft size={20} color={colors.muted} strokeWidth={2} />
-            )}
           </Row>
-
-          <View className="h-px bg-border" />
-
-          <Row>
-            <MiniStat
-              icon={<Trophy size={13} color={colors.primary} />}
-              label={t('Rank')}
-              value={league.rank ? `#${league.rank}` : '—'}
-            />
-            <View className="h-4 w-px bg-border" />
-            <MiniStat
-              icon={<Star size={13} color={colors.primary} fill={colors.primary} />}
-              label={t('pts')}
-              value={`${league.total_points ?? 0}`}
-            />
-            <View className="h-4 w-px bg-border" />
-            <MiniStat
-              icon={<Users size={13} color={colors.primary} />}
-              label={t('Members')}
-              value={`${league.members_count ?? 0}`}
-            />
-          </Row>
+          {!isLocked && (
+            <>
+              <View className="h-px bg-border" />
+              <Row>
+                <MiniStat
+                  icon={<Crown size={13} color={colors.muted} />}
+                  value={league.rank ? `#${league.rank}` : '—'}
+                />
+                <View className="h-4 w-px bg-border" />
+                <MiniStat
+                  icon={<Star size={13} color={colors.muted} fill={colors.muted} />}
+                  value={`${league.total_points ?? 0}`}
+                />
+                <View className="h-4 w-px bg-border" />
+                <MiniStat icon={<Users size={13} color={colors.muted} />} value={`${league.members_count ?? 0}`} />
+              </Row>
+            </>
+          )}
         </View>
+        {isLocked && (
+          <View className="absolute inset-0 items-center justify-center">
+            <Lock size={28} color={colors.error} strokeWidth={2} />
+          </View>
+        )}
       </Card>
     </Row>
   );
@@ -206,10 +193,7 @@ export function Leagues({
               <LeagueCard
                 key={league.league_id}
                 league={league}
-                isLocked={
-                  !league.active &&
-                  (league.competition_is_free === false || (!isPro && !activationSelection))
-                }
+                isLocked={!league.active && (league.competition_is_free === false || (!isPro && !activationSelection))}
                 isSelectable={!league.active && !!activationSelection && league.competition_is_free !== false}
                 isSelected={!!league.member_id && selectedMemberIds.has(league.member_id)}
                 onPress={() => handleLeaguePress(league)}

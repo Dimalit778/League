@@ -1,5 +1,6 @@
 import { images } from '@/assets/images';
-import { Button, Text } from '@/components';
+import { Button } from '@/components/ui/Button';
+import { Text } from '@/components/ui/Text';
 import { useTranslation } from '@/hooks/useTranslation';
 import NetInfo from '@react-native-community/netinfo';
 import { ImageBackground } from 'expo-image';

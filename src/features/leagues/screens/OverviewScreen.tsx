@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { CollapsibleHeader, DirectionalIcon, Section } from '@/components';
+import { ArrowIcon, CollapsibleHeader, Section } from '@/components';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -43,7 +43,7 @@ export default function OverviewScreen() {
         <Section
           title={t('Stats')}
           accent
-          actionIcon={<DirectionalIcon size={20} color={colors.text} />}
+          actionIcon={<ArrowIcon size={20} color={colors.text} />}
           onActionPress={() => {
             if (!memberId) return;
             router.push({

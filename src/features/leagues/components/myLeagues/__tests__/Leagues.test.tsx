@@ -125,10 +125,10 @@ describe('Leagues', () => {
     expect(mockSetPrimaryLeague).not.toHaveBeenCalled();
   });
 
-  it('marks a PRO-only competition league as requiring Pro even during activation selection', () => {
+  it('locks a PRO-only competition league even during activation selection', () => {
     const upgrade = jest.fn().mockResolvedValue(false);
     const onToggleLeague = jest.fn();
-    const { getByText, getAllByText } = render(
+    const { getByText, getByLabelText } = render(
       <Leagues
         isPro={false}
         upgrade={upgrade}
@@ -137,6 +137,10 @@ describe('Leagues', () => {
     );
 
     expect(getByText('Pro Only League')).toBeTruthy();
-    expect(getAllByText('Requires Pro').length).toBeGreaterThan(0);
+
+    // Locked leagues get the "Upgrade to Pro" hint; selectable ones get
+    // "Select league to activate" instead (see LeagueCard's accessibilityHint).
+    const card = getByLabelText('Pro Only League');
+    expect(card.props.accessibilityHint).toBe('Upgrade to Pro');
   });
 });

@@ -1,10 +1,20 @@
-import { Badge, Text } from '@/components';
+import { Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const LeagueCountBadge = ({ count }: { count: string }) => {
+  return (
+    <View className="flex-row items-center gap-2 bg-subtle rounded-md px-3 py-1">
+      <Text variant="body" tone="muted" className=" font-bold tracking-widest">
+        {count}
+      </Text>
+    </View>
+  );
+};
 
 export default function MyLeaguesHeader({ used, limit }: { used: number; limit: number }) {
   const { t } = useTranslation();
@@ -30,7 +40,7 @@ export default function MyLeaguesHeader({ used, limit }: { used: number; limit: 
           </Text>
         </View>
 
-        <Badge label={count} variant="primary" className=" self-center" size="md" radius="md" />
+        <LeagueCountBadge count={count} />
       </View>
     </View>
   );
