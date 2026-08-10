@@ -27,11 +27,7 @@ const LeagueCard = ({ league, selected, proLocked }: { league: MyLeague; selecte
       </View>
 
       <View className="min-w-0 flex-1">
-        {league.is_primary && (
-          <Text className="text-sm font-bold mb-0.5 text-primary">
-            {t('Primary')}
-          </Text>
-        )}
+        {league.is_primary && <Text className="text-sm font-bold mb-0.5 text-primary">{t('Primary')}</Text>}
         <Text numberOfLines={1} className="font-semibold text-text">
           {league.league.name}
         </Text>
@@ -61,9 +57,7 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
   return (
     <>
       <View className="items-center ">
-        <Text className="text-2xl font-bold text-text">
-          {t('Choose {{count}} active leagues', { count: maxLeagues })}
-        </Text>
+        <Text className="text-2xl font-bold text-text">{t('Activate Leagues', { count: maxLeagues })}</Text>
         <Text className="text-base mt-2 text-muted text-center">
           {t('Your subscription has ended. Choose the leagues you want to keep active.')}
         </Text>
@@ -81,9 +75,7 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
           onPress={onUpgrade}
           className="flex-row items-center gap-2 rounded-lg border border-primary px-3 py-2"
         >
-          <Text className="font-bold text-primary">
-            {t('Upgrade')}
-          </Text>
+          <Text className="font-bold text-primary">{t('Upgrade')}</Text>
           <ChevronRight size={18} color={theme.colors.primary} />
         </Pressable>
       </View>

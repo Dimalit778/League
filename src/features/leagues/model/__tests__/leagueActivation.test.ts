@@ -1,4 +1,9 @@
-import { resolveVacantLeagueSlots, toggleLeagueActivationSelection } from '../leagueActivation';
+import {
+  requiresLeagueActivationResolution,
+  resolveActivationTargetCount,
+  resolveVacantLeagueSlots,
+  toggleLeagueActivationSelection,
+} from '../leagueActivation';
 
 describe('resolveVacantLeagueSlots', () => {
   it('does not require a choice when the only inactive league fits the vacant seat', () => {
@@ -23,6 +28,66 @@ describe('resolveVacantLeagueSlots', () => {
     expect(
       resolveVacantLeagueSlots({ isPro: true, activeCount: 1, inactiveCount: 3, maxLeagues: 5 }),
     ).toEqual({ availableSlots: 0, requiresSelection: false });
+  });
+});
+
+describe('requiresLeagueActivationResolution', () => {
+  it('does not trigger for a pro user regardless of state', () => {
+    expect(
+      requiresLeagueActivationResolution({
+        isPro: true,
+        activeCount: 5,
+        maxLeagues: 2,
+        hasIneligibleActiveLeague: true,
+      }),
+    ).toBe(false);
+  });
+
+  it('triggers on count overflow alone, as before', () => {
+    expect(
+      requiresLeagueActivationResolution({
+        isPro: false,
+        activeCount: 3,
+        maxLeagues: 2,
+        hasIneligibleActiveLeague: false,
+      }),
+    ).toBe(true);
+  });
+
+  it('triggers on an ineligible active league even when the count is within the plan limit', () => {
+    expect(
+      requiresLeagueActivationResolution({
+        isPro: false,
+        activeCount: 1,
+        maxLeagues: 2,
+        hasIneligibleActiveLeague: true,
+      }),
+    ).toBe(true);
+  });
+
+  it('does not trigger when count and eligibility are both fine', () => {
+    expect(
+      requiresLeagueActivationResolution({
+        isPro: false,
+        activeCount: 2,
+        maxLeagues: 2,
+        hasIneligibleActiveLeague: false,
+      }),
+    ).toBe(false);
+  });
+});
+
+describe('resolveActivationTargetCount', () => {
+  it('targets the plan max when enough eligible leagues exist', () => {
+    expect(resolveActivationTargetCount(2, 5)).toBe(2);
+  });
+
+  it('caps the target at however many eligible leagues the user actually has', () => {
+    expect(resolveActivationTargetCount(2, 1)).toBe(1);
+  });
+
+  it('is zero when the user has no eligible leagues at all (upgrade is the only path)', () => {
+    expect(resolveActivationTargetCount(2, 0)).toBe(0);
   });
 });
 

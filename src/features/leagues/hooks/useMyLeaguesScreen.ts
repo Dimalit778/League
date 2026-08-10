@@ -7,6 +7,8 @@ import {
 } from '@/features/leagues/hooks/useLeagues';
 import { MyLeague, MyLeaguesResponse } from '@/features/leagues/types';
 import {
+  requiresLeagueActivationResolution,
+  resolveActivationTargetCount,
   resolveVacantLeagueSlots,
   toggleLeagueActivationSelection,
 } from '@/features/leagues/model/leagueActivation';
@@ -55,7 +57,25 @@ export function useMyLeaguesScreen() {
   const allLeagues = useMemo(() => flattenMyLeagues(myLeagues), [myLeagues]);
   const activeCount = allLeagues.filter((league) => league.active).length;
   const inactiveLeagues = useMemo(() => allLeagues.filter((league) => !league.active), [allLeagues]);
-  const requiresLeagueActivation = !isPro && activeCount > maxLeagues;
+  // A free-plan user can end up with an active PRO-only league even when
+  // activeCount is within maxLeagues (e.g. they downgraded while holding
+  // just one active league, which happened to be PRO-only) — count alone
+  // doesn't catch that, so also check eligibility directly.
+  const hasIneligibleActiveLeague = useMemo(
+    () => !isPro && allLeagues.some((league) => league.active && league.league.competition?.is_free === false),
+    [allLeagues, isPro],
+  );
+  const requiresLeagueActivation = requiresLeagueActivationResolution({
+    isPro,
+    activeCount,
+    maxLeagues,
+    hasIneligibleActiveLeague,
+  });
+  const eligibleLeagueCount = useMemo(
+    () => allLeagues.filter((league) => league.league.competition?.is_free !== false).length,
+    [allLeagues],
+  );
+  const activationTargetCount = resolveActivationTargetCount(maxLeagues, eligibleLeagueCount);
   const { availableSlots: availableActivationSlots, requiresSelection } = resolveVacantLeagueSlots({
     isPro,
     activeCount,
@@ -112,7 +132,7 @@ export function useMyLeaguesScreen() {
 
   const leagueActivationResolution = useLeagueActivationResolution({
     leagues: allLeagues,
-    maxLeagues,
+    maxLeagues: activationTargetCount,
     enabled: requiresLeagueActivation,
     updateLeagueActivation,
     refetch,
@@ -206,7 +226,7 @@ export function useMyLeaguesScreen() {
     limitSelect: requiresLeagueActivation
       ? {
           leagues: allLeagues,
-          maxLeagues,
+          maxLeagues: activationTargetCount,
           selectedMemberIds: leagueActivationResolution.selectedMemberIds,
           isSaving: isUpdatingLeagueActivation,
           canSave: leagueActivationResolution.canSave,
