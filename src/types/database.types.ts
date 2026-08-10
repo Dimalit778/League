@@ -475,6 +475,7 @@ export type Database = {
         Row: {
           app_user_id: string | null
           created_at: string | null
+          event_id: string | null
           event_type: string | null
           id: string
           payload: Json
@@ -483,6 +484,7 @@ export type Database = {
         Insert: {
           app_user_id?: string | null
           created_at?: string | null
+          event_id?: string | null
           event_type?: string | null
           id?: string
           payload: Json
@@ -491,10 +493,97 @@ export type Database = {
         Update: {
           app_user_id?: string | null
           created_at?: string | null
+          event_id?: string | null
           event_type?: string | null
           id?: string
           payload?: Json
           processed?: boolean | null
+        }
+        Relationships: []
+      }
+      subscription_entitlement_mappings: {
+        Row: {
+          created_at: string
+          entitlement_id: string
+          is_active: boolean
+          plan_code: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entitlement_id: string
+          is_active?: boolean
+          plan_code: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entitlement_id?: string
+          is_active?: boolean
+          plan_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_entitlement_mappings_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          can_use_premium_competitions: boolean
+          code: string
+          description_en: string | null
+          description_he: string | null
+          has_advanced_stats: boolean
+          is_active: boolean
+          is_default: boolean
+          max_active_leagues: number
+          max_members_per_league: number
+          name_en: string
+          name_he: string
+          rank: number
+          sort_order: number
+          updated_at: string
+          weekly_ai_analyses: number | null
+        }
+        Insert: {
+          can_use_premium_competitions?: boolean
+          code: string
+          description_en?: string | null
+          description_he?: string | null
+          has_advanced_stats?: boolean
+          is_active?: boolean
+          is_default?: boolean
+          max_active_leagues: number
+          max_members_per_league: number
+          name_en: string
+          name_he: string
+          rank?: number
+          sort_order?: number
+          updated_at?: string
+          weekly_ai_analyses?: number | null
+        }
+        Update: {
+          can_use_premium_competitions?: boolean
+          code?: string
+          description_en?: string | null
+          description_he?: string | null
+          has_advanced_stats?: boolean
+          is_active?: boolean
+          is_default?: boolean
+          max_active_leagues?: number
+          max_members_per_league?: number
+          name_en?: string
+          name_he?: string
+          rank?: number
+          sort_order?: number
+          updated_at?: string
+          weekly_ai_analyses?: number | null
         }
         Relationships: []
       }
@@ -573,6 +662,27 @@ export type Database = {
         }
         Relationships: []
       }
+      ugc_blocked_terms: {
+        Row: {
+          category: string
+          created_at: string
+          language: string
+          term: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          language?: string
+          term: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          language?: string
+          term?: string
+        }
+        Relationships: []
+      }
       user_blocks: {
         Row: {
           blocked_user_id: string
@@ -640,7 +750,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_fkey"
+            columns: ["plan"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -740,6 +858,10 @@ export type Database = {
         Args: { p_revenuecat_app_user_id?: string; p_user_id: string }
         Returns: Json
       }
+      assert_allowed_public_ugc: {
+        Args: { p_value: string }
+        Returns: undefined
+      }
       block_user: { Args: { p_target_user_id: string }; Returns: Json }
       consume_football_api_budget: {
         Args: { p_calls: number; p_job?: string; p_limit?: number }
@@ -760,6 +882,10 @@ export type Database = {
         Returns: string
       }
       delete_owned_league: { Args: { p_league_id: string }; Returns: Json }
+      fill_available_league_slots_if_unambiguous: {
+        Args: { p_user_id: string }
+        Returns: string[]
+      }
       find_league_by_code: {
         Args: { p_join_code: string }
         Returns: {
@@ -774,17 +900,6 @@ export type Database = {
           owner_nickname: string
         }[]
       }
-      get_competition_leaderboard: {
-        Args: { p_competition_id: number }
-        Returns: {
-          avatar_url: string | null
-          league_id: string | null
-          member_id: string | null
-          nickname: string | null
-          total_points: number | null
-          user_id: string | null
-        }[]
-      }
       get_blocked_users: {
         Args: never
         Returns: {
@@ -795,13 +910,25 @@ export type Database = {
           id: string
         }[]
       }
+      get_competition_leaderboard: {
+        Args: { p_competition_id: number }
+        Returns: {
+          avatar_url: string
+          league_id: string
+          member_id: string
+          nickname: string
+          total_points: number
+          user_id: string
+        }[]
+      }
       get_match_ai_summary: {
         Args: { p_match_id: number }
         Returns: {
-          ai_summary_en: string | null
-          ai_summary_he: string | null
+          ai_summary_en: string
+          ai_summary_he: string
         }[]
       }
+      get_my_subscription_access: { Args: never; Returns: Json }
       get_plan_limits: {
         Args: { p_plan: string }
         Returns: {
@@ -848,6 +975,7 @@ export type Database = {
         Args: { p_decision: string; p_notes?: string; p_report_id: string }
         Returns: Json
       }
+      normalize_ugc_for_filter: { Args: { p_value: string }; Returns: string }
       release_sync_lock: {
         Args: { p_job: string; p_status?: string }
         Returns: undefined
