@@ -4,8 +4,9 @@ import '@/lib/i18n/autoTranslate';
 
 import { images } from '@/assets/images';
 import { LoadingBall } from '@/components/layout/LoadingBall';
-import { NetworkStatusBanner } from '@/components/layout/NetworkStatusBanner';
+import { OfflineScreen } from '@/components/layout/OfflineScreen';
 import { useAppFonts } from '@/hooks/useAppFonts';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -66,6 +67,8 @@ const AppBootstrap = () => {
   const { colors } = useThemeTokens();
   const fontsLoaded = useAppFonts();
   const [isAppShellReady, setIsAppShellReady] = useState(false);
+  const { isConnected, isInternetReachable } = useNetworkStatus();
+  const isOffline = isConnected === false || isInternetReachable === false;
 
   useEffect(() => {
     navigationIntegration.registerNavigationContainer(ref);
@@ -114,19 +117,20 @@ const AppBootstrap = () => {
     return <LoadingBall />;
   }
 
-  return (
-    <>
-      <NetworkStatusBanner />
-      <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack.Protected>
+  if (isOffline) {
+    return <OfflineScreen />;
+  }
 
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack.Protected>
-      </Stack>
-    </>
+  return (
+    <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
   );
 };
 

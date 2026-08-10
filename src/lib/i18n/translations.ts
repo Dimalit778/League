@@ -910,6 +910,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Football Prediction': 'Football Prediction',
       'Go Home': 'Go Home',
       'No internet connection. Some features may not work.': 'No internet connection. Some features may not work.',
+      "You're offline": "You're offline",
+      'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.':
+        'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.',
       'Predict. Compete. Win.': 'Predict. Compete. Win.',
       'Resend Code': 'Resend Code',
       'Resend in {{count}}s': 'Resend in {{count}}s',
@@ -1885,6 +1888,9 @@ const translationsByFeature: Record<SupportedLanguage, Record<string, any>> = {
       'Football Prediction': 'ניחושי כדורגל',
       'Go Home': 'חזרה לבית',
       'No internet connection. Some features may not work.': 'אין חיבור לאינטרנט. ייתכן שחלק מהתכונות לא יעבדו.',
+      "You're offline": 'אין חיבור לאינטרנט',
+      'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.':
+        'Champo זקוקה לחיבור לאינטרנט כדי לטעון משחקים, ניחושים וטבלאות דירוג. בדקו את החיבור ונסו שוב.',
       'Predict. Compete. Win.': 'מנחשים. מתחרים. מנצחים.',
       'Resend Code': 'שליחת הקוד מחדש',
       'Resend in {{count}}s': 'שליחה מחדש בעוד {{count}} שניות',
