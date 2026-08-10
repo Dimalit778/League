@@ -5,9 +5,10 @@ import {
   useUpdateLeagueActivation,
   useUpdatePrimaryLeague,
 } from '@/features/leagues/hooks/useLeagues';
-import { MyLeague, MyLeaguesResponse } from '@/features/leagues/types';
+import { useRequiresLeagueActivation } from '@/features/leagues/hooks/useRequiresLeagueActivation';
+import { MyLeague } from '@/features/leagues/types';
 import {
-  requiresLeagueActivationResolution,
+  flattenMyLeagues,
   resolveActivationTargetCount,
   resolveVacantLeagueSlots,
   toggleLeagueActivationSelection,
@@ -16,15 +17,6 @@ import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-function flattenMyLeagues(myLeagues?: MyLeaguesResponse | null): MyLeague[] {
-  if (!myLeagues) return [];
-  return [
-    ...(myLeagues.primaryLeague ? [myLeagues.primaryLeague] : []),
-    ...myLeagues.leagues,
-    ...myLeagues.inactiveLeagues,
-  ];
-}
 
 function toPrimaryLeague(member: MyLeague) {
   return {
@@ -57,20 +49,7 @@ export function useMyLeaguesScreen() {
   const allLeagues = useMemo(() => flattenMyLeagues(myLeagues), [myLeagues]);
   const activeCount = allLeagues.filter((league) => league.active).length;
   const inactiveLeagues = useMemo(() => allLeagues.filter((league) => !league.active), [allLeagues]);
-  // A free-plan user can end up with an active PRO-only league even when
-  // activeCount is within maxLeagues (e.g. they downgraded while holding
-  // just one active league, which happened to be PRO-only) — count alone
-  // doesn't catch that, so also check eligibility directly.
-  const hasIneligibleActiveLeague = useMemo(
-    () => !isPro && allLeagues.some((league) => league.active && league.league.competition?.is_free === false),
-    [allLeagues, isPro],
-  );
-  const requiresLeagueActivation = requiresLeagueActivationResolution({
-    isPro,
-    activeCount,
-    maxLeagues,
-    hasIneligibleActiveLeague,
-  });
+  const requiresLeagueActivation = useRequiresLeagueActivation();
   const eligibleLeagueCount = useMemo(
     () => allLeagues.filter((league) => league.league.competition?.is_free !== false).length,
     [allLeagues],

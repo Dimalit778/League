@@ -1,3 +1,14 @@
+import type { MyLeague, MyLeaguesResponse } from '../types';
+
+export function flattenMyLeagues(myLeagues?: MyLeaguesResponse | null): MyLeague[] {
+  if (!myLeagues) return [];
+  return [
+    ...(myLeagues.primaryLeague ? [myLeagues.primaryLeague] : []),
+    ...myLeagues.leagues,
+    ...myLeagues.inactiveLeagues,
+  ];
+}
+
 type VacantLeagueSlotParams = {
   isPro: boolean;
   activeCount: number;
