@@ -37,6 +37,9 @@ describe('useSeasonMatches', () => {
         queryKey: KEYS.matches.season(1, 2502, 'm1'),
         queryFn: expect.any(Function),
         enabled: true,
+        refetchInterval: expect.any(Function),
+        refetchOnMount: 'always',
+        refetchOnWindowFocus: 'always',
       }),
     );
   });

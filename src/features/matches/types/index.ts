@@ -36,6 +36,7 @@ export type MatchBaseType = Pick<
   | 'kick_off'
   | 'stage'
   | 'group'
+  | 'updated_at'
   | 'home_team_id'
   | 'away_team_id'
   | 'ai_predicted_home_score'

@@ -47,7 +47,7 @@ describe('SignInScreen', () => {
   it('renders the icon-only social sign in group', () => {
     const { getByText, getByTestId } = render(<SignInScreen />);
 
-    expect(getByText('Continue with')).toBeTruthy();
+    expect(getByText('OR')).toBeTruthy();
     expect(getByTestId('google-sign-in-button')).toBeTruthy();
   });
 

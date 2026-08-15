@@ -10,10 +10,9 @@ import {
   jsonResponse,
   lockedResponse,
   must,
-  nowIso,
   releaseSyncLock,
   requireSyncAuth,
-  tryAcquireSyncLock,
+  tryAcquireSyncLock
 } from "../_shared/sync.ts";
 
 const JOB = "sync-today-matches";
@@ -28,6 +27,7 @@ const transformMatch = (m: any) => ({
   status: m.status ?? null,
   stage: m.stage ?? null,
   group: m.group ?? null,
+  updated_at: m.lastUpdated ?? null,
   home_team_id: m.homeTeam?.id ?? null,
   away_team_id: m.awayTeam?.id ?? null,
   score: {
@@ -43,7 +43,7 @@ const transformMatch = (m: any) => ({
     },
   },
   referee: m?.referees?.[0]?.name ?? null,
-  updated_at: nowIso(),
+
 });
 
 Deno.serve(async (req) => {

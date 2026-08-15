@@ -9,6 +9,23 @@ describe('adminService', () => {
     jest.clearAllMocks();
   });
 
+  describe('isAdmin', () => {
+    it.each([true, false])('returns the boolean from the is_admin rpc', async (isAdmin) => {
+      (supabase.rpc as jest.Mock).mockResolvedValue({ data: isAdmin, error: null });
+
+      await expect(adminService.isAdmin()).resolves.toBe(isAdmin);
+      expect(supabase.rpc).toHaveBeenCalledWith('is_admin');
+      expect(supabase.from).not.toHaveBeenCalledWith('admin_users');
+    });
+
+    it('throws when the is_admin rpc fails', async () => {
+      const error = { message: 'RPC failed' };
+      (supabase.rpc as jest.Mock).mockResolvedValue({ data: null, error });
+
+      await expect(adminService.isAdmin()).rejects.toEqual(error);
+    });
+  });
+
   describe('getUsers', () => {
     it('calls supabase with correct table and pagination', async () => {
       const mockData = [{ id: 'u1', email: 'test@test.com' }];

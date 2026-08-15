@@ -64,6 +64,11 @@ jest.mock('expo-router', () => ({
     back: jest.fn(),
   }),
   useLocalSearchParams: jest.fn(() => ({})),
+  useIsFocused: jest.fn(() => true),
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = require('react');
+    React.useEffect(callback, [callback]);
+  },
   Link: ({ children, href, asChild }: any) => {
     const React = require('react');
     const { Pressable, View } = require('react-native');
@@ -508,6 +513,9 @@ jest.mock('@/lib/supabase', () => ({
 }));
 
 jest.mock('@tanstack/react-query', () => ({
+  focusManager: {
+    setFocused: jest.fn(),
+  },
   useQueryClient: jest.fn(() => ({
     invalidateQueries: jest.fn(),
     setQueryData: jest.fn(),

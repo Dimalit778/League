@@ -15,7 +15,7 @@ export function Header({ fallbackHref, showBack = true }: HeaderProps) {
         </View>
       ) : null}
       <View className="items-center px-14" pointerEvents="none">
-        <Brand size="md" onBoarding />
+        <Brand size="sm" onBoarding />
       </View>
     </View>
   );

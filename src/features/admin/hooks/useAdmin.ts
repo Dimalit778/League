@@ -1,7 +1,8 @@
-import { KEYS } from '@/lib/queryClient';
-import { TablesInsert } from '@/types/database.types';
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { KEYS } from '@/lib/queryClient';
+import { useAuthStore } from '@/store/AuthStore';
+import { TablesInsert } from '@/types/database.types';
+import { skipToken, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../queries/adminService';
 
 const ADMIN_STALE_TIME = 60 * 1000; // 1 minute
@@ -14,11 +15,14 @@ export const useAdminDashboard = () => {
   });
 };
 export const useIsAdmin = () => {
-
+  const userId = useAuthStore((state) => state.session?.user.id ?? null);
+  const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
+  const isReady = !isAuthLoading && userId != null;
 
   return useQuery({
-    queryKey: KEYS.admin.isAdmin,
-    queryFn: () => adminService.isAdmin(),
+    queryKey: KEYS.admin.isAdmin(userId),
+    queryFn: isReady ? () => adminService.isAdmin() : skipToken,
+    enabled: isReady,
     staleTime: ADMIN_STALE_TIME,
   });
 };

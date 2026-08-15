@@ -588,11 +588,62 @@ export const en = {
 
     // Admin screens
     admin: {
+      Admin: 'Admin',
       ADMIN: 'ADMIN',
       'Open Admin Dashboard': 'Open Admin Dashboard',
       'Platform Overview': 'Platform Overview',
+      'Monitor platform health and jump directly into the work that needs attention.':
+        'Monitor platform health and jump directly into the work that needs attention.',
+      'Management areas': 'Management areas',
+      'Choose an area to review or manage.': 'Choose an area to review or manage.',
+      People: 'People',
+      Activity: 'Activity',
+      Safety: 'Safety',
+      Filtered: 'Filtered',
+      'Latest 200': 'Latest 200',
+      Active: 'Active',
+      Inactive: 'Inactive',
+      Member: 'Member',
+      'Needs review': 'Needs review',
       'User Management': 'User Management',
+      'Search accounts, review key details, and manage access safely.':
+        'Search accounts, review key details, and manage access safely.',
+      'User ID': 'User ID',
+      'Try a different name or email address.': 'Try a different name or email address.',
       'League Management': 'League Management',
+      'Review league ownership, capacity, competition, and join details.':
+        'Review league ownership, capacity, competition, and join details.',
+      'Browse every league and open its member directory.':
+        'Browse every league and open its member directory.',
+      'Search leagues, owners, or join codes...': 'Search leagues, owners, or join codes...',
+      'View members': 'View members',
+      '{{count}} members': '{{count}} members',
+      'No leagues match your search': 'No leagues match your search',
+      'Try a league name, owner, or join code.': 'Try a league name, owner, or join code.',
+      'No leagues found': 'No leagues found',
+      'Inspect membership, identity, primary status, and league assignment.':
+        'Inspect membership, identity, primary status, and league assignment.',
+      'View every participant or focus on one league.': 'View every participant or focus on one league.',
+      'Filter by league': 'Filter by league',
+      'All leagues': 'All leagues',
+      'Showing {{count}} members in {{league}}.': 'Showing {{count}} members in {{league}}.',
+      'No members in this league': 'No members in this league',
+      'Search members, users, or leagues...': 'Search members, users, or leagues...',
+      'No members match your search': 'No members match your search',
+      'No league members found': 'No league members found',
+      'Try a nickname, email, or league name.': 'Try a nickname, email, or league name.',
+      'No email available': 'No email available',
+      'Audit the latest prediction activity across users and leagues.':
+        'Audit the latest prediction activity across users and leagues.',
+      'Search predictions by user, league, or fixture...':
+        'Search predictions by user, league, or fixture...',
+      'No predictions match your search': 'No predictions match your search',
+      'No predictions found': 'No predictions found',
+      'Try a user, league, or fixture ID.': 'Try a user, league, or fixture ID.',
+      'Review reported content and take clear, auditable moderation actions.':
+        'Review reported content and take clear, auditable moderation actions.',
+      '{{count}} reports in this queue': '{{count}} reports in this queue',
+      'There is nothing waiting for review.': 'There is nothing waiting for review.',
       Users: 'Users',
       'Loading more users...': 'Loading more users...',
       'User deleted successfully': 'User deleted successfully',
@@ -608,6 +659,15 @@ export const en = {
       'Audit recent predictions submitted by users.': 'Audit recent predictions submitted by users.',
       Competitions: 'Competitions',
       Competition: 'Competition',
+      'Manage the competitions available across leagues and match data.':
+        'Manage the competitions available across leagues and match data.',
+      'Close form': 'Close form',
+      'Required fields are marked by their labels; optional values can be added later.':
+        'Required fields are marked by their labels; optional values can be added later.',
+      'Search competitions by name, area, or code...': 'Search competitions by name, area, or code...',
+      'No competitions match your search': 'No competitions match your search',
+      'No competitions found': 'No competitions found',
+      'Try a competition name, area, or code.': 'Try a competition name, area, or code.',
       'Add Competition': 'Add Competition',
       'Add New Competition': 'Add New Competition',
       'Remove competition': 'Remove competition',

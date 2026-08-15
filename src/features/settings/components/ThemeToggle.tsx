@@ -5,15 +5,11 @@ import { memo, useEffect } from 'react';
 import { type LayoutChangeEvent, Pressable, View } from 'react-native';
 import Animated, {
   interpolate,
-  interpolateColor,
   SharedValue,
-  useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-
-const AnimatedFeather = Animated.createAnimatedComponent(Feather);
 
 const springConfig = {
   damping: 30,
@@ -58,36 +54,32 @@ const ThemeToggle = () => {
           style={[thumbStyle, { width: THUMB_SIZE, height: THUMB_SIZE }]}
           className="absolute left-0 top-0 z-0 rounded-full bg-primary"
         />
-        <Icon icon="sun" progress={progress} />
-        <Icon icon="moon" progress={progress} />
+        <Icon icon="sun" progress={progress} isActive={!isDark} />
+        <Icon icon="moon" progress={progress} isActive={isDark} />
       </View>
     </Pressable>
   );
 };
 
-const Icon = memo(({ icon, progress }: { icon: 'sun' | 'moon'; progress: SharedValue<number> }) => {
-  const { colors } = useThemeTokens();
-  const isSun = icon === 'sun';
+const Icon = memo(
+  ({ icon, progress, isActive }: { icon: 'sun' | 'moon'; progress: SharedValue<number>; isActive: boolean }) => {
+    const { colors } = useThemeTokens();
+    const isSun = icon === 'sun';
 
-  const animatedIconStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(progress.value, [0, 1], [isSun ? 1 : 0.5, isSun ? 0.5 : 1]);
-    return { opacity };
-  });
+    const animatedIconStyle = useAnimatedStyle(() => {
+      const opacity = interpolate(progress.value, [0, 1], [isSun ? 1 : 0.5, isSun ? 0.5 : 1]);
+      return { opacity };
+    });
 
-  const animatedIconProps = useAnimatedProps(() => {
-    return {
-      color: isSun
-        ? interpolateColor(progress.value, [0, 1], [ACTIVE_ICON_COLOR, colors.muted])
-        : interpolateColor(progress.value, [0, 1], [colors.muted, ACTIVE_ICON_COLOR]),
-    };
-  }, [colors.muted, isSun]);
-
-  return (
-    <View style={{ width: THUMB_SIZE, height: THUMB_SIZE }} className="relative z-10 items-center justify-center">
-      <AnimatedFeather animatedProps={animatedIconProps} style={animatedIconStyle} name={icon} size={22} />
-    </View>
-  );
-});
+    return (
+      <View style={{ width: THUMB_SIZE, height: THUMB_SIZE }} className="relative z-10 items-center justify-center">
+        <Animated.View style={animatedIconStyle}>
+          <Feather color={isActive ? ACTIVE_ICON_COLOR : colors.muted} name={icon} size={22} />
+        </Animated.View>
+      </View>
+    );
+  },
+);
 
 Icon.displayName = 'Icon';
 export default ThemeToggle;

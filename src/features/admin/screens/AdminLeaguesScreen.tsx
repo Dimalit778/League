@@ -1,76 +1,159 @@
-import { Card, LoadingOverlay, Screen, Text } from '@/components';
-import { useAdminLeagues } from '@/features/admin/hooks/useAdmin';
+import { Badge, Card, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  ADMIN_CONTENT_CLASS,
+  AdminCollectionSummary,
+  AdminEmpty,
+  AdminErrorBanner,
+  AdminMeta,
+  AdminPageHeader,
+  AdminSearchField,
+} from '@/features/admin/components/AdminUI';
+import { useAdminLeagueMembers, useAdminLeagues } from '@/features/admin/hooks/useAdmin';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsFocused } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ChevronLeft, ChevronRight, SearchX, Trophy, UsersRound } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 
 const AdminLeaguesScreen = () => {
-  const isFocused = useIsFocused();
-  const { t } = useTranslation();
-  const { data, isLoading, isRefetching, refetch, error } = useAdminLeagues();
+  const { t, isRTL } = useTranslation();
+  const { colors } = useThemeTokens();
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const numColumns = width >= 768 ? 2 : 1;
+  const leaguesQuery = useAdminLeagues();
+  const membersQuery = useAdminLeagueMembers();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const memberCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const member of membersQuery.data ?? []) {
+      counts.set(member.league_id, (counts.get(member.league_id) ?? 0) + 1);
+    }
+    return counts;
+  }, [membersQuery.data]);
 
-  if (isLoading && !data) {
-    return <LoadingOverlay />;
-  }
+  const filteredLeagues = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    const leagues = leaguesQuery.data ?? [];
+    if (!query) return leagues;
+    return leagues.filter((league) =>
+      [league.name, league.join_code, league.owner?.full_name, league.owner?.email, league.competition?.name]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
+    );
+  }, [leaguesQuery.data, searchQuery]);
+
+  const openLeagueMembers = (leagueId: string) => {
+    router.push({
+      pathname: '/(app)/(admin)/league-members',
+      params: { leagueId },
+    });
+  };
+
+  const refresh = async () => {
+    await Promise.all([leaguesQuery.refetch(), membersQuery.refetch()]);
+  };
+
+  if (leaguesQuery.isLoading && !leaguesQuery.data) return <LoadingOverlay />;
 
   return (
     <Screen edges={['bottom']}>
-      <ScrollView
-        className="flex-1 px-4 pt-4"
-        refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
-      >
-        {error ? (
-          <Text className="text-error text-base">{t('Unable to load leagues. Pull to refresh to try again.')}</Text>
-        ) : (
-          <Text className="text-text text-sm mb-4">{t('Showing {{count}} leagues.', { count: data?.length ?? 0 })}</Text>
-        )}
+      <FlatList
+        key={`leagues-${numColumns}`}
+        data={filteredLeagues}
+        numColumns={numColumns}
+        keyExtractor={(league) => league.id}
+        refreshing={leaguesQuery.isRefetching || membersQuery.isRefetching}
+        onRefresh={() => void refresh()}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName={ADMIN_CONTENT_CLASS}
+        ListHeaderComponent={
+          <View>
+            <AdminPageHeader
+              eyebrow={t('Competition')}
+              title={t('League Management')}
+              description={t('Browse every league and open its member directory.')}
+            />
+            <AdminSearchField
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('Search leagues, owners, or join codes...')}
+            />
+            <View className="mt-3">
+              <AdminCollectionSummary
+                countLabel={t('Showing {{count}} leagues.', { count: filteredLeagues.length })}
+                badgeLabel={searchQuery ? t('Filtered') : undefined}
+              />
+            </View>
+            {leaguesQuery.error ? (
+              <AdminErrorBanner message={t('Unable to load leagues. Pull to refresh to try again.')} />
+            ) : null}
+          </View>
+        }
+        renderItem={({ item: league }) => {
+          const membersCount = memberCounts.get(league.id) ?? 0;
+          const Chevron = isRTL ? ChevronLeft : ChevronRight;
 
-        <View className="space-y-4 pb-16">
-          {data?.map((league) => (
-            <Card key={league.id}>
-              <View className="flex-row justify-between items-start mb-4">
-                <View className="flex-1 mr-4">
-                  <Text className="text-text text-lg font-semibold">{league.name}</Text>
-                  <Text className="text-text/70 text-sm">{league.id}</Text>
+          return (
+            <View className="flex-1 p-1.5">
+              <Card
+                className="h-full"
+                padding="sm"
+                onPress={() => openLeagueMembers(league.id)}
+                accessibilityLabel={`${league.name}. ${t('{{count}} members', { count: membersCount })}`}
+                contentClassName="gap-3"
+              >
+                <View className="flex-row items-center gap-3">
+                  <View className="h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                    <Trophy size={21} color={colors.primary} strokeWidth={1.9} />
+                  </View>
+                  <View className="min-w-0 flex-1">
+                    <Text variant="subtitle" numberOfLines={1}>
+                      {league.name}
+                    </Text>
+                    <Text variant="caption" tone="muted" numberOfLines={1}>
+                      {league.competition?.name ?? t('Not assigned')}
+                    </Text>
+                  </View>
+                  <Badge
+                    label={t('{{count}} members', { count: membersCount })}
+                    variant="primary"
+                    leftIcon={<UsersRound size={14} color={colors.primary} strokeWidth={2} />}
+                  />
                 </View>
-                <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide text-right">{t('Join Code')}</Text>
-                  <Text className="text-text text-base font-semibold">{league.join_code}</Text>
-                </View>
-              </View>
 
-              <View className="flex-row mb-3">
-                <View className="flex-1 mr-4">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Owner')}</Text>
-                  <Text className="text-text text-sm">{league.owner?.full_name ?? 'Unknown owner'}</Text>
-                  <Text className="text-text/70 text-xs">{league.owner?.email ?? 'No email on file'}</Text>
+                <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
+                  <AdminMeta
+                    label={t('Owner')}
+                    value={league.owner?.full_name ?? t('Unknown owner')}
+                    className="flex-1"
+                  />
+                  <AdminMeta label={t('Join Code')} value={league.join_code} ltr className="flex-1" />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Competition')}</Text>
-                  <Text className="text-text text-sm">{league.competition?.name ?? 'Not assigned'}</Text>
-                  <Text className="text-text/70 text-xs">{league.competition?.area ?? ''}</Text>
-                </View>
-              </View>
 
-              <View className="flex-row justify-between">
-                <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Max Members')}</Text>
-                  <Text className="text-text text-sm">{league.max_members}</Text>
+                <View className="flex-row items-center justify-between border-t border-border pt-3">
+                  <Text variant="bodySmall" tone="primary" className="font-semibold">
+                    {t('View members')}
+                  </Text>
+                  <Chevron size={18} color={colors.primary} strokeWidth={2.1} />
                 </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Created')}</Text>
-                  <Text className="text-text text-sm">{new Date(league.created_at).toLocaleString()}</Text>
-                </View>
-              </View>
-            </Card>
-          ))}
-        </View>
-      </ScrollView>
+              </Card>
+            </View>
+          );
+        }}
+        ListEmptyComponent={
+          <AdminEmpty
+            icon={searchQuery ? SearchX : Trophy}
+            title={searchQuery ? t('No leagues match your search') : t('No leagues found')}
+            description={searchQuery ? t('Try a league name, owner, or join code.') : undefined}
+          />
+        }
+        ListFooterComponent={<View className="h-8" />}
+      />
     </Screen>
   );
 };

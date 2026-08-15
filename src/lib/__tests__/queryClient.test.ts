@@ -126,6 +126,11 @@ describe('KEYS', () => {
   });
 
   describe('admin', () => {
+    it('scopes the admin access key to the current user', () => {
+      expect(KEYS.admin.isAdmin('user-1')).toEqual(['admin', 'isAdmin', 'user-1']);
+      expect(KEYS.admin.isAdmin(null)).toEqual(['admin', 'isAdmin', 'disabled']);
+    });
+
     it('has dashboard key', () => {
       expect(KEYS.admin.dashboard).toEqual(['admin', 'dashboard']);
     });

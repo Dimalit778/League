@@ -10,6 +10,7 @@ import { Calendar, Clock, MapPin } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { getMatchStatus } from '../../utils/matchStatus';
+import { getMatchMinute } from '../../utils/matchTimer';
 
 function TeamCard({ team, width, height }: { team: TeamType | null; width: number; height: number }) {
   if (!team) return <View className="flex-1" />;
@@ -31,12 +32,29 @@ function ScoreCard({
   awayScore,
   matchStatus,
   kick_off,
+  updated_at,
 }: {
   homeScore: number | null;
   awayScore: number | null;
   matchStatus: string;
   kick_off: string;
+  updated_at: string;
 }) {
+  const isScheduled = getMatchStatus(matchStatus) === 'SCHEDULED';
+  const kickoffPassed = Boolean(kick_off) && new Date(kick_off) < new Date();
+  const matchMinute = getMatchMinute({
+    status: matchStatus,
+    kickoffAt: kick_off,
+  });
+  console.log('matchMinute', matchMinute);
+  if (isScheduled && !kickoffPassed) {
+    return (
+      <Text variant="titleLarge" tone="muted" className="text-center ">
+        VS
+      </Text>
+    );
+  }
+
   return (
     <View className="w-32 mb-4 items-center justify-center ">
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
@@ -47,10 +65,13 @@ function ScoreCard({
           </Text>
         </Row>
       )}
-      {['IN_PLAY'].includes(matchStatus) && (
+      {['IN_PLAY', 'PAUSED'].includes(matchStatus) && (
         <View className="gap-1">
           <Text variant="label" className=" text-success text-center">
-            LIVE
+            {formatTime(updated_at)}
+          </Text>
+          <Text variant="label" className=" text-success text-center">
+            {matchStatus.toUpperCase() === 'PAUSED' ? 'HT' : 'LIVE'}
           </Text>
           <View className="border border-primary rounded-lg px-2 py-1">
             <Text className="text-4xl font-bold text-white">
@@ -149,18 +170,13 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
           <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
 
           <View className="w-28 items-center justify-center">
-            {isScheduled ? (
-              <Text variant="titleLarge" tone="muted" className="text-center ">
-                VS
-              </Text>
-            ) : (
-              <ScoreCard
-                homeScore={match.score?.fullTime?.home ?? null}
-                awayScore={match.score?.fullTime?.away ?? null}
-                matchStatus={match.status || ''}
-                kick_off={match.kick_off}
-              />
-            )}
+            <ScoreCard
+              homeScore={match.score?.fullTime?.home ?? null}
+              awayScore={match.score?.fullTime?.away ?? null}
+              matchStatus={match.status || ''}
+              kick_off={match.kick_off}
+              updated_at={match.updated_at}
+            />
           </View>
 
           <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />

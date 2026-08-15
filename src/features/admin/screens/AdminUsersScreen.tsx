@@ -1,10 +1,28 @@
 import { Button, Card, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  ADMIN_CONTENT_CLASS,
+  AdminCollectionSummary,
+  AdminEmpty,
+  AdminErrorBanner,
+  AdminMeta,
+  AdminPageHeader,
+  AdminSearchField,
+  formatAdminDate,
+} from '@/features/admin/components/AdminUI';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Tables } from '@/types/database.types';
-import TrashIcon from '@assets/icons/TrashIcon';
+import { SearchX, Trash2, UserRound } from 'lucide-react-native';
 import { memo, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, type ListRenderItemInfo, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  type ListRenderItemInfo,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 type AdminUser = Tables<'users'>;
 
@@ -12,32 +30,57 @@ type AdminUserRowProps = {
   id: string;
   fullName: string | null;
   email: string | null;
+  createdAt: string | null;
   isDeleting: boolean;
   onDelete: (userId: string, userName: string) => void;
 };
 
-const AdminUserRow = memo(function AdminUserRow({ id, fullName, email, isDeleting, onDelete }: AdminUserRowProps) {
-  const { t } = useTranslation();
-  const handlePress = useCallback(() => {
-    onDelete(id, fullName || email || t('this user'));
-  }, [email, fullName, id, onDelete, t]);
+const AdminUserRow = memo(function AdminUserRow({
+  id,
+  fullName,
+  email,
+  createdAt,
+  isDeleting,
+  onDelete,
+}: AdminUserRowProps) {
+  const { t, language } = useTranslation();
+  const { colors } = useThemeTokens();
+  const displayName = fullName || email || t('Unnamed User');
+  const initials = displayName.slice(0, 1).toUpperCase();
+
+  const handlePress = useCallback(() => onDelete(id, displayName), [displayName, id, onDelete]);
 
   return (
-    <Card className="my-2">
-      <View className="flex-row justify-between items-start mb-2">
-        <View className="flex-1">
-          <Text className="text-text text-lg font-semibold mb-1">{fullName || t('Unnamed User')}</Text>
-          <Text className="text-muted text-sm mb-4">{email}</Text>
+    <Card className="h-full" contentClassName="min-h-[154px] gap-4">
+      <View className="flex-row items-start gap-3">
+        <View className="h-11 w-11 items-center justify-center rounded-2xl bg-subtle">
+          <Text variant="subtitle" tone="primary">
+            {initials}
+          </Text>
+        </View>
+        <View className="min-w-0 flex-1">
+          <Text variant="subtitle" numberOfLines={1}>
+            {displayName}
+          </Text>
+          <Text variant="bodySmall" tone="muted" ltr numberOfLines={1}>
+            {email || t('No email')}
+          </Text>
         </View>
         <Button
           onPress={handlePress}
           disabled={isDeleting}
+          loading={isDeleting}
           accessibilityLabel={t('Delete user')}
-          variant="secondary"
+          variant="outline"
           size="icon"
+          className="border-error/30"
         >
-          <TrashIcon size={20} color="#ef4444" />
+          <Trash2 size={18} color={colors.error} />
         </Button>
+      </View>
+      <View className="mt-auto flex-row gap-4 border-t border-border pt-3">
+        <AdminMeta label={t('Created')} value={formatAdminDate(createdAt, language)} className="flex-1" />
+        <AdminMeta label={t('User ID')} value={`${id.slice(0, 8)}…`} ltr className="flex-1" />
       </View>
     </Card>
   );
@@ -46,132 +89,123 @@ const AdminUserRow = memo(function AdminUserRow({ id, fullName, email, isDeletin
 const keyExtractor = (user: AdminUser) => user.id;
 
 const AdminUsersScreen = () => {
-  const { data, isLoading, isRefetching, refetch, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useAdminUsersInfinite();
-  const { isPending: isDeleting, mutate: deleteUser } = useDeleteUser();
+  const usersQuery = useAdminUsersInfinite();
+  const deleteUserMutation = useDeleteUser();
   const { t } = useTranslation();
+  const { width } = useWindowDimensions();
+  const numColumns = width >= 768 ? 2 : 1;
   const [searchQuery, setSearchQuery] = useState('');
 
-  const onRefresh = useCallback(() => {
-    void refetch();
-  }, [refetch]);
-
-  // Flatten all pages into a single array
-  const allUsers = useMemo(() => {
-    return data?.pages.flat() || [];
-  }, [data]);
-
+  const allUsers = useMemo(() => usersQuery.data?.pages.flat() || [], [usersQuery.data]);
   const filteredUsers = useMemo(() => {
-    if (!allUsers.length) return [];
-    if (!searchQuery.trim()) return allUsers;
-
     const query = searchQuery.toLowerCase().trim();
-    return allUsers.filter((user) => {
-      const fullName = user.full_name?.toLowerCase() || '';
-      const email = user.email?.toLowerCase() || '';
-      return fullName.includes(query) || email.includes(query);
-    });
+    if (!query) return allUsers;
+    return allUsers.filter((user) =>
+      `${user.full_name ?? ''} ${user.email ?? ''}`.toLowerCase().includes(query),
+    );
   }, [allUsers, searchQuery]);
 
   const loadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (!searchQuery && usersQuery.hasNextPage && !usersQuery.isFetchingNextPage) {
+      void usersQuery.fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [searchQuery, usersQuery]);
 
   const handleDeleteUser = useCallback(
     (userId: string, userName: string) => {
-      Alert.alert(t('Delete User'), t('Are you sure you want to delete {{name}}? This action cannot be undone.', { name: userName }), [
-        {
-          text: t('Cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('Delete'),
-          style: 'destructive',
-          onPress: () => {
-            deleteUser(userId, {
-              onSuccess: () => {
-                Alert.alert(t('Success'), t('User deleted successfully'));
-              },
-              onError: (error) => {
-                Alert.alert(t('Error'), t('Failed to delete user: {{message}}', { message: error.message }));
-              },
-            });
+      Alert.alert(
+        t('Delete User'),
+        t('Are you sure you want to delete {{name}}? This action cannot be undone.', { name: userName }),
+        [
+          { text: t('Cancel'), style: 'cancel' },
+          {
+            text: t('Delete'),
+            style: 'destructive',
+            onPress: () =>
+              deleteUserMutation.mutate(userId, {
+                onSuccess: () => Alert.alert(t('Success'), t('User deleted successfully')),
+                onError: (error) =>
+                  Alert.alert(t('Error'), t('Failed to delete user: {{message}}', { message: error.message })),
+              }),
           },
-        },
-      ]);
+        ],
+      );
     },
-    [deleteUser, t],
+    [deleteUserMutation, t],
   );
 
   const renderUser = useCallback(
     ({ item: user }: ListRenderItemInfo<AdminUser>) => (
-      <AdminUserRow
-        id={user.id}
-        fullName={user.full_name}
-        email={user.email}
-        isDeleting={isDeleting}
-        onDelete={handleDeleteUser}
-      />
+      <View className="flex-1 p-1.5">
+        <AdminUserRow
+          id={user.id}
+          fullName={user.full_name}
+          email={user.email}
+          createdAt={user.created_at}
+          isDeleting={deleteUserMutation.isPending && deleteUserMutation.variables === user.id}
+          onDelete={handleDeleteUser}
+        />
+      </View>
     ),
-    [handleDeleteUser, isDeleting],
+    [deleteUserMutation.isPending, deleteUserMutation.variables, handleDeleteUser],
   );
 
-  if (isLoading && !data) {
-    return <LoadingOverlay />;
-  }
-
-  if (error && !data) {
-    return (
-      <Screen edges={['bottom']} padding="all" contentClassName="items-center justify-center">
-        <Text className="text-center text-error">{error.message}</Text>
-      </Screen>
-    );
-  }
+  if (usersQuery.isLoading && !usersQuery.data) return <LoadingOverlay />;
 
   return (
     <Screen edges={['bottom']}>
-      <View className="px-4 mb-4">
-        <TextInput
-          placeholder={t('Search by name or email...')}
-          placeholderTextColor="#aaa"
-          className="bg-surface text-text border border-border rounded-lg px-4 py-3"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        {filteredUsers.length > 0 && (
-          <Text className="text-muted text-sm mt-2">
-            {t('{{count}} users found', { count: filteredUsers.length })}
-          </Text>
-        )}
-      </View>
       <FlatList
+        key={`users-${numColumns}`}
         data={filteredUsers}
-        refreshing={isRefetching}
-        onRefresh={onRefresh}
+        numColumns={numColumns}
         keyExtractor={keyExtractor}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        onEndReached={searchQuery ? undefined : loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <View className="py-4 items-center">
-              <ActivityIndicator color="#666" size="small" />
-              <Text className="text-muted text-sm mt-2">{t('Loading more users...')}</Text>
+        renderItem={renderUser}
+        refreshing={usersQuery.isRefetching}
+        onRefresh={() => void usersQuery.refetch()}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.45}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName={ADMIN_CONTENT_CLASS}
+        ListHeaderComponent={
+          <View>
+            <AdminPageHeader
+              eyebrow={t('People')}
+              title={t('User Management')}
+              description={t('Search accounts, review key details, and manage access safely.')}
+            />
+            <AdminSearchField
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('Search by name or email...')}
+            />
+            <View className="mt-3">
+              <AdminCollectionSummary
+                countLabel={t('{{count}} users found', { count: filteredUsers.length })}
+                badgeLabel={searchQuery ? t('Filtered') : undefined}
+              />
             </View>
-          ) : null
-        }
-        ListEmptyComponent={
-          <View className="items-center justify-center py-8">
-            <Text className="text-muted text-center">
-              {searchQuery ? t('No users found matching your search') : t('No users found')}
-            </Text>
+            {usersQuery.error ? <AdminErrorBanner message={usersQuery.error.message} /> : null}
           </View>
         }
-        renderItem={renderUser}
+        ListFooterComponent={
+          usersQuery.isFetchingNextPage ? (
+            <View className="items-center py-5">
+              <ActivityIndicator size="small" />
+              <Text variant="caption" tone="muted" className="mt-2">
+                {t('Loading more users...')}
+              </Text>
+            </View>
+          ) : (
+            <View className="h-8" />
+          )
+        }
+        ListEmptyComponent={
+          <AdminEmpty
+            icon={searchQuery ? SearchX : UserRound}
+            title={searchQuery ? t('No users found matching your search') : t('No users found')}
+            description={searchQuery ? t('Try a different name or email address.') : undefined}
+          />
+        }
       />
     </Screen>
   );

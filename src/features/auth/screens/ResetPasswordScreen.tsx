@@ -130,64 +130,62 @@ const ResetPasswordScreen = () => {
         </View>
       ) : (
         <View className="gap-4">
-            <InputField
-              control={passwordForm.control}
-              name="password"
-              label={t('Password')}
-              placeholder={t('New Password')}
-              variant="auth"
-              autoComplete="new-password"
-              textContentType="newPassword"
-              secureTextEntry={!showPassword}
-              error={passwordForm.formState.errors.password}
-              icon={<LockIcon size={24} color={colors.muted} />}
-              rightIcon={
-                showPassword ? (
-                  <EyeOpenIcon size={24} color={colors.muted} />
-                ) : (
-                  <EyeClosedIcon size={24} color={colors.muted} />
-                )
-              }
-              onRightIconPress={() => setShowPassword(!showPassword)}
-            />
+          <InputField
+            control={passwordForm.control}
+            name="password"
+            placeholder={t('New Password')}
+            variant="auth"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            secureTextEntry={!showPassword}
+            error={passwordForm.formState.errors.password}
+            icon={<LockIcon size={24} color={colors.muted} />}
+            rightIcon={
+              showPassword ? (
+                <EyeOpenIcon size={24} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={24} color={colors.muted} />
+              )
+            }
+            onRightIconPress={() => setShowPassword(!showPassword)}
+          />
 
-            <InputField
-              control={passwordForm.control}
-              name="confirmPassword"
-              label={t('Confirm Password')}
-              placeholder={t('Confirm Password')}
-              variant="auth"
-              autoComplete="new-password"
-              textContentType="newPassword"
-              secureTextEntry={!showConfirmPassword}
-              error={passwordForm.formState.errors.confirmPassword}
-              icon={<LockIcon size={24} color={colors.muted} />}
-              rightIcon={
-                showConfirmPassword ? (
-                  <EyeOpenIcon size={24} color={colors.muted} />
-                ) : (
-                  <EyeClosedIcon size={24} color={colors.muted} />
-                )
-              }
-              onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            />
+          <InputField
+            control={passwordForm.control}
+            name="confirmPassword"
+            placeholder={t('Confirm Password')}
+            variant="auth"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            secureTextEntry={!showConfirmPassword}
+            error={passwordForm.formState.errors.confirmPassword}
+            icon={<LockIcon size={24} color={colors.muted} />}
+            rightIcon={
+              showConfirmPassword ? (
+                <EyeOpenIcon size={24} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={24} color={colors.muted} />
+              )
+            }
+            onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          />
 
-            {errorMessage ? (
-              <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
-                {errorMessage}
-              </Text>
-            ) : null}
+          {errorMessage ? (
+            <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
+              {errorMessage}
+            </Text>
+          ) : null}
 
-            <Button
-              label={t('Save New Password')}
-              onPress={passwordForm.handleSubmit(handleResetPassword)}
-              loading={isSubmitting}
-              disabled={!passwordForm.formState.isValid || isSubmitting}
-              variant="primary"
-              size="lg"
-              fullWidth
-              className="rounded-2xl"
-            />
+          <Button
+            label={t('Save New Password')}
+            onPress={passwordForm.handleSubmit(handleResetPassword)}
+            loading={isSubmitting}
+            disabled={!passwordForm.formState.isValid || isSubmitting}
+            variant="primary"
+            size="lg"
+            fullWidth
+            className="rounded-2xl"
+          />
         </View>
       )}
     </AuthScaffold>

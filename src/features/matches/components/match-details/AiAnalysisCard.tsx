@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Divider, Row, Text } from '@/components';
+import { Button, Card, Divider, Row, Text } from '@/components';
 import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
 import { resolveAiAnalysis, resolveAiSummaryText } from '@/features/matches/model/aiAnalysis';
 import { MatchWithPredictions, TeamType } from '@/features/matches/types';
@@ -28,23 +28,6 @@ type AiSummaryCardProps = {
   theme: ThemeName;
 };
 
-const AI_UPDATED_AT_FORMATTERS: Record<'en' | 'he', Intl.DateTimeFormat> = {
-  en: new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }),
-  he: new Intl.DateTimeFormat('he-IL', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }),
-};
-
 function teamName(team: TeamType | null, fallback: string) {
   return team?.shortName ?? team?.name ?? fallback;
 }
@@ -54,13 +37,12 @@ function AiEyebrow() {
   const { colors } = useThemeTokens();
 
   return (
-    <Badge
-      variant="primary"
-      size="lg"
-      label={t('AI Prediction')}
-      className="self-center "
-      leftIcon={<Ionicons name="sparkles" size={13} color={colors.primary} />}
-    />
+    <View className="flex-row items-center justify-center gap-2">
+      <Ionicons name="sparkles" size={18} color={colors.muted} />
+      <Text variant="titleLarge" tone="secondary" className=" font-semibold">
+        {t('AI Analysis')}
+      </Text>
+    </View>
   );
 }
 
@@ -125,7 +107,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
   const { t } = useTranslation();
 
   return (
-    <View className="relative min-h-72 overflow-hidden rounded-2xl border border-border bg-surface p-3">
+    <View className="relative min-h-50 overflow-hidden rounded-2xl border border-border bg-surface p-3">
       <Row className="items-center justify-center gap-2">
         <Ionicons name="analytics" size={18} color={colors.primary} />
         <Text variant="subtitle" className="font-semibold">
@@ -145,7 +127,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
 
       {!isPro && (
         <BlurView intensity={30} tint={theme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
-          <View className="flex-1 items-center justify-center gap-3 px-6 py-8">
+          <View className="flex-1 items-center justify-center gap-3">
             <View className="h-14 w-14 items-center justify-center rounded-2xl border border-primary">
               <Feather name="lock" size={22} color={colors.primary} />
             </View>
@@ -202,17 +184,6 @@ function AiUnavailableState() {
   );
 }
 
-function AiUpdatedAt({ date, language }: { date: Date; language: 'en' | 'he' }) {
-  const { t } = useTranslation();
-  const formatted = AI_UPDATED_AT_FORMATTERS[language].format(date);
-
-  return (
-    <Text variant="caption" tone="muted" className="text-center">
-      {t('Updated {{date}}', { date: formatted })}
-    </Text>
-  );
-}
-
 export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
@@ -234,12 +205,11 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
         <AiEyebrow />
       </View>
       <Divider />
-      <View className="flex-1 mt-6 px-4">
+      <View className="flex-1 p-6 gap-6">
         {analysis.status === 'available' ? (
           <>
             <AiScoreCard teams={teams} score={analysis.score} />
             <AiSummaryCard summary={summary} isPro={isPro} theme={theme} />
-            <AiUpdatedAt date={analysis.generatedAt} language={language} />
           </>
         ) : (
           <AiUnavailableState />

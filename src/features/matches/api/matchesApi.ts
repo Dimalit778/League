@@ -45,6 +45,7 @@ export const MATCH_WITH_ALL_PREDICTIONS = `
   status,
   stage,
   group,
+  updated_at,
   home_team_id,
   away_team_id,
   score,

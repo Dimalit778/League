@@ -51,15 +51,15 @@ export default function AuthScaffold({
               {emblem ? <View className=" items-center">{emblem}</View> : null}
 
               <View className="items-center">
-                <Text accessibilityRole="header" variant="display">
+                <Text accessibilityRole="header" variant="display" className="text-white">
                   {title}
                 </Text>
                 {description ? (
-                  <Text className="mt-2 max-w-[420px] text-center text-muted-foreground">{description}</Text>
+                  <Text className="mt-2 max-w-[420px] text-center text-white/70">{description}</Text>
                 ) : null}
               </View>
 
-              <View className="bg-background border border-border rounded-2xl px-6 py-8 gap-4">{children}</View>
+              <View className="bg-black/20 border border-border rounded-2xl px-6 py-8 gap-4">{children}</View>
 
               {footer ? <View>{footer}</View> : null}
             </View>

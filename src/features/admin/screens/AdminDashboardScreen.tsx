@@ -1,57 +1,57 @@
 import { Button, Card, Error, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  ADMIN_CONTENT_CLASS,
+  AdminGridItem,
+  AdminMetricCard,
+  AdminPageHeader,
+} from '@/features/admin/components/AdminUI';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import Entypo from '@expo/vector-icons/Entypo';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+import {
+  ChevronLeft,
+  ChevronRight,
+  CircleUserRound,
+  ClipboardCheck,
+  Crown,
+  LogOut,
+  ShieldAlert,
+  Target,
+  Trophy,
+  UserRound,
+  UsersRound,
+} from 'lucide-react-native';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 const statsCards = [
-  { label: 'Users', key: 'users' as const, width: 'w-1/2' },
-  { label: 'Leagues', key: 'leagues' as const, width: 'w-1/2' },
-  { label: 'Members', key: 'leagueMembers' as const, width: 'w-1/2' },
-  { label: 'Predictions', key: 'predictions' as const, width: 'w-1/2' },
-  {
-    label: 'Active Subscriptions',
-    key: 'subscriptions' as const,
-    width: 'w-1/2',
-  },
-  { label: 'Pending Reports', key: 'pendingReports' as const, width: 'w-1/2' },
+  { label: 'Users', key: 'users' as const, icon: CircleUserRound },
+  { label: 'Leagues', key: 'leagues' as const, icon: Trophy },
+  { label: 'Members', key: 'leagueMembers' as const, icon: UsersRound },
+  { label: 'Predictions', key: 'predictions' as const, icon: Target },
+  { label: 'Active Subscriptions', key: 'subscriptions' as const, icon: Crown },
+  { label: 'Pending Reports', key: 'pendingReports' as const, icon: ShieldAlert, emphasis: 'warning' as const },
 ];
 
 const navigationLinks = [
-  {
-    title: 'User Management',
-    description: 'Review registered users and account details.',
-    route: '/users',
-  },
-  {
-    title: 'League Management',
-    description: 'Manage leagues and their metadata.',
-    route: '/leagues',
-  },
-  {
-    title: 'League Members',
-    description: 'Inspect members across every league.',
-    route: '/league-members',
-  },
-  {
-    title: 'Predictions',
-    description: 'Audit recent predictions submitted by users.',
-    route: '/predictions',
-  },
+  { title: 'User Management', description: 'Review registered users and account details.', route: '/users', icon: UserRound },
+  { title: 'League Management', description: 'Manage leagues and their metadata.', route: '/leagues', icon: Trophy },
+  { title: 'League Members', description: 'Inspect members across every league.', route: '/league-members', icon: UsersRound },
+  { title: 'Predictions', description: 'Audit recent predictions submitted by users.', route: '/predictions', icon: Target },
   {
     title: 'Content Reports',
     description: 'Review reported nicknames, profile photos and league names.',
     route: '/reports',
+    icon: ShieldAlert,
   },
   {
     title: 'Competitions',
     description: 'Add or remove competitions from the platform.',
     route: '/competitions',
+    icon: ClipboardCheck,
   },
 ];
 
@@ -59,12 +59,10 @@ const AdminDashboardScreen = () => {
   const { signOut } = useAuthActions();
   const router = useRouter();
   const { colors } = useThemeTokens();
-  const { t } = useTranslation();
+  const { t, isRTL } = useTranslation();
   const isFocused = useIsFocused();
   const { data, isLoading, isRefetching, refetch, error } = useAdminDashboard();
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const onRefresh = useCallback(() => void refetch(), [refetch]);
 
   if (error) return <Error error={error} />;
   if (isLoading && !data) return <LoadingOverlay />;
@@ -72,40 +70,85 @@ const AdminDashboardScreen = () => {
   return (
     <Screen edges={['bottom']}>
       <ScrollView
-        className="flex-1 p-4"
-        refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            tintColor={colors.primary}
+            refreshing={isFocused && (isLoading || isRefetching)}
+            onRefresh={onRefresh}
+          />
+        }
       >
-        <Text className="text-text text-center text-xl font-semibold mb-2">{t('Platform Overview')}</Text>
+        <View className={ADMIN_CONTENT_CLASS}>
+          <AdminPageHeader
+            eyebrow={t('ADMIN')}
+            title={t('Platform Overview')}
+            description={t('Monitor platform health and jump directly into the work that needs attention.')}
+          />
 
-        <View className="flex-row flex-wrap ">
-          {statsCards.map((stat) => (
-            <View key={stat.key} className={`${stat.width} px-2 my-1`}>
-              <Card variant="soft" padding="sm" className="gap-1 items-center">
-                <Text className="text-muted text-md ">{t(stat.label)}</Text>
-                <Text className="text-text text-2xl font-semibold ">{data?.[stat.key] ?? 0}</Text>
-              </Card>
+          <View className="-mx-1.5 mb-6 flex-row flex-wrap">
+            {statsCards.map((stat) => (
+              <View key={stat.key} className="w-1/2 p-1.5 md:w-1/3 lg:w-1/6">
+                <AdminMetricCard
+                  label={t(stat.label)}
+                  value={data?.[stat.key] ?? 0}
+                  icon={stat.icon}
+                  emphasis={stat.emphasis}
+                />
+              </View>
+            ))}
+          </View>
+
+          <View className="mb-2 flex-row items-end justify-between gap-3">
+            <View>
+              <Text variant="title">{t('Management areas')}</Text>
+              <Text variant="bodySmall" tone="muted">
+                {t('Choose an area to review or manage.')}
+              </Text>
             </View>
-          ))}
+          </View>
+
+          <View className="-mx-1.5 flex-row flex-wrap">
+            {navigationLinks.map((link) => {
+              const Icon = link.icon;
+              const Chevron = isRTL ? ChevronLeft : ChevronRight;
+              return (
+                <AdminGridItem key={link.route}>
+                  <Card
+                    onPress={() => router.push(link.route as never)}
+                    contentClassName="min-h-[96px] flex-row items-center gap-4"
+                  >
+                    <View className="h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-subtle">
+                      <Icon size={21} color={colors.primary} strokeWidth={1.8} />
+                    </View>
+                    <View className="min-w-0 flex-1">
+                      <Text variant="subtitle" numberOfLines={1}>
+                        {t(link.title)}
+                      </Text>
+                      <Text variant="caption" tone="muted" className="mt-1" numberOfLines={2}>
+                        {t(link.description)}
+                      </Text>
+                    </View>
+                    <Chevron size={19} color={colors.muted} />
+                  </Card>
+                </AdminGridItem>
+              );
+            })}
+          </View>
+
+          <View className="mt-7 items-start border-t border-border pt-5">
+            <Button
+              label={t('Logout')}
+              variant="outline"
+              size="sm"
+              leftIcon={<LogOut size={17} color={colors.text} />}
+              onPress={() => signOut()}
+            />
+          </View>
         </View>
-
-        {navigationLinks.map((link) => (
-          <Card
-            key={link.route}
-            onPress={() => router.push(link.route as any)}
-            className="my-2"
-            contentClassName="flex-row justify-between"
-          >
-            <View className="flex-1">
-              <Text className="text-text text-lg font-semibold mb-2">{t(link.title)}</Text>
-              <Text className="text-muted text-sm">{t(link.description)}</Text>
-            </View>
-            <View className=" items-center justify-center">
-              <Entypo name="chevron-right" size={28} color={colors.text} />
-            </View>
-          </Card>
-        ))}
       </ScrollView>
-      <Button label={t('Logout')} onPress={() => signOut()} className="mx-auto" />
     </Screen>
   );
 };

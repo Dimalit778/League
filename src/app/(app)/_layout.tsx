@@ -15,7 +15,7 @@ export default function AppLayout() {
 
   const loading = usePrimaryLeagueStore((s) => s.loading);
   const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
-  const { data: isAdminUser } = useIsAdmin();
+  const { data: isAdminUser = false, isLoading: isAdminLoading, error: adminError } = useIsAdmin();
 
   useEffect(() => {
     if (!isAuthLoading && isLoggedIn) {
@@ -23,7 +23,13 @@ export default function AppLayout() {
     }
   }, [isAuthLoading, isLoggedIn, initializePrimaryLeague]);
 
-  if (isAuthLoading || loading) {
+  useEffect(() => {
+    if (adminError) {
+      console.error('Failed to verify admin access:', adminError);
+    }
+  }, [adminError]);
+
+  if (isAuthLoading || loading || isAdminLoading) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color={'#fff'} />

@@ -83,7 +83,7 @@ const MatchDetailScreen = () => {
           />
         </View>
 
-        <View className="-mt-3 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background">
+        <View className="-mt-3 min-h-0 flex-1 overflow-hidden rounded-t-3xl border border-border bg-background">
           <MatchContent match={matchData} isScheduled={isScheduled} />
         </View>
 

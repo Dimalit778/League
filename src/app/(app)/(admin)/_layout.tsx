@@ -26,37 +26,37 @@ const AdminLayout = () => {
       <Stack.Screen
         name="users"
         options={{
-          header: () => <NavigationHeader title={t('User Management')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('User Management')} fallbackHref="/(app)/(admin)" />,
         }}
       />
       <Stack.Screen
         name="leagues"
         options={{
-          header: () => <NavigationHeader title={t('League Management')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('League Management')} fallbackHref="/(app)/(admin)" />,
         }}
       />
       <Stack.Screen
         name="league-members"
         options={{
-          header: () => <NavigationHeader title={t('League Members')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('League Members')} fallbackHref="/(app)/(admin)" />,
         }}
       />
       <Stack.Screen
         name="predictions"
         options={{
-          header: () => <NavigationHeader title={t('Predictions')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('Predictions')} fallbackHref="/(app)/(admin)" />,
         }}
       />
       <Stack.Screen
         name="competitions"
         options={{
-          header: () => <NavigationHeader title={t('Competitions')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('Competitions')} fallbackHref="/(app)/(admin)" />,
         }}
       />
       <Stack.Screen
         name="reports"
         options={{
-          header: () => <NavigationHeader title={t('Content Reports')} fallbackHref="/(app)/(user)/settings" />,
+          header: () => <NavigationHeader title={t('Content Reports')} fallbackHref="/(app)/(admin)" />,
         }}
       />
     </Stack>

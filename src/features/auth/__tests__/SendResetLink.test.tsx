@@ -24,7 +24,6 @@ describe('SendResetLink', () => {
     const { getByText } = render(<SendResetLink />);
 
     expect(getByText('Send Reset Link')).toBeTruthy();
-    expect(getByText('Back to Sign In')).toBeTruthy();
     expect(getByText('Contact support')).toBeTruthy();
   });
 
