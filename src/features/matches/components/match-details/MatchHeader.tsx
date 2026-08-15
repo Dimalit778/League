@@ -65,14 +65,12 @@ function ScoreCard({
           </Text>
         </Row>
       )}
-      {['IN_PLAY', 'PAUSED'].includes(matchStatus) && (
-        <View className="gap-1">
-          <Text variant="label" className=" text-success text-center">
-            {formatTime(updated_at)}
+      {['IN_PLAY', 'LIVE', 'PAUSED'].includes(matchStatus) && (
+        <View className="gap-1 items-center">
+          <Text variant="label" className="text-success text-center">
+            {matchStatus === 'PAUSED' ? 'HT' : `${matchMinute} • LIVE`}
           </Text>
-          <Text variant="label" className=" text-success text-center">
-            {matchStatus.toUpperCase() === 'PAUSED' ? 'HT' : 'LIVE'}
-          </Text>
+
           <View className="border border-primary rounded-lg px-2 py-1">
             <Text className="text-4xl font-bold text-white">
               {homeScore ?? '—'} : {awayScore ?? '—'}
@@ -147,7 +145,7 @@ type MatchHeaderProps = {
 
 export default function MatchHeader({ match, memberPrediction, isScheduled, onPredictionSaved }: MatchHeaderProps) {
   const { t } = useTranslation();
-
+  console.log('match', JSON.stringify(match, null, 2));
   const { width } = useWindowDimensions();
   const badgeSize = width >= 768 ? 100 : 62;
   const predictionFormRef = useRef<PredictionFormHandle>(null);
@@ -161,6 +159,7 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
   const awayTeam = match.away_team ?? null;
   const venue = homeTeam?.venue;
   const status = match.status;
+  console.log('status', status);
 
   return (
     <View className="flex-1 ">

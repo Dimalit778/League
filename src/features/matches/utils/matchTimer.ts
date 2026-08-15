@@ -1,60 +1,57 @@
-type LiveMatchTimer = {
-  status: string | null;
-
-  // זמן תחילת המשחק
-  kickoffAt: string;
-
-  // הזמן שבו זיהינו שהמחצית השנייה התחילה
-  secondHalfStartedAt?: string | null;
-};
-
-export function getMatchMinute(
-  match: LiveMatchTimer,
-  now = new Date()
-): string {
-  const {
+export function getMatchMinute({
     status,
     kickoffAt,
     secondHalfStartedAt,
-  } = match;
-
-  if (status === 'PAUSED') {
-    return 'HT';
-  }
-
-  if (status === 'FINISHED') {
-    return 'FT';
-  }
-
-  if (status !== 'IN_PLAY') {
-    return '';
-  }
-
-  // מחצית שנייה
-  if (secondHalfStartedAt) {
-    const secondHalfStart =
-      new Date(secondHalfStartedAt).getTime();
-
-    const elapsedSecondHalf = Math.floor(
-      (now.getTime() - secondHalfStart) / 60_000
+  }: {
+    status: string;
+    kickoffAt: string;
+    secondHalfStartedAt?: string | null;
+  }) {
+    const normalizedStatus = status.toUpperCase();
+  
+    if (normalizedStatus === 'PAUSED') {
+      return 'HT';
+    }
+  
+    if (normalizedStatus === 'FINISHED') {
+      return 'FT';
+    }
+  
+    const isLive =
+      normalizedStatus === 'LIVE' ||
+      normalizedStatus === 'IN_PLAY';
+  
+    if (!isLive) {
+      return '';
+    }
+  
+    const now = Date.now();
+  
+    // מחצית שנייה
+    if (secondHalfStartedAt) {
+      const secondHalfStart = new Date(secondHalfStartedAt).getTime();
+  
+      const elapsedSecondHalf = Math.floor(
+        (now - secondHalfStart) / 60_000
+      );
+  
+      const minute = 45 + Math.max(0, elapsedSecondHalf);
+  
+      return `${minute}'`;
+    }
+  
+    // מחצית ראשונה
+    const kickoff = new Date(kickoffAt).getTime();
+  
+    if (Number.isNaN(kickoff)) {
+      return '';
+    }
+  
+    const elapsed = Math.floor(
+      (now - kickoff) / 60_000
     );
-
-    const minute = 45 + elapsedSecondHalf;
-
-    return `${Math.min(minute, 90)}'`;
+  
+    const minute = Math.max(1, Math.min(elapsed, 45));
+  
+    return `${minute}'`;
   }
-
-  // מחצית ראשונה
-  const kickoff = new Date(kickoffAt).getTime();
-
-  const elapsedFirstHalf = Math.floor(
-    (now.getTime() - kickoff) / 60_000
-  );
-
-  const minute = Math.max(
-    1,
-    Math.min(elapsedFirstHalf, 45)
-  );
-
-  return `${minute}'`;
-}

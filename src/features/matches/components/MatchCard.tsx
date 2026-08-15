@@ -133,7 +133,6 @@ const ScoreBlock = ({ score, time, hasScore }: { score: string; time?: string; h
 
 const MatchHeader = ({ status, date, top }: { status?: StatusType | null; date: string; top: number }) => {
   const displayStatus = getMatchStatus(status);
-
   if (displayStatus === 'FINISHED') {
     return (
       <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
@@ -177,7 +176,6 @@ export const MatchCard = memo(function MatchCard({
   layoutWidth,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
-
   const {
     width: cardWidth,
     height: cardHeight,
