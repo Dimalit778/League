@@ -20,3 +20,4 @@ grant execute on function public.create_new_league(text, integer, integer, text,
 
 revoke all on function public.join_league(text, text, text) from public, anon;
 grant execute on function public.join_league(text, text, text) to authenticated;
+;

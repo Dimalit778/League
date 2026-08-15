@@ -15,7 +15,7 @@ function TeamCard({ team, width, height }: { team: TeamType | null; width: numbe
   if (!team) return <View className="flex-1" />;
   const shortName = team.shortName || team.name;
   return (
-    <View className="min-w-0 flex-1 items-center justify-center gap-2 mx-3" accessible accessibilityLabel={shortName}>
+    <View className="min-w-0 flex-1 items-center justify-center gap-2" accessible accessibilityLabel={shortName}>
       <View style={{ width, height }} className="items-center justify-center overflow-hidden">
         <MyImage source={team.logo} width={width} height={height} contentFit="contain" />
       </View>
@@ -38,7 +38,7 @@ function ScoreCard({
   kick_off: string;
 }) {
   return (
-    <View className="w-32 items-center justify-center">
+    <View className="w-32 mb-4 items-center justify-center ">
       {['SCHEDULED', 'TIMED'].includes(matchStatus) && (
         <Row className="items-center rounded-2xl border border-white/20 bg-black/20 px-5 py-3">
           <Clock size={20} color="#fff" strokeWidth={1.6} />
@@ -48,14 +48,16 @@ function ScoreCard({
         </Row>
       )}
       {['IN_PLAY'].includes(matchStatus) && (
-        <Row className="items-center justify-center">
-          <View className="mb-2 rounded-full bg-error/20 px-2.5 py-1">
-            <Text className="text-xs font-bold text-error">LIVE</Text>
-          </View>
-          <Text className="text-2xl font-bold text-white">
-            {homeScore ?? '—'} : {awayScore ?? '—'}
+        <View className="gap-1">
+          <Text variant="label" className=" text-success text-center">
+            LIVE
           </Text>
-        </Row>
+          <View className="border border-primary rounded-lg px-2 py-1">
+            <Text className="text-4xl font-bold text-white">
+              {homeScore ?? '—'} : {awayScore ?? '—'}
+            </Text>
+          </View>
+        </View>
       )}
       {['FINISHED'].includes(matchStatus) && (
         <View className="flex-row items-center justify-center rounded-xl border border-white/25 bg-black/20 px-4 py-2">
@@ -79,7 +81,7 @@ function MatchDate({
   const displayStatus = getMatchStatus(status);
   const isFinished = displayStatus === 'FINISHED';
   return (
-    <View className="items-center pt-5">
+    <View className="items-center ">
       <Row className="min-w-24 rounded-full border border-border px-3 py-1.5 gap-1.5 justify-center">
         <Calendar size={14} color="#9ca3af" strokeWidth={2.2} />
         <Text variant="label" className="text-gray-400 font-semibold">
@@ -124,6 +126,7 @@ type MatchHeaderProps = {
 
 export default function MatchHeader({ match, memberPrediction, isScheduled, onPredictionSaved }: MatchHeaderProps) {
   const { t } = useTranslation();
+
   const { width } = useWindowDimensions();
   const badgeSize = width >= 768 ? 100 : 62;
   const predictionFormRef = useRef<PredictionFormHandle>(null);
@@ -139,21 +142,17 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
   const status = match.status;
 
   return (
-    <View className="flex-1  md:px-8">
+    <View className="flex-1 ">
       <MatchDate kickoff={match.kick_off} venue={venue} status={status} />
       <View className="flex-1 justify-center">
-        <Row className="items-center justify-center">
+        <Row keepLtr className="items-center justify-center mx-4">
           <TeamCard team={homeTeam} width={badgeSize} height={badgeSize} />
 
-          <View className="w-32 items-center justify-center">
+          <View className="w-28 items-center justify-center">
             {isScheduled ? (
-              <PredictionForm
-                ref={predictionFormRef}
-                prediction={memberPrediction}
-                matchId={match.id}
-                onSaveSuccess={onPredictionSaved}
-                onDraftChange={handleDraftChange}
-              />
+              <Text variant="titleLarge" tone="muted" className="text-center ">
+                VS
+              </Text>
             ) : (
               <ScoreCard
                 homeScore={match.score?.fullTime?.home ?? null}
@@ -167,22 +166,27 @@ export default function MatchHeader({ match, memberPrediction, isScheduled, onPr
           <TeamCard team={awayTeam} width={badgeSize} height={badgeSize} />
         </Row>
         {isScheduled && (
-          <View className="w-1/2 mx-auto px-4 mt-2">
-            {draft.hasChanges ? (
+          <>
+            <View className="mt-4">
+              <PredictionForm
+                ref={predictionFormRef}
+                prediction={memberPrediction}
+                matchId={match.id}
+                onSaveSuccess={onPredictionSaved}
+                onDraftChange={handleDraftChange}
+              />
+            </View>
+            <View className="mx-auto mt-4 w-full max-w-md px-5">
               <Button
-                size="sm"
+                size="md"
                 label={t('Save')}
                 variant="primary"
                 onPress={() => void predictionFormRef.current?.save()}
                 loading={draft.isPending}
-                disabled={draft.isPending}
+                disabled={!draft.hasChanges || draft.isPending}
               />
-            ) : (
-              <View className="min-h-9 mt-3 items-center justify-center rounded-xl bg-black/50 px-3">
-                <Text className="text-center font-semibold text-white">{t('Enter prediction')}</Text>
-              </View>
-            )}
-          </View>
+            </View>
+          </>
         )}
       </View>
     </View>

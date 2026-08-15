@@ -1,5 +1,4 @@
-import { Divider, Row, Text } from '@/components';
-import { FlatPremiumCard } from '@/components/ui/Cards';
+import { Card, Divider, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
@@ -29,7 +28,7 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
   const { t } = useTranslation();
 
   return (
-    <FlatPremiumCard>
+    <Card variant="hero" padding="md">
       <Row>
         <Stat
           icon={<Crown size={20} color={colors.muted} strokeWidth={1.5} />}
@@ -49,6 +48,6 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
           value={String(membersCount)}
         />
       </Row>
-    </FlatPremiumCard>
+    </Card>
   );
 }

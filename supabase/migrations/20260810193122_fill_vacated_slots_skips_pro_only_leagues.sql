@@ -82,3 +82,4 @@ revoke all on function public.fill_available_league_slots_if_unambiguous(uuid)
   from public, anon, authenticated;
 grant execute on function public.fill_available_league_slots_if_unambiguous(uuid)
   to service_role;
+;

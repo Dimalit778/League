@@ -10,10 +10,10 @@ const PendingEmailVerificationRedirect = () => {
 
   useEffect(() => {
     if (isAuthenticated || !requiresEmailVerification(session)) return;
-    if (pathname.includes('verifyEmail')) return;
+    if (pathname.includes('verify-email')) return;
 
     router.replace({
-      pathname: '/verifyEmail',
+      pathname: '/(auth)/verify-email',
       params: { email: session!.user.email! },
     });
   }, [isAuthenticated, pathname, session]);

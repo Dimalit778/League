@@ -41,3 +41,4 @@ $$;
 
 revoke all on function public.get_match_ai_summary(integer) from public, anon;
 grant execute on function public.get_match_ai_summary(integer) to authenticated;
+;

@@ -33,3 +33,4 @@ grant select (
   ai_generated_at,
   season_id
 ) on public.matches to authenticated, anon;
+;

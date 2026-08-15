@@ -17,10 +17,10 @@ const LeagueCreatedScreen = () => {
     if (typeof leagueData?.join_code === 'string') {
       await Clipboard.setStringAsync(leagueData?.join_code || '');
       showAlert({
-        title: 'Copied!',
-        message: 'Join code copied to clipboard.',
+        title: t('Copied!'),
+        message: t('Join code copied to clipboard.'),
         type: 'success',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };

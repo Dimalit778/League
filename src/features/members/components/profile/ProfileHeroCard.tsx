@@ -53,7 +53,7 @@ export function ProfileHeroCard() {
         title: t('Error'),
         message: t('Failed to pick image'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };
@@ -77,7 +77,7 @@ export function ProfileHeroCard() {
         title: t('Error'),
         message: t('Failed to upload image'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
       setImage(previousImageRef.current);
     }

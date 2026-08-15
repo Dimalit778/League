@@ -44,10 +44,11 @@ describe('SignInScreen', () => {
     expect(getByText('Create account')).toBeTruthy();
   });
 
-  it('renders Google Sign In option', () => {
-    const { getByText } = render(<SignInScreen />);
+  it('renders the icon-only social sign in group', () => {
+    const { getByText, getByTestId } = render(<SignInScreen />);
 
-    expect(getByText('Sign in with Google')).toBeTruthy();
+    expect(getByText('Continue with')).toBeTruthy();
+    expect(getByTestId('google-sign-in-button')).toBeTruthy();
   });
 
   it('renders a mode-switch prompt for new users', () => {

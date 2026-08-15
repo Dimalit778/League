@@ -43,3 +43,4 @@ select
 from ranked r
 join public.leagues l on l.id = r.league_id
 join public.competitions c on c.id = l.competition_id;
+;

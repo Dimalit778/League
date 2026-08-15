@@ -1,4 +1,4 @@
-import { BackButton, Badge, Button, Card, Chip, EmptyState, LoadingOverlay, Screen, Text } from '@/components';
+import { Badge, Button, Card, Chip, EmptyState, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminContentReports, useModerateContentReport } from '@/features/admin/hooks/useAdmin';
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -71,8 +71,7 @@ export default function AdminReportsScreen() {
   if (reportsQuery.isLoading && !reportsQuery.data) return <LoadingOverlay />;
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('Content Reports')} />
+    <Screen edges={['bottom']}>
       <View className="flex-row gap-2 px-4 py-3">
         {statusOptions.map((option) => (
           <Chip
@@ -87,17 +86,12 @@ export default function AdminReportsScreen() {
 
       <ScrollView
         className="flex-1 px-4"
-        refreshControl={
-          <RefreshControl
-            refreshing={isFocused && reportsQuery.isRefetching}
-            onRefresh={onRefresh}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={isFocused && reportsQuery.isRefetching} onRefresh={onRefresh} />}
       >
         {reportsQuery.error ? (
           <Text tone="error">{t('Unable to load content reports. Pull to refresh to try again.')}</Text>
         ) : reportsQuery.data?.length === 0 ? (
-          <EmptyState variant="empty" title={t('No reports in this queue')} />
+          <EmptyState size="sm" title={t('No reports in this queue')} />
         ) : (
           <View className="gap-4 pb-16 pt-2">
             {reportsQuery.data?.map((report) => (
@@ -109,17 +103,25 @@ export default function AdminReportsScreen() {
                       {t(reasonLabels[report.reason] ?? report.reason)}
                     </Text>
                   </View>
-                  <Badge label={t(report.status === 'pending' ? 'Pending' : report.status === 'resolved' ? 'Resolved' : 'Dismissed')} />
+                  <Badge
+                    label={t(
+                      report.status === 'pending' ? 'Pending' : report.status === 'resolved' ? 'Resolved' : 'Dismissed',
+                    )}
+                  />
                 </View>
 
                 <View className="rounded-xl bg-subtle p-3">
-                  <Text variant="caption" tone="muted">{t('Reported content')}</Text>
+                  <Text variant="caption" tone="muted">
+                    {t('Reported content')}
+                  </Text>
                   <Text numberOfLines={3}>{report.content_snapshot}</Text>
                 </View>
 
                 {report.details ? (
                   <View>
-                    <Text variant="caption" tone="muted">{t('Reporter details')}</Text>
+                    <Text variant="caption" tone="muted">
+                      {t('Reporter details')}
+                    </Text>
                     <Text variant="bodySmall">{report.details}</Text>
                   </View>
                 ) : null}

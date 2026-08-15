@@ -4,10 +4,10 @@ import {
   isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 
-import { Button, Text } from '@/components';
+import { Button } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -35,7 +35,6 @@ const GoogleAuth = ({
     });
   }, []);
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const label = t('Sign in with Google');
 
   const handleGoogleSignIn = async () => {
@@ -43,7 +42,6 @@ const GoogleAuth = ({
 
     try {
       setIsLoading(true);
-      setErrorMessage(null);
 
       if (Platform.OS === 'web') {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -106,30 +104,25 @@ const GoogleAuth = ({
         userMessage = formatErrorForUser(error) || 'Google sign in failed. Please try again.';
       }
 
-      setErrorMessage(userMessage);
-      Alert.alert('Sign In Error', userMessage);
+      Alert.alert(t('Sign In Error'), t(userMessage));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <Button
-        testID="google-sign-in-button"
-        onPress={handleGoogleSignIn}
-        disabled={isLoading}
-        accessibilityLabel={label}
-        leftIcon={<GoogleLogoIcon size={22} />}
-        variant="outline"
-        fullWidth
-        size="lg"
-        className="min-h-[56px] rounded-2xl border-[#8A94A8] bg-[#07172A]/80"
-      >
-        <Text className="text-center text-base font-semibold text-white">{label}</Text>
-      </Button>
-      {errorMessage && <Text className="text-error text-sm text-center mt-2">{errorMessage}</Text>}
-    </>
+    <Button
+      testID="google-sign-in-button"
+      onPress={handleGoogleSignIn}
+      disabled={isLoading}
+      accessibilityLabel={label}
+      accessibilityHint={label}
+      variant="outline"
+      size="icon"
+      className="h-[52px] w-[52px] rounded-[12px] border border-border bg-background"
+    >
+      <GoogleLogoIcon size={24} />
+    </Button>
   );
 };
 

@@ -10,7 +10,7 @@ export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
   const { t } = useTranslation();
 
   if (matches.length === 0) {
-    return <EmptyState icon={CalendarDays} title={t('No matches today')} className="rounded-2xl bg-surface" />;
+    return <EmptyState size="sm" icon={CalendarDays} title={t('No matches today')} />;
   }
 
   return (

@@ -18,11 +18,6 @@ export type TextTone =
 export type AppTextProps = TextProps & {
   variant?: TextVariant;
   tone?: TextTone;
-  /**
-   * Force left-to-right reading regardless of language. Use for content that must
-   * not mirror in Hebrew: numbers with symbols (`#3`, `2 - 1`, `+5`), codes,
-   * emails, URLs, phone numbers. Plain text never needs this.
-   */
   ltr?: boolean;
   className?: string;
 };

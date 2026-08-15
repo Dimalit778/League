@@ -70,7 +70,7 @@ const AdminDashboardScreen = () => {
   if (isLoading && !data) return <LoadingOverlay />;
 
   return (
-    <Screen safeArea>
+    <Screen edges={['bottom']}>
       <ScrollView
         className="flex-1 p-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
@@ -92,7 +92,6 @@ const AdminDashboardScreen = () => {
           <Card
             key={link.route}
             onPress={() => router.push(link.route as any)}
-            variant="interactive"
             className="my-2"
             contentClassName="flex-row justify-between"
           >

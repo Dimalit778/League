@@ -17,7 +17,6 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
   return (
     <Card
       padding="none"
-      variant="outlined"
       className="flex-1"
       style={{ opacity: achievement.unlocked ? 1 : 0.5 }}
       accessible

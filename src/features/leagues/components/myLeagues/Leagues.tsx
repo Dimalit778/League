@@ -55,7 +55,7 @@ function LeagueCard({
         </View>
       )}
       <Card
-        variant="elevated"
+        variant="surface"
         className="flex-1 overflow-hidden"
         padding="md"
         onPress={onPress}
@@ -113,17 +113,6 @@ function LeagueCard({
   );
 }
 
-function EmptyLeagues() {
-  const { t } = useTranslation();
-  return (
-    <EmptyState
-      className="flex-1 pb-20"
-      title={t('No leagues yet')}
-      description={t('Create or join a league to get started.')}
-    />
-  );
-}
-
 type ActivationSelection = {
   selectedMemberIds: string[];
   onToggleLeague: (memberId: string) => void;
@@ -172,7 +161,8 @@ export function Leagues({
   };
 
   if (isLoading) return <LeaguesSkeleton />;
-  if (!myLeagues || myLeagues.length === 0) return <EmptyLeagues />;
+  if (!myLeagues || myLeagues.length === 0)
+    return <EmptyState title={t('No leagues found')} description={t('Create a league to get started')} />;
 
   const primaryLeague =
     myLeagues.find((league) => league.league_id === primaryLeagueId) ??
@@ -183,7 +173,7 @@ export function Leagues({
     .sort((a, b) => Number(b.active) - Number(a.active));
 
   return (
-    <View className={spacing.section}>
+    <View className="gap-10">
       <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />
 
       {otherLeagues.length > 0 && (

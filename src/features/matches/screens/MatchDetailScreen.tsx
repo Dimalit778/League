@@ -1,18 +1,16 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
-import { Error, Screen } from '@/components';
+import { BackButton, Error, Screen } from '@/components';
 import { DotLottie } from '@lottiefiles/dotlottie-react-native';
 
 import { animations } from '@/assets/animations';
 import { images } from '@/assets/images';
-import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronLeftIcon } from 'lucide-react-native';
-import { Keyboard, Pressable, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MatchContent from '../components/match-details/MatchContent';
 import MatchDetailsSkeleton from '../components/match-details/MatchDetailsSkeleton';
@@ -21,13 +19,12 @@ import { useGetMatchData } from '../hooks/useMatchData';
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
-  const { t } = useTranslation();
-  const isRTL = useIsRTL();
+
   const memberId = useMemberId();
   const inset = useSafeAreaInsets();
+  const { colors, isDark } = useThemeTokens();
   const { height, width, fontScale } = useWindowDimensions();
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
-
   const { data: matchData, isLoading, error } = useGetMatchData(Number(matchId));
 
   if (isLoading) return <MatchDetailsSkeleton />;
@@ -42,16 +39,18 @@ const MatchDetailScreen = () => {
   const hasStarted = kickOff <= now || ['IN_PLAY', 'PAUSED', 'FINISHED'].includes(matchData.status ?? '');
   const isScheduled = !hasStarted;
   const isTablet = width >= 768;
-  const heroHeight = Math.min(
-    height * 0.4,
-    Math.max(height * 0.38 + Math.max(0, fontScale - 1) * 72, isTablet ? 360 : 280),
-  );
+  const heroHeight = isScheduled
+    ? Math.min(height * 0.46, Math.max(height * 0.43 + Math.max(0, fontScale - 1) * 72, isTablet ? 400 : 340))
+    : Math.min(height * 0.4, Math.max(height * 0.38 + Math.max(0, fontScale - 1) * 72, isTablet ? 360 : 280));
+  const heroGradientColors = isDark
+    ? (['rgba(4,10,20,0.38)', 'rgba(4,10,20,0.5)', 'rgba(4,10,20,0.72)', colors.background] as const)
+    : (['rgba(15,23,42,0.58)', 'rgba(15,23,42,0.44)', 'rgba(248,249,247,0.3)', colors.background] as const);
 
   return (
     <Screen edges={['bottom']}>
       <Pressable
         className="mx-auto w-full flex-1 bg-background"
-        style={{ maxWidth: isTablet ? 768 : 512 }}
+        style={{ maxWidth: isTablet ? 768 : 512, backgroundColor: colors.background }}
         onPress={Keyboard.dismiss}
         accessible={false}
       >
@@ -65,27 +64,16 @@ const MatchDetailScreen = () => {
             style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           />
           <LinearGradient
-            colors={['rgba(4,10,20,0.38)', 'rgba(4,10,20,0.5)', 'rgba(4,10,20,0.72)']}
-            locations={[0, 0.55, 1]}
+            colors={heroGradientColors}
+            locations={[0, 0.45, 0.82, 1]}
             style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           />
         </View>
 
         <View style={{ height: heroHeight, paddingTop: inset.top }}>
-          <TouchableOpacity
-            className="absolute z-20 p-1 items-center justify-center rounded-full border border-white"
-            style={[{ top: inset.top + 8 }, isRTL ? { right: 16 } : { left: 16 }]}
-            onPress={() => router.dismiss()}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('Close')}
-          >
-            {isRTL ? (
-              <ChevronLeftIcon size={30} color="#fff" strokeWidth={1.5} />
-            ) : (
-              <ChevronLeftIcon size={30} color="#fff" strokeWidth={1.5} />
-            )}
-          </TouchableOpacity>
+          <View className="absolute z-20  start-4" style={[{ top: inset.top }]}>
+            <BackButton variant="onImage" onPress={() => router.dismiss()} />
+          </View>
 
           <MatchHeader
             match={matchData}
@@ -95,7 +83,7 @@ const MatchDetailScreen = () => {
           />
         </View>
 
-        <View className="-mt-5 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background">
+        <View className="-mt-3 min-h-0 flex-1 overflow-hidden rounded-t-3xl border-t border-border bg-background">
           <MatchContent match={matchData} isScheduled={isScheduled} />
         </View>
 

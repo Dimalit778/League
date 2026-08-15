@@ -1,14 +1,14 @@
 import { render } from '@testing-library/react-native';
-import LegalDocumentScreen from '../../components/LegalDocumentScreen';
+import LegalDocumentScreen from '../LegalDocumentScreen';
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: () => null,
 }));
 
 describe('TermsScreen', () => {
-  it('renders terms heading', () => {
-    const { getAllByText } = render(<LegalDocumentScreen document="terms" />);
-    expect(getAllByText('Terms of Service').length).toBeGreaterThan(0);
+  it('renders the terms update date', () => {
+    const { getByText } = render(<LegalDocumentScreen document="terms" />);
+    expect(getByText('Last updated: August 4, 2026')).toBeTruthy();
   });
 
   it('renders subscriptions section', () => {

@@ -1,28 +1,29 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter } from 'expo-router';
-import { Platform, Pressable, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable } from 'react-native';
 import { ArrowIcon } from './ArrowIcon';
-import { Text } from './Text';
 
 interface BackButtonProps {
-  title?: string;
-  textColor?: 'text-text' | 'text-primary' | 'text-info';
-  includeSafeArea?: boolean;
   fallbackHref?: string;
+  onPress?: () => void;
+  variant?: 'default' | 'onImage';
 }
 
-const SIZE = 44;
+const SIZE = 40;
 
-export const BackButton = ({ fallbackHref, title, includeSafeArea = true }: BackButtonProps) => {
+export const BackButton = ({ fallbackHref, onPress, variant = 'default' }: BackButtonProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { colors } = useThemeTokens();
-  if (Platform.OS === 'web') return null;
+  const isOnImage = variant === 'onImage';
 
-  const onPress = () => {
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+
     if (router.canGoBack()) {
       router.back();
       return;
@@ -33,30 +34,17 @@ export const BackButton = ({ fallbackHref, title, includeSafeArea = true }: Back
   };
 
   return (
-    <View style={{ paddingTop: includeSafeArea ? insets.top : 0 }} className="w-full px-2.5">
-      <View className="h-12 w-full flex-row items-center">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('Back')}
-          hitSlop={8}
-          onPress={onPress}
-          className="z-10 items-center justify-center rounded-full border border-white/20 bg-[#061326]/70 active:opacity-70"
-          style={{
-            width: SIZE,
-            height: SIZE,
-          }}
-        >
-          <ArrowIcon size={30} color={colors.text} strokeWidth={2} />
-        </Pressable>
-
-        {title ? (
-          <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="none">
-            <Text variant="title" numberOfLines={1} className="text-center">
-              {title}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-    </View>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('Back')}
+      hitSlop={8}
+      onPress={handlePress}
+      className={`z-10 pe-1 items-center justify-center rounded-full border active:opacity-70 w-12 h-12 ${
+        isOnImage ? 'border-white/20 bg-[#061326]/70' : 'border-border bg-subtle'
+      }`}
+      style={{ width: SIZE, height: SIZE }}
+    >
+      <ArrowIcon size={30} color={isOnImage ? '#FFFFFF' : colors.text} strokeWidth={2} />
+    </Pressable>
   );
 };

@@ -1,4 +1,5 @@
 import { useFloatBottomTabsInset } from '@/components';
+import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
@@ -11,6 +12,8 @@ import { GroupTabs } from './shared/TournamentTabs';
 
 export default function GroupsEngine({ matches, onRefresh }: { matches: MatchCardType[]; onRefresh: () => void }) {
   const bottomInset = useFloatBottomTabsInset();
+  const { language } = useTranslation();
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
   const { groups, matchesByGroup, standingsByGroup } = useMemo(() => selectGroups(matches), [matches]);
   const [selectedGroup, setSelectedGroup] = useState(groups[0] ?? '');
   const activeGroup = groups.includes(selectedGroup) ? selectedGroup : (groups[0] ?? '');
@@ -26,7 +29,7 @@ export default function GroupsEngine({ matches, onRefresh }: { matches: MatchCar
         <LeagueStandingsTable rows={standingsByGroup[activeGroup] ?? []} />
         <View className="mt-4 gap-2">
           {(matchesByGroup[activeGroup] ?? []).map((match) => {
-            const card = mapMatchToCardData(match);
+            const card = mapMatchToCardData(match, locale);
             return (
               <MatchCard
                 key={match.id}

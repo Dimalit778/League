@@ -1,12 +1,13 @@
+import { images } from '@/assets/images';
 import {
   BoxSkeleton,
   Card,
   CardSkeleton,
-  Screen,
+  CollapsibleHeader,
+  Row,
   Section,
   Skeleton,
   TextSkeleton,
-  useFloatBottomTabsInset,
 } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
@@ -36,6 +37,38 @@ function LeagueHeroSkeleton() {
   );
 }
 
+function ExpandedHeaderSkeleton() {
+  return (
+    <Row className="items-start justify-between px-4">
+      <View className="h-9 w-9 shrink-0" />
+      <View className="flex-1 items-center gap-2 pt-8">
+        <TextSkeleton className="h-5 w-16" />
+        <TextSkeleton className="h-8 w-28" />
+      </View>
+      <View className="h-12 w-12 shrink-0" />
+    </Row>
+  );
+}
+
+function CollapsedHeaderSkeleton() {
+  return (
+    <Row className="h-12 items-center justify-between px-4">
+      <View className="h-9 w-9 shrink-0" />
+      <TextSkeleton className="h-5 w-24" />
+      <View className="h-12 w-12 shrink-0" />
+    </Row>
+  );
+}
+
+function PersistentHeaderSkeleton() {
+  return (
+    <Row className="h-12 items-start justify-between px-4">
+      <Skeleton className="h-9 w-9 rounded-lg" />
+      <Skeleton className="h-12 w-12 rounded-full" />
+    </Row>
+  );
+}
+
 function StatsSkeleton() {
   return (
     <View className={cn('flex-row', spacing.list)}>
@@ -47,23 +80,32 @@ function StatsSkeleton() {
 }
 
 export default function OverviewSkeleton() {
-  const bottomTabsInset = useFloatBottomTabsInset();
-
   return (
-    <Screen padding="horizontal" bottomInset={bottomTabsInset + 16} contentClassName={cn(spacing.section, 'pt-3')}>
-      <LeagueHeroSkeleton />
-      <Section contentClassName="gap-3 ">
-        <TextSkeleton className="w-20" />
-        <CardSkeleton />
-      </Section>
-      <Section contentClassName="gap-3">
-        <TextSkeleton className="w-20" />
-        <StatsSkeleton />
-      </Section>
-      <Section contentClassName="gap-3">
-        <TextSkeleton className="w-20" />
-        <BoxSkeleton />
-      </Section>
-    </Screen>
+    <CollapsibleHeader
+      backgroundImage={images.stadium}
+      expandedHeight={260}
+      collapsedHeight={48}
+      overlap={50}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      expandedHeader={<ExpandedHeaderSkeleton />}
+      collapsedHeader={<CollapsedHeaderSkeleton />}
+      persistentHeader={<PersistentHeaderSkeleton />}
+    >
+      <View className={cn(spacing.section)}>
+        <LeagueHeroSkeleton />
+        <Section contentClassName="gap-3 ">
+          <TextSkeleton className="w-20" />
+          <CardSkeleton />
+        </Section>
+        <Section contentClassName="gap-3">
+          <TextSkeleton className="w-20" />
+          <StatsSkeleton />
+        </Section>
+        <Section contentClassName="gap-3">
+          <TextSkeleton className="w-20" />
+          <BoxSkeleton />
+        </Section>
+      </View>
+    </CollapsibleHeader>
   );
 }

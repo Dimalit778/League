@@ -69,7 +69,6 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
 
   return (
     <Card
-      variant="default"
       padding="sm"
       className="overflow-hidden"
       accessible

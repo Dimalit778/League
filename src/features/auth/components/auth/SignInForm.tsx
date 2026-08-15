@@ -1,5 +1,5 @@
 import { EyeClosedIcon, EyeOpenIcon, LockIcon, MailIcon } from '@/assets/icons';
-import { Button, InputField, Text } from '@/components';
+import { Button, InputField, Row, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -42,7 +42,7 @@ export default function SignInForm() {
     if (result.error && result.error?.toLowerCase().includes('email not confirmed')) {
       resendOtp(email);
       router.push({
-        pathname: '/verifyEmail',
+        pathname: '/(auth)/verify-email',
         params: { email },
       });
     }
@@ -82,25 +82,30 @@ export default function SignInForm() {
         clearError={clearError}
       />
 
-      {errorMessage && <Text className="text-center text-xs text-error">{errorMessage}</Text>}
-
-      <Link href="/sendResetLink" asChild>
-        <Text accessibilityRole="link" tone="info">
-          {t('Forgot Password')}
+      {errorMessage ? (
+        <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
+          {errorMessage}
         </Text>
-      </Link>
+      ) : null}
+      <Row>
+        <Link href="/(auth)/forgot-password" asChild>
+          <Text variant="bodySmall" accessibilityRole="link" tone="info" className="min-h-11 py-3 font-semibold">
+            {t('Forgot Password')}
+          </Text>
+        </Link>
+      </Row>
 
       <Button
+        label={t('Sign In')}
         accessibilityLabel={t('Sign In')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading}
         variant="primary"
         size="lg"
-        className="min-h-[58px] rounded-2xl border border-[#FFD566] bg-[#FFB31A] focus:outline-none focus:ring-0"
-      >
-        <Text className="text-center text-xl font-black text-[#081322]">{t('Sign In')}</Text>
-      </Button>
+        fullWidth
+        className="rounded-2xl"
+      />
     </>
   );
 }

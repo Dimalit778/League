@@ -1,7 +1,5 @@
 import '../../global.css';
 
-import '@/lib/i18n/autoTranslate';
-
 import { images } from '@/assets/images';
 import { LoadingBall } from '@/components/layout/LoadingBall';
 import { OfflineScreen } from '@/components/layout/OfflineScreen';

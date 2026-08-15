@@ -1,4 +1,4 @@
-import { BackButton, Button, Card, LoadingOverlay, Screen, Text } from '@/components';
+import { Button, Card, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Tables } from '@/types/database.types';
@@ -124,15 +124,14 @@ const AdminUsersScreen = () => {
 
   if (error && !data) {
     return (
-      <Screen safeArea padding="all" contentClassName="items-center justify-center">
+      <Screen edges={['bottom']} padding="all" contentClassName="items-center justify-center">
         <Text className="text-center text-error">{error.message}</Text>
       </Screen>
     );
   }
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('User Management')} />
+    <Screen edges={['bottom']}>
       <View className="px-4 mb-4">
         <TextInput
           placeholder={t('Search by name or email...')}

@@ -1,4 +1,4 @@
-import { BackButton, Card, LoadingOverlay, Screen, Text } from '@/components';
+import { Card, LoadingOverlay, Screen, Text } from '@/components';
 import { useAdminLeagues } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';
@@ -19,8 +19,7 @@ const AdminLeaguesScreen = () => {
   }
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('League Management')} />
+    <Screen edges={['bottom']}>
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}

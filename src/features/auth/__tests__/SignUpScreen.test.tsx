@@ -36,18 +36,18 @@ describe('SignUpScreen', () => {
     expect(getByText('Sign In')).toBeTruthy();
   });
 
-  it('keeps social sign-in out of the focused sign-up form', () => {
-    const { queryByText } = render(<SignUpScreen />);
+  it('renders the icon-only social sign-up group', () => {
+    const { getByText, getByTestId } = render(<SignUpScreen />);
 
-    expect(queryByText('Sign in with Google')).toBeNull();
+    expect(getByText('Continue with')).toBeTruthy();
+    expect(getByTestId('google-sign-in-button')).toBeTruthy();
   });
 
-  it('shows legal acknowledgement before account creation', () => {
-    const { getByText } = render(<SignUpScreen />);
+  it('shows explicit terms consent before account creation', () => {
+    const { getByText, getByRole } = render(<SignUpScreen />);
 
-    expect(getByText('By creating an account, you agree to:')).toBeTruthy();
-    expect(getByText('Privacy Policy')).toBeTruthy();
     expect(getByText('Terms of Service')).toBeTruthy();
+    expect(getByRole('checkbox')).toBeTruthy();
   });
 
   it('renders password-strength guidance and consent checkbox', () => {

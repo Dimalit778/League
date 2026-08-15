@@ -9,6 +9,7 @@ import {
   useMemberId,
   usePrimaryLeagueStore,
 } from '@/store/PrimaryLeagueStore';
+import { useLanguageStore } from '@/store/LanguageStore';
 
 // Zero-state so the screen always receives a defined stats object,
 // matching how leagueSummary/upcomingMatches are normalized below.
@@ -18,6 +19,8 @@ export function useLeagueOverview(): LeagueOverview {
   const memberId = useMemberId();
   const leagueId = useLeagueId();
   const competitionId = useCompetitionId();
+  const language = useLanguageStore((state) => state.language);
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
   // nickname/avatar already live in the active-league store (populated on login
   // and patched on profile mutations) — no need to refetch the member here.
@@ -57,7 +60,7 @@ export function useLeagueOverview(): LeagueOverview {
       longestStreak: stats?.longestStreak ?? 0,
       recentForm: stats?.recentForm ?? [],
     },
-    upcomingMatches: (upcomingMatches ?? []).map(mapMatchToCardData),
+    upcomingMatches: (upcomingMatches ?? []).map((match) => mapMatchToCardData(match, locale)),
  
     isLoading: leagueLoading || statsLoading,
   };

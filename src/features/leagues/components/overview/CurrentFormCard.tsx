@@ -1,5 +1,4 @@
-import { Badge, Divider, Row, Text } from '@/components';
-import { FrostedGlassCard } from '@/components/ui/Cards';
+import { Badge, Card, Divider, Row, Text } from '@/components';
 
 import { type RecentFormEntry } from '@/features/members/types/stats.type';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -24,7 +23,7 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
   const totalPoints = results.reduce((sum, result) => sum + result.points, 0);
 
   return (
-    <FrostedGlassCard>
+    <Card variant="surface" padding="md">
       <Row className={spacing.stack}>
         <View className={cn('min-w-0 flex-1', spacing.list, isRTL ? 'items-end' : 'items-start')}>
           <Text variant="caption" tone="muted">
@@ -60,6 +59,6 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
           </Text>
         </View>
       </Row>
-    </FrostedGlassCard>
+    </Card>
   );
 }

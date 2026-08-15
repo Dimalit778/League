@@ -1,7 +1,7 @@
+import { NavigationHeader } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { HeaderBackButton } from '@react-navigation/elements';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { Platform } from 'react-native';
 
 export default function SettingsLayout() {
@@ -12,9 +12,6 @@ export default function SettingsLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerBackButtonDisplayMode: 'minimal',
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
         contentStyle: { backgroundColor: colors.background },
         gestureEnabled: true,
         fullScreenGestureEnabled: Platform.OS === 'ios',
@@ -23,15 +20,39 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: t('Settings'),
-          headerLeft: () => <HeaderBackButton tintColor={colors.text} onPress={() => router.back()} />,
+          header: () => <NavigationHeader title={t('Settings')} fallbackHref="/(app)/(league)/(tabs)/Profile" />,
         }}
       />
-      <Stack.Screen name="privacy" options={{ title: t('Privacy') }} />
-      <Stack.Screen name="terms" options={{ title: t('Terms') }} />
-      <Stack.Screen name="help" options={{ title: t('Help') }} />
-      <Stack.Screen name="subscription" options={{ title: t('Subscription') }} />
-      <Stack.Screen name="blocked-users" options={{ title: t('Blocked users') }} />
+      <Stack.Screen
+        name="privacy"
+        options={{
+          header: () => <NavigationHeader title={t('Privacy Policy')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
+      <Stack.Screen
+        name="terms"
+        options={{
+          header: () => <NavigationHeader title={t('Terms')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
+      <Stack.Screen
+        name="help"
+        options={{
+          header: () => <NavigationHeader title={t('Help & Support')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
+      <Stack.Screen
+        name="subscription"
+        options={{
+          header: () => <NavigationHeader title={t('Subscription')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
+      <Stack.Screen
+        name="blocked-users"
+        options={{
+          header: () => <NavigationHeader title={t('Blocked users')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
     </Stack>
   );
 }

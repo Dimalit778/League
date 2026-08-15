@@ -123,3 +123,4 @@ $$;
 revoke all on function public.update_my_league_activation(uuid[]) from public, anon;
 grant execute on function public.update_my_league_activation(uuid[])
   to authenticated, service_role;
+;

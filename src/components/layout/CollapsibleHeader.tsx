@@ -1,3 +1,5 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { setColorAlpha } from '@/lib/color';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import { ImageBackground, type ImageSourcePropType, StyleSheet, View, type ViewStyle } from 'react-native';
@@ -18,6 +20,8 @@ type CollapsibleHeaderProps = {
 
   expandedHeader?: ReactNode;
   collapsedHeader: ReactNode;
+  /** Header chrome that remains fully visible throughout the collapse animation. */
+  persistentHeader?: ReactNode;
 
   backgroundImage?: ImageSourcePropType;
 
@@ -42,14 +46,15 @@ export const CollapsibleHeader = ({
   variant = 'collapsible',
   expandedHeader,
   collapsedHeader,
+  persistentHeader,
   backgroundImage,
 
   expandedHeight = 210,
   collapsedHeight = 48,
   overlap = 0,
 
-  backgroundColor = '#061526',
-  borderColor = 'rgba(255, 255, 255, 0.35)',
+  backgroundColor,
+  borderColor,
   fixedBackgroundRevealStart = 0,
   fixedBackgroundRevealDistance = 200,
 
@@ -57,7 +62,16 @@ export const CollapsibleHeader = ({
   showsVerticalScrollIndicator = false,
 }: CollapsibleHeaderProps) => {
   const insets = useSafeAreaInsets();
+  const { colors, isDark } = useThemeTokens();
   const scrollY = useSharedValue(0);
+
+  const resolvedBackgroundColor = backgroundColor ?? colors.background;
+  const resolvedBorderColor = borderColor ?? colors.border;
+  const transparentBackground = setColorAlpha(resolvedBackgroundColor, 0);
+  const collapseBackground = setColorAlpha(resolvedBackgroundColor, 0.94);
+  const imageGradientColors = isDark
+    ? (['rgba(4, 18, 35, 0.85)', 'rgba(4, 18, 35, 0.75)', 'rgba(4, 18, 35, 0.55)', resolvedBackgroundColor] as const)
+    : (['rgba(15, 23, 42, 0.62)', 'rgba(15, 23, 42, 0.42)', 'rgba(248, 249, 247, 0.3)', resolvedBackgroundColor] as const);
 
   const isFixed = variant === 'fixed';
   const collapseDistance = Math.max(1, expandedHeight - collapsedHeight);
@@ -89,7 +103,7 @@ export const CollapsibleHeader = ({
     const animatedBackgroundColor = interpolateColor(
       scrollY.value,
       [0, collapseDistance * 0.55, collapseDistance],
-      ['rgba(6, 21, 38, 0)', 'rgba(6, 21, 38, 0.94)', backgroundColor],
+      [transparentBackground, collapseBackground, resolvedBackgroundColor],
     );
 
     return {
@@ -150,7 +164,7 @@ export const CollapsibleHeader = ({
       style={[
         styles.screen,
         {
-          backgroundColor,
+          backgroundColor: resolvedBackgroundColor,
         },
       ]}
     >
@@ -160,7 +174,7 @@ export const CollapsibleHeader = ({
           <Animated.View style={[StyleSheet.absoluteFill, backgroundImageStyle]}>
             <ImageBackground source={backgroundImage} resizeMode="cover" style={StyleSheet.absoluteFill}>
               <LinearGradient
-                colors={['rgba(4, 18, 35, 0.85)', 'rgba(4, 18, 35, 0.75)', 'rgba(4, 18, 35, 0.55)', backgroundColor]}
+                colors={[...imageGradientColors]}
                 locations={[0.1, 0.35, 0.75, 1]}
                 style={StyleSheet.absoluteFill}
               />
@@ -168,7 +182,9 @@ export const CollapsibleHeader = ({
           </Animated.View>
         ) : null}
 
-        {!isFixed ? <Animated.View style={[styles.border, borderStyle, { backgroundColor: borderColor }]} /> : null}
+        {!isFixed ? (
+          <Animated.View style={[styles.border, borderStyle, { backgroundColor: resolvedBorderColor }]} />
+        ) : null}
       </Animated.View>
 
       <Animated.ScrollView
@@ -213,7 +229,7 @@ export const CollapsibleHeader = ({
             top: 0,
             height: collapsedHeight + insets.top,
             paddingTop: insets.top,
-            backgroundColor: isFixed ? undefined : backgroundColor,
+            backgroundColor: isFixed ? undefined : resolvedBackgroundColor,
           },
         ]}
       >
@@ -221,16 +237,33 @@ export const CollapsibleHeader = ({
           <>
             <Animated.View
               pointerEvents="none"
-              style={[StyleSheet.absoluteFill, { backgroundColor }, fixedBackgroundStyle]}
+              style={[StyleSheet.absoluteFill, { backgroundColor: resolvedBackgroundColor }, fixedBackgroundStyle]}
             />
             <Animated.View
               pointerEvents="none"
-              style={[styles.border, borderStyle, { backgroundColor: borderColor }]}
+              style={[styles.border, borderStyle, { backgroundColor: resolvedBorderColor }]}
             />
           </>
         ) : null}
         {collapsedHeader}
       </Animated.View>
+
+      {persistentHeader ? (
+        <View
+          pointerEvents="box-none"
+          style={[
+            styles.toolbar,
+            styles.persistentToolbar,
+            {
+              top: 0,
+              height: collapsedHeight + insets.top,
+              paddingTop: insets.top,
+            },
+          ]}
+        >
+          {persistentHeader}
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -272,5 +305,10 @@ const styles = StyleSheet.create({
   collapsedToolbar: {
     zIndex: 101,
     elevation: 101,
+  },
+
+  persistentToolbar: {
+    zIndex: 102,
+    elevation: 102,
   },
 });

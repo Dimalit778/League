@@ -1,4 +1,4 @@
-import { BackButton, Button, InputField, LogoBadge, MyImage, Screen, Text } from '@/components';
+import { Button, InputField, LogoBadge, MyImage, Screen, Text } from '@/components';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall } from '@/lib/revenuecat/purchases';
@@ -143,9 +143,7 @@ export default function JoinLeagueScreen() {
   };
 
   return (
-    <Screen edges={['top', 'bottom']}>
-      <BackButton title={t('Join League')} />
-
+    <Screen edges={['bottom']}>
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="flex-1 px-4 pt-6">
           <Text className="text-2xl mb-2">

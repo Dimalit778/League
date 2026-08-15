@@ -1,10 +1,10 @@
-import { Text } from '../ui/Text';
-import { Row } from './Row';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { type ReactNode } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
+import { Text } from '../ui/Text';
+import { Row } from './Row';
 
 export type SectionProps = ViewProps & {
   title?: string;
@@ -66,7 +66,6 @@ export function Section({
       accessibilityLabel={actionLabel ?? title}
       hitSlop={8}
       className={cn('min-h-9 flex-row items-center active:opacity-70', spacing.inline)}
-      style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
       {actionLabel ? (
         <Text variant="label" tone="success">

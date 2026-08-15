@@ -1,7 +1,7 @@
 import { images } from '@/assets/images';
 import { Button, CollapsibleHeader, Error, Text } from '@/components';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
-import { CollapsedHeader, ExpandedHeader } from '@/features/members/components/profile/Header';
+import { CollapsedHeader, PersistentHeaderAction } from '@/features/members/components/profile/Header';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
@@ -55,8 +55,8 @@ const ProfileScreen = () => {
       contentContainerStyle={{
         paddingHorizontal: 16,
       }}
-      expandedHeader={<ExpandedHeader />}
       collapsedHeader={<CollapsedHeader nickname={member.nickname} />}
+      persistentHeader={<PersistentHeaderAction />}
       backgroundImage={images.stadium}
     >
       <View className={cn(spacing.section)}>

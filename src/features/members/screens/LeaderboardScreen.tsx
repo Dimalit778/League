@@ -4,7 +4,6 @@ import {
   useGetCompetitionLeaderboard,
   useGetLeaderboard,
   useGetLeagueAndMembers,
-  useGetRoundLeaderboard,
 } from '@/features/leagues/hooks/useLeagues';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -18,9 +17,11 @@ import { Trophy } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Share, View } from 'react-native';
 import { InviteFriendsCard } from '../components/leaderboard/InviteFriendsCard';
-import { LeaderboardAudienceToggle, type LeaderboardAudience } from '../components/leaderboard/LeaderboardAudienceToggle';
+import {
+  LeaderboardAudienceToggle,
+  type LeaderboardAudience,
+} from '../components/leaderboard/LeaderboardAudienceToggle';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
-import { LeaderboardScopeToggle, type LeaderboardScope } from '../components/leaderboard/LeaderboardScopeToggle';
 import LeaderboardSkeleton, { LeaderboardBodySkeleton } from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Pudiom';
 
@@ -35,9 +36,9 @@ const Header = ({
   const { t } = useTranslation();
 
   return (
-    <View className="w-full ">
-      <View className="relative w-full justify-center px-2.5 h-12">
-        <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="box-none">
+    <View className="w-full px-4">
+      <View className="relative w-full justify-center  h-12">
+        <View className="absolute inset-0 items-center justify-center " pointerEvents="box-none">
           <LeaderboardAudienceToggle value={audience} onChange={setAudience} />
         </View>
 
@@ -49,11 +50,11 @@ const Header = ({
           className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
           style={{
             position: 'absolute',
-            end: 10,
+            end: 0,
             top: 0,
           }}
         >
-          <Trophy color={colors.text} size={23} strokeWidth={1.5} />
+          <Trophy color={colors.text} size={24} strokeWidth={1.5} />
         </Pressable>
       </View>
     </View>
@@ -66,13 +67,10 @@ export default function LeaderboardScreen() {
   const currentUserId = useAuthStore((s) => s.user?.id);
 
   const [audience, setAudience] = useState<LeaderboardAudience>('friends');
-  const [scope, setScope] = useState<LeaderboardScope>('season');
 
-  const seasonQuery = useGetLeaderboard(leagueId);
-  const roundQuery = useGetRoundLeaderboard(leagueId);
+  const friendsQuery = useGetLeaderboard(leagueId);
   const worldQuery = useGetCompetitionLeaderboard(competitionId, audience === 'world');
 
-  const friendsQuery = scope === 'round' ? roundQuery : seasonQuery;
   const activeQuery = audience === 'world' ? worldQuery : friendsQuery;
   const { data: leaderboard, isLoading: activeIsLoading, error } = activeQuery;
 
@@ -111,7 +109,7 @@ export default function LeaderboardScreen() {
         title: t('Error'),
         message: t('Failed to share invite code'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };
@@ -133,8 +131,6 @@ export default function LeaderboardScreen() {
       collapsedHeader={<Header audience={audience} setAudience={setAudience} />}
     >
       <View className="gap-6 px-4 pt-2">
-        {audience === 'friends' ? <LeaderboardScopeToggle value={scope} onChange={setScope} /> : null}
-
         {error ? (
           <Error error={error} />
         ) : bodyIsLoading ? (
@@ -156,9 +152,7 @@ export default function LeaderboardScreen() {
               </View>
             ) : null}
 
-            {audience === 'friends' ? (
-              <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} />
-            ) : null}
+            {audience === 'friends' ? <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} /> : null}
           </>
         )}
       </View>

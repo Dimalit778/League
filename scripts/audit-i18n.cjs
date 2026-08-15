@@ -5,6 +5,11 @@ const ts = require('typescript');
 const root = path.resolve(__dirname, '..');
 const srcRoot = path.join(root, 'src');
 const translationsPath = path.join(srcRoot, 'lib/i18n/translations.ts');
+const localePaths = {
+  en: path.join(srcRoot, 'lib/i18n/locales/en.ts'),
+  he: path.join(srcRoot, 'lib/i18n/locales/he.ts'),
+};
+const translationSourcePaths = new Set([translationsPath, ...Object.values(localePaths)]);
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -17,14 +22,32 @@ function walk(directory) {
   });
 }
 
-function loadTranslations() {
-  const source = fs.readFileSync(translationsPath, 'utf8');
+function loadLocale(filePath, exportName) {
+  const source = fs.readFileSync(filePath, 'utf8');
   const output = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
   }).outputText;
   const module = { exports: {} };
   new Function('require', 'module', 'exports', output)(() => ({}), module, module.exports);
-  return module.exports.translations;
+  return module.exports[exportName];
+}
+
+function flattenTranslations(value, result = {}) {
+  for (const [key, entry] of Object.entries(value)) {
+    if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+      flattenTranslations(entry, result);
+    } else {
+      result[key] = entry;
+    }
+  }
+  return result;
+}
+
+function loadTranslations() {
+  return {
+    en: flattenTranslations(loadLocale(localePaths.en, 'en')),
+    he: flattenTranslations(loadLocale(localePaths.he, 'he')),
+  };
 }
 
 function location(sourceFile, node) {
@@ -33,7 +56,7 @@ function location(sourceFile, node) {
 }
 
 const translations = loadTranslations();
-const files = walk(srcRoot).filter((file) => file !== translationsPath && !file.endsWith('.d.ts'));
+const files = walk(srcRoot).filter((file) => !translationSourcePaths.has(file) && !file.endsWith('.d.ts'));
 const usedKeys = new Set();
 const dynamicCalls = [];
 const rawText = [];

@@ -1,5 +1,4 @@
-import { GlassCard, Row, Text } from '@/components';
-import { LayeredCard } from '@/components/ui/Cards';
+import { Card, Row, Text } from '@/components';
 import { type MemberStats } from '@/features/members/types/stats.type';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -32,11 +31,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
         : 'Room to improve';
 
   return (
-    <GlassCard
-      padding="sm"
-      style={{ flex: 0, width: 128 }}
-      contentClassName={cn('items-center justify-center', spacing.row)}
-    >
+    <Card variant="surface" padding="lg" contentClassName={cn('items-center justify-center gap-2', spacing.row)}>
       <Text variant="label" tone="secondary">
         {t('Accuracy')}
       </Text>
@@ -71,22 +66,26 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
       <Text variant="caption" tone="primary" className="text-center" numberOfLines={2}>
         {t(messageKey)}
       </Text>
-    </GlassCard>
+    </Card>
   );
 }
 
 function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
-    <LayeredCard>
-      <View className="items-center justify-center">{icon}</View>
-
+    <Card
+      variant="surface"
+      padding="sm"
+      className="min-w-0 flex-1"
+      contentClassName="items-center justify-center gap-1"
+    >
+      {icon}
       <Text variant="subtitle" className="text-center">
         {String(value)}
       </Text>
       <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">
         {label}
       </Text>
-    </LayeredCard>
+    </Card>
   );
 }
 

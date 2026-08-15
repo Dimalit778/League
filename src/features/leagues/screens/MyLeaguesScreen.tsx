@@ -70,12 +70,12 @@ export default function MyLeaguesScreen() {
       <Screen scroll padding="all" className="flex-grow">
         <View className="flex-1 gap-6 ">
           {showCreateJoin && <CreateJoinButtons />}
-
-          <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
-
+          <View className=" min-h-[550px]">
+            <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
+          </View>
           {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
         </View>
-        <View className="mt-auto bg-red-500">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
+        <View className="mt-auto">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
       </Screen>
 
       {limitSelect && <LimitSelectModal {...limitSelect} />}

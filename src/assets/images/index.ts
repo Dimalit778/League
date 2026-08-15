@@ -20,4 +20,8 @@ pitchGrass: require('./pitch-grass.png'),
  shieldLogo: require('./shield.png'),
  passwordLogo: require('./password.png'),
  mailLogo: require('./mail.png'),
+ appleLogo: require('./appleSignInLogoOnly.png'),
+ appleWhiteLogo: require('./appleid_white.png'),
+ appleBlackLogo: require('./appleid_black.png'),
+ appleWhiteOutlineLogo: require('./appleid_white_outline.png'),
 };

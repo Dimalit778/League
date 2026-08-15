@@ -22,8 +22,8 @@ export default function MyLeaguesHeader({ used, limit }: { used: number; limit: 
   const insets = useSafeAreaInsets();
   const count = `${used.toString()}/${limit.toString()}`;
   return (
-    <View className="w-full px-4 pb-2" style={{ paddingTop: insets.top }}>
-      <View className="w-full flex-row items-center justify-between gap-3">
+    <View className="w-full px-4 pb-2 sm:px-6 lg:px-8" style={{ paddingTop: insets.top }}>
+      <View className="mx-auto w-full max-w-2xl flex-row items-center justify-between gap-3">
         <Pressable
           onPress={() => router.push('/(app)/(user)/settings')}
           accessibilityRole="button"

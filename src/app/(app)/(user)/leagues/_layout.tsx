@@ -1,3 +1,4 @@
+import { NavigationHeader } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Stack } from 'expo-router';
@@ -10,10 +11,6 @@ export default function LeaguesLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal',
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
         contentStyle: { backgroundColor: colors.background },
         gestureEnabled: false,
         fullScreenGestureEnabled: false,
@@ -21,19 +18,33 @@ export default function LeaguesLayout() {
       initialRouteName="my-leagues"
     >
       <Stack.Screen name="my-leagues" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
-      <Stack.Screen name="join-league" options={{ gestureEnabled: true, fullScreenGestureEnabled: true }} />
+      <Stack.Screen
+        name="join-league"
+        options={{
+          headerShown: true,
+          header: () => (
+            <NavigationHeader title={t('Join League')} fallbackHref="/(app)/(user)/leagues/my-leagues" />
+          ),
+          gestureEnabled: true,
+          fullScreenGestureEnabled: true,
+        }}
+      />
       <Stack.Screen
         name="create-league/competitions"
         options={{
           headerShown: true,
-          title: t('Select Competition'),
+          header: () => (
+            <NavigationHeader title={t('Select Competition')} fallbackHref="/(app)/(user)/leagues/my-leagues" />
+          ),
         }}
       />
       <Stack.Screen
         name="create-league/details"
         options={{
           headerShown: true,
-          title: t('League Details'),
+          header: () => (
+            <NavigationHeader title={t('League Details')} fallbackHref="/(app)/(user)/leagues/my-leagues" />
+          ),
         }}
       />
       <Stack.Screen

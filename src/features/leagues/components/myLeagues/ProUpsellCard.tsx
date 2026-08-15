@@ -11,7 +11,7 @@ export default function ProUpsellCard({ onUpgrade }: { onUpgrade: () => void }) 
 
   return (
     <View className="items-center pt-10">
-      <View className="justify-center items-center gap-2">
+      <View className="justify-center items-center ">
         <Text variant="body" numberOfLines={1}>
           {t('Want to open more leagues?')}
         </Text>

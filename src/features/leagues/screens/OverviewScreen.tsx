@@ -7,7 +7,7 @@ import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import { CurrentFormCard } from '../components/overview/CurrentFormCard';
-import { CollapsedHeader, ExpandedHeader } from '../components/overview/Header';
+import { CollapsedHeader, ExpandedHeader, PersistentHeaderActions } from '../components/overview/Header';
 import LeagueSummary from '../components/overview/LeagueSummary';
 import OverviewSkeleton from '../components/overview/OverviewSkeleton';
 import { UpcomingMatches } from '../components/overview/Upcoming-matches';
@@ -16,9 +16,8 @@ import { useLeagueOverview } from '../hooks/useLeagueOverview';
 export default function OverviewScreen() {
   const { leagueSummary, stats, upcomingMatches, isLoading } = useLeagueOverview();
   const memberId = useMemberId();
-
-  const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   if (isLoading) return <OverviewSkeleton />;
 
@@ -31,8 +30,9 @@ export default function OverviewScreen() {
       contentContainerStyle={{
         paddingHorizontal: 16,
       }}
-      expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} logoUrl={leagueSummary.logoUrl} />}
-      collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} logoUrl={leagueSummary.logoUrl} />}
+      expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} />}
+      collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
+      persistentHeader={<PersistentHeaderActions logoUrl={leagueSummary.logoUrl} />}
     >
       <View className="gap-6">
         <LeagueSummary leagueSummary={leagueSummary} />
@@ -43,7 +43,7 @@ export default function OverviewScreen() {
         <Section
           title={t('Stats')}
           accent
-          actionIcon={<ArrowIcon size={20} color={colors.text} />}
+          actionIcon={<ArrowIcon size={20} color={colors.text} direction="forward" strokeWidth={2} />}
           onActionPress={() => {
             if (!memberId) return;
             router.push({

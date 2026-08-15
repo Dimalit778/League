@@ -46,3 +46,4 @@ $$;
 
 revoke all on function public.get_competition_leaderboard(integer) from public, anon;
 grant execute on function public.get_competition_leaderboard(integer) to authenticated;
+;

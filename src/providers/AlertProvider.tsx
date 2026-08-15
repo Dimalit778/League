@@ -1,4 +1,5 @@
 import { AlertDialog } from '@/components/ui/AlertDialog';
+import { useTranslation } from '@/hooks/useTranslation';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 export interface AlertButton {
@@ -21,6 +22,7 @@ interface AlertContextType {
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
+  const { t } = useTranslation();
   const [alertState, setAlertState] = useState<{
     visible: boolean;
     options: AlertOptions | null;
@@ -55,7 +57,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
         visible={alertState.visible}
         title={alertState.options?.title || ''}
         message={alertState.options?.message}
-        buttons={alertState.options?.buttons || [{ text: 'OK', style: 'default' }]}
+        buttons={alertState.options?.buttons || [{ text: t('OK'), style: 'default' }]}
         type={alertState.options?.type || 'info'}
         onButtonPress={handleButtonPress}
         onDismiss={hideAlert}

@@ -1,4 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
@@ -38,6 +39,7 @@ export const useGetMember = (memberId: string) => {
 };
 
 export const useUpdateMember = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const memberId = usePrimaryLeagueStore((s) => s.memberId);
 
@@ -54,7 +56,7 @@ export const useUpdateMember = () => {
       }
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };
@@ -101,6 +103,7 @@ export const useMyMemberByLeague = (leagueId: string) => {
 };
 
 export const useRemoveMember = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');
 
@@ -114,7 +117,7 @@ export const useRemoveMember = () => {
       ]);
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };

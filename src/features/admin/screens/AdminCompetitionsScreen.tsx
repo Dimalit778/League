@@ -1,4 +1,4 @@
-import { BackButton, Button, Card, LoadingOverlay, Screen, Text } from '@/components';
+import { Button, Card, LoadingOverlay, Screen, Text } from '@/components';
 import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';
@@ -123,8 +123,7 @@ const AdminCompetitionsScreen = () => {
   }
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('Competitions')} />
+    <Screen edges={['bottom']}>
       <ScrollView
         className="flex-1 px-4 pt-4"
         refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}

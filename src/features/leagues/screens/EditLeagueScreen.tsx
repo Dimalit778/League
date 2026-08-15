@@ -1,6 +1,5 @@
 import {
   AvatarImage,
-  BackButton,
   Badge,
   Button,
   Error,
@@ -145,7 +144,7 @@ export default function EditLeagueScreen() {
         title: t('Error'),
         message: t('Failed to share invite code'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };
@@ -198,14 +197,13 @@ export default function EditLeagueScreen() {
     );
   };
   if (isLoading || !league) {
-    return <EditLeagueSkeleton title={t('Manage League')} />;
+    return <EditLeagueSkeleton />;
   }
   if (error) {
     return <Error error={error} />;
   }
   return (
     <Screen padding="horizontal" bottomInset>
-      <BackButton title={t('Manage League')} />
       <KeyboardAwareScrollView
         bottomOffset={canSaveLeagueName ? 110 : 62}
         className="flex-1"

@@ -1,4 +1,5 @@
-import { Screen, Skeleton, useFloatBottomTabsInset } from '@/components';
+import { images } from '@/assets/images';
+import { CollapsibleHeader, Skeleton } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { View } from 'react-native';
 
@@ -51,6 +52,19 @@ function PodiumMemberSkeleton({ avatarSize, podiumHeight }: { avatarSize: number
   );
 }
 
+function LeaderboardHeaderSkeleton() {
+  return (
+    <View className="h-12 w-full justify-center px-2.5">
+      <View className="absolute inset-0 items-center justify-center px-14">
+        <Skeleton className="h-10 w-[216px] rounded-full" />
+      </View>
+      <View className="absolute end-2.5 top-0">
+        <Skeleton className="h-12 w-12 rounded-full" />
+      </View>
+    </View>
+  );
+}
+
 function PodiumSkeleton() {
   return (
     <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border bg-subtle">
@@ -98,11 +112,19 @@ export function LeaderboardBodySkeleton() {
 }
 
 export default function LeaderboardSkeleton() {
-  const bottomTabsInset = useFloatBottomTabsInset();
-
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
-      <LeaderboardBodySkeleton />
-    </Screen>
+    <CollapsibleHeader
+      variant="fixed"
+      expandedHeight={280}
+      fixedBackgroundRevealStart={40}
+      fixedBackgroundRevealDistance={30}
+      backgroundImage={images.stadium}
+      overlap={200}
+      collapsedHeader={<LeaderboardHeaderSkeleton />}
+    >
+      <View className="gap-6 px-4 pt-2">
+        <LeaderboardBodySkeleton />
+      </View>
+    </CollapsibleHeader>
   );
 }

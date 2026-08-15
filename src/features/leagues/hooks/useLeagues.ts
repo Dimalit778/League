@@ -3,6 +3,7 @@ import { KEYS } from '@/lib/queryClient';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
+import { useTranslation } from '@/hooks/useTranslation';
 import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
@@ -76,6 +77,7 @@ export const useGetLeagueAndMembers = (leagueId?: string | null) => {
 };
 
 export const useUpdatePrimaryLeague = () => {
+  const { t } = useTranslation();
   const userId = useAuthStore((state) => state.user?.id);
   const queryClient = useQueryClient();
 
@@ -113,7 +115,7 @@ export const useUpdatePrimaryLeague = () => {
     },
 
     onError: (error: Error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };
@@ -121,6 +123,7 @@ export const useUpdatePrimaryLeague = () => {
 export const useUpdateLeagueActivation = ({
   reinitializePrimaryLeague = true,
 }: { reinitializePrimaryLeague?: boolean } = {}) => {
+  const { t } = useTranslation();
   const userId = useAuthStore((s) => s.user?.id);
   const queryClient = useQueryClient();
   const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
@@ -177,7 +180,7 @@ export const useUpdateLeagueActivation = ({
         queryClient.setQueryData(KEYS.users.leagues(userId), context.previousLeagues);
         queryClient.setQueryData(KEYS.users.leaguesSummary(userId), context.previousSummary);
       }
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
     onSettled: () => {
       if (!userId) return;
@@ -258,6 +261,7 @@ export const useCreateLeague = () => {
   });
 };
 export const useJoinLeague = () => {
+  const { t } = useTranslation();
   const userId = useAuthStore((state) => state.user?.id );
   if (!userId) throw new Error('User not authenticated');
   const queryClient = useQueryClient();
@@ -288,11 +292,12 @@ export const useJoinLeague = () => {
     },
 
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };
 export const useUpdateLeague = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.id ?? null;
@@ -318,13 +323,14 @@ export const useUpdateLeague = () => {
       ]);
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };
 
 
 export const useLeaveLeague = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');
 
@@ -354,11 +360,12 @@ export const useLeaveLeague = () => {
         await usePrimaryLeagueStore.getState().initializePrimaryLeague();
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };
 export const useDeleteLeague = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? '');
   return useMutation({
@@ -397,7 +404,7 @@ export const useDeleteLeague = () => {
         await usePrimaryLeagueStore.getState().initializePrimaryLeague();
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };

@@ -41,7 +41,7 @@ function getPredictionDisplayStatus(
   return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';
 }
 
-export function mapMatchToCardData(match: MatchCardType): MatchCardData {
+export function mapMatchToCardData(match: MatchCardType, locale: string = 'en-GB'): MatchCardData {
   const prediction = match.prediction;
 
   return {
@@ -68,7 +68,7 @@ export function mapMatchToCardData(match: MatchCardType): MatchCardData {
 
     predictionStatus: getPredictionDisplayStatus(match, prediction),
     status: match.status,
-    date: formatMatchdayDate(match.kick_off),
+    date: formatMatchdayDate(match.kick_off, locale),
     time: formatTime(match.kick_off),
   };
 }

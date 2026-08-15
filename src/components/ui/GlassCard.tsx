@@ -52,6 +52,7 @@ type GlassCardProps = {
   variant?: GlassCardVariant;
   className?: string;
   onPress?: () => void;
+  fill?: boolean;
 };
 
 export function GlassCard({
@@ -63,6 +64,7 @@ export function GlassCard({
   padding = 'sm',
   variant = 'default',
   onPress,
+  fill = false,
 }: GlassCardProps) {
   const { theme, colors, radius, spacing } = useThemeTokens();
   const tokens = theme === 'light' ? lightTokens : darkTokens;
@@ -73,6 +75,7 @@ export function GlassCard({
   const gradient = isPrimary ? tokens.gradients.primaryCard : tokens.gradients.card;
   const borderColor = isPrimary ? tokens.effects.primaryCardBorder : tokens.effects.cardBorder;
   const highlight = isPrimary ? tokens.effects.primaryCardHighlight : tokens.effects.cardHighlight;
+
   const contentPadding =
     padding === 'none' ? 0 : padding === 'sm' ? spacing[3] : padding === 'lg' ? spacing[6] : spacing[4];
 
@@ -81,6 +84,7 @@ export function GlassCard({
       className={className}
       style={[
         styles.wrapper,
+        fill && styles.fillAvailable,
         {
           borderRadius,
           shadowColor: isLight ? tokens.effects.cardShadow : isPrimary ? colors.primary : tokens.effects.cardShadow,
@@ -92,10 +96,10 @@ export function GlassCard({
       <View
         style={[
           styles.cardShell,
+          fill && styles.fillAvailable,
           {
             borderRadius,
             borderColor,
-            // Surface lifts the card off the page background in light mode
             backgroundColor: colors.surface,
           },
         ]}
@@ -105,21 +109,21 @@ export function GlassCard({
           locations={[0, 0.45, 1]}
           start={{ x: 0.1, y: 0 }}
           end={{ x: 0.9, y: 1 }}
-          style={[styles.gradient, { borderRadius }]}
+          style={[styles.gradient, fill && styles.fillAvailable, { borderRadius }]}
         >
           {!isLight && (
             <LinearGradient
               pointerEvents="none"
-              colors={[
-                isLight ? tokens.effects.cardHighlight : tokens.effects.cardHighlight,
-                setColorAlpha(isLight ? tokens.effects.cardHighlight : tokens.effects.cardHighlight, 0),
-              ]}
+              colors={[highlight, setColorAlpha(highlight, 0)]}
               locations={[0, 1]}
               style={styles.highlightTop}
             />
           )}
 
-          <View className={cn('flex-1', contentClassName)} style={[{ padding: contentPadding }, contentStyle]}>
+          <View
+            className={cn(fill && 'flex-1', contentClassName)}
+            style={[{ padding: contentPadding }, contentStyle]}
+          >
             {children}
           </View>
         </LinearGradient>
@@ -131,7 +135,11 @@ export function GlassCard({
     return (
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [styles.fill, pressed && { opacity: 0.94, transform: [{ scale: 0.985 }] }]}
+        style={({ pressed }) => [
+          styles.fill,
+          fill && styles.fillAvailable,
+          pressed && { opacity: 0.94, transform: [{ scale: 0.985 }] },
+        ]}
       >
         {CardInner}
       </Pressable>
@@ -143,18 +151,16 @@ export function GlassCard({
 
 const styles = StyleSheet.create({
   fill: {
-    flex: 1,
-    alignSelf: 'stretch',
     width: '100%',
+  },
+  fillAvailable: {
+    flex: 1,
   },
   wrapper: {
     position: 'relative',
-    flex: 1,
-    alignSelf: 'stretch',
     width: '100%',
   },
   cardShell: {
-    flex: 1,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth * 1.5,
   },
@@ -183,7 +189,6 @@ const styles = StyleSheet.create({
     }),
   },
   gradient: {
-    flex: 1,
     overflow: 'hidden',
   },
   highlightTop: {

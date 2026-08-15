@@ -15,13 +15,15 @@ import { TIE_BRACKET_RAIL_WIDTH } from './tieBracketGeometry';
 
 function TieBlock({ tie }: { tie: Tie }) {
   const { width: screenWidth } = useWindowDimensions();
+  const { language } = useTranslation();
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
   // Reserve a real rail so stubs can meet a spine and exit — not just two parallel lines.
   const layoutWidth = screenWidth - TIE_BRACKET_RAIL_WIDTH + MATCH_CARD_HORIZONTAL_PADDING;
   const { height: cardHeight } = getMatchCardMetrics(layoutWidth);
 
   const cards = tie.legs.map((leg) => {
-    const card = mapMatchToCardData(leg);
+    const card = mapMatchToCardData(leg, locale);
     return (
       <MatchCard
         key={leg.id}

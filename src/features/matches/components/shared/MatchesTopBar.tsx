@@ -1,3 +1,4 @@
+import { Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -12,13 +13,13 @@ export function MatchesTopBar({ center }: { center?: ReactNode }) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="w-full" style={{ paddingTop: insets.top }}>
-      <View className="relative w-full justify-center px-2.5 h-12">
-        {center ? (
-          <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="box-none">
-            {center}
-          </View>
-        ) : null}
+    <View className="w-full px-4" style={{ paddingTop: insets.top }}>
+      <View className="relative w-full justify-center h-12">
+        <View className="absolute inset-0 items-center justify-center" pointerEvents="box-none">
+          <Text variant="title" numberOfLines={1} className="text-center">
+            {t('Matches')}
+          </Text>
+        </View>
 
         <Pressable
           accessibilityRole="button"
@@ -28,11 +29,11 @@ export function MatchesTopBar({ center }: { center?: ReactNode }) {
           className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
           style={{
             position: 'absolute',
-            end: 10,
+            end: 0,
             top: 0,
           }}
         >
-          <Trophy color={colors.text} size={23} strokeWidth={1.5} />
+          <Trophy color={colors.text} size={24} strokeWidth={1.5} />
         </Pressable>
       </View>
     </View>

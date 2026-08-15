@@ -7,7 +7,6 @@ import { Tabs } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-/** True when a league-stack screen (member, match, …) sits above the tabs. */
 function useLeagueStackOverlay() {
   const navigation = useNavigation();
 
@@ -26,10 +25,6 @@ function useLeagueStackOverlay() {
   });
 }
 
-/**
- * RN 7 dropped unmountOnBlur — remount tab content on tab switch so scroll resets.
- * Keep content mounted while a stack screen covers tabs so swipe-back is not blank.
- */
 function UnmountOnBlur({ children }: { children: ReactNode }) {
   const isFocused = useIsFocused();
   const isUnderStackOverlay = useLeagueStackOverlay();

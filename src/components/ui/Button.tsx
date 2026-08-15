@@ -3,13 +3,13 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { setColorAlpha } from '@/lib/color';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { forwardRef, type ReactNode } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View, type PressableProps } from 'react-native';
 
+import { ArrowIcon } from './ArrowIcon';
 import { Text } from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'glass' | 'error';
@@ -27,6 +27,7 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
   rightIcon?: ReactNode;
   haptic?: boolean;
   className?: string;
+  arrowIcon?: boolean;
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -77,6 +78,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
     className,
     accessibilityLabel,
     accessibilityHint,
+    arrowIcon = false,
     onPress,
     style,
     ...props
@@ -85,7 +87,6 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
 ) {
   const { colors, theme, effects, gradients } = useThemeTokens();
   const { t } = useTranslation();
-  const isRTL = useIsRTL();
 
   const isDisabled = disabled || loading;
   const isGlass = variant === 'glass';
@@ -105,6 +106,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
   };
 
   const spinnerColor = variant === 'primary' ? colors.onPrimary : variant === 'error' ? '#FFFFFF' : colors.text;
+  const arrowColor = variant === 'primary' ? colors.onPrimary : variant === 'error' ? '#FFFFFF' : colors.text;
 
   return (
     <Pressable
@@ -194,13 +196,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
       {loading ? (
         <ActivityIndicator color={spinnerColor} size="small" />
       ) : (
-        <View
-          className={cn('flex-row items-center justify-center', spacing.row)}
-          style={{
-            direction: 'ltr',
-            flexDirection: isRTL ? 'row-reverse' : 'row',
-          }}
-        >
+        <View className={cn('flex-row items-center justify-center', spacing.row)}>
           {leftIcon}
 
           {label ? (
@@ -210,6 +206,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
           )}
 
           {rightIcon}
+          {arrowIcon ? <ArrowIcon size={18} color={arrowColor} strokeWidth={2} direction="forward" /> : null}
         </View>
       )}
     </Pressable>

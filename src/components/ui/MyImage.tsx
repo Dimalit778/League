@@ -1,18 +1,8 @@
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  DimensionValue,
-  ImageStyle,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { DimensionValue, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
-// react-native-svg's SvgUri has no cache: every mount re-fetches and re-parses
-// the same XML from scratch, which shows up as team crests popping in with a
-// visible delay whenever a list (e.g. switching fixture rounds) remounts them.
-// Cache resolved XML per URI for the life of the app so repeats are instant.
 const svgXmlCache = new Map<string, string>();
 const svgXmlFetches = new Map<string, Promise<string>>();
 
@@ -88,24 +78,16 @@ export const MyImage = ({
 
   // Normalize to a URI string when available
   const uri =
-    typeof source === 'string'
-      ? source
-      : typeof source === 'object' && 'uri' in source
-        ? source.uri
-        : undefined;
+    typeof source === 'string' ? source : typeof source === 'object' && 'uri' in source ? source.uri : undefined;
 
   // ExpoImage's native SVG coders drop percentage-based fills (Brazil flag's
   // green rect uses x/y="-50%"). Prefer SvgUri for .svg URLs; forceSvg still
   // covers non-.svg URIs that need the same path.
   const isSvg =
-    typeof uri === 'string' &&
-    (forceSvg ||
-      uri.toLowerCase().includes('.svg') ||
-      uri.startsWith('data:image/svg+xml'));
+    typeof uri === 'string' && (forceSvg || uri.toLowerCase().includes('.svg') || uri.startsWith('data:image/svg+xml'));
 
   // Only inject size style if provided (so NativeWind className can control size)
-  const sizeStyle: StyleProp<ImageStyle> =
-    width !== undefined || height !== undefined ? { width, height } : undefined;
+  const sizeStyle: StyleProp<ImageStyle> = width !== undefined || height !== undefined ? { width, height } : undefined;
 
   // Build expo-image source without clobbering require(...) or headers
   const expoSource = useMemo(() => {
@@ -116,14 +98,8 @@ export const MyImage = ({
   }, [source]);
 
   // Stable recycling key helps lists (ignore cache-busting query params if you want)
-  const recyclingKey =
-    typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
-  const svgPreserveAspectRatio =
-    contentFit === 'fill'
-      ? 'none'
-      : contentFit === 'cover'
-        ? 'xMidYMid slice'
-        : undefined;
+  const recyclingKey = typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
+  const svgPreserveAspectRatio = contentFit === 'fill' ? 'none' : contentFit === 'cover' ? 'xMidYMid slice' : undefined;
 
   const svgXml = useSvgXml(isSvg ? uri : undefined);
 

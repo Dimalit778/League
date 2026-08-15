@@ -44,8 +44,8 @@ export default function FixtureListEngine({
   }, [allFixtures, matches, locale]);
 
   const cards = useMemo(
-    () => selectByFixture(matches, selectedFixture).map(mapMatchToCardData),
-    [matches, selectedFixture],
+    () => selectByFixture(matches, selectedFixture).map((match) => mapMatchToCardData(match, locale)),
+    [locale, matches, selectedFixture],
   );
 
   return (

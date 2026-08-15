@@ -4,13 +4,12 @@ import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Check, UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
 import * as yup from 'yup';
-import AuthLegalLinks from '../AuthLegalLinks';
 const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup
@@ -61,7 +60,7 @@ export default function SignUpForm() {
 
     if (result.success) {
       router.push({
-        pathname: '/verifyEmail',
+        pathname: '/(auth)/verify-email',
         params: { email },
       });
     }
@@ -112,7 +111,7 @@ export default function SignUpForm() {
         clearError={clearError}
       />
 
-      <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2 px-1">
+      <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2">
         <Row keepLtr className="gap-2">
           {[1, 2, 3, 4].map((segment) => (
             <View
@@ -122,45 +121,53 @@ export default function SignUpForm() {
             />
           ))}
         </Row>
-        <Text className="text-sm text-[#C0C8D8]">
+        <Text variant="bodySmall" tone="muted" className="text-start">
           {passwordStrength >= 4 ? t('Strong password') : t('At least 8 characters with a letter and a number')}
         </Text>
       </View>
+      {errorMessage && (
+        <Text variant="bodySmall" tone="error" className="text-center">
+          {errorMessage}
+        </Text>
+      )}
 
-      <Pressable
-        onPress={() => setAcceptedTerms((accepted) => !accepted)}
-        accessibilityRole="checkbox"
-        accessibilityLabel={t('By creating an account, you agree to:')}
-        accessibilityState={{ checked: acceptedTerms }}
-        className="min-h-12 flex-row items-center gap-3 rounded-xl py-1 active:opacity-75"
-      >
-        <View
-          className="size-7 items-center justify-center rounded-md border-2"
-          style={{ borderColor: '#FFB31A', backgroundColor: acceptedTerms ? '#FFB31A' : 'transparent' }}
+      <Row className="mt-6 gap-2.5 ">
+        <Pressable
+          onPress={() => setAcceptedTerms((accepted) => !accepted)}
+          accessibilityRole="checkbox"
+          accessibilityLabel={t('I agree to the')}
+          accessibilityState={{ checked: acceptedTerms }}
         >
-          {acceptedTerms ? <Check size={18} color="#081322" strokeWidth={3} /> : null}
-        </View>
-        <Row>
-          <Text className="min-w-0 flex-1 text-sm leading-5 text-[#C0C8D8]">
-            {t('By creating an account, you agree to:')}
+          <View
+            className="size-7 rounded-md border"
+            style={{ borderColor: colors.primary, backgroundColor: acceptedTerms ? colors.primary : 'transparent' }}
+          >
+            {acceptedTerms ? <Check size={20} color={colors.onPrimary} strokeWidth={3} /> : null}
+          </View>
+        </Pressable>
+        <Row className="gap-1">
+          <Text variant="bodySmall" tone="muted">
+            {t('I agree to the')}
           </Text>
-          <AuthLegalLinks />
+          <Link href="/(auth)/terms" asChild accessibilityRole="link">
+            <Text variant="bodySmall" tone="info" accessibilityRole="link" className="underline">
+              {t('Terms of Service')}
+            </Text>
+          </Link>
         </Row>
-      </Pressable>
-
-      {errorMessage && <Text className="text-center text-xs text-error">{errorMessage}</Text>}
+      </Row>
 
       <Button
+        label={t('Sign Up')}
         accessibilityLabel={t('Sign Up')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || !acceptedTerms || isLoading}
         variant="primary"
         size="lg"
-        className="min-h-[58px] rounded-2xl border border-[#FFD566] bg-[#FFB31A]"
-      >
-        <Text className="text-center text-xl font-black text-[#081322]">{t('Sign Up')}</Text>
-      </Button>
+        fullWidth
+        className="rounded-2xl"
+      />
     </>
   );
 }
