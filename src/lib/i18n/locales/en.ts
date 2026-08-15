@@ -609,6 +609,10 @@ export const en = {
       'Search accounts, review key details, and manage access safely.':
         'Search accounts, review key details, and manage access safely.',
       'User ID': 'User ID',
+      Name: 'Name',
+      Email: 'Email',
+      Actions: 'Actions',
+      'Load more': 'Load more',
       'Try a different name or email address.': 'Try a different name or email address.',
       'League Management': 'League Management',
       'Review league ownership, capacity, competition, and join details.':

@@ -583,6 +583,10 @@ export const he = {
       'Search accounts, review key details, and manage access safely.':
         'חפשו חשבונות, בדקו פרטים מרכזיים ונהלו גישה בבטחה.',
       'User ID': 'מזהה משתמש',
+      Name: 'שם',
+      Email: 'דוא״ל',
+      Actions: 'פעולות',
+      'Load more': 'טעינת נוספים',
       'Try a different name or email address.': 'נסו שם או כתובת דוא״ל אחרים.',
       'League Management': 'ניהול ליגות',
       'Review league ownership, capacity, competition, and join details.':

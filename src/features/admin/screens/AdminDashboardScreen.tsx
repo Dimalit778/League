@@ -25,7 +25,7 @@ import {
   UsersRound,
 } from 'lucide-react-native';
 import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { Platform, RefreshControl, ScrollView, View } from 'react-native';
 
 const statsCards = [
   { label: 'Users', key: 'users' as const, icon: CircleUserRound },
@@ -138,15 +138,17 @@ const AdminDashboardScreen = () => {
             })}
           </View>
 
-          <View className="mt-7 items-start border-t border-border pt-5">
-            <Button
-              label={t('Logout')}
-              variant="outline"
-              size="sm"
-              leftIcon={<LogOut size={17} color={colors.text} />}
-              onPress={() => signOut()}
-            />
-          </View>
+          {Platform.OS !== 'web' ? (
+            <View className="mt-7 items-start border-t border-border pt-5">
+              <Button
+                label={t('Logout')}
+                variant="outline"
+                size="sm"
+                leftIcon={<LogOut size={17} color={colors.text} />}
+                onPress={() => signOut()}
+              />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </Screen>

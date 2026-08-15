@@ -6,7 +6,7 @@ import { Search, ShieldAlert } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { TextInput, View, type ViewProps } from 'react-native';
 
-export const ADMIN_CONTENT_CLASS = 'mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 lg:px-8';
+export const ADMIN_CONTENT_CLASS = 'mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8';
 
 type AdminPageHeaderProps = {
   eyebrow?: string;
