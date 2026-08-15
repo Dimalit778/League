@@ -49,7 +49,7 @@ const AdminLeaguesScreen = () => {
 
   const openLeagueMembers = (leagueId: string) => {
     router.push({
-      pathname: '/(app)/(admin)/league-members',
+      pathname: '/admin/league-members',
       params: { leagueId },
     });
   };

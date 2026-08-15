@@ -61,7 +61,7 @@ export default function AppLayout() {
       />
 
       <Stack.Protected guard={!!isAdminUser}>
-        <Stack.Screen name="(admin)" />
+        <Stack.Screen name="admin" />
       </Stack.Protected>
     </Stack>
   );

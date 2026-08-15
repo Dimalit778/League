@@ -37,20 +37,20 @@ const statsCards = [
 ];
 
 const navigationLinks = [
-  { title: 'User Management', description: 'Review registered users and account details.', route: '/users', icon: UserRound },
-  { title: 'League Management', description: 'Manage leagues and their metadata.', route: '/leagues', icon: Trophy },
-  { title: 'League Members', description: 'Inspect members across every league.', route: '/league-members', icon: UsersRound },
-  { title: 'Predictions', description: 'Audit recent predictions submitted by users.', route: '/predictions', icon: Target },
+  { title: 'User Management', description: 'Review registered users and account details.', route: '/admin/users', icon: UserRound },
+  { title: 'League Management', description: 'Manage leagues and their metadata.', route: '/admin/leagues', icon: Trophy },
+  { title: 'League Members', description: 'Inspect members across every league.', route: '/admin/league-members', icon: UsersRound },
+  { title: 'Predictions', description: 'Audit recent predictions submitted by users.', route: '/admin/predictions', icon: Target },
   {
     title: 'Content Reports',
     description: 'Review reported nicknames, profile photos and league names.',
-    route: '/reports',
+    route: '/admin/reports',
     icon: ShieldAlert,
   },
   {
     title: 'Competitions',
     description: 'Add or remove competitions from the platform.',
-    route: '/competitions',
+    route: '/admin/competitions',
     icon: ClipboardCheck,
   },
 ];

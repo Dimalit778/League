@@ -63,7 +63,7 @@ const SettingsScreen = () => {
         <View className="mt-8 px-6">
           <Button
             label={t('Open Admin Dashboard')}
-            onPress={() => router.push('/(app)/(admin)/competitions')}
+            onPress={() => router.push('/admin')}
             variant="outline"
           />
         </View>

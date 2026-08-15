@@ -82,7 +82,7 @@ describe('admin league directories', () => {
     fireEvent.press(getAllByText('View members')[0]);
 
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/(app)/(admin)/league-members',
+      pathname: '/admin/league-members',
       params: { leagueId: 'league-a' },
     });
   });
