@@ -129,16 +129,24 @@ jest.mock('@/hooks/useThemeTokens', () => ({
   }),
 }));
 
-jest.mock('@/hooks/useTranslation', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    language: 'en',
-    setLanguage: jest.fn(),
-    toggleLanguage: jest.fn(),
-    isRTL: false,
-    availableLanguages: ['en', 'he'],
-  }),
-}));
+jest.mock('@/hooks/useTranslation', () => {
+  const t = (key: string, variables?: Record<string, string | number>) =>
+    Object.entries(variables ?? {}).reduce(
+      (result, [name, value]) => result.replace(new RegExp(`{{\\s*${name}\\s*}}`, 'g'), String(value)),
+      key,
+    );
+
+  return {
+    useTranslation: () => ({
+      t,
+      language: 'en',
+      setLanguage: jest.fn(),
+      toggleLanguage: jest.fn(),
+      isRTL: false,
+      availableLanguages: ['en', 'he'],
+    }),
+  };
+});
 
 jest.mock('@/providers/LanguageProvider', () => ({
   useIsRTL: () => false,
@@ -225,7 +233,11 @@ jest.mock('react-native-purchases', () => ({
   __esModule: true,
   default: {
     invalidateCustomerInfoCache: jest.fn(() => Promise.resolve()),
+    setLogLevel: jest.fn(),
     getCustomerInfo: jest.fn(() => Promise.resolve(null)),
+    getOfferings: jest.fn(() => Promise.resolve({ current: null, all: {} })),
+    purchasePackage: jest.fn(() => Promise.resolve({ customerInfo: null })),
+    restorePurchases: jest.fn(() => Promise.resolve(null)),
     isConfigured: jest.fn(() => Promise.resolve(true)),
     configure: jest.fn(),
     getAppUserID: jest.fn(() => Promise.resolve('user-1')),
@@ -234,20 +246,14 @@ jest.mock('react-native-purchases', () => ({
     addCustomerInfoUpdateListener: jest.fn(),
     removeCustomerInfoUpdateListener: jest.fn(),
   },
-}));
-
-jest.mock('react-native-purchases-ui', () => ({
-  __esModule: true,
-  default: {
-    presentPaywallIfNeeded: jest.fn(() => Promise.resolve('NOT_PRESENTED')),
+  PURCHASES_ERROR_CODE: {
+    PURCHASE_CANCELLED_ERROR: '1',
   },
-  PAYWALL_RESULT: {
-    PURCHASED: 'PURCHASED',
-    RESTORED: 'RESTORED',
-    NOT_PRESENTED: 'NOT_PRESENTED',
-    CANCELLED: 'CANCELLED',
-    ERROR: 'ERROR',
+  PRODUCT_TYPE: {
+    AUTO_RENEWABLE_SUBSCRIPTION: 'AUTO_RENEWABLE_SUBSCRIPTION',
+    UNKNOWN: 'UNKNOWN',
   },
+  LOG_LEVEL: { DEBUG: 'DEBUG' },
 }));
 
 jest.mock('@/lib/revenuecat/purchases', () => ({
@@ -543,39 +549,6 @@ jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(() => Promise.resolve({ isConnected: true, isInternetReachable: true })),
   refresh: jest.fn(() => Promise.resolve({ isConnected: true, isInternetReachable: true })),
   useNetInfo: jest.fn(() => ({ isConnected: true, isInternetReachable: true })),
-}));
-
-jest.mock('react-native-purchases', () => ({
-  __esModule: true,
-  default: {
-    configure: jest.fn(),
-    setLogLevel: jest.fn(),
-    logIn: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
-    logOut: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
-    getOfferings: jest.fn(() =>
-      Promise.resolve({
-        current: {
-          monthly: { identifier: '$rc_monthly' },
-        },
-      })
-    ),
-    purchasePackage: jest.fn(() =>
-      Promise.resolve({
-        customerInfo: { entitlements: { active: { pro: {} } } },
-      })
-    ),
-    restorePurchases: jest.fn(() =>
-      Promise.resolve({
-        entitlements: { active: { pro: {} } },
-      })
-    ),
-    getCustomerInfo: jest.fn(() =>
-      Promise.resolve({
-        entitlements: { active: {} },
-      })
-    ),
-  },
-  LOG_LEVEL: { DEBUG: 'DEBUG' },
 }));
 
 // Global form values storage for tests

@@ -1,4 +1,4 @@
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import {
   ComputedStandingRow,
   computeLeagueStandings,
@@ -8,20 +8,20 @@ import {
   getTournamentGroups,
 } from '../utils/tournamentMatches';
 
-export const selectFixtures = (matches: MatchCardType[]): number[] => getLeagueFixtures(matches);
+export const selectFixtures = (matches: MatchListItem[]): number[] => getLeagueFixtures(matches);
 
-export const selectByFixture = (matches: MatchCardType[], fixture: number): MatchCardType[] =>
+export const selectByFixture = (matches: MatchListItem[], fixture: number): MatchListItem[] =>
   getMatchesByFixture(matches, fixture);
 
 export type GroupsSlice = {
   groups: string[];
-  matchesByGroup: Record<string, MatchCardType[]>;
+  matchesByGroup: Record<string, MatchListItem[]>;
   standingsByGroup: Record<string, ComputedStandingRow[]>;
 };
 
-export const selectGroups = (matches: MatchCardType[]): GroupsSlice => {
+export const selectGroups = (matches: MatchListItem[]): GroupsSlice => {
   const groups = getTournamentGroups(matches);
-  const matchesByGroup: Record<string, MatchCardType[]> = {};
+  const matchesByGroup: Record<string, MatchListItem[]> = {};
   const standingsByGroup: Record<string, ComputedStandingRow[]> = {};
 
   for (const group of groups) {

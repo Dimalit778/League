@@ -6,7 +6,7 @@ import { FlatList, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
 import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/MatchCardBg';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import { getKnockoutStages, getStageLabel } from '../utils/tournamentMatches';
 import { KnockoutStageTabs } from './shared/TournamentTabs';
@@ -27,14 +27,7 @@ function TieBlock({ tie }: { tie: Tie }) {
     return (
       <MatchCard
         key={leg.id}
-        id={card.id}
-        home={card.home}
-        away={card.away}
-        prediction={card.prediction}
-        predictionStatus={card.predictionStatus}
-        status={card.status}
-        date={card.date}
-        time={card.time}
+        match={card}
         layoutWidth={tie.legs.length === 2 ? layoutWidth : undefined}
         onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
       />
@@ -58,7 +51,7 @@ export default function KnockoutEngine({
   onRefresh,
   initialStage,
 }: {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   onRefresh: () => void;
   initialStage?: string;
 }) {

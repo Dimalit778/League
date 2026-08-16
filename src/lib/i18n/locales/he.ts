@@ -13,8 +13,6 @@ export const he = {
       Error: 'שגיאה',
       OK: 'OK',
       Save: 'שמור',
-      'Save prediction': 'שמור ניחוש',
-      'Enter prediction': 'הכנס תוצאה',
       Success: 'הצלחה',
       Update: 'עדכון',
       Remove: 'הסר',
@@ -49,7 +47,6 @@ export const he = {
       Validation: 'אימות',
       'Privacy Policy': 'מדיניות פרטיות',
       'Terms of Service': 'תנאי שימוש',
-      'By creating an account, you agree to:': 'ביצירת חשבון, הנך מסכים/ה ל:',
       'I agree to the': 'אני מסכים ל',
       'Terms': 'תנאי שימוש',
       'Privacy': 'פרטיות',
@@ -96,16 +93,13 @@ export const he = {
       OR: 'או',
       Logout: 'יציאה',
       'Create account': 'יצירת חשבון',
-      'Sign in to your account': 'התחבר לחשבון שלך',
       'Forgot Password': 'שכחתי סיסמה',
       'Sign in with Google': 'התחברות עם Google',
       'Sign in with Apple': 'התחברות עם Apple',
       'Sign up with Apple': 'הרשמה עם Apple',
-      'Continue with': 'המשך באמצעות',
 
       'Full Name': 'שם מלא',
 
-      'Sign up to get started': 'הירשם כדי להתחיל',
 
 
 
@@ -117,16 +111,9 @@ export const he = {
       'Every match is a challenge': 'כל משחק הוא אתגר',
       'Predict scores, compete with friends, and climb the table.':
         'מנחשים תוצאות, מתחרים עם חברים ומטפסים בטבלה.',
-      'My prediction': 'התחזית שלי',
-      'Predicted score': 'התוצאה שלי',
       'Already have an account?': 'כבר יש לך חשבון?',
       'Create your Champo account': 'יצירת חשבון Champo',
       Back: 'חזרה',
-      'Join the challenge': 'מצטרפים לאתגר',
-      'Sign in to continue your predictions': 'מתחברים כדי להמשיך לתחזיות שלך',
-      'Create one account and keep all your predictions in one place.':
-        'פותחים חשבון ושומרים את כל התחזיות במקום אחד.',
-      'Predict. Compete. Climb.': 'חוזים. מתחרים. מטפסים.',
       "Don't have an account?": 'אין לך חשבון?',
       'Password strength': 'חוזק הסיסמה',
       'Strong password': 'סיסמה חזקה',
@@ -139,15 +126,14 @@ export const he = {
 
 
       'Send Reset Link': 'שלח קישור לאיפוס סיסמה',
+      'Reset link has been sent to your email': 'קישור לאיפוס נשלח לדוא״ל שלך',
+      'Email address is missing. Please try signing up again.':
+        'כתובת הדוא״ל חסרה. נסו להירשם מחדש.',
 
 
 
 
       'We sent a 6-digit code to': 'שלחנו קוד בן 6 ספרות אל',
-      'Apple and Google sign-in do not require email verification.':
-        'התחברות עם Apple או Google אינה דורשת אימות דוא״ל.',
-      'Prefer not to wait?': 'לא רוצה לחכות?',
-      'Sign in with Apple or Google': 'התחבר עם Apple או Google',
       'Email is required': 'דוא״ל נדרש',
       'Invalid email': 'דוא״ל לא תקין',
       'Password is required': 'סיסמה נדרשת',
@@ -167,7 +153,6 @@ export const he = {
     leagues: {
       League: 'ליגה',
       Leagues: 'ליגות',
-      'Create or join a league to get started.': 'צור ליגה או הצטרף לליגה כדי להתחיל.',
       'Full ranking': 'הדירוג המלא',
       Round: 'מחזור',
       'All season': 'כל העונה',
@@ -179,7 +164,6 @@ export const he = {
         'הזמינו חברים לליגה והפכו כל משחק למעניין יותר.',
       '{{count}} leagues': 'ליגות {{count}}',
       'Enter league': 'כניסה לליגה',
-      'Requires Pro': 'דורש Pro',
       'Want to open more leagues?': 'רוצה לפתח ליגות נוספות?',
       'Upgrade to Pro and open up to {{count}} leagues': 'שדרג ל-Pro ופתח עד {{count}} ליגות',
 
@@ -203,9 +187,10 @@ export const he = {
       'Save active leagues': 'שמור ליגות פעילות',
       'Activate league': 'הפעל ליגה',
       'Activate leagues': 'הפעל ליגות',
+      'Activate Leagues': 'הפעלת ליגות',
+      'Pro League': 'ליגת Pro',
       'Select league to activate': 'בחר ליגה להפעלה',
 
-      '{{count}} inactive leagues kept in your account': '{{count}} ליגות לא פעילות נשמרות בחשבון שלך',
       'Leave League': 'עזוב ליגה',
 
       Leave: 'עזוב ליגה',
@@ -229,6 +214,7 @@ export const he = {
 
 
       'Unable to load leagues. Pull to refresh to try again.': 'לא ניתן לטעון ליגות. נסה לטעון מחדש ',
+      'Create a league to get started': 'צרו ליגה כדי להתחיל',
       'Failed to create league': 'שגיאה ביצירת ליגה',
       'Subscription not confirmed': 'המנוי לא אומת',
       'We could not confirm your PRO subscription. Please try again in a moment.':
@@ -264,14 +250,8 @@ export const he = {
       'Nickname must be at most 20 characters': 'שם המשתמש יכול להכיל עד 20 תווים',
 
       Members: 'חברים',
-      'League table': 'טבלת ליגה',
-      Gameweek: 'מחזור',
-      'Your rank': 'הדירוג שלך',
 
       User: 'משתמש',
-      'Correct Scores': 'תוצאות מדויקות',
-      Movement: 'שינוי',
-      'Max Members': 'מקסימום חברים',
 
 
       '6 Members': '6 חברים',
@@ -298,7 +278,6 @@ export const he = {
       Created: 'נוצר',
       'Created at': 'נוצר בתאריך',
 
-      'You have reached the max number of leagues': 'הגעת למספר הליגות המקסימלי',
 
 
     },
@@ -309,8 +288,8 @@ export const he = {
       Prediction: 'ניחוש',
 
       'Predicted Score': 'ניקוד צופיות',
-      'Prediction Results': 'תוצאות ניחוש ',
       'No prediction': 'אין ניחוש',
+      VS: 'מול',
 
       'Unable to load predictions. Pull to refresh to try again.': 'לא ניתן לטעון ניחושים. נסה לטעון מחדש ',
 
@@ -321,15 +300,12 @@ export const he = {
 
 
 
-      'Premium stats only': 'סטטיסטיקה למנויי פרו בלבד',
-      'Upgrade to Pro to unlock match statistics': 'שדרג לפרו כדי לפתוח סטטיסטיקות משחק',
       Submitted: 'נשלח',
       'Fixture ID': 'מזהה צופיות',
       'Coming Soon...': 'בקרוב ...',
 
       'AI match analysis': 'ניתוח המשחק באמצעות AI',
       'Unlock the full AI analysis with Pro': 'ניתוח ה-AI המלא זמין למנויי פרו',
-      'AI Prediction': 'תחזית AI',
       'AI Analysis': 'ניתוח AI',
       'Get the full breakdown behind every prediction.':
         'קבל את הניתוח המלא שמאחורי כל תחזית.',
@@ -386,13 +362,9 @@ export const he = {
       'Delete Account': 'מחיקת חשבון',
 
       'Delete account confirmation message':
-        'האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו. מחיקת החשבון לא מבטלת מנוי App Store — יש לבטל אותו בהגדרות Apple ID ← מנויים.',
+        'האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.',
       'Delete personal data while keeping anonymized league history.':
         'מחיקת מידע אישי תוך שמירת היסטוריית ליגה אנונימית.',
-      'Check your subscription first': 'לפני המחיקה, חשוב לבדוק את המינוי',
-      'Deleting your Champo account does not cancel an active App Store subscription.':
-        'מחיקת חשבון Champo אינה מבטלת מינוי פעיל ב-App Store.',
-      'Continue deletion': 'המשך למחיקה',
     },
 
     // Help & Support
@@ -445,8 +417,8 @@ export const he = {
       'Go to Settings and tap the edit icon next to your name. You can update your display name and profile photo.':
         'עבור להגדרות ולחץ על סמל העריכה ליד השם שלך. אתה יכול לעדכן את שם התצוגה ותמונת הפרופיל שלך.',
       'How do I change my password?': 'איך אני משנה את הסיסמה שלי?',
-      'Reset link sent to your email':
-        'קישור לאיפוס הסיסמה נשלח לדוא"ל שלך',
+      'If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.':
+        'אם נרשמתם באמצעות דוא״ל, עברו להגדרות והשתמשו באפשרות איפוס הסיסמה. קישור לאיפוס יישלח אליכם בדוא״ל.',
       'Can I change my email address?': 'האם אני יכול לשנות את כתובת הדוא"ל שלי?',
       'Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.':
         'לא ניתן לשנות כתובות דוא"ל מתוך האפליקציה. אנא צור קשר עם התמיכה אם אתה צריך לעדכן את כתובת הדוא"ל שלך.',
@@ -455,14 +427,14 @@ export const he = {
         'פתחו את ההגדרות והקישו על תזכורות למשחקים. Champo תציג הסבר לפני בקשת ההרשאה, וניתן לשנות אותה בהמשך בהגדרות המכשיר.',
       'Subscription & Premium': 'מנוי ופרימיום',
       'What are the subscription benefits?': 'מהם היתרונות של המנוי?',
-      'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.':
-        'מנויי פרימיום מציעים תמיכה עדיפה, גישה לליגות נוספות, סטטיסטיקות מתקדמות ותכונות בלעדיות.',
+      'Champo Pro unlocks all 6 competitions, up to 5 active friend leagues, up to 12 members per league, and full AI match analysis.':
+        'Champo Pro פותח את כל 6 התחרויות, עד 5 ליגות חברים פעילות, עד 12 חברים בכל ליגה וניתוח משחק מלא של AI.',
       'How do I subscribe?': 'איך אני נרשם למנוי?',
-      'Navigate to Settings and tap on "Subscription" to view available plans and manage your subscription.':
-        'נווט להגדרות ולחץ על "מנוי" כדי לראות תוכניות זמינות ולנהל את המנוי שלך.',
+      'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.':
+        'פתחו את ההגדרות, הקישו על מנוי ובחרו בשדרוג כדי לרכוש את Champo Pro Season Pass.',
       'How do I cancel my subscription?': 'איך אני מבטל את המנוי שלי?',
-      "Subscriptions are managed through your device's app store (App Store for iOS, Play Store for Android). You can cancel anytime from your account settings.":
-        'מנויים מנוהלים דרך חנות האפליקציות של המכשיר שלך (App Store עבור iOS, Play Store עבור Android). אתה יכול לבטל בכל עת מהגדרות החשבון שלך.',
+      'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.':
+        'Champo Pro הוא Season Pass בתשלום חד־פעמי ואינו מתחדש אוטומטית, ולכן אין צורך לבטל אותו.',
       'Contact Support': 'יצירת קשר עם התמיכה',
       "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
         'עדיין יש לך שאלות? צוות התמיכה שלנו כאן כדי לעזור. פנה אלינו ונחזור אליך בהקדם האפשרי.',
@@ -482,7 +454,6 @@ export const he = {
       Subscribe: 'הירשם',
       PRO: 'פרו',
       Upgrade: 'שדרג',
-      Free: 'חינם',
       FREE: 'חינם',
 
       'Active Subscriptions': 'תשלומים פעילים',
@@ -491,6 +462,39 @@ export const he = {
       'Restore Purchases': 'שחזור רכישות',
       'Upgrade to Pro': 'שדרג לפרו',
       'No purchases found to restore': 'לא נמצאו רכישות לשחזור',
+
+      'Champo Pro Season Pass logo': 'לוגו Champo Pro Season Pass',
+      'Football stadium': 'אצטדיון כדורגל',
+      'Champo Pro Season Pass': 'מנוי Pro לעונה',
+      'One payment for the full season. No automatic renewal.':
+        'תשלום חד־פעמי לעונה שלמה. ללא חידוש אוטומטי.',
+      'Season Pass': 'מנוי לעונה',
+      'Get full access': 'קבל גישה מלאה',
+      'Join more leagues, play every competition and unlock complete AI analysis.':
+        'הצטרף ליותר ליגות, פתח את כל התחרויות וקבל ניתוח AI מלא.',
+      "What's included": 'מה כלול',
+      'Football competitions': 'תחרויות כדורגל',
+      'Active friend leagues': 'ליגות חברים פעילות',
+      'Members per league': 'חברים בכל ליגה',
+      'AI match insights': 'תובנות AI למשחק',
+      Score: 'תוצאה',
+      Full: 'מלא',
+      'Champo Pro': 'Champo Pro',
+      'Confirming the local App Store price…': 'מאמתים את המחיר המקומי ב־App Store…',
+      'La Liga and Bundesliga': 'לה ליגה ובונדסליגה',
+      'AI score prediction': 'ניחוש תוצאה של AI',
+      'La Liga, Bundesliga, Premier League, Serie A, Champions League and Ligue 1.':
+        'לה ליגה, בונדסליגה, פרמייר ליג, סרייה א׳, ליגת האלופות וליגה 1.',
+      'Full AI match analysis': 'ניתוח משחק מלא של AI',
+      'Upgrade for {{price}}': 'שדרוג ב־{{price}}',
+      'The Champo Pro offer is not available right now.': 'הצעת Champo Pro אינה זמינה כרגע.',
+      'The Champo Pro offer is incorrectly configured to renew automatically.':
+        'הצעת Champo Pro הוגדרה בטעות לחידוש אוטומטי.',
+      'Unable to load the offer. Please try again.': 'לא ניתן לטעון את ההצעה. נסו שוב.',
+      'The purchase completed, but Pro access is still being confirmed.':
+        'הרכישה הושלמה, אך הגישה ל־Pro עדיין בתהליך אימות.',
+      'Purchase failed. Please try again.': 'הרכישה נכשלה. נסו שוב.',
+      'Try again': 'נסו שוב',
 
     },
 
@@ -518,14 +522,13 @@ export const he = {
       'Describe what happened (optional)': 'תאר מה קרה (אופציונלי)',
       'Additional report details': 'פרטים נוספים לדיווח',
       'Submit report': 'שליחת דיווח',
-      'Safety actions': 'פעולות בטיחות',
       Report: 'דיווח',
       Block: 'חסימה',
       Unblock: 'ביטול חסימה',
       'Blocked users': 'משתמשים חסומים',
       'Blocked users and their content are hidden from your leagues.':
         'משתמשים חסומים והתוכן שלהם מוסתרים מהליגות שלך.',
-      'Unable to load blocked users.': 'לא ניתן לטעון משתמשים חסומים.',
+      'People you block will appear here.': 'משתמשים שתחסמו יופיעו כאן.',
       'You have not blocked anyone': 'לא חסמת אף משתמש',
       'Block user': 'חסימת משתמש',
       'Their profile, predictions and leaderboard entries will be hidden from you.':
@@ -589,8 +592,6 @@ export const he = {
       'Load more': 'טעינת נוספים',
       'Try a different name or email address.': 'נסו שם או כתובת דוא״ל אחרים.',
       'League Management': 'ניהול ליגות',
-      'Review league ownership, capacity, competition, and join details.':
-        'בדקו בעלות, קיבולת, תחרות ופרטי הצטרפות לכל ליגה.',
       'Browse every league and open its member directory.':
         'צפו בכל הליגות ופתחו את רשימת המשתתפים של כל ליגה.',
       'Search leagues, owners, or join codes...': 'חיפוש לפי ליגה, בעלים או קוד הצטרפות...',
@@ -599,8 +600,6 @@ export const he = {
       'No leagues match your search': 'לא נמצאו ליגות שתואמות לחיפוש',
       'Try a league name, owner, or join code.': 'נסו שם ליגה, בעלים או קוד הצטרפות.',
       'No leagues found': 'לא נמצאו ליגות',
-      'Inspect membership, identity, primary status, and league assignment.':
-        'בדקו שיוך לליגה, פרטי משתמש ומעמד של ליגה ראשית.',
       'View every participant or focus on one league.': 'צפו בכל המשתתפים או התמקדו בליגה מסוימת.',
       'Filter by league': 'סינון לפי ליגה',
       'All leagues': 'כל הליגות',
@@ -626,7 +625,6 @@ export const he = {
       'User deleted successfully': 'משתמש נמחק בהצלחה',
       'Delete User': 'מחיקת משתמש',
       'Unknown User': 'משתמש לא ידוע',
-      'Unknown user': 'משתמש לא ידוע',
       'Unnamed User': 'משתמש ללא שם',
       'Search by name or email...': 'חפש לפי שם או דואר אלקטרוני...',
       'Review registered users and account details.': 'סקירת משתמשים רשומים ופרטי חשבון.',
@@ -654,6 +652,13 @@ export const he = {
       'Unable to load competitions. Pull to refresh to try again.': 'לא ניתן לטעון תחרויות. משכו לרענון ונסו שוב.',
       'Competition ID': 'מזהה תחרות',
       'Competition ID must be a valid number.': 'מזהה התחרות חייב להיות מספר תקין.',
+      Area: 'אזור',
+      Code: 'קוד',
+      'Type (optional)': 'סוג (אופציונלי)',
+      'Display Type': 'סוג תצוגה',
+      'ID, name, area, code, flag and logo are required.':
+        'יש למלא מזהה, שם, אזור, קוד, דגל ולוגו.',
+      'Failed to add competition.': 'הוספת התחרות נכשלה.',
       Season: 'עונה',
       'Season (optional)': 'עונה (אופציונלי)',
       'Season must be a valid number when provided.': 'העונה חייבת להיות מספר תקין כאשר מוצגת.',
@@ -696,10 +701,6 @@ export const he = {
     // Home
     home: {
       Hello: 'שלום',
-      'Good morning': 'בוקר טוב',
-      'Good afternoon': 'צהריים טובים',
-      'Good evening': 'ערב טוב',
-      'Good night': 'לילה טוב',
       Hits: 'פגיעות',
 
     },
@@ -717,10 +718,7 @@ export const he = {
       'Password must contain at least one letter and one number':
         'הסיסמה חייבת לכלול לפחות אות אחת ומספר אחד',
       Accuracy: 'דיוק',
-      'Prediction Results': 'תוצאות ניחוש',
-      'Total Points': 'סך הכל נקודות',
 
-      'Your stats': 'הסטטיסטיקה שלך',
       'Primary league': 'ליגה ראשית',
       Rank: 'דירוג',
 
@@ -735,13 +733,7 @@ export const he = {
       'Last 5 finished predictions': '5 הניחושים האחרונים שהסתיימו',
       'No finished predictions yet': 'עדיין אין ניחושים שהסתיימו',
 
-      'Performance by round': 'ביצועים לפי סיבוב',
-      'Round {{n}}': 'סיבוב {{n}}',
-      'No round data yet': 'אין נתונים לסיבובים עדיין',
-      'Best category': 'קטגוריה מובילה',
       '{{count}} correct': '{{count}} נכונים',
-      "You're in the top {{percent}}% of the league": 'אתה ב-{{percent}}% העליונים של הליגה',
-      'View breakdown': 'צפה בפירוט',
     },
 
     // Fonts (legacy)
@@ -778,11 +770,9 @@ export const he = {
 
     // World Cup feature
     worldCup: {
-      'World Cup': 'גביע העולם',
       Groups: 'בתים',
       Knockout: 'נוקאאוט',
       Group: 'בית',
-      Aggregate: 'מצרפי',
       'League Phase': 'שלב הליגה',
       Matchday: 'מחזור',
       'Round of 16': 'שמינית גמר',
@@ -802,8 +792,6 @@ export const he = {
       'No standings found': 'לא נמצאה טבלה',
       Predict: 'נחש',
       Leaderboard: 'טבלת חברים',
-      'View all': 'הצג הכל',
-      'Show less': 'הצג פחות',
 
     },
     leagueOverview: {
@@ -811,11 +799,9 @@ export const he = {
 
       USER: 'משתמש',
       POINTS: 'נקודות',
-      'of {{count}} players': 'מתוך {{count}} שחקנים',
 
 
       Table: 'טבלה',
-      'Top leaderboard': 'מובילי הטבלה',
 
       'Today matches': 'משחקי היום',
       'No matches today': 'אין משחקים היום',
@@ -830,23 +816,18 @@ export const he = {
       'AI analysis is not available': 'ניתוח ה־AI אינו זמין',
       'There is not enough reliable match data to show a prediction yet.':
         'עדיין אין מספיק נתוני משחק אמינים כדי להציג תחזית.',
-      'Updated {{date}}': 'עודכן {{date}}',
       'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.':
         'הניתוח נוצר באמצעות AI ומיועד לבידור בלבד. הוא עלול להיות שגוי ואינו מהווה ייעוץ להימורים.',
       'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}':
         'תחזית AI: {{home}} {{homeScore}}, {{away}} {{awayScore}}',
     },
     activeUi: {
-      'An email has been sent to your email address with a link to reset your password.': 'נשלח אליך אימייל עם קישור לאיפוס הסיסמה.',
       Away: 'חוץ',
-      'Away score': 'תוצאת קבוצת החוץ',
       'Decrease away score': 'הקטנת התוצאה של קבוצת החוץ',
       'Decrease home score': 'הקטנת התוצאה של קבוצת הבית',
-      'Choose {{count}} active leagues': 'בחירת {{count}} ליגות פעילות',
       'Confirm Password': 'אימות סיסמה',
       Consistent: 'עקבי',
       'Edit league': 'עריכת ליגה',
-      'Edit nickname': 'עריכת כינוי',
       Enabled: 'פעיל',
       'Checking...': 'בודק...',
       Blocked: 'חסום',
@@ -876,15 +857,12 @@ export const he = {
       'Failed to update password. Please try again.': 'עדכון הסיסמה נכשל. נסו שוב.',
       General: 'כללי',
       Home: 'בית',
-      'Home score': 'תוצאת קבוצת הבית',
       'Increase away score': 'הגדלת התוצאה של קבוצת החוץ',
       'Increase home score': 'הגדלת התוצאה של קבוצת הבית',
       'Join my {{area}} league "{{name}}"! Use code: {{join_code}} Download the app to join!': 'הצטרפו לליגת {{area}} שלי "{{name}}"! השתמשו בקוד: {{join_code}} הורידו את האפליקציה כדי להצטרף!',
       'Join {{name}} League': 'הצטרפות לליגה {{name}}',
-      'Manage Subscription': 'ניהול המינוי',
       'Member not found': 'החבר לא נמצא',
       'My Leagues': 'הליגות שלי',
-      'No leagues yet': 'אין עדיין ליגות',
       'No matches found': 'לא נמצאו משחקים',
       'No predictions': 'אין ניחושים',
       Notification: 'התראות',
@@ -909,37 +887,23 @@ export const he = {
       '{{count}} correct predictions': '{{count}} ניחושים נכונים',
       '{{count}} matches played': '{{count}} משחקים שוחקו',
       'Code resent successfully!': 'הקוד נשלח מחדש בהצלחה!',
-      'Back to Sign In': 'חזרה לכניסה',
       'Change email address': 'שינוי דוא״ל',
       'Confirm and continue': 'אימות והמשך',
       "Didn't receive the code?": 'לא קיבלתם את הקוד?',
-      'Email address is missing. Please try signing up with email again.': 'דוא״ל חסר. נסו להירשם עם דוא״ל מחדש.',
       'Email verified successfully!': 'הדוא״ל אומת בהצלחה!',
       'Enter the code': 'הקלידו את הקוד',
-      'Enter the code to finish creating your account.': 'הקלידו את הקוד כדי להשלים את יצירת החשבון.',
       'Forgot your password?': 'שכחתם את הסיסמה?',
-      'Get back in the game': 'חוזרים למשחק',
-      'If an account exists for this email, a reset link will arrive shortly.':
-        'אם קיים חשבון עבור דוא״ל הזו, קישור לאיפוס יגיע בקרוב.',
-      'If an account exists for this email, the link may take a few minutes to arrive.':
-        'אם קיים חשבון עבור דוא״ל הזו, הקישור עשוי להגיע תוך כמה דקות.',
       'Error Details (Dev Only):': 'פרטי שגיאה (פיתוח בלבד):',
-      'Football Prediction': 'ניחושי כדורגל',
       'Go Home': 'חזרה לבית',
-      'No internet connection. Some features may not work.': 'אין חיבור לאינטרנט. ייתכן שחלק מהתכונות לא יעבדו.',
       "You're offline": 'אין חיבור לאינטרנט',
-      'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.':
-        'Champo זקוקה לחיבור לאינטרנט כדי לטעון משחקים, ניחושים וטבלאות דירוג. בדקו את החיבור ונסו שוב.',
+      'Check your connection and try again': 'בדקו את החיבור ונסו שוב',
       'Predict. Compete. Win.': 'מנחשים. מתחרים. מנצחים.',
       'Resend Code': 'שליחת הקוד מחדש',
-      'Resend in {{count}}s': 'שליחה מחדש בעוד {{count}} שניות',
       'Sending...': 'שולח...',
-      'Secure your predictions': 'שומרים על הניחושים שלכם',
       'Still need help?': 'עדיין צריכים עזרה?',
       'Contact support': 'פנייה לתמיכה',
       'Something went wrong': 'משהו השתבש',
       'Try Again': 'ניסיון נוסף',
-      'Verify Email': 'אימות אימייל',
       'The code is single-use and expires shortly.': 'הקוד מיועד לשימוש חד־פעמי ותוקפו יפוג בקרוב.',
       "We encountered an unexpected error. Don't worry, your data is safe.": 'אירעה שגיאה בלתי צפויה. הנתונים שלכם שמורים.',
       'Your other leagues and data will remain saved.': 'הליגות והנתונים האחרים שלכם יישארו שמורים.',
@@ -949,7 +913,6 @@ export const he = {
       'Delete user': 'מחיקת משתמש',
       Display: 'תצוגה',
       'Failed to delete user: {{message}}': 'מחיקת המשתמש נכשלה: {{message}}',
-      'ID: {{id}}': 'מזהה: {{id}}',
       No: 'לא',
       'No email': 'אין דוא״ל',
       'No users found': 'לא נמצאו משתמשים',
@@ -965,12 +928,10 @@ export const he = {
       points: 'נקודות',
       pts: 'נק׳',
       '{{name}}, position {{position}}, {{points}} points': '{{name}}, מקום {{position}}, {{points}} נקודות',
-      'Toggle menu': 'פתיחת התפריט',
       'My leagues': 'הליגות שלי',
       'Verification code digit {{number}}': 'ספרה {{number}} בקוד האימות',
       'Enter a single digit': 'הזינו ספרה אחת',
       'Resend verification code': 'שליחה מחדש של קוד האימות',
-        'Resend the verification code to your email': 'שליחת קוד האימות מחדש לדוא״ל',
       '6 Members': '6 חברים',
       '12 Members': '12 חברים',
       Close: 'סגירה',
@@ -978,7 +939,6 @@ export const he = {
       'Loading match': 'המשחק נטען',
       'Loading match details': 'פרטי המשחק נטענים',
       'Longest streak': 'הרצף הארוך ביותר',
-      'Member statistics': 'סטטיסטיקות חבר',
       'Prediction statistics': 'סטטיסטיקות ניחושים',
     },
   };

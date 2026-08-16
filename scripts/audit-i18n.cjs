@@ -71,7 +71,8 @@ const userFacingAttributes = new Set([
   'placeholder',
   'title',
 ]);
-const rawTextAllowlist = new Set(['Champion', 'EN', 'FT', 'LIVE', 'League', 'עב']);
+// Product names and universal abbreviations are intentionally not translated.
+const rawTextAllowlist = new Set(['CHAMPO', 'Champion', 'EN', 'FT', 'LIVE', 'League', 'עב']);
 const productionSource = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
 
 for (const file of files) {
@@ -175,3 +176,18 @@ const report = {
 };
 
 process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+
+const blockingIssues = {
+  missingEn,
+  missingHe,
+  onlyEn,
+  onlyHe,
+  unused,
+  rawText,
+  rawAttributes,
+  rawExpressionText,
+};
+
+if (Object.values(blockingIssues).some((issues) => issues.length > 0)) {
+  process.exitCode = 1;
+}

@@ -13,6 +13,7 @@ import {
   LanguageProvider,
   NotificationProvider,
   PurchasesProvider,
+  PaywallProvider,
   QueryProvider,
   ThemeProvider,
   useAuth,
@@ -140,17 +141,19 @@ const RootLayout = () => (
           <PurchasesProvider>
             <ThemeProvider>
               <LanguageProvider>
-                <NotificationProvider>
-                  <AlertProvider>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                      <SafeAreaProvider>
-                        <KeyboardProvider>
-                          <AppBootstrap />
-                        </KeyboardProvider>
-                      </SafeAreaProvider>
-                    </GestureHandlerRootView>
-                  </AlertProvider>
-                </NotificationProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <SafeAreaProvider>
+                    <PaywallProvider>
+                      <NotificationProvider>
+                        <AlertProvider>
+                          <KeyboardProvider>
+                            <AppBootstrap />
+                          </KeyboardProvider>
+                        </AlertProvider>
+                      </NotificationProvider>
+                    </PaywallProvider>
+                  </SafeAreaProvider>
+                </GestureHandlerRootView>
               </LanguageProvider>
             </ThemeProvider>
           </PurchasesProvider>

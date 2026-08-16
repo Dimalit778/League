@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
-import { AiSummaryType, MatchCardRawType, MatchCardType, MatchWithAllPredictionsType } from '../types';
+import { AiSummaryType, MatchDetails, MatchListItem, RawMatchListItem } from '../types';
 
 const UPCOMING_MATCHES_LIMIT = 10;
 
@@ -11,7 +11,7 @@ const TEAM_LIST_FIELDS = `
   logo,
   tla
 `;
-  
+
 export const MATCH_WITH_MEMBER_PREDICTION = `
   id,
   competition_id,
@@ -45,6 +45,7 @@ export const MATCH_WITH_ALL_PREDICTIONS = `
   status,
   stage,
   group,
+
   updated_at,
   home_team_id,
   away_team_id,
@@ -59,6 +60,10 @@ export const MATCH_WITH_ALL_PREDICTIONS = `
 
   away_team:teams!matches_away_team_id_fkey(
  ${TEAM_LIST_FIELDS}
+  ),
+  competition:competitions!matches_competition_id_fkey(
+    id,
+    name
   ),
 
 predictions:predictions!predictions_match_id_fkey(
@@ -76,8 +81,8 @@ predictions:predictions!predictions_match_id_fkey(
   )
 )
 `;
-export function mapMatchCardData(data: unknown): MatchCardType[] {
-  const rows = (data ?? []) as MatchCardRawType[];
+export function mapMatchCardData(data: unknown): MatchListItem[] {
+  const rows = (data ?? []) as RawMatchListItem[];
 
   return rows.map(({ predictions, ...match }) => ({
     ...match,
@@ -91,13 +96,13 @@ export const matchesApi = {
   async getMatchWithPredictions(
     leagueId: string,
     matchId: number,
-  ): Promise<MatchWithAllPredictionsType> {
+  ): Promise<MatchDetails> {
     const { data, error } = await supabase
       .from('matches')
       .select(MATCH_WITH_ALL_PREDICTIONS)
       .eq('id', matchId)
       .eq('predictions.league_member.league_id', leagueId)
-      .single<MatchWithAllPredictionsType>();
+      .single<MatchDetails>();
  
     if (error) throw error;
 
@@ -122,7 +127,7 @@ export const matchesApi = {
     competitionId: number,
     seasonId: number,
     memberId: string,
-  ): Promise<MatchCardType[]> {
+  ): Promise<MatchListItem[]> {
     return this.getCompetitionMatchesWithMemberPredictions(competitionId, seasonId, memberId);
   },
 
@@ -139,7 +144,7 @@ export const matchesApi = {
     seasonId: number;
     memberId: string;
     stage?: string;
-  }): Promise<MatchCardType[]> {
+  }): Promise<MatchListItem[]> {
     let query = supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
@@ -167,7 +172,7 @@ export const matchesApi = {
     competitionId: number,
     seasonId: number,
     memberId: string,
-  ): Promise<MatchCardType[]> {
+  ): Promise<MatchListItem[]> {
     const { data, error } = await supabase
       .from('matches')
       .select(MATCH_WITH_MEMBER_PREDICTION)
@@ -186,7 +191,7 @@ export const matchesApi = {
     competitionId: number,
     seasonId: number,
     memberId: string,
-  ): Promise<MatchCardType[]> {
+  ): Promise<MatchListItem[]> {
     // Local calendar day — not "from now onward".
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);

@@ -1,7 +1,7 @@
 import { Button, Card, Divider, Row, Text } from '@/components';
 import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
 import { resolveAiAnalysis, resolveAiSummaryText } from '@/features/matches/model/aiAnalysis';
-import { MatchWithPredictions, TeamType } from '@/features/matches/types';
+import { MatchDetails, TeamType } from '@/features/matches/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { ThemeName } from '@/lib/nativewind/nativeWind';
@@ -14,7 +14,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 type AiAnalysisCardProps = {
-  match: MatchWithPredictions;
+  match: MatchDetails;
 };
 
 type AiScoreCardProps = {

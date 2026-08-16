@@ -1,4 +1,4 @@
-import { Screen } from '@/components';
+import { Screen } from './Screens';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

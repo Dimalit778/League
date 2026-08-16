@@ -5,7 +5,7 @@ import { Leagues } from '../Leagues';
 const mockSetPrimaryLeague = jest.fn();
 const mockUpdatePrimaryLeague = jest.fn();
 
-const mockLeagues = [
+const defaultMockLeagues = [
   {
     active: true,
     competition_id: 1,
@@ -64,6 +64,8 @@ const mockLeagues = [
     total_points: 1,
   },
 ];
+let mockLeagues = defaultMockLeagues;
+const mockPrimaryLeagueCard = jest.fn((_props: unknown) => null);
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useGetMyLeaguesSummary: () => ({ data: mockLeagues, isLoading: false }),
@@ -77,13 +79,35 @@ jest.mock('@/store/PrimaryLeagueStore', () => ({
 
 jest.mock('../PrimaryLeagueCard', () => ({
   __esModule: true,
-  default: () => null,
+  default: (props: unknown) => mockPrimaryLeagueCard(props),
 }));
 
 describe('Leagues', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockLeagues = defaultMockLeagues;
     mockUpdatePrimaryLeague.mockResolvedValue(undefined);
+  });
+
+  it('does not present an inactive league as the primary league', () => {
+    mockLeagues = defaultMockLeagues.map((league) => ({ ...league, active: false, is_primary: false }));
+
+    const { getByText } = render(<Leagues isPro={false} upgrade={jest.fn().mockResolvedValue(false)} />);
+
+    expect(getByText('My Leagues')).toBeTruthy();
+    expect(mockPrimaryLeagueCard).not.toHaveBeenCalled();
+  });
+
+  it('does not invent a primary league when an active membership is not marked primary', () => {
+    mockLeagues = defaultMockLeagues.map((league, index) => ({
+      ...league,
+      active: index === 0,
+      is_primary: false,
+    }));
+
+    render(<Leagues isPro={false} upgrade={jest.fn().mockResolvedValue(false)} />);
+
+    expect(mockPrimaryLeagueCard).not.toHaveBeenCalled();
   });
 
   it('continues into the selected locked league after a successful upgrade', async () => {

@@ -25,15 +25,12 @@ export const useEnsureProAccess = () => {
   const isPro = !!subscription.isActive;
 
   const ensureProAccess = async (): Promise<boolean> => {
-    let hasClientPro = hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
+    const hasClientPro = hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
 
     if (!hasClientPro) {
-      const purchased = await openPaywall();
-      if (!purchased) return false;
-      hasClientPro = hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
+      // `openPaywall` returns true only after the Edge Function confirms PRO.
+      return openPaywall();
     }
-
-    if (!hasClientPro) return false;
 
     // Client is pro — make sure the server row agrees before proceeding.
     const serverResult = await syncSubscriptionToServerUntilPro();

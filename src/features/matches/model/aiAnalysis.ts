@@ -1,4 +1,4 @@
-import type { AiSummaryType, MatchWithPredictions } from '../types';
+import type { AiSummaryType, MatchDetails } from '../types';
 
 export type AiAnalysisState =
   | { status: 'unavailable' }
@@ -17,7 +17,7 @@ const isValidPredictedScore = (value: number | null): value is number =>
  * separately (see resolveAiSummaryText) — a free user should still see the
  * locked/blurred card, not "analysis not available".
  */
-export function resolveAiAnalysis(match: MatchWithPredictions): AiAnalysisState {
+export function resolveAiAnalysis(match: MatchDetails): AiAnalysisState {
   const generatedAt = match.ai_generated_at ? new Date(match.ai_generated_at) : null;
 
   if (

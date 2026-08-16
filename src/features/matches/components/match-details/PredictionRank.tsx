@@ -1,11 +1,11 @@
 import { AvatarImage, Text } from '@/components';
-import { PredictionWithMemberType } from '@/features/matches/types';
+import { MemberPrediction } from '@/features/matches/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { FlatList, View } from 'react-native';
 
 type RankCardProps = {
-  item: PredictionWithMemberType;
+  item: MemberPrediction;
   index: number;
   currentMember: boolean;
 };
@@ -65,7 +65,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
   );
 };
 
-export default function PredictionRank({ predictions }: { predictions: PredictionWithMemberType[] }) {
+export default function PredictionRank({ predictions }: { predictions: MemberPrediction[] }) {
   const memberId = useMemberId();
   const { t } = useTranslation();
 

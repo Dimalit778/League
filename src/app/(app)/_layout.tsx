@@ -60,6 +60,17 @@ export default function AppLayout() {
         }}
       />
 
+      <Stack.Screen
+        name="(paywall)/index"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.95],
+          animation: 'slide_from_bottom',
+          gestureEnabled: false,
+          headerShown: false,
+        }}
+      />
+
       <Stack.Protected guard={!!isAdminUser}>
         <Stack.Screen name="admin" />
       </Stack.Protected>

@@ -60,14 +60,15 @@ export default function MyLeaguesScreen() {
   const inSelectionMode = !!activationSelection;
   const atLeagueLimit = activeCount === maxLeagues;
   const showCreateJoin = !inSelectionMode && !atLeagueLimit;
-  const showProUpsell = !isPro && !inSelectionMode;
+  const showProUpsell = !isPro;
+
   const showActivateButton = (activationSelection?.selectedMemberIds.length ?? 0) > 0;
 
   return (
     <View className="flex-1 bg-background">
       <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
 
-      <Screen scroll padding="all" className="flex-grow">
+      <Screen scroll padding="horizontal" className="flex-grow">
         <View className="flex-1 gap-6 ">
           {showCreateJoin && <CreateJoinButtons />}
           <View className=" min-h-[550px]">

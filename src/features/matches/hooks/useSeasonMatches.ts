@@ -1,10 +1,8 @@
 import { useRefetchOnFocus } from '@/hooks/useRefetchOnFocus';
 import { KEYS } from '@/lib/queryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
-import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useIsFocused } from 'expo-router';
-import { useEffect } from 'react';
 import { matchesApi } from '../api/matchesApi';
 import { getMatchesRefetchInterval } from '../utils/matchRefetch';
 
@@ -45,10 +43,6 @@ export const useSeasonMatches = ({
   });
 
   useRefetchOnFocus(query.refetch, isReady);
-
-  useEffect(() => {
-    if (query.data) void prefetchMatchTeamLogos(query.data);
-  }, [query.data]);
 
   return query;
 };

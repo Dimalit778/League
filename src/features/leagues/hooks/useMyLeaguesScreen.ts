@@ -49,6 +49,10 @@ export function useMyLeaguesScreen() {
   const allLeagues = useMemo(() => flattenMyLeagues(myLeagues), [myLeagues]);
   const activeCount = allLeagues.filter((league) => league.active).length;
   const inactiveLeagues = useMemo(() => allLeagues.filter((league) => !league.active), [allLeagues]);
+  const eligibleInactiveLeagues = useMemo(
+    () => inactiveLeagues.filter((league) => league.league.competition?.is_free !== false),
+    [inactiveLeagues],
+  );
   const requiresLeagueActivation = useRequiresLeagueActivation();
   const eligibleLeagueCount = useMemo(
     () => allLeagues.filter((league) => league.league.competition?.is_free !== false).length,
@@ -58,7 +62,7 @@ export function useMyLeaguesScreen() {
   const { availableSlots: availableActivationSlots, requiresSelection } = resolveVacantLeagueSlots({
     isPro,
     activeCount,
-    inactiveCount: inactiveLeagues.length,
+    inactiveCount: eligibleInactiveLeagues.length,
     maxLeagues,
   });
   const canChooseInactiveLeagues =

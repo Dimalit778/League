@@ -3,9 +3,9 @@ import { KEYS } from '@/lib/queryClient';
 import { skipToken, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { leagueApi } from '@/features/leagues/api/leagueApi';
+import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
 import { useTranslation } from '@/hooks/useTranslation';
 import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
-import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
@@ -195,22 +195,27 @@ export const useUpdateLeagueActivation = ({
 };
 
 export const useReactivateLeaguesAfterProUpgrade = () => {
-  const openPaywall = usePaywall();
-  const { subscription } = useRevenueCatSubscription();
+  const { ensureProAccess } = useEnsureProAccess();
   const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation({ reinitializePrimaryLeague: false });
 
   return useCallback(
     async (leagues: MyLeague[]) => {
-      const hasProAccess = subscription.isActive || (await openPaywall());
-      if (!hasProAccess) return false;
+      try {
+        const hasProAccess = await ensureProAccess();
+        if (!hasProAccess) return false;
 
-      const memberIds = leagues.map((league) => league.id).slice(0, PLAN_LIMITS.PRO.maxLeagues);
-      if (memberIds.length === 0) return true;
+        const memberIds = leagues.map((league) => league.id).slice(0, PLAN_LIMITS.PRO.maxLeagues);
+        if (memberIds.length === 0) return true;
 
-      await updateLeagueActivation(memberIds);
-      return true;
+        await updateLeagueActivation(memberIds);
+        return true;
+      } catch {
+        // The mutation already displays a user-facing error through onError.
+        // Swallow the rejected promise so button handlers do not emit Uncaught.
+        return false;
+      }
     },
-    [openPaywall, subscription.isActive, updateLeagueActivation],
+    [ensureProAccess, updateLeagueActivation],
   );
 };
 

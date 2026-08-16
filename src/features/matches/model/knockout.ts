@@ -1,24 +1,24 @@
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { isKnockoutStage } from '../utils/tournamentMatches';
 
 export type Tie = {
   key: string;
   stage: string;
-  legs: MatchCardType[]; // 1..2, ordered by kick_off ascending
+  legs: MatchListItem[]; // 1..2, ordered by kick_off ascending
   aggregate: { home: number; away: number } | null;
   advancingTeamId: number | null;
 };
 
 const teamPairKey = (a: number, b: number) => (a <= b ? `${a}-${b}` : `${b}-${a}`);
 
-const winnerTeamId = (match: MatchCardType): number | null => {
+const winnerTeamId = (match: MatchListItem): number | null => {
   const winner = match.score?.winner;
   if (winner === 'HOME_TEAM') return match.home_team_id;
   if (winner === 'AWAY_TEAM') return match.away_team_id;
   return null;
 };
 
-const legGoalsForTeam = (match: MatchCardType, teamId: number): number | null => {
+const legGoalsForTeam = (match: MatchListItem, teamId: number): number | null => {
   const ft = match.score?.fullTime;
   if (!ft || ft.home == null || ft.away == null) return null;
   if (match.home_team_id === teamId) return ft.home;
@@ -26,9 +26,9 @@ const legGoalsForTeam = (match: MatchCardType, teamId: number): number | null =>
   return null;
 };
 
-const isFinished = (match: MatchCardType) => match.status === 'FINISHED';
+const isFinished = (match: MatchListItem) => match.status === 'FINISHED';
 
-function buildTie(stage: string, key: string, unordered: MatchCardType[]): Tie {
+function buildTie(stage: string, key: string, unordered: MatchListItem[]): Tie {
   const legs = [...unordered].sort(
     (a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime(),
   );
@@ -69,8 +69,8 @@ function buildTie(stage: string, key: string, unordered: MatchCardType[]): Tie {
   return { key, stage, legs, aggregate, advancingTeamId };
 }
 
-export function pairKnockoutTies(matches: MatchCardType[]): Tie[] {
-  const groups = new Map<string, MatchCardType[]>();
+export function pairKnockoutTies(matches: MatchListItem[]): Tie[] {
+  const groups = new Map<string, MatchListItem[]>();
   for (const match of matches) {
     if (match.home_team_id == null || match.away_team_id == null || !match.stage) continue;
     const key = `${match.stage}:${teamPairKey(match.home_team_id, match.away_team_id)}`;
@@ -84,5 +84,5 @@ export function pairKnockoutTies(matches: MatchCardType[]): Tie[] {
   );
 }
 
-export const selectKnockoutTies = (matches: MatchCardType[]): Tie[] =>
+export const selectKnockoutTies = (matches: MatchListItem[]): Tie[] =>
   pairKnockoutTies(matches.filter((match) => isKnockoutStage(match.stage)));

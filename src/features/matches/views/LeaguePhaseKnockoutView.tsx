@@ -5,7 +5,7 @@ import { MatchesTopBar } from '../components/shared/MatchesTopBar';
 import FixtureListEngine from '../engines/FixtureListEngine';
 import KnockoutEngine from '../engines/KnockoutEngine';
 import { TournamentViewTabs } from '../engines/shared/TournamentTabs';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { isFirstPhaseStage, isKnockoutStage, type TournamentView } from '../utils/tournamentMatches';
 
 export default function LeaguePhaseKnockoutView({
@@ -14,7 +14,7 @@ export default function LeaguePhaseKnockoutView({
   currentStage,
   onRefresh,
 }: {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   currentFixture: number;
   currentStage: string | null;
   onRefresh: () => void;

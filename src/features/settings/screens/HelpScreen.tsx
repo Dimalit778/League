@@ -123,17 +123,17 @@ const HelpScreen = () => {
         {
           question: 'What are the subscription benefits?',
           answer:
-            'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.',
+            'Champo Pro unlocks all 6 competitions, up to 5 active friend leagues, up to 12 members per league, and full AI match analysis.',
         },
         {
           question: 'How do I subscribe?',
           answer:
-            'Navigate to Settings and tap on "Subscription" to view available plans and manage your subscription.',
+            'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.',
         },
         {
           question: 'How do I cancel my subscription?',
           answer:
-            "Subscriptions are managed through your device's app store (App Store for iOS, Play Store for Android). You can cancel anytime from your account settings.",
+            'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.',
         },
       ],
     },

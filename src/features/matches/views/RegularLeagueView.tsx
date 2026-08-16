@@ -4,14 +4,14 @@ import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { MatchesTopBar } from '../components/shared/MatchesTopBar';
 import FixtureListEngine from '../engines/FixtureListEngine';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 
 export default function RegularLeagueView({
   matches,
   currentFixture,
   onRefresh,
 }: {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   currentFixture: number;
   onRefresh: () => void;
 }) {

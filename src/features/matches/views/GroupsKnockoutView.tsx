@@ -5,7 +5,7 @@ import { MatchesTopBar } from '../components/shared/MatchesTopBar';
 import GroupsEngine from '../engines/GroupsEngine';
 import KnockoutEngine from '../engines/KnockoutEngine';
 import { TournamentViewTabs } from '../engines/shared/TournamentTabs';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { isFirstPhaseStage, isKnockoutStage, type TournamentView } from '../utils/tournamentMatches';
 
 export default function GroupsKnockoutView({
@@ -13,7 +13,7 @@ export default function GroupsKnockoutView({
   currentStage,
   onRefresh,
 }: {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   currentStage: string | null;
   onRefresh: () => void;
 }) {

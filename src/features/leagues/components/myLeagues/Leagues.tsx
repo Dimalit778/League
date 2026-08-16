@@ -163,21 +163,22 @@ export function Leagues({
   if (isLoading) return <LeaguesSkeleton />;
   if (!myLeagues || myLeagues.length === 0)
     return <EmptyState title={t('No leagues found')} description={t('Create a league to get started')} />;
-
   const primaryLeague =
-    myLeagues.find((league) => league.league_id === primaryLeagueId) ??
-    myLeagues.find((league) => league.is_primary) ??
-    myLeagues[0];
+    myLeagues.find(
+      (league) => league.active && league.is_primary && league.league_id === primaryLeagueId,
+    ) ??
+    myLeagues.find((league) => league.active && league.is_primary) ??
+    null;
   const otherLeagues = myLeagues
-    .filter((league) => league.league_id !== primaryLeague.league_id)
+    .filter((league) => league.league_id !== primaryLeague?.league_id)
     .sort((a, b) => Number(b.active) - Number(a.active));
 
   return (
     <View className="gap-10">
-      <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />
+      {primaryLeague && <PrimaryLeagueCard league={primaryLeague} onPress={() => handleLeaguePress(primaryLeague)} />}
 
       {otherLeagues.length > 0 && (
-        <Section title={t('Other Leagues')} accent>
+        <Section title={t(primaryLeague ? 'Other Leagues' : 'My Leagues')} accent>
           <View className={spacing.list}>
             {otherLeagues.map((league) => (
               <LeagueCard

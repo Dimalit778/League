@@ -22,11 +22,12 @@ export function resolveVacantLeagueSlots({
   inactiveCount,
   maxLeagues,
 }: VacantLeagueSlotParams) {
-  const availableSlots = isPro ? 0 : Math.max(0, maxLeagues - activeCount);
+  const vacantSlots = isPro ? 0 : Math.max(0, maxLeagues - activeCount);
+  const availableSlots = Math.min(vacantSlots, inactiveCount);
 
   return {
     availableSlots,
-    requiresSelection: availableSlots > 0 && inactiveCount > availableSlots,
+    requiresSelection: availableSlots > 0,
   };
 }
 

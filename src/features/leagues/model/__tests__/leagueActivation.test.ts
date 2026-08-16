@@ -6,10 +6,10 @@ import {
 } from '../leagueActivation';
 
 describe('resolveVacantLeagueSlots', () => {
-  it('does not require a choice when the only inactive league fits the vacant seat', () => {
+  it('allows recovery when the only inactive league fits the vacant seat', () => {
     expect(
       resolveVacantLeagueSlots({ isPro: false, activeCount: 1, inactiveCount: 1, maxLeagues: 2 }),
-    ).toEqual({ availableSlots: 1, requiresSelection: false });
+    ).toEqual({ availableSlots: 1, requiresSelection: true });
   });
 
   it('requires one choice when several inactive leagues compete for one vacant seat', () => {
@@ -22,6 +22,12 @@ describe('resolveVacantLeagueSlots', () => {
     expect(
       resolveVacantLeagueSlots({ isPro: false, activeCount: 0, inactiveCount: 3, maxLeagues: 2 }),
     ).toEqual({ availableSlots: 2, requiresSelection: true });
+  });
+
+  it('does not require selecting more leagues than are eligible', () => {
+    expect(
+      resolveVacantLeagueSlots({ isPro: false, activeCount: 0, inactiveCount: 1, maxLeagues: 2 }),
+    ).toEqual({ availableSlots: 1, requiresSelection: true });
   });
 
   it('does not expose the free-plan selection flow to pro users', () => {

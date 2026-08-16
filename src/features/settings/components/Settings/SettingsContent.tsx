@@ -135,6 +135,7 @@ const SettingsContent = () => {
       label: t('Plan'),
       icon: <CreditCard size={iconSize} color={colors.text} strokeWidth={1.5} />,
       rightContent: subscriptionType,
+      path: '/settings/subscription' as RelativePathString,
     },
   ];
 

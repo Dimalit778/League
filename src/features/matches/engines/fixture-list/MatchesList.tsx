@@ -1,8 +1,9 @@
 import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
-import { FlatList, RefreshControl } from 'react-native';
+import { FlatList, RefreshControl, useWindowDimensions } from 'react-native';
 import { MatchCard } from '../../components/MatchCard';
+import { getMatchCardMetrics } from '../../components/MatchCardBg';
 import MatchesSkeleton from '../../components/MatchesSkeleton';
 import { MatchCardData } from '../../utils/matchCard.mapper';
 
@@ -14,6 +15,8 @@ type MatchesListProps = {
 export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: MatchesListProps) {
   const flatListRef = useRef<FlatList>(null);
   const { t } = useTranslation();
+  const { width } = useWindowDimensions();
+  const itemHeight = getMatchCardMetrics(width).height + 10;
   if (!matches || matches.length === 0) return <MatchesSkeleton />;
 
   return (
@@ -24,21 +27,10 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1, paddingHorizontal: 16, gap: 10 }}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <MatchCard
-          id={item.id}
-          home={item.home}
-          away={item.away}
-          prediction={item.prediction}
-          predictionStatus={item.predictionStatus}
-          status={item.status}
-          date={item.date}
-          time={item.time}
-        />
-      )}
+      renderItem={({ item }) => <MatchCard match={item} />}
       getItemLayout={(_, index) => ({
-        length: 80,
-        offset: 80 * index,
+        length: itemHeight,
+        offset: itemHeight * index,
         index,
       })}
       ListEmptyComponent={<Text className="text-text text-center">{t('No matches found')}</Text>}

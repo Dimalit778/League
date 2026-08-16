@@ -9,8 +9,6 @@ export const en = {
       Error: 'Error',
       OK: 'OK',
       Save: 'Save',
-      'Save prediction': 'Save prediction',
-      'Enter prediction': 'Enter prediction',
       Success: 'Success',
       Update: 'Update',
       Remove: 'Remove',
@@ -46,7 +44,6 @@ export const en = {
       Leave: 'Leave',
       'Privacy Policy': 'Privacy Policy',
       'Terms of Service': 'Terms of Service',
-      'By creating an account, you agree to:': 'By creating an account, you agree to:',
       'I agree to the': 'I agree to the',
 
     },
@@ -56,13 +53,9 @@ export const en = {
       'Delete Account': 'Delete Account',
 
       'Delete account confirmation message':
-        'Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone. Deleting your account does not cancel your App Store subscription — cancel it in Apple ID → Subscriptions.',
+        'Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone.',
       'Delete personal data while keeping anonymized league history.':
         'Delete personal data while keeping anonymized league history.',
-      'Check your subscription first': 'Check your subscription first',
-      'Deleting your Champo account does not cancel an active App Store subscription.':
-        'Deleting your Champo account does not cancel an active App Store subscription.',
-      'Continue deletion': 'Continue deletion',
       'Sign In': 'Sign In',
       'Sign In Error': 'Sign In Error',
       'Sign Up': 'Sign Up',
@@ -100,8 +93,6 @@ export const en = {
         'Connection problem. Please check your internet connection and try again.',
 
       Logout: 'Logout',
-      'Sign in to your account': 'Sign in to your account',
-      'Sign up to get started': 'Sign up to get started',
 
 
 
@@ -113,16 +104,9 @@ export const en = {
       'Every match is a challenge': 'Every match is a challenge',
       'Predict scores, compete with friends, and climb the table.':
         'Predict scores, compete with friends, and climb the table.',
-      'My prediction': 'My prediction',
-      'Predicted score': 'Predicted score',
       'Already have an account?': 'Already have an account?',
       'Create your Champo account': 'Create your Champo account',
       Back: 'Back',
-      'Join the challenge': 'Join the challenge',
-      'Sign in to continue your predictions': 'Sign in to continue your predictions',
-      'Create one account and keep all your predictions in one place.':
-        'Create one account and keep all your predictions in one place.',
-      'Predict. Compete. Climb.': 'Predict. Compete. Climb.',
       "Don't have an account?": "Don't have an account?",
       'Password strength': 'Password strength',
       'Strong password': 'Strong password',
@@ -136,15 +120,14 @@ export const en = {
 
 
       'Send Reset Link': 'Send Reset Link',
+      'Reset link has been sent to your email': 'Reset link has been sent to your email',
+      'Email address is missing. Please try signing up again.':
+        'Email address is missing. Please try signing up again.',
 
 
 
 
       'We sent a 6-digit code to': 'We sent a 6-digit code to',
-      'Apple and Google sign-in do not require email verification.':
-        'Apple and Google sign-in do not require email verification.',
-      'Prefer not to wait?': 'Prefer not to wait?',
-      'Sign in with Apple or Google': 'Sign in with Apple or Google',
       'Email is required': 'Email is required',
       'Invalid email': 'Invalid email',
       'Password is required': 'Password is required',
@@ -157,7 +140,6 @@ export const en = {
 
       'Sign in with Apple': 'Sign in with Apple',
       'Sign up with Apple': 'Sign up with Apple',
-      'Continue with': 'Continue with',
       // form errors
       'Please enter a valid email address': 'Please enter a valid email address',
       'Minimum 8 characters': 'Minimum 8 characters',
@@ -170,7 +152,6 @@ export const en = {
     leagues: {
       League: 'League',
       Leagues: 'Leagues',
-      'Create or join a league to get started.': 'Create or join a league to get started.',
       'Full ranking': 'Full ranking',
       Round: 'Round',
       'All season': 'All season',
@@ -182,7 +163,6 @@ export const en = {
         'Invite friends to your league and make every match more exciting.',
       '{{count}} leagues': '{{count}} leagues',
       'Enter league': 'Enter league',
-      'Requires Pro': 'Requires Pro',
       'Want to open more leagues?': 'Want to open more leagues?',
       'Upgrade to Pro and open up to {{count}} leagues': 'Upgrade to Pro and open up to {{count}} leagues',
       'Create League': 'Create League',
@@ -205,9 +185,10 @@ export const en = {
       'Save active leagues': 'Save active leagues',
       'Activate league': 'Activate league',
       'Activate leagues': 'Activate leagues',
+      'Activate Leagues': 'Activate Leagues',
+      'Pro League': 'Pro League',
       'Select league to activate': 'Select league to activate',
 
-      '{{count}} inactive leagues kept in your account': '{{count}} inactive leagues kept in your account',
 
       'League Name': 'League Name',
       'League name': 'League name',
@@ -227,6 +208,7 @@ export const en = {
 
 
       'Unable to load leagues. Pull to refresh to try again.': 'Unable to load leagues. Pull to refresh to try again.',
+      'Create a league to get started': 'Create a league to get started',
       'Failed to create league': 'Failed to create league',
       'Subscription not confirmed': 'Subscription not confirmed',
       'We could not confirm your PRO subscription. Please try again in a moment.':
@@ -264,14 +246,8 @@ export const en = {
       'Nickname must be at most 20 characters': 'Nickname must be at most 20 characters',
 
       Members: 'Members',
-      'League table': 'League table',
-      Gameweek: 'Gameweek',
-      'Your rank': 'Your rank',
 
       User: 'User',
-      'Correct Scores': 'Correct Scores',
-      Movement: 'Movement',
-      'Max Members': 'Max Members',
 
 
       '6 Members': '6 Members',
@@ -303,7 +279,6 @@ export const en = {
       'Are you sure you want to delete this league?':
         'This will permanently delete the league, all members, and all predictions. Are you sure?',
 
-      'You have reached the max number of leagues': 'You have reached the max number of leagues',
 
 
     },
@@ -314,28 +289,24 @@ export const en = {
       Prediction: 'Prediction',
 
       'Predicted Score': 'Predicted Score',
-      'Prediction Results': 'Prediction Results',
       'No prediction': 'No prediction',
+      VS: 'VS',
 
       'Unable to load predictions. Pull to refresh to try again.':
       'Unable to load predictions. Pull to refresh to try again.',
       pts: 'pts',
       Points: 'Points',
-      'Total Points': 'Total Points',
 
 
       Accuracy: 'Accuracy',
 
 
-      'Premium stats only': 'Premium stats only',
-      'Upgrade to Pro to unlock match statistics': 'Upgrade to Pro to unlock match statistics',
       Submitted: 'Submitted',
       'Fixture ID': 'Fixture ID',
 
 
       'AI match analysis': 'AI match analysis',
       'Unlock the full AI analysis with Pro': 'Unlock the full AI analysis with Pro',
-      'AI Prediction': 'AI Prediction',
       'AI Analysis': 'AI Analysis',
       'Get the full breakdown behind every prediction.':
         'Get the full breakdown behind every prediction.',
@@ -458,14 +429,14 @@ export const en = {
         'Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.',
       'Subscription & Premium': 'Subscription & Premium',
       'What are the subscription benefits?': 'What are the subscription benefits?',
-      'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.':
-        'Premium subscriptions offer priority support, access to additional leagues, advanced statistics, and exclusive features.',
+      'Champo Pro unlocks all 6 competitions, up to 5 active friend leagues, up to 12 members per league, and full AI match analysis.':
+        'Champo Pro unlocks all 6 competitions, up to 5 active friend leagues, up to 12 members per league, and full AI match analysis.',
       'How do I subscribe?': 'How do I subscribe?',
-      'Navigate to Settings and tap on "Subscription" to view available plans and manage your subscription.':
-        'Navigate to Settings and tap on "Subscription" to view available plans and manage your subscription.',
+      'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.':
+        'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.',
       'How do I cancel my subscription?': 'How do I cancel my subscription?',
-      "Subscriptions are managed through your device's app store (App Store for iOS, Play Store for Android). You can cancel anytime from your account settings.":
-        "Subscriptions are managed through your device's app store (App Store for iOS, Play Store for Android). You can cancel anytime from your account settings.",
+      'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.':
+        'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.',
       'Contact Support': 'Contact Support',
       "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
         "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
@@ -495,9 +466,41 @@ export const en = {
       'Restore Purchases': 'Restore Purchases',
       'No purchases found to restore': 'No purchases found to restore',
 
+      'Champo Pro Season Pass logo': 'Champo Pro Season Pass logo',
+      'Football stadium': 'Football stadium',
+      'Champo Pro Season Pass': 'Champo Pro Season Pass',
+      'One payment for the full season. No automatic renewal.':
+        'One payment for the full season. No automatic renewal.',
+      'Season Pass': 'Season Pass',
+      'Get full access': 'Get full access',
+      'Join more leagues, play every competition and unlock complete AI analysis.':
+        'Join more leagues, play every competition and unlock complete AI analysis.',
+      "What's included": "What's included",
+      'Football competitions': 'Football competitions',
+      'Active friend leagues': 'Active friend leagues',
+      'Members per league': 'Members per league',
+      'AI match insights': 'AI match insights',
+      Score: 'Score',
+      Full: 'Full',
+      'Champo Pro': 'Champo Pro',
+      'Confirming the local App Store price…': 'Confirming the local App Store price…',
+      'La Liga and Bundesliga': 'La Liga and Bundesliga',
+      'AI score prediction': 'AI score prediction',
+      'La Liga, Bundesliga, Premier League, Serie A, Champions League and Ligue 1.':
+        'La Liga, Bundesliga, Premier League, Serie A, Champions League and Ligue 1.',
+      'Full AI match analysis': 'Full AI match analysis',
+      'Upgrade for {{price}}': 'Upgrade for {{price}}',
+      'The Champo Pro offer is not available right now.': 'The Champo Pro offer is not available right now.',
+      'The Champo Pro offer is incorrectly configured to renew automatically.':
+        'The Champo Pro offer is incorrectly configured to renew automatically.',
+      'Unable to load the offer. Please try again.': 'Unable to load the offer. Please try again.',
+      'The purchase completed, but Pro access is still being confirmed.':
+        'The purchase completed, but Pro access is still being confirmed.',
+      'Purchase failed. Please try again.': 'Purchase failed. Please try again.',
+      'Try again': 'Try again',
+
 
       Upgrade: 'Upgrade',
-      Free: 'Free',
       FREE: 'FREE',
       PRO: 'PRO',
 
@@ -543,14 +546,13 @@ export const en = {
       'Describe what happened (optional)': 'Describe what happened (optional)',
       'Additional report details': 'Additional report details',
       'Submit report': 'Submit report',
-      'Safety actions': 'Safety actions',
       Report: 'Report',
       Block: 'Block',
       Unblock: 'Unblock',
       'Blocked users': 'Blocked users',
       'Blocked users and their content are hidden from your leagues.':
         'Blocked users and their content are hidden from your leagues.',
-      'Unable to load blocked users.': 'Unable to load blocked users.',
+      'People you block will appear here.': 'People you block will appear here.',
       'You have not blocked anyone': 'You have not blocked anyone',
       'Block user': 'Block user',
       'Their profile, predictions and leaderboard entries will be hidden from you.':
@@ -615,8 +617,6 @@ export const en = {
       'Load more': 'Load more',
       'Try a different name or email address.': 'Try a different name or email address.',
       'League Management': 'League Management',
-      'Review league ownership, capacity, competition, and join details.':
-        'Review league ownership, capacity, competition, and join details.',
       'Browse every league and open its member directory.':
         'Browse every league and open its member directory.',
       'Search leagues, owners, or join codes...': 'Search leagues, owners, or join codes...',
@@ -625,8 +625,6 @@ export const en = {
       'No leagues match your search': 'No leagues match your search',
       'Try a league name, owner, or join code.': 'Try a league name, owner, or join code.',
       'No leagues found': 'No leagues found',
-      'Inspect membership, identity, primary status, and league assignment.':
-        'Inspect membership, identity, primary status, and league assignment.',
       'View every participant or focus on one league.': 'View every participant or focus on one league.',
       'Filter by league': 'Filter by league',
       'All leagues': 'All leagues',
@@ -653,7 +651,6 @@ export const en = {
       'User deleted successfully': 'User deleted successfully',
       'Delete User': 'Delete User',
       'Unknown User': 'Unknown User',
-      'Unknown user': 'Unknown user',
       'Unnamed User': 'Unnamed User',
       'Search by name or email...': 'Search by name or email...',
       'Review registered users and account details.': 'Review registered users and account details.',
@@ -682,6 +679,13 @@ export const en = {
         'Unable to load competitions. Pull to refresh to try again.',
       'Competition ID': 'Competition ID',
       'Competition ID must be a valid number.': 'Competition ID must be a valid number.',
+      Area: 'Area',
+      Code: 'Code',
+      'Type (optional)': 'Type (optional)',
+      'Display Type': 'Display Type',
+      'ID, name, area, code, flag and logo are required.':
+        'ID, name, area, code, flag and logo are required.',
+      'Failed to add competition.': 'Failed to add competition.',
       Season: 'Season',
       'Season (optional)': 'Season (optional)',
       'Season must be a valid number when provided.': 'Season must be a valid number when provided.',
@@ -754,10 +758,6 @@ export const en = {
     // Home
     home: {
       Hello: 'Hello',
-      'Good morning': 'Good morning',
-      'Good afternoon': 'Good afternoon',
-      'Good evening': 'Good evening',
-      'Good night': 'Good night',
       Hits: 'Hits',
 
     },
@@ -771,10 +771,8 @@ export const en = {
       'Minimum 8 characters': 'Minimum 8 characters',
       'Password must contain at least one letter and one number':
         'Password must contain at least one letter and one number',
-      'Your stats': 'Your stats',
       'Primary league': 'Primary league',
       Rank: 'Rank',
-      'Total Points': 'Total Points',
 
       Accuracy: 'Accuracy',
       "You're performing great!": "You're performing great!",
@@ -788,13 +786,7 @@ export const en = {
       'Last 5 finished predictions': 'Last 5 finished predictions',
       'No finished predictions yet': 'No finished predictions yet',
 
-      'Performance by round': 'Performance by round',
-      'Round {{n}}': 'Round {{n}}',
-      'No round data yet': 'No round data yet',
-      'Best category': 'Best category',
       '{{count}} correct': '{{count}} correct',
-      "You're in the top {{percent}}% of the league": "You're in the top {{percent}}% of the league",
-      'View breakdown': 'View breakdown',
     },
 
     // Fonts (legacy)
@@ -831,11 +823,9 @@ export const en = {
 
     // World Cup feature
     worldCup: {
-      'World Cup': 'World Cup',
       Groups: 'Groups',
       Knockout: 'Knockout',
       Group: 'Group',
-      Aggregate: 'Aggregate',
       'League Phase': 'League Phase',
       Matchday: 'Matchday',
       'Round of 16': 'Round of 16',
@@ -855,8 +845,6 @@ export const en = {
       'No standings found': 'No standings found',
       Predict: 'Predict',
       Leaderboard: 'Leaderboard',
-      'View all': 'View all',
-      'Show less': 'Show less',
 
     },
     leagueOverview: {
@@ -864,11 +852,9 @@ export const en = {
 
       USER: 'USER',
       POINTS: 'POINTS',
-      'of {{count}} players': 'of {{count}} players',
 
 
       Table: 'Table',
-      'Top leaderboard': 'Top leaderboard',
 
       'Today matches': 'Today matches',
       'No matches today': 'No matches today',
@@ -883,29 +869,24 @@ export const en = {
       'AI analysis is not available': 'AI analysis is not available',
       'There is not enough reliable match data to show a prediction yet.':
         'There is not enough reliable match data to show a prediction yet.',
-      'Updated {{date}}': 'Updated {{date}}',
       'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.':
         'AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.',
       'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}':
         'AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}',
     },
     activeUi: {
-      'An email has been sent to your email address with a link to reset your password.': 'An email has been sent to your email address with a link to reset your password.',
       'Are you sure you want to delete your profile picture?': 'Are you sure you want to delete your profile picture?',
       'Ask the league owner for the invite code': 'Ask the league owner for the invite code',
       Away: 'Away',
-      'Away score': 'Away score',
       'Decrease away score': 'Decrease away score',
       'Decrease home score': 'Decrease home score',
       'Choose how many friends can join this league.': 'Choose how many friends can join this league.',
-      'Choose {{count}} active leagues': 'Choose {{count}} active leagues',
       'Coming Soon...': 'Coming Soon...',
       'Confirm Password': 'Confirm Password',
       Consistent: 'Consistent',
       'Create account': 'Create account',
       'Delete Profile Picture': 'Delete Profile Picture',
       'Edit league': 'Edit league',
-      'Edit nickname': 'Edit nickname',
       Enabled: 'Enabled',
       'Checking...': 'Checking...',
       Blocked: 'Blocked',
@@ -938,18 +919,15 @@ export const en = {
       'Forgot Password': 'Forgot Password',
       General: 'General',
       Home: 'Home',
-      'Home score': 'Home score',
       'Increase away score': 'Increase away score',
       'Increase home score': 'Increase home score',
       'Join my {{area}} league "{{name}}"! Use code: {{join_code}} Download the app to join!': 'Join my {{area}} league "{{name}}"! Use code: {{join_code}} Download the app to join!',
       'Join {{name}} League': 'Join {{name}} League',
       'League Created Successfully!': 'League Created Successfully!',
-      'Manage Subscription': 'Manage Subscription',
       'Member not found': 'Member not found',
       'My Leagues': 'My Leagues',
       Nickname: 'Nickname',
       'Nickname must be at least 2 characters': 'Nickname must be at least 2 characters',
-      'No leagues yet': 'No leagues yet',
       'No matches found': 'No matches found',
       'No predictions': 'No predictions',
       Notification: 'Notification',
@@ -977,37 +955,24 @@ export const en = {
       '{{count}} correct predictions': '{{count}} correct predictions',
       '{{count}} matches played': '{{count}} matches played',
       'Code resent successfully!': 'Code resent successfully!',
-      'Back to Sign In': 'Back to Sign In',
       'Change email address': 'Change email address',
       'Confirm and continue': 'Confirm and continue',
       "Didn't receive the code?": "Didn't receive the code?",
       'Email address is missing. Please try signing up again.': 'Email address is missing. Please try signing up again.',
       'Email verified successfully!': 'Email verified successfully!',
       'Enter the code': 'Enter the code',
-      'Enter the code to finish creating your account.': 'Enter the code to finish creating your account.',
       'Forgot your password?': 'Forgot your password?',
-      'Get back in the game': 'Get back in the game',
-      'If an account exists for this email, a reset link will arrive shortly.':
-        'If an account exists for this email, a reset link will arrive shortly.',
-      'If an account exists for this email, the link may take a few minutes to arrive.':
-        'If an account exists for this email, the link may take a few minutes to arrive.',
       'Error Details (Dev Only):': 'Error Details (Dev Only):',
-      'Football Prediction': 'Football Prediction',
       'Go Home': 'Go Home',
-      'No internet connection. Some features may not work.': 'No internet connection. Some features may not work.',
       "You're offline": "You're offline",
-      'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.':
-        'Champo needs an internet connection to load matches, predictions, and leaderboards. Check your connection and try again.',
+      'Check your connection and try again': 'Check your connection and try again',
       'Predict. Compete. Win.': 'Predict. Compete. Win.',
       'Resend Code': 'Resend Code',
-      'Resend in {{count}}s': 'Resend in {{count}}s',
       'Sending...': 'Sending...',
-      'Secure your predictions': 'Secure your predictions',
       'Still need help?': 'Still need help?',
       'Contact support': 'Contact support',
       'Something went wrong': 'Something went wrong',
       'Try Again': 'Try Again',
-      'Verify Email': 'Verify Email',
       'The code is single-use and expires shortly.': 'The code is single-use and expires shortly.',
       "We encountered an unexpected error. Don't worry, your data is safe.": "We encountered an unexpected error. Don't worry, your data is safe.",
       'Your other leagues and data will remain saved.': 'Your other leagues and data will remain saved.',
@@ -1017,7 +982,6 @@ export const en = {
       'Delete user': 'Delete user',
       Display: 'Display',
       'Failed to delete user: {{message}}': 'Failed to delete user: {{message}}',
-      'ID: {{id}}': 'ID: {{id}}',
       No: 'No',
       'No email': 'No email',
       'No users found': 'No users found',
@@ -1033,12 +997,10 @@ export const en = {
       points: 'points',
       pts: 'pts',
       '{{name}}, position {{position}}, {{points}} points': '{{name}}, position {{position}}, {{points}} points',
-      'Toggle menu': 'Toggle menu',
       'My leagues': 'My leagues',
       'Verification code digit {{number}}': 'Verification code digit {{number}}',
       'Enter a single digit': 'Enter a single digit',
       'Resend verification code': 'Resend verification code',
-      'Resend the verification code to your email': 'Resend the verification code to your email',
       '6 Members': '6 Members',
       '12 Members': '12 Members',
       Close: 'Close',
@@ -1046,7 +1008,6 @@ export const en = {
       'Loading match': 'Loading match',
       'Loading match details': 'Loading match details',
       'Longest streak': 'Longest streak',
-      'Member statistics': 'Member statistics',
       'Prediction statistics': 'Prediction statistics',
       Privacy: 'Privacy',
       Terms: 'Terms',

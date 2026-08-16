@@ -16,7 +16,7 @@ export function UpcomingMatches({ matches }: { matches: MatchCardData[] }) {
   return (
     <View className={spacing.list}>
       {matches.map((item) => (
-        <MatchCard key={item.id} {...item} />
+        <MatchCard key={item.id} match={item} />
       ))}
     </View>
   );

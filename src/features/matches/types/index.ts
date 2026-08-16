@@ -47,37 +47,47 @@ export type MatchBaseType = Pick<
   score: ScoreType | null;
   home_team: TeamType | null;
   away_team: TeamType | null;
+  competition: Pick<Tables<'competitions'>, 'id' | 'name'> | null;
 };
 
 /** ai_summary_en/he are PRO-gated server-side and fetched separately from the match row — see matchesApi.getMatchAiSummary. */
 export type AiSummaryType = Pick<Tables<'matches'>, 'ai_summary_en' | 'ai_summary_he'>;
 
-export type MatchCardType = MatchBaseType & {
+/** A match row used by lists, tournaments, and cards with the current member's prediction. */
+export type MatchListItem = MatchBaseType & {
   prediction: PredictionsType | null;
 };
 
-export type MatchCardRawType = MatchBaseType & {
+/** Raw Supabase list row before its predictions array is flattened. */
+export type RawMatchListItem = MatchBaseType & {
   predictions: PredictionsType[] | null;
 };
 
-export type PredictionWithMemberType = PredictionsType & {
+export type MemberPrediction = PredictionsType & {
   league_member: Pick<
     Tables<'league_members'>,
     'id' | 'league_id' | 'user_id' | 'nickname' | 'avatar_url' | 'is_primary'
   > | null;
 };
 
-export type MatchWithAllPredictionsType = MatchBaseType & {
-  predictions: PredictionWithMemberType[];
+/** Full match details with predictions from every member in the active league. */
+export type MatchDetails = MatchBaseType & {
+  predictions: MemberPrediction[];
 };
 
-/** List/tournament match with the current member's single prediction. */
-export type MatchWithPredictionsType = MatchCardType;
-
-/** Match detail with all league member predictions. */
-export type MatchWithPredictions = MatchWithAllPredictionsType;
-
-/** @deprecated Alias for PredictionWithMemberType */
-export type PredictionMemberType = PredictionWithMemberType;
+/** @deprecated Use MatchListItem. */
+export type MatchCardType = MatchListItem;
+/** @deprecated Use RawMatchListItem. */
+export type MatchCardRawType = RawMatchListItem;
+/** @deprecated Use MatchListItem. */
+export type MatchWithPredictionsType = MatchListItem;
+/** @deprecated Use MatchDetails. */
+export type MatchWithAllPredictionsType = MatchDetails;
+/** @deprecated Use MatchDetails. */
+export type MatchWithPredictions = MatchDetails;
+/** @deprecated Use MemberPrediction. */
+export type PredictionWithMemberType = MemberPrediction;
+/** @deprecated Use MemberPrediction. */
+export type PredictionMemberType = MemberPrediction;
 
 export * from './footballStages';
