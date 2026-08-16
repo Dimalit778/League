@@ -6,6 +6,8 @@ const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 const REVENUECAT_SECRET_API_KEY = Deno.env.get('REVENUECAT_SECRET_API_KEY') ?? '';
 
 const PRO_ENTITLEMENT = 'pro';
+const REVENUECAT_SYNC_ATTEMPTS = 3;
+const REVENUECAT_SYNC_RETRY_DELAY_MS = 1500;
 
 type RevenueCatEntitlement = {
   expires_date?: string | null;
@@ -26,6 +28,53 @@ function json(data: unknown, status = 200) {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchRevenueCatSubscriber(appUserId: string): Promise<{
+  data: RevenueCatSubscriberResponse | null;
+  errorStatus: number | null;
+  errorMessage: string | null;
+}> {
+  let lastData: RevenueCatSubscriberResponse | null = null;
+
+  for (let attempt = 0; attempt < REVENUECAT_SYNC_ATTEMPTS; attempt++) {
+    const response = await fetch(
+      `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(appUserId)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${REVENUECAT_SECRET_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const message = await response.text();
+      const retryable =
+        response.status === 404 || response.status === 429 || response.status >= 500;
+
+      if (retryable && attempt < REVENUECAT_SYNC_ATTEMPTS - 1) {
+        await wait(REVENUECAT_SYNC_RETRY_DELAY_MS);
+        continue;
+      }
+
+      return { data: null, errorStatus: response.status, errorMessage: message };
+    }
+
+    lastData = (await response.json()) as RevenueCatSubscriberResponse;
+    const entitlement = lastData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
+    const parsed = parseEntitlement(entitlement);
+
+    if (parsed.plan === 'pro' || attempt === REVENUECAT_SYNC_ATTEMPTS - 1) {
+      return { data: lastData, errorStatus: null, errorMessage: null };
+    }
+
+    await wait(REVENUECAT_SYNC_RETRY_DELAY_MS);
+  }
+
+  return { data: lastData, errorStatus: null, errorMessage: null };
 }
 
 function parseEntitlement(
@@ -108,23 +157,18 @@ Deno.serve(async (req) => {
     return json({ error: 'Too many requests. Try again shortly.' }, 429);
   }
 
-  const rcResponse = await fetch(
-    `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(user.id)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${REVENUECAT_SECRET_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    },
-  );
+  const revenueCatResult = await fetchRevenueCatSubscriber(user.id);
 
-  if (!rcResponse.ok) {
-    const message = await rcResponse.text();
-    console.error('RevenueCat API error:', rcResponse.status, message);
+  if (!revenueCatResult.data) {
+    console.error(
+      'RevenueCat API error:',
+      revenueCatResult.errorStatus,
+      revenueCatResult.errorMessage,
+    );
     return json({ error: 'Failed to fetch subscription from RevenueCat' }, 502);
   }
 
-  const rcData = (await rcResponse.json()) as RevenueCatSubscriberResponse;
+  const rcData = revenueCatResult.data;
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
 
