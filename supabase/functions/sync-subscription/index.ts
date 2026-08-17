@@ -111,6 +111,20 @@ function parseEntitlement(
   };
 }
 
+type CurrentSeason = { code: string; ends_at: string };
+
+async function fetchCurrentSeason(
+  adminClient: ReturnType<typeof createClient>,
+): Promise<CurrentSeason | null> {
+  const { data, error } = await adminClient.rpc('get_current_season');
+  if (error) {
+    console.error('Failed to fetch current season:', error.message);
+    return null;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  return row ? { code: row.code, ends_at: row.ends_at } : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
@@ -172,15 +186,42 @@ Deno.serve(async (req) => {
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
 
+  const season = await fetchCurrentSeason(adminClient);
+
+  // A Pro entitlement is only honored inside a defined season window. The fixed
+  // calendar boundary is the season end, regardless of when the pass was bought.
+  let plan = parsed.plan;
+  let status = parsed.status;
+  let expiresAt = parsed.expiresAt;
+  let seasonCode: string | null = null;
+
+  if (parsed.plan === 'pro') {
+    if (!season) {
+      // No active season: do not grant Pro (aligned with the client blocking sale).
+      plan = 'free';
+      status = 'inactive';
+      expiresAt = null;
+    } else {
+      expiresAt = season.ends_at;
+      seasonCode = season.code;
+      // Re-derive active state from the clamped, season-bounded expiry.
+      if (new Date(season.ends_at).getTime() <= Date.now()) {
+        plan = 'free';
+        status = 'expired';
+      }
+    }
+  }
+
   const { error } = await adminClient.from('user_subscriptions').upsert(
     {
       user_id: user.id,
-      plan: parsed.plan,
-      status: parsed.status,
-      entitlement_id: parsed.plan === 'pro' ? PRO_ENTITLEMENT : null,
+      plan,
+      status,
+      entitlement_id: plan === 'pro' ? PRO_ENTITLEMENT : null,
       product_id: parsed.productId,
       revenuecat_app_user_id: rcData.subscriber?.original_app_user_id ?? user.id,
-      expires_at: parsed.expiresAt,
+      expires_at: expiresAt,
+      season_code: seasonCode,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id' },
@@ -191,9 +232,5 @@ Deno.serve(async (req) => {
     return json({ error: 'Failed to sync subscription' }, 500);
   }
 
-  return json({
-    plan: parsed.plan,
-    status: parsed.status,
-    expires_at: parsed.expiresAt,
-  });
+  return json({ plan, status, expires_at: expiresAt });
 });
