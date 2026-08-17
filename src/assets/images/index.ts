@@ -11,11 +11,14 @@ pitchGrass: require('./pitch-grass.png'),
  trophyGold: require('./trophy-gold.png'),
  footballFieldBg: require('./football-field-bg.png'),
  ball: require('./ball.png'),
- champoProSeasonPass: require('./champo-pro-season-pass.png'),
 
  //brands
  brandOnBoarding: require('./brand-onBording.png'),
  brand: require('./brand.png'),
+
+ // subscriptions
+ proSeasonPass: require('./pro-season-pass.png'),
+ seasonPass: require('./season-pass.png'),
 
  //auth
  shieldLogo: require('./shield.png'),

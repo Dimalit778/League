@@ -7,15 +7,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RotateCcw, X } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Purchases, {
   PRODUCT_TYPE,
   PURCHASES_ERROR_CODE,
@@ -23,9 +15,7 @@ import Purchases, {
   type PurchasesPackage,
 } from 'react-native-purchases';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { selectProPackage } from './selectProPackage';
-
 type ChampoPaywallModalProps = {
   onComplete: (purchased: boolean) => void;
 };
@@ -39,11 +29,6 @@ type ComparisonRowProps = {
 };
 
 const FALLBACK_PRICE = '$29.99';
-
-const LEGAL_URLS = {
-  privacy: 'https://champoapp.com/privacy-policy/',
-  terms: 'https://champoapp.com/terms-of-service/',
-} as const;
 
 const isPurchaseCancelled = (error: unknown): boolean => {
   const purchaseError = error as Partial<PurchasesError> | null;
@@ -91,6 +76,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
 
     try {
       const offerings = await Purchases.getOfferings();
+      console.log('offerings', JSON.stringify(offerings.current?.availablePackages, null, 2));
       const selectedPackage = selectProPackage(
         offerings.current?.availablePackages ?? [],
         process.env.EXPO_PUBLIC_REVENUECAT_PRO_PACKAGE_ID,
@@ -166,11 +152,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
   };
 
   return (
-    <LinearGradient
-      testID="paywall-screen"
-      colors={['#061321', '#071525', '#030B15']}
-      style={styles.screen}
-    >
+    <LinearGradient testID="paywall-screen" colors={['#061321', '#071525', '#030B15']} style={styles.screen}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('Close')}
@@ -183,163 +165,114 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
       </Pressable>
 
       <ScrollView className="flex-1" contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            <View style={styles.hero}>
-              <Image
-                source={images.stadium}
-                contentFit="cover"
-                accessibilityLabel={t('Football stadium')}
-                style={StyleSheet.absoluteFill}
-              />
-              <LinearGradient
-                colors={['rgba(3,11,21,0.08)', 'rgba(3,11,21,0.18)', '#061321']}
-                locations={[0, 0.58, 1]}
-                style={StyleSheet.absoluteFill}
-              />
-              <Image
-                source={images.trophyGold}
-                contentFit="contain"
-                accessibilityLabel={t('Champo Pro Season Pass logo')}
-                style={styles.heroTrophy}
-              />
-            </View>
+        <View className="px-4 pb-1">
+          <Text className="text-center text-3xl font-black leading-9 text-[#FFE08A]">{t('Get full access')}</Text>
+          <Text className="mx-3 mt-2 text-center text-sm leading-5 text-slate-300">
+            {t('Join more leagues, play every competition and unlock complete AI analysis.')}
+          </Text>
+        </View>
 
-            <View className="px-4 pb-1">
-              <Text className="text-center text-3xl font-black leading-9 text-[#FFE08A]">{t('Get full access')}</Text>
-              <Text className="mx-3 mt-2 text-center text-sm leading-5 text-slate-300">
-                {t('Join more leagues, play every competition and unlock complete AI analysis.')}
-              </Text>
-            </View>
+        <View className="mx-4 mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
+          <Image
+            testID="comparison-background"
+            source={images.seasonPass}
+            contentFit="contain"
+            accessible={false}
+            style={StyleSheet.absoluteFill}
+          />
+          <LinearGradient colors={['rgba(3,11,21,0.9)', 'rgba(3,11,21,0.92)']} style={StyleSheet.absoluteFill} />
+          <View style={[styles.comparisonHeader, styles.comparisonDivider]}>
+            {isRTL ? (
+              <>
+                <View style={[styles.comparisonValueCell, styles.proCell, styles.proCellTop]}>
+                  <Text className="text-center text-sm font-black text-[#FFE49A]">{t('PRO')}</Text>
+                </View>
+                <View style={styles.comparisonValueCell}>
+                  <Text className="text-center text-sm font-bold text-white">{t('FREE')}</Text>
+                </View>
+                <View style={styles.comparisonLabelCell}>
+                  <Text className="text-sm font-bold text-white">{t("What's included")}</Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={styles.comparisonLabelCell}>
+                  <Text className="text-sm font-bold text-white">{t("What's included")}</Text>
+                </View>
+                <View style={styles.comparisonValueCell}>
+                  <Text className="text-center text-sm font-bold text-white">{t('FREE')}</Text>
+                </View>
+                <View style={[styles.comparisonValueCell, styles.proCell, styles.proCellTop]}>
+                  <Text className="text-center text-sm font-black text-[#FFE49A]">{t('PRO')}</Text>
+                </View>
+              </>
+            )}
+          </View>
+          <ComparisonRow isRTL={isRTL} label={t('Football competitions')} freeValue="2" proValue="6" />
+          <ComparisonRow isRTL={isRTL} label={t('Active friend leagues')} freeValue="2" proValue="5" />
+          <ComparisonRow isRTL={isRTL} label={t('Members per league')} freeValue="6" proValue="12" />
+          <ComparisonRow
+            isRTL={isRTL}
+            label={t('AI match insights')}
+            freeValue={t('Score')}
+            proValue={t('Full')}
+            last
+          />
+        </View>
 
-            <View className="mx-4 mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
-              <View style={[styles.comparisonHeader, styles.comparisonDivider]}>
-                {isRTL ? (
-                  <>
-                    <View style={[styles.comparisonValueCell, styles.proCell, styles.proCellTop]}>
-                      <Text className="text-center text-sm font-black text-[#FFE49A]">{t('PRO')}</Text>
-                    </View>
-                    <View style={styles.comparisonValueCell}>
-                      <Text className="text-center text-sm font-bold text-white">{t('FREE')}</Text>
-                    </View>
-                    <View style={styles.comparisonLabelCell}>
-                      <Text className="text-sm font-bold text-white">{t("What's included")}</Text>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    <View style={styles.comparisonLabelCell}>
-                      <Text className="text-sm font-bold text-white">{t("What's included")}</Text>
-                    </View>
-                    <View style={styles.comparisonValueCell}>
-                      <Text className="text-center text-sm font-bold text-white">{t('FREE')}</Text>
-                    </View>
-                    <View style={[styles.comparisonValueCell, styles.proCell, styles.proCellTop]}>
-                      <Text className="text-center text-sm font-black text-[#FFE49A]">{t('PRO')}</Text>
-                    </View>
-                  </>
-                )}
-              </View>
-              <ComparisonRow
-                isRTL={isRTL}
-                label={t('Football competitions')}
-                freeValue="2"
-                proValue="6"
-              />
-              <ComparisonRow isRTL={isRTL} label={t('Active friend leagues')} freeValue="2" proValue="5" />
-              <ComparisonRow isRTL={isRTL} label={t('Members per league')} freeValue="6" proValue="12" />
-              <ComparisonRow
-                isRTL={isRTL}
-                label={t('AI match insights')}
-                freeValue={t('Score')}
-                proValue={t('Full')}
-                last
-              />
-            </View>
-
-            <View className="mx-5 mt-4 gap-1.5">
-              <Text className="text-xs leading-5 text-slate-400">
-                <Text className="font-bold text-white">{t('FREE')}: </Text>
-                {t('La Liga and Bundesliga')}. {t('AI score prediction')}.
-              </Text>
-              <Text className="text-xs leading-5 text-slate-300">
-                <Text className="font-bold text-[#FFE49A]">{t('PRO')}: </Text>
-                {t('La Liga, Bundesliga, Premier League, Serie A, Champions League and Ligue 1.')}{' '}
-                {t('Full AI match analysis')}.
-              </Text>
-            </View>
-
-            {errorMessage ? (
-              <View className="mt-4 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3">
-                <Text testID="paywall-error" className="text-center text-sm text-red-200">
-                  {errorMessage}
-                </Text>
-                {!purchasePackage ? (
-                  <Pressable className="mt-2 self-center" onPress={loadOffering}>
-                    <Text className="font-bold text-[#F4C64E]">{t('Try again')}</Text>
-                  </Pressable>
-                ) : null}
-              </View>
+        {errorMessage ? (
+          <View className="mt-4 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3">
+            <Text testID="paywall-error" className="text-center text-sm text-red-200">
+              {errorMessage}
+            </Text>
+            {!purchasePackage ? (
+              <Pressable className="mt-2 self-center" onPress={loadOffering}>
+                <Text className="font-bold text-[#F4C64E]">{t('Try again')}</Text>
+              </Pressable>
             ) : null}
+          </View>
+        ) : null}
       </ScrollView>
 
       <View
         className="border-t border-white/10 bg-[#030B15] px-4 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
-            <View className="rounded-2xl border border-[#D6A21E]/60 bg-[#18314F] px-4 py-3">
-              <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-center text-sm font-bold text-[#FFE08A]">{t('Champo Pro Season Pass')}</Text>
-                <Text testID="paywall-price" ltr className="text-xl font-black text-[#FFE08A]">
-                  {displayedPrice}
-                </Text>
-              </View>
-              <Text className="mt-1 text-center text-xs text-slate-300">
-                {t('One payment for the full season. No automatic renewal.')}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('Upgrade for {{price}}', { price: displayedPrice })}
+          accessibilityState={{ disabled: !purchasePackage || isLoadingOffer || isRestoring, busy: isPurchasing }}
+          disabled={!purchasePackage || isLoadingOffer || isRestoring || isPurchasing}
+          className="mt-3 overflow-hidden rounded-2xl active:opacity-85 disabled:opacity-50"
+          onPress={handlePurchase}
+        >
+          <View className="rounded-2xl border border-primary px-4 py-3">
+            <View className="flex-row items-center justify-center gap-2">
+              <Text className="text-center text-sm font-bold text-primary">{t('Champo Pro Season Pass')}</Text>
+              <Text testID="paywall-price" ltr className="text-xl font-black text-primary">
+                {displayedPrice}
               </Text>
-              {isLoadingOffer ? (
-                <Text className="mt-1 text-center text-xs text-slate-400">
-                  {t('Confirming the local App Store price…')}
-                </Text>
-              ) : null}
             </View>
+            <Text className="mt-1 text-center text-xs text-neutral-400">
+              {t('One payment for the full season. No automatic renewal.')}
+            </Text>
+            {isLoadingOffer ? (
+              <Text className="mt-1 text-center text-xs text-neutral-400">
+                {t('Confirming the local App Store price…')}
+              </Text>
+            ) : null}
+          </View>
+        </Pressable>
 
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('Upgrade for {{price}}', { price: displayedPrice })}
-              accessibilityState={{ disabled: !purchasePackage || isLoadingOffer || isRestoring, busy: isPurchasing }}
-              disabled={!purchasePackage || isLoadingOffer || isRestoring || isPurchasing}
-              className="mt-3 overflow-hidden rounded-2xl active:opacity-85 disabled:opacity-50"
-              onPress={handlePurchase}
-            >
-              <LinearGradient
-                colors={['#70E7AD', '#78E4DD']}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={styles.purchaseButton}
-              >
-                {isPurchasing ? (
-                  <ActivityIndicator color="#03111C" />
-                ) : (
-                  <Text className="text-lg font-black text-[#03111C]">{t('Upgrade to Pro')}</Text>
-                )}
-              </LinearGradient>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              disabled={busy}
-              className="mt-2 flex-row items-center justify-center gap-1.5 py-1.5"
-              onPress={handleRestore}
-            >
-              <RotateCcw size={14} color="#CBD5E1" />
-              <Text className="text-xs font-semibold text-slate-300">{t('Restore Purchases')}</Text>
-            </Pressable>
-            <View className="mt-1 flex-row items-center justify-center gap-5">
-              <Pressable accessibilityRole="link" onPress={() => Linking.openURL(LEGAL_URLS.terms)}>
-                <Text className="text-xs text-slate-500">{t('Terms')}</Text>
-              </Pressable>
-              <Pressable accessibilityRole="link" onPress={() => Linking.openURL(LEGAL_URLS.privacy)}>
-                <Text className="text-xs text-slate-500">{t('Privacy Policy')}</Text>
-              </Pressable>
-            </View>
+        <Pressable
+          accessibilityRole="button"
+          disabled={busy}
+          className="mt-2 flex-row items-center justify-center gap-1.5 py-1.5"
+          onPress={handleRestore}
+        >
+          <RotateCcw size={14} color="#CBD5E1" />
+          <Text className="text-xs font-semibold text-neutral-400">{t('Restore Purchases')}</Text>
+        </Pressable>
       </View>
     </LinearGradient>
   );
@@ -351,7 +284,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, overflow: 'hidden' },
   scrollContent: { paddingBottom: 18 },
   closeButton: { left: 12 },
-  hero: { height: 205, overflow: 'hidden' },
+
   heroTrophy: { position: 'absolute', right: 18, bottom: 4, width: 170, height: 170 },
   comparisonHeader: { minHeight: 48, flexDirection: 'row', alignItems: 'stretch' },
   comparisonRow: { minHeight: 55, flexDirection: 'row', alignItems: 'stretch' },

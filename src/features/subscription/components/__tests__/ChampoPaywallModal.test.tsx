@@ -33,12 +33,13 @@ describe('PaywallModal', () => {
     expect(getByRole('button', { name: 'Upgrade for $29.99' }).props.accessibilityState.disabled).toBe(false);
 
     expect(getByTestId('paywall-screen')).toBeTruthy();
+    expect(getByTestId('comparison-background').props.contentFit).toBe('cover');
+    expect(getByTestId('comparison-background').props.accessible).toBe(false);
     expect(getByTestId('paywall-price').props.children).toBe('$29.99');
     expect(getByText('Get full access')).toBeTruthy();
     expect(getByText('Football competitions')).toBeTruthy();
     expect(getByText('Members per league')).toBeTruthy();
     expect(getByText('AI match insights')).toBeTruthy();
-    expect(getByText(/Premier League, Serie A, Champions League and Ligue 1/)).toBeTruthy();
     expect(mockedPurchases.getOfferings).toHaveBeenCalled();
   });
 });

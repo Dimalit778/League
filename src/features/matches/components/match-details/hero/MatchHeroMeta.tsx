@@ -16,7 +16,7 @@ export function MatchHeroMeta({
   const { t } = useTranslation();
 
   return (
-    <View className="w-full justify-center px-4 py-1">
+    <View className="w-full justify-center ">
       <View className="absolute start-4 z-10">
         <BackButton variant="onImage" />
       </View>
@@ -25,21 +25,18 @@ export function MatchHeroMeta({
         <Text variant="subtitle" numberOfLines={1} className="text-center font-semibold">
           {competitionName}
         </Text>
-        {matchday > 0 ? (
-          <Text variant="label" className="text-gray-400">
-            {`${t('Matchday')} ${matchday}`}
-          </Text>
-        ) : null}
+
+        <Text variant="label" className="text-gray-400">
+          {`${t('Matchday')} ${matchday}`}
+        </Text>
       </View>
 
-      <View className="absolute end-4">
-        <Row className="gap-1">
-          <Calendar size={14} color="#9ca3af" strokeWidth={2.2} />
-          <Text variant="label" className="font-semibold text-gray-400">
-            {dateFormat(kickOff)}
-          </Text>
-        </Row>
-      </View>
+      <Row className="gap-1 bg-subtle px-2 py-1 rounded-md absolute end-4">
+        <Text variant="body" className="font-semibold text-white">
+          {dateFormat(kickOff)}
+        </Text>
+        <Calendar size={16} color="white" strokeWidth={2} />
+      </Row>
     </View>
   );
 }

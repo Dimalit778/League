@@ -1,0 +1,10 @@
+---
+description: Format Hebrew answers from right to left
+alwaysApply: true
+---
+
+# Hebrew RTL responses
+
+- Answer Hebrew user messages in Hebrew.
+- Wrap Hebrew responses in `<div dir="rtl" align="right">...</div>` so prose, headings, and lists render right to left.
+- Keep code, commands, paths, identifiers, and technical values in their original left-to-right form.

@@ -13,6 +13,8 @@ import type { MatchDetails } from '../types';
 
 function LoadedMatchDetails({ match }: { match: MatchDetails }) {
   const controller = useMatchDetailsController(match);
+  console.log('controller', JSON.stringify(controller, null, 2));
+  console.log('match', JSON.stringify(match, null, 2));
 
   return (
     <Screen edges={['bottom']}>

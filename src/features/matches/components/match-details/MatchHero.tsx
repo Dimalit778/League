@@ -17,7 +17,6 @@ type MatchHeroProps = {
 export default function MatchHero({ match, memberPrediction, presentation, onPredictionSaved }: MatchHeroProps) {
   const { width } = useWindowDimensions();
   const badgeSize = width >= 768 ? 100 : 62;
-  console.log('match', JSON.stringify(match, null, 2));
 
   return (
     <View className="flex-1">
