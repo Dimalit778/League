@@ -115,14 +115,14 @@ type CurrentSeason = { code: string; ends_at: string };
 
 async function fetchCurrentSeason(
   adminClient: ReturnType<typeof createClient>,
-): Promise<CurrentSeason | null> {
+): Promise<{ season: CurrentSeason | null; failed: boolean }> {
   const { data, error } = await adminClient.rpc('get_current_season');
   if (error) {
     console.error('Failed to fetch current season:', error.message);
-    return null;
+    return { season: null, failed: true };
   }
   const row = Array.isArray(data) ? data[0] : data;
-  return row ? { code: row.code, ends_at: row.ends_at } : null;
+  return { season: row ? { code: row.code, ends_at: row.ends_at } : null, failed: false };
 }
 
 Deno.serve(async (req) => {
@@ -186,7 +186,11 @@ Deno.serve(async (req) => {
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
 
-  const season = await fetchCurrentSeason(adminClient);
+  const seasonResult = await fetchCurrentSeason(adminClient);
+  if (seasonResult.failed) {
+    return json({ error: 'Failed to fetch current season' }, 500);
+  }
+  const season = seasonResult.season;
 
   // A Pro entitlement is only honored inside a defined season window. The fixed
   // calendar boundary is the season end, regardless of when the pass was bought.

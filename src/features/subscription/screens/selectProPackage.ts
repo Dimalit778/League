@@ -31,8 +31,6 @@ export function resolveSeasonMonth(
   return monthNumberFromDate(now);
 }
 
-const pad2 = (n: number): string => String(n).padStart(2, '0');
-
 /** Months elapsed since the season start month (season start = 0 … 11). */
 const elapsedIndex = (monthNumber: number, seasonStartMonth: number): number =>
   ((monthNumber - seasonStartMonth) + 12) % 12;
