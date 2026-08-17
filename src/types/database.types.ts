@@ -471,6 +471,33 @@ export type Database = {
           },
         ]
       }
+      pro_seasons: {
+        Row: {
+          code: string
+          created_at: string
+          ends_at: string
+          id: number
+          is_current: boolean
+          starts_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          ends_at: string
+          id?: never
+          is_current?: boolean
+          starts_at: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          ends_at?: string
+          id?: never
+          is_current?: boolean
+          starts_at?: string
+        }
+        Relationships: []
+      }
       revenuecat_events: {
         Row: {
           app_user_id: string | null
@@ -726,6 +753,7 @@ export type Database = {
           plan: string
           product_id: string | null
           revenuecat_app_user_id: string | null
+          season_code: string | null
           status: string
           updated_at: string
           user_id: string
@@ -736,6 +764,7 @@ export type Database = {
           plan?: string
           product_id?: string | null
           revenuecat_app_user_id?: string | null
+          season_code?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -746,6 +775,7 @@ export type Database = {
           plan?: string
           product_id?: string | null
           revenuecat_app_user_id?: string | null
+          season_code?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -919,6 +949,14 @@ export type Database = {
           nickname: string
           total_points: number
           user_id: string
+        }[]
+      }
+      get_current_season: {
+        Args: never
+        Returns: {
+          code: string
+          ends_at: string
+          starts_at: string
         }[]
       }
       get_match_ai_summary: {
