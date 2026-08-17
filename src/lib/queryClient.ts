@@ -93,4 +93,9 @@ export const KEYS = {
     competitions: ['admin', 'competitions'] as const,
     reports: (status: string) => ['admin', 'reports', status] as const,
   },
+
+  // ==================== SUBSCRIPTION ====================
+  subscription: {
+    currentSeason: ['subscription', 'current-season'] as const,
+  },
 } as const;
