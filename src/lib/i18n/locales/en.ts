@@ -498,6 +498,7 @@ export const en = {
         'The purchase completed, but Pro access is still being confirmed.',
       'Purchase failed. Please try again.': 'Purchase failed. Please try again.',
       'Try again': 'Try again',
+      'No active season right now': 'No active season right now',
 
 
       Upgrade: 'Upgrade',

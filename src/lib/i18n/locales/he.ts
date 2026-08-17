@@ -495,6 +495,7 @@ export const he = {
         'הרכישה הושלמה, אך הגישה ל־Pro עדיין בתהליך אימות.',
       'Purchase failed. Please try again.': 'הרכישה נכשלה. נסו שוב.',
       'Try again': 'נסו שוב',
+      'No active season right now': 'אין עונה פעילה כרגע',
 
     },
 

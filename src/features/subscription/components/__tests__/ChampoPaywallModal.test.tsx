@@ -1,19 +1,40 @@
 import { render, waitFor } from '@testing-library/react-native';
 import Purchases from 'react-native-purchases';
 
+import { useCurrentSeason } from '@/features/subscription/hooks/useCurrentSeason';
+
 import PaywallModal from '../../screens/ChamoPaywallModal';
 
 const mockedPurchases = Purchases as jest.Mocked<typeof Purchases>;
 
+jest.mock('@/features/subscription/hooks/useCurrentSeason', () => ({
+  useCurrentSeason: jest.fn(),
+}));
+
+const mockedUseCurrentSeason = useCurrentSeason as jest.Mock;
+
+// A window that always contains "now", regardless of wall-clock time, so the
+// current purchase-flow tests stay deterministic.
+const ALWAYS_ACTIVE_SEASON = {
+  code: '2026-27',
+  startsAt: '2000-01-01T00:00:00Z',
+  endsAt: '2100-01-01T00:00:00Z',
+};
+
 describe('PaywallModal', () => {
   beforeEach(() => {
+    mockedUseCurrentSeason.mockReturnValue({ season: ALWAYS_ACTIVE_SEASON, isLoading: false });
+
+    const currentMonth = String(new Date().getUTCMonth() + 1).padStart(2, '0');
+
     mockedPurchases.getOfferings.mockResolvedValue({
       all: {},
       current: {
         availablePackages: [
           {
-            identifier: 'season-pass',
+            identifier: `champo_pro_m${currentMonth}`,
             product: {
+              identifier: `champo_pro_m${currentMonth}`,
               priceString: '$29.99',
               productType: 'UNKNOWN',
             },
@@ -33,7 +54,7 @@ describe('PaywallModal', () => {
     expect(getByRole('button', { name: 'Upgrade for $29.99' }).props.accessibilityState.disabled).toBe(false);
 
     expect(getByTestId('paywall-screen')).toBeTruthy();
-    expect(getByTestId('comparison-background').props.contentFit).toBe('cover');
+    expect(getByTestId('comparison-background').props.contentFit).toBe('contain');
     expect(getByTestId('comparison-background').props.accessible).toBe(false);
     expect(getByTestId('paywall-price').props.children).toBe('$29.99');
     expect(getByText('Get full access')).toBeTruthy();
@@ -41,5 +62,14 @@ describe('PaywallModal', () => {
     expect(getByText('Members per league')).toBeTruthy();
     expect(getByText('AI match insights')).toBeTruthy();
     expect(mockedPurchases.getOfferings).toHaveBeenCalled();
+  });
+
+  it('shows the no-active-season state and hides the purchase button when there is no current season', async () => {
+    mockedUseCurrentSeason.mockReturnValue({ season: null, isLoading: false });
+
+    const { getByText, queryByRole } = render(<PaywallModal onComplete={jest.fn()} />);
+
+    await waitFor(() => expect(getByText('No active season right now')).toBeTruthy());
+    expect(queryByRole('button', { name: /Upgrade for/ })).toBeNull();
   });
 });
