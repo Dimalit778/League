@@ -1,7 +1,23 @@
-# Champo Pro — Season Pass with Monthly Tiered Pricing
+# Champo Pro — Season Pass
 
 **Date:** 2026-08-17
-**Status:** Approved design, ready for implementation plan
+**Status:** Superseded on 2026-08-18 — simplified to a single flat-price pass (see below).
+
+## Update (2026-08-18): Simplified to one flat-price season pass
+
+The monthly tiered-pricing model described in the rest of this document was **dropped before launch** in favor of the simplest possible design. What actually shipped:
+
+- **One product, one price for the whole season** — a single **Consumable** IAP `champo_pro_season` (App Store / Google Play), re-purchasable each season. No monthly price tiers, no `champo_pro_mMM` products.
+- **Season window is August → August** (leagues run Aug–Jun): `pro_seasons` current row `2026-27` = `2026-08-01 → 2027-08-01`.
+- **Client** shows the single package (`selectProPackage`) whenever the season is active (`isSeasonActive(now, season)`), else a "no active season" state. The month-tier functions (`resolveSeasonMonth`, `selectMonthlyProPackage`) were removed.
+- **Unchanged server machinery** (still the valuable part): `pro_seasons` + `get_current_season()`, the `sync-subscription` clamp of `expires_at` to the season end, and the server-first pro-gate — these align access to the Aug→Aug season regardless of purchase date.
+- **RevenueCat:** offering `season_pass` (current) → one package → `champo_pro_season` (consumable). The 12 monthly products + `pro_season` offering were archived.
+
+The finding about device-clock price manipulation is now **moot** — with a single flat price there is no cheaper tier to exploit.
+
+Everything below is the original tiered design, kept for history.
+
+---
 
 ## Goal
 
