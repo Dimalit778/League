@@ -16,7 +16,7 @@ import Purchases, {
   type PurchasesPackage,
 } from 'react-native-purchases';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { resolveSeasonMonth, selectMonthlyProPackage } from './selectProPackage';
+import { isSeasonActive, selectProPackage } from './selectProPackage';
 type ChampoPaywallModalProps = {
   onComplete: (purchased: boolean) => void;
 };
@@ -70,13 +70,12 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { season, isLoading: isLoadingSeason } = useCurrentSeason();
-  const seasonMonth = season ? resolveSeasonMonth(new Date(), season) : null;
-  const seasonStartMonth = season ? new Date(season.startsAt).getUTCMonth() + 1 : null;
+  const seasonActive = season ? isSeasonActive(new Date(), season) : false;
 
   const loadOffering = useCallback(async () => {
     if (Platform.OS === 'web') return;
 
-    if (seasonMonth === null || seasonStartMonth === null) {
+    if (!seasonActive) {
       setPurchasePackage(null);
       return;
     }
@@ -86,10 +85,9 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
 
     try {
       const offerings = await Purchases.getOfferings();
-      const selectedPackage = selectMonthlyProPackage(
+      const selectedPackage = selectProPackage(
         offerings.current?.availablePackages ?? [],
-        seasonMonth,
-        seasonStartMonth,
+        process.env.EXPO_PUBLIC_REVENUECAT_PRO_PACKAGE_ID,
       );
 
       if (!selectedPackage) {
@@ -107,7 +105,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
     } finally {
       setIsLoadingOffer(false);
     }
-  }, [t, seasonMonth, seasonStartMonth]);
+  }, [t, seasonActive]);
 
   useEffect(() => {
     void loadOffering();
@@ -248,7 +246,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
         className="border-t border-white/10 bg-[#030B15] px-4 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
-        {!isLoadingSeason && seasonMonth === null ? (
+        {!isLoadingSeason && !seasonActive ? (
           <View className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
             <Text className="text-center text-sm text-slate-300">{t('No active season right now')}</Text>
           </View>
@@ -257,10 +255,10 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
             accessibilityRole="button"
             accessibilityLabel={t('Upgrade for {{price}}', { price: displayedPrice })}
             accessibilityState={{
-              disabled: seasonMonth === null || !purchasePackage || isLoadingOffer || isRestoring,
+              disabled: !seasonActive || !purchasePackage || isLoadingOffer || isRestoring,
               busy: isPurchasing,
             }}
-            disabled={seasonMonth === null || !purchasePackage || isLoadingOffer || isRestoring || isPurchasing}
+            disabled={!seasonActive || !purchasePackage || isLoadingOffer || isRestoring || isPurchasing}
             className="mt-3 overflow-hidden rounded-2xl active:opacity-85 disabled:opacity-50"
             onPress={handlePurchase}
           >

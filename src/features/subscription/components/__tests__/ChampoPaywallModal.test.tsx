@@ -25,16 +25,14 @@ describe('PaywallModal', () => {
   beforeEach(() => {
     mockedUseCurrentSeason.mockReturnValue({ season: ALWAYS_ACTIVE_SEASON, isLoading: false });
 
-    const currentMonth = String(new Date().getUTCMonth() + 1).padStart(2, '0');
-
     mockedPurchases.getOfferings.mockResolvedValue({
       all: {},
       current: {
         availablePackages: [
           {
-            identifier: `champo_pro_m${currentMonth}`,
+            identifier: 'champo_pro_season',
             product: {
-              identifier: `champo_pro_m${currentMonth}`,
+              identifier: 'champo_pro_season',
               priceString: '$29.99',
               productType: 'UNKNOWN',
             },

@@ -45,6 +45,6 @@ grant execute on function public.get_current_season() to service_role;
 alter table public.user_subscriptions
   add column season_code text;
 
--- Seed the first season: 2026-27 (July 2026 -> July 2027).
+-- Seed the first season: 2026-27 (August 2026 -> August 2027).
 insert into public.pro_seasons (code, starts_at, ends_at, is_current)
-values ('2026-27', '2026-07-01T00:00:00Z', '2027-07-01T00:00:00Z', true);
+values ('2026-27', '2026-08-01T00:00:00Z', '2027-08-01T00:00:00Z', true);
