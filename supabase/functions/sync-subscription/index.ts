@@ -80,8 +80,22 @@ async function fetchRevenueCatSubscriber(appUserId: string): Promise<{
 function parseEntitlement(
   entitlement: RevenueCatEntitlement | undefined,
 ): { plan: 'pro' | 'free'; status: string; expiresAt: string | null; productId: string | null } {
-  if (!entitlement?.expires_date) {
+  // No entitlement object at all -> the user was never granted Pro.
+  if (!entitlement) {
     return { plan: 'free', status: 'inactive', expiresAt: null, productId: null };
+  }
+
+  // Non-expiring entitlement (non-consumable / non-renewing season pass):
+  // present with no expires_date === active lifetime Pro. The old auto-renewable
+  // model always carried an expires_date, so the previous `!expires_date` guard
+  // wrongly treated the flat-price season pass as free.
+  if (!entitlement.expires_date) {
+    return {
+      plan: 'pro',
+      status: entitlement.billing_issues_detected_at ? 'billing_issue' : 'active',
+      expiresAt: null,
+      productId: entitlement.product_identifier ?? null,
+    };
   }
 
   const expiresAt = new Date(entitlement.expires_date);
