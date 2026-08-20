@@ -172,6 +172,31 @@ Deno.serve(async (req) => {
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
 
+  // This client-triggered sync exists to PROMOTE a user to Pro right after a
+  // purchase. Downgrades are owned by the RevenueCat webhook (EXPIRATION /
+  // CANCELLATION). If RevenueCat's REST read momentarily lags behind a fresh
+  // purchase/renewal and reports 'free', do not let it clobber an active Pro
+  // row the webhook already wrote.
+  if (parsed.plan === 'free') {
+    const { data: existing } = await adminClient
+      .from('user_subscriptions')
+      .select('plan, status, expires_at')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    const existingIsActivePro =
+      existing?.plan === 'pro' &&
+      (!existing.expires_at || new Date(existing.expires_at).getTime() > Date.now());
+
+    if (existingIsActivePro) {
+      return json({
+        plan: 'pro',
+        status: existing.status ?? 'active',
+        expires_at: existing.expires_at ?? null,
+      });
+    }
+  }
+
   const { error } = await adminClient.from('user_subscriptions').upsert(
     {
       user_id: user.id,
