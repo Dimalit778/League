@@ -1,9 +1,10 @@
 import { AvatarImage, Text } from '@/components';
 import { LeaderboardMember } from '@/features/members/types/member.type';
 import { useTranslation } from '@/hooks/useTranslation';
+import { setColorAlpha } from '@/lib/color';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { PodiumCrown, PodiumHexBadge } from './PodiumInsignia';
 
 type Position = 1 | 2 | 3;
@@ -51,10 +52,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
           width: avatarSize,
           height: avatarSize,
           borderColor: color,
-          shadowColor: color,
-          shadowOpacity: position === 1 ? 0.55 : 0.3,
-          shadowRadius: position === 1 ? 14 : 8,
-          shadowOffset: { width: 0, height: 0 },
+          boxShadow: `0 0 ${position === 1 ? 14 : 8}px ${setColorAlpha(color, position === 1 ? 0.55 : 0.3)}`,
         }}
       >
         <AvatarImage path={member?.avatar_url} nickname={member?.nickname ?? ''} />
@@ -72,17 +70,17 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
         <View style={styles.avatarLayer}>
           {clickable ? (
             <Link href={{ pathname: '/(app)/(league)/member/[memberId]', params: { memberId } }} asChild>
-              <TouchableOpacity
-                activeOpacity={0.8}
+              <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('{{name}}, position {{position}}, {{points}} points', {
                   name: displayName,
                   position,
                   points: member?.total_points ?? 0,
                 })}
+                style={({ pressed }) => pressed && { opacity: 0.8 }}
               >
                 {avatar}
-              </TouchableOpacity>
+              </Pressable>
             </Link>
           ) : (
             avatar

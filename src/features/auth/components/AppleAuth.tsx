@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, Platform, Pressable, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { Alert, Platform, Pressable, StyleSheet } from 'react-native';
 
 const AppleAuth = ({
   setIsLoading,
@@ -109,7 +110,7 @@ const AppleAuth = ({
         testID="apple-sign-in-logo"
         accessible={false}
         source={images.appleWhiteLogo}
-        resizeMode="contain"
+        contentFit="contain"
         style={styles.logo}
       />
     </Pressable>

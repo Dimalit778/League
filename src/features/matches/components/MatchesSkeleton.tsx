@@ -1,13 +1,21 @@
 import { Skeleton } from '@/components';
 import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SKELETON_COUNT = 6;
 const FIXTURE_SKELETON_COUNT = 8;
 const FIXTURE_WIDTH = 70;
 const FIXTURE_HEIGHT = 36;
+
+function renderFixtureSkeleton() {
+  return (
+    <View className="mx-2 items-center">
+      <Skeleton className="rounded-xl bg-border" style={{ width: FIXTURE_WIDTH, height: FIXTURE_HEIGHT }} />
+    </View>
+  );
+}
 
 type MatchesSkeletonProps = {
   count?: number;
@@ -19,18 +27,15 @@ export function FixturesSkeleton({ count = FIXTURE_SKELETON_COUNT }: { count?: n
   const items = Array.from({ length: count }, (_, index) => index);
 
   return (
-    <ScrollView
+    <FlatList
       horizontal
+      data={items}
+      keyExtractor={(item) => String(item)}
+      renderItem={renderFixtureSkeleton}
       showsHorizontalScrollIndicator={false}
       className="shrink-0 grow-0"
       contentContainerStyle={{ paddingVertical: 3, paddingTop: 5 }}
-    >
-      {items.map((item) => (
-        <View key={item} className="mx-2 items-center">
-          <Skeleton className="rounded-xl bg-border" style={{ width: FIXTURE_WIDTH, height: FIXTURE_HEIGHT }} />
-        </View>
-      ))}
-    </ScrollView>
+    />
   );
 }
 

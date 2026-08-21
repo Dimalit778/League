@@ -8,7 +8,8 @@ import {
   AdminWebTableRow,
   AdminWebToolbar,
 } from '@/features/admin/components/AdminWebUI';
-import { AdminEmpty, AdminErrorBanner, formatAdminDate } from '@/features/admin/components/AdminUI';
+import { AdminEmpty, AdminErrorBanner } from '@/features/admin/components/AdminUI';
+import { formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SearchX, Trash2, UserRound } from 'lucide-react-native';

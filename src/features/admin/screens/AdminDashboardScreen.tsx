@@ -1,10 +1,10 @@
 import { Button, Card, Error, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminGridItem,
   AdminMetricCard,
   AdminPageHeader,
 } from '@/features/admin/components/AdminUI';
+import { ADMIN_CONTENT_CLASS } from '@/features/admin/lib/adminUi';
 import { useAdminDashboard } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

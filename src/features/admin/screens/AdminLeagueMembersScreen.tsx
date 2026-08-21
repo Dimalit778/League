@@ -1,21 +1,21 @@
 import { Badge, Card, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminCollectionSummary,
   AdminEmpty,
   AdminErrorBanner,
   AdminMeta,
   AdminPageHeader,
   AdminSearchField,
-  formatAdminDate,
 } from '@/features/admin/components/AdminUI';
 import { useAdminLeagueMembers, useAdminLeagues } from '@/features/admin/hooks/useAdmin';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
+import type { LeagueMemberWithRelations, LeagueWithRelations } from '@/features/admin/queries/adminService';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { SearchX, UsersRound } from 'lucide-react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, useWindowDimensions, View } from 'react-native';
 
 const getInitials = (value: string) =>
   value
@@ -67,6 +67,18 @@ const AdminLeagueMembersScreen = () => {
     await Promise.all([membersQuery.refetch(), leaguesQuery.refetch()]);
   };
 
+  const renderLeagueFilter = useCallback(
+    ({ item: league }: { item: LeagueWithRelations }) => (
+      <LeagueFilterChip
+        label={league.name}
+        selected={selectedLeagueId === league.id}
+        value={league.id}
+        onSelect={setSelectedLeagueId}
+      />
+    ),
+    [selectedLeagueId],
+  );
+
   if ((membersQuery.isLoading && !membersQuery.data) || (leaguesQuery.isLoading && !leaguesQuery.data)) {
     return <LoadingOverlay />;
   }
@@ -95,26 +107,23 @@ const AdminLeagueMembersScreen = () => {
             <Text variant="caption" tone="muted" className="mb-2 font-semibold uppercase tracking-[0.8px]">
               {t('Filter by league')}
             </Text>
-            <ScrollView
+            <FlatList
               horizontal
+              data={leagues}
+              keyExtractor={(league) => league.id}
+              ListHeaderComponent={
+                <LeagueFilterChip
+                  label={t('All leagues')}
+                  selected={selectedLeagueId === 'all'}
+                  value="all"
+                  onSelect={setSelectedLeagueId}
+                />
+              }
               showsHorizontalScrollIndicator={false}
               className="-mx-4 mb-4"
               contentContainerClassName="gap-2 px-4"
-            >
-              <LeagueFilterChip
-                label={t('All leagues')}
-                selected={selectedLeagueId === 'all'}
-                onPress={() => setSelectedLeagueId('all')}
-              />
-              {leagues.map((league) => (
-                <LeagueFilterChip
-                  key={league.id}
-                  label={league.name}
-                  selected={selectedLeagueId === league.id}
-                  onPress={() => setSelectedLeagueId(league.id)}
-                />
-              ))}
-            </ScrollView>
+              renderItem={renderLeagueFilter}
+            />
 
             <AdminSearchField
               value={searchQuery}
@@ -139,52 +148,7 @@ const AdminLeagueMembersScreen = () => {
             ) : null}
           </View>
         }
-        renderItem={({ item: member }) => {
-          const displayName = member.nickname || member.user?.full_name || t('Unknown User');
-
-          return (
-            <View className="flex-1 p-1.5">
-              <Card className="h-full" padding="sm" contentClassName="gap-3">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <Text variant="bodySmall" tone="primary" className="font-bold">
-                      {getInitials(displayName) || '?'}
-                    </Text>
-                  </View>
-                  <View className="min-w-0 flex-1">
-                    <Text variant="subtitle" numberOfLines={1}>
-                      {displayName}
-                    </Text>
-                    <Text variant="caption" tone="muted" ltr numberOfLines={1}>
-                      {member.user?.email ?? t('No email available')}
-                    </Text>
-                  </View>
-                  <Badge
-                    label={member.is_primary ? t('Primary') : t('Member')}
-                    variant={member.is_primary ? 'primary' : 'default'}
-                  />
-                </View>
-
-                <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
-                  <AdminMeta
-                    label={t('League')}
-                    value={member.league?.name ?? t('Unknown League')}
-                    className="flex-[2]"
-                  />
-                  <AdminMeta
-                    label={t('Status')}
-                    value={member.active ? t('Active') : t('Inactive')}
-                    className="flex-1"
-                  />
-                </View>
-
-                <Text variant="caption" tone="muted">
-                  {t('Joined')}: {formatAdminDate(member.created_at, language)}
-                </Text>
-              </Card>
-            </View>
-          );
-        }}
+        renderItem={renderAdminMember}
         ListEmptyComponent={
           <AdminEmpty
             icon={searchQuery ? SearchX : UsersRound}
@@ -204,10 +168,20 @@ const AdminLeagueMembersScreen = () => {
   );
 };
 
-function LeagueFilterChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function LeagueFilterChip({
+  label,
+  selected,
+  value,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  value: string;
+  onSelect: (value: string) => void;
+}) {
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onSelect(value)}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       className={cn(
@@ -219,6 +193,58 @@ function LeagueFilterChip({ label, selected, onPress }: { label: string; selecte
         {label}
       </Text>
     </Pressable>
+  );
+}
+
+function renderAdminMember({ item: member }: { item: LeagueMemberWithRelations }) {
+  return <AdminMemberCard member={member} />;
+}
+
+function AdminMemberCard({ member }: { member: LeagueMemberWithRelations }) {
+  const { t, language } = useTranslation();
+  const displayName = member.nickname || member.user?.full_name || t('Unknown User');
+
+  return (
+    <View className="flex-1 p-1.5">
+      <Card className="h-full" padding="sm" contentClassName="gap-3">
+        <View className="flex-row items-center gap-3">
+          <View className="h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <Text variant="bodySmall" tone="primary" className="font-bold">
+              {getInitials(displayName) || '?'}
+            </Text>
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text variant="subtitle" numberOfLines={1}>
+              {displayName}
+            </Text>
+            <Text variant="caption" tone="muted" ltr numberOfLines={1}>
+              {member.user?.email ?? t('No email available')}
+            </Text>
+          </View>
+          <Badge
+            label={member.is_primary ? t('Primary') : t('Member')}
+            variant={member.is_primary ? 'primary' : 'default'}
+          />
+        </View>
+
+        <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
+          <AdminMeta
+            label={t('League')}
+            value={member.league?.name ?? t('Unknown League')}
+            className="flex-[2]"
+          />
+          <AdminMeta
+            label={t('Status')}
+            value={member.active ? t('Active') : t('Inactive')}
+            className="flex-1"
+          />
+        </View>
+
+        <Text variant="caption" tone="muted">
+          {t('Joined')}: {formatAdminDate(member.created_at, language)}
+        </Text>
+      </Card>
+    </View>
   );
 }
 

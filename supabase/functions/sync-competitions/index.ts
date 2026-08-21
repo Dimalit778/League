@@ -212,11 +212,10 @@ async function syncCompetition(
   apiCompetition: FootballDataCompetition,
   targetCompetition: TargetCompetition,
 ): Promise<void> {
-  const existing = await getExistingCompetition(apiCompetition.id);
-
-  // fdFetch is sequential-only: fetch the schedule to compute total_matchdays
-  // FIRST, then download images in parallel (plain CDN fetches, not the API).
-  const matches = await fetchCompetitionMatches(supabase, JOB, FD_KEY, targetCompetition.code);
+  const [existing, matches] = await Promise.all([
+    getExistingCompetition(apiCompetition.id),
+    fetchCompetitionMatches(supabase, JOB, FD_KEY, targetCompetition.code),
+  ]);
   const totalMatchdays = calculateTotalMatchdays(targetCompetition, matches);
 
   const [uploadedLogo, uploadedFlag] = await Promise.all([

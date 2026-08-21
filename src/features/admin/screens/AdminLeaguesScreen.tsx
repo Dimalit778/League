@@ -1,6 +1,5 @@
 import { Badge, Card, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminCollectionSummary,
   AdminEmpty,
   AdminErrorBanner,
@@ -9,16 +8,17 @@ import {
   AdminSearchField,
 } from '@/features/admin/components/AdminUI';
 import { useAdminLeagueMembers, useAdminLeagues } from '@/features/admin/hooks/useAdmin';
+import { ADMIN_CONTENT_CLASS } from '@/features/admin/lib/adminUi';
+import type { LeagueWithRelations } from '@/features/admin/queries/adminService';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ChevronLeft, ChevronRight, SearchX, Trophy, UsersRound } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 
 const AdminLeaguesScreen = () => {
-  const { t, isRTL } = useTranslation();
-  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const numColumns = width >= 768 ? 2 : 1;
@@ -47,12 +47,23 @@ const AdminLeaguesScreen = () => {
     );
   }, [leaguesQuery.data, searchQuery]);
 
-  const openLeagueMembers = (leagueId: string) => {
+  const openLeagueMembers = useCallback((leagueId: string) => {
     router.push({
       pathname: '/admin/league-members',
       params: { leagueId },
     });
-  };
+  }, [router]);
+
+  const renderLeague = useCallback(
+    ({ item: league }: { item: LeagueWithRelations }) => (
+      <AdminLeagueCard
+        league={league}
+        membersCount={memberCounts.get(league.id) ?? 0}
+        onOpen={openLeagueMembers}
+      />
+    ),
+    [memberCounts, openLeagueMembers],
+  );
 
   const refresh = async () => {
     await Promise.all([leaguesQuery.refetch(), membersQuery.refetch()]);
@@ -94,57 +105,7 @@ const AdminLeaguesScreen = () => {
             ) : null}
           </View>
         }
-        renderItem={({ item: league }) => {
-          const membersCount = memberCounts.get(league.id) ?? 0;
-          const Chevron = isRTL ? ChevronLeft : ChevronRight;
-
-          return (
-            <View className="flex-1 p-1.5">
-              <Card
-                className="h-full"
-                padding="sm"
-                onPress={() => openLeagueMembers(league.id)}
-                accessibilityLabel={`${league.name}. ${t('{{count}} members', { count: membersCount })}`}
-                contentClassName="gap-3"
-              >
-                <View className="flex-row items-center gap-3">
-                  <View className="h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-                    <Trophy size={21} color={colors.primary} strokeWidth={1.9} />
-                  </View>
-                  <View className="min-w-0 flex-1">
-                    <Text variant="subtitle" numberOfLines={1}>
-                      {league.name}
-                    </Text>
-                    <Text variant="caption" tone="muted" numberOfLines={1}>
-                      {league.competition?.name ?? t('Not assigned')}
-                    </Text>
-                  </View>
-                  <Badge
-                    label={t('{{count}} members', { count: membersCount })}
-                    variant="primary"
-                    leftIcon={<UsersRound size={14} color={colors.primary} strokeWidth={2} />}
-                  />
-                </View>
-
-                <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
-                  <AdminMeta
-                    label={t('Owner')}
-                    value={league.owner?.full_name ?? t('Unknown owner')}
-                    className="flex-1"
-                  />
-                  <AdminMeta label={t('Join Code')} value={league.join_code} ltr className="flex-1" />
-                </View>
-
-                <View className="flex-row items-center justify-between border-t border-border pt-3">
-                  <Text variant="bodySmall" tone="primary" className="font-semibold">
-                    {t('View members')}
-                  </Text>
-                  <Chevron size={18} color={colors.primary} strokeWidth={2.1} />
-                </View>
-              </Card>
-            </View>
-          );
-        }}
+        renderItem={renderLeague}
         ListEmptyComponent={
           <AdminEmpty
             icon={searchQuery ? SearchX : Trophy}
@@ -157,5 +118,67 @@ const AdminLeaguesScreen = () => {
     </Screen>
   );
 };
+
+const AdminLeagueCard = memo(function AdminLeagueCard({
+  league,
+  membersCount,
+  onOpen,
+}: {
+  league: LeagueWithRelations;
+  membersCount: number;
+  onOpen: (leagueId: string) => void;
+}) {
+  const { t, isRTL } = useTranslation();
+  const { colors } = useThemeTokens();
+  const Chevron = isRTL ? ChevronLeft : ChevronRight;
+  const onPress = useCallback(() => onOpen(league.id), [league.id, onOpen]);
+
+  return (
+    <View className="flex-1 p-1.5">
+      <Card
+        className="h-full"
+        padding="sm"
+        onPress={onPress}
+        accessibilityLabel={`${league.name}. ${t('{{count}} members', { count: membersCount })}`}
+        contentClassName="gap-3"
+      >
+        <View className="flex-row items-center gap-3">
+          <View className="h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+            <Trophy size={21} color={colors.primary} strokeWidth={1.9} />
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text variant="subtitle" numberOfLines={1}>
+              {league.name}
+            </Text>
+            <Text variant="caption" tone="muted" numberOfLines={1}>
+              {league.competition?.name ?? t('Not assigned')}
+            </Text>
+          </View>
+          <Badge
+            label={t('{{count}} members', { count: membersCount })}
+            variant="primary"
+            leftIcon={<UsersRound size={14} color={colors.primary} strokeWidth={2} />}
+          />
+        </View>
+
+        <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
+          <AdminMeta
+            label={t('Owner')}
+            value={league.owner?.full_name ?? t('Unknown owner')}
+            className="flex-1"
+          />
+          <AdminMeta label={t('Join Code')} value={league.join_code} ltr className="flex-1" />
+        </View>
+
+        <View className="flex-row items-center justify-between border-t border-border pt-3">
+          <Text variant="bodySmall" tone="primary" className="font-semibold">
+            {t('View members')}
+          </Text>
+          <Chevron size={18} color={colors.primary} strokeWidth={2.1} />
+        </View>
+      </Card>
+    </View>
+  );
+});
 
 export default AdminLeaguesScreen;

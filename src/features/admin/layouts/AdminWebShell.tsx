@@ -13,7 +13,8 @@ import {
   Trophy,
   UsersRound,
 } from 'lucide-react-native';
-import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import { useCallback } from 'react';
+import { Pressable, FlatList, useWindowDimensions, View } from 'react-native';
 
 const navigationItems = [
   { label: 'Platform Overview', href: '/admin', icon: LayoutDashboard },
@@ -44,6 +45,33 @@ const AdminWebShell = () => {
     if (result.success) router.replace('/');
   };
 
+  const renderNavItem = useCallback(
+    ({ item }: { item: (typeof navigationItems)[number] }) => {
+      const { label, href, icon: Icon } = item;
+      const isActive =
+        href === '/admin' ? pathname === '/admin' || pathname === '/admin/' : pathname.startsWith(href);
+
+      return (
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={t(label)}
+          accessibilityState={{ selected: isActive }}
+          onPress={() => router.push(href as never)}
+          className={`min-h-12 flex-row items-center rounded-xl px-3 ${isActive ? 'bg-primary' : 'hover:bg-subtle'}`}
+          style={{ justifyContent: isCompact ? 'center' : 'flex-start', gap: isCompact ? 0 : 12 }}
+        >
+          <Icon size={20} color={isActive ? colors.onPrimary : colors.muted} strokeWidth={isActive ? 2.2 : 1.9} />
+          {!isCompact ? (
+            <Text variant="bodySmall" tone={isActive ? 'inverse' : 'default'} className="font-semibold">
+              {t(label)}
+            </Text>
+          ) : null}
+        </Pressable>
+      );
+    },
+    [colors.muted, colors.onPrimary, isCompact, pathname, router, t],
+  );
+
   return (
     <View className="flex-1 bg-background" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
       <View
@@ -69,30 +97,15 @@ const AdminWebShell = () => {
           ) : null}
         </View>
 
-        <ScrollView className="flex-1" contentContainerClassName="gap-1.5 p-3" showsVerticalScrollIndicator={false}>
-          {navigationItems.map(({ label, href, icon: Icon }) => {
-            const isActive = href === '/admin' ? pathname === '/admin' || pathname === '/admin/' : pathname.startsWith(href);
-
-            return (
-              <Pressable
-                key={href}
-                accessibilityRole="link"
-                accessibilityLabel={t(label)}
-                accessibilityState={{ selected: isActive }}
-                onPress={() => router.push(href as never)}
-                className={`min-h-12 flex-row items-center rounded-xl px-3 ${isActive ? 'bg-primary' : 'hover:bg-subtle'}`}
-                style={{ justifyContent: isCompact ? 'center' : 'flex-start', gap: isCompact ? 0 : 12 }}
-              >
-                <Icon size={20} color={isActive ? colors.onPrimary : colors.muted} strokeWidth={isActive ? 2.2 : 1.9} />
-                {!isCompact ? (
-                  <Text variant="bodySmall" tone={isActive ? 'inverse' : 'default'} className="font-semibold">
-                    {t(label)}
-                  </Text>
-                ) : null}
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+        <FlatList
+          data={[...navigationItems]}
+          keyExtractor={(item) => item.href}
+          extraData={`${pathname}-${isCompact}`}
+          className="flex-1"
+          contentContainerClassName="gap-1.5 p-3"
+          showsVerticalScrollIndicator={false}
+          renderItem={renderNavItem}
+        />
 
         <View className="border-t border-border p-3">
           <Pressable

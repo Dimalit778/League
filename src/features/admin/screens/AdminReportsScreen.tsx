@@ -1,6 +1,5 @@
 import { Badge, Button, Card, Chip, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminCardGrid,
   AdminCollectionSummary,
   AdminEmpty,
@@ -8,8 +7,8 @@ import {
   AdminGridItem,
   AdminMeta,
   AdminPageHeader,
-  formatAdminDate,
 } from '@/features/admin/components/AdminUI';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminContentReports, useModerateContentReport } from '@/features/admin/hooks/useAdmin';
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';

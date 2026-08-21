@@ -3,7 +3,8 @@ import { MyLeague } from '@/features/leagues/types';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ChevronRight, Crown, LockIcon } from 'lucide-react-native';
-import { Modal, Pressable, ScrollView, View } from 'react-native';
+import { useCallback } from 'react';
+import { Modal, Pressable, FlatList, View } from 'react-native';
 
 type LimitSelectModalProps = {
   leagues: MyLeague[];
@@ -94,6 +95,31 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
     </>
   );
 };
+type LimitLeagueRowProps = {
+  league: MyLeague;
+  selected: boolean;
+  selectedCount: number;
+  maxLeagues: number;
+  onToggleLeague: (memberId: string) => void;
+};
+
+function LimitLeagueRow({ league, selected, selectedCount, maxLeagues, onToggleLeague }: LimitLeagueRowProps) {
+  const proLocked = league.league.competition?.is_free === false;
+  const cannotSelect = proLocked || (!selected && selectedCount >= maxLeagues);
+
+  return (
+    <Pressable
+      onPress={() => onToggleLeague(league.id)}
+      disabled={cannotSelect}
+      className={`rounded-xl border bg-surface p-4 ${selected ? 'border-primary' : 'border-border'} ${
+        cannotSelect || !league.active ? 'opacity-50' : ''
+      }`}
+    >
+      <LeagueCard league={league} selected={selected} proLocked={proLocked} />
+    </Pressable>
+  );
+}
+
 export default function LimitSelectModal({
   leagues,
   maxLeagues,
@@ -106,31 +132,31 @@ export default function LimitSelectModal({
 }: LimitSelectModalProps) {
   const { t } = useTranslation();
   const selectedCount = selectedMemberIds.length;
+  const renderLeague = useCallback(
+    ({ item: league }: { item: MyLeague }) => (
+      <LimitLeagueRow
+        league={league}
+        selected={selectedMemberIds.includes(league.id)}
+        selectedCount={selectedCount}
+        maxLeagues={maxLeagues}
+        onToggleLeague={onToggleLeague}
+      />
+    ),
+    [maxLeagues, onToggleLeague, selectedCount, selectedMemberIds],
+  );
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => {}}>
       <View className="flex-1 justify-center px-4" style={{ backgroundColor: 'rgba(0,0,0,0.90)' }}>
         <View className="rounded-2xl border border-border bg-background p-4" style={{ maxHeight: '82%' }}>
           <ModalHeader maxLeagues={maxLeagues} selectedCount={selectedCount} onUpgrade={onUpgrade} />
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3 py-4">
-            {leagues.map((league) => {
-              const selected = selectedMemberIds.includes(league.id);
-              const proLocked = league.league.competition?.is_free === false;
-              const cannotSelect = proLocked || (!selected && selectedCount >= maxLeagues);
-
-              return (
-                <Pressable
-                  key={league.id}
-                  onPress={() => onToggleLeague(league.id)}
-                  disabled={cannotSelect}
-                  className={`rounded-xl border bg-surface p-4 ${selected ? 'border-primary' : 'border-border'} ${
-                    cannotSelect || !league.active ? 'opacity-50' : ''
-                  }`}
-                >
-                  <LeagueCard league={league} selected={selected} proLocked={proLocked} />
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          <FlatList
+            data={leagues}
+            keyExtractor={(league) => league.id}
+            extraData={selectedMemberIds}
+            showsVerticalScrollIndicator={false}
+            contentContainerClassName="gap-3 py-4"
+            renderItem={renderLeague}
+          />
 
           <Button label={t('Save active leagues')} size="lg" onPress={onSave} loading={isSaving} disabled={!canSave} />
         </View>

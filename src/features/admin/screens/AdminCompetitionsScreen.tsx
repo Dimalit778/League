@@ -1,6 +1,5 @@
 import { Badge, Button, Card, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminCardGrid,
   AdminCollectionSummary,
   AdminEmpty,
@@ -10,6 +9,7 @@ import {
   AdminPageHeader,
   AdminSearchField,
 } from '@/features/admin/components/AdminUI';
+import { ADMIN_CONTENT_CLASS } from '@/features/admin/lib/adminUi';
 import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@/features/admin/hooks/useAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

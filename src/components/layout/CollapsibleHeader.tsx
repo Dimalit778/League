@@ -2,7 +2,8 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { setColorAlpha } from '@/lib/color';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { ImageBackground, type ImageSourcePropType, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Image } from 'expo-image';
+import { type ImageSourcePropType, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -172,13 +173,14 @@ export const CollapsibleHeader = ({
       <Animated.View pointerEvents="none" style={[styles.headerBackground, headerBackgroundStyle]}>
         {backgroundImage ? (
           <Animated.View style={[StyleSheet.absoluteFill, backgroundImageStyle]}>
-            <ImageBackground source={backgroundImage} resizeMode="cover" style={StyleSheet.absoluteFill}>
+            <View style={StyleSheet.absoluteFill}>
+              <Image source={backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill} />
               <LinearGradient
                 colors={[...imageGradientColors]}
                 locations={[0.1, 0.35, 0.75, 1]}
                 style={StyleSheet.absoluteFill}
               />
-            </ImageBackground>
+            </View>
           </Animated.View>
         ) : null}
 
@@ -299,16 +301,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 100,
-    elevation: 100,
   },
 
   collapsedToolbar: {
     zIndex: 101,
-    elevation: 101,
   },
 
   persistentToolbar: {
     zIndex: 102,
-    elevation: 102,
   },
 });

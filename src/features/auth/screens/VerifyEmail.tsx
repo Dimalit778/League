@@ -15,7 +15,7 @@ export default function VerifyEmailScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
   const { t } = useTranslation();
   const { verifyOtp, resendOtp, isLoading, errorMessage, clearError } = useAuthActions();
-  const [code, setCode] = useState<string[]>(Array(CODE_LENGTH).fill(''));
+  const [code, setCode] = useState<string[]>(() => Array(CODE_LENGTH).fill(''));
   const [resendCoolDown, setResendCoolDown] = useState(30);
   const [resendLoading, setResendLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);

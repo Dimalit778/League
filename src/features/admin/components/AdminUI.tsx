@@ -6,8 +6,6 @@ import { Search, ShieldAlert } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { TextInput, View, type ViewProps } from 'react-native';
 
-export const ADMIN_CONTENT_CLASS = 'mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8';
-
 type AdminPageHeaderProps = {
   eyebrow?: string;
   title: string;
@@ -153,14 +151,4 @@ export function AdminGridItem({ children, className }: { children: ReactNode; cl
 
 export function AdminEmpty({ title, description, icon }: { title: string; description?: string; icon?: LucideIcon }) {
   return <EmptyState size="sm" icon={icon} title={title} description={description} className="py-10" />;
-}
-
-export function formatAdminDate(value: string | null | undefined, language: 'en' | 'he') {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return new Intl.DateTimeFormat(language === 'he' ? 'he-IL' : 'en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
 }

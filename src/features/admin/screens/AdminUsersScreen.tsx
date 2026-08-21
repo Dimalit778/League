@@ -1,14 +1,13 @@
 import { Button, Card, LoadingOverlay, Screen, Text } from '@/components';
 import {
-  ADMIN_CONTENT_CLASS,
   AdminCollectionSummary,
   AdminEmpty,
   AdminErrorBanner,
   AdminMeta,
   AdminPageHeader,
   AdminSearchField,
-  formatAdminDate,
 } from '@/features/admin/components/AdminUI';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';

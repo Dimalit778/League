@@ -158,8 +158,9 @@ function mix(from: string, to: string, weight: number): string {
   const target = hexToRgb(to);
 
   return `#${hexToRgb(from)
-    .map((channel, index) => Math.round(channel * weight + target[index] * (1 - weight)))
-    .map((channel) => channel.toString(16).padStart(2, '0'))
+    .map((channel, index) =>
+      Math.round(channel * weight + target[index] * (1 - weight)).toString(16).padStart(2, '0'),
+    )
     .join('')}`;
 }
 

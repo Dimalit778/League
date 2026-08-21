@@ -12,6 +12,10 @@ type MatchesListProps = {
   onRefresh: () => void;
   bottomInset?: number;
 };
+
+function renderMatchCard({ item }: { item: MatchCardData }) {
+  return <MatchCard match={item} />;
+}
 export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: MatchesListProps) {
   const flatListRef = useRef<FlatList>(null);
   const { t } = useTranslation();
@@ -27,7 +31,7 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1, paddingHorizontal: 16, gap: 10 }}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <MatchCard match={item} />}
+      renderItem={renderMatchCard}
       getItemLayout={(_, index) => ({
         length: itemHeight,
         offset: itemHeight * index,

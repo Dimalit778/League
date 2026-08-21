@@ -93,8 +93,8 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
 ) {
   const { t } = useTranslation();
   const memberId = useMemberId();
-  const [homeScore, setHomeScore] = useState(clampScore(prediction?.home_score ?? 0));
-  const [awayScore, setAwayScore] = useState(clampScore(prediction?.away_score ?? 0));
+  const [homeScore, setHomeScore] = useState(() => clampScore(prediction?.home_score ?? 0));
+  const [awayScore, setAwayScore] = useState(() => clampScore(prediction?.away_score ?? 0));
   const [hasInteracted, setHasInteracted] = useState(false);
   const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
     prediction ? { home: clampScore(prediction.home_score), away: clampScore(prediction.away_score) } : null,

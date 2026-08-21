@@ -6,11 +6,38 @@ import { SvgXml } from 'react-native-svg';
 const svgXmlCache = new Map<string, string>();
 const svgXmlFetches = new Map<string, Promise<string>>();
 
+async function loadSvgXml(uri: string): Promise<string> {
+  const cached = svgXmlCache.get(uri);
+  if (cached !== undefined) return cached;
+
+  let request = svgXmlFetches.get(uri);
+  if (!request) {
+    request = fetch(uri).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`SVG fetch failed (${response.status})`);
+      }
+      return response.text();
+    });
+    svgXmlFetches.set(uri, request);
+  }
+
+  try {
+    const xml = await request;
+    svgXmlCache.set(uri, xml);
+    return xml;
+  } finally {
+    svgXmlFetches.delete(uri);
+  }
+}
+
 function useSvgXml(uri: string | undefined) {
   const [xml, setXml] = useState<string | null>(uri ? (svgXmlCache.get(uri) ?? null) : null);
 
   useEffect(() => {
-    if (!uri) return;
+    if (!uri) {
+      setXml(null);
+      return;
+    }
 
     const cached = svgXmlCache.get(uri);
     if (cached !== undefined) {
@@ -19,19 +46,11 @@ function useSvgXml(uri: string | undefined) {
     }
 
     let cancelled = false;
-    let request = svgXmlFetches.get(uri);
-    if (!request) {
-      request = fetch(uri).then((res) => res.text());
-      svgXmlFetches.set(uri, request);
-    }
-
-    request
+    loadSvgXml(uri)
       .then((text) => {
-        svgXmlCache.set(uri, text);
         if (!cancelled) setXml(text);
       })
-      .catch(() => {})
-      .finally(() => svgXmlFetches.delete(uri));
+      .catch(() => {});
 
     return () => {
       cancelled = true;

@@ -1,4 +1,5 @@
 import { Text } from '@/components';
+import { setColorAlpha } from '@/lib/color';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Path, Polygon, Stop } from 'react-native-svg';
 
@@ -28,11 +29,7 @@ export function PodiumHexBadge({ position, size = 34 }: { position: Position; si
         height: h,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: m.mid,
-        shadowOpacity: 0.7,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 1 },
-        elevation: 6,
+        boxShadow: `0 1px 6px ${setColorAlpha(m.mid, 0.7)}`,
       }}
     >
       <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute' }}>
@@ -70,11 +67,7 @@ export function PodiumCrown({ size = 40 }: { size?: number }) {
       style={{
         width: w,
         height: h,
-        shadowColor: m.mid,
-        shadowOpacity: 0.75,
-        shadowRadius: 7,
-        shadowOffset: { width: 0, height: 1 },
-        elevation: 7,
+        boxShadow: `0 1px 7px ${setColorAlpha(m.mid, 0.75)}`,
       }}
     >
       <Svg width={w} height={h} viewBox="0 6 48 30">
