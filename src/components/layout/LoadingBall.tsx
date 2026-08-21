@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useLayoutEffect } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -82,7 +83,7 @@ export function LoadingBall() {
       <View style={styles.stage} pointerEvents="box-none">
         <View style={styles.ballColumn}>
           <Animated.View style={[styles.ball, ballStyle]}>
-            <Image source={images.ball} style={styles.ballImage} resizeMode="contain" />
+            <Image source={images.ball} style={styles.ballImage} contentFit="contain" />
           </Animated.View>
           <Animated.View style={[styles.ballShadow, shadowStyle]} />
         </View>

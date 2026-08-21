@@ -1,5 +1,7 @@
+import { KEYS } from '@/lib/queryClient';
+import { useQuery } from '@tanstack/react-query';
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DimensionValue, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
@@ -31,33 +33,15 @@ async function loadSvgXml(uri: string): Promise<string> {
 }
 
 function useSvgXml(uri: string | undefined) {
-  const [xml, setXml] = useState<string | null>(uri ? (svgXmlCache.get(uri) ?? null) : null);
+  const { data } = useQuery({
+    queryKey: KEYS.images.svgXml(uri ?? ''),
+    queryFn: () => loadSvgXml(uri ?? ''),
+    enabled: Boolean(uri),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
-  useEffect(() => {
-    if (!uri) {
-      setXml(null);
-      return;
-    }
-
-    const cached = svgXmlCache.get(uri);
-    if (cached !== undefined) {
-      setXml(cached);
-      return;
-    }
-
-    let cancelled = false;
-    loadSvgXml(uri)
-      .then((text) => {
-        if (!cancelled) setXml(text);
-      })
-      .catch(() => {});
-
-    return () => {
-      cancelled = true;
-    };
-  }, [uri]);
-
-  return xml;
+  return data ?? (uri ? svgXmlCache.get(uri) ?? null : null);
 }
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';

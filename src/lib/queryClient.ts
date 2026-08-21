@@ -98,4 +98,8 @@ export const KEYS = {
   subscription: {
     currentSeason: ['subscription', 'current-season'] as const,
   },
+
+  images: {
+    svgXml: (uri: string) => ['images', 'svg-xml', uri] as const,
+  },
 } as const;

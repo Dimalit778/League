@@ -98,7 +98,7 @@ const AdminWebShell = () => {
         </View>
 
         <FlatList
-          data={[...navigationItems]}
+          data={navigationItems}
           keyExtractor={(item) => item.href}
           extraData={`${pathname}-${isCompact}`}
           className="flex-1"
