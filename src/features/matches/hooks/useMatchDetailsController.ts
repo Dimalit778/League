@@ -31,7 +31,7 @@ export function useMatchDetailsController(match: MatchDetails) {
       ),
     )
     : Math.min(
-      height * 0.32,
+      height * 0.35,
       Math.max(
         height * 0.5 + fontScaleExtra,
         isTablet ? 360 : 260,

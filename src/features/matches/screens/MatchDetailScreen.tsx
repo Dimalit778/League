@@ -49,14 +49,13 @@ function LoadedMatchDetails({ match }: { match: MatchDetails }) {
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
+  const { data: match, isLoading, error } = useGetMatchData(Number(matchId));
 
-  const { data: matchData, isLoading, error } = useGetMatchData(Number(matchId));
+  if (!match) {
+    return isLoading ? <MatchDetailsSkeleton /> : <Error error={error ?? { message: 'No match data found' }} />;
+  }
 
-  if (isLoading) return <MatchDetailsSkeleton />;
-  if (error) return <Error error={error} />;
-  if (!matchData) return <Error error={{ message: 'No match data found' }} />;
-
-  return <LoadedMatchDetails match={matchData} />;
+  return <LoadedMatchDetails match={match} />;
 };
 
 export default MatchDetailScreen;
