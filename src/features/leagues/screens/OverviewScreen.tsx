@@ -32,7 +32,7 @@ export default function OverviewScreen() {
       }}
       expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} />}
       collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
-      persistentHeader={<PersistentHeaderActions logoUrl={leagueSummary.logoUrl} />}
+      persistentHeader={<PersistentHeaderActions logoUrl={leagueSummary.flagUrl} />}
     >
       <View className="gap-6">
         <LeagueSummary leagueSummary={leagueSummary} />

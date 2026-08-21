@@ -3,14 +3,11 @@ import { View } from 'react-native';
 
 function CompetitionCardSkeleton() {
   return (
-    <View className="mb-3 overflow-hidden rounded-xl border-2 border-border bg-surface p-4">
-      <View className="flex-row items-center">
-        <Skeleton className="h-12 w-12 rounded-md" />
-        <View className="flex-1 items-center gap-2">
-          <TextSkeleton className="h-3 w-16" />
-          <TextSkeleton className="h-5 w-28" />
-        </View>
-        <Skeleton className="h-[52px] w-[52px] rounded-md" />
+    <View className="items-center overflow-hidden rounded-xl border-2 border-border bg-surface p-4">
+      <Skeleton className="h-12 w-12 rounded-md" />
+      <View className="mt-3 items-center gap-2">
+        <TextSkeleton className="h-3 w-16" />
+        <TextSkeleton className="h-5 w-24" />
       </View>
     </View>
   );
@@ -19,9 +16,11 @@ function CompetitionCardSkeleton() {
 export default function CompetitionsSkeleton() {
   return (
     <Screen edges={['bottom']}>
-      <View className="flex-1 px-[18px] pt-6">
+      <View className="flex-1 flex-row flex-wrap gap-3 px-[18px] pt-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <CompetitionCardSkeleton key={index} />
+          <View key={index} className="w-[48%]">
+            <CompetitionCardSkeleton />
+          </View>
         ))}
       </View>
       <View className="p-3">

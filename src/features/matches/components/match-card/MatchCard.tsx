@@ -20,10 +20,10 @@ export const MatchCard = memo(function MatchCard({
   const presentation = deriveMatchPresentation({ status: match.status, kickOff: match.kickOff });
   const logoWidth = metrics.logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : metrics.logoBoxSize;
-  const scoreLabel =
-    match.home.score != null && match.away.score != null
-      ? `${match.home.score} - ${match.away.score}`
-      : match.time;
+
+  const hasResult = match.home.score != null && match.away.score != null;
+  const showDateTab = !(presentation.isFinished && hasResult);
+  const scoreLabel = hasResult ? `${match.home.score} - ${match.away.score}` : match.time;
 
   return (
     <Pressable
@@ -38,30 +38,21 @@ export const MatchCard = memo(function MatchCard({
             width={metrics.width}
             height={metrics.height}
             predictionStatus={match.predictionStatus}
+            showDateTab={showDateTab}
           />
         </View>
 
-        <MatchCardStatus presentation={presentation} date={match.date} top={metrics.headerTop} />
+        {showDateTab ? <MatchCardStatus presentation={presentation} date={match.date} top={metrics.headerTop} /> : null}
 
         <View
           className="absolute left-0 right-0 flex-row items-center justify-center"
           style={{ top: metrics.contentTop, height: metrics.contentHeight, gap: metrics.gap }}
         >
-          <MatchCardTeam
-            team={match.home}
-            width={metrics.teamWidth}
-            logoWidth={logoWidth}
-            logoHeight={logoHeight}
-          />
+          <MatchCardTeam team={match.home} width={metrics.teamWidth} logoWidth={logoWidth} logoHeight={logoHeight} />
           <View style={{ width: metrics.centerWidth }} className="items-center justify-center">
             <MatchCardScore homeScore={match.home.score} awayScore={match.away.score} time={match.time} />
           </View>
-          <MatchCardTeam
-            team={match.away}
-            width={metrics.teamWidth}
-            logoWidth={logoWidth}
-            logoHeight={logoHeight}
-          />
+          <MatchCardTeam team={match.away} width={metrics.teamWidth} logoWidth={logoWidth} logoHeight={logoHeight} />
         </View>
 
         <MatchCardPrediction

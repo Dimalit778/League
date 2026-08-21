@@ -395,7 +395,10 @@ verify_jwt = false
 [functions.revenuecat-webhook]
 verify_jwt = false
 
-[functions.sync-all-competitions]
+[functions.sync-competitions]
+verify_jwt = false
+
+[functions.sync-competition-progress]
 verify_jwt = false
 
 [functions.sync-all-competitions-teams]

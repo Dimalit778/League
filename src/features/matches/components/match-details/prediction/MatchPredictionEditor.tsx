@@ -23,26 +23,23 @@ export function MatchPredictionEditor({
   const handleDraftChange = useCallback((state: PredictionDraftState) => setDraft(state), []);
 
   return (
-    <>
-      <View className="mt-4">
-        <PredictionForm
-          ref={formRef}
-          prediction={prediction}
-          matchId={matchId}
-          onSaveSuccess={onSaved}
-          onDraftChange={handleDraftChange}
-        />
-      </View>
-      <View className="mx-auto mt-4 w-full max-w-md px-5">
-        <Button
-          size="md"
-          label={t('Save')}
-          variant="primary"
-          onPress={() => void formRef.current?.save()}
-          loading={draft.isPending}
-          disabled={!draft.hasChanges || draft.isPending}
-        />
-      </View>
-    </>
+    <View className="gap-2 pt-5">
+      <PredictionForm
+        ref={formRef}
+        prediction={prediction}
+        matchId={matchId}
+        onSaveSuccess={onSaved}
+        onDraftChange={handleDraftChange}
+      />
+
+      <Button
+        size="md"
+        label={t('Save')}
+        variant="primary"
+        onPress={() => void formRef.current?.save()}
+        loading={draft.isPending}
+        disabled={!draft.hasChanges || draft.isPending}
+      />
+    </View>
   );
 }

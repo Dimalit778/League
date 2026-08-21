@@ -80,8 +80,22 @@ async function fetchRevenueCatSubscriber(appUserId: string): Promise<{
 function parseEntitlement(
   entitlement: RevenueCatEntitlement | undefined,
 ): { plan: 'pro' | 'free'; status: string; expiresAt: string | null; productId: string | null } {
-  if (!entitlement?.expires_date) {
+  // No entitlement object at all -> the user was never granted Pro.
+  if (!entitlement) {
     return { plan: 'free', status: 'inactive', expiresAt: null, productId: null };
+  }
+
+  // Non-expiring entitlement (non-consumable / non-renewing season pass):
+  // present with no expires_date === active lifetime Pro. The old auto-renewable
+  // model always carried an expires_date, so the previous `!expires_date` guard
+  // wrongly treated the flat-price season pass as free.
+  if (!entitlement.expires_date) {
+    return {
+      plan: 'pro',
+      status: entitlement.billing_issues_detected_at ? 'billing_issue' : 'active',
+      expiresAt: null,
+      productId: entitlement.product_identifier ?? null,
+    };
   }
 
   const expiresAt = new Date(entitlement.expires_date);
@@ -186,20 +200,44 @@ Deno.serve(async (req) => {
   const entitlement = rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT];
   const parsed = parseEntitlement(entitlement);
 
-  const seasonResult = await fetchCurrentSeason(adminClient);
-  if (seasonResult.failed) {
-    return json({ error: 'Failed to fetch current season' }, 500);
-  }
-  const season = seasonResult.season;
+  // This client-triggered sync exists to PROMOTE a user to Pro right after a
+  // purchase. Downgrades are owned by the RevenueCat webhook (EXPIRATION /
+  // CANCELLATION). If RevenueCat's REST read momentarily lags behind a fresh
+  // purchase/renewal and reports 'free', do not let it clobber an active Pro
+  // row the webhook already wrote.
+  if (parsed.plan === 'free') {
+    const { data: existing } = await adminClient
+      .from('user_subscriptions')
+      .select('plan, status, expires_at')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-  // A Pro entitlement is only honored inside a defined season window. The fixed
-  // calendar boundary is the season end, regardless of when the pass was bought.
+    const existingIsActivePro =
+      existing?.plan === 'pro' &&
+      (!existing.expires_at || new Date(existing.expires_at).getTime() > Date.now());
+
+    if (existingIsActivePro) {
+      return json({
+        plan: 'pro',
+        status: existing.status ?? 'active',
+        expires_at: existing.expires_at ?? null,
+      });
+    }
+  }
+
+  // A Pro entitlement is honored only within a defined season window, with the
+  // fixed calendar expiry set to the season end regardless of purchase date.
   let plan = parsed.plan;
   let status = parsed.status;
   let expiresAt = parsed.expiresAt;
   let seasonCode: string | null = null;
 
   if (parsed.plan === 'pro') {
+    const seasonResult = await fetchCurrentSeason(adminClient);
+    if (seasonResult.failed) {
+      return json({ error: 'Failed to fetch current season' }, 500);
+    }
+    const season = seasonResult.season;
     if (!season) {
       // No active season: do not grant Pro (aligned with the client blocking sale).
       plan = 'free';

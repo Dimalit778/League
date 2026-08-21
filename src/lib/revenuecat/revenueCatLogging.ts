@@ -1,15 +1,15 @@
-import Purchases, { LOG_LEVEL, type LogHandler } from 'react-native-purchases';
+import Purchases, { LOG_LEVEL, type LogHandler } from "react-native-purchases";
 
 const isNoisyOfflineLog = (message: string): boolean => {
   const lower = message.toLowerCase();
 
   return (
-    lower.includes('networkerror') ||
-    lower.includes('unable to resolve host') ||
-    lower.includes('api.revenuecat.com') ||
-    lower.includes('no address associated with hostname') ||
-    lower.includes('error fetching customer data') ||
-    lower.includes('network request failed')
+    lower.includes("networkerror") ||
+    lower.includes("unable to resolve host") ||
+    lower.includes("api.revenuecat.com") ||
+    lower.includes("no address associated with hostname") ||
+    lower.includes("error fetching customer data") ||
+    lower.includes("network request failed")
   );
 };
 

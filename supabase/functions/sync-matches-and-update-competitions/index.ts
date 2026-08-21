@@ -1,3 +1,15 @@
+// sync-matches-and-update-competitions
+//
+// Match-record sync for the configured competitions. Fetches each
+// competition's matches from Football-Data and upserts them into `matches`.
+//
+// NOTE: competition PROGRESS (current_matchday / current_stage /
+// total_matchdays) is intentionally NOT written here. That is owned solely by
+// sync-competition-progress (daily) and sync-competitions (season metadata), so
+// there is a single source of truth. This function only manages match rows.
+//
+// (The directory name is kept for deployment stability; its responsibility is
+// now match records only.)
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { requireSyncAuth } from "../_shared/sync.ts";
 
@@ -11,26 +23,18 @@ const CORS_HEADERS = {
 
 const FD_BASE_URL = "https://api.football-data.org/v4";
 
-/**
- * league:
- * משתמש ב-matchday ומעדכן current_fixture + total_fixtures.
- *
- * stage:
- * משתמש ב-stage ומעדכן current_stage.
- */
+// Competitions whose match rows this job syncs.
 const COMPETITIONS = [
-  { code: "PL", type: "league" },
-  { code: "PD", type: "league" },
-  // { code: "SA", type: "league" },
-  // { code: "BL1", type: "league" },
-  // { code: "FL1", type: "league" },
-  { code: "CL", type: "stage" },
-  { code: "WC", type: "stage" },
-
+  { code: "PL" },
+  { code: "PD" },
+  // { code: "SA" },
+  // { code: "BL1" },
+  // { code: "FL1" },
+  { code: "CL" },
+  { code: "WC" },
 ] as const;
 
 type CompetitionConfig = (typeof COMPETITIONS)[number];
-type CompetitionType = CompetitionConfig["type"];
 
 type FootballMatch = {
   id?: number;
@@ -84,44 +88,11 @@ type FootballDataPayload = {
 
 type SyncCompetitionResult = {
   competition: string;
-  type: CompetitionType;
   success: boolean;
   fetched: number;
   upserted: number;
-  current_fixture: number | null;
-  total_fixtures: number | null;
-  current_stage: string | null;
   errors?: string[];
 };
-
-const STAGE_ORDER = [
-  "PRELIMINARY_ROUND",
-  "QUALIFICATION_ROUND_1",
-  "QUALIFICATION_ROUND_2",
-  "QUALIFICATION_ROUND_3",
-  "PLAYOFF_ROUND_1",
-  "PLAYOFF_ROUND_2",
-  "PLAYOFFS",
-  "LEAGUE_STAGE",
-  "GROUP_STAGE",
-  "LAST_64",
-  "LAST_32",
-  "LAST_16",
-  "QUARTER_FINALS",
-  "SEMI_FINALS",
-  "THIRD_PLACE",
-  "FINAL",
-] as const;
-
-const ACTIVE_OR_COMPLETED_STATUSES = new Set([
-  "TIMED",
-  "IN_PLAY",
-  "PAUSED",
-  "EXTRA_TIME",
-  "PENALTY_SHOOTOUT",
-  "FINISHED",
-  "AWARDED",
-]);
 
 const getEnvVar = (key: string): string => {
   const value = Deno.env.get(key);
@@ -213,124 +184,6 @@ async function fetchFootballData(
       clearTimeout(timeout);
     }
   });
-}
-
-function hasStarted(match: FootballMatch): boolean {
-  const status = match.status ?? "";
-
-  return ACTIVE_OR_COMPLETED_STATUSES.has(status);
-}
-
-function deriveLeagueProgress(matches: FootballMatch[]): {
-  currentFixture: number | null;
-  totalFixtures: number | null;
-} {
-  const matchdays = matches
-    .map((match) => match.matchday)
-    .filter((matchday): matchday is number =>
-      typeof matchday === "number"
-    );
-
-  const uniqueMatchdays = [...new Set(matchdays)];
-
-  const totalFixtures =
-    uniqueMatchdays.length > 0
-      ? Math.max(...uniqueMatchdays)
-      : null;
-
-  const startedMatchdays = matches
-    .filter(hasStarted)
-    .map((match) => match.matchday)
-    .filter((matchday): matchday is number =>
-      typeof matchday === "number"
-    );
-
-  if (startedMatchdays.length > 0) {
-    return {
-      currentFixture: Math.max(...startedMatchdays),
-      totalFixtures,
-    };
-  }
-
-  return {
-    currentFixture:
-      uniqueMatchdays.length > 0
-        ? Math.min(...uniqueMatchdays)
-        : null,
-
-    totalFixtures,
-  };
-}
-
-function getStageIndex(stage: string): number {
-  return STAGE_ORDER.indexOf(stage as (typeof STAGE_ORDER)[number]);
-}
-
-function getLatestStage(stages: string[]): string | null {
-  if (stages.length === 0) {
-    return null;
-  }
-
-  return stages.reduce((latest, stage) => {
-    const latestIndex = getStageIndex(latest);
-    const currentIndex = getStageIndex(stage);
-
-    if (currentIndex === -1) {
-      return latest;
-    }
-
-    if (latestIndex === -1 || currentIndex > latestIndex) {
-      return stage;
-    }
-
-    return latest;
-  });
-}
-
-function deriveStageProgress(matches: FootballMatch[]): {
-  currentStage: string | null;
-} {
-  const startedStages = matches
-    .filter(hasStarted)
-    .map((match) => match.stage)
-    .filter((stage): stage is string =>
-      typeof stage === "string" && stage.length > 0
-    );
-
-  const currentStartedStage = getLatestStage([
-    ...new Set(startedStages),
-  ]);
-
-  if (currentStartedStage) {
-    return {
-      currentStage: currentStartedStage,
-    };
-  }
-
-  const allStages = matches
-    .map((match) => match.stage)
-    .filter((stage): stage is string =>
-      typeof stage === "string" && stage.length > 0
-    );
-
-  const firstAvailableStage = [...new Set(allStages)]
-    .sort((stageA, stageB) => {
-      const indexA = getStageIndex(stageA);
-      const indexB = getStageIndex(stageB);
-
-      if (indexA === -1 && indexB === -1) {
-        return stageA.localeCompare(stageB);
-      }
-
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-
-      return indexA - indexB;
-    })[0];
-
-  return {
-    currentStage: firstAvailableStage ?? null,
-  };
 }
 
 function transformMatch(
@@ -446,70 +299,6 @@ async function bulkUpsertMatches(
   };
 }
 
-async function updateCompetitionProgress(
-  supabase: ReturnType<typeof createClient>,
-  competitionId: number,
-  competitionType: CompetitionType,
-  matches: FootballMatch[],
-): Promise<{
-  currentFixture: number | null;
-  totalFixtures: number | null;
-  currentStage: string | null;
-}> {
-  if (competitionType === "league") {
-    const {
-      currentFixture,
-      totalFixtures,
-    } = deriveLeagueProgress(matches);
-
-    const { error } = await supabase
-      .from("competitions")
-      .update({
-        current_fixture: currentFixture,
-        total_fixtures: totalFixtures,
-        current_stage: null,
-        updated_at: nowIso(),
-      })
-      .eq("id", competitionId);
-
-    if (error) {
-      throw new Error(
-        `Competition ${competitionId} update failed: ${error.message}`,
-      );
-    }
-
-    return {
-      currentFixture,
-      totalFixtures,
-      currentStage: null,
-    };
-  }
-
-  const { currentStage } = deriveStageProgress(matches);
-
-  const { error } = await supabase
-    .from("competitions")
-    .update({
-      current_stage: currentStage,
-      current_fixture: null,
-      total_fixtures: null,
-      updated_at: nowIso(),
-    })
-    .eq("id", competitionId);
-
-  if (error) {
-    throw new Error(
-      `Competition ${competitionId} update failed: ${error.message}`,
-    );
-  }
-
-  return {
-    currentFixture: null,
-    totalFixtures: null,
-    currentStage,
-  };
-}
-
 async function syncCompetition(
   supabase: ReturnType<typeof createClient>,
   config: CompetitionConfig,
@@ -556,26 +345,15 @@ async function syncCompetition(
     rows,
   );
 
-  const progress = await updateCompetitionProgress(
-    supabase,
-    competitionId,
-    config.type,
-    matches,
-  );
-
   const errorMessages = upsertErrors.map(
     (error) => error.message,
   );
 
   return {
     competition: config.code,
-    type: config.type,
     success: errorMessages.length === 0,
     fetched: rows.length,
     upserted,
-    current_fixture: progress.currentFixture,
-    total_fixtures: progress.totalFixtures,
-    current_stage: progress.currentStage,
     errors:
       errorMessages.length > 0
         ? errorMessages
@@ -628,7 +406,7 @@ Deno.serve(async (req: Request) => {
     );
 
     console.info(
-      `Starting competition sync: ${
+      `Starting match sync: ${
         COMPETITIONS
           .map((competition) => competition.code)
           .join(", ")
@@ -669,13 +447,9 @@ Deno.serve(async (req: Request) => {
 
         results.push({
           competition: config.code,
-          type: config.type,
           success: false,
           fetched: 0,
           upserted: 0,
-          current_fixture: null,
-          total_fixtures: null,
-          current_stage: null,
           errors: [message],
         });
       }
@@ -736,7 +510,7 @@ Deno.serve(async (req: Request) => {
 
     console.error(
       JSON.stringify({
-        tag: "sync-all-competitions",
+        tag: "sync-matches-and-update-competitions",
         reqId,
         message: normalizedError.message,
         stack: normalizedError.stack,

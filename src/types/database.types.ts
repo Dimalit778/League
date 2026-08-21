@@ -43,6 +43,7 @@ export type Database = {
           code: string
           created_at: string
           current_fixture: number | null
+          current_matchday: number | null
           current_stage: string | null
           flag: string | null
           id: number
@@ -53,6 +54,7 @@ export type Database = {
           season_id: number | null
           season_start: string | null
           total_fixtures: number | null
+          total_matchdays: number | null
           type: string
           updated_at: string
         }
@@ -61,6 +63,7 @@ export type Database = {
           code: string
           created_at?: string
           current_fixture?: number | null
+          current_matchday?: number | null
           current_stage?: string | null
           flag?: string | null
           id: number
@@ -71,6 +74,7 @@ export type Database = {
           season_id?: number | null
           season_start?: string | null
           total_fixtures?: number | null
+          total_matchdays?: number | null
           type: string
           updated_at?: string
         }
@@ -79,6 +83,7 @@ export type Database = {
           code?: string
           created_at?: string
           current_fixture?: number | null
+          current_matchday?: number | null
           current_stage?: string | null
           flag?: string | null
           id?: number
@@ -89,6 +94,7 @@ export type Database = {
           season_id?: number | null
           season_start?: string | null
           total_fixtures?: number | null
+          total_matchdays?: number | null
           type?: string
           updated_at?: string
         }
@@ -851,9 +857,9 @@ export type Database = {
       member_league_summary_view: {
         Row: {
           active: boolean | null
+          competition_flag: string | null
           competition_id: number | null
           competition_is_free: boolean | null
-          competition_logo: string | null
           competition_name: string | null
           competition_season_id: number | null
           is_primary: boolean | null

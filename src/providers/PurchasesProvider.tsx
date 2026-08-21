@@ -8,9 +8,7 @@ import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
 
-/** Map app language → RevenueCat paywall locale (must match dashboard locales). */
-const toRevenueCatLocale = (language: SupportedLanguage): string =>
-  language === 'he' ? 'he' : 'en-US';
+const toRevenueCatLocale = (language: SupportedLanguage): string => (language === 'he' ? 'he' : 'en-US');
 
 type PurchasesContextValue = {
   isReady: boolean;
@@ -31,14 +29,10 @@ const getRevenueCatApiKey = (): string | null => {
         ? process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY
         : undefined;
 
-  // Production must use a real store key. Never ship the RevenueCat Test Store
-  // key: reject a missing OR a `test_`-prefixed key so a misconfigured release
-  // build fails loudly instead of silently pointing purchases at the sandbox.
   if (!__DEV__) {
     return platformKey && !platformKey.startsWith('test_') ? platformKey : null;
   }
 
-  // Local development: fall back to the shared test key for convenience.
   return platformKey ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
 };
 
@@ -151,7 +145,8 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
         return;
       }
 
-      const apiKey = getRevenueCatApiKey();
+      // const apiKey = getRevenueCatApiKey();
+      const apiKey = process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY;
       if (!apiKey) {
         dispatch({ type: 'setError', value: new Error('RevenueCat API key is not configured for this platform') });
         dispatch({ type: 'setReady', value: false });
@@ -160,7 +155,6 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
 
       try {
         configureRevenueCatLogging();
-
         const isConfigured = await Purchases.isConfigured();
         if (!isConfigured) {
           Purchases.configure({
@@ -170,10 +164,8 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
         }
 
         isConfiguredRef.current = true;
-
         try {
           const initialCustomerInfo = await Purchases.getCustomerInfo();
-
           if (!cancelled) {
             dispatch({ type: 'setOffline', value: false });
             applyCustomerInfo(initialCustomerInfo);
@@ -304,10 +296,6 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     };
   }, [applyCustomerInfo, isReady]);
 
-  // Keep the RevenueCat paywall in the app's selected language rather than the
-  // device locale, so the in-app language toggle also drives the paywall. The
-  // paywall must have a matching localization in RevenueCat (falls back to its
-  // default locale otherwise).
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;
 

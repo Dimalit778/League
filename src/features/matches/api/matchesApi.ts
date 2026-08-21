@@ -1,6 +1,11 @@
-import { supabase } from '@/lib/supabase';
-import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
-import { AiSummaryType, MatchDetails, MatchListItem, RawMatchListItem } from '../types';
+import { supabase } from "@/lib/supabase";
+import { prefetchMatchTeamLogos } from "@/utils/prefetchTeamLogos";
+import {
+  AiSummaryType,
+  MatchDetails,
+  MatchListItem,
+  RawMatchListItem,
+} from "../types";
 
 const UPCOMING_MATCHES_LIMIT = 10;
 
@@ -9,7 +14,8 @@ const TEAM_LIST_FIELDS = `
   shortName,
   name,
   logo,
-  tla
+  tla,
+  "clubColors"
 `;
 
 export const MATCH_WITH_MEMBER_PREDICTION = `
@@ -90,7 +96,6 @@ export function mapMatchCardData(data: unknown): MatchListItem[] {
   }));
 }
 
-
 export const matchesApi = {
   // Get one match with all members' predictions
   async getMatchWithPredictions(
@@ -98,37 +103,41 @@ export const matchesApi = {
     matchId: number,
   ): Promise<MatchDetails> {
     const { data, error } = await supabase
-      .from('matches')
+      .from("matches")
       .select(MATCH_WITH_ALL_PREDICTIONS)
-      .eq('id', matchId)
-      .eq('predictions.league_member.league_id', leagueId)
+      .eq("id", matchId)
+      .eq("predictions.league_member.league_id", leagueId)
       .single<MatchDetails>();
- 
+
     if (error) throw error;
 
-    if (!data) throw new Error('Match not found');
+    if (!data) throw new Error("Match not found");
     void prefetchMatchTeamLogos([data]);
     return data;
   },
 
-  // PRO-only: the summary text is column-gated server-side, this only
-  // succeeds for a PRO subscriber (see get_match_ai_summary in Supabase).
   async getMatchAiSummary(matchId: number): Promise<AiSummaryType> {
-    const { data, error } = await supabase.rpc('get_match_ai_summary', { p_match_id: matchId }).single();
+    const { data, error } = await supabase.rpc("get_match_ai_summary", {
+      p_match_id: matchId,
+    }).single();
 
     if (error) throw new Error(error.message);
-    if (!data) throw new Error('AI summary not found');
+    if (!data) throw new Error("AI summary not found");
 
     return data;
   },
 
- //--->  MatchesScreen
+  //--->  MatchesScreen
   async getSeasonMatches(
     competitionId: number,
     seasonId: number,
     memberId: string,
   ): Promise<MatchListItem[]> {
-    return this.getCompetitionMatchesWithMemberPredictions(competitionId, seasonId, memberId);
+    return this.getCompetitionMatchesWithMemberPredictions(
+      competitionId,
+      seasonId,
+      memberId,
+    );
   },
 
   // Get matches by fixture with current member's predictions
@@ -146,18 +155,18 @@ export const matchesApi = {
     stage?: string;
   }): Promise<MatchListItem[]> {
     let query = supabase
-      .from('matches')
+      .from("matches")
       .select(MATCH_WITH_MEMBER_PREDICTION)
-      .eq('competition_id', competitionId)
-      .eq('season_id', seasonId)
-      .eq('fixture', fixture)
-      .eq('predictions.league_member_id', memberId);
+      .eq("competition_id", competitionId)
+      .eq("season_id", seasonId)
+      .eq("fixture", fixture)
+      .eq("predictions.league_member_id", memberId);
 
     if (stage) {
-      query = query.eq('stage', stage);
+      query = query.eq("stage", stage);
     }
 
-    const { data, error } = await query.order('kick_off', { ascending: true });
+    const { data, error } = await query.order("kick_off", { ascending: true });
 
     if (error) throw error;
     if (!data) return [];
@@ -174,12 +183,12 @@ export const matchesApi = {
     memberId: string,
   ): Promise<MatchListItem[]> {
     const { data, error } = await supabase
-      .from('matches')
+      .from("matches")
       .select(MATCH_WITH_MEMBER_PREDICTION)
-      .eq('competition_id', competitionId)
-      .eq('season_id', seasonId)
-      .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true });
+      .eq("competition_id", competitionId)
+      .eq("season_id", seasonId)
+      .eq("predictions.league_member_id", memberId)
+      .order("kick_off", { ascending: true });
 
     if (error) throw error;
 
@@ -199,14 +208,14 @@ export const matchesApi = {
     endOfDay.setHours(23, 59, 59, 999);
 
     const { data, error } = await supabase
-      .from('matches')
+      .from("matches")
       .select(MATCH_WITH_MEMBER_PREDICTION)
-      .eq('competition_id', competitionId)
-      .eq('season_id', seasonId)
-      .gte('kick_off', startOfDay.toISOString())
-      .lte('kick_off', endOfDay.toISOString())
-      .eq('predictions.league_member_id', memberId)
-      .order('kick_off', { ascending: true })
+      .eq("competition_id", competitionId)
+      .eq("season_id", seasonId)
+      .gte("kick_off", startOfDay.toISOString())
+      .lte("kick_off", endOfDay.toISOString())
+      .eq("predictions.league_member_id", memberId)
+      .order("kick_off", { ascending: true })
       .limit(UPCOMING_MATCHES_LIMIT);
 
     if (error) throw error;

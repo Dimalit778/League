@@ -6,7 +6,10 @@ const PLACEHOLDER_LOGO = 'https://domain.com/placeholder-logo.png';
 
 export type MatchCardTeam = {
   name: string;
+  tla: string;
   logo: string;
+  /** Raw football-data value, e.g. "Red / White" — parsed by TeamLogo. */
+  clubColors: string | null;
   score: number | null;
 };
 
@@ -51,13 +54,17 @@ export function mapMatchToCardData(match: MatchListItem, locale: string = 'en-GB
 
     home: {
       name: match.home_team?.shortName ?? '--',
+      tla: match.home_team?.tla ?? '--',
       logo: match.home_team?.logo ?? PLACEHOLDER_LOGO,
+      clubColors: match.home_team?.clubColors ?? null,
       score: match.score?.fullTime?.home ?? null,
     },
 
     away: {
       name: match.away_team?.shortName ?? '--',
+      tla: match.away_team?.tla ?? '--',
       logo: match.away_team?.logo ?? PLACEHOLDER_LOGO,
+      clubColors: match.away_team?.clubColors ?? null,
       score: match.score?.fullTime?.away ?? null,
     },
 

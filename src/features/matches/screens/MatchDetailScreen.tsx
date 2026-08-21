@@ -13,8 +13,6 @@ import type { MatchDetails } from '../types';
 
 function LoadedMatchDetails({ match }: { match: MatchDetails }) {
   const controller = useMatchDetailsController(match);
-  console.log('controller', JSON.stringify(controller, null, 2));
-  console.log('match', JSON.stringify(match, null, 2));
 
   return (
     <Screen edges={['bottom']}>
@@ -24,9 +22,13 @@ function LoadedMatchDetails({ match }: { match: MatchDetails }) {
         onPress={Keyboard.dismiss}
         accessible={false}
       >
-        <MatchHeroBackground height={controller.heroHeight} gradientColors={controller.heroGradientColors} />
-
-        <View style={{ height: controller.heroHeight, paddingTop: controller.insets.top }}>
+        <View
+          style={{
+            minHeight: controller.heroHeight,
+            paddingTop: controller.insets.top,
+          }}
+        >
+          <MatchHeroBackground gradientColors={controller.heroGradientColors} />
           <MatchHero
             match={match}
             memberPrediction={controller.memberPrediction}
@@ -35,7 +37,7 @@ function LoadedMatchDetails({ match }: { match: MatchDetails }) {
           />
         </View>
 
-        <View className="-mt-3 min-h-0 flex-1 overflow-hidden rounded-t-3xl border border-border bg-background">
+        <View className="-mt-4 min-h-0 flex-1 overflow-hidden rounded-t-3xl bg-background">
           <MatchContent match={match} canPredict={controller.presentation.canPredict} />
         </View>
 

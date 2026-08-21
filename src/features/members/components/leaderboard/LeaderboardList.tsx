@@ -29,7 +29,7 @@ export function LeaderboardRow({ member, position, isCurrentUser, clickable }: L
       )}
     >
       <View className="w-7 items-center">
-        <Text ltr className={cn('font-teko-bold text-[20px]', isCurrentUser ? 'text-primary' : 'text-muted')}>
+        <Text ltr className={cn('font-oswald-bold text-[20px]', isCurrentUser ? 'text-primary' : 'text-muted')}>
           {position}
         </Text>
       </View>

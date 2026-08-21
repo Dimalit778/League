@@ -33,7 +33,7 @@ jest.mock('@/features/matches/views/LeaguePhaseKnockoutView', () => {
 });
 const setup = (code: string, stages: string[]) => {
   jest.mocked(useGetCompetitionsDetails).mockReturnValue({
-    data: { code, type: code === 'CL' || code === 'WC' ? 'CUP' : 'LEAGUE', currentFixture: 1, currentStage: stages[0] ?? null },
+    data: { code, type: code === 'CL' || code === 'WC' ? 'CUP' : 'LEAGUE', currentMatchday: 1, currentStage: stages[0] ?? null },
     isLoading: false,
     error: null,
   } as any);

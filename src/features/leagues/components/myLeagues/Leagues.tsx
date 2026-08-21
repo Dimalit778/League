@@ -1,4 +1,4 @@
-import { Card, EmptyState, LogoBadge, Row, Section, Text } from '@/components';
+import { Card, EmptyState, MyImage, Row, Section, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
@@ -71,7 +71,7 @@ function LeagueCard({
         <View className={cn(spacing.list, isLocked && 'opacity-25')}>
           <Row between>
             <Row className="min-w-0 flex-1 gap-3">
-              <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={40} height={40} />
+              <MyImage source={league.competition_flag ?? ''} width={40} height={40} />
               <View className="min-w-0 flex-1 gap-0.5">
                 <Row className="gap-2">
                   <Text numberOfLines={1} className="shrink text-lg font-semibold">
@@ -164,9 +164,7 @@ export function Leagues({
   if (!myLeagues || myLeagues.length === 0)
     return <EmptyState title={t('No leagues found')} description={t('Create a league to get started')} />;
   const primaryLeague =
-    myLeagues.find(
-      (league) => league.active && league.is_primary && league.league_id === primaryLeagueId,
-    ) ??
+    myLeagues.find((league) => league.active && league.is_primary && league.league_id === primaryLeagueId) ??
     myLeagues.find((league) => league.active && league.is_primary) ??
     null;
   const otherLeagues = myLeagues

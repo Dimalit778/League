@@ -27,7 +27,7 @@ export default function MatchesScreen() {
   }
 
   const shape = resolveCompetitionShape(meta.code);
-  const currentFixture = meta.currentFixture ?? 1;
+  const currentFixture = meta.currentMatchday ?? 1;
   const currentStage = meta.currentStage ?? null;
 
   if (!shape) return <Error error={`Unsupported competition code: ${meta.code ?? 'missing'}`} />;
