@@ -10,11 +10,10 @@ describe('SignInScreen', () => {
     globalThis.testFormValues = {};
   });
 
-  it('renders the heading and subheading', () => {
+  it('renders the heading', () => {
     const { getByText } = render(<SignInScreen />);
 
     expect(getByText('Welcome Back')).toBeTruthy();
-    expect(getByText('Sign in to your account')).toBeTruthy();
   });
 
   it('renders email and password input fields', () => {
@@ -45,10 +44,18 @@ describe('SignInScreen', () => {
     expect(getByText('Create account')).toBeTruthy();
   });
 
-  it('renders Google Sign In option', () => {
+  it('renders the icon-only social sign in group', () => {
+    const { getByText, getByTestId } = render(<SignInScreen />);
+
+    expect(getByText('OR')).toBeTruthy();
+    expect(getByTestId('google-sign-in-button')).toBeTruthy();
+  });
+
+  it('renders a mode-switch prompt for new users', () => {
     const { getByText } = render(<SignInScreen />);
 
-    expect(getByText('Sign in with Google')).toBeTruthy();
+    expect(getByText("Don't have an account?")).toBeTruthy();
+    expect(getByText('Sign Up')).toBeTruthy();
   });
 
   it('renders sign in button as enabled when form is valid', async () => {

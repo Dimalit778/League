@@ -1,14 +1,13 @@
-import { Screen } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { Button, Screen, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useManageSubscription, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { usePaywall, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { useCallback, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
-  const manageSubscription = useManageSubscription();
+  const openPaywall = usePaywall();
   const restorePurchases = useRestorePurchases();
   const { subscription, isLoading, isOffline } = useRevenueCatSubscription();
   const [isRestoring, setIsRestoring] = useState(false);
@@ -46,14 +45,16 @@ export default function SubscriptionScreen() {
           )}
         </View>
 
-        <Button
-          label={subscription.isActive ? t('Manage Subscription') : t('Upgrade')}
-          variant="primary"
-          size="lg"
-          loading={isLoading}
-          disabled={isRestoring}
-          onPress={manageSubscription}
-        />
+        {!subscription.isActive && (
+          <Button
+            label={t('Upgrade')}
+            variant="primary"
+            size="lg"
+            loading={isLoading}
+            disabled={isRestoring}
+            onPress={openPaywall}
+          />
+        )}
 
         {Platform.OS !== 'web' && (
           <Button

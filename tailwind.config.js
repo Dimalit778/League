@@ -27,8 +27,8 @@ module.exports = {
         overlay: 'var(--color-overlay)',
       },
       fontFamily: {
-        teko: ['Teko_400Regular'],
-        'teko-bold': ['Teko_700Bold'],
+        oswald: ['Oswald_400Regular'],
+        'oswald-bold': ['Oswald_700Bold'],
       },
 
       maxWidth: {

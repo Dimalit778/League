@@ -1,9 +1,20 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Badge, Button, Card, Chip, EmptyState, Text } from '@/components/ui';
+import { Badge, Button, Card, Chip, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  AdminCardGrid,
+  AdminCollectionSummary,
+  AdminEmpty,
+  AdminErrorBanner,
+  AdminGridItem,
+  AdminMeta,
+  AdminPageHeader,
+} from '@/features/admin/components/AdminUI';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminContentReports, useModerateContentReport } from '@/features/admin/hooks/useAdmin';
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';
+import { ShieldCheck } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, View } from 'react-native';
 
@@ -31,13 +42,14 @@ const reasonLabels: Record<string, string> = {
 };
 
 export default function AdminReportsScreen() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const { colors } = useThemeTokens();
   const isFocused = useIsFocused();
   const [status, setStatus] = useState<ReportStatus>('pending');
   const reportsQuery = useAdminContentReports(status);
   const moderateReport = useModerateContentReport();
 
-  const onRefresh = useCallback(() => reportsQuery.refetch(), [reportsQuery]);
+  const onRefresh = useCallback(() => void reportsQuery.refetch(), [reportsQuery]);
 
   const confirmDecision = (reportId: string, decision: ModerationDecision) => {
     const title =
@@ -61,9 +73,7 @@ export default function AdminReportsScreen() {
         onPress: () =>
           moderateReport.mutate(
             { reportId, decision },
-            {
-              onError: (error) => Alert.alert(t('Error'), error.message),
-            },
+            { onError: (error) => Alert.alert(t('Error'), error.message) },
           ),
       },
     ]);
@@ -72,108 +82,149 @@ export default function AdminReportsScreen() {
   if (reportsQuery.isLoading && !reportsQuery.data) return <LoadingOverlay />;
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('Content Reports')} />
-      <View className="flex-row gap-2 px-4 py-3">
-        {statusOptions.map((option) => (
-          <Chip
-            key={option.value}
-            label={t(option.label)}
-            variant={status === option.value ? 'selected' : 'default'}
-            onPress={() => setStatus(option.value)}
-            className="flex-1"
-          />
-        ))}
-      </View>
-
+    <Screen edges={['bottom']}>
       <ScrollView
-        className="flex-1 px-4"
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
+            tintColor={colors.primary}
             refreshing={isFocused && reportsQuery.isRefetching}
             onRefresh={onRefresh}
           />
         }
       >
-        {reportsQuery.error ? (
-          <Text tone="error">{t('Unable to load content reports. Pull to refresh to try again.')}</Text>
-        ) : reportsQuery.data?.length === 0 ? (
-          <EmptyState variant="empty" title={t('No reports in this queue')} />
-        ) : (
-          <View className="gap-4 pb-16 pt-2">
-            {reportsQuery.data?.map((report) => (
-              <Card key={report.id} contentClassName="gap-3">
-                <View className="flex-row items-start justify-between gap-3">
-                  <View className="min-w-0 flex-1">
-                    <Text variant="subtitle">{t(contentLabels[report.content_type] ?? report.content_type)}</Text>
-                    <Text variant="bodySmall" tone="muted">
-                      {t(reasonLabels[report.reason] ?? report.reason)}
-                    </Text>
-                  </View>
-                  <Badge label={t(report.status === 'pending' ? 'Pending' : report.status === 'resolved' ? 'Resolved' : 'Dismissed')} />
-                </View>
+        <View className={ADMIN_CONTENT_CLASS}>
+          <AdminPageHeader
+            eyebrow={t('Safety')}
+            title={t('Content Reports')}
+            description={t('Review reported content and take clear, auditable moderation actions.')}
+          />
 
-                <View className="rounded-xl bg-subtle p-3">
-                  <Text variant="caption" tone="muted">{t('Reported content')}</Text>
-                  <Text numberOfLines={3}>{report.content_snapshot}</Text>
-                </View>
-
-                {report.details ? (
-                  <View>
-                    <Text variant="caption" tone="muted">{t('Reporter details')}</Text>
-                    <Text variant="bodySmall">{report.details}</Text>
-                  </View>
-                ) : null}
-
-                <View className="gap-1">
-                  <Text variant="bodySmall" tone="muted">
-                    {t('League')}: {report.league?.name ?? t('Unknown')}
-                  </Text>
-                  <Text variant="bodySmall" tone="muted">
-                    {t('Reported user')}: {report.target?.full_name ?? report.member?.nickname ?? t('Unknown')}
-                  </Text>
-                  <Text variant="bodySmall" tone="muted">
-                    {t('Reported by')}: {report.reporter?.email ?? t('Deleted Player')}
-                  </Text>
-                  <Text variant="caption" tone="muted">
-                    {new Date(report.created_at).toLocaleString()}
-                  </Text>
-                </View>
-
-                {report.status === 'pending' ? (
-                  <View className="gap-2">
-                    <View className="flex-row gap-2">
-                      <Button
-                        label={t('Dismiss')}
-                        variant="outline"
-                        className="flex-1"
-                        onPress={() => confirmDecision(report.id, 'dismiss')}
-                        disabled={moderateReport.isPending}
-                      />
-                      <Button
-                        label={t('Remove content')}
-                        variant="error"
-                        className="flex-1"
-                        onPress={() => confirmDecision(report.id, 'remove_content')}
-                        disabled={moderateReport.isPending}
-                      />
-                    </View>
-                    {report.league_member_id ? (
-                      <Button
-                        label={t('Remove member')}
-                        variant="outline"
-                        fullWidth
-                        className="border-error"
-                        onPress={() => confirmDecision(report.id, 'remove_member')}
-                        disabled={moderateReport.isPending}
-                      />
-                    ) : null}
-                  </View>
-                ) : null}
-              </Card>
+          <View className="mb-4 flex-row gap-2 rounded-2xl border border-border bg-surface p-1.5">
+            {statusOptions.map((option) => (
+              <Chip
+                key={option.value}
+                label={t(option.label)}
+                variant={status === option.value ? 'selected' : 'default'}
+                onPress={() => setStatus(option.value)}
+                className="flex-1 border-0"
+              />
             ))}
           </View>
-        )}
+
+          <AdminCollectionSummary
+            countLabel={t('{{count}} reports in this queue', { count: reportsQuery.data?.length ?? 0 })}
+            badgeLabel={t(status === 'pending' ? 'Needs review' : status === 'resolved' ? 'Resolved' : 'Dismissed')}
+          />
+
+          {reportsQuery.error ? (
+            <AdminErrorBanner message={t('Unable to load content reports. Pull to refresh to try again.')} />
+          ) : reportsQuery.data?.length === 0 ? (
+            <AdminEmpty
+              icon={ShieldCheck}
+              title={t('No reports in this queue')}
+              description={status === 'pending' ? t('There is nothing waiting for review.') : undefined}
+            />
+          ) : (
+            <AdminCardGrid>
+              {reportsQuery.data?.map((report) => (
+                <AdminGridItem key={report.id}>
+                  <Card className="h-full" contentClassName="min-h-[390px] gap-4">
+                    <View className="flex-row items-start justify-between gap-3">
+                      <View className="min-w-0 flex-1">
+                        <Text variant="subtitle">{t(contentLabels[report.content_type] ?? report.content_type)}</Text>
+                        <Text variant="bodySmall" tone="muted">
+                          {t(reasonLabels[report.reason] ?? report.reason)}
+                        </Text>
+                      </View>
+                      <Badge
+                        label={t(
+                          report.status === 'pending'
+                            ? 'Pending'
+                            : report.status === 'resolved'
+                              ? 'Resolved'
+                              : 'Dismissed',
+                        )}
+                        variant={report.status === 'pending' ? 'warning' : report.status === 'resolved' ? 'success' : 'default'}
+                      />
+                    </View>
+
+                    <View className="rounded-2xl border border-border bg-subtle p-3">
+                      <Text variant="caption" tone="muted">
+                        {t('Reported content')}
+                      </Text>
+                      <Text numberOfLines={3}>{report.content_snapshot}</Text>
+                    </View>
+
+                    {report.details ? (
+                      <AdminMeta label={t('Reporter details')} value={<Text variant="bodySmall">{report.details}</Text>} />
+                    ) : null}
+
+                    <View className="gap-2">
+                      <View className="flex-row gap-4">
+                        <AdminMeta label={t('League')} value={report.league?.name ?? t('Unknown')} className="flex-1" />
+                        <AdminMeta
+                          label={t('Reported user')}
+                          value={report.target?.full_name ?? report.member?.nickname ?? t('Unknown')}
+                          className="flex-1"
+                        />
+                      </View>
+                      <View className="flex-row gap-4">
+                        <AdminMeta
+                          label={t('Reported by')}
+                          value={report.reporter?.email ?? t('Deleted Player')}
+                          ltr
+                          className="flex-1"
+                        />
+                        <AdminMeta
+                          label={t('Submitted')}
+                          value={formatAdminDate(report.created_at, language)}
+                          className="flex-1"
+                        />
+                      </View>
+                    </View>
+
+                    {report.status === 'pending' ? (
+                      <View className="mt-auto gap-2 border-t border-border pt-3">
+                        <View className="flex-row gap-2">
+                          <Button
+                            label={t('Dismiss')}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onPress={() => confirmDecision(report.id, 'dismiss')}
+                            disabled={moderateReport.isPending}
+                          />
+                          <Button
+                            label={t('Remove content')}
+                            variant="error"
+                            size="sm"
+                            className="flex-1"
+                            onPress={() => confirmDecision(report.id, 'remove_content')}
+                            disabled={moderateReport.isPending}
+                          />
+                        </View>
+                        {report.league_member_id ? (
+                          <Button
+                            label={t('Remove member')}
+                            variant="outline"
+                            size="sm"
+                            fullWidth
+                            className="border-error/40"
+                            onPress={() => confirmDecision(report.id, 'remove_member')}
+                            disabled={moderateReport.isPending}
+                          />
+                        ) : null}
+                      </View>
+                    ) : null}
+                  </Card>
+                </AdminGridItem>
+              ))}
+            </AdminCardGrid>
+          )}
+        </View>
       </ScrollView>
     </Screen>
   );

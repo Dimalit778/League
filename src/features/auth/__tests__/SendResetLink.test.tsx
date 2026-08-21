@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { mockAuthActions, resetAuthMocks } from './setup';
-import SendResetLink from '../screens/SendResetLink';
+import SendResetLink from '../screens/ForgotPasswordScreen';
 
 describe('SendResetLink', () => {
   beforeEach(() => {
@@ -10,7 +10,7 @@ describe('SendResetLink', () => {
   it('renders the heading and description', () => {
     const { getByText } = render(<SendResetLink />);
 
-    expect(getByText('Reset Password')).toBeTruthy();
+    expect(getByText('Forgot your password?')).toBeTruthy();
     expect(getByText("Enter your email address and we'll send you a reset link")).toBeTruthy();
   });
 
@@ -24,12 +24,13 @@ describe('SendResetLink', () => {
     const { getByText } = render(<SendResetLink />);
 
     expect(getByText('Send Reset Link')).toBeTruthy();
+    expect(getByText('Contact support')).toBeTruthy();
   });
 
   it('renders a back button', () => {
-    const { getByTestId } = render(<SendResetLink />);
+    const { getByLabelText } = render(<SendResetLink />);
 
-    expect(getByTestId('lucide-icon')).toBeTruthy();
+    expect(getByLabelText('Back')).toBeTruthy();
   });
 
   it('enables button when valid email is entered', async () => {

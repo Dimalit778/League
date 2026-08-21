@@ -1,4 +1,4 @@
-import { AvatarImage, Button } from '@/components/ui';
+import { AvatarImage, Button } from '@/components';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -53,7 +53,7 @@ export function ProfileHeroCard() {
         title: t('Error'),
         message: t('Failed to pick image'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };
@@ -77,7 +77,7 @@ export function ProfileHeroCard() {
         title: t('Error'),
         message: t('Failed to upload image'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
       setImage(previousImageRef.current);
     }

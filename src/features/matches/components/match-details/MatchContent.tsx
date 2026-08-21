@@ -1,16 +1,16 @@
 import AiAnalysisCard from '@/features/matches/components/match-details/AiAnalysisCard';
-import { MatchWithPredictions } from '@/features/matches/types';
-import TabsContent from './TabsContent';
+import { MatchDetails } from '@/features/matches/types';
+import MatchDetailsTabs from './MatchDetailsTabs';
 
 interface MatchContentProps {
-  match: MatchWithPredictions;
-  isScheduled: boolean;
+  match: MatchDetails;
+  canPredict: boolean;
 }
 
-export default function MatchContent({ match, isScheduled }: MatchContentProps) {
-  if (isScheduled) {
+export default function MatchContent({ match, canPredict }: MatchContentProps) {
+  if (canPredict) {
     return <AiAnalysisCard match={match} />;
   }
 
-  return <TabsContent match={match} />;
+  return <MatchDetailsTabs match={match} />;
 }

@@ -72,9 +72,14 @@ describe('formatDateRange', () => {
 });
 
 describe('formatMatchdayDate', () => {
-  it('formats a matchday date with day abbreviation', () => {
-    const result = formatMatchdayDate('2024-03-15T12:00:00Z');
-    // Should contain day abbreviation and date
-    expect(result).toMatch(/\w+, \d{1,2}\/\d{1,2}/);
+  it('formats a matchday date with an English day abbreviation', () => {
+    expect(formatMatchdayDate('2024-03-15T12:00:00Z', 'en-GB')).toBe('Fri, 15/3');
+  });
+
+  it('formats the abbreviated day name in Hebrew', () => {
+    const result = formatMatchdayDate('2024-03-15T12:00:00Z', 'he-IL');
+
+    expect(result).toMatch(/[\u0590-\u05FF]/);
+    expect(result).toContain('15/3');
   });
 });

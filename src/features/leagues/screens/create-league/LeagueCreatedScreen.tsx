@@ -1,5 +1,4 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { Button, Card, Divider, LogoBadge, Text } from '@/components/ui';
+import { Button, Card, Divider, LoadingOverlay, LogoBadge, Screen, Text } from '@/components';
 import { useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
@@ -18,10 +17,10 @@ const LeagueCreatedScreen = () => {
     if (typeof leagueData?.join_code === 'string') {
       await Clipboard.setStringAsync(leagueData?.join_code || '');
       showAlert({
-        title: 'Copied!',
-        message: 'Join code copied to clipboard.',
+        title: t('Copied!'),
+        message: t('Join code copied to clipboard.'),
         type: 'success',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };

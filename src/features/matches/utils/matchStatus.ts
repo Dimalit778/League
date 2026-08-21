@@ -8,6 +8,7 @@ const getMatchStatus = (status: string | null | undefined): 'SCHEDULED' | 'LIVE'
   }
   if (
     normalized === 'IN_PLAY' ||
+    normalized === 'LIVE' ||
     normalized === 'PAUSED' ||
     normalized === 'EXTRA_TIME' ||
     normalized === 'PENALTY_SHOOTOUT'

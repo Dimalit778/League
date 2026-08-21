@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Champo iPad readiness research</title>
+  <style>
+    :root{color-scheme:dark;--bg:#05070d;--panel:#101726;--line:#263247;--text:#f5f7fb;--muted:#aab5c7;--accent:#38d996;--warn:#ffc857}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#142a34 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1120px;margin:auto;padding:56px 24px 80px}h1{font-size:clamp(34px,7vw,72px);line-height:.95;margin:10px 0 20px;max-width:850px}h2{font-size:25px;margin:48px 0 16px}h3{margin:0 0 8px}.eyebrow,.tag{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.lead{font-size:19px;color:var(--muted);max-width:780px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(145deg,#121b2c,#0d1420);border:1px solid var(--line);border-radius:18px;padding:18px}.card p{color:var(--muted);margin:7px 0}.fact{border-left:3px solid var(--accent);padding-left:10px}.claim{border-left:3px solid #65a9ff;padding-left:10px}.inference{border-left:3px solid var(--warn);padding-left:10px}.recommendation{border-left:3px solid #cf87ff;padding-left:10px}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.step{padding:16px;border-radius:14px;background:#111b2b;border:1px solid var(--line);text-align:center}.matrix{width:100%;border-collapse:collapse;background:#0d1420}.matrix th,.matrix td{border:1px solid var(--line);padding:12px;text-align:left;vertical-align:top}.matrix th{background:#152034}.visual{width:100%;height:190px;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:#0a101a}.sources a{color:#83bcff}.note{color:var(--muted);font-size:13px}@media(max-width:650px){main{padding:34px 16px}.flow{grid-template-columns:1fr}.matrix{font-size:13px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">Design research · 15 Aug 2026</div>
+  <h1>Champo on iPad</h1>
+  <p class="lead">Scope: make the existing Expo app a credible universal iPhone/iPad release without replacing its familiar four-tab information architecture.</p>
+
+  <h2>Synthesis</h2>
+  <div class="grid">
+    <article class="card"><h3>Keep the tabs</h3><p class="recommendation"><b>Recommendation.</b> Four stable primary destinations fit Apple’s tab-bar model and do not justify a permanent sidebar yet.</p></article>
+    <article class="card"><h3>Design for width, not device name</h3><p class="claim"><b>Source-reported claim.</b> iPad windows can move between compact, intermediate and regular widths.</p></article>
+    <article class="card"><h3>Protect readability</h3><p class="recommendation"><b>Recommendation.</b> Center content and cap line/card width while allowing backgrounds and safe areas to fill the window.</p></article>
+  </div>
+
+  <h2>Input analysis</h2>
+  <div class="grid">
+    <article class="card"><p class="fact"><b>Observed fact.</b> <code>ios.supportsTablet</code> is already true and orientation is <code>default</code>.</p></article>
+    <article class="card"><p class="fact"><b>Observed fact.</b> Shared screens use max-width tokens from 384px through 896px and responsive horizontal padding.</p></article>
+    <article class="card"><p class="fact"><b>Observed fact.</b> The floating bottom tabs are capped at 720px, preventing excessive reach on wide iPads.</p></article>
+    <article class="card"><p class="inference"><b>Inference.</b> The main release risk is verification across resizable widths, RTL and Dynamic Type—not an absent tablet flag.</p></article>
+  </div>
+
+  <h2>Reference set</h2>
+  <div class="grid">
+    <article class="card"><h3>Apple · Split views</h3><p class="claim"><b>Source-reported claim.</b> Interfaces must remain useful at narrow, intermediate and regular widths.</p></article>
+    <article class="card"><h3>Apple · Sidebars</h3><p class="claim"><b>Source-reported claim.</b> Sidebars are valuable when space and hierarchy warrant them, and may adapt with width.</p></article>
+    <article class="card"><h3>Apple · Tab bars</h3><p class="claim"><b>Source-reported claim.</b> A tab bar is appropriate for persistent top-level destinations and should remain stable.</p></article>
+    <article class="card"><h3>Apple · Typography</h3><p class="claim"><b>Source-reported claim.</b> Dynamic Type should be tested on both iPhone and iPad, with layouts adapting around it.</p></article>
+    <article class="card"><h3>React Navigation · Safe areas</h3><p class="claim"><b>Source-reported claim.</b> Safe-area insets prevent controls and content from colliding with system UI.</p></article>
+  </div>
+
+  <h2>Structural evidence</h2>
+  <div class="grid">
+    <article class="card"><img class="visual" alt="Wide iPad layout schematic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='420'%3E%3Crect width='900' height='420' fill='%23070b12'/%3E%3Crect x='145' y='30' width='610' height='330' rx='25' fill='%23131d2d' stroke='%2338d996' stroke-width='3'/%3E%3Crect x='245' y='72' width='410' height='70' rx='14' fill='%23202e42'/%3E%3Crect x='245' y='160' width='410' height='120' rx='14' fill='%23192535'/%3E%3Crect x='210' y='315' width='480' height='40' rx='20' fill='%23202e42'/%3E%3Ctext x='450' y='112' text-anchor='middle' fill='%23f5f7fb' font-family='sans-serif' font-size='24'%3ECentered readable content%3C/text%3E%3C/svg%3E"/><p class="recommendation"><b>Recommendation.</b> Wide background, bounded content, bounded navigation.</p></article>
+    <article class="card"><img class="visual" alt="Compact split view layout schematic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='420'%3E%3Crect width='900' height='420' fill='%23070b12'/%3E%3Crect x='285' y='25' width='330' height='350' rx='22' fill='%23131d2d' stroke='%2365a9ff' stroke-width='3'/%3E%3Crect x='310' y='65' width='280' height='70' rx='14' fill='%23202e42'/%3E%3Crect x='310' y='150' width='280' height='140' rx='14' fill='%23192535'/%3E%3Crect x='315' y='320' width='270' height='38' rx='19' fill='%23202e42'/%3E%3Ctext x='450' y='108' text-anchor='middle' fill='%23f5f7fb' font-family='sans-serif' font-size='22'%3ECompact window%3C/text%3E%3C/svg%3E"/><p class="recommendation"><b>Recommendation.</b> The same flow survives Split View without a navigation-mode switch.</p></article>
+  </div>
+
+  <h2>Flow comparison</h2>
+  <div class="flow"><div class="step">Launch<br><span class="tag">same</span></div><div class="step">Choose tab<br><span class="tag">same</span></div><div class="step">Read / act<br><span class="tag">width-adaptive</span></div></div>
+  <p class="inference"><b>Inference.</b> Preserving this sequence reduces first-run relearning and makes phone/tablet screenshots and QA directly comparable.</p>
+
+  <h2>Pattern matrix</h2>
+  <table class="matrix"><thead><tr><th>Pattern</th><th>Narrow / Split View</th><th>Wide / landscape</th><th>Decision</th></tr></thead><tbody>
+    <tr><td>Bottom tabs</td><td>Natural fit</td><td>Centered, max 720px</td><td class="recommendation"><b>Recommendation.</b> Keep</td></tr>
+    <tr><td>Permanent sidebar</td><td>Must collapse</td><td>Useful for deeper hierarchies</td><td class="recommendation"><b>Recommendation.</b> Defer</td></tr>
+    <tr><td>Full-width cards/text</td><td>Acceptable</td><td>Hard to scan</td><td class="recommendation"><b>Recommendation.</b> Avoid</td></tr>
+    <tr><td>Centered content column</td><td>Fills available width</td><td>Maintains readable measure</td><td class="recommendation"><b>Recommendation.</b> Standardize</td></tr>
+  </tbody></table>
+
+  <h2>Leaders and fast first run</h2>
+  <p class="inference"><b>Inference.</b> Apple’s own adaptive navigation APIs are the reference leader: the navigation structure may change when width changes, but task continuity should not.</p>
+  <p class="recommendation"><b>Recommendation.</b> Champo’s fastest first run is identical on phone and tablet: authenticate, select a league, land on Home, then discover Matches, Leaderboard and Profile in the same fixed order.</p>
+
+  <h2>Risks and proposed experience</h2>
+  <div class="grid">
+    <article class="card"><h3>Resize</h3><p class="recommendation"><b>Recommendation.</b> Test full-screen portrait/landscape and narrow Split View; no clipped buttons, fixed widths or stale orientation assumptions.</p></article>
+    <article class="card"><h3>Language</h3><p class="recommendation"><b>Recommendation.</b> Exercise Hebrew RTL and English at every target width, including long labels.</p></article>
+    <article class="card"><h3>Accessibility</h3><p class="recommendation"><b>Recommendation.</b> Verify large Dynamic Type and keyboard/focus behavior where hardware keyboards are supported.</p></article>
+    <article class="card"><h3>Store delivery</h3><p class="recommendation"><b>Recommendation.</b> Confirm final IPA device family and provide required iPad screenshots before TestFlight/App Store review.</p></article>
+  </div>
+
+  <h2>Sources and limitations</h2>
+  <div class="card sources">
+    <p><a href="https://developer.apple.com/design/human-interface-guidelines/split-views">Apple HIG: Split views</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/sidebars">Sidebars</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/tab-bars">Tab bars</a> · <a href="https://developer.apple.com/design/human-interface-guidelines/typography">Typography</a> · <a href="https://reactnavigation.org/docs/handling-safe-area/">React Navigation: Safe areas</a></p>
+    <p class="note"><b>Limitation.</b> No proprietary product screenshots were supplied or reproduced. The embedded visuals are original structural diagrams; conclusions combine official platform guidance with static inspection of the Champo repository. Native device QA remains required.</p>
+  </div>
+</main></body></html>

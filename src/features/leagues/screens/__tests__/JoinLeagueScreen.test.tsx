@@ -35,8 +35,8 @@ describe('JoinLeagueScreen', () => {
     expect(getByText('How to Join a League')).toBeTruthy();
   });
 
-  it('renders Join League button', () => {
+  it('renders invite-code guidance', () => {
     const { getByText } = render(<JoinLeagueScreen />);
-    expect(getByText('Join League')).toBeTruthy();
+    expect(getByText('Ask the league owner for the invite code')).toBeTruthy();
   });
 });

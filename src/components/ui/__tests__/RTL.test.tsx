@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { ListItem } from '../ListItem';
-import { Section } from '@/components/layout/Section';
+import { Section } from '../../layout/Section';
 
 jest.mock('@/providers/LanguageProvider', () => ({
   useIsRTL: () => true,

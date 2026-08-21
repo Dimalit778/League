@@ -1,43 +1,36 @@
 import { syncSubscriptionToServerUntilPro } from '@/features/subscription/api/subscriptionApi';
-import {
-  hasActiveEntitlement,
-  PRO_ENTITLEMENT,
-  usePaywall,
-  useRevenueCatSubscription,
-} from '@/lib/revenuecat/purchases';
+import { usePaywall, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 
 /**
  * Pro-gate helper shared by flows that unlock paid features.
- * `ensureProAccess` re-checks the entitlement against RevenueCat before and
- * after showing the paywall, so a stale local subscription state can't
- * grant or deny access incorrectly.
  *
  * Client entitlement alone is not enough: server RPCs (e.g. create_new_league)
- * gate on the `user_subscriptions` table, which can lag behind RevenueCat.
- * Before granting access we therefore also confirm the server sees `pro`,
- * syncing with retries. This closes the desync where the client is pro but the
- * server still returns free and the action fails with a cryptic "Plan limit".
+ * gate on the `user_subscriptions` table, which can lag behind — or outlast —
+ * RevenueCat. The season-bounded Pro window in particular means a stale local
+ * RevenueCat entitlement (e.g. from a past season) must never grant access on
+ * its own, so `ensureProAccess` treats the server as the source of truth.
  */
 export const useEnsureProAccess = () => {
   const openPaywall = usePaywall();
-  const { subscription, refreshCustomerInfo } = useRevenueCatSubscription();
+  const { subscription } = useRevenueCatSubscription();
 
   const isPro = !!subscription.isActive;
 
   const ensureProAccess = async (): Promise<boolean> => {
-    let hasClientPro = hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
-
-    if (!hasClientPro) {
-      const purchased = await openPaywall();
-      if (!purchased) return false;
-      hasClientPro = hasActiveEntitlement(await refreshCustomerInfo(), PRO_ENTITLEMENT);
+    // Server is the source of truth for the season-bounded Pro window. A stale
+    // RevenueCat entitlement (e.g. a past season) must not grant access.
+    try {
+      const serverResult = await syncSubscriptionToServerUntilPro();
+      if (serverResult?.plan === 'pro') {
+        return true;
+      }
+    } catch (error) {
+      console.warn('[Subscription] Server pro check failed:', error);
     }
 
-    if (!hasClientPro) return false;
-
-    // Client is pro — make sure the server row agrees before proceeding.
-    const serverResult = await syncSubscriptionToServerUntilPro();
-    return serverResult?.plan === 'pro';
+    // Server did not confirm Pro (free, expired season, or sync failure): let the
+    // user (re)purchase. `openPaywall` resolves true only after the server confirms.
+    return openPaywall();
   };
 
   return { isPro, openPaywall, ensureProAccess };

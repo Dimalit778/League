@@ -1,5 +1,4 @@
-import { Section } from '@/components/layout';
-import { ListItem, Text } from '@/components/ui';
+import { ListItem, Section, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useNotificationPermission } from '@/providers/NotificationProvider';
@@ -136,6 +135,7 @@ const SettingsContent = () => {
       label: t('Plan'),
       icon: <CreditCard size={iconSize} color={colors.text} strokeWidth={1.5} />,
       rightContent: subscriptionType,
+      path: '/settings/subscription' as RelativePathString,
     },
   ];
 

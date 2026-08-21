@@ -6,12 +6,7 @@ export const MATCH_CARD_VIEWBOX_WIDTH = 360;
 export const MATCH_CARD_VIEWBOX_HEIGHT = 110;
 
 // ponytail: shared silhouette so shadow keeps the prediction notch (plain Rect leaked a stripe under it)
-const MATCH_CARD_PATH = `
-  M 32 6
-  H 108
-  C 124 8 132 30 144 30
-  H 216
-  C 228 30 236 8 252 6
+const MATCH_CARD_BODY = `
   H 328
   C 342 6 352 15 352 26
   V 82
@@ -27,20 +22,56 @@ const MATCH_CARD_PATH = `
   Z
 `;
 
+const MATCH_CARD_PATH = `
+  M 32 6
+  H 108
+  C 124 8 132 30 144 30
+  H 216
+  C 228 30 236 8 252 6
+  ${MATCH_CARD_BODY}
+`;
+
+const MATCH_CARD_PATH_FLAT_TOP = `
+  M 32 6
+  ${MATCH_CARD_BODY}
+`;
+
+const MATCH_CARD_HIGHLIGHT_PATH = `
+  M 32 7
+  H 108
+  C 124 9 132 30 144 30
+  H 216
+  C 228 30 236 9 252 7
+  H 328
+  C 340 7 348 14 351 23
+  H 9
+  C 12 14 20 7 32 7
+  Z
+`;
+
+const MATCH_CARD_HIGHLIGHT_PATH_FLAT_TOP = `
+  M 32 7
+  H 328
+  C 340 7 348 14 351 23
+  H 9
+  C 12 14 20 7 32 7
+  Z
+`;
+
 export const MATCH_CARD_HORIZONTAL_PADDING = 32;
 const MATCH_CARD_HEIGHT_SCALE = 0.945;
 const MATCH_CARD_GAP = 8;
 const MATCH_CARD_CENTER_WIDTH = 82;
-const MATCH_CARD_LOGO_MAX = 38;
+const MATCH_CARD_LOGO_MAX = 44;
 
 export const MATCH_CARD_LAYOUT = {
   dateTabCenterY: 18 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabTopY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabHeight: 28 / MATCH_CARD_VIEWBOX_HEIGHT,
   contentTopY: 32 / MATCH_CARD_VIEWBOX_HEIGHT,
-  contentBottomY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
+  contentBottomY: 82 / MATCH_CARD_VIEWBOX_HEIGHT,
 
-  dateTabTextOffset: 8,
+  dateTabTextOffset: 6,
 } as const;
 
 export function getMatchCardMetrics(screenWidth: number) {
@@ -62,7 +93,7 @@ export function getMatchCardMetrics(screenWidth: number) {
   const predictionTop = height * MATCH_CARD_LAYOUT.predictionTabTopY;
   const predictionHeight = height * MATCH_CARD_LAYOUT.predictionTabHeight;
 
-  const logoBoxSize = Math.min(teamWidth * 0.65, height * 0.42, MATCH_CARD_LOGO_MAX);
+  const logoBoxSize = Math.min(teamWidth * 0.7, height * 0.45, MATCH_CARD_LOGO_MAX);
 
   return {
     width,
@@ -83,12 +114,15 @@ type Props = {
   width: number;
   height: number;
   predictionStatus?: PredictionDisplayStatus;
+  showDateTab?: boolean;
 };
 
-export function MatchCardBg({ width, height, predictionStatus = 'none' }: Props) {
+export function MatchCardBg({ width, height, predictionStatus = 'none', showDateTab = true }: Props) {
   const { theme, colors } = useThemeTokens();
   const predictionColor =
     predictionStatus === 'correct' ? colors.success : predictionStatus === 'incorrect' ? colors.error : colors.border;
+  const cardPath = showDateTab ? MATCH_CARD_PATH : MATCH_CARD_PATH_FLAT_TOP;
+  const highlightPath = showDateTab ? MATCH_CARD_HIGHLIGHT_PATH : MATCH_CARD_HIGHLIGHT_PATH_FLAT_TOP;
 
   return (
     <Svg
@@ -125,55 +159,28 @@ export function MatchCardBg({ width, height, predictionStatus = 'none' }: Props)
       </Defs>
 
       {/* Shadow — same notch as card so it doesn't peek under the prediction tab */}
-      <Path
-        d={MATCH_CARD_PATH}
-        transform="translate(1, 1.5)"
-        fill={colors.text}
-        opacity={theme === 'dark' ? 0.2 : 0.08}
-      />
+      <Path d={cardPath} transform="translate(1, 1.5)" fill={colors.text} opacity={theme === 'dark' ? 0.2 : 0.08} />
 
       {/* Main card */}
-      <Path d={MATCH_CARD_PATH} fill="url(#match-card-background)" stroke={colors.border} strokeWidth="1.25" />
+      <Path d={cardPath} fill="url(#match-card-background)" stroke={colors.border} strokeWidth="1.25" />
 
       {/* Subtle top highlight */}
-      <Path
-        d="
-          M 32 7
+      <Path d={highlightPath} fill="url(#match-card-highlight)" />
 
-          H 108
-          C 124 9 132 30 144 30
-
-          H 216
-          C 228 30 236 9 252 7
-
-          H 328
-          C 340 7 348 14 351 23
-
-          H 9
-          C 12 14 20 7 32 7
-
-          Z
-        "
-        fill="url(#match-card-highlight)"
-      />
-
-      {/* Date tab */}
-      <Path
-        d="
-          M 115 9
-
-          C 127 23 133 30 144 30
-
-          H 216
-
-          C 227 30 233 23 245 9
-
-          Z
-        "
-        fill="url(#match-date-tab-background)"
-        stroke={colors.border}
-        strokeWidth="1.2"
-      />
+      {showDateTab ? (
+        <Path
+          d="
+            M 115 9
+            C 127 23 133 30 144 30
+            H 216
+            C 227 30 233 23 245 9
+            Z
+          "
+          fill="url(#match-date-tab-background)"
+          stroke={colors.border}
+          strokeWidth="1.2"
+        />
+      ) : null}
 
       {/* Prediction tab — bottom edge matches card notch (y=104) */}
       <Path

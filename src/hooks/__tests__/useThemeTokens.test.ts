@@ -19,6 +19,7 @@ describe('useThemeTokens', () => {
     expect(result.current.spacing[4]).toBe(16);
     expect(result.current.radius.lg).toBe(16);
     expect(result.current.gradients.hero).toHaveLength(3);
-    expect(result.current.fonts.headingBold).toBe('Teko_700Bold');
+    expect(result.current.effects.cardGlow).toEqual(expect.any(String));
+    expect(result.current.fonts.headingBold).toBe('Oswald_700Bold');
   });
 });

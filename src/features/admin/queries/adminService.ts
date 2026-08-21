@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase';
 import { ContentReportWithRelations, ModerationDecision, ReportStatus } from '@/features/moderation/types';
+import { supabase } from '@/lib/supabase';
 import { Tables, TablesInsert } from '@/types/database.types';
 
 type DashboardCounts = {
@@ -31,10 +31,10 @@ type PredictionWithRelations = Tables<'predictions'> & {
 };
 
 export const adminService = {
-  async isAdmin() {
-    const { data, error } = await supabase.from('admin_users').select('user_id').maybeSingle();
+  async isAdmin(): Promise<boolean> {
+    const { data, error } = await supabase.rpc('is_admin');
     if (error) throw error;
-    return !!data;
+    return data === true;
   },
   async getDashboardCounts(): Promise<DashboardCounts> {
     const countTable = async (

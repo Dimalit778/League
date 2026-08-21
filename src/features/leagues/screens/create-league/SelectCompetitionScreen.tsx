@@ -1,5 +1,4 @@
-import { Error, LoadingOverlay, Screen } from '@/components/layout';
-import { Button } from '@/components/ui';
+import { Button, Error, LoadingOverlay, Screen } from '@/components';
 import CompetitionCard from '@/features/leagues/components/createLeague/CompetitionCard';
 import { useGetCompetitions } from '@/features/leagues/hooks/useCompetition';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
@@ -7,7 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Tables } from '@/types/database.types';
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import CompetitionsSkeleton from '../../components/createLeague/CompetitionsSkeletion';
 
 type Competition = Tables<'competitions'>;
@@ -62,12 +61,14 @@ const SelectCompetitionScreen = () => {
 
   const renderItem = useCallback(
     ({ item: comp }: { item: Competition }) => (
-      <CompetitionCard
-        competition={comp}
-        isSelected={selectedCompetition?.id === comp.id}
-        isLocked={requiresUpgrade(comp)}
-        onPress={handleSelectCompetition}
-      />
+      <View className="flex-1">
+        <CompetitionCard
+          competition={comp}
+          isSelected={selectedCompetition?.id === comp.id}
+          isLocked={requiresUpgrade(comp)}
+          onPress={handleSelectCompetition}
+        />
+      </View>
     ),
     [selectedCompetition, requiresUpgrade, handleSelectCompetition],
   );
@@ -83,6 +84,8 @@ const SelectCompetitionScreen = () => {
       <FlatList
         data={competitions ?? []}
         keyExtractor={(comp) => String(comp.id)}
+        numColumns={2}
+        columnWrapperStyle={{ gap: 12 }}
         contentContainerStyle={{ paddingHorizontal: 18, gap: 12, paddingBottom: 16 }}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}

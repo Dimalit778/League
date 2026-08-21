@@ -64,6 +64,11 @@ jest.mock('expo-router', () => ({
     back: jest.fn(),
   }),
   useLocalSearchParams: jest.fn(() => ({})),
+  useIsFocused: jest.fn(() => true),
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const React = require('react');
+    React.useEffect(callback, [callback]);
+  },
   Link: ({ children, href, asChild }: any) => {
     const React = require('react');
     const { Pressable, View } = require('react-native');
@@ -109,22 +114,39 @@ jest.mock('@/hooks/useThemeTokens', () => ({
     gradients: {
       hero: ['#000', '#111', '#222'],
       premium: ['#111', '#222', '#333'],
+      card: ['#000', '#111', '#222'],
+      cardActive: ['#111', '#222', '#333'],
+    },
+    effects: {
+      cardBorder: 'rgba(255,255,255,0.2)',
+      cardHighlight: 'rgba(255,255,255,0.1)',
+      cardGlow: 'rgba(0,0,0,0.1)',
+      cardActiveGlow: 'rgba(255,200,0,0.2)',
+      cardShadow: '#000',
     },
     spacing: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32, 10: 40, 12: 48 },
     radius: { sm: 8, md: 12, lg: 16, xl: 24, full: 999 },
   }),
 }));
 
-jest.mock('@/hooks/useTranslation', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    language: 'en',
-    setLanguage: jest.fn(),
-    toggleLanguage: jest.fn(),
-    isRTL: false,
-    availableLanguages: ['en', 'he'],
-  }),
-}));
+jest.mock('@/hooks/useTranslation', () => {
+  const t = (key: string, variables?: Record<string, string | number>) =>
+    Object.entries(variables ?? {}).reduce(
+      (result, [name, value]) => result.replace(new RegExp(`{{\\s*${name}\\s*}}`, 'g'), String(value)),
+      key,
+    );
+
+  return {
+    useTranslation: () => ({
+      t,
+      language: 'en',
+      setLanguage: jest.fn(),
+      toggleLanguage: jest.fn(),
+      isRTL: false,
+      availableLanguages: ['en', 'he'],
+    }),
+  };
+});
 
 jest.mock('@/providers/LanguageProvider', () => ({
   useIsRTL: () => false,
@@ -211,7 +233,11 @@ jest.mock('react-native-purchases', () => ({
   __esModule: true,
   default: {
     invalidateCustomerInfoCache: jest.fn(() => Promise.resolve()),
+    setLogLevel: jest.fn(),
     getCustomerInfo: jest.fn(() => Promise.resolve(null)),
+    getOfferings: jest.fn(() => Promise.resolve({ current: null, all: {} })),
+    purchasePackage: jest.fn(() => Promise.resolve({ customerInfo: null })),
+    restorePurchases: jest.fn(() => Promise.resolve(null)),
     isConfigured: jest.fn(() => Promise.resolve(true)),
     configure: jest.fn(),
     getAppUserID: jest.fn(() => Promise.resolve('user-1')),
@@ -220,20 +246,14 @@ jest.mock('react-native-purchases', () => ({
     addCustomerInfoUpdateListener: jest.fn(),
     removeCustomerInfoUpdateListener: jest.fn(),
   },
-}));
-
-jest.mock('react-native-purchases-ui', () => ({
-  __esModule: true,
-  default: {
-    presentPaywallIfNeeded: jest.fn(() => Promise.resolve('NOT_PRESENTED')),
+  PURCHASES_ERROR_CODE: {
+    PURCHASE_CANCELLED_ERROR: '1',
   },
-  PAYWALL_RESULT: {
-    PURCHASED: 'PURCHASED',
-    RESTORED: 'RESTORED',
-    NOT_PRESENTED: 'NOT_PRESENTED',
-    CANCELLED: 'CANCELLED',
-    ERROR: 'ERROR',
+  PRODUCT_TYPE: {
+    AUTO_RENEWABLE_SUBSCRIPTION: 'AUTO_RENEWABLE_SUBSCRIPTION',
+    UNKNOWN: 'UNKNOWN',
   },
+  LOG_LEVEL: { DEBUG: 'DEBUG' },
 }));
 
 jest.mock('@/lib/revenuecat/purchases', () => ({
@@ -319,14 +339,19 @@ jest.mock('expo-haptics', () => ({
 
 jest.mock('react-native-reanimated', () => {
   const React = require('react');
-  const { View } = require('react-native');
+  const { View, ScrollView } = require('react-native');
   const AnimatedView = React.forwardRef((props: any, ref: any) => React.createElement(View, { ...props, ref }));
   AnimatedView.displayName = 'AnimatedView';
+  const AnimatedScrollView = React.forwardRef((props: any, ref: any) =>
+    React.createElement(ScrollView, { ...props, ref }),
+  );
+  AnimatedScrollView.displayName = 'AnimatedScrollView';
 
   return {
     __esModule: true,
     default: {
       View: AnimatedView,
+      ScrollView: AnimatedScrollView,
       createAnimatedComponent: (Component: any) => Component,
     },
     cancelAnimation: jest.fn(),
@@ -338,11 +363,13 @@ jest.mock('react-native-reanimated', () => {
       out: (value: any) => value,
       inOut: (value: any) => value,
     },
+    Extrapolation: { CLAMP: 'clamp', EXTEND: 'extend', IDENTITY: 'identity' },
     interpolate: (_value: number, _input: number[], output: number[]) => output[0],
     interpolateColor: (_value: number, _input: number[], output: string[]) => output[0],
     useSharedValue: jest.fn((init: any) => ({ value: init })),
     useAnimatedProps: jest.fn((factory: () => object) => factory()),
     useAnimatedStyle: jest.fn(() => ({})),
+    useAnimatedScrollHandler: jest.fn(() => jest.fn()),
     withSpring: jest.fn((val: any) => val),
     withTiming: jest.fn((val: any) => val),
     withRepeat: jest.fn((val: any) => val),
@@ -492,6 +519,9 @@ jest.mock('@/lib/supabase', () => ({
 }));
 
 jest.mock('@tanstack/react-query', () => ({
+  focusManager: {
+    setFocused: jest.fn(),
+  },
   useQueryClient: jest.fn(() => ({
     invalidateQueries: jest.fn(),
     setQueryData: jest.fn(),
@@ -517,40 +547,8 @@ jest.mock('@tanstack/react-query', () => ({
 jest.mock('@react-native-community/netinfo', () => ({
   addEventListener: jest.fn(() => jest.fn()),
   fetch: jest.fn(() => Promise.resolve({ isConnected: true, isInternetReachable: true })),
+  refresh: jest.fn(() => Promise.resolve({ isConnected: true, isInternetReachable: true })),
   useNetInfo: jest.fn(() => ({ isConnected: true, isInternetReachable: true })),
-}));
-
-jest.mock('react-native-purchases', () => ({
-  __esModule: true,
-  default: {
-    configure: jest.fn(),
-    setLogLevel: jest.fn(),
-    logIn: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
-    logOut: jest.fn(() => Promise.resolve({ customerInfo: { entitlements: { active: {} } } })),
-    getOfferings: jest.fn(() =>
-      Promise.resolve({
-        current: {
-          monthly: { identifier: '$rc_monthly' },
-        },
-      })
-    ),
-    purchasePackage: jest.fn(() =>
-      Promise.resolve({
-        customerInfo: { entitlements: { active: { pro: {} } } },
-      })
-    ),
-    restorePurchases: jest.fn(() =>
-      Promise.resolve({
-        entitlements: { active: { pro: {} } },
-      })
-    ),
-    getCustomerInfo: jest.fn(() =>
-      Promise.resolve({
-        entitlements: { active: {} },
-      })
-    ),
-  },
-  LOG_LEVEL: { DEBUG: 'DEBUG' },
 }));
 
 // Global form values storage for tests

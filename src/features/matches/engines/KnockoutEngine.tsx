@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { Text } from '@/components/ui';
+import { Row, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
@@ -7,7 +6,7 @@ import { FlatList, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
 import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/MatchCardBg';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import { getKnockoutStages, getStageLabel } from '../utils/tournamentMatches';
 import { KnockoutStageTabs } from './shared/TournamentTabs';
@@ -16,24 +15,19 @@ import { TIE_BRACKET_RAIL_WIDTH } from './tieBracketGeometry';
 
 function TieBlock({ tie }: { tie: Tie }) {
   const { width: screenWidth } = useWindowDimensions();
+  const { language } = useTranslation();
+  const locale = language === 'he' ? 'he-IL' : 'en-GB';
 
   // Reserve a real rail so stubs can meet a spine and exit — not just two parallel lines.
   const layoutWidth = screenWidth - TIE_BRACKET_RAIL_WIDTH + MATCH_CARD_HORIZONTAL_PADDING;
   const { height: cardHeight } = getMatchCardMetrics(layoutWidth);
 
   const cards = tie.legs.map((leg) => {
-    const card = mapMatchToCardData(leg);
+    const card = mapMatchToCardData(leg, locale);
     return (
       <MatchCard
         key={leg.id}
-        id={card.id}
-        home={card.home}
-        away={card.away}
-        prediction={card.prediction}
-        predictionStatus={card.predictionStatus}
-        status={card.status}
-        date={card.date}
-        time={card.time}
+        match={card}
         layoutWidth={tie.legs.length === 2 ? layoutWidth : undefined}
         onPress={() => router.push(`/(app)/(league)/match/${leg.id}`)}
       />
@@ -57,7 +51,7 @@ export default function KnockoutEngine({
   onRefresh,
   initialStage,
 }: {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   onRefresh: () => void;
   initialStage?: string;
 }) {

@@ -1,87 +1,149 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Card, Text } from '@/components/ui';
+import { Badge, Card, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  AdminCollectionSummary,
+  AdminEmpty,
+  AdminErrorBanner,
+  AdminMeta,
+  AdminPageHeader,
+  AdminSearchField,
+} from '@/features/admin/components/AdminUI';
 import { useAdminPredictions } from '@/features/admin/hooks/useAdmin';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
+import type { PredictionWithRelations } from '@/features/admin/queries/adminService';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsFocused } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { SearchX, Target } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 
 const AdminPredictionsScreen = () => {
-  const isFocused = useIsFocused();
   const { t } = useTranslation();
-  const { data, isLoading, isRefetching, refetch, error } = useAdminPredictions();
+  const { width } = useWindowDimensions();
+  const numColumns = width >= 768 ? 2 : 1;
+  const predictionsQuery = useAdminPredictions();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const filteredPredictions = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    const predictions = predictionsQuery.data ?? [];
+    if (!query) return predictions;
+    return predictions.filter((prediction) =>
+      [
+        prediction.league?.name,
+        prediction.member?.nickname,
+        prediction.user?.full_name,
+        prediction.user?.email,
+        String(prediction.match_id),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
+    );
+  }, [predictionsQuery.data, searchQuery]);
 
-  if (isLoading && !data) {
-    return <LoadingOverlay />;
-  }
+  if (predictionsQuery.isLoading && !predictionsQuery.data) return <LoadingOverlay />;
 
   return (
-    <Screen safeArea>
-      <BackButton title={t('Predictions')} />
-      <ScrollView
-        className="flex-1 px-4 pt-4"
-        refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
-      >
-        {error ? (
-          <Text className="text-error text-base">{t('Unable to load predictions. Pull to refresh to try again.')}</Text>
-        ) : (
-          <Text className="text-text text-sm mb-4">
-            {t('Showing {{count}} recent predictions (latest 200 records).', { count: data?.length ?? 0 })}
-          </Text>
-        )}
-
-        <View className="space-y-4 pb-16">
-          {data?.map((prediction) => (
-            <Card key={prediction.id}>
-              <View className="flex-row justify-between items-start mb-3">
-                <View className="flex-1 mr-4">
-                  <Text className="text-text text-lg font-semibold">
-                    {prediction.league?.name ?? t('Unknown League')}
-                  </Text>
-                  <Text className="text-text/70 text-sm">{prediction.member?.nickname ?? t('Unknown member')}</Text>
-                  <Text className="text-text/50 text-xs">
-                    {prediction.user?.full_name ?? t('Unknown user')} · {prediction.user?.email ?? t('No email')}
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Points')}</Text>
-                  <Text className="text-text text-xl font-semibold">{prediction.points}</Text>
-                </View>
-              </View>
-
-              <View className="flex-row justify-between mb-3">
-                <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Predicted Score')}</Text>
-                  <Text className="text-text text-sm">
-                    {prediction.home_score} - {prediction.away_score}
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Status')}</Text>
-                  <Text className="text-text text-sm">{prediction.is_finished ? t('Finished') : t('Pending')}</Text>
-                </View>
-              </View>
-
-              <View className="flex-row justify-between">
-                <View>
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Fixture ID')}</Text>
-                  <Text className="text-text text-sm">{prediction.match_id}</Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Submitted')}</Text>
-                  <Text className="text-text text-sm">{new Date(prediction.created_at ?? '').toLocaleString()}</Text>
-                </View>
-              </View>
-            </Card>
-          ))}
-        </View>
-      </ScrollView>
+    <Screen edges={['bottom']}>
+      <FlatList
+        key={`predictions-${numColumns}`}
+        data={filteredPredictions}
+        numColumns={numColumns}
+        keyExtractor={(prediction) => prediction.id}
+        refreshing={predictionsQuery.isRefetching}
+        onRefresh={() => void predictionsQuery.refetch()}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName={ADMIN_CONTENT_CLASS}
+        ListHeaderComponent={
+          <View>
+            <AdminPageHeader
+              eyebrow={t('Activity')}
+              title={t('Predictions')}
+              description={t('Audit the latest prediction activity across users and leagues.')}
+            />
+            <AdminSearchField
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('Search predictions by user, league, or fixture...')}
+            />
+            <View className="mt-3">
+              <AdminCollectionSummary
+                countLabel={t('Showing {{count}} recent predictions (latest 200 records).', {
+                  count: filteredPredictions.length,
+                })}
+                badgeLabel={searchQuery ? t('Filtered') : t('Latest 200')}
+              />
+            </View>
+            {predictionsQuery.error ? (
+              <AdminErrorBanner message={t('Unable to load predictions. Pull to refresh to try again.')} />
+            ) : null}
+          </View>
+        }
+        renderItem={renderAdminPrediction}
+        ListEmptyComponent={
+          <AdminEmpty
+            icon={searchQuery ? SearchX : Target}
+            title={searchQuery ? t('No predictions match your search') : t('No predictions found')}
+            description={searchQuery ? t('Try a user, league, or fixture ID.') : undefined}
+          />
+        }
+        ListFooterComponent={<View className="h-8" />}
+      />
     </Screen>
   );
 };
+
+function renderAdminPrediction({ item }: { item: PredictionWithRelations }) {
+  return <AdminPredictionCard prediction={item} />;
+}
+
+function AdminPredictionCard({ prediction }: { prediction: PredictionWithRelations }) {
+  const { t, language } = useTranslation();
+
+  return (
+    <View className="flex-1 p-1.5">
+      <Card className="h-full" contentClassName="min-h-[215px] gap-4">
+        <View className="flex-row items-start justify-between gap-3">
+          <View className="min-w-0 flex-1">
+            <Text variant="subtitle" numberOfLines={1}>
+              {prediction.league?.name ?? t('Unknown League')}
+            </Text>
+            <Text variant="bodySmall" tone="muted" numberOfLines={1}>
+              {prediction.member?.nickname ?? t('Unknown member')}
+            </Text>
+            <Text variant="caption" tone="muted" ltr numberOfLines={1}>
+              {prediction.user?.email ?? t('No email')}
+            </Text>
+          </View>
+          <Badge
+            label={prediction.is_finished ? t('Finished') : t('Pending')}
+            variant={prediction.is_finished ? 'success' : 'warning'}
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between rounded-2xl bg-subtle p-3">
+          <AdminMeta label={t('Predicted Score')} value={`${prediction.home_score} – ${prediction.away_score}`} />
+          <View className="items-end">
+            <Text variant="caption" tone="muted">
+              {t('Points')}
+            </Text>
+            <Text variant="title" tone={prediction.points ? 'success' : 'default'}>
+              {prediction.points ?? 0}
+            </Text>
+          </View>
+        </View>
+
+        <View className="mt-auto flex-row gap-4 border-t border-border pt-3">
+          <AdminMeta label={t('Fixture ID')} value={prediction.match_id} ltr className="flex-1" />
+          <AdminMeta
+            label={t('Submitted')}
+            value={formatAdminDate(prediction.created_at, language)}
+            className="flex-[2]"
+          />
+        </View>
+      </Card>
+    </View>
+  );
+}
 
 export default AdminPredictionsScreen;

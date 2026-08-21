@@ -1,0 +1,13 @@
+---
+description: Always write Hebrew answers right-to-left
+alwaysApply: true
+---
+
+# Hebrew RTL responses
+
+When the user writes in Hebrew, answer in Hebrew. Never leave Hebrew prose in left-to-right layout.
+
+- Wrap the entire Hebrew reply in `<div dir="rtl" align="right">...</div>`.
+- Put headings, paragraphs, lists, and tables inside that wrapper so they render right to left.
+- Keep code, commands, paths, identifiers, and technical values in their original left-to-right form.
+- Do not mix unwrapped Hebrew sentences outside the RTL wrapper.

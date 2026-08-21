@@ -1,8 +1,6 @@
-import { Row } from '@/components/layout';
-import { Button, Divider, ListItem, LogoBadge, MyImage, Text } from '@/components/ui';
+import { Button, Divider, ListItem, LogoBadge, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { LeagueWithMembersType } from '@/types';
 import * as Clipboard from 'expo-clipboard';
 import { Link } from 'expo-router';
@@ -19,7 +17,6 @@ export const LeagueDetailsSection = ({
 }) => {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
-  const isRTL = useIsRTL();
   const handleCopyJoinCode = async () => {
     if (typeof league.join_code === 'string') {
       await Clipboard.setStringAsync(league.join_code || '');
@@ -33,10 +30,7 @@ export const LeagueDetailsSection = ({
   return (
     <View className="overflow-hidden rounded-2xl border border-border bg-surface">
       {/* Header */}
-      <Row
-        className="items-center gap-2 px-3 py-2"
-        style={{ direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }}
-      >
+      <Row className="items-center gap-2 px-3 py-2">
         <View className="h-9 w-9 items-center justify-center rounded-full bg-subtle">
           <Shield size={18} color={colors.primary} />
         </View>
@@ -64,7 +58,7 @@ export const LeagueDetailsSection = ({
               <Text tone="muted" className="me-2">
                 {league.name}
               </Text>
-              <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={20} height={20} />
+              <LogoBadge source={league?.competition?.flag || ''} width={28} height={24} />
             </Row>
           }
         />
@@ -96,16 +90,7 @@ export const LeagueDetailsSection = ({
           trailing={<Text tone="muted">{owner?.nickname || 'Unknown'}</Text>}
         />
 
-        <ListItem
-          title={t('Competition')}
-          divider
-          trailing={
-            <Row className="items-center gap-2">
-              <Text tone="muted">{league.competition.name}</Text>
-              <LogoBadge source={{ uri: league.competition.logo }} width={18} height={18} />
-            </Row>
-          }
-        />
+        <ListItem title={t('Competition')} divider trailing={<Text tone="muted">{league.competition.name}</Text>} />
 
         <ListItem
           title={t('Country')}
@@ -113,9 +98,6 @@ export const LeagueDetailsSection = ({
           trailing={
             <Row className="items-center gap-2">
               <Text tone="muted">{league.competition.area}</Text>
-              {league.competition.flag && (
-                <MyImage source={{ uri: league.competition.flag }} width={18} height={18} contentFit="contain" />
-              )}
             </Row>
           }
         />

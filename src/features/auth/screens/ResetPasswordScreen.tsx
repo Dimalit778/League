@@ -1,21 +1,21 @@
-import { Screen } from '@/components/layout';
-import { Button, InputField, Text } from '@/components/ui';
+import { Button, InputField, Text } from '@/components';
 import {
   parseRecoveryTokensFromUrl,
   updatePasswordWithRecoveryTokens,
   type RecoveryTokens,
 } from '@/features/auth/api/authApi';
+import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
+import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { spacing } from '@/lib/nativewind/spacing';
 import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
+import { LockKeyhole } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as yup from 'yup';
 
 type PasswordFormData = yup.InferType<typeof passwordSchema>;
@@ -52,8 +52,6 @@ const ResetPasswordScreen = () => {
     },
   });
 
-  // The recovery link carries the session tokens in its fragment. Capture them
-  // once; the session itself is only established when the user submits.
   useEffect(() => {
     if (!url || recoveryTokens) return;
 
@@ -85,7 +83,7 @@ const ResetPasswordScreen = () => {
 
       Alert.alert(t('Password Updated'), t('Your password has been changed successfully.'), [
         {
-          text: 'OK',
+          text: t('OK'),
           onPress: () => router.replace('/(auth)/signIn'),
         },
       ]);
@@ -97,91 +95,100 @@ const ResetPasswordScreen = () => {
     }
   };
 
-  return (
-    <Screen width="compact" padding="horizontal" edges={['top', 'bottom']}>
-      <KeyboardAwareScrollView bottomOffset={62} className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="items-center py-12 sm:py-16">
-          <Text variant="display" tone="primary" className="text-center">
-            {t('New Password')}
-          </Text>
-          <Text variant="body" tone="muted" className="mt-4 text-center">
-            {t('Enter your new password')}
-          </Text>
-        </View>
+  const emblem = (
+    <View className="size-[72px] items-center justify-center rounded-[22px] border border-[#FFCC65]/45 bg-[#0B213B]/90">
+      <LockKeyhole size={34} color="#FFB31A" strokeWidth={1.8} />
+    </View>
+  );
 
-        {linkError && !recoveryTokens ? (
-          <View className={spacing.stack}>
+  return (
+    <AuthScaffold
+      title={t('New Password')}
+      description={t('Enter your new password')}
+      fallbackHref="/(auth)/signIn"
+      emblem={emblem}
+      footer={<AuthLegalLinks />}
+    >
+      {linkError && !recoveryTokens ? (
+        <View className="gap-4">
+          <View className="rounded-2xl border border-error/30 bg-error/10 p-4">
             <Text tone="error" className="text-center">
               {t('Reset link is invalid or expired.')}
             </Text>
-            <Text tone="muted" className="text-center">
+            <Text tone="muted" className="mt-1 text-center">
               {t('Please request a new link.')}
             </Text>
-            <Button
-              label={t('Resend New Link')}
-              onPress={() => router.replace('/(auth)/sendResetLink')}
-              variant="secondary"
-              size="lg"
-            />
           </View>
-        ) : (
-          <View className={spacing.stack}>
-            <InputField
-              control={passwordForm.control}
-              name="password"
-              placeholder={t('New Password')}
-              autoComplete="new-password"
-              textContentType="newPassword"
-              secureTextEntry={!showPassword}
-              error={passwordForm.formState.errors.password}
-              icon={<LockIcon size={24} color={colors.muted} />}
-              rightIcon={
-                showPassword ? (
-                  <EyeOpenIcon size={24} color={colors.muted} />
-                ) : (
-                  <EyeClosedIcon size={24} color={colors.muted} />
-                )
-              }
-              onRightIconPress={() => setShowPassword(!showPassword)}
-            />
+          <Button
+            label={t('Resend New Link')}
+            onPress={() => router.replace('/(auth)/forgot-password')}
+            variant="primary"
+            size="lg"
+            fullWidth
+            className="rounded-2xl"
+          />
+        </View>
+      ) : (
+        <View className="gap-4">
+          <InputField
+            control={passwordForm.control}
+            name="password"
+            placeholder={t('New Password')}
+            variant="auth"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            secureTextEntry={!showPassword}
+            error={passwordForm.formState.errors.password}
+            icon={<LockIcon size={24} color={colors.muted} />}
+            rightIcon={
+              showPassword ? (
+                <EyeOpenIcon size={24} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={24} color={colors.muted} />
+              )
+            }
+            onRightIconPress={() => setShowPassword(!showPassword)}
+          />
 
-            <InputField
-              control={passwordForm.control}
-              name="confirmPassword"
-              placeholder={t('Confirm Password')}
-              autoComplete="new-password"
-              textContentType="newPassword"
-              secureTextEntry={!showConfirmPassword}
-              error={passwordForm.formState.errors.confirmPassword}
-              icon={<LockIcon size={24} color={colors.muted} />}
-              rightIcon={
-                showConfirmPassword ? (
-                  <EyeOpenIcon size={24} color={colors.muted} />
-                ) : (
-                  <EyeClosedIcon size={24} color={colors.muted} />
-                )
-              }
-              onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            />
+          <InputField
+            control={passwordForm.control}
+            name="confirmPassword"
+            placeholder={t('Confirm Password')}
+            variant="auth"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            secureTextEntry={!showConfirmPassword}
+            error={passwordForm.formState.errors.confirmPassword}
+            icon={<LockIcon size={24} color={colors.muted} />}
+            rightIcon={
+              showConfirmPassword ? (
+                <EyeOpenIcon size={24} color={colors.muted} />
+              ) : (
+                <EyeClosedIcon size={24} color={colors.muted} />
+              )
+            }
+            onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          />
 
-            {errorMessage && (
-              <View>
-                <Text className="text-error text-center">{errorMessage}</Text>
-              </View>
-            )}
+          {errorMessage ? (
+            <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
+              {errorMessage}
+            </Text>
+          ) : null}
 
-            <Button
-              label={t('Save New Password')}
-              onPress={passwordForm.handleSubmit(handleResetPassword)}
-              loading={isSubmitting}
-              disabled={!passwordForm.formState.isValid || isSubmitting}
-              variant="secondary"
-              size="lg"
-            />
-          </View>
-        )}
-      </KeyboardAwareScrollView>
-    </Screen>
+          <Button
+            label={t('Save New Password')}
+            onPress={passwordForm.handleSubmit(handleResetPassword)}
+            loading={isSubmitting}
+            disabled={!passwordForm.formState.isValid || isSubmitting}
+            variant="primary"
+            size="lg"
+            fullWidth
+            className="rounded-2xl"
+          />
+        </View>
+      )}
+    </AuthScaffold>
   );
 };
 

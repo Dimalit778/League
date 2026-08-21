@@ -31,6 +31,7 @@ export const KEYS = {
     byJoinCode: (code: string) => ['leagues', 'code', code] as const,
     members: (leagueId: string) => ['leagues', leagueId, 'members'] as const,
     leaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard'] as const,
+    roundLeaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard', 'round'] as const,
   },
 
   // ==================== MATCHES ====================
@@ -50,6 +51,7 @@ export const KEYS = {
     byCompetitionRoot: (competitionId: number) => ['matches', competitionId] as const,
     // Match with league predictions
     withPredictions: (leagueId: string, matchId: number) => ['matches', matchId, 'predictions', leagueId] as const,
+    aiSummary: (matchId: number) => ['matches', matchId, 'ai-summary'] as const,
     upcoming: (competitionId: number, seasonId: number, memberId: string) =>
       ['matches', competitionId, seasonId, 'upcoming', memberId] as const,
     finishedFixtures: (competitionId: number, seasonId: number) =>
@@ -76,12 +78,13 @@ export const KEYS = {
   competitions: {
     all: ['competitions'] as const,
     matchMeta: (competitionId: number) => ['competitions', competitionId.toString(), 'match-meta'] as const,
+    leaderboard: (competitionId: number) => ['competitions', competitionId.toString(), 'leaderboard'] as const,
   },
 
 
   // ==================== ADMIN ====================
   admin: {
-    isAdmin: ['admin', 'isAdmin'] as const,
+    isAdmin: (userId?: string | null) => ['admin', 'isAdmin', userId ?? 'disabled'] as const,
     dashboard: ['admin', 'dashboard'] as const,
     users: ['admin', 'users'] as const,
     leagues: ['admin', 'leagues'] as const,
@@ -89,5 +92,14 @@ export const KEYS = {
     predictions: ['admin', 'predictions'] as const,
     competitions: ['admin', 'competitions'] as const,
     reports: (status: string) => ['admin', 'reports', status] as const,
+  },
+
+  // ==================== SUBSCRIPTION ====================
+  subscription: {
+    currentSeason: ['subscription', 'current-season'] as const,
+  },
+
+  images: {
+    svgXml: (uri: string) => ['images', 'svg-xml', uri] as const,
   },
 } as const;

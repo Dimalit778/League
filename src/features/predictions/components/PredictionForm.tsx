@@ -1,14 +1,19 @@
-import { Text } from '@/components/ui';
+import { Text } from '@/components';
 import { PredictionWithMemberType } from '@/features/matches/types';
 
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import { Minus, Plus } from 'lucide-react-native';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Pressable, View } from 'react-native';
 
-const SCORE_INPUT_SIZE = 48;
-const SCORE_FONT_SIZE = 24;
+const MIN_SCORE = 0;
+const MAX_SCORE = 9;
+const STEPPER_WIDTH = 148;
+const ICON_COLOR = '#D7DCE7';
+
+const clampScore = (value: number) => Math.min(MAX_SCORE, Math.max(MIN_SCORE, value));
 
 export type PredictionDraftState = {
   hasChanges: boolean;
@@ -26,51 +31,61 @@ type PredictionFormProps = {
   onDraftChange?: (state: PredictionDraftState) => void;
 };
 
-type ScoreInputProps = {
-  value: number | null;
-  accessibilityLabel: string;
-  onChange: (value: number | null) => void;
-  onDigitEntered?: () => void;
+type ScoreStepperProps = {
+  value: number;
+  decreaseAccessibilityLabel: string;
+  increaseAccessibilityLabel: string;
+  disabled: boolean;
+  onChange: (value: number) => void;
 };
 
-const ScoreInput = forwardRef<TextInput, ScoreInputProps>(function ScoreInput(
-  { value, accessibilityLabel, onChange, onDigitEntered },
-  ref,
-) {
-  const handleChangeText = (text: string) => {
-    const digit = text.replace(/\D/g, '').slice(-1);
-
-    if (!digit) {
-      onChange(null);
-      return;
-    }
-
-    onChange(Number(digit));
-    onDigitEntered?.();
-  };
+function ScoreStepper({
+  value,
+  decreaseAccessibilityLabel,
+  increaseAccessibilityLabel,
+  disabled,
+  onChange,
+}: ScoreStepperProps) {
+  const canDecrease = !disabled && value > MIN_SCORE;
+  const canIncrease = !disabled && value < MAX_SCORE;
 
   return (
-    <TextInput
-      ref={ref}
-      value={value === null ? '' : String(value)}
-      placeholderTextColor="rgba(255,255,255,0.45)"
-      onChangeText={handleChangeText}
-      keyboardType="number-pad"
-      maxLength={1}
-      selectTextOnFocus
-      allowFontScaling
-      maxFontSizeMultiplier={1.5}
-      className="rounded-xl border border-white/40 bg-black/20 text-center font-bold text-white"
-      style={{
-        width: SCORE_INPUT_SIZE,
-        height: SCORE_INPUT_SIZE,
-        fontSize: SCORE_FONT_SIZE,
-      }}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ text: value === null ? '' : String(value) }}
-    />
+    <View
+      className=" flex-row items-stretch overflow-hidden rounded-lg border border-white/25 bg-gray-900"
+      style={{ direction: 'ltr', width: STEPPER_WIDTH, height: 44 }}
+    >
+      <Pressable
+        className="flex-1 items-center justify-center border-r border-white/20 active:bg-white/10"
+        onPress={() => onChange(value - 1)}
+        disabled={!canDecrease}
+        accessibilityRole="button"
+        accessibilityLabel={decreaseAccessibilityLabel}
+        accessibilityState={{ disabled: !canDecrease }}
+        hitSlop={4}
+      >
+        <Minus size={22} color={ICON_COLOR} strokeWidth={2} opacity={canDecrease ? 0.9 : 0.4} />
+      </Pressable>
+
+      <View className="flex-1 items-center justify-center">
+        <Text ltr variant="header" className="text-center text-white">
+          {value}
+        </Text>
+      </View>
+
+      <Pressable
+        className="flex-1 items-center justify-center border-l border-white/20 active:bg-white/10"
+        onPress={() => onChange(value + 1)}
+        disabled={!canIncrease}
+        accessibilityRole="button"
+        accessibilityLabel={increaseAccessibilityLabel}
+        accessibilityState={{ disabled: !canIncrease }}
+        hitSlop={4}
+      >
+        <Plus size={22} color={ICON_COLOR} strokeWidth={2} opacity={canIncrease ? 0.9 : 0.4} />
+      </Pressable>
+    </View>
   );
-});
+}
 
 const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(function PredictionForm(
   { prediction, matchId, onSaveSuccess, onDraftChange },
@@ -78,33 +93,23 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
 ) {
   const { t } = useTranslation();
   const memberId = useMemberId();
-  const awayScoreInputRef = useRef<TextInput>(null);
-  const [homeScore, setHomeScore] = useState<number | null>(prediction?.home_score ?? null);
-
-  const [awayScore, setAwayScore] = useState<number | null>(prediction?.away_score ?? null);
+  const [homeScore, setHomeScore] = useState(() => clampScore(prediction?.home_score ?? 0));
+  const [awayScore, setAwayScore] = useState(() => clampScore(prediction?.away_score ?? 0));
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
-    prediction ? { home: prediction.home_score, away: prediction.away_score } : null,
+    prediction ? { home: clampScore(prediction.home_score), away: clampScore(prediction.away_score) } : null,
   );
 
   const upsertPrediction = useUpsertPrediction();
 
-  const bothScoresSet = homeScore !== null && awayScore !== null;
-  const hasChanges =
-    bothScoresSet && (savedScores === null || homeScore !== savedScores.home || awayScore !== savedScores.away);
+  const hasChanges = savedScores ? homeScore !== savedScores.home || awayScore !== savedScores.away : hasInteracted;
 
   useEffect(() => {
     onDraftChange?.({ hasChanges, isPending: upsertPrediction.isPending });
   }, [hasChanges, onDraftChange, upsertPrediction.isPending]);
 
   const handleSave = useCallback(async () => {
-    if (
-      !matchId ||
-      !memberId ||
-      !hasChanges ||
-      homeScore === null ||
-      awayScore === null ||
-      upsertPrediction.isPending
-    ) {
+    if (!matchId || !memberId || !hasChanges || upsertPrediction.isPending) {
       return;
     }
 
@@ -116,6 +121,7 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
         league_member_id: memberId,
       });
       setSavedScores({ home: homeScore, away: awayScore });
+      setHasInteracted(false);
       onSaveSuccess?.();
     } catch {
       // Alert handled in useUpsertPrediction
@@ -124,26 +130,32 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
 
   useImperativeHandle(ref, () => ({ save: handleSave }), [handleSave]);
 
+  const updateHomeScore = (value: number) => {
+    setHomeScore(clampScore(value));
+    setHasInteracted(true);
+  };
+
+  const updateAwayScore = (value: number) => {
+    setAwayScore(clampScore(value));
+    setHasInteracted(true);
+  };
+
   return (
-    <View className="items-center justify-center">
-      <View className="flex-row items-center justify-center">
-        <ScoreInput
-          value={homeScore}
-          onChange={setHomeScore}
-          accessibilityLabel={t('Home score')}
-          onDigitEntered={() => awayScoreInputRef.current?.focus()}
-        />
-        <Text variant="label" className="mx-1.5 text-2xl text-white/70">
-          -
-        </Text>
-        <ScoreInput
-          ref={awayScoreInputRef}
-          value={awayScore}
-          onChange={setAwayScore}
-          accessibilityLabel={t('Away score')}
-          onDigitEntered={Keyboard.dismiss}
-        />
-      </View>
+    <View className="w-full flex-row items-center justify-between ">
+      <ScoreStepper
+        value={homeScore}
+        onChange={updateHomeScore}
+        decreaseAccessibilityLabel={t('Decrease home score')}
+        increaseAccessibilityLabel={t('Increase home score')}
+        disabled={upsertPrediction.isPending}
+      />
+      <ScoreStepper
+        value={awayScore}
+        onChange={updateAwayScore}
+        decreaseAccessibilityLabel={t('Decrease away score')}
+        increaseAccessibilityLabel={t('Increase away score')}
+        disabled={upsertPrediction.isPending}
+      />
     </View>
   );
 });

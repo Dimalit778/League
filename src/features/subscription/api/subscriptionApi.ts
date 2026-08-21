@@ -17,31 +17,30 @@ export const syncSubscriptionToServer = async (): Promise<SyncSubscriptionResult
   return data ?? null;
 };
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 /**
- * Syncs the subscription to the server and retries until the server confirms
- * `plan === 'pro'` (RevenueCat propagation can lag right after a purchase).
- * Each attempt is best-effort — a thrown error is retried, not surfaced — so a
- * transient failure does not lose a completed purchase. Returns the last known
- * server result (or null if every attempt failed).
+ * Kept as the public post-purchase helper. RevenueCat propagation retries run
+ * inside the Edge Function so one user action consumes one rate-limit slot.
  */
-export const syncSubscriptionToServerUntilPro = async ({
-  attempts = 3,
-  delayMs = 1500,
-}: { attempts?: number; delayMs?: number } = {}): Promise<SyncSubscriptionResult | null> => {
-  let last: SyncSubscriptionResult | null = null;
+export const syncSubscriptionToServerUntilPro = (): Promise<SyncSubscriptionResult | null> =>
+  syncSubscriptionToServer();
 
-  for (let attempt = 0; attempt < attempts; attempt++) {
-    try {
-      last = await syncSubscriptionToServer();
-      if (last?.plan === 'pro') return last;
-    } catch (error) {
-      console.warn(`[subscription] server sync attempt ${attempt + 1}/${attempts} failed:`, error);
-    }
+export type ProSeason = {
+  code: string;
+  startsAt: string;
+  endsAt: string;
+};
 
-    if (attempt < attempts - 1) await wait(delayMs);
+export const getCurrentSeason = async (): Promise<ProSeason | null> => {
+  const { data, error } = await supabase.rpc('get_current_season');
+
+  if (error) {
+    throw new Error(formatErrorForUser(error));
   }
 
-  return last;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    return null;
+  }
+
+  return { code: row.code, startsAt: row.starts_at, endsAt: row.ends_at };
 };

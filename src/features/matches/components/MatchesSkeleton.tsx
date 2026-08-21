@@ -1,14 +1,43 @@
-import { Skeleton } from '@/components/ui';
+import { Skeleton } from '@/components';
 import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useWindowDimensions, View } from 'react-native';
+import { FlatList, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SKELETON_COUNT = 6;
+const FIXTURE_SKELETON_COUNT = 8;
+const FIXTURE_WIDTH = 70;
+const FIXTURE_HEIGHT = 36;
+
+function renderFixtureSkeleton() {
+  return (
+    <View className="mx-2 items-center">
+      <Skeleton className="rounded-xl bg-border" style={{ width: FIXTURE_WIDTH, height: FIXTURE_HEIGHT }} />
+    </View>
+  );
+}
 
 type MatchesSkeletonProps = {
   count?: number;
   bottomInset?: number;
+  showFixtures?: boolean;
 };
+
+export function FixturesSkeleton({ count = FIXTURE_SKELETON_COUNT }: { count?: number }) {
+  const items = Array.from({ length: count }, (_, index) => index);
+
+  return (
+    <FlatList
+      horizontal
+      data={items}
+      keyExtractor={(item) => String(item)}
+      renderItem={renderFixtureSkeleton}
+      showsHorizontalScrollIndicator={false}
+      className="shrink-0 grow-0"
+      contentContainerStyle={{ paddingVertical: 3, paddingTop: 5 }}
+    />
+  );
+}
 
 export const MatchCardSkeleton = () => {
   const { width: screenWidth } = useWindowDimensions();
@@ -21,7 +50,6 @@ export const MatchCardSkeleton = () => {
     teamWidth,
     contentHeight,
     contentTop: mainContentTop,
-    headerTop,
     predictionTop,
     logoBoxSize,
   } = getMatchCardMetrics(screenWidth);
@@ -33,12 +61,6 @@ export const MatchCardSkeleton = () => {
       <View style={{ width: cardWidth, height: cardHeight }}>
         <View className="absolute inset-0">
           <MatchCardBg width={cardWidth} height={cardHeight} />
-        </View>
-
-        <View className="absolute left-0 right-0 z-10 items-center justify-center pt-1" style={{ top: headerTop }}>
-          <Skeleton
-            style={{ width: cardWidth * 0.15, height: cardHeight * 0.1, borderRadius: 5, backgroundColor: boneColor }}
-          />
         </View>
 
         <View
@@ -93,13 +115,40 @@ export const MatchCardSkeleton = () => {
   );
 };
 
-export default function MatchesSkeleton({ count = SKELETON_COUNT }: MatchesSkeletonProps) {
-  const items = Array.from({ length: count }, (_, index) => index);
+export function MatchesTopBarSkeleton() {
+  const insets = useSafeAreaInsets();
   return (
-    <View className="flex-row flex-wrap gap-2">
-      {items.map((item) => (
-        <MatchCardSkeleton key={item.toString()} />
-      ))}
+    <View className="w-full" style={{ paddingTop: insets.top }}>
+      <View className="relative h-12 w-full justify-center px-2.5">
+        <View className="absolute inset-0 items-center justify-center px-14">
+          <Skeleton className="rounded-md bg-border" style={{ width: 96, height: 22 }} />
+        </View>
+
+        <View className="absolute z-10" style={{ end: 10, top: 0, width: 40, height: 40 }}>
+          <Skeleton className="h-full w-full rounded-full bg-border" />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export default function MatchesSkeleton({
+  count = SKELETON_COUNT,
+  bottomInset = 0,
+  showFixtures = true,
+}: MatchesSkeletonProps) {
+  const items = Array.from({ length: count }, (_, index) => index);
+
+  return (
+    <View className="flex-1">
+      <MatchesTopBarSkeleton />
+      {showFixtures ? <FixturesSkeleton /> : null}
+
+      <View className="gap-2.5 px-4" style={{ paddingBottom: bottomInset + 20 }}>
+        {items.map((item) => (
+          <MatchCardSkeleton key={item.toString()} />
+        ))}
+      </View>
     </View>
   );
 }

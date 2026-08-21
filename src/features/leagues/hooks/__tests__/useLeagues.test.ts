@@ -6,6 +6,7 @@ import {
   useCreateLeague,
   useDeleteLeague,
   useFindLeagueByJoinCode,
+  useGetCompetitionLeaderboard,
   useUpdatePrimaryLeague,
 } from '../useLeagues';
 
@@ -39,6 +40,7 @@ jest.mock('../../api/leagueApi', () => ({
   leagueApi: {
     findLeagueByJoinCode: jest.fn(),
     updatePrimaryLeague: jest.fn(),
+    getCompetitionLeaderboard: jest.fn(),
   },
 }));
 
@@ -146,5 +148,27 @@ describe('useLeagues hooks', () => {
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.detail('l1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.members('l1') });
     expect(queryClient.removeQueries).toHaveBeenCalledWith({ queryKey: KEYS.leagues.leaderboard('l1') });
+  });
+
+  it('queries the competition leaderboard with the right key', () => {
+    useGetCompetitionLeaderboard(2021);
+
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: KEYS.competitions.leaderboard(2021),
+        queryFn: expect.any(Function),
+      }),
+    );
+  });
+
+  it('disables the competition leaderboard query when enabled is false', () => {
+    useGetCompetitionLeaderboard(2021, false);
+
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: KEYS.competitions.leaderboard(2021),
+        enabled: false,
+      }),
+    );
   });
 });

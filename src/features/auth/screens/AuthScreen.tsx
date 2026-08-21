@@ -1,18 +1,15 @@
-import { Screen } from '@/components/layout';
-import { Card, Text } from '@/components/ui';
 import AppleAuth from '@/features/auth/components/AppleAuth';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
-import AuthModeToggle from '@/features/auth/components/auth/AuthModeToggle';
+import GoogleAuth from '@/features/auth/components/GoogleAuth';
+import AuthDivider from '@/features/auth/components/auth/AuthDivider';
+import AuthModeSwitchPrompt from '@/features/auth/components/auth/AuthModeSwitchPrompt';
+import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
 import SignInForm from '@/features/auth/components/auth/SignInForm';
 import SignUpForm from '@/features/auth/components/auth/SignUpForm';
-import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/nativewind/nativeWind';
-import { spacing } from '@/lib/nativewind/spacing';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 type AuthMode = 'signIn' | 'signUp';
 
@@ -24,60 +21,33 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
   const { t } = useTranslation();
   const { clearError } = useAuthActions();
   const [mode, setMode] = useState<AuthMode>(initialMode);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isAppleLoading, setIsAppleLoading] = useState(false);
-
-  const handleModeChange = (nextMode: AuthMode) => {
-    if (nextMode === mode) return;
-    clearError();
-    setMode(nextMode);
-  };
+  const [socialBusy, setSocialBusy] = useState(false);
 
   const isSignIn = mode === 'signIn';
 
+  const switchMode = () => {
+    clearError();
+    setMode(isSignIn ? 'signUp' : 'signIn');
+  };
+
   return (
-    <Screen padding="horizontal" width="compact">
-      <KeyboardAwareScrollView
-        bottomOffset={62}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <View className={cn('w-full ', spacing.section)}>
-          <View className="items-center justify-center mb-8">
-            <Text variant="display" tone="primary">
-              {isSignIn ? t('Welcome Back') : t('Create account')}
-            </Text>
-            <Text variant="subtitle" tone="muted" className="text-center">
-              {isSignIn ? t('Sign in to your account') : t('Sign up to get started')}
-            </Text>
-          </View>
-
-          <Card padding="md">
-            <AuthModeToggle mode={mode} onModeChange={handleModeChange} />
-
-            <View className={cn('mt-8', spacing.stack)}>
-              {isSignIn ? <SignInForm key="signIn" /> : <SignUpForm key="signUp" />}
-
-              <View className="my-2 flex-row items-center">
-                <View className="h-px flex-1 bg-border" />
-                <Text variant="caption" tone="muted" className="mx-2">
-                  {t('OR')}
-                </Text>
-                <View className="h-px flex-1 bg-border" />
-              </View>
-
-              <View className={spacing.list}>
-                <AppleAuth isLoading={isAppleLoading} setIsLoading={setIsAppleLoading} mode={mode} />
-                <GoogleAuth isLoading={isGoogleLoading} setIsLoading={setIsGoogleLoading} />
-              </View>
-            </View>
-          </Card>
-          <View className="mt-5">
-            <AuthLegalLinks showConsent={!isSignIn} />
-          </View>
+    <AuthScaffold
+      title={isSignIn ? t('Welcome Back') : t('Create account')}
+      footer={
+        <View className="gap-8">
+          <AuthModeSwitchPrompt mode={mode} onPress={switchMode} />
+          {isSignIn ? <AuthLegalLinks /> : null}
         </View>
-      </KeyboardAwareScrollView>
-    </Screen>
+      }
+    >
+      {isSignIn ? <SignInForm key="signIn" /> : <SignUpForm key="signUp" />}
+
+      <AuthDivider label={t('OR')} />
+
+      <View className="flex-row items-center justify-center gap-6" style={{ direction: 'ltr' }}>
+        <AppleAuth isLoading={socialBusy} setIsLoading={setSocialBusy} mode={mode} />
+        <GoogleAuth isLoading={socialBusy} setIsLoading={setSocialBusy} />
+      </View>
+    </AuthScaffold>
   );
 }

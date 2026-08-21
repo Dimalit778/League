@@ -1,10 +1,10 @@
 import '../../global.css';
 
-import '@/lib/i18n/autoTranslate';
-
 import { images } from '@/assets/images';
-import { LoadingBall, NetworkStatusBanner } from '@/components/layout';
+import { LoadingBall } from '@/components/layout/LoadingBall';
+import { OfflineScreen } from '@/components/layout/OfflineScreen';
 import { useAppFonts } from '@/hooks/useAppFonts';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -13,6 +13,7 @@ import {
   LanguageProvider,
   NotificationProvider,
   PurchasesProvider,
+  PaywallProvider,
   QueryProvider,
   ThemeProvider,
   useAuth,
@@ -65,6 +66,8 @@ const AppBootstrap = () => {
   const { colors } = useThemeTokens();
   const fontsLoaded = useAppFonts();
   const [isAppShellReady, setIsAppShellReady] = useState(false);
+  const { isConnected, isInternetReachable } = useNetworkStatus();
+  const isOffline = isConnected === false || isInternetReachable === false;
 
   useEffect(() => {
     navigationIntegration.registerNavigationContainer(ref);
@@ -113,19 +116,20 @@ const AppBootstrap = () => {
     return <LoadingBall />;
   }
 
-  return (
-    <>
-      <NetworkStatusBanner />
-      <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack.Protected>
+  if (isOffline) {
+    return <OfflineScreen />;
+  }
 
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack.Protected>
-      </Stack>
-    </>
+  return (
+    <Stack screenOptions={{ contentStyle: { backgroundColor: colors.background } }}>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
   );
 };
 
@@ -137,17 +141,19 @@ const RootLayout = () => (
           <PurchasesProvider>
             <ThemeProvider>
               <LanguageProvider>
-                <NotificationProvider>
-                  <AlertProvider>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                      <SafeAreaProvider>
-                        <KeyboardProvider>
-                          <AppBootstrap />
-                        </KeyboardProvider>
-                      </SafeAreaProvider>
-                    </GestureHandlerRootView>
-                  </AlertProvider>
-                </NotificationProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <SafeAreaProvider>
+                    <PaywallProvider>
+                      <NotificationProvider>
+                        <AlertProvider>
+                          <KeyboardProvider>
+                            <AppBootstrap />
+                          </KeyboardProvider>
+                        </AlertProvider>
+                      </NotificationProvider>
+                    </PaywallProvider>
+                  </SafeAreaProvider>
+                </GestureHandlerRootView>
               </LanguageProvider>
             </ThemeProvider>
           </PurchasesProvider>

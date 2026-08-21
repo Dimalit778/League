@@ -11,7 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const isIOS = Platform.OS === 'ios';
 
 const PILL_HEIGHT = 64;
-
+// const height = 48px;
+// const iconWidth = 72px;
 const CONTENT_BOTTOM_GAP = 16;
 
 const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + safeAreaBottom + CONTENT_BOTTOM_GAP;

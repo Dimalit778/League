@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Inner RN-web inputs sit inside overflow-hidden fields; Chrome's focus
+   outline gets clipped into two vertical blue lines on the sides. */
+input,
+textarea {
+  outline: none !important;
+}
+
 /* Disable focus outline on web */
 @media (min-width: 768px) {
   * {

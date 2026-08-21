@@ -35,10 +35,15 @@ jest.mock('@/features/auth/hooks/useAuthActions', () => ({
 
 jest.mock('@/features/auth/components/GoogleAuth', () => {
   const React = jest.requireActual('react');
-  const { View, Text } = jest.requireActual('react-native');
+  const { View } = jest.requireActual('react-native');
   return {
     __esModule: true,
-    default: () => React.createElement(View, null, React.createElement(Text, null, 'Google Sign In')),
+    default: () =>
+      React.createElement(View, {
+        testID: 'google-sign-in-button',
+        accessibilityRole: 'button',
+        accessibilityLabel: 'Sign in with Google',
+      }),
   };
 });
 

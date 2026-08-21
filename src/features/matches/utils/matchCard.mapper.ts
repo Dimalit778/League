@@ -1,12 +1,15 @@
 import { formatMatchdayDate, formatTime } from '@/utils/formats';
-import { MatchCardType, StatusType } from '../types';
+import { MatchListItem, StatusType } from '../types';
 import { isMatchFinished } from './matchStatus';
 
 const PLACEHOLDER_LOGO = 'https://domain.com/placeholder-logo.png';
 
 export type MatchCardTeam = {
   name: string;
+  tla: string;
   logo: string;
+  /** Raw football-data value, e.g. "Red / White" — parsed by TeamLogo. */
+  clubColors: string | null;
   score: number | null;
 };
 
@@ -14,6 +17,7 @@ export type PredictionDisplayStatus = 'none' | 'correct' | 'incorrect';
 
 export type MatchCardData = {
   id: number;
+  kickOff: string;
   status: StatusType;
   home: MatchCardTeam;
   away: MatchCardTeam;
@@ -27,8 +31,8 @@ export type MatchCardData = {
 };
 
 function getPredictionDisplayStatus(
-  match: MatchCardType,
-  prediction: MatchCardType['prediction'],
+  match: MatchListItem,
+  prediction: MatchListItem['prediction'],
 ): PredictionDisplayStatus {
   if (!prediction || prediction.home_score == null || prediction.away_score == null) {
     return 'none';
@@ -41,21 +45,26 @@ function getPredictionDisplayStatus(
   return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';
 }
 
-export function mapMatchToCardData(match: MatchCardType): MatchCardData {
+export function mapMatchToCardData(match: MatchListItem, locale: string = 'en-GB'): MatchCardData {
   const prediction = match.prediction;
 
   return {
     id: match.id,
+    kickOff: match.kick_off,
 
     home: {
       name: match.home_team?.shortName ?? '--',
+      tla: match.home_team?.tla ?? '--',
       logo: match.home_team?.logo ?? PLACEHOLDER_LOGO,
+      clubColors: match.home_team?.clubColors ?? null,
       score: match.score?.fullTime?.home ?? null,
     },
 
     away: {
       name: match.away_team?.shortName ?? '--',
+      tla: match.away_team?.tla ?? '--',
       logo: match.away_team?.logo ?? PLACEHOLDER_LOGO,
+      clubColors: match.away_team?.clubColors ?? null,
       score: match.score?.fullTime?.away ?? null,
     },
 
@@ -68,7 +77,7 @@ export function mapMatchToCardData(match: MatchCardType): MatchCardData {
 
     predictionStatus: getPredictionDisplayStatus(match, prediction),
     status: match.status,
-    date: formatMatchdayDate(match.kick_off),
+    date: formatMatchdayDate(match.kick_off, locale),
     time: formatTime(match.kick_off),
   };
 }

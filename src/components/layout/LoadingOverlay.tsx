@@ -1,9 +1,11 @@
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 export function LoadingOverlay() {
+  const { colors } = useThemeTokens();
   return (
     <View style={styles.overlay}>
-      <ActivityIndicator size="large" color="orange" />
+      <ActivityIndicator size="large" color={colors.text} />
     </View>
   );
 }
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    // backgroundColor: 'rgba(0, 0, 0, 0.7)',
     zIndex: 9999,
   },
 });

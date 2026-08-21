@@ -7,8 +7,6 @@ type Src = string | number | { uri: string; headers?: Record<string, string> };
 
 const LOGO_BACKDROP = '#D8E1EA';
 
-const LOGO_PAD = 4;
-
 interface LogoBadgeProps {
   source: Src;
   width: number;
@@ -24,17 +22,14 @@ export const LogoBadge = ({
   height = 40,
   backgroundColor = LOGO_BACKDROP,
   className,
-  contentFit = 'contain',
+  contentFit = 'fill',
 }: LogoBadgeProps) => {
-  const innerWidth = Math.max(width - LOGO_PAD * 2, 0);
-  const innerHeight = Math.max(height - LOGO_PAD * 2, 0);
-
   return (
     <View
       className={cn('items-center justify-center overflow-hidden rounded-md border border-border', className)}
       style={{ width, height, backgroundColor }}
     >
-      <MyImage source={source} width={innerWidth} height={innerHeight} contentFit={contentFit} />
+      <MyImage source={source} width={width} height={height} contentFit={contentFit} />
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { Skeleton, TextSkeleton } from '@/components/ui';
+import { Skeleton, TextSkeleton } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

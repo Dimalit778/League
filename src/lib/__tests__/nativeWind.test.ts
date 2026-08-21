@@ -96,8 +96,8 @@ describe('themeTokens', () => {
 
   it('uses the font family names registered by Expo', () => {
     expect(themeTokens.light.fonts).toEqual({
-      heading: 'Teko_400Regular',
-      headingBold: 'Teko_700Bold',
+      heading: 'Oswald_400Regular',
+      headingBold: 'Oswald_700Bold',
     });
   });
 

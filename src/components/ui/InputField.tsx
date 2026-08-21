@@ -1,15 +1,24 @@
-import { Text } from '@/components/ui/Text';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useState } from 'react';
 import { Control, Controller, FieldError } from 'react-hook-form';
-import { Pressable, TextInput, type TextInputProps, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  TextInput,
+  View,
+  type StyleProp,
+  type TextInputProps,
+  type ViewStyle,
+} from 'react-native';
+import { Text } from './Text';
 
 type InputFieldProps = {
   control: Control<any>;
   name: string;
   placeholder: string;
+  variant?: 'default' | 'auth';
   secureTextEntry?: boolean;
   error?: FieldError;
   maxLength?: number;
@@ -31,8 +40,9 @@ export const InputField = ({
   control,
   name,
   placeholder,
+  variant = 'default',
   secureTextEntry,
-  maxLength = 50,
+  maxLength = 25,
   autoCapitalize = 'none',
   autoCorrect = false,
   autoComplete,
@@ -66,22 +76,50 @@ export const InputField = ({
     return t('Enter {{placeholder}}', { placeholder: placeholder.toLowerCase() });
   };
 
-  const inferredAutoComplete = autoComplete ?? (name === 'email' ? 'email' : name === 'password' ? 'current-password' : 'name');
+  const inferredAutoComplete =
+    autoComplete ?? (name === 'email' ? 'email' : name === 'password' ? 'current-password' : 'name');
   const inferredKeyboardType = keyboardType ?? (name === 'email' ? 'email-address' : 'default');
   const inferredTextContentType =
     textContentType ?? (name === 'email' ? 'emailAddress' : name === 'password' ? 'password' : 'name');
+  const isAuth = variant === 'auth';
+  const inputColor = isAuth ? '#F8FAFC' : colors.text;
+  const fieldBg = isAuth ? 'rgba(4, 15, 31, 0.74)' : colors.surface;
+
+  const autofillCssVars = {
+    '--input-autofill-color': inputColor,
+    '--input-autofill-bg': isAuth ? 'rgb(4, 15, 31)' : colors.surface,
+  };
+  const webFieldStyle: StyleProp<ViewStyle> =
+    Platform.OS === 'web' ? (autofillCssVars as unknown as StyleProp<ViewStyle>) : undefined;
+  const webInputStyle: TextInputProps['style'] =
+    Platform.OS === 'web'
+      ? ({ outlineStyle: 'none', ...autofillCssVars } as unknown as TextInputProps['style'])
+      : undefined;
 
   return (
-    <View className="gap-1">
+    <View className={isAuth ? 'gap-2' : 'gap-1'}>
       <View
-        className="flex-row items-center overflow-hidden rounded-xl px-2"
-        style={{
-          direction: 'ltr',
-          flexDirection: isRTL ? 'row-reverse' : 'row',
-          backgroundColor: colors.surface,
-          borderWidth: isFocused ? 2 : 1,
-          borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
-        }}
+        className={
+          isAuth
+            ? 'min-h-[52px] flex-row items-center overflow-hidden rounded-2xl px-2'
+            : 'flex-row items-center overflow-hidden rounded-xl px-2'
+        }
+        style={[
+          {
+            direction: 'ltr',
+            flexDirection: isRTL ? 'row-reverse' : 'row',
+            backgroundColor: fieldBg,
+            borderWidth: isFocused ? 2 : 1,
+            borderColor: error
+              ? colors.error
+              : isFocused
+                ? '#FFB31A'
+                : isAuth
+                  ? 'rgba(170, 181, 204, 0.72)'
+                  : colors.border,
+          },
+          webFieldStyle,
+        ]}
       >
         {icon && (
           <View className={isRTL ? 'ml-2' : 'mr-2'} accessible={false}>
@@ -97,12 +135,15 @@ export const InputField = ({
               placeholder={placeholder}
               placeholderTextColor={colors.muted}
               secureTextEntry={secureTextEntry}
-              className="flex-1 text-text py-4 px-2"
-              style={{
-                textAlign: textAlign ?? (isRTL ? 'right' : 'left'),
-                color: colors.text,
-                backgroundColor: colors.surface,
-              }}
+              className={isAuth ? 'min-h-[52px] flex-1 px-2 py-3 text-white' : 'flex-1 px-2 py-4 text-text'}
+              style={[
+                {
+                  textAlign: textAlign ?? (isRTL ? 'right' : 'left'),
+                  color: inputColor,
+                  backgroundColor: 'transparent',
+                },
+                webInputStyle,
+              ]}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
                 onBlur();
@@ -130,10 +171,13 @@ export const InputField = ({
         {rightIcon && (
           <Pressable
             onPress={onRightIconPress}
-            className={isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'}
+            className={
+              isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'
+            }
             accessible
             accessibilityRole="button"
             accessibilityLabel={t('Toggle password visibility')}
+            accessibilityState={{ expanded: !secureTextEntry }}
           >
             {rightIcon}
           </Pressable>
@@ -141,7 +185,12 @@ export const InputField = ({
       </View>
 
       {error && (
-        <Text accessible accessibilityRole="text" accessibilityLiveRegion="assertive" className="text-xs text-error text-center">
+        <Text
+          accessible
+          accessibilityRole="text"
+          accessibilityLiveRegion="assertive"
+          className="text-xs text-error text-center"
+        >
           {error.message && t(error.message)}
         </Text>
       )}

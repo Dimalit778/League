@@ -6,21 +6,23 @@ jest.mock('@/assets/images', () => ({
 }));
 
 describe('LandingScreen', () => {
-  it('renders the app title', () => {
+  it('renders the value proposition', () => {
     const { getByText } = render(<LandingScreen />);
 
-    expect(getByText('Champo')).toBeTruthy();
-  });
-
-  it('renders the tagline', () => {
-    const { getByText } = render(<LandingScreen />);
-
-    expect(getByText('Predict. Compete. Win.')).toBeTruthy();
+    expect(getByText('Every match is a challenge')).toBeTruthy();
+    expect(getByText('Predict scores, compete with friends, and climb the table.')).toBeTruthy();
   });
 
   it('renders the Get Started link', () => {
     const { getByText } = render(<LandingScreen />);
 
     expect(getByText('Get Started')).toBeTruthy();
+  });
+
+  it('renders the returning-user sign-in action', () => {
+    const { getByText } = render(<LandingScreen />);
+
+    expect(getByText('Already have an account?')).toBeTruthy();
+    expect(getByText('Sign In')).toBeTruthy();
   });
 });

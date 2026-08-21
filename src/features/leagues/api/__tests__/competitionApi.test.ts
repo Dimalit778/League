@@ -52,8 +52,8 @@ describe('competitionApi', () => {
         single: jest.fn().mockResolvedValue({
           data: {
             id: 1,
-            current_fixture: 5,
-            total_fixtures: 38,
+            current_matchday: 5,
+            total_matchdays: 38,
             type: 'league',
             current_stage: 'LEAGUE',
             season_id: 2026,
@@ -64,14 +64,14 @@ describe('competitionApi', () => {
 
       const result = await competitionApi.getCompetitionsDetails(1);
       expect(result.id).toBe(1);
-      expect(result.currentFixture).toBe(5);
-      expect(result.totalFixtures).toBe(38);
+      expect(result.currentMatchday).toBe(5);
+      expect(result.totalMatchdays).toBe(38);
       expect(result.type).toBe('league');
       expect(result.currentStage).toBe('LEAGUE');
       expect(result.seasonId).toBe(2026);
-      expect(result.allFixtures).toHaveLength(38);
-      expect(result.allFixtures[0]).toBe(1);
-      expect(result.allFixtures[37]).toBe(38);
+      expect(result.allMatchdays).toHaveLength(38);
+      expect(result.allMatchdays[0]).toBe(1);
+      expect(result.allMatchdays[37]).toBe(38);
     });
   });
 });

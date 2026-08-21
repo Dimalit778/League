@@ -4,6 +4,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const HANDLED_EVENTS = new Set([
   'INITIAL_PURCHASE',
+  'NON_RENEWING_PURCHASE',
   'RENEWAL',
   'PRODUCT_CHANGE',
   'UNCANCELLATION',
@@ -15,6 +16,7 @@ const HANDLED_EVENTS = new Set([
 function getStatusFromEvent(eventType) {
   switch(eventType){
     case 'INITIAL_PURCHASE':
+    case 'NON_RENEWING_PURCHASE':
     case 'RENEWAL':
     case 'PRODUCT_CHANGE':
     case 'UNCANCELLATION':
@@ -33,6 +35,7 @@ function getPlanFromEvent(event) {
   const eventType = event.type;
   switch(eventType){
     case 'INITIAL_PURCHASE':
+    case 'NON_RENEWING_PURCHASE':
     case 'RENEWAL':
     case 'PRODUCT_CHANGE':
     case 'UNCANCELLATION':

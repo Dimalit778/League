@@ -1,4 +1,4 @@
-import { Button, Text } from '@/components/ui';
+import { Button, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { UsersRound } from 'lucide-react-native';

@@ -1,47 +1,50 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
-import { useIsRTL } from '@/providers/LanguageProvider';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useRouter } from 'expo-router';
-import { CircleArrowLeftIcon, CircleArrowRightIcon } from 'lucide-react-native';
-import { Platform, Pressable, View } from 'react-native';
-import { Text } from './Text';
+import { Pressable } from 'react-native';
+import { ArrowIcon } from './ArrowIcon';
 
 interface BackButtonProps {
-  title?: string;
-  textColor?: 'text-text' | 'text-primary' | 'text-info';
-  includeSafeArea?: boolean;
+  fallbackHref?: string;
+  onPress?: () => void;
+  variant?: 'default' | 'onImage';
 }
 
-export const BackButton = ({ title, textColor = 'text-text' }: BackButtonProps) => {
-  const { colors } = useThemeTokens();
+const SIZE = 40;
+
+export const BackButton = ({ fallbackHref, onPress, variant = 'default' }: BackButtonProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
-  const isRTL = useIsRTL();
+  const { colors } = useThemeTokens();
+  const isOnImage = variant === 'onImage';
 
-  const CircleArrowIcon = isRTL ? CircleArrowRightIcon : CircleArrowLeftIcon;
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
 
-  const headerHeight = Platform.OS === 'ios' ? 44 : 56;
-  const isWeb = Platform.OS === 'web';
-  if (isWeb) {
-    return null;
-  }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    if (fallbackHref) {
+      router.replace(fallbackHref as never);
+    }
+  };
 
   return (
-    <View style={{ height: headerHeight, justifyContent: 'center', width: '100%' }}>
-      <Pressable
-        style={{
-          position: 'absolute',
-          [isRTL ? 'right' : 'left']: 5,
-          zIndex: 1000,
-          height: '100%',
-          width: 60,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={() => router.back()}
-      >
-        <CircleArrowIcon color={colors.text} size={38} strokeWidth={1} />
-      </Pressable>
-
-      {title && <Text className={`text-xl  text-text text-center`}>{title}</Text>}
-    </View>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('Back')}
+      hitSlop={8}
+      onPress={handlePress}
+      className={`z-10 pe-1 items-center justify-center rounded-full border active:opacity-70 w-12 h-12 ${
+        isOnImage ? 'border-white/20 bg-[#061326]/70' : 'border-border bg-subtle'
+      }`}
+      style={{ width: SIZE, height: SIZE }}
+    >
+      <ArrowIcon size={30} color={isOnImage ? '#FFFFFF' : colors.text} strokeWidth={2} />
+    </Pressable>
   );
 };

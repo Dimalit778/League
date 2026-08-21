@@ -1,21 +1,79 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { useGetLeaderboard, useGetLeagueAndMembers } from '@/features/leagues/hooks/useLeagues';
+import { images } from '@/assets/images';
+import { CollapsibleHeader, Error, Row, Text } from '@/components';
+import {
+  useGetCompetitionLeaderboard,
+  useGetLeaderboard,
+  useGetLeagueAndMembers,
+} from '@/features/leagues/hooks/useLeagues';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
-import { useLeagueId } from '@/store/PrimaryLeagueStore';
+import { useAuthStore } from '@/store/AuthStore';
+import { useCompetitionId, useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
-import { useEffect, useMemo } from 'react';
-import { Share } from 'react-native';
+import { router } from 'expo-router';
+import { Trophy } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, Share, View } from 'react-native';
+import { InviteFriendsCard } from '../components/leaderboard/InviteFriendsCard';
+import {
+  LeaderboardAudienceToggle,
+  type LeaderboardAudience,
+} from '../components/leaderboard/LeaderboardAudienceToggle';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
-import LeaderboardSkeleton from '../components/leaderboard/LeaderboardSkeleton';
+import LeaderboardSkeleton, { LeaderboardBodySkeleton } from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Pudiom';
-import { SparseLeaderboardCard } from '../components/leaderboard/SparseLeaderboardCard';
+
+const Header = ({
+  audience,
+  setAudience,
+}: {
+  audience: LeaderboardAudience;
+  setAudience: (audience: LeaderboardAudience) => void;
+}) => {
+  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
+
+  return (
+    <View className="w-full px-4">
+      <View className="relative w-full justify-center  h-12">
+        <View className="absolute inset-0 items-center justify-center " pointerEvents="box-none">
+          <LeaderboardAudienceToggle value={audience} onChange={setAudience} />
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('My leagues')}
+          hitSlop={4}
+          onPress={() => router.push('/(app)/(user)/leagues/my-leagues')}
+          className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
+          style={{
+            position: 'absolute',
+            end: 0,
+            top: 0,
+          }}
+        >
+          <Trophy color={colors.text} size={24} strokeWidth={1.5} />
+        </Pressable>
+      </View>
+    </View>
+  );
+};
 
 export default function LeaderboardScreen() {
   const leagueId = useLeagueId();
-  const bottomTabsInset = useFloatBottomTabsInset();
-  const { data: leaderboard, isLoading, error } = useGetLeaderboard(leagueId);
+  const competitionId = useCompetitionId();
+  const currentUserId = useAuthStore((s) => s.user?.id);
+
+  const [audience, setAudience] = useState<LeaderboardAudience>('friends');
+
+  const friendsQuery = useGetLeaderboard(leagueId);
+  const worldQuery = useGetCompetitionLeaderboard(competitionId, audience === 'world');
+
+  const activeQuery = audience === 'world' ? worldQuery : friendsQuery;
+  const { data: leaderboard, isLoading: activeIsLoading, error } = activeQuery;
+
   const { data: league } = useGetLeagueAndMembers(leagueId);
   const { t } = useTranslation();
   const { showAlert } = useAlert();
@@ -51,27 +109,53 @@ export default function LeaderboardScreen() {
         title: t('Error'),
         message: t('Failed to share invite code'),
         type: 'warning',
-        buttons: [{ text: 'OK' }],
+        buttons: [{ text: t('OK') }],
       });
     }
   };
 
-  if (error) return <Error error={error} />;
-  if (!leaderboard || isLoading) return <LeaderboardSkeleton />;
+  if (friendsQuery.error) return <Error error={friendsQuery.error} />;
+  if (!friendsQuery.data && friendsQuery.isLoading) return <LeaderboardSkeleton />;
+
+  const isClickable = audience === 'friends';
+  const bodyIsLoading = activeIsLoading || !leaderboard;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
-      <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} />
+    <CollapsibleHeader
+      variant="fixed"
+      expandedHeight={280}
+      fixedBackgroundRevealStart={40}
+      fixedBackgroundRevealDistance={30}
+      backgroundImage={images.stadium}
+      overlap={200}
+      collapsedHeader={<Header audience={audience} setAudience={setAudience} />}
+    >
+      <View className="gap-6 px-4 pt-2">
+        {error ? (
+          <Error error={error} />
+        ) : bodyIsLoading ? (
+          <LeaderboardBodySkeleton />
+        ) : (
+          <>
+            <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
 
-      {rest.length > 0 ? (
-        <LeaderboardList leaderboard={rest} />
-      ) : (
-        <SparseLeaderboardCard
-          memberCount={leaderboard.length}
-          onInvite={handleInviteFriends}
-          inviteDisabled={!league}
-        />
-      )}
-    </Screen>
+            {rest.length > 0 ? (
+              <View className="gap-4">
+                <Row keepLtr className="gap-3">
+                  <View className="h-px flex-1 bg-border" />
+                  <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
+                    {t('Full ranking')}
+                  </Text>
+                  <View className="h-px flex-1 bg-border" />
+                </Row>
+                <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
+              </View>
+            ) : null}
+
+            {audience === 'friends' ? <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} /> : null}
+          </>
+        )}
+      </View>
+    </CollapsibleHeader>
   );
 }

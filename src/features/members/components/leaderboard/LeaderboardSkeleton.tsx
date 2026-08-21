@@ -1,5 +1,5 @@
-import { Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Skeleton } from '@/components/ui';
+import { images } from '@/assets/images';
+import { CollapsibleHeader, Skeleton } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { View } from 'react-native';
 
@@ -52,6 +52,19 @@ function PodiumMemberSkeleton({ avatarSize, podiumHeight }: { avatarSize: number
   );
 }
 
+function LeaderboardHeaderSkeleton() {
+  return (
+    <View className="h-12 w-full justify-center px-2.5">
+      <View className="absolute inset-0 items-center justify-center px-14">
+        <Skeleton className="h-10 w-[216px] rounded-full" />
+      </View>
+      <View className="absolute end-2.5 top-0">
+        <Skeleton className="h-12 w-12 rounded-full" />
+      </View>
+    </View>
+  );
+}
+
 function PodiumSkeleton() {
   return (
     <View className="mx-4 mt-4 mb-8 overflow-hidden rounded-xl border border-border bg-subtle">
@@ -84,11 +97,9 @@ function LeaderboardRowSkeleton() {
   );
 }
 
-export default function LeaderboardSkeleton() {
-  const bottomTabsInset = useFloatBottomTabsInset();
-
+export function LeaderboardBodySkeleton() {
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomTabsInset}>
+    <>
       <PodiumSkeleton />
 
       <View className="mx-2 rounded-md border border-border bg-surface">
@@ -96,6 +107,24 @@ export default function LeaderboardSkeleton() {
           <LeaderboardRowSkeleton key={index} />
         ))}
       </View>
-    </Screen>
+    </>
+  );
+}
+
+export default function LeaderboardSkeleton() {
+  return (
+    <CollapsibleHeader
+      variant="fixed"
+      expandedHeight={280}
+      fixedBackgroundRevealStart={40}
+      fixedBackgroundRevealDistance={30}
+      backgroundImage={images.stadium}
+      overlap={200}
+      collapsedHeader={<LeaderboardHeaderSkeleton />}
+    >
+      <View className="gap-6 px-4 pt-2">
+        <LeaderboardBodySkeleton />
+      </View>
+    </CollapsibleHeader>
   );
 }

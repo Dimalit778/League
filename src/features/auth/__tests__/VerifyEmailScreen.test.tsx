@@ -19,10 +19,9 @@ describe('VerifyEmailScreen', () => {
   });
 
   it('renders the heading and email', () => {
-    const { getAllByText, getByText } = render(<VerifyEmailScreen />);
+    const { getByText } = render(<VerifyEmailScreen />);
 
-    // "Verify Email" appears as both heading and button
-    expect(getAllByText('Verify Email').length).toBeGreaterThanOrEqual(1);
+    expect(getByText('Enter the code')).toBeTruthy();
     expect(getByText('user@test.com')).toBeTruthy();
   });
 
@@ -33,16 +32,17 @@ describe('VerifyEmailScreen', () => {
     expect(inputs).toHaveLength(6);
   });
 
-  it('renders the Verify Email button', () => {
-    const { getByTestId } = render(<VerifyEmailScreen />);
+  it('renders the confirmation button', () => {
+    const { getByTestId, getByText } = render(<VerifyEmailScreen />);
 
     expect(getByTestId('button')).toBeTruthy();
+    expect(getByText('Confirm and continue')).toBeTruthy();
   });
 
-  it('renders the Resend Code button', () => {
+  it('renders the initial resend cooldown', () => {
     const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('Resend Code')).toBeTruthy();
+    expect(getByText('00:30')).toBeTruthy();
   });
 
   it('shows missing email message when no email param', () => {
@@ -78,15 +78,11 @@ describe('VerifyEmailScreen', () => {
     });
   });
 
-  it('renders resend button as enabled initially', () => {
-    const { getByText } = render(<VerifyEmailScreen />);
+  it('keeps resend unavailable during the initial cooldown', () => {
+    const { getByText, queryByText } = render(<VerifyEmailScreen />);
 
-    const resendButton = getByText('Resend Code');
-    expect(resendButton).toBeTruthy();
-    
-    // Check that the resend button is not disabled initially
-    const resendButtonContainer = resendButton.parent;
-    expect(resendButtonContainer?.props.accessibilityState?.disabled).not.toBe(true);
+    expect(getByText('00:30')).toBeTruthy();
+    expect(queryByText('Resend Code')).toBeNull();
   });
 
   it('does not display error message initially', () => {

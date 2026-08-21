@@ -2,6 +2,7 @@ import { translateRaw } from '@/lib/i18n/translate';
 import { translations } from '@/lib/i18n/translations';
 import { useIsRTL, useLanguageContext } from '@/providers/LanguageProvider';
 import { SupportedLanguage, useLanguageStore } from '@/store/LanguageStore';
+import { useCallback } from 'react';
 
 export const useTranslation = () => {
   // Subscribe to language store for state management
@@ -13,8 +14,10 @@ export const useTranslation = () => {
   useLanguageContext();
   const isRTL = useIsRTL();
 
-  const translate = (key: string, variables?: Record<string, string | number>) =>
-    translateRaw(language, key, variables);
+  const translate = useCallback(
+    (key: string, variables?: Record<string, string | number>) => translateRaw(language, key, variables),
+    [language],
+  );
 
   return {
     t: translate,

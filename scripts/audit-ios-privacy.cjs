@@ -20,8 +20,8 @@ const secureStoreOptions = Array.isArray(secureStore) ? secureStore[1] : {};
 if (secureStoreOptions?.faceIDPermission !== false) fail('Face ID permission must stay disabled.');
 
 const manifest = appConfig.ios?.privacyManifests;
-if (appConfig.ios?.supportsTablet !== false) {
-  fail('The iOS release must remain iPhone-only (ios.supportsTablet=false).');
+if (appConfig.ios?.supportsTablet !== true) {
+  fail('The iOS release must support both iPhone and iPad (ios.supportsTablet=true).');
 }
 if (!manifest) {
   fail('ios.privacyManifests is missing.');
@@ -74,4 +74,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log('iOS privacy audit passed: tracking disabled, manifest complete, unnecessary permissions blocked.');
+console.log(
+  'iOS release audit passed: iPhone/iPad enabled, tracking disabled, manifest complete, unnecessary permissions blocked.',
+);

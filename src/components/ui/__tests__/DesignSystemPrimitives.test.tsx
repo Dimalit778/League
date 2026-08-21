@@ -1,9 +1,9 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { Settings } from 'lucide-react-native';
+import { EmptyState } from '../../layout/EmptyState';
 import { Badge } from '../Badge';
 import { Button } from '../Button';
 import { Chip } from '../Chip';
-import { EmptyState } from '../EmptyState';
 import { ListItem } from '../ListItem';
 
 describe('design system primitives', () => {

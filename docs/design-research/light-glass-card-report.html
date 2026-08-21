@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Champo light-mode glass surfaces</title>
+  <style>
+    :root { color-scheme:light; --ink:#0f172a; --muted:#64748b; --paper:#f8f9f7; --card:#fff; --line:#e2e8f0; --gold:#7a5800; --fact:#e7f6ee; --claim:#e8f1ff; --inference:#fff4d6; --recommendation:#f1eaff; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font:16px/1.55 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--paper); }
+    a { color:#3157d5; overflow-wrap:anywhere; }
+    a:focus-visible { outline:3px solid #ffbf47; outline-offset:3px; }
+    header, nav, main, footer { width:min(1120px,calc(100% - 32px)); margin:auto; }
+    header { padding:52px 0 20px; }
+    h1 { margin:0 0 10px; font-size:clamp(2.2rem,6vw,4.6rem); line-height:1; letter-spacing:-.045em; }
+    h2 { margin:44px 0 16px; font-size:clamp(1.45rem,3vw,2.2rem); }
+    h3 { margin:.2rem 0 .65rem; }
+    p { max-width:76ch; }
+    .lede,.meta { color:var(--muted); }
+    .lede { font-size:1.12rem; }
+    nav { padding:14px 18px; background:#ffffffcc; border:1px solid var(--line); border-radius:16px; }
+    nav a { display:inline-block; margin:3px 14px 3px 0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:18px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 8px 28px rgba(15,23,42,.06); }
+    .badge { display:inline-block; padding:4px 9px; margin:0 5px 6px 0; border-radius:999px; font-size:.78rem; font-weight:700; }
+    .observed { background:var(--fact); } .reported { background:var(--claim); } .inference { background:var(--inference); } .recommendation { background:var(--recommendation); }
+    .schematic { min-height:190px; display:grid; place-items:center; border:1px solid var(--line); border-radius:14px; background:linear-gradient(145deg,#fff9e8,#fff5d9 45%,#fff); padding:24px; }
+    .bad,.good { width:min(100%,360px); height:92px; border-radius:18px; border:1px solid rgba(122,88,0,.2); position:relative; overflow:hidden; }
+    .bad { background:linear-gradient(#fff 0 8%,#aaa 40%,#fff 70%); }
+    .good { background:linear-gradient(145deg,#fff9e8,#fff8e8 42%,#fff); box-shadow:0 6px 18px rgba(15,23,42,.08); }
+    .bad::after,.good::after { content:attr(data-label); position:absolute; inset:0; display:grid; place-items:center; font-weight:800; }
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:16px; background:#fff; }
+    table { width:100%; border-collapse:collapse; min-width:760px; }
+    th,td { padding:12px 14px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line); }
+    th { background:#edf1f8; }
+    code { background:#eef2f7; padding:.12em .35em; border-radius:5px; }
+    footer { padding:48px 0 64px; color:var(--muted); }
+    @media (max-width:600px) { header { padding-top:34px; } .card { padding:15px; } }
+    @media print { body { background:#fff; } nav { display:none; } .card { box-shadow:none; break-inside:avoid; } a { color:inherit; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="meta">Design research · 9 August 2026 · Expo React Native · iOS/Android</p>
+    <h1>Light-mode glass surfaces</h1>
+    <p class="lede">A focused review of Champo’s My Leagues screen. The goal is to remove the dirty grey band from light cards and glass buttons while preserving the premium gold hierarchy and the existing dark appearance.</p>
+  </header>
+  <nav aria-label="Report contents">
+    <a href="#synthesis">Synthesis</a><a href="#input">Input</a><a href="#references">References</a><a href="#comparison">Comparison</a><a href="#leaders">Leaders</a><a href="#first-run">First run</a><a href="#risks">Risks</a><a href="#recommendations">Recommendations</a><a href="#proposal">Proposal</a><a href="#sources">Sources</a>
+  </nav>
+  <main>
+    <section id="synthesis"><h2>Executive synthesis</h2><div class="grid">
+      <article class="card"><span class="badge observed">Observed fact</span><h3>The defect is tonal, not structural</h3><p>The supplied screen has clear hierarchy and readable content, but every highlight fades through a dark grey midpoint. The repeated band makes cards and buttons look stained.</p></article>
+      <article class="card"><span class="badge inference">Inference</span><h3>Transparent black is being interpolated</h3><p>The implementation fades a white RGBA highlight to the named color <code>transparent</code>. That endpoint is transparent black, so interpolation creates grey before opacity reaches zero.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Use a quiet surface in light mode</h3><p>Remove the decorative sheen from light content cards and glass actions. Retain a subtle border and low elevation; reserve the warm tint for the primary league and keep the richer material treatment in dark mode.</p></article>
+    </div></section>
+
+    <section id="input"><h2>Input analysis</h2><div class="grid">
+      <article class="card"><div class="schematic"><div class="bad" data-label="Current: grey midpoint"></div></div><span class="badge observed">Observed fact</span><p>The screenshot shows the My Leagues header, two glass actions, a premium primary-league card with a nested stats card and glass action, other league rows, and a Pro upsell card. The glass treatment repeats at three hierarchy levels.</p></article>
+      <article class="card"><div class="schematic"><div class="good" data-label="Target: quiet highlight"></div></div><span class="badge recommendation">Recommendation</span><p>Use near-white content surfaces in light mode. Let the primary card carry the warm tint; nested cards and buttons should be neutral and quieter so information—not the material effect—holds attention.</p></article>
+    </div><p class="meta">The user-provided screenshot was inspected in conversation but was not available as a local file, so it is not copied into this report. The diagrams are original schematics, not recreations of a third-party screen.</p></section>
+
+    <section id="references"><h2>Top references</h2><div class="grid">
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Apple — Materials</h3><p>Apple distinguishes navigation/control glass from content-layer materials, recommends using glass sparingly, and ties material thickness to legibility.</p><p class="meta"><a href="https://developer.apple.com/design/human-interface-guidelines/materials">Primary source</a> · accessed 9 Aug 2026 · text evidence; no external image embedded.</p></article>
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Apple — Accessibility</h3><p>Apple calls for foreground/background contrast checks in both light and dark appearances and cites 4.5:1 for normal text and 3:1 for large text.</p><p class="meta"><a href="https://developer.apple.com/design/human-interface-guidelines/accessibility/">Primary source</a> · accessed 9 Aug 2026 · text evidence.</p></article>
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Fluent 2 — Material</h3><p>Fluent describes solid as its most common material and reserves acrylic’s frosted-glass treatment for transient surfaces such as popovers and menus.</p><p class="meta"><a href="https://fluent2.microsoft.design/material">Primary source</a> · accessed 9 Aug 2026 · text evidence.</p></article>
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Fluent 2 — Elevation</h3><p>Fluent uses consistent light and shadow to communicate distance. Its low elevation ramp is the relevant comparison for cards and list items.</p><p class="meta"><a href="https://fluent2.microsoft.design/elevation">Primary source</a> · accessed 9 Aug 2026 · text evidence.</p></article>
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Atlassian — Elevation</h3><p>Atlassian frames elevation as layered surfaces and varies surface brightness with height, reinforcing a restrained surface-plus-shadow model.</p><p class="meta"><a href="https://atlassian.design/foundations/elevation/">Primary source</a> · accessed 9 Aug 2026 · text evidence.</p></article>
+      <article class="card"><span class="badge reported">Source-reported claim</span><h3>W3C — WCAG 2.2</h3><p>WCAG 2.2 requires 4.5:1 contrast for normal text and 3:1 for large text at Level AA, with documented exceptions.</p><p class="meta"><a href="https://www.w3.org/TR/WCAG22/#contrast-minimum">Normative source</a> · accessed 9 Aug 2026 · text evidence.</p></article>
+    </div></section>
+
+    <section id="comparison"><h2>Flow and pattern comparison</h2><div class="table-wrap"><table><thead><tr><th>Decision</th><th>Apple</th><th>Fluent</th><th>Atlassian</th><th>Champo implication</th></tr></thead><tbody>
+      <tr><td>Content surface</td><td>Standard material; glass is not the default content layer</td><td>Solid is most common</td><td>Layered surface tokens</td><td>Keep cards nearly opaque</td></tr>
+      <tr><td>Hierarchy</td><td>Material thickness and separation</td><td>Shadow/light elevation ramp</td><td>Surface brightness by elevation</td><td>Border + low shadow, not a dark band</td></tr>
+      <tr><td>Mode behavior</td><td>Adaptive appearance and contrast settings</td><td>Solid/acrylic/mica are mode-aware</td><td>Theme surface tokens</td><td>Separate light and dark verification</td></tr>
+      <tr><td>Transient glass</td><td>Useful for controls/navigation, sparingly</td><td>Acrylic for menus/popovers</td><td>Overlay elevation for transient UI</td><td>Glass button may stay, but visually quiet</td></tr>
+    </tbody></table></div></section>
+
+    <section id="leaders"><h2>What established systems do differently</h2><div class="grid">
+      <article class="card"><span class="badge observed">Observed fact</span><p>Apple, Microsoft Fluent, Atlassian, and W3C are included as platform/design-system authorities, not because of app-store rankings. They document system-level surface, elevation, and accessibility behavior.</p></article>
+      <article class="card"><span class="badge inference">Inference</span><p>The common differentiator is semantic restraint: material choice communicates layer and function. Decorative gradients are subordinate to readable content and consistent elevation.</p></article>
+    </div></section>
+
+    <section id="first-run"><h2>Fast, low-friction first run</h2><p><span class="badge observed">Observed fact</span> This is a returning-user dashboard, not onboarding. The earliest value is recognizing the primary league and entering it. The current screen requires no permission or setup decision before that action.</p><p><span class="badge recommendation">Recommendation</span> Preserve the existing order, labels, defaults, locked-state disclosure, and direct “Enter league” action. The visual fix should not add steps, modals, sample data, or new decisions. Recovery behavior and account timing are outside this component’s scope.</p></section>
+
+    <section id="risks"><h2>Risks and anti-patterns</h2><div class="grid">
+      <article class="card"><span class="badge observed">Observed fact</span><h3>Accidental dark interpolation</h3><p>A named transparent endpoint can introduce an unintended black hue into a light highlight.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Avoid nested spectacle</h3><p>Do not strengthen blur, gloss, and shadow simultaneously across parent card, child card, and button.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Verify contrast</h3><p>Recheck muted labels and disabled league rows against their final composited surfaces in both modes.</p></article>
+      <article class="card"><span class="badge inference">Inference</span><h3>Android parity</h3><p>Blur and elevation can differ by platform; the hue-preserving alpha fix is lower risk than increasing blur intensity.</p></article>
+    </div></section>
+
+    <section id="recommendations"><h2>Recommendations</h2><div class="grid">
+      <article class="card"><span class="badge recommendation">P0 · High confidence · Low effort</span><h3>Remove light-mode sheen</h3><p>Render the highlight only in dark mode. Use a nearly opaque neutral gradient for regular cards and a very pale warm gradient for the primary card.</p></article>
+      <article class="card"><span class="badge recommendation">P1 · High confidence · Low effort</span><h3>Use low, consistent elevation</h3><p>Pair the light surface with a hairline border and a restrained cool-grey shadow. Glass actions should use the same surface language at a lower elevation.</p></article>
+      <article class="card"><span class="badge recommendation">P2 · Medium confidence · Medium effort</span><h3>Composite contrast audit</h3><p>Measure the final text/icon colors over the premium and neutral gradients, including locked/disabled states.</p></article>
+    </div></section>
+
+    <section id="proposal"><h2>Proposed experience and implementation</h2><div class="grid">
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>State inventory</h3><p>Default glass card, primary warm card, nested neutral card, glass action, pressed state, disabled/locked state, light mode, and dark mode.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Component rule</h3><p>In light mode, content cards and actions use opaque surfaces without a sheen. In dark mode, a highlight may fade only opacity, never hue; the shared alpha utility keeps that interpolation safe.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Accessibility</h3><p>Keep semantic buttons and labels unchanged. Test light/dark contrast, Reduce Transparency behavior where supported, RTL layout, and Dynamic Type clipping.</p></article>
+      <article class="card"><span class="badge recommendation">Recommendation</span><h3>Measurement</h3><p>No analytics event is warranted for a rendering fix. Validate with visual regression snapshots and monitor existing enter-league conversion only for unexpected regressions.</p></article>
+    </div></section>
+
+    <section id="sources"><h2>Sources and limitations</h2><ul>
+      <li><a href="https://developer.apple.com/design/human-interface-guidelines/materials">Apple Human Interface Guidelines — Materials</a></li>
+      <li><a href="https://developer.apple.com/design/human-interface-guidelines/accessibility/">Apple Human Interface Guidelines — Accessibility</a></li>
+      <li><a href="https://fluent2.microsoft.design/material">Fluent 2 — Material</a></li>
+      <li><a href="https://fluent2.microsoft.design/elevation">Fluent 2 — Elevation</a></li>
+      <li><a href="https://atlassian.design/foundations/elevation/">Atlassian Design System — Elevation</a></li>
+      <li><a href="https://www.w3.org/TR/WCAG22/#contrast-minimum">W3C WCAG 2.2 — Contrast minimum</a></li>
+      <li><a href="https://docs.expo.dev/versions/latest/sdk/linear-gradient/">Expo — LinearGradient API</a></li>
+    </ul><p class="meta">All sources accessed 9 August 2026. Research was limited to public primary documentation and the supplied screenshot; no authenticated competitor flows or behavioral studies were available. No causal usability claim is made. External screenshots were not embedded because capture/download was unavailable and unnecessary for this narrow rendering defect. The report remains fully readable offline; only source links require network access.</p></section>
+  </main>
+  <footer>Self-contained report. Original schematics are embedded directly; source links are provided for attribution.</footer>
+</body>
+</html>

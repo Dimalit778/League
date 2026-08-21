@@ -1,4 +1,4 @@
-import { Card, LockedBadge, Text } from '@/components/ui';
+import { Card, LockedBadge, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
 

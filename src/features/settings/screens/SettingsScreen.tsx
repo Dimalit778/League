@@ -1,11 +1,9 @@
-import { Screen } from '@/components/layout';
-import { Button, Card, Text } from '@/components/ui';
+import { Button, Card, Screen, Text } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
 import { useDeleteUser } from '@/features/settings/hooks/useUsers';
 import { useTranslation } from '@/hooks/useTranslation';
-import { openStoreSubscriptionManagement } from '@/lib/revenuecat/purchases';
 import { useAlert } from '@/providers/AlertProvider';
 import { router } from 'expo-router';
 import { Alert, View } from 'react-native';
@@ -25,21 +23,6 @@ const SettingsScreen = () => {
       buttons: [
         { text: t('Cancel'), style: 'cancel' },
         { text: t('Delete'), style: 'destructive', onPress: () => deleteUserMutation.mutate() },
-      ],
-    });
-  };
-
-  const handleDeleteAccountPress = () => {
-    showAlert({
-      title: t('Check your subscription first'),
-      message: t('Deleting your Champo account does not cancel an active App Store subscription.'),
-      type: 'warning',
-      buttons: [
-        {
-          text: t('Manage Subscription'),
-          onPress: () => void openStoreSubscriptionManagement(),
-        },
-        { text: t('Continue deletion'), style: 'destructive', onPress: confirmDeleteAccount },
       ],
     });
   };
@@ -64,7 +47,7 @@ const SettingsScreen = () => {
         <View className="mt-8 px-6">
           <Button
             label={t('Open Admin Dashboard')}
-            onPress={() => router.push('/(app)/(admin)/competitions')}
+            onPress={() => router.push('/admin')}
             variant="outline"
           />
         </View>
@@ -73,7 +56,7 @@ const SettingsScreen = () => {
 
       <View className="mt-8">
         <Card
-          onPress={handleDeleteAccountPress}
+          onPress={confirmDeleteAccount}
           variant="soft"
           contentClassName="items-center"
           className="border-error/40"

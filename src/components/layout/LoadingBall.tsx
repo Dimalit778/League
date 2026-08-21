@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useLayoutEffect } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -10,7 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const ballImage = require('@assets/ball.png');
+import { images } from '@/assets/images';
+
 const BALL_SIZE = 120;
 /** Vertical travel (px); ball moves from `-BOUNCE_UP` (apex) to `0` (rest). */
 const BOUNCE_UP = 130;
@@ -81,7 +83,7 @@ export function LoadingBall() {
       <View style={styles.stage} pointerEvents="box-none">
         <View style={styles.ballColumn}>
           <Animated.View style={[styles.ball, ballStyle]}>
-            <Image source={ballImage} style={styles.ballImage} resizeMode="contain" />
+            <Image source={images.ball} style={styles.ballImage} contentFit="contain" />
           </Animated.View>
           <Animated.View style={[styles.ballShadow, shadowStyle]} />
         </View>

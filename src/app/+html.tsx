@@ -6,10 +6,10 @@ const webAutofillStyles = `
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    -webkit-text-fill-color: var(--color-text) !important;
-    caret-color: var(--color-text) !important;
-    -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
-    box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+    -webkit-text-fill-color: var(--input-autofill-color, var(--color-text)) !important;
+    caret-color: var(--input-autofill-color, var(--color-text)) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--input-autofill-bg, var(--color-surface)) inset !important;
+    box-shadow: 0 0 0 1000px var(--input-autofill-bg, var(--color-surface)) inset !important;
   }
 `;
 

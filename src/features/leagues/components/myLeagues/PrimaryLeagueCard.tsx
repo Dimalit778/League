@@ -1,100 +1,90 @@
-import { DirectionalIcon, Divider, HeaderBackground, LogoBadge, MyImage, Text } from '@/components/ui';
+import { Button, Card, Divider, GlassCard, MyImage, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
-import { Podium, Star, Users } from 'lucide-react-native';
-import { Pressable, View } from 'react-native';
-
-import { images } from '@/assets/images';
-import { Row } from '@/components/layout';
+import { Award, Crown, Star, Users } from 'lucide-react-native';
+import { View } from 'react-native';
 import { LeagueSummary } from '../../types';
 
-type StatBlockProps = {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-};
-
-function StatBlock({ icon, label, value }: StatBlockProps) {
+function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <View className="flex-1 items-center gap-1">
-      <View className="flex-row items-center justify-center gap-1.5">
-        {icon}
-        <Text numberOfLines={1} className="text-xs text-muted">
-          {label}
-        </Text>
-      </View>
-      <Text numberOfLines={1} className="font-semibold text-text">
+      {icon}
+      <Text variant="subtitle" tone="primary" numberOfLines={1}>
         {value}
+      </Text>
+      <Text variant="caption" tone="muted" numberOfLines={1}>
+        {label}
       </Text>
     </View>
   );
 }
 
 export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueSummary; onPress?: () => void }) {
-  const { colors } = useThemeTokens();
+  const { colors, effects } = useThemeTokens();
   const { t } = useTranslation();
 
   const handlePress = () => {
-    if (onPress) {
-      onPress();
-      return;
-    }
-
+    if (onPress) return onPress();
     router.replace('/(app)/(league)/(tabs)');
   };
 
   return (
-    <HeaderBackground>
-      <Pressable
+    <Card variant="hero" padding="md" contentClassName="gap-4">
+      <View className="flex-row justify-between ">
+        <Row className="items-center gap-3">
+          <MyImage source={league.competition_flag ?? ''} width={48} height={48} />
+          <View className="min-w-0 gap-0.5">
+            <Text variant="titleLarge" numberOfLines={1}>
+              {league.league_name}
+            </Text>
+            <Text tone="muted" numberOfLines={1}>
+              {league.nickname}
+            </Text>
+          </View>
+        </Row>
+        <Row
+          className="self-center items-center gap-1.5 rounded-full border px-2.5 py-1"
+          style={{
+            borderColor: colors.primary,
+            backgroundColor: effects.cardActiveGlow,
+          }}
+        >
+          <Star size={16} color={colors.primary} strokeWidth={1.5} />
+          <Text variant="bodySmall" tone="primary" className="font-semibold" numberOfLines={1}>
+            {t('Primary League')}
+          </Text>
+        </Row>
+      </View>
+
+      <GlassCard padding="sm" contentClassName="gap-4 flex-row ">
+        <Stat
+          icon={<Users size={16} color={colors.muted} strokeWidth={1.5} />}
+          label={t('Members')}
+          value={`${league.members_count ?? 0}`}
+        />
+        <Divider orientation="vertical" className="h-12 bg-border" />
+        <Stat
+          icon={<Award size={16} color={colors.muted} strokeWidth={1.5} />}
+          label={t('Points')}
+          value={`${league.total_points ?? 0}`}
+        />
+        <Divider orientation="vertical" className="h-12 bg-border" />
+        <Stat
+          icon={<Crown size={16} color={colors.muted} strokeWidth={1.5} />}
+          label={t('Rank')}
+          value={league.rank ? `#${league.rank}` : '—'}
+        />
+      </GlassCard>
+
+      <Button
+        variant="glass"
+        fullWidth
+        label={t('Enter league')}
         onPress={handlePress}
-        accessibilityRole="button"
+        arrowIcon={true}
         accessibilityLabel={`${league.league_name}, ${league.nickname}`}
-        className="min-h-11 flex-row items-center gap-4 px-4 py-4 "
-      >
-        <View className="min-w-0 flex-1 justify-center gap-3 ">
-          <Row className="items-center gap-3">
-            <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
-
-            <View className="min-w-0 flex-1 gap-0.5">
-              <Text numberOfLines={1} className="text-xl font-semibold">
-                {league.league_name}
-              </Text>
-              <Text numberOfLines={1} className="text-base text-muted">
-                {league.nickname}
-              </Text>
-            </View>
-          </Row>
-
-          <Divider />
-
-          <View className="flex-row items-center justify-between">
-            <StatBlock icon={<Podium size={18} color={colors.primary} />} label={t('Rank')} value={`#${league.rank}`} />
-
-            <Divider orientation="vertical" className="h-10" />
-
-            <StatBlock
-              icon={<Star size={18} color={colors.primary} fill={colors.primary} />}
-              label={t('Points')}
-              value={`${league.total_points} ${t('pts')}`}
-            />
-
-            <Divider orientation="vertical" className="h-10" />
-
-            <StatBlock
-              icon={<Users size={18} color={colors.primary} />}
-              label={t('Members')}
-              value={`${league.members_count}`}
-            />
-          </View>
-        </View>
-        <View className="items-center justify-center">
-          <View className="rounded-full border border-primary p-1">
-            <DirectionalIcon size={23} color={colors.primary} />
-          </View>
-          <MyImage source={images.trophyGold} width={70} height={70} contentFit="contain" />
-        </View>
-      </Pressable>
-    </HeaderBackground>
+      />
+    </Card>
   );
 }

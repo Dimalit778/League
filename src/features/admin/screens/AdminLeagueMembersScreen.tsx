@@ -1,69 +1,251 @@
-import { LoadingOverlay, Screen } from '@/components/layout';
-import { BackButton, Card, Text } from '@/components/ui';
-import { useAdminLeagueMembers } from '@/features/admin/hooks/useAdmin';
+import { Badge, Card, LoadingOverlay, Screen, Text } from '@/components';
+import {
+  AdminCollectionSummary,
+  AdminEmpty,
+  AdminErrorBanner,
+  AdminMeta,
+  AdminPageHeader,
+  AdminSearchField,
+} from '@/features/admin/components/AdminUI';
+import { useAdminLeagueMembers, useAdminLeagues } from '@/features/admin/hooks/useAdmin';
+import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
+import type { LeagueMemberWithRelations, LeagueWithRelations } from '@/features/admin/queries/adminService';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsFocused } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { SearchX, UsersRound } from 'lucide-react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, useWindowDimensions, View } from 'react-native';
+
+const getInitials = (value: string) =>
+  value
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 
 const AdminLeagueMembersScreen = () => {
-  const isFocused = useIsFocused();
-  const { t } = useTranslation();
-  const { data, isLoading, isRefetching, refetch, error } = useAdminLeagueMembers();
+  const { t, language } = useTranslation();
+  const { leagueId } = useLocalSearchParams<{ leagueId?: string }>();
+  const { width } = useWindowDimensions();
+  const numColumns = width >= 768 ? 2 : 1;
+  const membersQuery = useAdminLeagueMembers();
+  const leaguesQuery = useAdminLeagues();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLeagueId, setSelectedLeagueId] = useState(leagueId ?? 'all');
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  useEffect(() => {
+    setSelectedLeagueId(leagueId ?? 'all');
+  }, [leagueId]);
 
-  if (isLoading && !data) {
+  const leagues = useMemo(
+    () => [...(leaguesQuery.data ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
+    [leaguesQuery.data],
+  );
+
+  const selectedLeague = useMemo(
+    () => leagues.find((league) => league.id === selectedLeagueId),
+    [leagues, selectedLeagueId],
+  );
+
+  const filteredMembers = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return (membersQuery.data ?? []).filter((member) => {
+      if (selectedLeagueId !== 'all' && member.league_id !== selectedLeagueId) return false;
+      if (!query) return true;
+      return [member.nickname, member.user?.full_name, member.user?.email, member.league?.name]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(query);
+    });
+  }, [membersQuery.data, searchQuery, selectedLeagueId]);
+
+  const refresh = async () => {
+    await Promise.all([membersQuery.refetch(), leaguesQuery.refetch()]);
+  };
+
+  const renderLeagueFilter = useCallback(
+    ({ item: league }: { item: LeagueWithRelations }) => (
+      <LeagueFilterChip
+        label={league.name}
+        selected={selectedLeagueId === league.id}
+        value={league.id}
+        onSelect={setSelectedLeagueId}
+      />
+    ),
+    [selectedLeagueId],
+  );
+
+  if ((membersQuery.isLoading && !membersQuery.data) || (leaguesQuery.isLoading && !leaguesQuery.data)) {
     return <LoadingOverlay />;
   }
 
+  const isFiltered = Boolean(searchQuery) || selectedLeagueId !== 'all';
+
   return (
-    <Screen safeArea>
-      <BackButton title={t('League Members')} />
-      <ScrollView
-        className="flex-1 px-4 pt-4"
-        refreshControl={<RefreshControl refreshing={isFocused && (isLoading || isRefetching)} onRefresh={onRefresh} />}
-      >
-        {error ? (
-          <Text className="text-error text-base">{t('Unable to load league members. Pull to refresh to try again.')}</Text>
-        ) : (
-          <Text className="text-text text-sm mb-4">{t('Showing {{count}} league members.', { count: data?.length ?? 0 })}</Text>
-        )}
+    <Screen edges={['bottom']}>
+      <FlatList
+        key={`members-${numColumns}`}
+        data={filteredMembers}
+        numColumns={numColumns}
+        keyExtractor={(member) => member.id}
+        refreshing={membersQuery.isRefetching || leaguesQuery.isRefetching}
+        onRefresh={() => void refresh()}
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName={ADMIN_CONTENT_CLASS}
+        ListHeaderComponent={
+          <View>
+            <AdminPageHeader
+              eyebrow={t('People')}
+              title={t('League Members')}
+              description={t('View every participant or focus on one league.')}
+            />
 
-        <View className="space-y-4 pb-16">
-          {data?.map((member) => (
-            <Card key={member.id}>
-              <View className="flex-row justify-between items-start mb-3">
-                <View className="flex-1 mr-4">
-                  <Text className="text-text text-lg font-semibold">{member.nickname}</Text>
-                  <Text className="text-text/70 text-sm">{member.user?.full_name ?? 'Unknown User'}</Text>
-                  <Text className="text-text/50 text-xs">{member.user?.email ?? 'No email available'}</Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Primary')}</Text>
-                  <Text className="text-text text-sm">{member.is_primary ? t('Yes') : t('No')}</Text>
-                </View>
-              </View>
+            <Text variant="caption" tone="muted" className="mb-2 font-semibold uppercase tracking-[0.8px]">
+              {t('Filter by league')}
+            </Text>
+            <FlatList
+              horizontal
+              data={leagues}
+              keyExtractor={(league) => league.id}
+              ListHeaderComponent={
+                <LeagueFilterChip
+                  label={t('All leagues')}
+                  selected={selectedLeagueId === 'all'}
+                  value="all"
+                  onSelect={setSelectedLeagueId}
+                />
+              }
+              showsHorizontalScrollIndicator={false}
+              className="-mx-4 mb-4"
+              contentContainerClassName="gap-2 px-4"
+              renderItem={renderLeagueFilter}
+            />
 
-              <View className="flex-row justify-between">
-                <View className="flex-1 mr-4">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('League')}</Text>
-                  <Text className="text-text text-sm">{member.league?.name ?? 'Unknown League'}</Text>
-                  <Text className="text-text/70 text-xs">{member.league?.id}</Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-text/50 text-xs uppercase tracking-wide">{t('Joined')}</Text>
-                  <Text className="text-text text-sm">{new Date(member.created_at).toLocaleString()}</Text>
-                </View>
-              </View>
-            </Card>
-          ))}
-        </View>
-      </ScrollView>
+            <AdminSearchField
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('Search members, users, or leagues...')}
+            />
+            <View className="mt-3">
+              <AdminCollectionSummary
+                countLabel={
+                  selectedLeague
+                    ? t('Showing {{count}} members in {{league}}.', {
+                        count: filteredMembers.length,
+                        league: selectedLeague.name,
+                      })
+                    : t('Showing {{count}} league members.', { count: filteredMembers.length })
+                }
+                badgeLabel={isFiltered ? t('Filtered') : undefined}
+              />
+            </View>
+            {membersQuery.error || leaguesQuery.error ? (
+              <AdminErrorBanner message={t('Unable to load league members. Pull to refresh to try again.')} />
+            ) : null}
+          </View>
+        }
+        renderItem={renderAdminMember}
+        ListEmptyComponent={
+          <AdminEmpty
+            icon={searchQuery ? SearchX : UsersRound}
+            title={
+              searchQuery
+                ? t('No members match your search')
+                : selectedLeague
+                  ? t('No members in this league')
+                  : t('No league members found')
+            }
+            description={searchQuery ? t('Try a nickname, email, or league name.') : undefined}
+          />
+        }
+        ListFooterComponent={<View className="h-8" />}
+      />
     </Screen>
   );
 };
+
+function LeagueFilterChip({
+  label,
+  selected,
+  value,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  value: string;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <Pressable
+      onPress={() => onSelect(value)}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      className={cn(
+        'min-h-11 justify-center rounded-full border px-4 active:opacity-80',
+        selected ? 'border-primary bg-primary' : 'border-border bg-surface',
+      )}
+    >
+      <Text variant="bodySmall" className={cn('font-semibold', selected && 'text-primary-foreground')}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function renderAdminMember({ item: member }: { item: LeagueMemberWithRelations }) {
+  return <AdminMemberCard member={member} />;
+}
+
+function AdminMemberCard({ member }: { member: LeagueMemberWithRelations }) {
+  const { t, language } = useTranslation();
+  const displayName = member.nickname || member.user?.full_name || t('Unknown User');
+
+  return (
+    <View className="flex-1 p-1.5">
+      <Card className="h-full" padding="sm" contentClassName="gap-3">
+        <View className="flex-row items-center gap-3">
+          <View className="h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <Text variant="bodySmall" tone="primary" className="font-bold">
+              {getInitials(displayName) || '?'}
+            </Text>
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text variant="subtitle" numberOfLines={1}>
+              {displayName}
+            </Text>
+            <Text variant="caption" tone="muted" ltr numberOfLines={1}>
+              {member.user?.email ?? t('No email available')}
+            </Text>
+          </View>
+          <Badge
+            label={member.is_primary ? t('Primary') : t('Member')}
+            variant={member.is_primary ? 'primary' : 'default'}
+          />
+        </View>
+
+        <View className="flex-row gap-4 rounded-xl bg-subtle px-3 py-2.5">
+          <AdminMeta
+            label={t('League')}
+            value={member.league?.name ?? t('Unknown League')}
+            className="flex-[2]"
+          />
+          <AdminMeta
+            label={t('Status')}
+            value={member.active ? t('Active') : t('Inactive')}
+            className="flex-1"
+          />
+        </View>
+
+        <Text variant="caption" tone="muted">
+          {t('Joined')}: {formatAdminDate(member.created_at, language)}
+        </Text>
+      </Card>
+    </View>
+  );
+}
 
 export default AdminLeagueMembersScreen;

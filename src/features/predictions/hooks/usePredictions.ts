@@ -1,4 +1,5 @@
 import { MatchCardType } from '@/features/matches/types';
+import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,6 +7,7 @@ import { Alert } from 'react-native';
 import { PredictionInput, predictionService } from '../api/predictionService';
 
 export const useUpsertPrediction = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const competitionId = usePrimaryLeagueStore((s) => s.competitionId) ?? 0;
   const leagueId = usePrimaryLeagueStore((s) => s.leagueId) ?? '';
@@ -35,7 +37,7 @@ export const useUpsertPrediction = () => {
       }
     },
     onError: (error) => {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('Error'), error.message);
     },
   });
 };

@@ -18,6 +18,7 @@ export type TextTone =
 export type AppTextProps = TextProps & {
   variant?: TextVariant;
   tone?: TextTone;
+  ltr?: boolean;
   className?: string;
 };
 
@@ -37,6 +38,7 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
   {
     variant = 'body',
     tone = 'default',
+    ltr = false,
     className,
     style,
     allowFontScaling = true,
@@ -56,7 +58,7 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
       maxFontSizeMultiplier={maxFontSizeMultiplier}
       className={cn(typography[variant], toneClasses[tone], className)}
       style={[
-        { writingDirection: isRTL ? 'rtl' : 'ltr' },
+        { writingDirection: ltr || !isRTL ? 'ltr' : 'rtl' },
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,
         style,
       ]}

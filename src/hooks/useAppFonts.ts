@@ -1,11 +1,11 @@
-import { Teko_400Regular } from '@expo-google-fonts/teko/400Regular';
-import { Teko_700Bold } from '@expo-google-fonts/teko/700Bold';
+import { Oswald_400Regular } from '@expo-google-fonts/oswald/400Regular';
+import { Oswald_700Bold } from '@expo-google-fonts/oswald/700Bold';
 import { useFonts } from 'expo-font';
 
 export const useAppFonts = () => {
   const [loaded] = useFonts({
-    Teko_400Regular,
-    Teko_700Bold,
+    Oswald_400Regular,
+    Oswald_700Bold,
   });
 
   return loaded;

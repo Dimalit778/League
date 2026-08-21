@@ -1,4 +1,4 @@
-import { MatchWithPredictionsType, TeamType } from '../types';
+import { MatchListItem, TeamType } from '../types';
 import { isDomesticLeagueStage, isGroupPhaseStage } from '../types/footballStages';
 
 export type ComputedStandingRow = {
@@ -14,7 +14,7 @@ export type ComputedStandingRow = {
   points: number;
 };
 
-export const computeLeagueStandings = (matches: MatchWithPredictionsType[]): ComputedStandingRow[] => {
+export const computeLeagueStandings = (matches: MatchListItem[]): ComputedStandingRow[] => {
   const teamMap = new Map<number, Omit<ComputedStandingRow, 'position' | 'goalsDiff'>>();
 
   for (const match of matches) {
@@ -90,13 +90,13 @@ export const computeLeagueStandings = (matches: MatchWithPredictionsType[]): Com
     .map((entry, i) => ({ ...entry, position: i + 1 }));
 };
 
-export const isLeaguePhase = (matches: MatchWithPredictionsType[]): boolean =>
+export const isLeaguePhase = (matches: MatchListItem[]): boolean =>
   matches.some((m) => isDomesticLeagueStage(m.stage));
 
-export const getLeagueFixtures = (matches: MatchWithPredictionsType[]): number[] =>
+export const getLeagueFixtures = (matches: MatchListItem[]): number[] =>
   Array.from(new Set(matches.map((m) => m.fixture).filter((f): f is number => f != null))).sort((a, b) => a - b);
 
-export const getMatchesByFixture = (matches: MatchWithPredictionsType[], fixture: number): MatchWithPredictionsType[] =>
+export const getMatchesByFixture = (matches: MatchListItem[], fixture: number): MatchListItem[] =>
   matches
     .filter((m) => m.fixture === fixture)
     .sort((a, b) => new Date(a.kick_off).getTime() - new Date(b.kick_off).getTime());
@@ -191,7 +191,7 @@ export const toTournamentGroupValue = (group: string | null | undefined): string
   return letter ? `GROUP_${letter}` : '';
 };
 
-export const getTournamentGroups = (matches: MatchWithPredictionsType[]) => {
+export const getTournamentGroups = (matches: MatchListItem[]) => {
   return Array.from(
     new Set(
       matches
@@ -212,7 +212,7 @@ export const getKnockoutDisplayStageForMatch = (stage: string | null | undefined
 export const getTournamentViewForMatch = (stage: string | null | undefined): TournamentView =>
   isKnockoutStage(stage) ? 'knockout' : 'groups';
 
-export const getKnockoutStages = (matches: MatchWithPredictionsType[]) => {
+export const getKnockoutStages = (matches: MatchListItem[]) => {
   const stages = Array.from(
     new Set(matches.filter((match) => isKnockoutStage(match.stage)).map((match) => match.stage as string)),
   );
@@ -235,8 +235,8 @@ export const getKnockoutStages = (matches: MatchWithPredictionsType[]) => {
   return [...withoutFinalKeys, FINAL_DISPLAY_STAGE];
 };
 
-export const groupMatchesByFixture = (matches: MatchWithPredictionsType[]) => {
-  const grouped = matches.reduce<Record<number, MatchWithPredictionsType[]>>((acc, match) => {
+export const groupMatchesByFixture = (matches: MatchListItem[]) => {
+  const grouped = matches.reduce<Record<number, MatchListItem[]>>((acc, match) => {
     if (match.fixture == null) return acc;
     acc[match.fixture] = acc[match.fixture] ?? [];
     acc[match.fixture].push(match);
@@ -251,13 +251,13 @@ export const groupMatchesByFixture = (matches: MatchWithPredictionsType[]) => {
     .sort((a, b) => a.fixture - b.fixture);
 };
 
-export const hasLeagueStage = (matches: MatchWithPredictionsType[]) => {
+export const hasLeagueStage = (matches: MatchListItem[]) => {
   return matches.some((match) => isDomesticLeagueStage(match.stage));
 };
 
-export const splitTournamentMatches = (matches: MatchWithPredictionsType[]) => {
-  const firstPhase: MatchWithPredictionsType[] = [];
-  const knockoutStages: MatchWithPredictionsType[] = [];
+export const splitTournamentMatches = (matches: MatchListItem[]) => {
+  const firstPhase: MatchListItem[] = [];
+  const knockoutStages: MatchListItem[] = [];
 
   for (const match of matches) {
     if (isFirstPhaseStage(match.stage)) firstPhase.push(match);
@@ -267,13 +267,13 @@ export const splitTournamentMatches = (matches: MatchWithPredictionsType[]) => {
   return { firstPhase, knockoutStages };
 };
 
-export const getGroupStageMatches = (matches: MatchWithPredictionsType[]) =>
+export const getGroupStageMatches = (matches: MatchListItem[]) =>
   matches.filter((match) => match.stage === GROUP_STAGE);
 
-export const selectKnockoutMatches = (matches: MatchWithPredictionsType[]) =>
+export const selectKnockoutMatches = (matches: MatchListItem[]) =>
   matches.filter((match) => isKnockoutStage(match.stage));
 
-export const filterMatchesByGroup = (matches: MatchWithPredictionsType[], group: string) =>
+export const filterMatchesByGroup = (matches: MatchListItem[], group: string) =>
   matches.filter((match) => isGroupPhaseStage(match.stage) && normalizedGroupLetter(match.group) === group);
 
 export const getStageLabel = (stage: string) => {

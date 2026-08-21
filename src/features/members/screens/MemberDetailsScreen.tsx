@@ -1,5 +1,4 @@
-import { Error, Screen } from '@/components/layout';
-import { AvatarImage, BackButton, Button, Card, EmptyState, Text } from '@/components/ui';
+import { AvatarImage, Button, Card, EmptyState, Error, Screen, Text } from '@/components';
 import { useGetMember } from '@/features/members/hooks/useMembers';
 import { useMemberStats } from '@/features/members/hooks/useMemberStats';
 import { useBlockStatus, useBlockUser, useUnblockUser } from '@/features/moderation/hooks/useModeration';
@@ -38,8 +37,7 @@ export default function MemberDetailsScreen() {
   if (!member) {
     return (
       <Screen padding="all" bottomInset>
-        <BackButton />
-        <EmptyState variant="empty" title={t('Member not found')} />
+        <EmptyState size="md" title={t('Member not found')} />
       </Screen>
     );
   }

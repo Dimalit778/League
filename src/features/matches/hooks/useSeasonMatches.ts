@@ -1,9 +1,10 @@
+import { useRefetchOnFocus } from '@/hooks/useRefetchOnFocus';
 import { KEYS } from '@/lib/queryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
-import { prefetchMatchTeamLogos } from '@/utils/prefetchTeamLogos';
 import { skipToken, useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useIsFocused } from 'expo-router';
 import { matchesApi } from '../api/matchesApi';
+import { getMatchesRefetchInterval } from '../utils/matchRefetch';
 
 export const useSeasonMatches = ({
   competitionId,
@@ -15,6 +16,7 @@ export const useSeasonMatches = ({
   enabled?: boolean;
 }) => {
   const seasonId = usePrimaryLeagueStore((state) => state.seasonId);
+  const isFocused = useIsFocused();
 
   const isReady = enabled && competitionId != null && seasonId != null && memberId != null;
 
@@ -32,13 +34,15 @@ export const useSeasonMatches = ({
     queryFn: isReady ? () => matchesApi.getSeasonMatches(competitionId, seasonId, memberId) : skipToken,
     enabled: isReady,
     staleTime: 1000 * 60 * 5,
-    refetchOnMount: false,
+    refetchInterval: (currentQuery) =>
+      isFocused ? getMatchesRefetchInterval(currentQuery.state.data) : false,
+    refetchIntervalInBackground: false,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     placeholderData: (previousData) => previousData,
   });
 
-  useEffect(() => {
-    if (query.data) void prefetchMatchTeamLogos(query.data);
-  }, [query.data]);
+  useRefetchOnFocus(query.refetch, isReady);
 
   return query;
 };

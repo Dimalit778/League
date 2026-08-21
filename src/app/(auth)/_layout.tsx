@@ -1,10 +1,12 @@
+import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import PendingEmailVerificationRedirect from '@/features/auth/components/PendingEmailVerificationRedirect';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
   const { colors } = useThemeTokens();
-
+  const { t } = useTranslation();
   return (
     <>
       <PendingEmailVerificationRedirect />
@@ -20,26 +22,34 @@ export default function AuthLayout() {
         <Stack.Screen
           name="signIn"
           options={{
-            headerShown: true,
-            headerTitle: '',
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="signUp"
           options={{
-            headerShown: true,
-            headerTitle: '',
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
+            headerShown: false,
           }}
         />
-        <Stack.Screen name="verifyEmail" />
-        <Stack.Screen name="resetPassword" />
-        <Stack.Screen name="sendResetLink" />
-        <Stack.Screen name="privacy" options={{ gestureEnabled: true }} />
-        <Stack.Screen name="terms" options={{ gestureEnabled: true }} />
+        <Stack.Screen name="verify-email" />
+        <Stack.Screen name="reset-password" />
+        <Stack.Screen name="forgot-password" />
+        <Stack.Screen
+          name="privacy"
+          options={{
+            headerShown: true,
+            header: () => <NavigationHeader title={t('Privacy Policy')} fallbackHref="/(auth)" />,
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="terms"
+          options={{
+            headerShown: true,
+            header: () => <NavigationHeader title={t('Terms of Service')} fallbackHref="/(auth)" />,
+            gestureEnabled: true,
+          }}
+        />
       </Stack>
     </>
   );

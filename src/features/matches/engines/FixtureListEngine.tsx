@@ -2,13 +2,13 @@ import { formatDateRange } from '@/utils/formats';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { selectByFixture, selectFixtures } from '../model/selectors';
-import type { MatchCardType } from '../types';
+import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import FixturesList from './fixture-list/FixturesList';
 import MatchesList from './fixture-list/MatchesList';
 
 type FixtureListEngineProps = {
-  matches: MatchCardType[];
+  matches: MatchListItem[];
   currentFixture: number;
   selectedFixture: number;
   onSelectFixture: (fixture: number) => void;
@@ -44,8 +44,8 @@ export default function FixtureListEngine({
   }, [allFixtures, matches, locale]);
 
   const cards = useMemo(
-    () => selectByFixture(matches, selectedFixture).map(mapMatchToCardData),
-    [matches, selectedFixture],
+    () => selectByFixture(matches, selectedFixture).map((match) => mapMatchToCardData(match, locale)),
+    [locale, matches, selectedFixture],
   );
 
   return (

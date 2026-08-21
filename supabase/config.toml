@@ -380,6 +380,63 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# Keep the currently deployed JWT policy versioned with each Edge Function so
+# a CLI deployment cannot silently change the gateway behavior. Authorization
+# inside verify_jwt=false functions is reviewed separately.
+[functions.Sync-teams]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.generate-match-analysis]
+verify_jwt = false
+
+[functions.revenuecat-webhook]
+verify_jwt = false
+
+[functions.sync-competitions]
+verify_jwt = false
+
+[functions.sync-competition-progress]
+verify_jwt = false
+
+[functions.sync-all-competitions-teams]
+verify_jwt = false
+
+[functions.sync-finished-matches]
+verify_jwt = false
+
+[functions.sync-finished-matches-worldcup]
+verify_jwt = false
+
+[functions.sync-matches]
+verify_jwt = false
+
+[functions.sync-matches-and-update-competitions]
+verify_jwt = false
+
+[functions.sync-season-matches]
+verify_jwt = false
+
+[functions.sync-season-teams]
+verify_jwt = false
+
+[functions.sync-subscription]
+verify_jwt = true
+
+[functions.sync-today-matches]
+verify_jwt = false
+
+[functions.sync-today-matches-worldcup]
+verify_jwt = false
+
+[functions.sync-world-cup-matches]
+verify_jwt = false
+
+[functions.v2_start-worldcup-sync]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

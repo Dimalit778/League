@@ -1,9 +1,9 @@
-import { Text } from '@/components/ui';
+import { Row, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { useEffect, useRef } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 
 type TabOption<T extends string = string> = {
   value: T;
@@ -34,7 +34,7 @@ export const TournamentViewTabs = ({
   ];
 
   return (
-    <View className="shrink-0 flex-row px-8">
+    <Row className="self-center gap-1 rounded-full border border-border bg-surface/60 p-0.5">
       {options.map((option) => {
         const active = value === option.value;
 
@@ -44,15 +44,15 @@ export const TournamentViewTabs = ({
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             onPress={() => onChange(option.value)}
-            className={cn('flex-1 items-center border-b py-2', active ? 'border-primary' : 'border-transparent')}
+            className={cn('min-w-[104px] items-center rounded-full px-4 py-1.5', active && 'bg-muted')}
           >
-            <Text numberOfLines={1} className={cn('text-lg font-semibold ', active ? 'text-primary' : 'text-muted')}>
+            <Text numberOfLines={1} className={cn('font-semibold', active ? 'text-background' : 'text-muted')}>
               {option.label}
             </Text>
           </Pressable>
         );
       })}
-    </View>
+    </Row>
   );
 };
 

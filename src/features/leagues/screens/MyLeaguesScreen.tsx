@@ -1,95 +1,85 @@
-import { Error, Row, Screen } from '@/components/layout';
-import { Button, Card, DirectionalIcon, Text } from '@/components/ui';
-import { LeaguesIndicator, LimitSelectModal } from '@/features/leagues/components/myLeagues';
+import { Button, Error, Row, Screen } from '@/components';
+import { LimitSelectModal, MyLeaguesHeader, ProUpsellCard } from '@/features/leagues/components/myLeagues';
 import { useMyLeaguesScreen } from '@/features/leagues/hooks/useMyLeaguesScreen';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
-import { Sparkles } from 'lucide-react-native';
+import { Plus, UserPlus } from 'lucide-react-native';
 import { View } from 'react-native';
 import { Leagues } from '../components/myLeagues/Leagues';
 import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
-const ButtonRow = ({ onUpgrade, reachedLimit }: { onUpgrade: () => void; reachedLimit: boolean }) => {
+type ActivationSelection = NonNullable<ReturnType<typeof useMyLeaguesScreen>['activationSelection']>;
+
+function CreateJoinButtons() {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
 
-  if (reachedLimit) {
-    return (
-      <Card
-        variant="outlined"
-        padding="md"
-        onPress={onUpgrade}
-        className="mb-6 border-primary/35"
-        accessibilityLabel={t('Upgrade to Pro')}
-        accessibilityHint={t('You have reached the max number of leagues') ?? undefined}
-      >
-        <Row className=" gap-4 ">
-          <View className="h-10 w-10  justify-center">
-            <Sparkles size={22} color={colors.primary} strokeWidth={1.75} />
-          </View>
-
-          <View className=" flex-1 ">
-            <Text variant="label">{t('You have reached the max number of leagues')}</Text>
-            <Text variant="label" tone="primary">
-              {t('Upgrade to Pro')}
-            </Text>
-          </View>
-
-          <DirectionalIcon size={18} color={colors.primary} />
-        </Row>
-      </Card>
-    );
-  }
-
   return (
-    <Row className="mb-6 gap-2">
+    <Row className="gap-3">
       <Button
-        variant="primary"
+        variant="glass"
+        size="md"
         className="flex-1"
         label={t('Create League')}
+        leftIcon={<Plus size={18} color={colors.text} strokeWidth={2.5} />}
         onPress={() => router.push('/leagues/create-league/competitions')}
       />
       <Button
-        variant="outline"
+        variant="glass"
+        size="md"
         className="flex-1"
         label={t('Join League')}
+        leftIcon={<UserPlus size={18} color={colors.text} strokeWidth={2} />}
         onPress={() => router.push('/leagues/join-league')}
       />
     </Row>
   );
-};
+}
+
+function ActivateLeaguesButton({ selection }: { selection: ActivationSelection }) {
+  const { t } = useTranslation();
+
+  return (
+    <Button
+      label={t(selection.availableSlots === 1 ? 'Activate league' : 'Activate leagues')}
+      onPress={selection.onSave}
+      loading={selection.isSaving}
+      disabled={!selection.canSave}
+    />
+  );
+}
 
 export default function MyLeaguesScreen() {
-  const { t } = useTranslation();
   const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, activationSelection, limitSelect } =
     useMyLeaguesScreen();
 
   if (isLoading) return <LeaguesSkeleton />;
   if (error) return <Error error={error as Error} />;
 
-  const reachedLimit = activeCount >= maxLeagues;
-  const maxLeague = isPro && activeCount === maxLeagues;
+  const inSelectionMode = !!activationSelection;
+  const atLeagueLimit = activeCount === maxLeagues;
+  const showCreateJoin = !inSelectionMode && !atLeagueLimit;
+  const showProUpsell = !isPro;
+
+  const showActivateButton = (activationSelection?.selectedMemberIds.length ?? 0) > 0;
 
   return (
-    <Screen edges={['bottom']} padding="none" className="flex-1">
-      <LeaguesIndicator used={activeCount} limit={maxLeagues} />
+    <View className="flex-1 bg-background">
+      <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
 
-      <View className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-6 lg:px-8">
-        <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
-        {activationSelection?.selectedMemberIds.length ? (
-          <Button
-            className="mb-6"
-            label={t(activationSelection.availableSlots === 1 ? 'Activate league' : 'Activate leagues')}
-            onPress={activationSelection.onSave}
-            loading={activationSelection.isSaving}
-            disabled={!activationSelection.canSave}
-          />
-        ) : !maxLeague && !activationSelection ? (
-          <ButtonRow reachedLimit={reachedLimit} onUpgrade={upgrade} />
-        ) : null}
-      </View>
+      <Screen scroll padding="horizontal" className="flex-grow">
+        <View className="flex-1 gap-6 ">
+          {showCreateJoin && <CreateJoinButtons />}
+          <View className=" min-h-[550px]">
+            <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
+          </View>
+          {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
+        </View>
+        <View className="mt-auto">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
+      </Screen>
+
       {limitSelect && <LimitSelectModal {...limitSelect} />}
-    </Screen>
+    </View>
   );
 }

@@ -1,4 +1,4 @@
-import { Card, Skeleton, TextSkeleton } from '@/components/ui';
+import { Card, Skeleton, TextSkeleton } from '@/components';
 import { View } from 'react-native';
 
 export function MemberDetailsSkeleton() {

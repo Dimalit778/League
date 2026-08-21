@@ -1,4 +1,6 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { AppState, Platform } from 'react-native';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,5 +18,15 @@ export const queryClient = new QueryClient({
 });
 
 export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    const subscription = AppState.addEventListener('change', (status) => {
+      focusManager.setFocused(status === 'active');
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };

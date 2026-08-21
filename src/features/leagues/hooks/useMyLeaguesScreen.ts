@@ -5,8 +5,11 @@ import {
   useUpdateLeagueActivation,
   useUpdatePrimaryLeague,
 } from '@/features/leagues/hooks/useLeagues';
-import { MyLeague, MyLeaguesResponse } from '@/features/leagues/types';
+import { useRequiresLeagueActivation } from '@/features/leagues/hooks/useRequiresLeagueActivation';
+import { MyLeague } from '@/features/leagues/types';
 import {
+  flattenMyLeagues,
+  resolveActivationTargetCount,
   resolveVacantLeagueSlots,
   toggleLeagueActivationSelection,
 } from '@/features/leagues/model/leagueActivation';
@@ -14,15 +17,6 @@ import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-function flattenMyLeagues(myLeagues?: MyLeaguesResponse | null): MyLeague[] {
-  if (!myLeagues) return [];
-  return [
-    ...(myLeagues.primaryLeague ? [myLeagues.primaryLeague] : []),
-    ...myLeagues.leagues,
-    ...myLeagues.inactiveLeagues,
-  ];
-}
 
 function toPrimaryLeague(member: MyLeague) {
   return {
@@ -55,11 +49,20 @@ export function useMyLeaguesScreen() {
   const allLeagues = useMemo(() => flattenMyLeagues(myLeagues), [myLeagues]);
   const activeCount = allLeagues.filter((league) => league.active).length;
   const inactiveLeagues = useMemo(() => allLeagues.filter((league) => !league.active), [allLeagues]);
-  const requiresLeagueActivation = !isPro && activeCount > maxLeagues;
+  const eligibleInactiveLeagues = useMemo(
+    () => inactiveLeagues.filter((league) => league.league.competition?.is_free !== false),
+    [inactiveLeagues],
+  );
+  const requiresLeagueActivation = useRequiresLeagueActivation();
+  const eligibleLeagueCount = useMemo(
+    () => allLeagues.filter((league) => league.league.competition?.is_free !== false).length,
+    [allLeagues],
+  );
+  const activationTargetCount = resolveActivationTargetCount(maxLeagues, eligibleLeagueCount);
   const { availableSlots: availableActivationSlots, requiresSelection } = resolveVacantLeagueSlots({
     isPro,
     activeCount,
-    inactiveCount: inactiveLeagues.length,
+    inactiveCount: eligibleInactiveLeagues.length,
     maxLeagues,
   });
   const canChooseInactiveLeagues =
@@ -74,13 +77,17 @@ export function useMyLeaguesScreen() {
     }
 
     setSelectedInactiveMemberIds((current) =>
-      current.filter((memberId) => inactiveLeagues.some((league) => league.id === memberId)),
+      current.filter((memberId) =>
+        inactiveLeagues.some((league) => league.id === memberId && league.league.competition?.is_free !== false),
+      ),
     );
   }, [canChooseInactiveLeagues, inactiveLeagues]);
 
   const toggleInactiveLeague = useCallback(
     (memberId: string) => {
-      if (!canChooseInactiveLeagues || !inactiveLeagues.some((league) => league.id === memberId)) return;
+      const league = inactiveLeagues.find((candidate) => candidate.id === memberId);
+      if (!canChooseInactiveLeagues || !league) return;
+      if (league.league.competition?.is_free === false) return;
 
       setSelectedInactiveMemberIds((current) =>
         toggleLeagueActivationSelection(current, memberId, availableActivationSlots),
@@ -108,7 +115,7 @@ export function useMyLeaguesScreen() {
 
   const leagueActivationResolution = useLeagueActivationResolution({
     leagues: allLeagues,
-    maxLeagues,
+    maxLeagues: activationTargetCount,
     enabled: requiresLeagueActivation,
     updateLeagueActivation,
     refetch,
@@ -150,7 +157,7 @@ export function useMyLeaguesScreen() {
         await updatePrimaryLeague({ leagueId: nextLeagueId });
       } catch {
         setPrimaryLeague(previousPrimaryLeague);
-        router.replace('/(app)/(league)/(tabs)/MyLeagues');
+        router.replace('/(app)/(user)/leagues/my-leagues');
       }
     },
     [
@@ -202,7 +209,7 @@ export function useMyLeaguesScreen() {
     limitSelect: requiresLeagueActivation
       ? {
           leagues: allLeagues,
-          maxLeagues,
+          maxLeagues: activationTargetCount,
           selectedMemberIds: leagueActivationResolution.selectedMemberIds,
           isSaving: isUpdatingLeagueActivation,
           canSave: leagueActivationResolution.canSave,

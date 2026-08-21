@@ -1,5 +1,4 @@
-import { Row } from '@/components/layout';
-import { Card, Text } from '@/components/ui';
+import { Card, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';

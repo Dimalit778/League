@@ -47,10 +47,12 @@ jest.mock('@/components/ui/HeaderBackground', () => {
 
 describe('OverviewScreen', () => {
   it('renders the league summary', () => {
-    const { getByText } = render(<OverviewScreen />);
+    const { getAllByText, getByText } = render(<OverviewScreen />);
 
-    expect(getByText('Test League')).toBeTruthy();
-    expect(getByText('Player1')).toBeTruthy();
+    expect(getAllByText('Player1').length).toBeGreaterThan(0);
+    expect(getByText('#1')).toBeTruthy();
+    expect(getByText('100')).toBeTruthy();
+    expect(getByText('12')).toBeTruthy();
   });
 
   it('shows the matches empty state', () => {

@@ -63,7 +63,8 @@ describe('MyLeagueScreen', () => {
 
   it('renders empty state message when no leagues', () => {
     const { getByText } = render(<MyLeagueScreen />);
-    expect(getByText('Create or join a league to get started.')).toBeTruthy();
+    expect(getByText('No leagues found')).toBeTruthy();
+    expect(getByText('Create a league to get started')).toBeTruthy();
   });
 
   it('does not render an infinite progress width when subscription limit is zero', () => {

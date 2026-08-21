@@ -1,5 +1,4 @@
-import { LoadingOverlay, Row, Screen } from '@/components/layout';
-import { Button, InputField, Text } from '@/components/ui';
+import { Button, InputField, LoadingOverlay, Row, Screen, Text } from '@/components';
 import MemberOption from '@/features/leagues/components/createLeague/MemberOption';
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';

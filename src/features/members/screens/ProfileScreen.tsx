@@ -1,6 +1,7 @@
-import { Error, Screen, useFloatBottomTabsInset } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { images } from '@/assets/images';
+import { Button, CollapsibleHeader, Error, Text } from '@/components';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
+import { CollapsedHeader, PersistentHeaderAction } from '@/features/members/components/profile/Header';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
@@ -25,7 +26,6 @@ const ProfileScreen = () => {
   const memberId = useMemberId();
   const leagueId = useLeagueId();
   const userId = useAuthStore((s) => s.user?.id);
-  const bottomInset = useFloatBottomTabsInset();
   const leaveLeague = useLeaveLeague();
   const { data: member, isLoading: memberLoading } = useGetMember(memberId);
   const { data: stats, isLoading, error } = useMemberStats(memberId);
@@ -48,7 +48,17 @@ const ProfileScreen = () => {
   if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <ProfileSkeleton />;
 
   return (
-    <Screen scroll padding="horizontal" bottomInset={bottomInset}>
+    <CollapsibleHeader
+      expandedHeight={250}
+      collapsedHeight={48}
+      overlap={200}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+      }}
+      collapsedHeader={<CollapsedHeader nickname={member.nickname} />}
+      persistentHeader={<PersistentHeaderAction />}
+      backgroundImage={images.stadium}
+    >
       <View className={cn(spacing.section)}>
         <ProfileHeroCard />
         <ProfileNicknameEdit initialNickname={member.nickname} />
@@ -74,7 +84,7 @@ const ProfileScreen = () => {
           </Text>
         </View>
       </View>
-    </Screen>
+    </CollapsibleHeader>
   );
 };
 

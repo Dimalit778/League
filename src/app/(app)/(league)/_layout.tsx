@@ -1,22 +1,57 @@
+import { NavigationHeader } from '@/components';
+import { useRequiresLeagueActivation } from '@/features/leagues/hooks/useRequiresLeagueActivation';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function LeagueLayout() {
+  const requiresLeagueActivation = useRequiresLeagueActivation();
+  const { colors } = useThemeTokens();
   const { t } = useTranslation();
+
+  if (requiresLeagueActivation) {
+    return <Redirect href="/(app)/(user)/leagues/my-leagues" />;
+  }
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="match/[matchId]" />
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        contentStyle: { backgroundColor: colors.background },
+        gestureEnabled: true,
+        fullScreenGestureEnabled: Platform.OS === 'ios',
+      }}
+    >
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false, gestureEnabled: false, fullScreenGestureEnabled: false }}
+      />
+      <Stack.Screen name="match/[matchId]" options={{ headerShown: false }} />
       <Stack.Screen
         name="member/[memberId]"
         options={{
-          headerShown: true,
-          title: t('Member Details'),
-          headerBackButtonDisplayMode: 'minimal',
+          header: () => <NavigationHeader title={t('Member Details')} fallbackHref="/(app)/(league)/(tabs)" />,
         }}
       />
-      <Stack.Screen name="edit-league" />
-      <Stack.Screen name="report-content" />
+      <Stack.Screen
+        name="edit-league"
+        options={{
+          header: () => <NavigationHeader title={t('Manage League')} fallbackHref="/(app)/(league)/(tabs)" />,
+        }}
+      />
+      <Stack.Screen
+        name="report-content"
+        options={{
+          header: () => <NavigationHeader title={t('Report content')} fallbackHref="/(app)/(league)/(tabs)" />,
+        }}
+      />
+      <Stack.Screen
+        name="notifications"
+        options={{
+          header: () => <NavigationHeader title={t('Notifications')} fallbackHref="/(app)/(league)/(tabs)" />,
+        }}
+      />
     </Stack>
   );
 }

@@ -10,11 +10,10 @@ describe('SignUpScreen', () => {
     globalThis.testFormValues = {};
   });
 
-  it('renders the heading and subheading', () => {
+  it('renders the heading', () => {
     const { getByText } = render(<SignUpScreen />);
 
     expect(getByText('Create account')).toBeTruthy();
-    expect(getByText('Sign up to get started')).toBeTruthy();
   });
 
   it('renders fullname, email, and password fields', () => {
@@ -37,18 +36,25 @@ describe('SignUpScreen', () => {
     expect(getByText('Sign In')).toBeTruthy();
   });
 
-  it('renders Google Sign In option', () => {
-    const { getByText } = render(<SignUpScreen />);
+  it('renders the icon-only social sign-up group', () => {
+    const { getByText, getByTestId } = render(<SignUpScreen />);
 
-    expect(getByText('Sign in with Google')).toBeTruthy();
+    expect(getByText('OR')).toBeTruthy();
+    expect(getByTestId('google-sign-in-button')).toBeTruthy();
   });
 
-  it('shows legal acknowledgement before account creation', () => {
-    const { getByText } = render(<SignUpScreen />);
+  it('shows explicit terms consent before account creation', () => {
+    const { getByText, getByRole } = render(<SignUpScreen />);
 
-    expect(getByText('By creating an account, you agree to:')).toBeTruthy();
-    expect(getByText('Privacy Policy')).toBeTruthy();
     expect(getByText('Terms of Service')).toBeTruthy();
+    expect(getByRole('checkbox')).toBeTruthy();
+  });
+
+  it('renders password-strength guidance and consent checkbox', () => {
+    const { getByText, getByRole } = render(<SignUpScreen />);
+
+    expect(getByText('At least 8 characters with a letter and a number')).toBeTruthy();
+    expect(getByRole('checkbox')).toBeTruthy();
   });
 
   it('calls signUp and navigates to verifyEmail on success', async () => {

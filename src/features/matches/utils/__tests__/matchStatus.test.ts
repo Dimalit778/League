@@ -17,6 +17,10 @@ describe('getMatchStatus', () => {
     expect(getMatchStatus('TIMED')).toBe('SCHEDULED');
   });
 
+  it('returns LIVE for LIVE status', () => {
+    expect(getMatchStatus('LIVE')).toBe('LIVE');
+  });
+
   it('returns LIVE for IN_PLAY status', () => {
     expect(getMatchStatus('IN_PLAY')).toBe('LIVE');
   });

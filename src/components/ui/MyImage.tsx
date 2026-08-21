@@ -1,13 +1,48 @@
+import { KEYS } from '@/lib/queryClient';
+import { useQuery } from '@tanstack/react-query';
 import { Image as ExpoImage, ImageContentFit } from 'expo-image';
 import { useMemo, useState } from 'react';
-import {
-  DimensionValue,
-  ImageStyle,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { SvgUri } from 'react-native-svg';
+import { DimensionValue, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+
+const svgXmlCache = new Map<string, string>();
+const svgXmlFetches = new Map<string, Promise<string>>();
+
+async function loadSvgXml(uri: string): Promise<string> {
+  const cached = svgXmlCache.get(uri);
+  if (cached !== undefined) return cached;
+
+  let request = svgXmlFetches.get(uri);
+  if (!request) {
+    request = fetch(uri).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`SVG fetch failed (${response.status})`);
+      }
+      return response.text();
+    });
+    svgXmlFetches.set(uri, request);
+  }
+
+  try {
+    const xml = await request;
+    svgXmlCache.set(uri, xml);
+    return xml;
+  } finally {
+    svgXmlFetches.delete(uri);
+  }
+}
+
+function useSvgXml(uri: string | undefined) {
+  const { data } = useQuery({
+    queryKey: KEYS.images.svgXml(uri ?? ''),
+    queryFn: () => loadSvgXml(uri ?? ''),
+    enabled: Boolean(uri),
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  return data ?? (uri ? svgXmlCache.get(uri) ?? null : null);
+}
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';
 
@@ -46,24 +81,16 @@ export const MyImage = ({
 
   // Normalize to a URI string when available
   const uri =
-    typeof source === 'string'
-      ? source
-      : typeof source === 'object' && 'uri' in source
-        ? source.uri
-        : undefined;
+    typeof source === 'string' ? source : typeof source === 'object' && 'uri' in source ? source.uri : undefined;
 
   // ExpoImage's native SVG coders drop percentage-based fills (Brazil flag's
   // green rect uses x/y="-50%"). Prefer SvgUri for .svg URLs; forceSvg still
   // covers non-.svg URIs that need the same path.
   const isSvg =
-    typeof uri === 'string' &&
-    (forceSvg ||
-      uri.toLowerCase().includes('.svg') ||
-      uri.startsWith('data:image/svg+xml'));
+    typeof uri === 'string' && (forceSvg || uri.toLowerCase().includes('.svg') || uri.startsWith('data:image/svg+xml'));
 
   // Only inject size style if provided (so NativeWind className can control size)
-  const sizeStyle: StyleProp<ImageStyle> =
-    width !== undefined || height !== undefined ? { width, height } : undefined;
+  const sizeStyle: StyleProp<ImageStyle> = width !== undefined || height !== undefined ? { width, height } : undefined;
 
   // Build expo-image source without clobbering require(...) or headers
   const expoSource = useMemo(() => {
@@ -74,25 +101,17 @@ export const MyImage = ({
   }, [source]);
 
   // Stable recycling key helps lists (ignore cache-busting query params if you want)
-  const recyclingKey =
-    typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
-  const svgPreserveAspectRatio =
-    contentFit === 'fill'
-      ? 'none'
-      : contentFit === 'cover'
-        ? 'xMidYMid slice'
-        : undefined;
+  const recyclingKey = typeof uri === 'string' ? uri /* or uri.split('?')[0] */ : undefined;
+  const svgPreserveAspectRatio = contentFit === 'fill' ? 'none' : contentFit === 'cover' ? 'xMidYMid slice' : undefined;
+
+  const svgXml = useSvgXml(isSvg ? uri : undefined);
 
   if (isSvg && uri) {
-    // Render SVG via react-native-svg (no caching; wrap to size)
     return (
       <View className={className} style={sizeStyle as StyleProp<ViewStyle>}>
-        <SvgUri
-          uri={uri}
-          width="100%"
-          height="100%"
-          preserveAspectRatio={svgPreserveAspectRatio}
-        />
+        {svgXml ? (
+          <SvgXml xml={svgXml} width="100%" height="100%" preserveAspectRatio={svgPreserveAspectRatio} />
+        ) : null}
       </View>
     );
   }

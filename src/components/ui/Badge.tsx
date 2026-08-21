@@ -1,30 +1,22 @@
 import { cn } from '@/lib/nativewind/nativeWind';
+import { radius, type RadiusToken } from '@/lib/nativewind/radius';
 import { type TextVariant } from '@/lib/nativewind/typography';
+import { useIsRTL } from '@/providers/LanguageProvider';
 import { type ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
-import { useIsRTL } from '@/providers/LanguageProvider';
 import { Text } from './Text';
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'live' | 'locked';
 export type BadgeSize = 'sm' | 'md' | 'lg';
+export type BadgeRadius = RadiusToken;
 
 export type BadgeProps = ViewProps & {
   label: string;
   variant?: BadgeVariant;
   size?: BadgeSize;
+  radius?: BadgeRadius;
   leftIcon?: ReactNode;
   className?: string;
-};
-
-const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-subtle',
-  primary: 'bg-subtle',
-  success: 'bg-subtle',
-  warning: 'bg-subtle',
-  error: 'bg-subtle',
-  info: 'bg-subtle',
-  live: 'bg-subtle',
-  locked: 'bg-subtle',
 };
 
 const textClasses: Record<BadgeVariant, string> = {
@@ -44,7 +36,15 @@ const textVariants: Record<BadgeSize, TextVariant> = {
   lg: 'subtitle',
 };
 
-export function Badge({ label, variant = 'default', size = 'sm', leftIcon, className, ...props }: BadgeProps) {
+export function Badge({
+  label,
+  variant = 'default',
+  size = 'sm',
+  radius: radiusToken = 'full',
+  leftIcon,
+  className,
+  ...props
+}: BadgeProps) {
   const isRTL = useIsRTL();
 
   return (
@@ -53,9 +53,10 @@ export function Badge({ label, variant = 'default', size = 'sm', leftIcon, class
       accessibilityLabel={props.accessibilityLabel ?? label}
       style={[props.style, { direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       className={cn(
-        'self-start flex-row items-center gap-1 rounded-full',
+        'self-start flex-row items-center gap-1',
+        radius[radiusToken],
         size === 'sm' ? 'min-h-6 px-2 py-0.5' : size === 'lg' ? 'min-h-10 px-4 py-1.5' : 'min-h-8 px-3 py-1',
-        variantClasses[variant],
+        'bg-subtle',
         className,
       )}
     >
@@ -63,7 +64,7 @@ export function Badge({ label, variant = 'default', size = 'sm', leftIcon, class
       {leftIcon}
       <Text
         variant={textVariants[size]}
-        className={cn('font-semibold', textClasses[variant])}
+        className={cn('font-semibold ', textClasses[variant])}
         style={{ textAlign: isRTL ? 'right' : 'left' }}
       >
         {label}
