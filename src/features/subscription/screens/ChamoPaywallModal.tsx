@@ -2,6 +2,7 @@ import { Text } from '@/components';
 import { PaywallActions } from '@/features/subscription/components/PaywallActions';
 import { PaywallError } from '@/features/subscription/components/PaywallError';
 import { Plans } from '@/features/subscription/components/Plans';
+import { useCurrentSeason } from '@/features/subscription/hooks/useCurrentSeason';
 import { useTranslation } from '@/hooks/useTranslation';
 import { hasActiveEntitlement, PRO_ENTITLEMENT } from '@/lib/revenuecat/customerInfoSummary';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -15,7 +16,7 @@ import Purchases, {
   type PurchasesError,
   type PurchasesPackage,
 } from 'react-native-purchases';
-import { selectProPackage } from './selectProPackage';
+import { isSeasonActive, selectProPackage } from './selectProPackage';
 
 type ChampoPaywallModalProps = {
   onComplete: (purchased: boolean) => void;
@@ -36,8 +37,16 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
   const [isRestoring, setIsRestoring] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const { season, isLoading: isLoadingSeason } = useCurrentSeason();
+  const seasonActive = season ? isSeasonActive(new Date(), season) : false;
+
   const loadOffering = useCallback(async () => {
     if (Platform.OS === 'web') return;
+
+    if (!seasonActive) {
+      setPurchasePackage(null);
+      return;
+    }
 
     setIsLoadingOffer(true);
     setErrorMessage(null);
@@ -62,7 +71,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
     } finally {
       setIsLoadingOffer(false);
     }
-  }, [t]);
+  }, [t, seasonActive]);
 
   useEffect(() => {
     void loadOffering();
@@ -149,15 +158,21 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
         ) : null}
       </ScrollView>
 
-      <PaywallActions
-        price={purchasePackage?.product.priceString ?? FALLBACK_PRICE}
-        canPurchase={!!purchasePackage}
-        isLoadingOffer={isLoadingOffer}
-        isPurchasing={isPurchasing}
-        isRestoring={isRestoring}
-        onPurchase={handlePurchase}
-        onRestore={handleRestore}
-      />
+      {!isLoadingSeason && !seasonActive ? (
+        <View className="border-t border-white/10 bg-[#030B15] px-4 py-4">
+          <Text className="text-center text-sm text-slate-300">{t('No active season right now')}</Text>
+        </View>
+      ) : (
+        <PaywallActions
+          price={purchasePackage?.product.priceString ?? FALLBACK_PRICE}
+          canPurchase={seasonActive && !!purchasePackage}
+          isLoadingOffer={isLoadingOffer}
+          isPurchasing={isPurchasing}
+          isRestoring={isRestoring}
+          onPurchase={handlePurchase}
+          onRestore={handleRestore}
+        />
+      )}
     </LinearGradient>
   );
 };

@@ -454,13 +454,13 @@ export const he = {
     "No purchases found to restore": "לא נמצאו רכישות לשחזור",
 
     "Champo Pro Season Pass": "מנוי Pro לעונה",
+    "No active season right now": "אין עונה פעילה כרגע",
     "One payment for the full season. No automatic renewal.":
       "תשלום חד־פעמי לעונה שלמה. ללא חידוש אוטומטי.",
     "Season Pass": "מנוי לעונה",
     "Get full access": "קבל גישה מלאה",
     "Join more leagues, play every competition and unlock complete AI analysis.":
       "הצטרף ליותר ליגות, פתח את כל התחרויות וקבל ניתוח AI מלא.",
-    "What's included": "מה כלול",
     "Football competitions": "תחרויות כדורגל",
     "Active friend leagues": "ליגות חברים פעילות",
     "Members per league": "חברים בכל ליגה",

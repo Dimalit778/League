@@ -23,3 +23,24 @@ export const syncSubscriptionToServer = async (): Promise<SyncSubscriptionResult
  */
 export const syncSubscriptionToServerUntilPro = (): Promise<SyncSubscriptionResult | null> =>
   syncSubscriptionToServer();
+
+export type ProSeason = {
+  code: string;
+  startsAt: string;
+  endsAt: string;
+};
+
+export const getCurrentSeason = async (): Promise<ProSeason | null> => {
+  const { data, error } = await supabase.rpc('get_current_season');
+
+  if (error) {
+    throw new Error(formatErrorForUser(error));
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    return null;
+  }
+
+  return { code: row.code, startsAt: row.starts_at, endsAt: row.ends_at };
+};

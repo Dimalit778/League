@@ -1,4 +1,6 @@
-# Champo Pro Season-Pass Tiered Pricing Implementation Plan
+# Champo Pro Season-Pass Implementation Plan
+
+> **Superseded on 2026-08-18.** This plan was executed, then the pricing model was simplified before launch to a **single flat-price season pass** (one Consumable IAP `champo_pro_season`, season window **August → August**). The 12 monthly tiers and the client month-selection logic (`resolveSeasonMonth` / `selectMonthlyProPackage`) were removed; the client now shows the single package while `isSeasonActive(now, season)` is true. The server machinery (`pro_seasons`, `get_current_season`, `expires_at` clamp, server-first gate) shipped unchanged. See the design spec's "Update (2026-08-18)" note for the final model. The task-by-task detail below is kept for history.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

@@ -159,7 +159,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
           transform: [{ scale: 0.985 }],
         },
 
-        typeof style === 'function' ? style({ pressed, hovered: false }) : style,
+        typeof style === 'function' ? style({ pressed }) : style,
       ]}
     >
       {isGlass && (

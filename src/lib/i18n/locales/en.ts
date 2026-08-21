@@ -443,13 +443,13 @@ export const en = {
     "No purchases found to restore": "No purchases found to restore",
 
     "Champo Pro Season Pass": "Champo Pro Season Pass",
+    "No active season right now": "No active season right now",
     "One payment for the full season. No automatic renewal.":
       "One payment for the full season. No automatic renewal.",
     "Season Pass": "Season Pass",
     "Get full access": "Get full access",
     "Join more leagues, play every competition and unlock complete AI analysis.":
       "Join more leagues, play every competition and unlock complete AI analysis.",
-    "What's included": "What's included",
     "Football competitions": "Football competitions",
     "Active friend leagues": "Active friend leagues",
     "Members per league": "Members per league",
