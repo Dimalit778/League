@@ -4,27 +4,32 @@ import { RotateCcw } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+export type PaywallCheckoutStatus =
+  | 'unavailable'
+  | 'loadingOffer'
+  | 'ready'
+  | 'purchasing'
+  | 'restoring';
+
 type PaywallActionsProps = {
   price: string;
-  canPurchase: boolean;
-  isLoadingOffer: boolean;
-  isPurchasing: boolean;
-  isRestoring: boolean;
+  status: PaywallCheckoutStatus;
   onPurchase: () => void;
   onRestore: () => void;
 };
 
 export function PaywallActions({
   price,
-  canPurchase,
-  isLoadingOffer,
-  isPurchasing,
-  isRestoring,
+  status,
   onPurchase,
   onRestore,
 }: PaywallActionsProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const isLoadingOffer = status === 'loadingOffer';
+  const isPurchasing = status === 'purchasing';
+  const isRestoring = status === 'restoring';
+  const canPurchase = status === 'ready';
   const busy = isPurchasing || isRestoring;
 
   return (

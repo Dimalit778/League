@@ -246,50 +246,59 @@ async function bulkUpsertMatches(
 
   const parts = chunk(rows, chunkSize);
 
-  for (let index = 0; index < parts.length; index += 1) {
-    const part = parts[index];
-    const start = index * chunkSize;
+  const outcomes = await Promise.all(
+    parts.map(async (part, index) => {
+      const start = index * chunkSize;
 
-    try {
-      const { data, error } = await supabase
-        .from("matches")
-        .upsert(part, {
-          onConflict: "id",
-        })
-        .select("id");
+      try {
+        const { data, error } = await supabase
+          .from("matches")
+          .upsert(part, {
+            onConflict: "id",
+          })
+          .select("id");
 
-      if (error) {
-        errors.push({
+        if (error) {
+          console.error(
+            `Matches upsert failed at row ${start}:`,
+            error.message,
+          );
+
+          return {
+            start,
+            upserted: 0,
+            message: error.message,
+          };
+        }
+
+        return {
           start,
-          message: error.message,
-        });
+          upserted: Array.isArray(data) ? data.length : part.length,
+          message: null,
+        };
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : String(error);
 
-        console.error(
-          `Matches upsert failed at row ${start}:`,
-          error.message,
-        );
+        console.error(`Matches upsert threw at row ${start}:`, message);
 
-        continue;
+        return {
+          start,
+          upserted: 0,
+          message,
+        };
       }
+    }),
+  );
 
-      upserted += Array.isArray(data)
-        ? data.length
-        : part.length;
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : String(error);
+  for (const outcome of outcomes) {
+    upserted += outcome.upserted;
 
+    if (outcome.message) {
       errors.push({
-        start,
-        message,
+        start: outcome.start,
+        message: outcome.message,
       });
-
-      console.error(
-        `Matches upsert threw at row ${start}:`,
-        message,
-      );
     }
   }
 

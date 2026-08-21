@@ -3,7 +3,7 @@ import { setColorAlpha } from '@/lib/color';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 export type GlassCardPadding = 'none' | 'sm' | 'md' | 'lg';
 export type GlassCardVariant = 'default' | 'primary';
@@ -75,6 +75,14 @@ export function GlassCard({
   const gradient = isPrimary ? tokens.gradients.primaryCard : tokens.gradients.card;
   const borderColor = isPrimary ? tokens.effects.primaryCardBorder : tokens.effects.cardBorder;
   const highlight = isPrimary ? tokens.effects.primaryCardHighlight : tokens.effects.cardHighlight;
+  const shadowColor = isLight
+    ? tokens.effects.cardShadow
+    : isPrimary
+      ? colors.primary
+      : tokens.effects.cardShadow;
+  const boxShadow = isLight
+    ? `0 5px 14px ${setColorAlpha(shadowColor, 0.07)}`
+    : `0 6px 16px ${setColorAlpha(shadowColor, 0.12)}`;
 
   const contentPadding =
     padding === 'none' ? 0 : padding === 'sm' ? spacing[3] : padding === 'lg' ? spacing[6] : spacing[4];
@@ -87,9 +95,8 @@ export function GlassCard({
         fill && styles.fillAvailable,
         {
           borderRadius,
-          shadowColor: isLight ? tokens.effects.cardShadow : isPrimary ? colors.primary : tokens.effects.cardShadow,
+          boxShadow,
         },
-        isLight ? styles.elevationLight : styles.elevation,
         style,
       ]}
     >
@@ -163,30 +170,6 @@ const styles = StyleSheet.create({
   cardShell: {
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth * 1.5,
-  },
-  elevation: {
-    ...Platform.select({
-      ios: {
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: 6 },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  elevationLight: {
-    ...Platform.select({
-      ios: {
-        shadowOpacity: 0.07,
-        shadowRadius: 14,
-        shadowOffset: { width: 0, height: 5 },
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
   },
   gradient: {
     overflow: 'hidden',

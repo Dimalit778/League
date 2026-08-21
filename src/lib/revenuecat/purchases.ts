@@ -38,12 +38,21 @@ export const usePaywall = () => {
 
   return useCallback(async () => {
     const upgraded = await presentPaywall();
+
+    if (upgraded) {
+      const [, synced] = await Promise.all([
+        refreshCustomerInfo(),
+        syncSubscriptionAfterChange(),
+      ]);
+      return synced;
+    }
+
     const latestCustomerInfo = await refreshCustomerInfo();
     const hasProAccess = hasActiveEntitlement(latestCustomerInfo, PRO_ENTITLEMENT);
 
     // Sync existing Pro users too so RevenueCat and Supabase can recover from
     // a previously missed purchase callback.
-    if (upgraded || hasProAccess) {
+    if (hasProAccess) {
       return syncSubscriptionAfterChange();
     }
 
@@ -60,13 +69,17 @@ export const useRestorePurchases = () => {
     }
 
     const restored = await purchasesService.restorePurchases();
-    await refreshCustomerInfo();
 
-    if (restored) {
-      return syncSubscriptionAfterChange();
+    if (!restored) {
+      await refreshCustomerInfo();
+      return false;
     }
 
-    return false;
+    const [, synced] = await Promise.all([
+      refreshCustomerInfo(),
+      syncSubscriptionAfterChange(),
+    ]);
+    return synced;
   }, [refreshCustomerInfo]);
 };
 

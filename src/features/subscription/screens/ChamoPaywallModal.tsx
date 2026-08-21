@@ -165,10 +165,17 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
       ) : (
         <PaywallActions
           price={purchasePackage?.product.priceString ?? FALLBACK_PRICE}
-          canPurchase={seasonActive && !!purchasePackage}
-          isLoadingOffer={isLoadingOffer}
-          isPurchasing={isPurchasing}
-          isRestoring={isRestoring}
+          status={
+            isPurchasing
+              ? 'purchasing'
+              : isRestoring
+                ? 'restoring'
+                : isLoadingOffer
+                  ? 'loadingOffer'
+                  : seasonActive && purchasePackage
+                    ? 'ready'
+                    : 'unavailable'
+          }
           onPurchase={handlePurchase}
           onRestore={handleRestore}
         />

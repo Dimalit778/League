@@ -282,14 +282,19 @@ Deno.serve(async (request: Request): Promise<Response> => {
         }
       }
 
-      const returnedCodes = new Set(
-        apiCompetitions
-          .map((competition) => competition.code)
-          .filter((code): code is string => typeof code === "string"),
-      );
-      const missingCodes = TARGET_COMPETITIONS
-        .map((competition) => competition.code)
-        .filter((code) => !returnedCodes.has(code));
+      const returnedCodes = new Set<string>();
+      for (const competition of apiCompetitions) {
+        if (typeof competition.code === "string") {
+          returnedCodes.add(competition.code);
+        }
+      }
+
+      const missingCodes: string[] = [];
+      for (const competition of TARGET_COMPETITIONS) {
+        if (!returnedCodes.has(competition.code)) {
+          missingCodes.push(competition.code);
+        }
+      }
 
       const success = failures.length === 0 && missingCodes.length === 0;
 
