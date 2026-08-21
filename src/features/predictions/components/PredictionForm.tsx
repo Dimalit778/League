@@ -51,8 +51,8 @@ function ScoreStepper({
 
   return (
     <View
-      className="h-14 flex-row items-stretch overflow-hidden rounded-2xl border border-white/25 bg-black/25"
-      style={{ direction: 'ltr', width: STEPPER_WIDTH }}
+      className=" flex-row items-stretch overflow-hidden rounded-lg border border-white/25 bg-gray-900"
+      style={{ direction: 'ltr', width: STEPPER_WIDTH, height: 44 }}
     >
       <Pressable
         className="flex-1 items-center justify-center border-r border-white/20 active:bg-white/10"
@@ -141,7 +141,7 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
   };
 
   return (
-    <View className="w-full flex-row items-center justify-between px-4">
+    <View className="w-full flex-row items-center justify-between ">
       <ScoreStepper
         value={homeScore}
         onChange={updateHomeScore}

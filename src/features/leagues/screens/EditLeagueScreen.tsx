@@ -1,14 +1,4 @@
-import {
-  AvatarImage,
-  Badge,
-  Button,
-  Error,
-  InputField,
-  ListItem,
-  LogoBadge,
-  Screen,
-  Text,
-} from '@/components';
+import { AvatarImage, Badge, Button, Error, InputField, ListItem, LogoBadge, Screen, Text } from '@/components';
 import {
   useDeleteLeague,
   useGetLeagueAndMembers,
@@ -213,7 +203,7 @@ export default function EditLeagueScreen() {
         <View className="gap-5 pt-4">
           <View className="rounded-2xl border border-border bg-surface p-4">
             <View className="mb-4 flex-row items-center gap-3">
-              <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={40} height={40} />
+              <LogoBadge source={league?.competition?.flag || ''} width={48} height={42} />
               <View className="flex-1">
                 <Text className="text-base font-bold">{league?.competition?.name}</Text>
                 <Text tone="muted" variant="bodySmall">

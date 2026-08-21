@@ -10,7 +10,6 @@ export type MatchPresentation = {
   canPredict: boolean;
   isLive: boolean;
   isFinished: boolean;
-  showKickoffTime: boolean;
   minuteLabel: string;
   detailStatusLabel: string | null;
   cardStatusLabel: 'LIVE' | 'FT' | null;
@@ -54,7 +53,6 @@ export function deriveMatchPresentation(
     canPredict,
     isLive,
     isFinished,
-    showKickoffTime: !isFinished,
     minuteLabel,
     detailStatusLabel:
       phase === 'finished'

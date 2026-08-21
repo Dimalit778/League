@@ -29,8 +29,8 @@ export type CardProps = StaticCardProps | PressableCardProps;
 const variantClasses: Record<CardVariant, string> = {
   surface: 'bg-surface',
   soft: 'bg-subtle',
-  elevated: 'border border-border/50 bg-surface shadow-sm elevation-1',
-  hero: 'border border-border/50 bg-surface rounded-3xl shadow-md elevation-3',
+  elevated: 'border border-border bg-surface shadow-sm elevation-1',
+  hero: 'border-2 border-primary bg-surface rounded-3xl shadow-md elevation-3',
 };
 
 const paddingClasses: Record<CardPadding, string> = {

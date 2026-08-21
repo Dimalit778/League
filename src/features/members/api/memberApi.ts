@@ -76,7 +76,7 @@ export const memberApi = {
         avatar_url,
         league:leagues!league_id(
           id,
-          competition:competitions(id, current_fixture, total_fixtures)
+          competition:competitions(id, current_matchday, total_matchdays)
         )
       `,
       )

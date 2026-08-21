@@ -1,4 +1,4 @@
-import { Button, Divider, ListItem, LogoBadge, MyImage, Row, Text } from '@/components';
+import { Button, Divider, ListItem, LogoBadge, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LeagueWithMembersType } from '@/types';
@@ -58,7 +58,7 @@ export const LeagueDetailsSection = ({
               <Text tone="muted" className="me-2">
                 {league.name}
               </Text>
-              <LogoBadge source={{ uri: league?.competition?.logo || '' }} width={20} height={20} />
+              <LogoBadge source={league?.competition?.flag || ''} width={28} height={24} />
             </Row>
           }
         />
@@ -90,16 +90,7 @@ export const LeagueDetailsSection = ({
           trailing={<Text tone="muted">{owner?.nickname || 'Unknown'}</Text>}
         />
 
-        <ListItem
-          title={t('Competition')}
-          divider
-          trailing={
-            <Row className="items-center gap-2">
-              <Text tone="muted">{league.competition.name}</Text>
-              <LogoBadge source={{ uri: league.competition.logo }} width={18} height={18} />
-            </Row>
-          }
-        />
+        <ListItem title={t('Competition')} divider trailing={<Text tone="muted">{league.competition.name}</Text>} />
 
         <ListItem
           title={t('Country')}
@@ -107,9 +98,6 @@ export const LeagueDetailsSection = ({
           trailing={
             <Row className="items-center gap-2">
               <Text tone="muted">{league.competition.area}</Text>
-              {league.competition.flag && (
-                <MyImage source={{ uri: league.competition.flag }} width={18} height={18} contentFit="contain" />
-              )}
             </Row>
           }
         />

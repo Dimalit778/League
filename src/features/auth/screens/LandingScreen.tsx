@@ -39,7 +39,7 @@ export default function LandingScreen() {
 
               <Text
                 accessibilityRole="header"
-                className="text-center font-teko-bold text-[44px] leading-[48px] text-white sm:text-[52px] sm:leading-[56px]"
+                className="text-center font-oswald-bold text-[44px] leading-[48px] text-white sm:text-[52px] sm:leading-[56px]"
                 maxFontSizeMultiplier={1.3}
               >
                 {t('Every match is a challenge')}

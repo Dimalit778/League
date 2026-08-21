@@ -19,14 +19,14 @@ export default function MatchHero({ match, memberPrediction, presentation, onPre
   const badgeSize = width >= 768 ? 100 : 62;
 
   return (
-    <View className="flex-1">
+    <View>
       <MatchHeroMeta
         kickOff={match.kick_off}
         competitionName={match.competition?.name ?? ''}
         matchday={match.fixture ?? 0}
       />
-      <View className="flex-1 justify-center">
-        <Row className="mx-4 items-center justify-center">
+      <View className="px-5 pt-6">
+        <Row className="items-center justify-center">
           <MatchHeroTeam team={match.home_team ?? null} badgeSize={badgeSize} />
           <View className="w-28 items-center justify-center">
             <MatchHeroScore

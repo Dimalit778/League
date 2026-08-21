@@ -1,4 +1,4 @@
-import { Button, Card, Divider, GlassCard, LogoBadge, Row, Text } from '@/components';
+import { Button, Card, Divider, GlassCard, MyImage, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -33,7 +33,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
     <Card variant="hero" padding="md" contentClassName="gap-4">
       <View className="flex-row justify-between ">
         <Row className="items-center gap-3">
-          <LogoBadge source={{ uri: league.competition_logo ?? '' }} width={48} height={48} />
+          <MyImage source={league.competition_flag ?? ''} width={48} height={48} />
           <View className="min-w-0 gap-0.5">
             <Text variant="titleLarge" numberOfLines={1}>
               {league.league_name}

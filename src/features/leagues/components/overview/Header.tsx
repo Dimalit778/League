@@ -5,11 +5,7 @@ import { router } from 'expo-router';
 import { TrophyIcon } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
-export const CollapsedHeader = ({
-  nickname,
-}: {
-  nickname?: string;
-}) => {
+export const CollapsedHeader = ({ nickname }: { nickname?: string }) => {
   return (
     <Row className="h-12 items-center justify-between px-4">
       <View className="h-9 w-9 shrink-0" />
@@ -48,7 +44,7 @@ export const PersistentHeaderActions = ({ logoUrl }: { logoUrl: string }) => {
 
   return (
     <Row className="h-12 items-start justify-between px-4">
-      <LogoBadge source={logoUrl} width={36} height={36} />
+      <LogoBadge source={logoUrl} width={36} height={32} />
       <Pressable
         hitSlop={10}
         className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"

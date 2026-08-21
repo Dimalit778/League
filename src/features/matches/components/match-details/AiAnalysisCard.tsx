@@ -105,6 +105,7 @@ function AiLockedSummaryPlaceholder() {
 function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
+  console.log('summary', summary);
 
   return (
     <View className="relative min-h-50 overflow-hidden rounded-2xl border border-border bg-surface p-3">
@@ -188,10 +189,13 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
   const analysis = resolveAiAnalysis(match);
+  console.log('analysis', JSON.stringify(analysis, null, 2));
   const { theme } = useThemeTokens();
   const { subscription } = useRevenueCatSubscription();
+
   const isPro = subscription.isActive;
   const { data: aiSummary } = useMatchAiSummary(match.id, isPro && analysis.status === 'available');
+  console.log('aiSummary', aiSummary);
   const summary = resolveAiSummaryText(aiSummary, language);
 
   const teams = {

@@ -109,8 +109,8 @@ const darkEffects: ThemeEffects = {
 
 const sharedTokens = {
   fonts: {
-    heading: 'Teko_400Regular',
-    headingBold: 'Teko_700Bold',
+    heading: 'Oswald_400Regular',
+    headingBold: 'Oswald_700Bold',
   },
   spacing: spacingValues,
   radius: radiusValues,

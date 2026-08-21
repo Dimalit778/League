@@ -1,4 +1,4 @@
-import { Card, LockedBadge, LogoBadge, MyImage, Text } from '@/components';
+import { Card, LockedBadge, MyImage, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
@@ -21,10 +21,10 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
   const isSvgFlag = flag.toLowerCase().includes('.svg');
 
   return (
-    <Card onPress={() => onPress(competition)} padding="none">
+    <Card onPress={() => onPress(competition)} padding="none" className="flex-1">
       <View className="relative overflow-hidden rounded-xl">
         <View
-          className="flex-row items-center p-4 border-2 bg-surface rounded-xl"
+          className="flex-1 items-center p-4 border-2 bg-surface rounded-xl"
           style={{ borderColor: isSelected ? colors.primary : colors.border }}
         >
           <MyImage
@@ -37,20 +37,18 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             forceSvg={isSvgFlag}
           />
 
-          <View className="flex-1 items-center">
-            <Text variant="bodySmall" tone="muted">
-              {t(competition.area)}
-            </Text>
-            <Text
-              variant="body"
-              numberOfLines={1}
-              className={cn('font-semibold text-center', isSelected ? 'text-primary' : 'text-text')}
-            >
-              {t(competition.name)}
-            </Text>
-          </View>
-          <LogoBadge source={{ uri: competition.logo ?? '' }} width={48} height={48} />
+          <Text variant="bodySmall" tone="muted">
+            {t(competition.area)}
+          </Text>
+          <Text
+            variant="body"
+            numberOfLines={1}
+            className={cn('font-semibold text-center', isSelected ? 'text-primary' : 'text-text')}
+          >
+            {t(competition.name)}
+          </Text>
         </View>
+
         <LockedBadge visible={isLocked} />
       </View>
     </Card>

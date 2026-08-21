@@ -9,7 +9,7 @@ const defaultMockLeagues = [
   {
     active: true,
     competition_id: 1,
-    competition_logo: null,
+    competition_flag: null,
     competition_season_id: 2026,
     is_primary: true,
     league_id: 'primary-league',
@@ -23,7 +23,7 @@ const defaultMockLeagues = [
   {
     active: false,
     competition_id: 2,
-    competition_logo: null,
+    competition_flag: null,
     competition_season_id: 2026,
     is_primary: false,
     league_id: 'locked-league',
@@ -37,7 +37,7 @@ const defaultMockLeagues = [
   {
     active: false,
     competition_id: 3,
-    competition_logo: null,
+    competition_flag: null,
     competition_season_id: 2026,
     is_primary: false,
     league_id: 'second-locked-league',
@@ -52,7 +52,7 @@ const defaultMockLeagues = [
     active: false,
     competition_id: 4,
     competition_is_free: false,
-    competition_logo: null,
+    competition_flag: null,
     competition_season_id: 2026,
     is_primary: false,
     league_id: 'pro-only-league',

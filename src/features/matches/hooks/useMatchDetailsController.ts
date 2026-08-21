@@ -20,32 +20,35 @@ export function useMatchDetailsController(match: MatchDetails) {
     prediction.league_member?.id === memberId
   );
   const isTablet = width >= 768;
+  const fontScaleExtra = Math.max(0, fontScale - 1) * 40;
+
   const heroHeight = presentation.canPredict
     ? Math.min(
-      height * 0.46,
+      height * 0.4,
       Math.max(
-        height * 0.43 + Math.max(0, fontScale - 1) * 72,
+        height * 0.52 + fontScaleExtra,
         isTablet ? 400 : 340,
       ),
     )
     : Math.min(
-      height * 0.34,
+      height * 0.32,
       Math.max(
-        height * 0.36 + Math.max(0, fontScale - 1) * 64,
-        isTablet ? 360 : 240,
+        height * 0.5 + fontScaleExtra,
+        isTablet ? 360 : 260,
       ),
     );
+
   const heroGradientColors = isDark
     ? ([
-      "rgba(4,10,20,0.38)",
-      "rgba(4,10,20,0.5)",
-      "rgba(4,10,20,0.72)",
+      "rgba(4,8,20,0.99)",
+      "rgba(4,8,19,0.78)",
+      "rgba(3,8,18,0.62)",
       colors.background,
     ] as const)
     : ([
-      "rgba(15,23,42,0.58)",
-      "rgba(15,23,42,0.44)",
-      "rgba(248,249,247,0.3)",
+      "rgba(4,8,20,0.99)",
+      "rgba(4,8,19,0.74)",
+      "rgba(3,8,18,0.52)",
       colors.background,
     ] as const);
 

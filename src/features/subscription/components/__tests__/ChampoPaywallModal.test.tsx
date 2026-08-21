@@ -33,7 +33,7 @@ describe('PaywallModal', () => {
     expect(getByRole('button', { name: 'Upgrade for $29.99' }).props.accessibilityState.disabled).toBe(false);
 
     expect(getByTestId('paywall-screen')).toBeTruthy();
-    expect(getByTestId('comparison-background').props.contentFit).toBe('cover');
+    expect(getByTestId('comparison-background').props.contentFit).toBe('contain');
     expect(getByTestId('comparison-background').props.accessible).toBe(false);
     expect(getByTestId('paywall-price').props.children).toBe('$29.99');
     expect(getByText('Get full access')).toBeTruthy();

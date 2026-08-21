@@ -30,6 +30,7 @@ describe('deriveMatchPresentation', () => {
     expect(result.phase).toBe('live');
     expect(result.cardStatusLabel).toBe('LIVE');
     expect(result.canPredict).toBe(false);
+    expect(result.scoreMode).toBe('score');
   });
 
   it('represents a paused match as halftime', () => {
@@ -37,6 +38,7 @@ describe('deriveMatchPresentation', () => {
       phase: 'halftime',
       detailStatusLabel: 'HT',
       cardStatusLabel: 'LIVE',
+      scoreMode: 'score',
     });
   });
 
@@ -45,7 +47,7 @@ describe('deriveMatchPresentation', () => {
       phase: 'finished',
       detailStatusLabel: 'FT',
       cardStatusLabel: 'FT',
-      showKickoffTime: false,
+      scoreMode: 'score',
     });
   });
 });
