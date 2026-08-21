@@ -450,7 +450,6 @@ export const en = {
     "Get full access": "Get full access",
     "Join more leagues, play every competition and unlock complete AI analysis.":
       "Join more leagues, play every competition and unlock complete AI analysis.",
-    "What's included": "What's included",
     "Football competitions": "Football competitions",
     "Active friend leagues": "Active friend leagues",
     "Members per league": "Members per league",

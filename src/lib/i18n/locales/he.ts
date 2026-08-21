@@ -461,7 +461,6 @@ export const he = {
     "Get full access": "קבל גישה מלאה",
     "Join more leagues, play every competition and unlock complete AI analysis.":
       "הצטרף ליותר ליגות, פתח את כל התחרויות וקבל ניתוח AI מלא.",
-    "What's included": "מה כלול",
     "Football competitions": "תחרויות כדורגל",
     "Active friend leagues": "ליגות חברים פעילות",
     "Members per league": "חברים בכל ליגה",
