@@ -389,7 +389,7 @@ deno_version = 2
 # a CLI deployment cannot silently change the gateway behavior. Authorization
 # inside verify_jwt=false functions is reviewed separately.
 [functions.Sync-teams]
-verify_jwt = false
+verify_jwt = true
 
 [functions.delete-account]
 verify_jwt = true
