@@ -9,8 +9,6 @@ import { cn } from '@/lib/nativewind/nativeWind';
 
 type EmptyStateSize = 'sm' | 'md' | 'lg';
 
-const FULL_SCREEN_OFFSET_Y = -160;
-
 type EmptyStateProps = ViewProps & {
   icon?: LucideIcon;
   title: string;
@@ -23,7 +21,6 @@ type EmptyStateProps = ViewProps & {
   onSecondaryAction?: () => void;
   size?: EmptyStateSize;
   fill?: boolean;
-  offsetY?: number;
   className?: string;
 };
 
@@ -31,7 +28,7 @@ const SIZE_PRESETS: Record<
   EmptyStateSize,
   { iconSize: number; iconContainerSize: number; titleVariant: 'subtitle' | 'title' }
 > = {
-  sm: { iconSize: 26, iconContainerSize: 56, titleVariant: 'subtitle' },
+  sm: { iconSize: 26, iconContainerSize: 50, titleVariant: 'subtitle' },
   md: { iconSize: 36, iconContainerSize: 88, titleVariant: 'title' },
   lg: { iconSize: 44, iconContainerSize: 104, titleVariant: 'title' },
 };
@@ -47,7 +44,6 @@ export function EmptyState({
   onActionPress,
   secondaryActionLabel,
   onSecondaryAction,
-  offsetY,
   className,
   style,
   ...props
@@ -56,18 +52,17 @@ export function EmptyState({
   const preset = SIZE_PRESETS[size];
   const handleAction = onAction ?? onActionPress;
   const shouldFill = fill ?? size !== 'sm';
-  const resolvedOffsetY = offsetY ?? (shouldFill ? FULL_SCREEN_OFFSET_Y : 0);
   const hasActions = (actionLabel && handleAction) || (secondaryActionLabel && onSecondaryAction);
 
   return (
     <View
       {...props}
-      className={cn('w-full items-center justify-center px-4 py-2', shouldFill && 'flex-1 self-center px-6', className)}
-      style={[style, resolvedOffsetY ? { transform: [{ translateY: resolvedOffsetY }] } : undefined]}
+      className={cn('w-full  items-center justify-center', shouldFill && 'flex-1 self-center px-6', className)}
+      style={[style]}
     >
       {Icon ? (
         <View
-          className={cn('items-center justify-center rounded-full border', size === 'sm' ? 'mb-3' : 'mb-5')}
+          className={cn('items-center justify-center rounded-full border', size === 'sm' ? 'mb-1.5' : 'mb-4')}
           style={{
             width: preset.iconContainerSize,
             height: preset.iconContainerSize,
@@ -84,7 +79,7 @@ export function EmptyState({
       </Text>
 
       {description ? (
-        <Text variant="bodySmall" tone="muted" className="mt-1.5 max-w-[280px] text-center">
+        <Text variant="body" tone="muted" className="mt-1.5 max-w-[280px] text-center">
           {description}
         </Text>
       ) : null}

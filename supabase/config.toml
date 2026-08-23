@@ -111,6 +111,11 @@ enabled = true
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
+[storage.buckets.profile_images]
+public = true
+file_size_limit = "5MiB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp"]
+
 # Uncomment to configure local storage buckets
 # [storage.buckets.images]
 # public = false
@@ -401,19 +406,7 @@ verify_jwt = false
 [functions.sync-competition-progress]
 verify_jwt = false
 
-[functions.sync-all-competitions-teams]
-verify_jwt = false
-
-[functions.sync-finished-matches]
-verify_jwt = false
-
 [functions.sync-finished-matches-worldcup]
-verify_jwt = false
-
-[functions.sync-matches]
-verify_jwt = false
-
-[functions.sync-matches-and-update-competitions]
 verify_jwt = false
 
 [functions.sync-season-matches]

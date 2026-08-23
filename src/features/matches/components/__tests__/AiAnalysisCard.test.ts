@@ -39,7 +39,7 @@ describe('resolveAiAnalysis', () => {
     const match = createMatch({ ai_predicted_home_score: null, ai_predicted_away_score: null });
     const { getByText, queryByText } = render(React.createElement(AiAnalysisCard, { match }));
 
-    expect(getByText('AI analysis is not available')).toBeTruthy();
+    expect(getByText('AI analysis is available on match day')).toBeTruthy();
     expect(queryByText(/^0$/)).toBeNull();
   });
 

@@ -16,13 +16,13 @@ export const MatchCard = memo(function MatchCard({
   layoutWidth,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
-  const metrics = getMatchCardMetrics(layoutWidth ?? screenWidth);
   const presentation = deriveMatchPresentation({ status: match.status, kickOff: match.kickOff });
+  const hasResult = match.home.score != null && match.away.score != null;
+  const compact = presentation.isFinished && hasResult;
+  const metrics = getMatchCardMetrics(layoutWidth ?? screenWidth, compact);
   const logoWidth = metrics.logoBoxSize;
   const logoHeight = logoVariant === 'flag' ? Math.round((logoWidth * 2) / 3) : metrics.logoBoxSize;
-
-  const hasResult = match.home.score != null && match.away.score != null;
-  const showDateTab = !(presentation.isFinished && hasResult);
+  const showDateTab = !compact;
   const scoreLabel = hasResult ? `${match.home.score} - ${match.away.score}` : match.time;
 
   return (

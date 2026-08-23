@@ -1,5 +1,7 @@
 import { images } from '@/assets/images';
 import { Text } from '@/components';
+import { useGetCompetitions } from '@/features/leagues/hooks/useCompetition';
+import { useSubscriptionPlans } from '@/features/subscription/hooks/useSubscriptionPlans';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -39,6 +41,13 @@ function ComparisonRow({ label, freeValue, proValue, isRTL, last = false }: Comp
 
 export function Plans() {
   const { t, isRTL } = useTranslation();
+  const { data: plans } = useSubscriptionPlans();
+  const { data: competitions } = useGetCompetitions();
+  const freePlan = plans?.find((plan) => plan.code === 'free');
+  const proPlan = plans?.find((plan) => plan.code === 'pro');
+  const freeCompetitionCount = competitions?.filter((competition) => competition.is_free).length;
+  const totalCompetitionCount = competitions?.length;
+  const displayNumber = (value: number | undefined) => value?.toString() ?? '—';
 
   const freeHeader = (
     <View key="free" style={styles.comparisonValueCell}>
@@ -72,10 +81,31 @@ export function Plans() {
         {isRTL ? [proHeader, freeHeader] : [freeHeader, proHeader]}
       </View>
 
-      <ComparisonRow isRTL={isRTL} label={t('Football competitions')} freeValue="2" proValue="6" />
-      <ComparisonRow isRTL={isRTL} label={t('Active friend leagues')} freeValue="2" proValue="5" />
-      <ComparisonRow isRTL={isRTL} label={t('Members per league')} freeValue="6" proValue="12" />
-      <ComparisonRow isRTL={isRTL} label={t('AI match insights')} freeValue={t('Score')} proValue={t('Full')} last />
+      <ComparisonRow
+        isRTL={isRTL}
+        label={t('Football competitions')}
+        freeValue={displayNumber(freePlan?.capabilities.premiumCompetitions ? totalCompetitionCount : freeCompetitionCount)}
+        proValue={displayNumber(proPlan?.capabilities.premiumCompetitions ? totalCompetitionCount : freeCompetitionCount)}
+      />
+      <ComparisonRow
+        isRTL={isRTL}
+        label={t('Active friend leagues')}
+        freeValue={displayNumber(freePlan?.limits.maxActiveLeagues)}
+        proValue={displayNumber(proPlan?.limits.maxActiveLeagues)}
+      />
+      <ComparisonRow
+        isRTL={isRTL}
+        label={t('Members per league')}
+        freeValue={displayNumber(freePlan?.limits.maxMembersPerLeague)}
+        proValue={displayNumber(proPlan?.limits.maxMembersPerLeague)}
+      />
+      <ComparisonRow
+        isRTL={isRTL}
+        label={t('AI match insights')}
+        freeValue={freePlan ? t(freePlan.capabilities.advancedStats ? 'Full' : 'Score') : '—'}
+        proValue={proPlan ? t(proPlan.capabilities.advancedStats ? 'Full' : 'Score') : '—'}
+        last
+      />
     </View>
   );
 }

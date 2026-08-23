@@ -1,33 +1,31 @@
-import { hasActiveEntitlement, PRO_ENTITLEMENT } from '@/lib/revenuecat/customerInfoSummary';
 import { router } from 'expo-router';
 import { createContext, use, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Platform } from 'react-native';
 
-import { usePurchasesContext } from './PurchasesProvider';
+export type PaywallResult = 'purchased' | 'restored' | false;
 
 type PaywallContextValue = {
-  presentPaywall: () => Promise<boolean>;
-  finishPaywall: (purchased: boolean) => void;
+  presentPaywall: () => Promise<PaywallResult>;
+  finishPaywall: (result: PaywallResult) => void;
   abandonPaywall: () => void;
 };
 
 const PaywallContext = createContext<PaywallContextValue | null>(null);
 
 export function PaywallProvider({ children }: { children: React.ReactNode }) {
-  const { customerInfo } = usePurchasesContext();
-  const resolverRef = useRef<((purchased: boolean) => void) | null>(null);
-  const promiseRef = useRef<Promise<boolean> | null>(null);
+  const resolverRef = useRef<((result: PaywallResult) => void) | null>(null);
+  const promiseRef = useRef<Promise<PaywallResult> | null>(null);
 
-  const resolvePaywall = useCallback((purchased: boolean) => {
+  const resolvePaywall = useCallback((result: PaywallResult) => {
     const resolve = resolverRef.current;
     resolverRef.current = null;
     promiseRef.current = null;
-    resolve?.(purchased);
+    resolve?.(result);
   }, []);
 
   const finishPaywall = useCallback(
-    (purchased: boolean) => {
-      resolvePaywall(purchased);
+    (result: PaywallResult) => {
+      resolvePaywall(result);
       if (router.canGoBack()) router.back();
     },
     [resolvePaywall],
@@ -46,21 +44,20 @@ export function PaywallProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const presentPaywall = useCallback(async (): Promise<boolean> => {
+  const presentPaywall = useCallback(async (): Promise<PaywallResult> => {
     if (Platform.OS === 'web') return false;
-    if (hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT)) return true;
 
     // Reuse the current route result if two upgrade guards fire at the same time.
     if (promiseRef.current) return promiseRef.current;
 
-    const result = new Promise<boolean>((resolve) => {
+    const result = new Promise<PaywallResult>((resolve) => {
       resolverRef.current = resolve;
     });
     promiseRef.current = result;
     router.push('/(app)/(paywall)');
 
     return result;
-  }, [customerInfo]);
+  }, []);
 
   const value = useMemo(
     () => ({ presentPaywall, finishPaywall, abandonPaywall }),

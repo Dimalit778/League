@@ -20,6 +20,6 @@ describe('useThemeTokens', () => {
     expect(result.current.radius.lg).toBe(16);
     expect(result.current.gradients.hero).toHaveLength(3);
     expect(result.current.effects.cardGlow).toEqual(expect.any(String));
-    expect(result.current.fonts.headingBold).toBe('Oswald_700Bold');
+    expect(result.current.fonts.headingBold).toBe('Nunito_700Bold');
   });
 });

@@ -7,6 +7,7 @@ import { Text as RNText, type TextProps } from 'react-native';
 export type TextTone =
   | 'default'
   | 'secondary'
+  | 'onPrimary'
   | 'muted'
   | 'primary'
   | 'success'
@@ -25,6 +26,7 @@ export type AppTextProps = TextProps & {
 const toneClasses: Record<TextTone, string> = {
   default: 'text-text',
   secondary: 'text-muted',
+  onPrimary: 'text-onPrimary',
   muted: 'text-muted',
   primary: 'text-primary',
   success: 'text-success',

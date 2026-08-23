@@ -25,7 +25,7 @@ export function MatchCardPrediction({
   const { t } = useTranslation();
   const hasPrediction = prediction?.home != null && prediction.away != null;
 
-  if (presentation.isFinished && !hasPrediction) {
+  if (!presentation.canPredict && !hasPrediction) {
     return (
       <View className="absolute left-0 right-0 z-10 items-center justify-center" style={{ top, height }}>
         <Text variant="caption" tone="muted" numberOfLines={1}>

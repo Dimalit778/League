@@ -1,15 +1,19 @@
 # דוח מוכנות מלא להשקת Champo ב־App Store
 
-**תאריך הבדיקה:** 2 באוגוסט 2026  
+**תאריך הבדיקה:** 23 באוגוסט 2026
 **גרסה שנבדקה:** `1.0.0`  
 **Bundle ID:** `com.dimalit778.champo`  
 **יעד:** הפצה עולמית ל־iPhone בלבד, אנגלית ועברית, מנוי PRO וניתוח AI פעילים ב־1.0
-**החלטה:** **NO-GO — אין להגיש עדיין ל־App Review**  
-**ציון כולל:** **6.2/10**
+**החלטה:** **GO הנדסי ל־release candidate; NO-GO להגשה עד build חתום ו־QA ב־TestFlight**
+**ציון כולל:** **8.7/10 למוכנות קוד ו־backend**
 
 > זהו audit הנדסי, מוצרי ותפעולי, ולא ייעוץ משפטי. סעיפי GDPR, UK GDPR, תנאי שימוש וזכויות תוכן צריכים לעבור אישור של עורך דין המתמחה במוצרי תוכנה ובשווקי היעד.
 
 > **עדכון לאחר הבדיקה — 15 באוגוסט 2026:** יעד ההפצה כולל iPhone ו־iPad עם `ios.supportsTablet:true`. שכבת המסכים משתמשת ברוחבי תוכן מוגבלים וממורכזים, והניווט התחתון מוגבל לרוחב קריא במסכים רחבים. עדיין נדרש QA native מלא על iPhone ו־iPad לפני ההעלאה.
+
+> **עדכון release hardening — 23 באוגוסט 2026:** כל 93 חבילות הבדיקה ו־562 הבדיקות עוברות; TypeScript, ESLint, i18n, iOS privacy audit, Expo Doctor ‏(19/19), Expo export לכל הפלטפורמות, 11 בדיקות Edge ו־Supabase DB lint נקיים. נוספה `seed.sql`, תוקנו נגישות focus/contrast, והוחלה migration להקשחת grants ו־RPC. בדיקות RLS דינמיות ב־production הוכיחו בידוד משתמש/ליגה וחסימת שינויי cross-user בתוך transaction שבוטל. 14 Edge Functions הועלו מחדש. ה־migration האחרון ב־production הוא `20260823161551_harden_public_authorization_surface`.
+
+> Leaked Password Protection לא הופעל: Supabase מציעה אותו ב־Pro ומעלה, בעוד הארגון נמצא ב־Free; בהתאם להנחיה שלא לבצע פעולה בתשלום לא בוצע שדרוג. עדכוני `npm audit fix` הלא־שוברים הוחלו. נשארו advisories עקיפים ב־Metro/image-size וב־Expo/xcode/uuid שאין להם תיקון תואם ללא downgrade שובר, ולכן לא הופעל `--force`.
 
 ## תקציר מנהלים
 
@@ -89,7 +93,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 | ID | חומרה | סטטוס | ממצא וראיה / דרך שחזור | השפעה | תיקון מומלץ | מאמץ |
 |---|---|---|---|---|---|---:|
 | SEC-01 | P0 | נפרס / אימות E2E חסר | `20260802100000_secure_prediction_writes.sql` נפרס ל־production; `upsert_own_prediction` נטען ב־PostgREST וחסום ל־anon. הוא מקבל רק scores ובודק משתמש, membership פעיל, תחרות, status ו־kickoff ומחשב ניקוד קנוני. | ללא מבחן משתמש מחובר עדיין אין ראיה מלאה לכל מסלול השמירה ב־production. | לבצע שמירה לפני kickoff, ניסיון שינוי אחרי kickoff וזיוף membership/points עם שני משתמשים לפני סימון “עבר”. | S |
-| PRIV-01 | P0 | נפרס חלקית / לא אומת | מיגרציית האנונימיזציה נפרסה, אך גרסת `delete-account` החדשה לא נפרסה משום שחסרים Apple ו־RevenueCat API secrets. | ה־Edge Function הישן אינו מממש את תהליך האנונימיזציה המלא; אין לבצע מבחן מחיקה עד השלמת התצורה והפריסה. | להגדיר secrets, לפרוס את הפונקציה, ולבצע deletion test עם email/Apple, ליגה בבעלות, מנוי פעיל, avatar וניחושים; לאמת RevenueCat/Storage/Auth/DB. | M |
+| PRIV-01 | P0 | נפרס / אימות E2E חסר | מיגרציית האנונימיזציה וגרסת `delete-account` החדשה נפרסו ל־production. | ללא מבחן מחיקה מלא עדיין אין ראיה שכל מסלולי Apple, RevenueCat, Storage, Auth וה־DB מסתיימים באופן עקבי. | לבצע deletion test עם email/Apple, ליגה בבעלות, מנוי פעיל, avatar וניחושים; לאמת RevenueCat/Storage/Auth/DB. | M |
 | LEGAL-01 | P0 | נכשל | `champoapp.com` לא נפתר ב־DNS ו־Review Notes עדיין מכילים `[YOUR_DOMAIN]`. מסמכי הפרטיות המקומיים עודכנו ל־Champo, `support@champoapp.com` ותזכורות מקומיות, אך עדיין קיימים שרידי League Champion במסכי עזרה/metadata. | אין Privacy Policy URL/Support URL פונקציונליים; סיבת דחייה ישירה לפי App Completeness ו־Privacy. | להפעיל HTTPS ב־`champoapp.com`; לפרסם `/privacy`, `/terms`, `/support`, `/privacy-choices`; להשלים ניקוי מיתוג ולבדוק קישורים מחוץ לחשבון. | M + משפטי |
 | UGC-01 | P0 | נפרס / אימות E2E ותפעול חסרים | `20260802120000_add_ugc_moderation.sql` נפרס ל־production. משתמש יכול לדווח על nickname/avatar/league name לפי קטגוריה, לחסום ולהסיר חסימה דרך Settings; חסימה מסתירה membership, predictions ו־leaderboard. בעל ליגה מסיר חבר דרך RPC אטומי. אדמין מקבל תור pending/resolved/dismissed ויכול לדחות, להסיר תוכן או חבר. RPCs קיימים ב־PostgREST וחסומים ל־anon. | ללא מבחן שני משתמשים, SLA ו־support URL פעיל עדיין אין ראיה תפעולית מלאה ל־Guideline 1.2. | להריץ E2E report/block/unblock/remove/moderate, להגדיר owner תפעולי ו־SLA, ולפרסם support/contact לפני סימון “עבר”. | L |
 | STORE-01 | P0 | לא אומת | App Store Connect פתח מסך login; לא היה session. build, TestFlight, metadata, age rating, content rights, App Privacy, DSA, agreements וחשבון reviewer לא נבדקו. | לא ניתן להוכיח יכולת הגשה או רכישה. | לבצע checklist הדשבורד תחת חשבון Admin/App Manager ולצרף ראיות לכל שער; אין לסמן Go לפני שכל השורות עברו. | M |
@@ -97,7 +101,7 @@ Champo כבר נראית ומרגישה כמו מוצר אמיתי ולא כמו
 | PRIV-02 | P0 | תוקן בקוד / App Store ו־IPA לא אומתו | `ios.privacyManifests` ו־`ios/league/PrivacyInfo.xcprivacy` מצהירים כעת על Name, Email, Photos, Gameplay/Other User Content, User ID, Purchase History ו־Product Interaction, עם linking/purposes ו־tracking=false. manifests של RevenueCat ו־Sentry נמצאו ב־Pods. נוצרה מטריצת App Privacy מדויקת ב־`docs/app-store-connect-app-privacy-he.md`. | הסתירה המקומית נסגרה; עדיין אין ראיה שה־IPA הסופי ממזג את כל manifests ושאותן בחירות הוזנו ב־App Store Connect. | ליצור archive, להפיק Xcode Privacy Report, להשוות למטריצה ולהזין את אותן תשובות ב־App Store Connect. | S–M |
 | QA-01 | P1 | עבר | mocks והציפיות המיושנות עודכנו לאחר שינויי assets, מסכים משפטיים, מגבלות ליגה ושלבי טורניר; 89 suites ו־538 tests עוברים. | release gate ירוק. | לשמור את `npm run test:ci` כחובה ב־CI. | S |
 | DATA-01 | P1 | נפרס / אימות E2E חסר | `20260802110000_secure_league_membership_state.sql` נפרס ל־production; הוא מסיר הרשאת UPDATE רחבה, מגן על `active`/`is_primary`, מוסיף unique partial index ו־check ש־primary חייב להיות active, ומעביר את השינויים ל־RPCs אטומיים. ה־RPCs נטענו ב־PostgREST וחסומים ל־anon. | נדרש מבחן מחובר עם שני משתמשים ובקשות מקבילות לפני סגירה מלאה. | לבדוק שינוי ישיר שנחסם, בחירת membership זר, חריגה ממגבלת תוכנית ושתי בקשות מקבילות, ורק אז לסמן “עבר”. | M |
-| OPS-01 | P1 | תוקן בקוד / תפעול חסר | `sync-matches-and-update-competitions` יוצאה מ־production אל `supabase/functions/`, וכל ערכי `verify_jwt` של הפונקציות הפעילות תועדו ב־`supabase/config.toml`. בדיקה חיה של `cron.job` לא מצאה schedule שמפעיל אותה. | מקור הפונקציה והתנהגות ה־gateway ניתנים כעת לשחזור מה־repository; עדיין אין owner, cadence או alert מתועדים, והפונקציה אינה דורשת JWT. | לפני שימוש מחודש להגדיר מנגנון authorization פנימי, לנהל schedule כמיגרציה ולתעד owner ו־alert; אם היא legacy, להסיר אותה מ־production לאחר בדיקת logs. | S–M |
+| OPS-01 | P1 | נפרס / ניטור מתמשך | פונקציות הסנכרון החופפות הוסרו מה־repository ומ־production. שני ה־Cron היומיים מנוהלים במיגרציה ומפנים ל־`sync-competition-progress` ול־`sync-season-matches`; `sync-today-matches` קיבלה retry מוגבל לשגיאות רשת. | מבנה הסנכרון פשוט יותר, אך עדיין נדרשים owner, alert וניטור מתמשך לשגיאות ספק חיצוני. | לתעד owner ו־alert ולעקוב אחר שיעור 5xx של `sync-today-matches` לאחר הפריסה. | S |
 | NOTIF-01 | P1 | תוקן בקוד / לא אומת במכשיר | `NotificationProvider` קורא את סטטוס המערכת ללא prompt. Settings מציג Enabled/Blocked/Not requested/Unavailable, מציג הסבר לפני opt-in, ומפנה ל־Open Settings כשהבקשה אינה זמינה. המדיניות ו־Review Notes עודכנו לתזכורות מקומיות ללא push token. | אין עוד prompt אוטומטי או סטטוס מטעה; נותר לאמת את התנהגות iOS/Android בבינארי. | לבדוק allow/deny/change, חזרה מ־Settings, שפה, logout והקשה על תזכורת ב־TestFlight/device. | S |
 | BRAND-01 | P1 | נכשל | binary נקרא Champo, אך landing page, legal, Sentry project ו־review notes עדיין League Champion; package נקרא `league`. | בלבול reviewer/משתמש, אמון נמוך ו־metadata לא עקבי. | לבצע inventory של כל string, URL, email, deep link, dashboard/project name ונכס חנות; להחליף רק היכן שנדרש ולשמור redirects. | S–M |
 | AUTH-01 | P1 | נכשל | `AuthLegalLinks.tsx` קיים אך לא משולב ב־`AuthScreen`; אין קישורי Privacy/Terms במסך signup. בחירת שפה זמינה רק לאחר login והברירה היא English. | שקיפות נמוכה לפני יצירת חשבון; onboarding עברי חלש. | להציג קישורים גלויים ותמצית הסכמה לפני Sign up; לבחור שפה לפי locale ולאפשר החלפה במסך הראשון. | S–M |

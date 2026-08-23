@@ -11,6 +11,10 @@ jest.mock('@/features/subscription/hooks/useCurrentSeason', () => ({
   useCurrentSeason: jest.fn(),
 }));
 
+jest.mock('@/lib/revenuecat/purchases', () => ({
+  useRestorePurchases: () => jest.fn().mockResolvedValue(false),
+}));
+
 const mockedUseCurrentSeason = useCurrentSeason as jest.Mock;
 
 // A window that always contains "now", regardless of wall-clock time, so the

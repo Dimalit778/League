@@ -27,4 +27,6 @@ export const images = {
     appleWhiteLogo: require("./appleid_white.png"),
     appleBlackLogo: require("./appleid_black.png"),
     appleWhiteOutlineLogo: require("./appleid_white_outline.png"),
+
+    appIcon: require("./app-icon.png"),
 };

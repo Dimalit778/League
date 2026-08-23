@@ -32,9 +32,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
 
   return (
     <Card variant="surface" padding="lg" contentClassName={cn('items-center justify-center gap-2', spacing.row)}>
-      <Text variant="label" tone="secondary">
-        {t('Accuracy')}
-      </Text>
+      <Text variant="label">{t('Accuracy')}</Text>
       <View style={{ width: GAUGE_SIZE, height: GAUGE_SIZE }}>
         <Svg width={GAUGE_SIZE} height={GAUGE_SIZE}>
           <Circle
@@ -63,7 +61,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
           </Text>
         </View>
       </View>
-      <Text variant="caption" tone="primary" className="text-center" numberOfLines={2}>
+      <Text variant="caption" tone="muted" className="text-center" numberOfLines={2}>
         {t(messageKey)}
       </Text>
     </Card>

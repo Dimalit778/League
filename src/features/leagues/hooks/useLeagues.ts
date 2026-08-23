@@ -9,8 +9,8 @@ import {
 
 import { leagueApi } from "@/features/leagues/api/leagueApi";
 import { useEnsureProAccess } from "@/features/subscription/hooks/useEnsureProAccess";
+import { useSubscriptionAccess } from "@/features/subscription/hooks/useSubscriptionAccess";
 import { useTranslation } from "@/hooks/useTranslation";
-import { PLAN_LIMITS } from "@/lib/revenuecat/plans";
 import { useAuth } from "@/providers/AuthProvider";
 import { useAuthStore } from "@/store/AuthStore";
 import { usePrimaryLeagueStore } from "@/store/PrimaryLeagueStore";
@@ -228,6 +228,7 @@ export const useUpdateLeagueActivation = ({
 
 export const useReactivateLeaguesAfterProUpgrade = () => {
   const { ensureProAccess } = useEnsureProAccess();
+  const { refetch: refetchSubscriptionAccess } = useSubscriptionAccess();
   const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation({
     reinitializePrimaryLeague: false,
   });
@@ -238,10 +239,11 @@ export const useReactivateLeaguesAfterProUpgrade = () => {
         const hasProAccess = await ensureProAccess();
         if (!hasProAccess) return false;
 
-        const memberIds = leagues.map((league) => league.id).slice(
-          0,
-          PLAN_LIMITS.PRO.maxLeagues,
-        );
+        const { data: access } = await refetchSubscriptionAccess();
+        const maxActiveLeagues = access?.limits.maxActiveLeagues ?? 0;
+        if (maxActiveLeagues <= 0) return false;
+
+        const memberIds = leagues.map((league) => league.id).slice(0, maxActiveLeagues);
         if (memberIds.length === 0) return true;
 
         await updateLeagueActivation(memberIds);
@@ -250,7 +252,7 @@ export const useReactivateLeaguesAfterProUpgrade = () => {
         return false;
       }
     },
-    [ensureProAccess, updateLeagueActivation],
+    [ensureProAccess, refetchSubscriptionAccess, updateLeagueActivation],
   );
 };
 

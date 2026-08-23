@@ -5,4 +5,8 @@ describe('getMatchCardMetrics', () => {
     expect(getMatchCardMetrics(390).width).toBe(358);
     expect(getMatchCardMetrics(1024).width).toBe(450);
   });
+
+  it('shortens finished cards', () => {
+    expect(getMatchCardMetrics(390, true).height).toBeLessThan(getMatchCardMetrics(390).height);
+  });
 });

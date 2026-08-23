@@ -15,7 +15,7 @@ export function MatchCardScore({ homeScore, awayScore, time }: MatchCardScorePro
 
   if (hasScore) {
     return (
-      <Text variant="header" className="w-full text-center text-muted pb-3" numberOfLines={1}>
+      <Text variant="header" className="w-full text-center text-muted " numberOfLines={1}>
         {homeScore} - {awayScore}
       </Text>
     );

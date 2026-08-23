@@ -78,7 +78,7 @@ export default function KnockoutEngine({
         data={stageTies}
         renderItem={({ item }) => <TieBlock tie={item} />}
         keyExtractor={(item) => item.key}
-        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
       />

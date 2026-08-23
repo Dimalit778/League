@@ -42,7 +42,6 @@ export type Database = {
           area: string
           code: string
           created_at: string
-          current_fixture: number | null
           current_matchday: number | null
           current_stage: string | null
           flag: string | null
@@ -53,7 +52,6 @@ export type Database = {
           season_end: string | null
           season_id: number | null
           season_start: string | null
-          total_fixtures: number | null
           total_matchdays: number | null
           type: string
           updated_at: string
@@ -62,7 +60,6 @@ export type Database = {
           area: string
           code: string
           created_at?: string
-          current_fixture?: number | null
           current_matchday?: number | null
           current_stage?: string | null
           flag?: string | null
@@ -73,7 +70,6 @@ export type Database = {
           season_end?: string | null
           season_id?: number | null
           season_start?: string | null
-          total_fixtures?: number | null
           total_matchdays?: number | null
           type: string
           updated_at?: string
@@ -82,7 +78,6 @@ export type Database = {
           area?: string
           code?: string
           created_at?: string
-          current_fixture?: number | null
           current_matchday?: number | null
           current_stage?: string | null
           flag?: string | null
@@ -93,7 +88,6 @@ export type Database = {
           season_end?: string | null
           season_id?: number | null
           season_start?: string | null
-          total_fixtures?: number | null
           total_matchdays?: number | null
           type?: string
           updated_at?: string
@@ -534,38 +528,6 @@ export type Database = {
         }
         Relationships: []
       }
-      subscription_entitlement_mappings: {
-        Row: {
-          created_at: string
-          entitlement_id: string
-          is_active: boolean
-          plan_code: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          entitlement_id: string
-          is_active?: boolean
-          plan_code: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          entitlement_id?: string
-          is_active?: boolean
-          plan_code?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subscription_entitlement_mappings_plan_code_fkey"
-            columns: ["plan_code"]
-            isOneToOne: false
-            referencedRelation: "subscription_plans"
-            referencedColumns: ["code"]
-          },
-        ]
-      }
       subscription_plans: {
         Row: {
           can_use_premium_competitions: boolean
@@ -758,9 +720,11 @@ export type Database = {
           expires_at: string | null
           plan: string
           product_id: string | null
+          purchased_at: string | null
           revenuecat_app_user_id: string | null
           season_code: string | null
           status: string
+          transaction_id: string | null
           updated_at: string
           user_id: string
         }
@@ -769,9 +733,11 @@ export type Database = {
           expires_at?: string | null
           plan?: string
           product_id?: string | null
+          purchased_at?: string | null
           revenuecat_app_user_id?: string | null
           season_code?: string | null
           status?: string
+          transaction_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -780,9 +746,11 @@ export type Database = {
           expires_at?: string | null
           plan?: string
           product_id?: string | null
+          purchased_at?: string | null
           revenuecat_app_user_id?: string | null
           season_code?: string | null
           status?: string
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -972,6 +940,7 @@ export type Database = {
           ai_summary_he: string
         }[]
       }
+      get_my_plan: { Args: never; Returns: string }
       get_my_subscription_access: { Args: never; Returns: Json }
       get_plan_limits: {
         Args: { p_plan: string }
@@ -980,15 +949,10 @@ export type Database = {
           max_members: number
         }[]
       }
-      get_user_plan: { Args: { p_user_id: string }; Returns: string }
       has_blocked_user: { Args: { p_target_user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_league_member: { Args: { league_id_param: string }; Returns: boolean }
       is_league_owner: { Args: { league_id_param: string }; Returns: boolean }
-      is_member_in_league: {
-        Args: { _league: string; _user: string }
-        Returns: boolean
-      }
       join_league: {
         Args: {
           league_join_code: string
@@ -1026,7 +990,6 @@ export type Database = {
       }
       remove_league_member: { Args: { p_member_id: string }; Returns: Json }
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
-      rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
       submit_content_report: {
         Args: {
@@ -1072,7 +1035,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      user_exists: { Args: { uid: string }; Returns: boolean }
     }
     Enums: {
       match_status:

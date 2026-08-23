@@ -39,15 +39,12 @@ export default function LandingScreen() {
 
               <Text
                 accessibilityRole="header"
-                className="text-center font-oswald-bold text-[44px] leading-[48px] text-white sm:text-[52px] sm:leading-[56px]"
+                className="text-center font-nunito-bold text-[44px] leading-[48px] text-white sm:text-[52px] sm:leading-[56px]"
                 maxFontSizeMultiplier={1.3}
               >
                 {t('Every match is a challenge')}
               </Text>
-              <Text
-                className="mt-3 max-w-[390px] text-center text-base leading-6 text-[#B6C0D2]"
-                maxFontSizeMultiplier={1.4}
-              >
+              <Text className="mt-3 max-w-[390px] text-center text-base leading-6 text-[#B6C0D2]" maxFontSizeMultiplier={1.4}>
                 {t('Predict scores, compete with friends, and climb the table.')}
               </Text>
 

@@ -106,7 +106,7 @@ async function bulkUpsert(supabase, table, rows) {
   };
 }
 /**
- * Derives the current stage and fixture from match data.
+ * Derives the current stage and matchday from match data.
  *
  * Logic:
  * 1. Filter to only TRULY started matches (exclude SCHEDULED + TIMED).
@@ -114,7 +114,7 @@ async function bulkUpsert(supabase, table, rows) {
  *    stage from STAGE_ORDER that appears in the schedule.
  * 3. If some have started → find the LATEST stage that has at least one
  *    started match (walk STAGE_ORDER forwards, keep overwriting).
- * 4. current_fixture is only relevant during GROUP_STAGE.
+ * 4. current_matchday is only relevant during GROUP_STAGE.
  */ function deriveCupProgress(matches) {
   // Only matches that have actually kicked off
   const started = matches.filter((m)=>!UNSTARTED.has(m?.status));
@@ -125,13 +125,13 @@ async function bulkUpsert(supabase, table, rows) {
       if (scheduledStages.has(s)) {
         return {
           current_stage: s,
-          current_fixture: s === "GROUP_STAGE" ? 1 : null
+          current_matchday: s === "GROUP_STAGE" ? 1 : null
         };
       }
     }
     return {
       current_stage: null,
-      current_fixture: null
+      current_matchday: null
     };
   }
   // ── Tournament in progress ─────────────────────────────────────────────────
@@ -144,14 +144,14 @@ async function bulkUpsert(supabase, table, rows) {
   if (!current_stage && started.length > 0) {
     current_stage = started[started.length - 1]?.stage ?? null;
   }
-  let current_fixture = null;
+  let current_matchday = null;
   if (current_stage === "GROUP_STAGE") {
     const played = started.filter((m)=>m?.stage === "GROUP_STAGE" && typeof m?.matchday === "number").map((m)=>m.matchday);
-    current_fixture = played.length > 0 ? Math.max(...played) : 1;
+    current_matchday = played.length > 0 ? Math.max(...played) : 1;
   }
   return {
     current_stage,
-    current_fixture
+    current_matchday
   };
 }
 // ─── Step 1: Sync competition ────────────────────────────────────────────────
@@ -160,7 +160,13 @@ async function syncCompetition(supabase, fdKey, matches) {
   const apiComp = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}`, fdKey);
   const season = apiComp.currentSeason ?? null;
   const progress = deriveCupProgress(matches);
-  console.info(`📊 Progress: stage=${progress.current_stage}, fixture=${progress.current_fixture}, total=${matches.length}`);
+  const groupMatchdays = new Set(
+    matches
+      .filter((match) => match?.stage === "GROUP_STAGE" && typeof match?.matchday === "number")
+      .map((match) => match.matchday),
+  );
+  const totalMatchdays = groupMatchdays.size;
+  console.info(`📊 Progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}, totalMatchdays=${totalMatchdays}`);
   const [logo, flag] = await Promise.all([
     apiComp.emblem ? tryUpload(supabase, "competitions_logo", WC_CODE, apiComp.emblem, "WC emblem") : Promise.resolve(null),
     apiComp.area?.flag ? tryUpload(supabase, "flags", apiComp.area.code ?? "World", apiComp.area.flag, "WC flag") : Promise.resolve(null)
@@ -176,9 +182,9 @@ async function syncCompetition(supabase, fdKey, matches) {
     season_id: season?.id ?? null,
     season_start: season?.startDate ?? null,
     season_end: season?.endDate ?? null,
-    current_fixture: progress.current_fixture,
+    current_matchday: progress.current_matchday,
     current_stage: progress.current_stage,
-    total_fixtures: matches.length,
+    total_matchdays: totalMatchdays,
     updated_at: nowIso()
   };
   const { error } = await supabase.from("competitions").upsert(row, {

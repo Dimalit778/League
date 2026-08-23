@@ -1,19 +1,15 @@
 import { useMyLeagues } from '@/features/leagues/hooks/useLeagues';
-import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
-import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
 
 export const useSubscriptionLimits = () => {
   const leaguesQuery = useMyLeagues();
+  const accessQuery = useSubscriptionAccess();
 
-  const subscriptionState = useRevenueCatSubscription();
-
-  const isPro = subscriptionState.subscription.isActive;
+  const isPro = accessQuery.data?.planCode === 'pro';
   const plan = isPro ? 'PRO' : 'FREE';
-  const limits = PLAN_LIMITS[plan];
-
- 
+  const limits = accessQuery.data?.limits;
   const totalLeagues = leaguesQuery.data?.total ?? 0;
-  const maxLeagues = limits.maxLeagues;
+  const maxLeagues = limits?.maxActiveLeagues ?? 0;
   const reachedLimit = totalLeagues >= maxLeagues;
   const exceededLimit = totalLeagues > maxLeagues;
   const remainingLeagues = Math.max(0, maxLeagues - totalLeagues);
@@ -23,7 +19,6 @@ export const useSubscriptionLimits = () => {
   return {
     plan,
     isPro,
-    subscription: subscriptionState.subscription,
     limits,
     totalLeagues,
     maxLeagues,
@@ -31,9 +26,9 @@ export const useSubscriptionLimits = () => {
     exceededLimit,
     remainingLeagues,
     usagePercent,
-    isLoading: leaguesQuery.isPending || subscriptionState.isLoading,
-    isFetching: leaguesQuery.isFetching,
-    error: leaguesQuery.error ?? subscriptionState.error,
+    isLoading: leaguesQuery.isPending || accessQuery.isPending,
+    isFetching: leaguesQuery.isFetching || accessQuery.isFetching,
+    error: leaguesQuery.error ?? accessQuery.error,
     refetchLeagues: leaguesQuery.refetch,
   };
 };

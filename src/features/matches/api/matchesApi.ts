@@ -196,12 +196,11 @@ export const matchesApi = {
     void prefetchMatchTeamLogos(matches);
     return matches;
   },
-  async getUpcomingMatches(
+  async getTodayMatches(
     competitionId: number,
     seasonId: number,
     memberId: string,
   ): Promise<MatchListItem[]> {
-    // Local calendar day — not "from now onward".
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date();

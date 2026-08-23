@@ -12,14 +12,17 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --watchAll",
     "test:ci": "jest --runInBand --no-watchman",
+    "test:edge": "deno test supabase/functions",
     "audit:i18n": "node scripts/audit-i18n.cjs",
     "audit:ios-privacy": "node scripts/audit-ios-privacy.cjs",
     "sync-types": "supabase gen types typescript --project-id keuavfvgwhwckqordjbp --schema public > src/types/database.types.ts",
     "seed:app-reviewer": "node scripts/seed-app-reviewer.mjs",
     "doctor": "expo-doctor",
-    "doctor:react": "npx react-doctor@latest"
+    "doctor:react": "npx react-doctor@latest",
+    "submit:ios": "eas build --platform ios --profile production --auto-submit"
   },
   "dependencies": {
+    "@expo-google-fonts/nunito": "^0.4.2",
     "@expo-google-fonts/oswald": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
     "@google/genai": "^2.10.0",
@@ -121,6 +124,7 @@
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/src/features/auth/__tests__/setup.ts",
+      "<rootDir>/supabase/functions",
       "<rootDir>/.claude/worktrees",
       "<rootDir>/.worktrees"
     ],

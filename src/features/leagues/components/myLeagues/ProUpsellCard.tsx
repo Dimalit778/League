@@ -1,13 +1,15 @@
 import { Button, Text } from '@/components';
+import { useSubscriptionPlans } from '@/features/subscription/hooks/useSubscriptionPlans';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { PLAN_LIMITS } from '@/lib/revenuecat/plans';
 import { Crown } from 'lucide-react-native';
 import { View } from 'react-native';
 
 export default function ProUpsellCard({ onUpgrade }: { onUpgrade: () => void }) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const { data: plans } = useSubscriptionPlans();
+  const proLeagueLimit = plans?.find((plan) => plan.code === 'pro')?.limits.maxActiveLeagues ?? '—';
 
   return (
     <View className="items-center pt-10">
@@ -16,7 +18,7 @@ export default function ProUpsellCard({ onUpgrade }: { onUpgrade: () => void }) 
           {t('Want to open more leagues?')}
         </Text>
         <Text variant="bodySmall" tone="muted">
-          {t('Upgrade to Pro and open up to {{count}} leagues', { count: PLAN_LIMITS.PRO.maxLeagues })}
+          {t('Upgrade to Pro and open up to {{count}} leagues', { count: proLeagueLimit })}
         </Text>
         <Button
           variant="primary"

@@ -33,6 +33,18 @@ jest.mock('@expo/vector-icons/Entypo', () => {
   return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
 });
 
+jest.mock('@expo/vector-icons/Feather', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
+jest.mock('@expo/vector-icons/Ionicons', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
 jest.mock('react-native-keyboard-controller', () => {
   const { ScrollView } = require('react-native');
   return {
@@ -352,6 +364,7 @@ jest.mock('react-native-reanimated', () => {
     default: {
       View: AnimatedView,
       ScrollView: AnimatedScrollView,
+      FlatList: require('react-native').FlatList,
       createAnimatedComponent: (Component: any) => Component,
     },
     cancelAnimation: jest.fn(),

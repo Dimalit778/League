@@ -1,24 +1,21 @@
-import type { AiSummaryType, MatchDetails } from '../types';
+import type { AiSummaryType, MatchDetails } from "../types";
 
 export type AiAnalysisState =
-  | { status: 'unavailable' }
+  | { status: "unavailable" }
   | {
-      status: 'available';
-      score: { home: number; away: number };
-      generatedAt: Date;
-    };
+    status: "available";
+    score: { home: number; away: number };
+    generatedAt: Date;
+  };
 
 const isValidPredictedScore = (value: number | null): value is number =>
-  typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 20;
+  typeof value === "number" && Number.isInteger(value) && value >= 0 &&
+  value <= 20;
 
-/**
- * Availability depends only on the predicted score + generation timestamp,
- * which are public columns. The written summary is PRO-gated and fetched
- * separately (see resolveAiSummaryText) — a free user should still see the
- * locked/blurred card, not "analysis not available".
- */
 export function resolveAiAnalysis(match: MatchDetails): AiAnalysisState {
-  const generatedAt = match.ai_generated_at ? new Date(match.ai_generated_at) : null;
+  const generatedAt = match.ai_generated_at
+    ? new Date(match.ai_generated_at)
+    : null;
 
   if (
     !isValidPredictedScore(match.ai_predicted_home_score) ||
@@ -26,11 +23,11 @@ export function resolveAiAnalysis(match: MatchDetails): AiAnalysisState {
     !generatedAt ||
     Number.isNaN(generatedAt.getTime())
   ) {
-    return { status: 'unavailable' };
+    return { status: "unavailable" };
   }
 
   return {
-    status: 'available',
+    status: "available",
     score: {
       home: match.ai_predicted_home_score,
       away: match.ai_predicted_away_score,
@@ -39,12 +36,22 @@ export function resolveAiAnalysis(match: MatchDetails): AiAnalysisState {
   };
 }
 
-/** Resolves the language-appropriate summary text from a (PRO-only) fetched summary. */
-export function resolveAiSummaryText(summary: AiSummaryType | undefined, language: 'en' | 'he'): string {
-  if (!summary) return '';
+export function resolveAiSummaryText(
+  summary: AiSummaryType | undefined,
+  language: "en" | "he",
+): string {
+  if (!summary) return "";
 
-  const text =
-    language === 'he' ? (summary.ai_summary_he ?? summary.ai_summary_en) : (summary.ai_summary_en ?? summary.ai_summary_he);
+  const text = language === "he"
+    ? (summary.ai_summary_he ?? summary.ai_summary_en)
+    : (summary.ai_summary_en ?? summary.ai_summary_he);
 
-  return text?.trim() ?? '';
+  return text?.trim() ?? "";
+}
+
+export function splitSummaryParagraphs(text: string): string[] {
+  return text
+    .split(/\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 }

@@ -4,7 +4,8 @@ import { PaywallError } from '@/features/subscription/components/PaywallError';
 import { Plans } from '@/features/subscription/components/Plans';
 import { useCurrentSeason } from '@/features/subscription/hooks/useCurrentSeason';
 import { useTranslation } from '@/hooks/useTranslation';
-import { hasActiveEntitlement, PRO_ENTITLEMENT } from '@/lib/revenuecat/customerInfoSummary';
+import { useRestorePurchases } from '@/lib/revenuecat/purchases';
+import type { PaywallResult } from '@/providers/PaywallProvider';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
@@ -19,7 +20,7 @@ import Purchases, {
 import { isSeasonActive, selectProPackage } from './selectProPackage';
 
 type ChampoPaywallModalProps = {
-  onComplete: (purchased: boolean) => void;
+  onComplete: (result: PaywallResult) => void;
 };
 
 const FALLBACK_PRICE = '$29.99';
@@ -36,6 +37,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const restorePurchases = useRestorePurchases();
 
   const { season, isLoading: isLoadingSeason } = useCurrentSeason();
   const seasonActive = season ? isSeasonActive(new Date(), season) : false;
@@ -84,13 +86,8 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
     setErrorMessage(null);
 
     try {
-      const { customerInfo } = await Purchases.purchasePackage(purchasePackage);
-
-      if (!hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT)) {
-        throw new Error(t('The purchase completed, but Pro access is still being confirmed.'));
-      }
-
-      onComplete(true);
+      await Purchases.purchasePackage(purchasePackage);
+      onComplete('purchased');
     } catch (error) {
       if (!isPurchaseCancelled(error)) {
         setErrorMessage(formatErrorForUser(error) || t('Purchase failed. Please try again.'));
@@ -105,9 +102,9 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
     setErrorMessage(null);
 
     try {
-      const customerInfo = await Purchases.restorePurchases();
-      if (hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT)) {
-        onComplete(true);
+      const restored = await restorePurchases();
+      if (restored) {
+        onComplete('restored');
         return;
       }
 
@@ -117,7 +114,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
     } finally {
       setIsRestoring(false);
     }
-  }, [onComplete, t]);
+  }, [onComplete, restorePurchases, t]);
 
   const busy = isPurchasing || isRestoring;
 

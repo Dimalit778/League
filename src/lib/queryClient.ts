@@ -96,6 +96,9 @@ export const KEYS = {
 
   // ==================== SUBSCRIPTION ====================
   subscription: {
+    plans: ['subscription', 'plans'] as const,
+    accessAll: ['subscription', 'access'] as const,
+    access: (userId: string) => ['subscription', 'access', userId] as const,
     currentSeason: ['subscription', 'current-season'] as const,
   },
 

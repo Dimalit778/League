@@ -28,7 +28,7 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
   const { t } = useTranslation();
 
   return (
-    <Card variant="hero" padding="md">
+    <Card variant="elevated" padding="md" className="mx-4">
       <Row>
         <Stat
           icon={<Crown size={20} color={colors.muted} strokeWidth={1.5} />}

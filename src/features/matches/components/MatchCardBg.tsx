@@ -60,6 +60,7 @@ const MATCH_CARD_HIGHLIGHT_PATH_FLAT_TOP = `
 
 export const MATCH_CARD_HORIZONTAL_PADDING = 32;
 const MATCH_CARD_HEIGHT_SCALE = 0.945;
+const MATCH_CARD_COMPACT_HEIGHT_SCALE = 0.82;
 const MATCH_CARD_GAP = 8;
 const MATCH_CARD_CENTER_WIDTH = 82;
 const MATCH_CARD_LOGO_MAX = 44;
@@ -74,10 +75,14 @@ export const MATCH_CARD_LAYOUT = {
   dateTabTextOffset: 6,
 } as const;
 
-export function getMatchCardMetrics(screenWidth: number) {
+export function getMatchCardMetrics(screenWidth: number, compact = false) {
   const width = Math.min(screenWidth - MATCH_CARD_HORIZONTAL_PADDING, 450);
 
-  const height = Math.round(width * (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) * MATCH_CARD_HEIGHT_SCALE);
+  const height = Math.round(
+    width *
+      (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) *
+      (compact ? MATCH_CARD_COMPACT_HEIGHT_SCALE : MATCH_CARD_HEIGHT_SCALE),
+  );
 
   const gap = MATCH_CARD_GAP;
   const centerWidth = MATCH_CARD_CENTER_WIDTH;
@@ -162,7 +167,7 @@ export function MatchCardBg({ width, height, predictionStatus = 'none', showDate
       <Path d={cardPath} transform="translate(1, 1.5)" fill={colors.text} opacity={theme === 'dark' ? 0.2 : 0.08} />
 
       {/* Main card */}
-      <Path d={cardPath} fill="url(#match-card-background)" stroke={colors.border} strokeWidth="1.25" />
+      <Path d={cardPath} fill="url(#match-card-background)" stroke={predictionColor} strokeWidth="1.25" />
 
       {/* Subtle top highlight */}
       <Path d={highlightPath} fill="url(#match-card-highlight)" />
@@ -177,7 +182,7 @@ export function MatchCardBg({ width, height, predictionStatus = 'none', showDate
             Z
           "
           fill="url(#match-date-tab-background)"
-          stroke={colors.border}
+          stroke={predictionColor}
           strokeWidth="1.2"
         />
       ) : null}

@@ -96,8 +96,8 @@ describe('themeTokens', () => {
 
   it('uses the font family names registered by Expo', () => {
     expect(themeTokens.light.fonts).toEqual({
-      heading: 'Oswald_400Regular',
-      headingBold: 'Oswald_700Bold',
+      heading: 'Nunito_400Regular',
+      headingBold: 'Nunito_700Bold',
     });
   });
 

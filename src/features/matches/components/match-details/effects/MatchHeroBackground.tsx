@@ -17,7 +17,7 @@ export function MatchHeroBackground({ gradientColors }: { gradientColors: readon
       />
       <LinearGradient
         colors={gradientColors}
-        locations={[0, 0.45, 1, 1]}
+        locations={[0, 0, 1, 1]}
         style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
       />
     </View>

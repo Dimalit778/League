@@ -19,7 +19,7 @@ import {
 import { ReactNode } from 'react';
 import { Alert, Linking, View } from 'react-native';
 
-import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
 import { useAuthStore } from '@/store/AuthStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import LanguageToggle from '../LanguageToggle';
@@ -36,7 +36,7 @@ type SettingsItem = {
 
 const SettingsContent = () => {
   const user = useAuthStore((s) => s.user);
-  const subscription = useRevenueCatSubscription();
+  const subscriptionAccess = useSubscriptionAccess();
   const { permission, isRequesting, requestPermission } = useNotificationPermission();
 
   const router = useRouter();
@@ -44,7 +44,7 @@ const SettingsContent = () => {
   const { colors } = useThemeTokens();
   const fullName = formatNameCapitalize(user?.full_name);
   const joinedDate = user?.created_at === 'N/A' ? user?.created_at : new Date(user?.created_at!).toLocaleDateString();
-  const subscriptionType = subscription.subscription.isActive ? 'PRO' : 'FREE';
+  const subscriptionType = subscriptionAccess.data?.planCode === 'pro' ? 'PRO' : 'FREE';
 
   const notificationStatus = (() => {
     if (isRequesting || permission.status === 'loading') return { label: t('Checking...'), tone: 'muted' as const };

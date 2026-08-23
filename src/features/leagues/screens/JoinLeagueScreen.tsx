@@ -1,4 +1,4 @@
-import { Button, InputField, LogoBadge, MyImage, Screen, Text } from '@/components';
+import { Button, InputField, LogoBadge, Screen, Text } from '@/components';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall } from '@/lib/revenuecat/purchases';
@@ -32,14 +32,9 @@ const FullLeagueCard = ({ league }: { league: FullLeague }) => {
   return (
     <View className="bg-border rounded-2xl p-4 mx-5">
       <View className="items-center gap-2">
-        <LogoBadge source={league.competition_logo} width={80} height={80} />
+        <LogoBadge source={league.competition_flag} width={80} height={80} />
 
-        <Text
-          className="text-primary font-bold text-2xl text-center uppercase"
-          style={{
-            letterSpacing: 1,
-          }}
-        >
+        <Text variant="titleLarge" tone="primary" className="text-center uppercase" style={{ letterSpacing: 1 }}>
           {league.league_name}
         </Text>
       </View>
@@ -47,38 +42,31 @@ const FullLeagueCard = ({ league }: { league: FullLeague }) => {
       <View className="h-[1px] bg-muted my-3" />
 
       <View className="gap-3">
-        <View>
-          <View className="flex-row justify-between ">
-            <Text className="text-text">{t('Members')}</Text>
-            <Text className="text-text font-semibold">
-              {league.members_count || 0} / {league.max_members}
-            </Text>
-          </View>
+        <View className="flex-row justify-between mx-2 ">
+          <Text variant="body">{t('Members')}</Text>
+          <Text variant="body">
+            {league.members_count || 0} / {league.max_members}
+          </Text>
         </View>
+
         <View className="h-[1px] bg-muted" />
         {/* Owner */}
-        <View className="flex-row justify-between">
-          <Text className="text-text">{t('League Owner')}</Text>
-          <Text className="text-text font-semibold">{league.owner_nickname}</Text>
+        <View className="flex-row justify-between mx-2">
+          <Text variant="body">{t('League Owner')}</Text>
+          <Text variant="body">{league.owner_nickname}</Text>
         </View>
         <View className="h-[1px] bg-muted" />
         {/* Competition details */}
-        <View className="flex-row justify-between">
-          <Text className="text-text">{t('League')}</Text>
+        <View className="flex-row justify-between mx-2">
+          <Text variant="body">{t('League')}</Text>
           <View className="flex-row items-center">
-            <Text className="text-text font-semibold mr-2">{league.competition_name}</Text>
-            <LogoBadge source={{ uri: league.competition_logo }} width={18} height={18} />
+            <Text variant="body">{league.competition_name}</Text>
           </View>
         </View>
         <View className="h-[1px] bg-muted" />
-        <View className="flex-row justify-between items-center pb-1">
-          <Text className="text-text">{t('Country')}</Text>
-          <View className="flex-row items-center">
-            <Text className="text-text font-semibold mr-2">{league.competition_area}</Text>
-            {league.competition_flag && (
-              <MyImage source={league.competition_flag} width={18} height={18} contentFit="contain" />
-            )}
-          </View>
+        <View className="flex-row justify-between items-center pb-1 mx-2">
+          <Text variant="body">{t('Country')}</Text>
+          <Text variant="body">{league.competition_area}</Text>
         </View>
       </View>
     </View>
@@ -146,9 +134,7 @@ export default function JoinLeagueScreen() {
     <Screen edges={['bottom']}>
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
         <View className="flex-1 px-4 pt-6">
-          <Text className="text-2xl mb-2">
-            {t('Invite Code')}
-          </Text>
+          <Text className="text-2xl mb-2">{t('Invite Code')}</Text>
 
           <View className="mb-6">
             <InputField
@@ -160,11 +146,7 @@ export default function JoinLeagueScreen() {
               autoCapitalize="characters"
             />
             <Text className="mt-1 text-center ">{t('Ask the league owner for the invite code')}</Text>
-            {isLoading && (
-              <Text className="text-sm mt-2 text-center text-muted">
-                {t('Searching for league...')}
-              </Text>
-            )}
+            {isLoading && <Text className="text-sm mt-2 text-center text-muted">{t('Searching for league...')}</Text>}
           </View>
 
           {foundLeague && (
@@ -202,28 +184,20 @@ export default function JoinLeagueScreen() {
 
           {error && !foundLeague && !isLoading && inviteCodeValue?.length === 7 && (
             <View className="mb-6 p-2 bg-error border border-error rounded-xl">
-              <Text className="text-xs text-center text-white">
-                {t('League not found')}
-              </Text>
+              <Text className="text-xs text-center text-white">{t('League not found')}</Text>
             </View>
           )}
 
           {!foundLeague && (
             <View className="mt-8 p-4 bg-surface rounded-xl">
-              <Text className="text-2xl mb-3">
-                {t('How to Join a League')}
-              </Text>
+              <Text className="text-2xl mb-3">{t('How to Join a League')}</Text>
               <View className="gap-3">
                 {steps.map((step, index) => (
                   <View key={index} className="flex-row items-start gap-3">
                     <View className="w-6 h-6 bg-primary rounded-full items-center justify-center mt-0.5">
-                      <Text className="text-sm font-bold">
-                        {index + 1}
-                      </Text>
+                      <Text className="text-sm font-bold">{index + 1}</Text>
                     </View>
-                    <Text className="text-base text-muted flex-1">
-                      {t(step)}
-                    </Text>
+                    <Text className="text-base text-muted flex-1">{t(step)}</Text>
                   </View>
                 ))}
               </View>

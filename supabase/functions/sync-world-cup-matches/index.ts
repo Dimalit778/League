@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       if (compId != null) {
         const { error: compErr } = await supabase
           .from("competitions")
-          .update({ total_fixtures: totalMatchdays, updated_at: nowIso() })
+          .update({ total_matchdays: totalMatchdays, updated_at: nowIso() })
           .eq("id", compId);
         if (compErr) {
           throw new Error(`Competition update failed: ${compErr.message}`);

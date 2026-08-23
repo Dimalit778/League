@@ -2,7 +2,7 @@ import { cn } from '@/lib/nativewind/nativeWind';
 import { forwardRef } from 'react';
 import { Pressable, type PressableProps, type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
 
-export type CardVariant = 'surface' | 'soft' | 'elevated' | 'hero';
+export type CardVariant = 'surface' | 'soft' | 'elevated' | 'hero' | 'outline';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
 type BaseCardProps = {
@@ -28,14 +28,15 @@ export type CardProps = StaticCardProps | PressableCardProps;
 
 const variantClasses: Record<CardVariant, string> = {
   surface: 'bg-surface',
-  soft: 'bg-subtle',
-  elevated: 'border border-border bg-surface shadow-sm elevation-1',
+  soft: 'bg-surface',
+  outline: 'border border-border bg-transparent',
+  elevated: 'border-none bg-surface shadow-sm elevation-3',
   hero: 'border-2 border-primary bg-surface rounded-3xl shadow-md elevation-3',
 };
 
 const paddingClasses: Record<CardPadding, string> = {
   none: '',
-  sm: 'p-3',
+  sm: 'p-2',
   md: 'p-4',
   lg: 'p-6',
 };
