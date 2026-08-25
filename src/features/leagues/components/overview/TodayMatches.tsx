@@ -2,13 +2,26 @@ import { EmptyState, Row, Text } from '@/components';
 import { type MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CalendarDays } from 'lucide-react-native';
+import { useCallback, useMemo } from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 import { OverviewMatchCard } from './OverviewMatchCard';
+
+const LIST_CONTENT_STYLE = { alignItems: 'flex-start', gap: 12, paddingHorizontal: 16, paddingBottom: 2 } as const;
 
 export function TodayMatches({ matches }: { matches: MatchCardData[] }) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const cardWidth = Math.round(width * 0.408);
+
+  const cardStyle = useMemo(() => ({ width: cardWidth }), [cardWidth]);
+  const renderItem = useCallback(
+    ({ item }: { item: MatchCardData }) => (
+      <View style={cardStyle}>
+        <OverviewMatchCard match={item} />
+      </View>
+    ),
+    [cardStyle],
+  );
 
   return (
     <>
@@ -27,12 +40,8 @@ export function TodayMatches({ matches }: { matches: MatchCardData[] }) {
           showsHorizontalScrollIndicator={false}
           data={matches}
           keyExtractor={(match) => match.id.toString()}
-          contentContainerStyle={{ alignItems: 'flex-start', gap: 12, paddingHorizontal: 16, paddingBottom: 2 }}
-          renderItem={({ item }) => (
-            <View style={{ width: cardWidth }}>
-              <OverviewMatchCard match={item} />
-            </View>
-          )}
+          contentContainerStyle={LIST_CONTENT_STYLE}
+          renderItem={renderItem}
         />
       )}
     </>
