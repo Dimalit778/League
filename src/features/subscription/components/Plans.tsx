@@ -39,6 +39,8 @@ function ComparisonRow({ label, freeValue, proValue, isRTL, last = false }: Comp
   );
 }
 
+const displayNumber = (value: number | undefined) => value?.toString() ?? '—';
+
 export function Plans() {
   const { t, isRTL } = useTranslation();
   const { data: plans } = useSubscriptionPlans();
@@ -47,7 +49,6 @@ export function Plans() {
   const proPlan = plans?.find((plan) => plan.code === 'pro');
   const freeCompetitionCount = competitions?.filter((competition) => competition.is_free).length;
   const totalCompetitionCount = competitions?.length;
-  const displayNumber = (value: number | undefined) => value?.toString() ?? '—';
 
   const freeHeader = (
     <View key="free" style={styles.comparisonValueCell}>

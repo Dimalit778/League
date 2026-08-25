@@ -58,7 +58,7 @@ export function EmptyState({
     <View
       {...props}
       className={cn('w-full  items-center justify-center', shouldFill && 'flex-1 self-center px-6', className)}
-      style={[style]}
+      style={style}
     >
       {Icon ? (
         <View

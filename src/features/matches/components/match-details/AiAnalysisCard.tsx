@@ -80,8 +80,8 @@ function AiLockedSummaryPlaceholder() {
 function AiSummaryText({ summary }: { summary: string }) {
   return (
     <View className="py-3">
-      {splitSummaryParagraphs(summary).map((paragraph, index) => (
-        <Text key={index} className="text-start leading-7">
+      {splitSummaryParagraphs(summary).map((paragraph) => (
+        <Text key={paragraph} className="text-start leading-7">
           {paragraph}
         </Text>
       ))}
