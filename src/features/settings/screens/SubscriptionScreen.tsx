@@ -1,12 +1,28 @@
 import { Button, Screen, Text } from '@/components';
 import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall, useRestorePurchases } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { useCallback, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 
-export default function SubscriptionScreen() {
+function FreeAccessScreen() {
+  const { t } = useTranslation();
+
+  return (
+    <Screen edges={['top']}>
+      <View className="flex-1 px-4 pt-6 gap-4">
+        <View className="rounded-2xl border border-border bg-surface p-5 gap-3">
+          <Text className="text-2xl">{t('Free access')}</Text>
+          <Text className="text-base text-muted">{t('All features are currently free.')}</Text>
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
+function PaidSubscriptionScreen() {
   const { t } = useTranslation();
   const openPaywall = usePaywall();
   const restorePurchases = useRestorePurchases();
@@ -69,4 +85,8 @@ export default function SubscriptionScreen() {
       </View>
     </Screen>
   );
+}
+
+export default function SubscriptionScreen() {
+  return SUBSCRIPTIONS_ENABLED ? <PaidSubscriptionScreen /> : <FreeAccessScreen />;
 }

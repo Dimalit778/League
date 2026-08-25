@@ -66,7 +66,17 @@ describe('adminService', () => {
 
   describe('getCompetitions', () => {
     it('fetches competitions ordered by date', async () => {
-      const mockData = [{ id: 1, name: 'Premier League' }];
+      const currentSeason = {
+        id: 2026,
+        competition_id: 1,
+        current_matchday: 1,
+        current_stage: 'REGULAR_SEASON',
+        total_matchdays: 38,
+        season_start: '2026-08-21',
+        season_end: '2027-05-30',
+        is_current: true,
+      };
+      const mockData = [{ id: 1, name: 'Premier League', seasons: [currentSeason] }];
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnThis(),
         order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
@@ -74,23 +84,41 @@ describe('adminService', () => {
 
       const result = await adminService.getCompetitions();
       expect(supabase.from).toHaveBeenCalledWith('competitions');
-      expect(result).toEqual(mockData);
+      expect(result).toEqual([{ id: 1, name: 'Premier League', currentSeason }]);
     });
   });
 
   describe('addCompetition', () => {
-    it('inserts a competition', async () => {
+    it('creates a competition and its optional current season atomically', async () => {
       const mockComp = { id: 1, name: 'La Liga' };
-      (supabase.from as jest.Mock).mockReturnValue({
-        insert: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({ data: mockComp, error: null }),
-          }),
-        }),
+      (supabase.rpc as jest.Mock).mockResolvedValue({
+        data: mockComp,
+        error: null,
       });
 
-      const result = await adminService.addCompetition({ name: 'La Liga' });
-      expect(supabase.from).toHaveBeenCalledWith('competitions');
+      const result = await adminService.addCompetition({
+        id: 1,
+        name: 'La Liga',
+        area: 'Spain',
+        code: 'PD',
+        flag: 'flag.svg',
+        logo: 'logo.svg',
+        type: 'league',
+        seasonId: 2026,
+        currentStage: 'REGULAR_SEASON',
+      });
+
+      expect(supabase.rpc).toHaveBeenCalledWith('admin_create_competition', {
+        p_id: 1,
+        p_name: 'La Liga',
+        p_area: 'Spain',
+        p_code: 'PD',
+        p_flag: 'flag.svg',
+        p_logo: 'logo.svg',
+        p_type: 'league',
+        p_season_id: 2026,
+        p_current_stage: 'REGULAR_SEASON',
+      });
       expect(result).toEqual(mockComp);
     });
   });

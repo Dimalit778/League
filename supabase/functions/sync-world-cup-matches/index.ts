@@ -14,6 +14,7 @@ import {
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import { upsertCurrentSeason } from "../_shared/seasons.ts";
 
 const JOB = "sync-world-cup-matches";
 const WORLD_CUP_COMPETITION = "WC";
@@ -45,20 +46,19 @@ Deno.serve(async (req) => {
       );
       const matches = Array.isArray(data?.matches) ? data.matches : [];
       const compId = data?.competition?.id ?? null;
+      const seasonId = matches.find((match: any) => match?.season?.id)?.season?.id ?? null;
 
       const totalMatchdays = matches.reduce((mx: number, m: any) => {
         const md = Number(m?.matchday ?? 0);
         return Number.isFinite(md) ? Math.max(mx, md) : mx;
       }, 0);
 
-      if (compId != null) {
-        const { error: compErr } = await supabase
-          .from("competitions")
-          .update({ total_matchdays: totalMatchdays, updated_at: nowIso() })
-          .eq("id", compId);
-        if (compErr) {
-          throw new Error(`Competition update failed: ${compErr.message}`);
-        }
+      if (compId != null && seasonId != null) {
+        await upsertCurrentSeason(supabase, {
+          id: seasonId,
+          competition_id: compId,
+          total_matchdays: totalMatchdays,
+        });
       }
 
       const rows = matches.map((m: any) => ({

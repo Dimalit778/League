@@ -6,7 +6,6 @@ import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import PredictionForm from '@/features/predictions/components/PredictionForm';
-import { dateFormat, formatTime } from '@/utils/formats';
 import { MatchHeroBackground } from './effects/MatchHeroBackground';
 
 type MatchHeroProps = {
@@ -15,12 +14,6 @@ type MatchHeroProps = {
   presentation: MatchPresentation;
   onPredictionSaved?: () => void;
   gradientColors: readonly [string, string, string, string];
-};
-type ScoreProps = {
-  homeScore?: number | null;
-  awayScore?: number | null;
-  kickOff: string;
-  presentation: MatchPresentation;
 };
 
 const HeroMeta = ({ name, matchday }: { name?: string; matchday?: number | null }) => {
@@ -48,24 +41,24 @@ const HeroMeta = ({ name, matchday }: { name?: string; matchday?: number | null 
     </View>
   );
 };
-const Score = ({ homeScore, awayScore, kickOff, presentation }: ScoreProps) => {
-  if (presentation.scoreMode !== 'score') {
+const Score = ({ presentation }: { presentation: MatchPresentation }) => {
+  if (presentation.score.kind === 'time') {
     return (
       <View className=" items-center justify-center">
-        <Text className="mt-2 text-3xl font-semibold text-white">{formatTime(kickOff)}</Text>
+        <Text className="mt-2 text-3xl font-semibold text-white">{presentation.score.time}</Text>
         <Divider className="my-0.5 h-px w-6 bg-gray-400" />
 
         <Row className="gap-1 ">
           <Text variant="label" className="font-semibold text-gray-400">
-            {dateFormat(kickOff)}
+            {presentation.status.label}
           </Text>
         </Row>
       </View>
     );
   }
 
-  const home = homeScore ?? '–';
-  const away = awayScore ?? '–';
+  const home = presentation.score.kind === 'score' ? presentation.score.home : '–';
+  const away = presentation.score.kind === 'score' ? presentation.score.away : '–';
 
   return (
     <View className="flex-1 items-center justify-center">
@@ -129,12 +122,7 @@ export default function MatchHeader({
         <View className="flex-1 justify-center gap-4">
           <View className="flex-row items-center justify-around">
             <Team team={match.home_team} badgeSize={badgeSize} />
-            <Score
-              homeScore={match.score?.fullTime?.home}
-              awayScore={match.score?.fullTime?.away}
-              kickOff={match.kick_off}
-              presentation={presentation}
-            />
+            <Score presentation={presentation} />
 
             <Team team={match.away_team} badgeSize={badgeSize} />
           </View>

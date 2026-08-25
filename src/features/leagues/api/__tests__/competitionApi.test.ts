@@ -52,11 +52,23 @@ describe('competitionApi', () => {
         single: jest.fn().mockResolvedValue({
           data: {
             id: 1,
-            current_matchday: 5,
-            total_matchdays: 38,
             type: 'league',
-            current_stage: 'LEAGUE',
-            season_id: 2026,
+            seasons: [
+              {
+                id: 2025,
+                current_matchday: 38,
+                total_matchdays: 38,
+                current_stage: 'FINISHED',
+                is_current: false,
+              },
+              {
+                id: 2026,
+                current_matchday: 5,
+                total_matchdays: 38,
+                current_stage: 'LEAGUE',
+                is_current: true,
+              },
+            ],
           },
           error: null,
         }),

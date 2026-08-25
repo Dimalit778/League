@@ -851,6 +851,7 @@ export const he = {
     "Failed to update password. Please try again.":
       "עדכון הסיסמה נכשל. נסו שוב.",
     General: "כללי",
+    Account: "חשבון",
     Home: "בית",
     "Increase away score": "הגדלת התוצאה של קבוצת החוץ",
     "Increase home score": "הגדלת התוצאה של קבוצת הבית",
@@ -874,6 +875,9 @@ export const he = {
     "Save New Password": "שמירת סיסמה חדשה",
     "This league is full. Upgrade to create larger leagues.":
       "הליגה מלאה. שדרגו כדי ליצור ליגות גדולות יותר.",
+    "This league is full.": "הליגה מלאה.",
+    "Free access": "גישה חופשית",
+    "All features are currently free.": "כל התכונות זמינות כרגע בחינם.",
     "Top 10": "עשירייה ראשונה",
     "Upgrade to create more leagues and unlock more competitions.":
       "שדרגו כדי ליצור ליגות נוספות ולפתוח תחרויות נוספות.",

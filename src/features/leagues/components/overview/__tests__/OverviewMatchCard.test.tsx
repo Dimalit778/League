@@ -19,18 +19,18 @@ const createCard = (overrides: Partial<MatchCardData> = {}): MatchCardData => ({
 describe('OverviewMatchCard', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('shows date, team abbreviations, kickoff time, and no-pick status', () => {
-    const { getByText, getAllByText } = render(<OverviewMatchCard match={createCard()} />);
+  it('shows the date, kickoff time, and a plus icon when the match is scheduled without a prediction', () => {
+    const { getByText, getByLabelText, queryByText } = render(<OverviewMatchCard match={createCard()} />);
 
     expect(getByText('Sat, 15/8')).toBeTruthy();
-    expect(getAllByText('ARS').length).toBeGreaterThan(0);
-    expect(getAllByText('CHE').length).toBeGreaterThan(0);
     expect(getByText('20:30')).toBeTruthy();
-    expect(getByText('No prediction')).toBeTruthy();
+    expect(getByLabelText('No prediction')).toBeTruthy();
+    expect(queryByText('LIVE')).toBeNull();
+    expect(queryByText('FT')).toBeNull();
   });
 
-  it('shows the saved prediction instead of no-pick', () => {
-    const { getByText, queryByText } = render(
+  it('shows the saved prediction instead of a plus icon', () => {
+    const { getByText, queryByLabelText } = render(
       <OverviewMatchCard
         match={createCard({
           prediction: { home: 2, away: 1 },
@@ -39,15 +39,31 @@ describe('OverviewMatchCard', () => {
     );
 
     expect(getByText('2-1')).toBeTruthy();
-    expect(queryByText('No prediction')).toBeNull();
+    expect(queryByLabelText('No prediction')).toBeNull();
   });
 
-  it('shows FT instead of kickoff time when the match is finished', () => {
+  it('shows LIVE and a dash when the match is live without a prediction', () => {
     const { getByText, queryByText } = render(
-      <OverviewMatchCard match={createCard({ status: 'FINISHED' })} />,
+      <OverviewMatchCard match={createCard({ status: 'LIVE' })} />,
+    );
+
+    expect(getByText('LIVE')).toBeTruthy();
+    expect(getByText('–')).toBeTruthy();
+    expect(queryByText('Sat, 15/8')).toBeNull();
+  });
+
+  it('shows FT and the prediction when the match is finished', () => {
+    const { getByText, queryByText } = render(
+      <OverviewMatchCard
+        match={createCard({
+          status: 'FINISHED',
+          prediction: { home: 2, away: 1 },
+        })}
+      />,
     );
 
     expect(getByText('FT')).toBeTruthy();
+    expect(getByText('2-1')).toBeTruthy();
     expect(queryByText('20:30')).toBeNull();
   });
 

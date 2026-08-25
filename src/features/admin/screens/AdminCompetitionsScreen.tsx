@@ -94,8 +94,8 @@ const AdminCompetitionsScreen = () => {
         flag: form.flag.trim(),
         logo: form.logo.trim(),
         type: form.type.trim() || 'league',
-        current_stage: form.displayType.trim() || null,
-        season_id: seasonAsNumber ?? undefined,
+        currentStage: form.displayType.trim() || null,
+        seasonId: seasonAsNumber,
       },
       {
         onSuccess: () => {
@@ -259,8 +259,8 @@ const AdminCompetitionsScreen = () => {
 
                     <View className="flex-row gap-4">
                       <AdminMeta label={t('Type')} value={competition.type ?? '—'} className="flex-1" />
-                      <AdminMeta label={t('Display')} value={competition.current_stage ?? 'LEAGUE'} className="flex-1" />
-                      <AdminMeta label={t('Season')} value={competition.season_id ?? '—'} className="flex-1" />
+                      <AdminMeta label={t('Display')} value={competition.currentSeason?.current_stage ?? 'LEAGUE'} className="flex-1" />
+                      <AdminMeta label={t('Season')} value={competition.currentSeason?.id ?? '—'} className="flex-1" />
                     </View>
 
                     <View className="mt-auto flex-row items-end justify-between gap-3 border-t border-border pt-3">

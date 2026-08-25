@@ -1,11 +1,10 @@
-import { EyeClosedIcon, EyeOpenIcon, LockIcon, MailIcon } from '@/assets/icons';
 import { Button, InputField, Row, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
-import { Check, UserIcon } from 'lucide-react-native';
+import { Check, Eye, EyeOff, LockKeyhole, Mail, UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
@@ -74,7 +73,7 @@ export default function SignUpForm() {
         placeholder={t('Full Name')}
         variant="auth"
         autoComplete="name"
-        icon={<UserIcon size={24} color={colors.muted} strokeWidth={1.5} />}
+        icon={<UserIcon size={22} color={colors.muted} strokeWidth={1.5} />}
         error={errors.fullname}
         clearError={clearError}
       />
@@ -85,7 +84,7 @@ export default function SignUpForm() {
         placeholder={t('Email')}
         variant="auth"
         autoComplete="email"
-        icon={<MailIcon size={24} color={colors.muted} />}
+        icon={<Mail size={22} color={colors.muted} strokeWidth={1.5} />}
         error={errors.email}
         clearError={clearError}
       />
@@ -98,14 +97,14 @@ export default function SignUpForm() {
         autoComplete="new-password"
         textContentType="newPassword"
         secureTextEntry={!showPassword}
-        icon={<LockIcon size={24} color={colors.muted} />}
+        icon={<LockKeyhole size={22} color={colors.muted} strokeWidth={1.5} />}
         error={errors.password}
         onRightIconPress={() => setShowPassword(!showPassword)}
         rightIcon={
           showPassword ? (
-            <EyeOpenIcon size={18} color={colors.muted} />
+            <Eye size={18} color={colors.muted} strokeWidth={2} />
           ) : (
-            <EyeClosedIcon size={18} color={colors.muted} />
+            <EyeOff size={18} color={colors.muted} strokeWidth={2} />
           )
         }
         clearError={clearError}

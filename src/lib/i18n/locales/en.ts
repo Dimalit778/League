@@ -863,6 +863,7 @@ export const en = {
       "Failed to update password. Please try again.",
     "Forgot Password": "Forgot Password",
     General: "General",
+    Account: "Account",
     Home: "Home",
     "Increase away score": "Increase away score",
     "Increase home score": "Increase home score",
@@ -893,6 +894,9 @@ export const en = {
     "Sign in with Google": "Sign in with Google",
     "This league is full. Upgrade to create larger leagues.":
       "This league is full. Upgrade to create larger leagues.",
+    "This league is full.": "This league is full.",
+    "Free access": "Free access",
+    "All features are currently free.": "All features are currently free.",
     "Top 10": "Top 10",
     "Upgrade to create more leagues and unlock more competitions.":
       "Upgrade to create more leagues and unlock more competitions.",

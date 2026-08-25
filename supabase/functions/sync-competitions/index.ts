@@ -1,10 +1,10 @@
 // sync-competitions
 //
-// Owns the STABLE, season-level competition metadata for the 5 domestic
+// Owns stable competition metadata and current-season metadata for the 5 domestic
 // leagues + UEFA Champions League:
 //
-//   id, code, name, type, area, logo, flag,
-//   season_id, season_start, season_end, total_matchdays, is_free
+//   competitions: id, code, name, type, area, logo, flag, is_free
+//   seasons: id, season_start, season_end, total_matchdays
 //
 // total_matchdays is CALCULATED from the season's actual match data (never
 // hardcoded): the number of unique numeric matchdays. For the Champions League
@@ -47,6 +47,7 @@ import {
   type TargetCompetition,
   TARGET_COMPETITIONS,
 } from "../_shared/competitions.ts";
+import { upsertCurrentSeason } from "../_shared/seasons.ts";
 
 /* -------------------------------------------------------------------------- */
 /* Configuration                                                              */
@@ -75,10 +76,15 @@ type ExistingCompetition = {
   id: number;
   logo: string | null;
   flag: string | null;
+};
+
+type ExistingSeason = {
+  id: number;
   total_matchdays: number | null;
   current_matchday: number | null;
   current_stage: string | null;
-  season_id: number | null;
+  season_start: string | null;
+  season_end: string | null;
 };
 
 type SyncFailure = { code: string; error: string };
@@ -141,7 +147,7 @@ function seedCurrentStage(
 async function getExistingCompetition(competitionId: number): Promise<ExistingCompetition | null> {
   const { data, error } = await supabase
     .from("competitions")
-    .select("id, logo, flag, total_matchdays, current_matchday, current_stage, season_id")
+    .select("id, logo, flag")
     .eq("id", competitionId)
     .maybeSingle();
 
@@ -149,19 +155,39 @@ async function getExistingCompetition(competitionId: number): Promise<ExistingCo
   return data as ExistingCompetition | null;
 }
 
+async function getExistingCurrentSeason(competitionId: number): Promise<ExistingSeason | null> {
+  const { data, error } = await supabase
+    .from("seasons")
+    .select("id, total_matchdays, current_matchday, current_stage, season_start, season_end")
+    .eq("competition_id", competitionId)
+    .eq("is_current", true)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed reading current season for ${competitionId}: ${error.message}`);
+  return data as ExistingSeason | null;
+}
+
 async function upsertCompetition(params: {
   apiCompetition: FootballDataCompetition;
   targetCompetition: TargetCompetition;
   existing: ExistingCompetition | null;
+  existingSeason: ExistingSeason | null;
   totalMatchdays: number | null;
   uploadedLogo: string | null;
   uploadedFlag: string | null;
 }): Promise<void> {
-  const { apiCompetition, targetCompetition, existing, totalMatchdays, uploadedLogo, uploadedFlag } =
-    params;
+  const {
+    apiCompetition,
+    targetCompetition,
+    existing,
+    existingSeason,
+    totalMatchdays,
+    uploadedLogo,
+    uploadedFlag,
+  } = params;
 
   const season = apiCompetition.currentSeason;
-  const isFirstInsert = existing === null;
+  const isFirstSeason = season != null && existingSeason?.id !== season.id;
 
   const record = {
     id: apiCompetition.id,
@@ -174,34 +200,28 @@ async function upsertCompetition(params: {
     area: apiCompetition.area?.name ?? null,
     flag: uploadedFlag ?? existing?.flag ?? null,
 
-    // Stable season metadata. Fall back to existing values rather than
-    // overwriting valid data with an accidental null from the API.
-    season_id: season?.id ?? existing?.season_id ?? null,
-    season_start: season?.startDate ?? undefined,
-    season_end: season?.endDate ?? undefined,
-
-    // Calculated; keep the previous value if this run could not compute one.
-    total_matchdays: totalMatchdays ?? existing?.total_matchdays ?? 0,
-
-    // Progress is owned by sync-competition-progress. Seed it only on the very
-    // first insert as a fallback; on subsequent runs leave it untouched.
-    current_matchday: isFirstInsert
-      ? season?.currentMatchday ?? null
-      : existing?.current_matchday ?? null,
-    current_stage: isFirstInsert
-      ? seedCurrentStage(targetCompetition, apiCompetition)
-      : existing?.current_stage ?? null,
-
     is_free: targetCompetition.isFree,
     updated_at: nowIso(),
   };
 
-  // Drop undefined season fields so we never write NULL over a good value.
-  if (record.season_start === undefined) delete (record as any).season_start;
-  if (record.season_end === undefined) delete (record as any).season_end;
-
   const { error } = await supabase.from("competitions").upsert(record, { onConflict: "id" });
   if (error) throw new Error(`Failed upserting ${targetCompetition.code}: ${error.message}`);
+
+  if (!season?.id) return;
+
+  await upsertCurrentSeason(supabase, {
+    id: season.id,
+    competition_id: apiCompetition.id,
+    season_start: season.startDate ?? existingSeason?.season_start ?? null,
+    season_end: season.endDate ?? existingSeason?.season_end ?? null,
+    total_matchdays: totalMatchdays ?? existingSeason?.total_matchdays ?? 0,
+    current_matchday: isFirstSeason
+      ? season.currentMatchday ?? null
+      : existingSeason?.current_matchday ?? null,
+    current_stage: isFirstSeason
+      ? seedCurrentStage(targetCompetition, apiCompetition)
+      : existingSeason?.current_stage ?? null,
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -212,8 +232,9 @@ async function syncCompetition(
   apiCompetition: FootballDataCompetition,
   targetCompetition: TargetCompetition,
 ): Promise<void> {
-  const [existing, matches] = await Promise.all([
+  const [existing, existingSeason, matches] = await Promise.all([
     getExistingCompetition(apiCompetition.id),
+    getExistingCurrentSeason(apiCompetition.id),
     fetchCompetitionMatches(supabase, JOB, FD_KEY, targetCompetition.code),
   ]);
   const totalMatchdays = calculateTotalMatchdays(targetCompetition, matches);
@@ -227,6 +248,7 @@ async function syncCompetition(
     apiCompetition,
     targetCompetition,
     existing,
+    existingSeason,
     totalMatchdays,
     uploadedLogo,
     uploadedFlag,

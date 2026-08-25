@@ -101,7 +101,7 @@ export const InputField = ({
       <View
         className={
           isAuth
-            ? 'min-h-[52px] flex-row items-center overflow-hidden rounded-2xl px-2'
+            ? 'min-h-[52px] flex-row items-center overflow-hidden rounded-2xl px-3'
             : 'flex-row items-center overflow-hidden rounded-xl px-2'
         }
         style={[
@@ -172,7 +172,7 @@ export const InputField = ({
           <Pressable
             onPress={onRightIconPress}
             className={
-              isRTL ? 'mr-1 h-11 w-11 items-center justify-center' : 'ml-1 h-11 w-11 items-center justify-center'
+              isRTL ? 'mr-2 h-11 w-11 items-center justify-center' : 'ml-2 h-11 w-11 items-center justify-center'
             }
             accessible
             accessibilityRole="button"

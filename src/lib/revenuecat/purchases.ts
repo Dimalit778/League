@@ -1,19 +1,20 @@
-import { syncSubscriptionToServerUntilPro } from '@/features/subscription/api/subscriptionApi';
-import { KEYS } from '@/lib/queryClient';
-import { useChampoPaywall } from '@/providers/PaywallProvider';
-import { usePurchasesContext } from '@/providers/PurchasesProvider';
-import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
-import { getSubscriptionSummary } from './customerInfoSummary';
+import { syncSubscriptionToServerUntilPro } from "@/features/subscription/api/subscriptionApi";
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
+import { KEYS } from "@/lib/queryClient";
+import { useChampoPaywall } from "@/providers/PaywallProvider";
+import { usePurchasesContext } from "@/providers/PurchasesProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import { Platform } from "react-native";
+import Purchases from "react-native-purchases";
+import { getSubscriptionSummary } from "./customerInfoSummary";
 
 const syncSubscriptionAfterChange = async (): Promise<boolean> => {
   try {
     const result = await syncSubscriptionToServerUntilPro();
-    return result?.plan === 'pro';
+    return result?.plan === "pro";
   } catch (error) {
-    console.warn('[RevenueCat] Server subscription sync failed:', error);
+    console.warn("[RevenueCat] Server subscription sync failed:", error);
     return false;
   }
 };
@@ -24,17 +25,21 @@ export const usePaywall = () => {
   const queryClient = useQueryClient();
 
   return useCallback(async () => {
+    if (!SUBSCRIPTIONS_ENABLED) return true;
+
     const result = await presentPaywall();
 
-    if (result === 'restored') return true;
+    if (result === "restored") return true;
 
-    if (result === 'purchased') {
+    if (result === "purchased") {
       const [, synced] = await Promise.all([
         refreshCustomerInfo(),
         syncSubscriptionAfterChange(),
       ]);
       if (synced) {
-        await queryClient.invalidateQueries({ queryKey: KEYS.subscription.accessAll });
+        await queryClient.invalidateQueries({
+          queryKey: KEYS.subscription.accessAll,
+        });
       }
       return synced;
     }
@@ -48,34 +53,45 @@ export const useRestorePurchases = () => {
   const queryClient = useQueryClient();
 
   return useCallback(async () => {
-    if (Platform.OS === 'web') {
-      return false;
-    }
+    if (!SUBSCRIPTIONS_ENABLED) return true;
 
-    await Purchases.restorePurchases();
+    console.log("restorePurchases");
+    if (Platform.OS === "web") return false;
+
+    const restored = await Purchases.restorePurchases();
+    console.log("restored", JSON.stringify(restored, null, 2));
     await Purchases.invalidateCustomerInfoCache();
-
+    console.log("invalidated customer info cache");
     const [, synced] = await Promise.all([
       refreshCustomerInfo(),
       syncSubscriptionAfterChange(),
     ]);
     if (synced) {
-      await queryClient.invalidateQueries({ queryKey: KEYS.subscription.accessAll });
+      await queryClient.invalidateQueries({
+        queryKey: KEYS.subscription.accessAll,
+      });
     }
     return synced;
   }, [queryClient, refreshCustomerInfo]);
 };
 
 export const useRevenueCatSubscription = () => {
-  const { customerInfo, isReady, isUserSynced, isOffline, error, refreshCustomerInfo } =
-    usePurchasesContext();
+  const {
+    customerInfo,
+    isReady,
+    isUserSynced,
+    isOffline,
+    error,
+    refreshCustomerInfo,
+  } = usePurchasesContext();
 
   const subscription = useMemo(
     () => getSubscriptionSummary(customerInfo),
     [customerInfo],
   );
 
-  const isSubscriptionKnown = isUserSynced && (!isOffline || customerInfo !== null);
+  const isSubscriptionKnown = isUserSynced &&
+    (!isOffline || customerInfo !== null);
 
   return {
     customerInfo,

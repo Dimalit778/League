@@ -15,6 +15,7 @@ import {
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import { upsertCurrentSeason } from "../_shared/seasons.ts";
 
 const JOB = "sync-finished-matches-worldcup";
 const WC_CODE = "WC";
@@ -114,20 +115,18 @@ Deno.serve(async (req) => {
       const matches = Array.isArray(payload?.matches) ? payload.matches : [];
       console.info(`WC: ${matches.length} matches`);
 
-      // Update current_stage and current_matchday on competitions table
+      // Update progress on the canonical current season row.
       const compId = payload?.competition?.id ?? null;
-      if (compId) {
+      const seasonId = matches.find((match: any) => match?.season?.id)?.season?.id ?? null;
+      if (compId && seasonId) {
         const progress = deriveCupProgress(matches);
-        const { error: compErr } = await supabase
-          .from("competitions")
-          .update({
-            current_stage: progress.current_stage,
-            current_matchday: progress.current_matchday,
-            updated_at: nowIso(),
-          })
-          .eq("id", compId);
-        if (compErr) console.warn("Failed to update competition progress:", compErr.message);
-        else console.info(`Updated WC progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}`);
+        await upsertCurrentSeason(supabase, {
+          id: seasonId,
+          competition_id: compId,
+          current_stage: progress.current_stage,
+          current_matchday: progress.current_matchday,
+        });
+        console.info(`Updated WC progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}`);
       }
 
       const rows = matches.filter((m: any) => m?.id).map(transformMatch);

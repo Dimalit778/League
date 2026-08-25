@@ -6,6 +6,7 @@ import {
   PRO_SEASON_PRODUCT_ID,
   resolveLegacyEntitlementAccess,
   resolveSeasonPassAccess,
+  resolveSeasonPassEntitlementAccess,
   transactionBelongsToSeason,
   type ProSeason,
   type RevenueCatSubscriberResponse,
@@ -68,8 +69,17 @@ async function fetchRevenueCatSubscriber(
     const legacyEntitlement = resolveLegacyEntitlementAccess(
       lastData.subscriber?.entitlements?.[PRO_ENTITLEMENT],
     );
+    const seasonPassEntitlement = resolveSeasonPassEntitlementAccess(
+      lastData.subscriber?.entitlements?.[PRO_ENTITLEMENT],
+      season,
+    );
 
-    if (foundCurrentPurchase || legacyEntitlement || attempt === REVENUECAT_SYNC_ATTEMPTS - 1) {
+    if (
+      foundCurrentPurchase ||
+      seasonPassEntitlement ||
+      legacyEntitlement ||
+      attempt === REVENUECAT_SYNC_ATTEMPTS - 1
+    ) {
       return { data: lastData, errorStatus: null, errorMessage: null };
     }
 
@@ -172,10 +182,16 @@ Deno.serve(async (req) => {
     season: seasonResult.season,
     cancelledTransactionId,
   });
+  const seasonPassEntitlementAccess = resolveSeasonPassEntitlementAccess(
+    rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT],
+    seasonResult.season,
+  );
   const legacyAccess = resolveLegacyEntitlementAccess(
     rcData.subscriber?.entitlements?.[PRO_ENTITLEMENT],
   );
-  let access = seasonPassAccess.plan === 'pro' ? seasonPassAccess : legacyAccess ?? seasonPassAccess;
+  let access = seasonPassAccess.plan === 'pro'
+    ? seasonPassAccess
+    : seasonPassEntitlementAccess ?? legacyAccess ?? seasonPassAccess;
 
   // Do not regress a verified current-season purchase if RevenueCat's snapshot
   // is briefly stale immediately after a webhook processed it.

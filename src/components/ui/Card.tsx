@@ -31,7 +31,7 @@ const variantClasses: Record<CardVariant, string> = {
   soft: 'bg-surface',
   outline: 'border border-border bg-transparent',
   elevated: 'border-none bg-surface shadow-sm elevation-3',
-  hero: 'border-2 border-primary bg-surface rounded-3xl shadow-md elevation-3',
+  hero: 'border border-primary bg-surface rounded-3xl shadow-md elevation-3',
 };
 
 const paddingClasses: Record<CardPadding, string> = {

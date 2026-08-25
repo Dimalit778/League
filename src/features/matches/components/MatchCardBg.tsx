@@ -69,7 +69,7 @@ export const MATCH_CARD_LAYOUT = {
   dateTabCenterY: 18 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabTopY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
   predictionTabHeight: 28 / MATCH_CARD_VIEWBOX_HEIGHT,
-  contentTopY: 32 / MATCH_CARD_VIEWBOX_HEIGHT,
+  contentTopY: 30 / MATCH_CARD_VIEWBOX_HEIGHT,
   contentBottomY: 82 / MATCH_CARD_VIEWBOX_HEIGHT,
 
   dateTabTextOffset: 6,

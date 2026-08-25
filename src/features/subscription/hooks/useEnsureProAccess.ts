@@ -1,20 +1,14 @@
 import { usePaywall } from '@/lib/revenuecat/purchases';
+import { SUBSCRIPTIONS_ENABLED } from '../subscriptionMode';
 import { useSubscriptionAccess } from './useSubscriptionAccess';
 
-/**
- * Pro-gate helper shared by flows that unlock paid features.
- *
- * Uses the cached, server-authoritative subscription access loaded by the app.
- * RevenueCat-to-Supabase synchronization belongs after purchase/restore, not
- * before opening the paywall for a known Free user.
- */
 export const useEnsureProAccess = () => {
   const openPaywall = usePaywall();
   const { data: access } = useSubscriptionAccess();
-  const isPro = access?.planCode === 'pro';
+  const isPro = !SUBSCRIPTIONS_ENABLED || access?.planCode === 'pro';
 
   const ensureProAccess = async (): Promise<boolean> => {
-    if (isPro) return true;
+    if (!SUBSCRIPTIONS_ENABLED || isPro) return true;
     return openPaywall();
   };
 

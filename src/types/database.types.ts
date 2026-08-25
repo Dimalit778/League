@@ -60,17 +60,11 @@ export type Database = {
           area: string
           code: string
           created_at: string
-          current_matchday: number | null
-          current_stage: string | null
           flag: string | null
           id: number
           is_free: boolean
           logo: string
           name: string
-          season_end: string | null
-          season_id: number | null
-          season_start: string | null
-          total_matchdays: number | null
           type: string
           updated_at: string
         }
@@ -78,17 +72,11 @@ export type Database = {
           area: string
           code: string
           created_at?: string
-          current_matchday?: number | null
-          current_stage?: string | null
           flag?: string | null
           id: number
           is_free?: boolean
           logo: string
           name: string
-          season_end?: string | null
-          season_id?: number | null
-          season_start?: string | null
-          total_matchdays?: number | null
           type: string
           updated_at?: string
         }
@@ -96,17 +84,11 @@ export type Database = {
           area?: string
           code?: string
           created_at?: string
-          current_matchday?: number | null
-          current_stage?: string | null
           flag?: string | null
           id?: number
           is_free?: boolean
           logo?: string
           name?: string
-          season_end?: string | null
-          season_id?: number | null
-          season_start?: string | null
-          total_matchdays?: number | null
           type?: string
           updated_at?: string
         }
@@ -486,6 +468,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["competition_season_id"]
           },
           {
             foreignKeyName: "matches_season_id_fkey"
@@ -995,6 +984,37 @@ export type Database = {
       }
     }
     Functions: {
+      admin_create_competition: {
+        Args: {
+          p_area: string
+          p_code: string
+          p_current_stage?: string
+          p_flag: string
+          p_id: number
+          p_logo: string
+          p_name: string
+          p_season_id?: number
+          p_type?: string
+        }
+        Returns: {
+          area: string
+          code: string
+          created_at: string
+          flag: string | null
+          id: number
+          is_free: boolean
+          logo: string
+          name: string
+          type: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "competitions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       anonymize_user_account: {
         Args: { p_revenuecat_app_user_id?: string; p_user_id: string }
         Returns: Json
@@ -1052,7 +1072,7 @@ export type Database = {
         }[]
       }
       get_competition_leaderboard: {
-        Args: { p_competition_id: number }
+        Args: { p_competition_id: number; p_limit?: number; p_offset?: number }
         Returns: {
           avatar_url: string
           league_id: string

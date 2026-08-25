@@ -1,4 +1,8 @@
 import '@testing-library/react-native/build/matchers/extend-expect';
+
+// Existing subscription-flow tests exercise the preserved paid mode. Tests
+// for free-access mode can override/reset this environment variable explicitly.
+process.env.EXPO_PUBLIC_SUBSCRIPTIONS_ENABLED = 'true';
 declare global {
   var testFormValues: Record<string, any>;
 }

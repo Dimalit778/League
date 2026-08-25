@@ -14,6 +14,7 @@ import {
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import { upsertCurrentSeason } from "../_shared/seasons.ts";
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-sync-secret",
@@ -179,18 +180,24 @@ async function syncCompetition(supabase, fdKey, matches) {
     logo,
     flag,
     area: apiComp.area?.name ?? null,
-    season_id: season?.id ?? null,
-    season_start: season?.startDate ?? null,
-    season_end: season?.endDate ?? null,
-    current_matchday: progress.current_matchday,
-    current_stage: progress.current_stage,
-    total_matchdays: totalMatchdays,
     updated_at: nowIso()
   };
   const { error } = await supabase.from("competitions").upsert(row, {
     onConflict: "id"
   });
   if (error) throw new Error(`Competition upsert failed: ${error.message}`);
+
+  if (season?.id) {
+    await upsertCurrentSeason(supabase, {
+      id: season.id,
+      competition_id: apiComp.id,
+      season_start: season.startDate ?? null,
+      season_end: season.endDate ?? null,
+      current_matchday: progress.current_matchday,
+      current_stage: progress.current_stage,
+      total_matchdays: totalMatchdays,
+    });
+  }
   console.info(`✅ World Cup competition synced (id: ${apiComp.id})`);
   return {
     id: apiComp.id

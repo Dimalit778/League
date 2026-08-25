@@ -1,4 +1,4 @@
-import { ListItem, Section, Text } from '@/components';
+import { ListItem, Section, Text, type TextTone } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useNotificationPermission } from '@/providers/NotificationProvider';
@@ -10,16 +10,21 @@ import {
   FileQuestionMark,
   Globe,
   Info,
+  LogOut,
   Mail,
   Palette,
   ReceiptText,
   ShieldBan,
+  Smartphone,
+  Trash,
   User,
 } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Alert, Linking, View } from 'react-native';
+import { version as appVersion } from '../../../../../package.json';
 
 import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useAuthStore } from '@/store/AuthStore';
 import { formatNameCapitalize } from '@/utils/formats';
 import LanguageToggle from '../LanguageToggle';
@@ -32,11 +37,18 @@ type SettingsItem = {
   rightContent?: ReactNode;
   path?: RelativePathString;
   onPress?: () => void;
+  titleTone?: TextTone;
+  chevron?: boolean;
 };
 
-const SettingsContent = () => {
+type SettingsContentProps = {
+  onSignOut: () => void;
+  onDeleteAccount: () => void;
+};
+
+const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) => {
   const user = useAuthStore((s) => s.user);
-  const subscriptionAccess = useSubscriptionAccess();
+  const subscriptionAccess = useSubscriptionAccess(SUBSCRIPTIONS_ENABLED);
   const { permission, isRequesting, requestPermission } = useNotificationPermission();
 
   const router = useRouter();
@@ -64,10 +76,14 @@ const SettingsContent = () => {
         if (nextPermission.status === 'granted') {
           Alert.alert(t('Notifications enabled'), t('Match reminders will be scheduled for upcoming matches.'));
         } else if (nextPermission.status === 'denied') {
-          Alert.alert(t('Permission required'), t('Enable notifications from your device settings to receive match reminders.'), [
-            { text: t('Cancel'), style: 'cancel' },
-            { text: t('Open Settings'), onPress: openNotificationSettings },
-          ]);
+          Alert.alert(
+            t('Permission required'),
+            t('Enable notifications from your device settings to receive match reminders.'),
+            [
+              { text: t('Cancel'), style: 'cancel' },
+              { text: t('Open Settings'), onPress: openNotificationSettings },
+            ],
+          );
         }
       })
       .catch(() => Alert.alert(t('Error'), t('Unable to update notification permission. Please try again.')));
@@ -75,18 +91,26 @@ const SettingsContent = () => {
 
   const handleNotificationPress = () => {
     if (permission.status === 'granted') {
-      Alert.alert(t('Match reminders'), t('Notifications are enabled. You can change this permission in device settings.'), [
-        { text: t('Cancel'), style: 'cancel' },
-        { text: t('Open Settings'), onPress: openNotificationSettings },
-      ]);
+      Alert.alert(
+        t('Match reminders'),
+        t('Notifications are enabled. You can change this permission in device settings.'),
+        [
+          { text: t('Cancel'), style: 'cancel' },
+          { text: t('Open Settings'), onPress: openNotificationSettings },
+        ],
+      );
       return;
     }
 
     if (permission.status === 'denied' && !permission.canAskAgain) {
-      Alert.alert(t('Permission required'), t('Enable notifications from your device settings to receive match reminders.'), [
-        { text: t('Cancel'), style: 'cancel' },
-        { text: t('Open Settings'), onPress: openNotificationSettings },
-      ]);
+      Alert.alert(
+        t('Permission required'),
+        t('Enable notifications from your device settings to receive match reminders.'),
+        [
+          { text: t('Cancel'), style: 'cancel' },
+          { text: t('Open Settings'), onPress: openNotificationSettings },
+        ],
+      );
       return;
     }
 
@@ -111,7 +135,7 @@ const SettingsContent = () => {
 
   const iconSize = 24;
 
-  const accountRows: SettingsItem[] = [
+  const infoRows: SettingsItem[] = [
     {
       key: 'name',
       label: t('Name'),
@@ -130,12 +154,22 @@ const SettingsContent = () => {
       icon: <Calendar size={iconSize} color={colors.text} strokeWidth={1.5} />,
       rightContent: joinedDate,
     },
+    ...(SUBSCRIPTIONS_ENABLED
+      ? [
+          {
+            key: 'plan',
+            label: t('Plan'),
+            icon: <CreditCard size={iconSize} color={colors.text} strokeWidth={1.5} />,
+            rightContent: subscriptionType,
+            path: '/settings/subscription' as RelativePathString,
+          },
+        ]
+      : []),
     {
-      key: 'plan',
-      label: t('Plan'),
-      icon: <CreditCard size={iconSize} color={colors.text} strokeWidth={1.5} />,
-      rightContent: subscriptionType,
-      path: '/settings/subscription' as RelativePathString,
+      key: 'version',
+      label: t('Version'),
+      icon: <Smartphone size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      rightContent: appVersion,
     },
   ];
 
@@ -191,9 +225,25 @@ const SettingsContent = () => {
       icon: <FileQuestionMark size={iconSize} color={colors.text} strokeWidth={1.5} />,
     },
   ];
-
+  const accountRows: SettingsItem[] = [
+    {
+      key: 'sign-out',
+      label: t('Sign Out'),
+      icon: <LogOut size={iconSize} color={colors.text} strokeWidth={1.5} />,
+      onPress: onSignOut,
+      chevron: true,
+    },
+    {
+      key: 'delete-account',
+      label: t('Delete Account'),
+      titleTone: 'error',
+      icon: <Trash size={iconSize} color={colors.error} strokeWidth={1.5} />,
+      onPress: onDeleteAccount,
+      chevron: true,
+    },
+  ];
   const renderSection = (items: SettingsItem[], title?: string) => (
-    <Section title={title} contentClassName="overflow-hidden rounded-xl border border-border bg-surface ">
+    <Section title={title} contentClassName="overflow-hidden rounded-xl border border-border bg-surface">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -202,8 +252,9 @@ const SettingsContent = () => {
             key={item.key}
             leading={<View className="items-center justify-center rounded-md bg-subtle p-2">{item.icon}</View>}
             title={item.label}
+            titleTone={item.titleTone}
             trailing={item.rightContent}
-            right={item.path ? 'chevron' : 'none'}
+            right={item.path || item.chevron ? 'chevron' : 'none'}
             divider={!isLast}
             className="px-3"
             disabled={item.key === 'notification' && (permission.status === 'loading' || isRequesting)}
@@ -216,9 +267,10 @@ const SettingsContent = () => {
 
   return (
     <View className="gap-4">
-      {renderSection(accountRows)}
+      {renderSection(infoRows)}
       {renderSection(preferenceRows, t('Preferences'))}
       {renderSection(generalRows, t('General'))}
+      {renderSection(accountRows, t('Account'))}
     </View>
   );
 };

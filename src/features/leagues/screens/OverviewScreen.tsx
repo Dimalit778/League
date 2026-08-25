@@ -31,7 +31,7 @@ export default function OverviewScreen() {
       collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
       persistentHeader={<PersistentHeaderActions logoUrl={leagueSummary.flagUrl} />}
     >
-      <View className="gap-6">
+      <View className="gap-6 ">
         <LeagueSummary leagueSummary={leagueSummary} />
 
         <TodayMatches matches={todayMatches} />

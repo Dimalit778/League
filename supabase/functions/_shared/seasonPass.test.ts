@@ -1,6 +1,7 @@
 import {
   getLatestSeasonPassTransaction,
   resolveSeasonPassAccess,
+  resolveSeasonPassEntitlementAccess,
   transactionBelongsToSeason,
   type ProSeason,
 } from './seasonPass.ts';
@@ -86,4 +87,41 @@ Deno.test('does not grant before or after the configured season window', () => {
     resolveSeasonPassAccess({ transaction, season, now: new Date('2027-08-01T00:00:00Z') }).plan,
     'free',
   );
+});
+
+Deno.test('uses the active season-pass entitlement when the transaction list is absent', () => {
+  const result = resolveSeasonPassEntitlementAccess(
+    {
+      product_identifier: 'pro_season',
+      purchase_date: '2026-08-24T12:00:00Z',
+      expires_date: null,
+    },
+    season,
+    new Date('2026-09-01T00:00:00Z'),
+  );
+
+  assertEquals(result, {
+    plan: 'pro',
+    status: 'active',
+    entitlementId: 'pro',
+    productId: 'pro_season',
+    expiresAt: season.ends_at,
+    seasonCode: season.code,
+    purchasedAt: '2026-08-24T12:00:00.000Z',
+    transactionId: null,
+  });
+});
+
+Deno.test('does not use a season-pass entitlement purchased in a previous season', () => {
+  const result = resolveSeasonPassEntitlementAccess(
+    {
+      product_identifier: 'pro_season',
+      purchase_date: '2025-08-24T12:00:00Z',
+      expires_date: null,
+    },
+    season,
+    new Date('2026-09-01T00:00:00Z'),
+  );
+
+  assertEquals(result, null);
 });

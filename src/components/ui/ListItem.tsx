@@ -7,11 +7,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { type ReactNode } from 'react';
 import { Pressable, type PressableProps, View } from 'react-native';
 import { Divider } from './Divider';
-import { Text } from './Text';
+import { Text, type TextTone } from './Text';
 
 export type ListItemProps = Omit<PressableProps, 'children'> & {
   icon?: LucideIcon;
   title: string;
+  titleTone?: TextTone;
   description?: string;
   leading?: ReactNode;
   trailing?: ReactNode;
@@ -37,6 +38,7 @@ function asNode(value: ReactNode) {
 export function ListItem({
   icon: Icon,
   title,
+  titleTone,
   description,
   leading,
   trailing,
@@ -64,7 +66,7 @@ export function ListItem({
       <View className={cn('min-h-14 flex-row items-center py-2', spacing.list)} style={{ direction: 'ltr' }}>
         {isRTL ? trailingContent : leadingContent}
         <View className="min-w-0 flex-1">
-          <Text variant="body" numberOfLines={1}>
+          <Text variant="body" tone={titleTone} numberOfLines={1}>
             {title}
           </Text>
           {description ? (

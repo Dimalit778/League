@@ -1,14 +1,12 @@
-import { Text } from '@/components';
+import { Button, Text } from '@/components';
 import type { MemberPrediction } from '@/features/matches/types';
 
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
-import { Check, Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Pressable, View } from 'react-native';
 
 const MIN_SCORE = 0;
 const MAX_SCORE = 9;
@@ -16,9 +14,6 @@ const STEPPER_WIDTH = 140;
 const STEPPER_HEIGHT = 52;
 const ICON_COLOR = '#D7DCE7';
 const SAVED_FLASH_MS = 1200;
-const SAVE_BUTTON_SIZE = 70;
-const SAVE_BUTTON_COMPACT_SIZE = 36;
-const SAVE_BUTTON_SPRING = { damping: 100, stiffness: 50 };
 
 const clampScore = (value: number) => Math.min(MAX_SCORE, Math.max(MIN_SCORE, value));
 
@@ -82,71 +77,21 @@ function ScoreStepper({
   );
 }
 
-type SaveButtonProps = {
-  canSave: boolean;
-  isPending: boolean;
-  justSaved: boolean;
-  label: string;
-  saveText: string;
-  iconColor: string;
-  onSave: () => void;
-};
-
-function SaveButton({ canSave, isPending, justSaved, label, saveText, iconColor, onSave }: SaveButtonProps) {
-  const expanded = canSave || isPending || justSaved;
-  const progress = useSharedValue(expanded ? 1 : 0);
-
-  useEffect(() => {
-    progress.value = withSpring(expanded ? 1 : 0, SAVE_BUTTON_SPRING);
-  }, [expanded, progress]);
-
-  const buttonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(progress.value, [0, 1], [SAVE_BUTTON_COMPACT_SIZE / SAVE_BUTTON_SIZE, 1]) }],
-    opacity: interpolate(progress.value, [0, 1], [0.5, 1]),
-  }));
-
-  return (
-    <View className="h-18 w-18 items-center justify-center">
-      <Animated.View style={buttonStyle}>
-        <Pressable
-          onPress={onSave}
-          disabled={!canSave}
-          accessibilityRole="button"
-          accessibilityLabel={label}
-          accessibilityState={{ disabled: !canSave, busy: isPending }}
-          className="h-16 w-16 items-center justify-center rounded-full bg-primary"
-        >
-          {isPending ? (
-            <ActivityIndicator color={iconColor} />
-          ) : justSaved ? (
-            <Check size={28} color={iconColor} strokeWidth={2.5} />
-          ) : (
-            <Text variant="label" tone="inverse" className="text-center">
-              {saveText}
-            </Text>
-          )}
-        </Pressable>
-      </Animated.View>
-    </View>
-  );
-}
-
 export default function PredictionForm({ prediction, matchId, onSaveSuccess }: PredictionFormProps) {
   const { t } = useTranslation();
-  const { colors } = useThemeTokens();
   const memberId = useMemberId();
   const [homeScore, setHomeScore] = useState(() => clampScore(prediction?.home_score ?? 0));
   const [awayScore, setAwayScore] = useState(() => clampScore(prediction?.away_score ?? 0));
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
-    prediction ? { home: clampScore(prediction.home_score), away: clampScore(prediction.away_score) } : null,
-  );
+  const [savedScores, setSavedScores] = useState({
+    home: clampScore(prediction?.home_score ?? 0),
+    away: clampScore(prediction?.away_score ?? 0),
+  });
   const [justSaved, setJustSaved] = useState(false);
 
   const upsertPrediction = useUpsertPrediction();
   const isPending = upsertPrediction.isPending;
 
-  const hasChanges = savedScores ? homeScore !== savedScores.home || awayScore !== savedScores.away : hasInteracted;
+  const hasChanges = homeScore !== savedScores.home || awayScore !== savedScores.away;
   const canSave = hasChanges && !isPending;
   const saveLabel = isPending ? t('Saving') : justSaved ? t('Saved') : t('Save');
 
@@ -169,7 +114,6 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
         league_member_id: memberId,
       });
       setSavedScores({ home: homeScore, away: awayScore });
-      setHasInteracted(false);
       setJustSaved(true);
       onSaveSuccess?.();
     } catch {
@@ -179,40 +123,40 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
 
   const updateHomeScore = (value: number) => {
     setHomeScore(clampScore(value));
-    setHasInteracted(true);
     setJustSaved(false);
   };
 
   const updateAwayScore = (value: number) => {
     setAwayScore(clampScore(value));
-    setHasInteracted(true);
     setJustSaved(false);
   };
 
   return (
-    <View className="w-full flex-row items-center justify-between ">
-      <ScoreStepper
-        value={homeScore}
-        onChange={updateHomeScore}
-        decreaseAccessibilityLabel={t('Decrease home score')}
-        increaseAccessibilityLabel={t('Increase home score')}
-        disabled={isPending}
-      />
-      <SaveButton
-        canSave={canSave}
-        isPending={isPending}
-        justSaved={justSaved}
+    <View className="gap-6">
+      <View className="w-full flex-row items-center justify-between ">
+        <ScoreStepper
+          value={homeScore}
+          onChange={updateHomeScore}
+          decreaseAccessibilityLabel={t('Decrease home score')}
+          increaseAccessibilityLabel={t('Increase home score')}
+          disabled={isPending}
+        />
+
+        <ScoreStepper
+          value={awayScore}
+          onChange={updateAwayScore}
+          decreaseAccessibilityLabel={t('Decrease away score')}
+          increaseAccessibilityLabel={t('Increase away score')}
+          disabled={isPending}
+        />
+      </View>
+      <Button
         label={saveLabel}
-        saveText={t('Save')}
-        iconColor={colors.onPrimary}
-        onSave={() => void handleSave()}
-      />
-      <ScoreStepper
-        value={awayScore}
-        onChange={updateAwayScore}
-        decreaseAccessibilityLabel={t('Decrease away score')}
-        increaseAccessibilityLabel={t('Increase away score')}
-        disabled={isPending}
+        variant="primary"
+        size="md"
+        onPress={() => void handleSave()}
+        disabled={!canSave || isPending}
+        loading={isPending}
       />
     </View>
   );

@@ -1,5 +1,6 @@
 import { Button, InputField, LogoBadge, Screen, Text } from '@/components';
 import { useFindLeagueByJoinCode, useJoinLeague } from '@/features/leagues/hooks/useLeagues';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePaywall } from '@/lib/revenuecat/purchases';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -110,7 +111,7 @@ export default function JoinLeagueScreen() {
   const onClickJoinLeague = async (formData: { inviteCode: string; nickname: string }) => {
     if (!foundLeague) return;
     if (isLeagueFull) {
-      openPaywall();
+      if (SUBSCRIPTIONS_ENABLED) openPaywall();
       return;
     }
 
@@ -156,9 +157,15 @@ export default function JoinLeagueScreen() {
                 {isLeagueFull ? (
                   <View className="gap-3">
                     <Text className="text-sm text-center text-muted">
-                      {t('This league is full. Upgrade to create larger leagues.')}
+                      {t(
+                        SUBSCRIPTIONS_ENABLED
+                          ? 'This league is full. Upgrade to create larger leagues.'
+                          : 'This league is full.',
+                      )}
                     </Text>
-                    <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />
+                    {SUBSCRIPTIONS_ENABLED && (
+                      <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />
+                    )}
                   </View>
                 ) : (
                   <>

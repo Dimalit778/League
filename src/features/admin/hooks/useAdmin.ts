@@ -1,7 +1,7 @@
 import { ModerationDecision, ReportStatus } from '@/features/moderation/types';
 import { KEYS } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/AuthStore';
-import { TablesInsert } from '@/types/database.types';
+import { CreateCompetitionInput } from '../queries/adminService';
 import { skipToken, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../queries/adminService';
 
@@ -99,7 +99,7 @@ export const useAddCompetition = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (competition: TablesInsert<'competitions'>) => adminService.addCompetition(competition),
+    mutationFn: (competition: CreateCompetitionInput) => adminService.addCompetition(competition),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: KEYS.admin.competitions,

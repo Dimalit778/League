@@ -119,6 +119,27 @@ export const resolveSeasonPassAccess = ({
   };
 };
 
+/**
+ * RevenueCat treats an active entitlement as the source of truth for access.
+ * For the non-renewing season pass we still cap access to the season in which
+ * it was purchased, rather than accepting the entitlement's unlimited expiry.
+ */
+export const resolveSeasonPassEntitlementAccess = (
+  entitlement: RevenueCatEntitlement | undefined,
+  season: ProSeason | null,
+  now = new Date(),
+): SubscriptionAccess | null => {
+  if (!entitlement || entitlement.product_identifier !== PRO_SEASON_PRODUCT_ID) return null;
+
+  const access = resolveSeasonPassAccess({
+    transaction: { purchase_date: entitlement.purchase_date },
+    season,
+    now,
+  });
+
+  return access.plan === 'pro' ? access : null;
+};
+
 /** Keeps support for older auto-renewing products while the season pass replaces them. */
 export const resolveLegacyEntitlementAccess = (
   entitlement: RevenueCatEntitlement | undefined,

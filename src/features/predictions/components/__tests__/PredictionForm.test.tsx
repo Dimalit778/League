@@ -42,6 +42,16 @@ describe('PredictionForm', () => {
     expect(getByText('1')).toBeTruthy();
   });
 
+  it('disables save after returning to the original score', () => {
+    const { getByRole } = render(<PredictionForm matchId={42} />);
+
+    fireEvent.press(getByRole('button', { name: 'Increase home score' }));
+    expect(getByRole('button', { name: 'Save' }).props.accessibilityState.disabled).toBe(false);
+
+    fireEvent.press(getByRole('button', { name: 'Decrease home score' }));
+    expect(getByRole('button', { name: 'Save' }).props.accessibilityState.disabled).toBe(true);
+  });
+
   it('shows loading then a check after a successful save, then returns to Save', async () => {
     jest.useFakeTimers();
 

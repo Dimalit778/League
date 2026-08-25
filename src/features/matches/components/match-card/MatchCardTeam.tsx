@@ -16,7 +16,7 @@ export function MatchCardTeam({ team, width, logoWidth, logoHeight }: MatchCardT
         <TeamLogo tla={team.tla} clubColors={team.clubColors} size={logoWidth} radius={logoWidth / 2} />
       </View>
 
-      <Text variant="body" numberOfLines={2} ellipsizeMode="tail">
+      <Text variant="label" numberOfLines={2} ellipsizeMode="tail">
         {team.name}
       </Text>
     </View>

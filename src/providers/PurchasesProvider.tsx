@@ -1,4 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
 import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
@@ -77,8 +78,8 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   const isUserSyncedRef = useRef(false);
 
   const [{ isReady, isUserSynced, isOffline, customerInfo, error }, dispatch] = useReducer(purchasesReducer, {
-    isReady: false,
-    isUserSynced: Platform.OS === 'web',
+    isReady: !SUBSCRIPTIONS_ENABLED || Platform.OS === 'web',
+    isUserSynced: !SUBSCRIPTIONS_ENABLED || Platform.OS === 'web',
     isOffline: false,
     customerInfo: null,
     error: null,
@@ -137,7 +138,7 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     let cancelled = false;
 
     const configurePurchases = async () => {
-      if (Platform.OS === 'web') {
+      if (!SUBSCRIPTIONS_ENABLED || Platform.OS === 'web') {
         markUserSynced(true);
         dispatch({ type: 'setReady', value: true });
         return;

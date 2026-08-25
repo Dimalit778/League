@@ -1,6 +1,7 @@
 import { MatchCardData } from "@/features/matches/utils/matchCard.mapper";
 import { useMemberStats } from "@/features/members/hooks/useMemberStats";
 import { Tables } from "@/types/database.types";
+import { CompetitionWithCurrentSeason } from "../model/currentSeason";
 
 type CompetitionSummary = Pick<
   Tables<"competitions">,
@@ -8,17 +9,15 @@ type CompetitionSummary = Pick<
 >;
 
 type Competition = Pick<
-  Tables<"competitions">,
+  CompetitionWithCurrentSeason,
   | "id"
   | "name"
   | "logo"
   | "flag"
   | "area"
   | "type"
-  | "current_stage"
-  | "current_matchday"
-  | "season_id"
   | "is_free"
+  | "currentSeason"
 >;
 
 export type LeaderboardRow =
