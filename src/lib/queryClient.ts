@@ -41,7 +41,6 @@ export const KEYS = {
     byJoinCode: (code: string) => ['leagues', 'code', code] as const,
     members: (leagueId: string) => ['leagues', leagueId, 'members'] as const,
     leaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard'] as const,
-    roundLeaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard', 'round'] as const,
   },
 
   // ==================== MATCHES ====================

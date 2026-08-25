@@ -6,11 +6,15 @@ import {
   MyLeague,
   MyLeaguesResponse,
 } from "../types";
+import {
+  CompetitionWithSeasonRows,
+  normalizeCompetition,
+} from "../model/currentSeason";
 
 const LEADERBOARD_SELECT =
   "avatar_url, league_id, member_id, nickname, total_points, user_id";
 const COMPETITION_SELECT =
-  "id, name,area, logo, flag, type, current_stage, current_matchday, season_id, is_free";
+  "id, name, area, logo, flag, type, is_free, seasons(id, competition_id, current_matchday, current_stage, total_matchdays, season_start, season_end, is_current)";
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,
@@ -60,6 +64,22 @@ const LEAGUE_WITH_MEMBERS_SELECT = `
   )
 `;
 
+type RawMyLeague = Omit<MyLeague, "league"> & {
+  league: Omit<MyLeague["league"], "competition"> & {
+    competition: CompetitionWithSeasonRows;
+  };
+};
+
+function normalizeMyLeague(membership: RawMyLeague): MyLeague {
+  return {
+    ...membership,
+    league: {
+      ...membership.league,
+      competition: normalizeCompetition(membership.league.competition),
+    },
+  };
+}
+
 export const leagueApi = {
   async getLeaderboardView(leagueId: string) {
     const { data, error } = await supabase
@@ -100,12 +120,6 @@ export const leagueApi = {
         ? (correctScoreCounts.get(row.member_id) ?? 0)
         : 0,
     }));
-  },
-  // TODO(backend): return per-round standings once a round leaderboard source
-  // (RPC or view) exists. Until then it mirrors the season view so the UI toggle
-  // is fully wired and only the query needs to be swapped here.
-  async getRoundLeaderboardView(leagueId: string) {
-    return leagueApi.getLeaderboardView(leagueId);
   },
   async getCompetitionLeaderboard(
     competitionId: number,
@@ -150,7 +164,7 @@ export const leagueApi = {
 
     if (error) throw new Error(error.message);
 
-    const memberships = (data ?? []) as MyLeague[];
+    const memberships = ((data ?? []) as unknown as RawMyLeague[]).map(normalizeMyLeague);
 
     return {
       primaryLeague: memberships.find((league) => league.is_primary) ?? null,
@@ -173,7 +187,12 @@ export const leagueApi = {
 
     if (leagueError) throw new Error(leagueError.message);
 
-    return leagueData;
+    return {
+      ...leagueData,
+      competition: normalizeCompetition(
+        leagueData.competition as unknown as CompetitionWithSeasonRows,
+      ),
+    };
   },
   async getLeagueWithCompetition(leagueId: string) {
     const { data, error } = await supabase
@@ -185,7 +204,12 @@ export const leagueApi = {
     if (error) throw new Error(error.message);
     if (!data) throw new Error("League not found");
 
-    return data;
+    return {
+      ...data,
+      competition: normalizeCompetition(
+        data.competition as unknown as CompetitionWithSeasonRows,
+      ),
+    };
   },
 
   async updatePrimaryLeague(leagueId: string) {
