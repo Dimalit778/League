@@ -181,15 +181,7 @@ function MatchMark({
           colors={[setColorAlpha(glowColor, 0), glow, '#FFFFFF', glow, setColorAlpha(glowColor, 0)]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
-          style={[
-            styles.lightLine,
-            {
-              shadowColor: glowColor,
-              shadowOpacity: 1,
-              shadowRadius: size * 0.1,
-              shadowOffset: { width: 0, height: 0 },
-            },
-          ]}
+          style={[styles.lightLine, { boxShadow: `0px 0px ${size * 0.1}px ${glowColor}` }]}
         />
       </View>
     </View>

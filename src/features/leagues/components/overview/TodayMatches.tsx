@@ -2,7 +2,7 @@ import { EmptyState, Row, Text } from '@/components';
 import { type MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CalendarDays } from 'lucide-react-native';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { FlatList, useWindowDimensions, View } from 'react-native';
 import { OverviewMatchCard } from './OverviewMatchCard';
 
 export function TodayMatches({ matches }: { matches: MatchCardData[] }) {
@@ -21,24 +21,19 @@ export function TodayMatches({ matches }: { matches: MatchCardData[] }) {
       {matches.length === 0 ? (
         <EmptyState size="sm" icon={CalendarDays} title={t('No matches today')} />
       ) : (
-        <ScrollView
+        <FlatList
           horizontal
           nestedScrollEnabled
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            gap: 12,
-            paddingHorizontal: 16,
-            paddingBottom: 2,
-          }}
-        >
-          {matches.map((match) => (
-            <View key={match.id} style={{ width: cardWidth }}>
-              <OverviewMatchCard match={match} />
+          data={matches}
+          keyExtractor={(match) => match.id.toString()}
+          contentContainerStyle={{ alignItems: 'flex-start', gap: 12, paddingHorizontal: 16, paddingBottom: 2 }}
+          renderItem={({ item }) => (
+            <View style={{ width: cardWidth }}>
+              <OverviewMatchCard match={item} />
             </View>
-          ))}
-        </ScrollView>
+          )}
+        />
       )}
     </>
   );

@@ -1,5 +1,6 @@
 import { Skeleton } from '@/components';
-import { getMatchCardMetrics, MatchCardBg } from '@/features/matches/components/MatchCardBg';
+import { MatchCardBg } from '@/features/matches/components/MatchCardBg';
+import { getMatchCardMetrics } from '@/features/matches/components/matchCardLayout';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

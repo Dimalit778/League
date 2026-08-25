@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
-import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/MatchCardBg';
+import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/matchCardLayout';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
 import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';

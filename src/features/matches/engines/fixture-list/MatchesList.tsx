@@ -1,7 +1,7 @@
 import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useRef } from 'react';
-import { FlatList, RefreshControl } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { MatchCard } from '../../components/MatchCard';
 import MatchesSkeleton from '../../components/MatchesSkeleton';
 import { MatchCardData } from '../../utils/matchCard.mapper';
@@ -26,10 +26,11 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
       data={matches}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: bottomInset + 20, flexGrow: 1, paddingHorizontal: 16, gap: 8 }}
+      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, gap: 8 }}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderMatchCard}
       ListEmptyComponent={<Text className="text-text text-center">{t('No matches found')}</Text>}
+      ListFooterComponent={<View style={{ height: bottomInset + 20 }} />}
       refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
     />
   );

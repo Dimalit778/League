@@ -206,19 +206,22 @@ async function handleTransfer(supabase: AdminClient, event: RevenueCatEvent) {
     .maybeSingle();
   if (!source) return false;
 
-  let processed = false;
-  for (const targetId of targetIds) {
-    const targetUserId = await resolveUserId(supabase, [targetId]);
-    if (!targetUserId) continue;
-    const { error } = await supabase.from('user_subscriptions').upsert({
-      ...source,
-      user_id: targetUserId,
-      revenuecat_app_user_id: targetId,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id' });
-    if (!error) processed = true;
-  }
-  return processed;
+  // Each target is an independent user_subscriptions row (onConflict: user_id),
+  // so the transfers can run concurrently.
+  const results = await Promise.all(
+    targetIds.map(async (targetId) => {
+      const targetUserId = await resolveUserId(supabase, [targetId]);
+      if (!targetUserId) return false;
+      const { error } = await supabase.from('user_subscriptions').upsert({
+        ...source,
+        user_id: targetUserId,
+        revenuecat_app_user_id: targetId,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+      return !error;
+    }),
+  );
+  return results.some(Boolean);
 }
 
 Deno.serve(async (req) => {

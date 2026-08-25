@@ -1,4 +1,4 @@
-import { getMatchCardMetrics } from "../MatchCardBg";
+import { getMatchCardMetrics } from "../matchCardLayout";
 
 describe("getMatchCardMetrics", () => {
   it("fills a phone while keeping cards compact on wide screens", () => {
