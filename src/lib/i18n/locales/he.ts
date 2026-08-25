@@ -154,7 +154,6 @@ export const he = {
     Leagues: "ליגות",
     "Full ranking": "הדירוג המלא",
     Round: "מחזור",
-    "All season": "כל העונה",
     Friends: "חברים",
     World: "עולם",
     You: "אתה",
@@ -353,8 +352,6 @@ export const he = {
 
     "Delete account confirmation message":
       "האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.",
-    "Delete personal data while keeping anonymized league history.":
-      "מחיקת מידע אישי תוך שמירת היסטוריית ליגה אנונימית.",
   },
 
   // Help & Support
@@ -791,7 +788,6 @@ export const he = {
     "Primary league": "ליגה ראשית",
 
     USER: "משתמש",
-    POINTS: "נקודות",
 
     Table: "טבלה",
 

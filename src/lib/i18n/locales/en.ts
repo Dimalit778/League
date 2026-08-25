@@ -58,8 +58,6 @@ export const en = {
 
     "Delete account confirmation message":
       "Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone.",
-    "Delete personal data while keeping anonymized league history.":
-      "Delete personal data while keeping anonymized league history.",
     "Sign In": "Sign In",
     "Sign In Error": "Sign In Error",
     "Sign Up": "Sign Up",
@@ -159,7 +157,6 @@ export const en = {
     Leagues: "Leagues",
     "Full ranking": "Full ranking",
     Round: "Round",
-    "All season": "All season",
     Friends: "Friends",
     World: "World",
     You: "You",
@@ -792,7 +789,6 @@ export const en = {
     "Primary league": "Primary league",
 
     USER: "USER",
-    POINTS: "POINTS",
 
     Table: "Table",
 
