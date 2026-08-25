@@ -37,6 +37,24 @@ export type Database = {
           },
         ]
       }
+      app_config: {
+        Row: {
+          singleton: boolean
+          subscriptions_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          singleton?: boolean
+          subscriptions_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          singleton?: boolean
+          subscriptions_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       competitions: {
         Row: {
           area: string
@@ -215,6 +233,65 @@ export type Database = {
           job?: string | null
         }
         Relationships: []
+      }
+      league_member_standings: {
+        Row: {
+          exact_count: number
+          finished_count: number
+          league_id: string
+          league_member_id: string
+          outcome_count: number
+          total_points: number
+          updated_at: string
+        }
+        Insert: {
+          exact_count?: number
+          finished_count?: number
+          league_id: string
+          league_member_id: string
+          outcome_count?: number
+          total_points?: number
+          updated_at?: string
+        }
+        Update: {
+          exact_count?: number
+          finished_count?: number
+          league_id?: string
+          league_member_id?: string
+          outcome_count?: number
+          total_points?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_member_standings_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "league_leaderboard_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "league_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["member_id"]
+          },
+        ]
       }
       league_members: {
         Row: {
@@ -404,6 +481,13 @@ export type Database = {
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
         ]
       }
       predictions: {
@@ -527,6 +611,53 @@ export type Database = {
           processed?: boolean | null
         }
         Relationships: []
+      }
+      seasons: {
+        Row: {
+          competition_id: number
+          created_at: string
+          current_matchday: number | null
+          current_stage: string | null
+          id: number
+          is_current: boolean
+          season_end: string | null
+          season_start: string | null
+          total_matchdays: number | null
+          updated_at: string
+        }
+        Insert: {
+          competition_id: number
+          created_at?: string
+          current_matchday?: number | null
+          current_stage?: string | null
+          id: number
+          is_current?: boolean
+          season_end?: string | null
+          season_start?: string | null
+          total_matchdays?: number | null
+          updated_at?: string
+        }
+        Update: {
+          competition_id?: number
+          created_at?: string
+          current_matchday?: number | null
+          current_stage?: string | null
+          id?: number
+          is_current?: boolean
+          season_end?: string | null
+          season_start?: string | null
+          total_matchdays?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seasons_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_plans: {
         Row: {
