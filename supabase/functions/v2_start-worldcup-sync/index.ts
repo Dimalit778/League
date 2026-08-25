@@ -161,11 +161,12 @@ async function syncCompetition(supabase, fdKey, matches) {
   const apiComp = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}`, fdKey);
   const season = apiComp.currentSeason ?? null;
   const progress = deriveCupProgress(matches);
-  const groupMatchdays = new Set(
-    matches
-      .filter((match) => match?.stage === "GROUP_STAGE" && typeof match?.matchday === "number")
-      .map((match) => match.matchday),
-  );
+  const groupMatchdays = new Set();
+  for (const match of matches) {
+    if (match?.stage === "GROUP_STAGE" && typeof match?.matchday === "number") {
+      groupMatchdays.add(match.matchday);
+    }
+  }
   const totalMatchdays = groupMatchdays.size;
   console.info(`📊 Progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}, totalMatchdays=${totalMatchdays}`);
   const [logo, flag] = await Promise.all([
