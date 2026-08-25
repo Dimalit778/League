@@ -10,6 +10,28 @@ import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession();
 
+export type AuthActionResult = { success: true } | { success: false; error: string };
+
+/**
+ * Shared shell for every auth action: fail fast when offline, run the action,
+ * and turn any thrown error into a user-friendly `{ success: false, error }`.
+ * This removes the connection-check + try/catch + `formatErrorForUser`
+ * boilerplate (and the `catch (error: any)`) that every action repeated.
+ */
+const withNetworkGuard = async (action: () => Promise<void>): Promise<AuthActionResult> => {
+  try {
+    const isConnected = await checkNetworkConnection();
+    if (!isConnected) {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+
+    await action();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: formatErrorForUser(error) };
+  }
+};
+
 // Helper: Create redirect URI for password reset
 const getPasswordResetRedirectUri = () => {
   const uri = AuthSession.makeRedirectUri({
@@ -23,16 +45,11 @@ const getPasswordResetRedirectUri = () => {
 };
 
 // Sign In
-export const signIn = async (email: string, password: string, queryClient: QueryClient) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
+export const signIn = (email: string, password: string, queryClient: QueryClient) =>
+  withNetworkGuard(async () => {
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
-      password: password,
+      password,
     });
 
     if (error) throw error;
@@ -44,22 +61,11 @@ export const signIn = async (email: string, password: string, queryClient: Query
     if (session?.user?.id) {
       await queryClient.invalidateQueries({ queryKey: KEYS.members.primaryLeague(session.user.id) });
     }
-
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
+  });
 
 // Sign Up
-export const signUp = async (email: string, password: string, fullname: string) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
+export const signUp = (email: string, password: string, fullname: string) =>
+  withNetworkGuard(async () => {
     const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
@@ -73,26 +79,16 @@ export const signUp = async (email: string, password: string, fullname: string) 
     if (data.user && data.user.identities?.length === 0) {
       throw new Error('Email already registered');
     }
-
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
-
+  });
 
 // Sign Out
 export const signOut = async (queryClient: QueryClient) => {
   // Always attempt the remote sign-out, even if the local session is
   // expired, revoked, or missing — Supabase errors here must not block logout.
   try {
-    const { error } = await supabase.auth.signOut();
-    if (error && error.message !== 'Auth session missing!') {
-      console.log('signOutError', JSON.stringify(error, null, 2));
-    }
-  } catch (signOutError) {
-    console.log('signOutError', JSON.stringify(signOutError, null, 2));
+    await supabase.auth.signOut();
+  } catch {
+    // Remote sign-out is best-effort; local cleanup below must run regardless.
   }
 
   usePrimaryLeagueStore.getState().clearPrimaryLeague();
@@ -104,13 +100,8 @@ export const signOut = async (queryClient: QueryClient) => {
 };
 
 // Verify OTP
-export const verifyOtp = async (email: string, token: string) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
+export const verifyOtp = (email: string, token: string) =>
+  withNetworkGuard(async () => {
     const {
       data: { session },
       error,
@@ -125,58 +116,28 @@ export const verifyOtp = async (email: string, token: string) => {
     if (!session?.user) {
       throw new Error('Verification failed. Please try again.');
     }
+  });
 
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
-
-// Resend OTP 
-export const resendOtp = async (email: string) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
+// Resend OTP
+export const resendOtp = (email: string) =>
+  withNetworkGuard(async () => {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email.trim().toLowerCase(),
     });
 
     if (error) throw error;
-
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
+  });
 
 // Send Reset Password Link
-export const sendResetPasswordLink = async (email: string) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
-    const redirectTo = getPasswordResetRedirectUri();
-
+export const sendResetPasswordLink = (email: string) =>
+  withNetworkGuard(async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo,
+      redirectTo: getPasswordResetRedirectUri(),
     });
 
     if (error) throw error;
-
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
+  });
 
 export type RecoveryTokens = {
   accessToken: string;
@@ -215,64 +176,45 @@ export const parseRecoveryTokensFromUrl = (
 // Update Password using the recovery tokens from the reset link.
 // The session is established here (at submit time) rather than on screen mount,
 // so the auth guard doesn't unmount the reset screen while the user is typing.
-export const updatePasswordWithRecoveryTokens = async (password: string, tokens: RecoveryTokens) => {
-  let sessionEstablished = false;
+export const updatePasswordWithRecoveryTokens = (password: string, tokens: RecoveryTokens) =>
+  withNetworkGuard(async () => {
+    let sessionEstablished = false;
 
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
+    try {
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken,
+      });
 
-    const { error: sessionError } = await supabase.auth.setSession({
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-    });
+      if (sessionError) throw sessionError;
+      sessionEstablished = true;
 
-    if (sessionError) throw sessionError;
-    sessionEstablished = true;
+      const { error } = await supabase.auth.updateUser({ password });
 
-    const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
 
-    if (error) throw error;
-
-    // End the temporary recovery session so the auth guard does not redirect
-    // into the app stack while this screen is still showing feedback.
-    await supabase.auth.signOut();
-
-    return { success: true };
-  } catch (error: any) {
-    if (sessionEstablished) {
-      try {
-        await supabase.auth.signOut();
-      } catch {
-        // Ignore — local session cleanup is best-effort after a failed reset.
+      // End the temporary recovery session so the auth guard does not redirect
+      // into the app stack while this screen is still showing feedback.
+      await supabase.auth.signOut();
+    } catch (error) {
+      if (sessionEstablished) {
+        try {
+          await supabase.auth.signOut();
+        } catch {
+          // Ignore — local session cleanup is best-effort after a failed reset.
+        }
       }
-    }
 
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
+      throw error;
+    }
+  });
 
 // Resend Password Reset OTP
-export const resendPasswordResetOtp = async (email: string) => {
-  try {
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
-
-    const redirectTo = getPasswordResetRedirectUri();
+export const resendPasswordResetOtp = (email: string) =>
+  withNetworkGuard(async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo,
+      redirectTo: getPasswordResetRedirectUri(),
     });
 
     if (error) throw error;
-
-    return { success: true };
-  } catch (error: any) {
-    const userFriendlyError = formatErrorForUser(error);
-    return { success: false, error: userFriendlyError };
-  }
-};
+  });

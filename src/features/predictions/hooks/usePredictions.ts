@@ -1,4 +1,4 @@
-import { MatchCardType } from '@/features/matches/types';
+import { MatchListItem } from '@/features/matches/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { KEYS } from '@/lib/queryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
@@ -18,8 +18,8 @@ export const useUpsertPrediction = () => {
     },
     onSuccess: (data) => {
       if (competitionId && memberId) {
-        queryClient.setQueriesData<MatchCardType[]>(
-          { queryKey: ['matches', competitionId] },
+        queryClient.setQueriesData<MatchListItem[]>(
+          { queryKey: KEYS.matches.byCompetitionRoot(competitionId) },
           (old) => {
             if (!old) return old;
 

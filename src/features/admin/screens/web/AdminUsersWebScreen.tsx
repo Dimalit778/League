@@ -9,7 +9,7 @@ import {
   AdminWebToolbar,
 } from '@/features/admin/components/AdminWebUI';
 import { AdminEmpty, AdminErrorBanner } from '@/features/admin/components/AdminUI';
-import { formatAdminDate } from '@/features/admin/lib/adminUi';
+import { adminUserDisplayName, filterAdminUsers, formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SearchX, Trash2, UserRound } from 'lucide-react-native';
@@ -23,11 +23,7 @@ export default function AdminUsersWebScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const users = useMemo(() => usersQuery.data?.pages.flat() ?? [], [usersQuery.data]);
-  const filteredUsers = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return users;
-    return users.filter((user) => `${user.full_name ?? ''} ${user.email ?? ''} ${user.id}`.toLowerCase().includes(query));
-  }, [searchQuery, users]);
+  const filteredUsers = useMemo(() => filterAdminUsers(users, searchQuery), [searchQuery, users]);
 
   const confirmDelete = (id: string, displayName: string) => {
     if (!globalThis.confirm(t('Are you sure you want to delete {{name}}? This action cannot be undone.', { name: displayName }))) {
@@ -73,7 +69,7 @@ export default function AdminUsersWebScreen() {
               minWidth={980}
             >
               {filteredUsers.map((user) => {
-                const displayName = user.full_name || user.email || t('Unnamed User');
+                const displayName = adminUserDisplayName(user, t('Unnamed User'));
                 return (
                   <AdminWebTableRow key={user.id}>
                     <AdminWebCell flex={2} minWidth={220}>

@@ -63,13 +63,21 @@ export function resolveActivationTargetCount(maxLeagues: number, eligibleLeagueC
   return Math.min(maxLeagues, eligibleLeagueCount);
 }
 
+/**
+ * Toggle a league in/out of the activation selection.
+ *
+ * Deselecting is always allowed. Selecting is blocked once the seats are full
+ * (`current.length >= maxSelections`) rather than silently evicting an earlier
+ * pick — the user must free a seat first. This is the single rule shared by
+ * both activation pickers (see [[useLeagueActivationResolution]]).
+ */
 export function toggleLeagueActivationSelection(current: string[], memberId: string, maxSelections: number) {
   if (current.includes(memberId)) {
     return current.filter((selectedMemberId) => selectedMemberId !== memberId);
   }
 
   if (maxSelections <= 0) return current;
-  if (current.length >= maxSelections) return [...current.slice(1), memberId];
+  if (current.length >= maxSelections) return current;
 
   return [...current, memberId];
 }

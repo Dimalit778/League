@@ -1,4 +1,4 @@
-import { KEYS } from "@/lib/queryClient";
+import { disabledKey, KEYS } from "@/lib/queryClient";
 import { usePrimaryLeagueStore } from "@/store/PrimaryLeagueStore";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { matchesApi } from "../api/matchesApi";
@@ -16,14 +16,7 @@ export const useGetTodayMatches = ({
   return useQuery({
     queryKey: isReady
       ? KEYS.matches.upcoming(competitionId, seasonId, memberId)
-      : ([
-        "matches",
-        "today",
-        "disabled",
-        competitionId ?? "none",
-        seasonId ?? "none",
-        memberId ?? "none",
-      ] as const),
+      : disabledKey("matches", "today", competitionId, seasonId, memberId),
     queryFn: isReady
       ? () => matchesApi.getTodayMatches(competitionId, seasonId, memberId)
       : skipToken,

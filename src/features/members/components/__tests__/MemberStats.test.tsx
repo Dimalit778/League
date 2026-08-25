@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import MemberStats from '../memberStats';
+import MemberStats from '../MemberStats';
 
 describe('MemberStats', () => {
   const mockStats = {

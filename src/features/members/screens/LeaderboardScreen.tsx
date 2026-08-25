@@ -23,7 +23,7 @@ import {
 } from '../components/leaderboard/LeaderboardAudienceToggle';
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
 import LeaderboardSkeleton, { LeaderboardBodySkeleton } from '../components/leaderboard/LeaderboardSkeleton';
-import { Podium } from '../components/leaderboard/Pudiom';
+import { Podium } from '../components/leaderboard/Podium';
 
 const Header = ({
   audience,
@@ -140,14 +140,18 @@ export default function LeaderboardScreen() {
             <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
 
             <View className="min-h-[200px] gap-4">
-              <Row keepLtr className="gap-3">
-                <View className="h-px flex-1 bg-border" />
-                <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
-                  {t('Full ranking')}
-                </Text>
-                <View className="h-px flex-1 bg-border" />
-              </Row>
-              <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
+              {rest.length > 0 && (
+                <>
+                  <Row keepLtr className="gap-3">
+                    <View className="h-px flex-1 bg-border" />
+                    <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
+                      {t('Full ranking')}
+                    </Text>
+                    <View className="h-px flex-1 bg-border" />
+                  </Row>
+                  <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
+                </>
+              )}
             </View>
 
             <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} />

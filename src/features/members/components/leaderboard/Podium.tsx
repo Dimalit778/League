@@ -47,7 +47,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
       ) : null}
 
       <View
-        className="items-center justify-center overflow-hidden rounded-full border-[3px] bg-surface"
+        className="items-center justify-center overflow-hidden rounded-full border-[3px] "
         style={{
           width: avatarSize,
           height: avatarSize,
@@ -65,22 +65,12 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
   );
 
   return (
-    <View className="min-w-0 flex-1 items-center justify-end" style={styles.column}>
+    <View className="min-w-0 flex-1 items-center justify-end " style={styles.column}>
       {memberId ? (
         <View style={styles.avatarLayer}>
           {clickable ? (
             <Link href={{ pathname: '/(app)/(league)/member/[memberId]', params: { memberId } }} asChild>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('{{name}}, position {{position}}, {{points}} points', {
-                  name: displayName,
-                  position,
-                  points: member?.total_points ?? 0,
-                })}
-                style={({ pressed }) => pressed && { opacity: 0.8 }}
-              >
-                {avatar}
-              </Pressable>
+              <Pressable style={({ pressed }) => pressed && { opacity: 0.8 }}>{avatar}</Pressable>
             </Link>
           ) : (
             avatar
@@ -90,7 +80,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
 
       {/* Pedestal — holds the name + points on its face */}
       <View
-        className="w-full items-center overflow-hidden rounded-t-xl border border-b-0 border-white/5 px-1"
+        className="w-full items-center overflow-hidden rounded-t-xl border border-b-0 border-white/5 px-1 bg-surface"
         style={{ height: PEDESTAL_HEIGHT[position], borderTopColor: color, borderTopWidth: 3, paddingTop: 22 }}
       >
         <LinearGradient

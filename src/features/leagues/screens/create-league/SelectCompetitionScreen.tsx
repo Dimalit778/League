@@ -7,7 +7,7 @@ import { Tables } from '@/types/database.types';
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, View } from 'react-native';
-import CompetitionsSkeleton from '../../components/createLeague/CompetitionsSkeletion';
+import CompetitionsSkeleton from '../../components/createLeague/CompetitionsSkeleton';
 
 type Competition = Tables<'competitions'>;
 

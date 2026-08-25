@@ -1,4 +1,4 @@
-import { KEYS } from "@/lib/queryClient";
+import { disabledKey, KEYS } from "@/lib/queryClient";
 
 import {
   skipToken,
@@ -27,7 +27,7 @@ export const useMyLeagues = () => {
   return useQuery({
     queryKey: userId
       ? KEYS.users.leagues(userId)
-      : (["users", "leagues", "disabled"] as const),
+      : disabledKey("users", "leagues"),
     queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
     staleTime: STALE_TIME,
   });
@@ -68,7 +68,7 @@ export const useGetMyLeaguesSummary = () => {
   return useQuery({
     queryKey: userId
       ? KEYS.users.leaguesSummary(userId)
-      : (["users", "leagues-summary", "disabled"] as const),
+      : disabledKey("users", "leagues-summary"),
     queryFn: userId ? () => leagueApi.getMyLeaguesSummary(userId) : skipToken,
     staleTime: 1000 * 60 * 5,
   });

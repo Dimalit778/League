@@ -17,7 +17,7 @@ import Purchases, {
   type PurchasesError,
   type PurchasesPackage,
 } from 'react-native-purchases';
-import { isSeasonActive, selectProPackage } from './selectProPackage';
+import { isSeasonActive, selectProPackage } from '../utils/selectProPackage';
 
 type ChampoPaywallModalProps = {
   onComplete: (result: PaywallResult) => void;

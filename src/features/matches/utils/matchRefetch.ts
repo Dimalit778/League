@@ -1,12 +1,11 @@
 import { MatchBaseType } from '../types';
+import { IN_PROGRESS_STATUSES, TERMINAL_STATUSES, normalizeStatus } from './matchStatus';
 
 export const LIVE_MATCH_REFETCH_INTERVAL = 30_000;
 export const UPCOMING_MATCH_REFETCH_INTERVAL = 60_000;
 
 const UPCOMING_WINDOW_MS = 30 * 60 * 1000;
 const ACTIVE_MATCH_WINDOW_MS = 4 * 60 * 60 * 1000;
-const LIVE_STATUSES = new Set(['IN_PLAY', 'LIVE', 'PAUSED']);
-const TERMINAL_STATUSES = new Set(['FINISHED', 'POSTPONED']);
 
 type RefreshableMatch = Pick<MatchBaseType, 'kick_off' | 'status'>;
 
@@ -16,9 +15,9 @@ export const getMatchRefetchInterval = (
 ): number | false => {
   if (!match) return false;
 
-  const status = match.status?.toUpperCase();
-  if (status && LIVE_STATUSES.has(status)) return LIVE_MATCH_REFETCH_INTERVAL;
-  if (status && TERMINAL_STATUSES.has(status)) return false;
+  const status = normalizeStatus(match.status);
+  if (IN_PROGRESS_STATUSES.has(status)) return LIVE_MATCH_REFETCH_INTERVAL;
+  if (TERMINAL_STATUSES.has(status)) return false;
 
   const kickOff = new Date(match.kick_off).getTime();
   if (!Number.isFinite(kickOff)) return false;

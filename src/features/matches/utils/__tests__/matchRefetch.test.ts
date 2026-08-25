@@ -7,13 +7,16 @@ import {
 
 const NOW = new Date('2026-08-15T18:00:00.000Z').getTime();
 
-const match = (status: 'TIMED' | 'SCHEDULED' | 'IN_PLAY' | 'LIVE' | 'FINISHED' | 'POSTPONED' | 'PAUSED', kickOff: string) => ({
-  status,
-  kick_off: kickOff,
-});
+// `status` is typed as string because live football statuses such as
+// EXTRA_TIME / PENALTY_SHOOTOUT arrive from the data feed but are wider than the
+// generated DB enum. getMatchRefetchInterval normalises the raw string itself.
+const match = (status: string, kickOff: string) =>
+  ({ status, kick_off: kickOff }) as NonNullable<Parameters<typeof getMatchRefetchInterval>[0]>;
 
 describe('match refetch intervals', () => {
-  it.each(['IN_PLAY', 'LIVE', 'PAUSED'] as const)('polls a %s match every 30 seconds', (status) => {
+  it.each(['IN_PLAY', 'LIVE', 'PAUSED', 'EXTRA_TIME', 'PENALTY_SHOOTOUT'] as const)(
+    'polls a %s match every 30 seconds',
+    (status) => {
     expect(getMatchRefetchInterval(match(status, '2026-08-15T17:30:00.000Z'), NOW)).toBe(
       LIVE_MATCH_REFETCH_INTERVAL,
     );

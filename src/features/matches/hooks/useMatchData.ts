@@ -1,5 +1,5 @@
 import { useRefetchOnFocus } from '@/hooks/useRefetchOnFocus';
-import { KEYS } from '@/lib/queryClient';
+import { disabledKey, KEYS } from '@/lib/queryClient';
 import { useLeagueId } from '@/store/PrimaryLeagueStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useIsFocused } from 'expo-router';
@@ -23,7 +23,7 @@ export const useGetMatchData = (matchId: number) => {
   const query = useQuery({
     queryKey: isReady
       ? KEYS.matches.withPredictions(leagueId!, matchId)
-      : (['matches', 'detail', 'disabled', matchId || 'none'] as const),
+      : disabledKey('matches', 'detail', matchId || 'none'),
     queryFn: isReady ? () => matchesApi.getMatchWithPredictions(leagueId!, matchId) : skipToken,
     select: (data) => ({
       ...data,

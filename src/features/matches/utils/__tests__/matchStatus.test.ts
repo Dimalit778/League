@@ -1,4 +1,4 @@
-import { getMatchStatus, getMatchStatusColor, isMatchFinished, isMatchLive, isMatchScheduled } from '../matchStatus';
+import { getMatchStatus, isMatchFinished, isMatchLive, isMatchScheduled, statusLabel, statusLabelTone } from '../matchStatus';
 
 describe('getMatchStatus', () => {
   it('returns SCHEDULED for null status', () => {
@@ -70,6 +70,10 @@ describe('isMatchLive', () => {
     expect(isMatchLive('LIVE')).toBe(true);
   });
 
+  it('returns true for IN_PLAY', () => {
+    expect(isMatchLive('IN_PLAY')).toBe(true);
+  });
+
   it('returns false for FINISHED', () => {
     expect(isMatchLive('FINISHED')).toBe(false);
   });
@@ -80,41 +84,39 @@ describe('isMatchScheduled', () => {
     expect(isMatchScheduled('SCHEDULED')).toBe(true);
   });
 
+  it('returns true for TIMED', () => {
+    expect(isMatchScheduled('TIMED')).toBe(true);
+  });
+
   it('returns false for LIVE', () => {
     expect(isMatchScheduled('LIVE')).toBe(false);
   });
 });
 
-describe('getMatchStatusColor', () => {
-  const muted = '#888888';
-
-  it('returns gold colors for 5 points (Bingo)', () => {
-    const [primary, secondary] = getMatchStatusColor('FINISHED', true, 5, muted);
-    expect(primary).toBe('#FCD34D');
-    expect(secondary).toBe('#F59E0B');
+describe('statusLabel', () => {
+  it('returns LIVE for in-play matches', () => {
+    expect(statusLabel('IN_PLAY', 'Sat, 15/8')).toBe('LIVE');
   });
 
-  it('returns green colors for 3 points (Hit)', () => {
-    const [primary, secondary] = getMatchStatusColor('FINISHED', true, 3, muted);
-    expect(primary).toBe('#10B981');
-    expect(secondary).toBe('#059669');
+  it('returns FT for finished matches', () => {
+    expect(statusLabel('FINISHED', 'Sat, 15/8')).toBe('FT');
   });
 
-  it('returns gray/red colors for 0 points (Miss)', () => {
-    const [primary, secondary] = getMatchStatusColor('FINISHED', true, 0, muted);
-    expect(primary).toBe('#6B7280');
-    expect(secondary).toBe('#EF4444');
+  it('returns the date for scheduled matches', () => {
+    expect(statusLabel('TIMED', 'Sat, 15/8')).toBe('Sat, 15/8');
+  });
+});
+
+describe('statusLabelTone', () => {
+  it('returns success for live matches', () => {
+    expect(statusLabelTone('LIVE')).toBe('success');
   });
 
-  it('returns muted colors when not finished', () => {
-    const [primary, secondary] = getMatchStatusColor('SCHEDULED', false, 0, muted);
-    expect(primary).toBe(muted);
-    expect(secondary).toBe(muted);
+  it('returns muted for finished matches', () => {
+    expect(statusLabelTone('FINISHED')).toBe('muted');
   });
 
-  it('returns muted colors for finished with unknown points', () => {
-    const [primary, secondary] = getMatchStatusColor('FINISHED', true, 1, muted);
-    expect(primary).toBe(muted);
-    expect(secondary).toBe(muted);
+  it('returns default for scheduled matches', () => {
+    expect(statusLabelTone('SCHEDULED')).toBe('default');
   });
 });
