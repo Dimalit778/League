@@ -14,7 +14,7 @@ export const useAuthActions = () => {
   }, []);
 
   const handleAction = useCallback(
-    async <T extends any[]>(
+    async <T extends unknown[]>(
       action: (...args: T) => Promise<{ success: boolean; error?: string }>,
       ...args: T
     ) => {
