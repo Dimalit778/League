@@ -405,6 +405,8 @@ export type Database = {
           away_team_id: number | null
           competition_id: number | null
           created_at: string
+          final_away_score: number | null
+          final_home_score: number | null
           fixture: number | null
           group: string | null
           home_team_id: number | null
@@ -426,6 +428,8 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          final_away_score?: number | null
+          final_home_score?: number | null
           fixture?: number | null
           group?: string | null
           home_team_id?: number | null
@@ -447,6 +451,8 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          final_away_score?: number | null
+          final_home_score?: number | null
           fixture?: number | null
           group?: string | null
           home_team_id?: number | null
