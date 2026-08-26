@@ -9,6 +9,8 @@ export const en = {
     Error: "Error",
     OK: "OK",
     Save: "Save",
+    Saving: "Saving",
+    Saved: "Saved",
     Success: "Success",
     Update: "Update",
     Remove: "Remove",
@@ -56,8 +58,6 @@ export const en = {
 
     "Delete account confirmation message":
       "Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone.",
-    "Delete personal data while keeping anonymized league history.":
-      "Delete personal data while keeping anonymized league history.",
     "Sign In": "Sign In",
     "Sign In Error": "Sign In Error",
     "Sign Up": "Sign Up",
@@ -157,7 +157,6 @@ export const en = {
     Leagues: "Leagues",
     "Full ranking": "Full ranking",
     Round: "Round",
-    "All season": "All season",
     Friends: "Friends",
     World: "World",
     You: "You",
@@ -467,8 +466,6 @@ export const en = {
       "The Champo Pro offer is incorrectly configured to renew automatically.",
     "Unable to load the offer. Please try again.":
       "Unable to load the offer. Please try again.",
-    "The purchase completed, but Pro access is still being confirmed.":
-      "The purchase completed, but Pro access is still being confirmed.",
     "Purchase failed. Please try again.": "Purchase failed. Please try again.",
     "Try again": "Try again",
 
@@ -792,7 +789,6 @@ export const en = {
     "Primary league": "Primary league",
 
     USER: "USER",
-    POINTS: "POINTS",
 
     Table: "Table",
 
@@ -807,13 +803,11 @@ export const en = {
       "{{home}} vs {{away}} starts soon, enter your prediction for the match",
   },
   aiAnalysis: {
-    "AI analysis is not available": "AI analysis is not available",
-    "There is not enough reliable match data to show a prediction yet.":
-      "There is not enough reliable match data to show a prediction yet.",
+    "AI analysis is available on match day": "AI analysis is available on match day",
+    "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
+      "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
       "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.",
-    "AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}":
-      "AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
   },
   activeUi: {
     "Are you sure you want to delete your profile picture?":
@@ -865,6 +859,7 @@ export const en = {
       "Failed to update password. Please try again.",
     "Forgot Password": "Forgot Password",
     General: "General",
+    Account: "Account",
     Home: "Home",
     "Increase away score": "Increase away score",
     "Increase home score": "Increase home score",
@@ -893,10 +888,11 @@ export const en = {
     "Reset link is invalid or expired.": "Reset link is invalid or expired.",
     "Save New Password": "Save New Password",
     "Sign in with Google": "Sign in with Google",
-    "Subscription status may be outdated while offline.":
-      "Subscription status may be outdated while offline.",
     "This league is full. Upgrade to create larger leagues.":
       "This league is full. Upgrade to create larger leagues.",
+    "This league is full.": "This league is full.",
+    "Free access": "Free access",
+    "All features are currently free.": "All features are currently free.",
     "Top 10": "Top 10",
     "Upgrade to create more leagues and unlock more competitions.":
       "Upgrade to create more leagues and unlock more competitions.",

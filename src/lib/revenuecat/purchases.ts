@@ -1,98 +1,97 @@
-import { syncSubscriptionToServerUntilPro } from '@/features/subscription/api/subscriptionApi';
-import { useChampoPaywall } from '@/providers/PaywallProvider';
-import { usePurchasesContext } from '@/providers/PurchasesProvider';
-import { useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
-import {
-  getSubscriptionSummary,
-  hasActiveEntitlement,
-  PRO_ENTITLEMENT,
-} from './customerInfoSummary';
+import { syncSubscriptionToServerUntilPro } from "@/features/subscription/api/subscriptionApi";
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
+import { KEYS } from "@/lib/queryClient";
+import { useChampoPaywall } from "@/providers/PaywallProvider";
+import { usePurchasesContext } from "@/providers/PurchasesProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import { Platform } from "react-native";
+import Purchases from "react-native-purchases";
+import { getSubscriptionSummary } from "./customerInfoSummary";
 
 const syncSubscriptionAfterChange = async (): Promise<boolean> => {
   try {
     const result = await syncSubscriptionToServerUntilPro();
-    return result?.plan === 'pro';
+    return result?.plan === "pro";
   } catch (error) {
-    console.warn('[RevenueCat] Server subscription sync failed:', error);
+    console.warn("[RevenueCat] Server subscription sync failed:", error);
     return false;
   }
-};
-
-const purchasesService = {
-  async restorePurchases(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      return false;
-    }
-
-    const customerInfo = await Purchases.restorePurchases();
-    await Purchases.invalidateCustomerInfoCache();
-    return hasActiveEntitlement(customerInfo, PRO_ENTITLEMENT);
-  },
 };
 
 export const usePaywall = () => {
   const { refreshCustomerInfo } = usePurchasesContext();
   const presentPaywall = useChampoPaywall();
+  const queryClient = useQueryClient();
 
   return useCallback(async () => {
-    const upgraded = await presentPaywall();
+    if (!SUBSCRIPTIONS_ENABLED) return true;
 
-    if (upgraded) {
+    const result = await presentPaywall();
+
+    if (result === "restored") return true;
+
+    if (result === "purchased") {
       const [, synced] = await Promise.all([
         refreshCustomerInfo(),
         syncSubscriptionAfterChange(),
       ]);
+      if (synced) {
+        await queryClient.invalidateQueries({
+          queryKey: KEYS.subscription.accessAll,
+        });
+      }
       return synced;
     }
 
-    const latestCustomerInfo = await refreshCustomerInfo();
-    const hasProAccess = hasActiveEntitlement(latestCustomerInfo, PRO_ENTITLEMENT);
-
-    // Sync existing Pro users too so RevenueCat and Supabase can recover from
-    // a previously missed purchase callback.
-    if (hasProAccess) {
-      return syncSubscriptionAfterChange();
-    }
-
     return false;
-  }, [presentPaywall, refreshCustomerInfo]);
+  }, [presentPaywall, queryClient, refreshCustomerInfo]);
 };
 
 export const useRestorePurchases = () => {
   const { refreshCustomerInfo } = usePurchasesContext();
+  const queryClient = useQueryClient();
 
   return useCallback(async () => {
-    if (Platform.OS === 'web') {
-      return false;
-    }
+    if (!SUBSCRIPTIONS_ENABLED) return true;
 
-    const restored = await purchasesService.restorePurchases();
+    console.log("restorePurchases");
+    if (Platform.OS === "web") return false;
 
-    if (!restored) {
-      await refreshCustomerInfo();
-      return false;
-    }
-
+    const restored = await Purchases.restorePurchases();
+    console.log("restored", JSON.stringify(restored, null, 2));
+    await Purchases.invalidateCustomerInfoCache();
+    console.log("invalidated customer info cache");
     const [, synced] = await Promise.all([
       refreshCustomerInfo(),
       syncSubscriptionAfterChange(),
     ]);
+    if (synced) {
+      await queryClient.invalidateQueries({
+        queryKey: KEYS.subscription.accessAll,
+      });
+    }
     return synced;
-  }, [refreshCustomerInfo]);
+  }, [queryClient, refreshCustomerInfo]);
 };
 
 export const useRevenueCatSubscription = () => {
-  const { customerInfo, isReady, isUserSynced, isOffline, error, refreshCustomerInfo } =
-    usePurchasesContext();
+  const {
+    customerInfo,
+    isReady,
+    isUserSynced,
+    isOffline,
+    error,
+    refreshCustomerInfo,
+  } = usePurchasesContext();
 
   const subscription = useMemo(
     () => getSubscriptionSummary(customerInfo),
     [customerInfo],
   );
 
-  const isSubscriptionKnown = isUserSynced && (!isOffline || customerInfo !== null);
+  const isSubscriptionKnown = isUserSynced &&
+    (!isOffline || customerInfo !== null);
 
   return {
     customerInfo,
@@ -105,5 +104,3 @@ export const useRevenueCatSubscription = () => {
     refreshCustomerInfo,
   };
 };
-
-export { hasActiveEntitlement, PRO_ENTITLEMENT };

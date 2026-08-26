@@ -1,7 +1,8 @@
 import { Button, Card, Row, Screen, Section, Text } from '@/components';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import { MailIcon } from 'lucide-react-native';
+import { Mail } from 'lucide-react-native';
 import { Linking } from 'react-native';
 import { version as appVersion } from '../../../../package.json';
 
@@ -123,13 +124,11 @@ const HELP_SECTIONS = [
       },
       {
         question: 'How do I subscribe?',
-        answer:
-          'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.',
+        answer: 'Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.',
       },
       {
         question: 'How do I cancel my subscription?',
-        answer:
-          'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.',
+        answer: 'Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.',
       },
     ],
   },
@@ -155,24 +154,26 @@ const HelpScreen = () => {
       </Card>
 
       {/* Help Sections */}
-      {HELP_SECTIONS.map((section) => (
-        <Section key={section.title} title={t(section.title)}>
-          {section.items.map((item) => (
-            <Card key={`${section.title}-${item.question}`} className="mb-3" contentClassName="gap-2">
-              <Row>
-                <Text variant="title" tone="primary">
-                  {t(item.question)}
-                </Text>
-              </Row>
-              <Row>
-                <Text variant="body" tone="muted" className="leading-6">
-                  {t(item.answer)}
-                </Text>
-              </Row>
-            </Card>
-          ))}
-        </Section>
-      ))}
+      {HELP_SECTIONS.filter((section) => SUBSCRIPTIONS_ENABLED || section.title !== 'Subscription & Premium').map(
+        (section) => (
+          <Section key={section.title} title={t(section.title)}>
+            {section.items.map((item) => (
+              <Card key={`${section.title}-${item.question}`} className="mb-3" contentClassName="gap-2">
+                <Row>
+                  <Text variant="title" tone="primary">
+                    {t(item.question)}
+                  </Text>
+                </Row>
+                <Row>
+                  <Text variant="body" tone="muted" className="leading-6">
+                    {t(item.answer)}
+                  </Text>
+                </Row>
+              </Card>
+            ))}
+          </Section>
+        ),
+      )}
 
       {/* Contact Support */}
       <Section title={t('Contact Support')} contentClassName="gap-2">
@@ -187,7 +188,7 @@ const HelpScreen = () => {
           <Button
             onPress={handleEmailPress}
             label={t('Email Support')}
-            leftIcon={<MailIcon size={16} strokeWidth={2} />}
+            leftIcon={<Mail size={16} strokeWidth={2} />}
             fullWidth
           />
         </Card>

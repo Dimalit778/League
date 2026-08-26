@@ -21,7 +21,6 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const totalPoints = results.reduce((sum, result) => sum + result.points, 0);
-
   return (
     <Card variant="surface" padding="md">
       <Row className={spacing.stack}>
@@ -42,7 +41,7 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
               ))}
             </View>
           ) : (
-            <Text variant="bodySmall" tone="muted">
+            <Text variant="label" tone="muted">
               {t('No finished predictions yet')}
             </Text>
           )}

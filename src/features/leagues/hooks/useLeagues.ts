@@ -1,4 +1,4 @@
-import { KEYS } from "@/lib/queryClient";
+import { disabledKey, KEYS } from "@/lib/queryClient";
 
 import {
   skipToken,
@@ -9,8 +9,8 @@ import {
 
 import { leagueApi } from "@/features/leagues/api/leagueApi";
 import { useEnsureProAccess } from "@/features/subscription/hooks/useEnsureProAccess";
+import { useSubscriptionAccess } from "@/features/subscription/hooks/useSubscriptionAccess";
 import { useTranslation } from "@/hooks/useTranslation";
-import { PLAN_LIMITS } from "@/lib/revenuecat/plans";
 import { useAuth } from "@/providers/AuthProvider";
 import { useAuthStore } from "@/store/AuthStore";
 import { usePrimaryLeagueStore } from "@/store/PrimaryLeagueStore";
@@ -27,7 +27,7 @@ export const useMyLeagues = () => {
   return useQuery({
     queryKey: userId
       ? KEYS.users.leagues(userId)
-      : (["users", "leagues", "disabled"] as const),
+      : disabledKey("users", "leagues"),
     queryFn: userId ? () => leagueApi.getMyLeagues(userId) : skipToken,
     staleTime: STALE_TIME,
   });
@@ -37,16 +37,6 @@ export const useGetLeaderboard = (leagueId: string) => {
   return useQuery({
     queryKey: KEYS.leagues.leaderboard(leagueId),
     queryFn: () => leagueApi.getLeaderboardView(leagueId),
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
-// Per-round standings. Currently mirrors the season view (see leagueApi TODO);
-// swap the queryFn's data source once a round leaderboard backend exists.
-export const useGetRoundLeaderboard = (leagueId: string) => {
-  return useQuery({
-    queryKey: KEYS.leagues.roundLeaderboard(leagueId),
-    queryFn: () => leagueApi.getRoundLeaderboardView(leagueId),
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -68,7 +58,7 @@ export const useGetMyLeaguesSummary = () => {
   return useQuery({
     queryKey: userId
       ? KEYS.users.leaguesSummary(userId)
-      : (["users", "leagues-summary", "disabled"] as const),
+      : disabledKey("users", "leagues-summary"),
     queryFn: userId ? () => leagueApi.getMyLeaguesSummary(userId) : skipToken,
     staleTime: 1000 * 60 * 5,
   });
@@ -228,6 +218,7 @@ export const useUpdateLeagueActivation = ({
 
 export const useReactivateLeaguesAfterProUpgrade = () => {
   const { ensureProAccess } = useEnsureProAccess();
+  const { refetch: refetchSubscriptionAccess } = useSubscriptionAccess();
   const { mutateAsync: updateLeagueActivation } = useUpdateLeagueActivation({
     reinitializePrimaryLeague: false,
   });
@@ -238,10 +229,11 @@ export const useReactivateLeaguesAfterProUpgrade = () => {
         const hasProAccess = await ensureProAccess();
         if (!hasProAccess) return false;
 
-        const memberIds = leagues.map((league) => league.id).slice(
-          0,
-          PLAN_LIMITS.PRO.maxLeagues,
-        );
+        const { data: access } = await refetchSubscriptionAccess();
+        const maxActiveLeagues = access?.limits.maxActiveLeagues ?? 0;
+        if (maxActiveLeagues <= 0) return false;
+
+        const memberIds = leagues.map((league) => league.id).slice(0, maxActiveLeagues);
         if (memberIds.length === 0) return true;
 
         await updateLeagueActivation(memberIds);
@@ -250,7 +242,7 @@ export const useReactivateLeaguesAfterProUpgrade = () => {
         return false;
       }
     },
-    [ensureProAccess, updateLeagueActivation],
+    [ensureProAccess, refetchSubscriptionAccess, updateLeagueActivation],
   );
 };
 

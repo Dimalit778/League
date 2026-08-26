@@ -1,4 +1,4 @@
-import { Button, Card, Screen, Text } from '@/components';
+import { Button, Screen } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import SettingsContent from '@/features/settings/components/Settings/SettingsContent';
@@ -40,36 +40,14 @@ const SettingsScreen = () => {
   return (
     <Screen scroll padding="horizontal" bottomInset>
       <View className="mt-2">
-        <SettingsContent />
+        <SettingsContent onSignOut={handleSignOut} onDeleteAccount={confirmDeleteAccount} />
       </View>
 
       {isAdmin && (
         <View className="mt-8 px-6">
-          <Button
-            label={t('Open Admin Dashboard')}
-            onPress={() => router.push('/admin')}
-            variant="outline"
-          />
+          <Button label={t('Open Admin Dashboard')} onPress={() => router.push('/admin')} variant="outline" />
         </View>
       )}
-      <Button size="md" variant="outline" label={t('Sign Out')} onPress={handleSignOut} className="mt-10 " />
-
-      <View className="mt-8">
-        <Card
-          onPress={confirmDeleteAccount}
-          variant="soft"
-          contentClassName="items-center"
-          className="border-error/40"
-        >
-          <Text variant="title" tone="error">
-            {t('Delete Account')}
-          </Text>
-
-          <Text variant="bodySmall" className="text-muted">
-            {t('Delete personal data while keeping anonymized league history.')}
-          </Text>
-        </Card>
-      </View>
     </Screen>
   );
 };

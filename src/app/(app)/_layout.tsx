@@ -1,4 +1,5 @@
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { Stack } from 'expo-router';
@@ -60,16 +61,18 @@ export default function AppLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="(paywall)/index"
-        options={{
-          presentation: 'formSheet',
+      <Stack.Protected guard={SUBSCRIPTIONS_ENABLED}>
+        <Stack.Screen
+          name="(paywall)/index"
+          options={{
+            presentation: 'formSheet',
 
-          animation: 'slide_from_bottom',
-          gestureEnabled: false,
-          headerShown: false,
-        }}
-      />
+            animation: 'slide_from_bottom',
+            gestureEnabled: false,
+            headerShown: false,
+          }}
+        />
+      </Stack.Protected>
 
       <Stack.Protected guard={!!isAdminUser}>
         <Stack.Screen name="admin" />

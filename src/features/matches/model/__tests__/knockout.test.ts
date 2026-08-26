@@ -1,7 +1,7 @@
-import type { MatchCardType } from '../../types';
+import type { MatchListItem } from '../../types';
 import { pairKnockoutTies, selectKnockoutTies } from '../knockout';
 
-const mk = (o: Partial<MatchCardType>): MatchCardType =>
+const mk = (o: Partial<MatchListItem>): MatchListItem =>
   ({
     id: 0,
     competition_id: 1,
@@ -21,7 +21,7 @@ const mk = (o: Partial<MatchCardType>): MatchCardType =>
     ai_predicted_away_score: null,
     prediction: null,
     ...o,
-  }) as MatchCardType;
+  }) as MatchListItem;
 
 describe('pairKnockoutTies', () => {
   it('treats a single-leg World Cup knockout match as a one-leg tie with no aggregate', () => {

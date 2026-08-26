@@ -1,15 +1,34 @@
 import { Button, Screen, Text } from '@/components';
+import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePaywall, useRestorePurchases, useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
+import { usePaywall, useRestorePurchases } from '@/lib/revenuecat/purchases';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import { useCallback, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 
-export default function SubscriptionScreen() {
+function FreeAccessScreen() {
+  const { t } = useTranslation();
+
+  return (
+    <Screen edges={['top']}>
+      <View className="flex-1 px-4 pt-6 gap-4">
+        <View className="rounded-2xl border border-border bg-surface p-5 gap-3">
+          <Text className="text-2xl">{t('Free access')}</Text>
+          <Text className="text-base text-muted">{t('All features are currently free.')}</Text>
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
+function PaidSubscriptionScreen() {
   const { t } = useTranslation();
   const openPaywall = usePaywall();
   const restorePurchases = useRestorePurchases();
-  const { subscription, isLoading, isOffline } = useRevenueCatSubscription();
+  const accessQuery = useSubscriptionAccess();
+  const isPro = accessQuery.data?.planCode === 'pro';
+  const isLoading = accessQuery.isPending;
   const [isRestoring, setIsRestoring] = useState(false);
 
   const handleRestorePurchases = useCallback(async () => {
@@ -34,18 +53,15 @@ export default function SubscriptionScreen() {
     <Screen edges={['top']}>
       <View className="flex-1 px-4 pt-6 gap-4">
         <View className="rounded-2xl border border-border bg-surface p-5 gap-3">
-          <Text className="text-2xl">{subscription.isActive ? t('PRO') : t('FREE')}</Text>
+          <Text className="text-2xl">{isPro ? t('PRO') : t('FREE')}</Text>
           <Text className="text-base text-muted">
-            {subscription.isActive
+            {isPro
               ? t('Your PRO subscription is active.')
               : t('Upgrade to create more leagues and unlock more competitions.')}
           </Text>
-          {isOffline && (
-            <Text className="text-sm text-muted">{t('Subscription status may be outdated while offline.')}</Text>
-          )}
         </View>
 
-        {!subscription.isActive && (
+        {!isPro && (
           <Button
             label={t('Upgrade')}
             variant="primary"
@@ -69,4 +85,8 @@ export default function SubscriptionScreen() {
       </View>
     </Screen>
   );
+}
+
+export default function SubscriptionScreen() {
+  return SUBSCRIPTIONS_ENABLED ? <PaidSubscriptionScreen /> : <FreeAccessScreen />;
 }

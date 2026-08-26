@@ -10,7 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Flag, ShieldBan, ShieldCheck } from 'lucide-react-native';
 import { Alert, View } from 'react-native';
 import MemberDetailsSkeleton from '../components/MemberDetailsSkeleton';
-import MemberStats from '../components/memberStats';
+import MemberStats from '../components/MemberStats';
 
 export default function MemberDetailsScreen() {
   const { memberId } = useLocalSearchParams<{ memberId: string }>();

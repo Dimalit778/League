@@ -10,7 +10,7 @@ type AppBrandProps = {
 const sizes = {
   sm: 120,
   md: 200,
-  lg: 250,
+  lg: 320,
 } as const;
 
 export const Brand = ({ size = 'md', onBoarding = false }: AppBrandProps) => {

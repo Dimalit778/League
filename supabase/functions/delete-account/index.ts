@@ -1,5 +1,5 @@
-import { createClient, type User } from 'npm:@supabase/supabase-js@2';
-import { importPKCS8, SignJWT } from 'npm:jose@5.9.6';
+import { createClient, type User } from 'npm:@supabase/supabase-js@2.75.0';
+import { createRemoteJWKSet, importPKCS8, jwtVerify, SignJWT } from 'npm:jose@5.9.6';
 import { createRequestId, monitoredErrorResponse } from '../_shared/monitoring.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
@@ -7,6 +7,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 const REVENUECAT_SECRET_API_KEY = Deno.env.get('REVENUECAT_SECRET_API_KEY') ?? '';
 const PROFILE_IMAGES_BUCKET = Deno.env.get('PROFILE_IMAGES_BUCKET') ?? 'profile_images';
+const APPLE_JWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,6 +33,13 @@ function isAppleUser(user: User) {
   );
 }
 
+function getAppleSubject(user: User): string | null {
+  const identity = user.identities?.find((candidate) => candidate.provider === 'apple');
+  const subject = identity?.identity_data?.sub;
+  if (typeof subject === 'string' && subject.length > 0) return subject;
+  return identity?.id ?? null;
+}
+
 async function createAppleClientSecret() {
   const clientId = Deno.env.get('APPLE_CLIENT_ID') ?? '';
   const teamId = Deno.env.get('APPLE_TEAM_ID') ?? '';
@@ -55,7 +63,7 @@ async function createAppleClientSecret() {
   return { clientId, clientSecret };
 }
 
-async function revokeAppleAuthorization(authorizationCode: string) {
+async function revokeAppleAuthorization(authorizationCode: string, expectedSubject: string) {
   const { clientId, clientSecret } = await createAppleClientSecret();
   const tokenResponse = await fetch('https://appleid.apple.com/auth/token', {
     method: 'POST',
@@ -75,7 +83,19 @@ async function revokeAppleAuthorization(authorizationCode: string) {
   const tokens = (await tokenResponse.json()) as {
     access_token?: string;
     refresh_token?: string;
+    id_token?: string;
   };
+
+  if (!tokens.id_token) {
+    throw new Error('Apple token exchange returned no identity token');
+  }
+
+  await jwtVerify(tokens.id_token, APPLE_JWKS, {
+    issuer: 'https://appleid.apple.com',
+    audience: clientId,
+    subject: expectedSubject,
+  });
+
   const token = tokens.refresh_token ?? tokens.access_token;
 
   if (!token) {
@@ -139,12 +159,20 @@ async function deleteProfileImages(userId: string) {
   // superseded/orphaned profile images that are no longer referenced by a row.
   const membershipFiles = await Promise.all(
     (memberships ?? []).map(async (membership) => {
-      const { data: files, error: listError } = await adminClient.storage
-        .from(PROFILE_IMAGES_BUCKET)
-        .list('', { search: `${membership.id}_`, limit: 100 });
+      const files: { name: string }[] = [];
+      const pageSize = 100;
 
-      if (listError) throw new Error(listError.message);
-      return files ?? [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data: page, error: listError } = await adminClient.storage
+          .from(PROFILE_IMAGES_BUCKET)
+          .list('', { search: `${membership.id}_`, limit: pageSize, offset });
+
+        if (listError) throw new Error(listError.message);
+        files.push(...(page ?? []));
+        if (!page || page.length < pageSize) break;
+      }
+
+      return files;
     }),
   );
 
@@ -190,10 +218,19 @@ Deno.serve(async (req) => {
 
     const body = (await req.json().catch(() => ({}))) as DeleteAccountBody;
     if (isAppleUser(user)) {
-      if (!body.appleAuthorizationCode) {
+      if (
+        typeof body.appleAuthorizationCode !== 'string' ||
+        body.appleAuthorizationCode.length === 0 ||
+        body.appleAuthorizationCode.length > 4096
+      ) {
         return json({ error: 'Apple reauthentication is required' }, 400);
       }
-      await revokeAppleAuthorization(body.appleAuthorizationCode);
+
+      const appleSubject = getAppleSubject(user);
+      if (!appleSubject) {
+        throw new Error('Apple identity subject is unavailable');
+      }
+      await revokeAppleAuthorization(body.appleAuthorizationCode, appleSubject);
     }
 
     const { data: subscription, error: subscriptionError } = await adminClient
@@ -218,7 +255,7 @@ Deno.serve(async (req) => {
 
     if (anonymizationError) throw new Error(anonymizationError.message);
 
-    const { error: authError } = await adminClient.auth.admin.deleteUser(user.id);
+    const { error: authError } = await adminClient.auth.admin.deleteUser(user.id, false);
     if (authError) throw new Error(authError.message);
 
     return json({ success: true, deletedProfileImages, anonymization });
@@ -230,6 +267,10 @@ Deno.serve(async (req) => {
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: {
+      ...corsHeaders,
+      'Cache-Control': 'no-store',
+      'Content-Type': 'application/json',
+    },
   });
 }

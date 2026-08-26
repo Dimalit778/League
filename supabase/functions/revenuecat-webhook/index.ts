@@ -1,7 +1,16 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const REVENUECAT_WEBHOOK_SECRET = Deno.env.get('REVENUECAT_WEBHOOK_SECRET');
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+// deno-lint-ignore no-import-prefix
+import { createClient } from 'npm:@supabase/supabase-js@2.75.0';
+import {
+  PRO_ENTITLEMENT,
+  PRO_SEASON_PRODUCT_ID,
+  resolveSeasonPassAccess,
+  type ProSeason,
+} from '../_shared/seasonPass.ts';
+
+const REVENUECAT_WEBHOOK_SECRET = Deno.env.get('REVENUECAT_WEBHOOK_SECRET') ?? '';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
 const HANDLED_EVENTS = new Set([
   'INITIAL_PURCHASE',
   'NON_RENEWING_PURCHASE',
@@ -11,330 +20,264 @@ const HANDLED_EVENTS = new Set([
   'CANCELLATION',
   'EXPIRATION',
   'BILLING_ISSUE',
-  'TRANSFER'
+  'REFUND_REVERSED',
+  'TRANSFER',
 ]);
-function getStatusFromEvent(eventType) {
-  switch(eventType){
-    case 'INITIAL_PURCHASE':
-    case 'NON_RENEWING_PURCHASE':
-    case 'RENEWAL':
-    case 'PRODUCT_CHANGE':
-    case 'UNCANCELLATION':
-      return 'active';
-    case 'CANCELLATION':
-      return 'cancelled';
-    case 'EXPIRATION':
-      return 'expired';
-    case 'BILLING_ISSUE':
-      return 'billing_issue';
-    default:
-      return 'inactive';
-  }
+
+// Edge Functions use the project schema dynamically; generated database types
+// are not bundled into this runtime module.
+// deno-lint-ignore no-explicit-any
+type AdminClient = any;
+type RevenueCatEvent = {
+  id?: string | null;
+  type?: string;
+  app_user_id?: string | null;
+  aliases?: string[];
+  product_id?: string | null;
+  entitlement_id?: string | null;
+  entitlement_ids?: string[];
+  purchased_at_ms?: number | null;
+  expiration_at_ms?: number | null;
+  transaction_id?: string | null;
+  cancel_reason?: string | null;
+  transferred_from?: string[];
+  transferred_to?: string[];
+};
+
+function response(message: string, status = 200) {
+  return new Response(message, { status });
 }
-function getPlanFromEvent(event) {
-  const eventType = event.type;
-  switch(eventType){
-    case 'INITIAL_PURCHASE':
-    case 'NON_RENEWING_PURCHASE':
-    case 'RENEWAL':
-    case 'PRODUCT_CHANGE':
-    case 'UNCANCELLATION':
-      return 'pro';
-    case 'CANCELLATION':
-      /**
-       * Important:
-       * Cancellation means the user turned off auto-renewal.
-       * The user should usually keep PRO access until expiration_at_ms.
-       */ return 'pro';
-    case 'BILLING_ISSUE':
-      {
-        /**
-       * If Apple / RevenueCat still gives a future expiration,
-       * keep access during grace period.
-       */ const expirationMs = event.expiration_at_ms;
-        if (expirationMs && expirationMs > Date.now()) {
-          return 'pro';
-        }
-        return 'free';
-      }
-    case 'EXPIRATION':
-      /**
-       * This is the event that should actually remove PRO access.
-       */ return 'free';
-    default:
-      return 'free';
-  }
-}
-/**
- * Resolve the Supabase user_id from a RevenueCat app_user_id.
- *
- * Normally Purchases.logIn(supabaseUserId) means app_user_id is the Supabase UUID.
- * But anonymous purchases / aliases / old RevenueCat users can make it different.
- */ async function resolveUserId(supabase, appUserId) {
-  /**
-   * 1. Direct match.
-   * If app_user_id is the Supabase user UUID, this will work.
-   */ const { data: userRow, error: userError } = await supabase.from('users').select('id').eq('id', appUserId).maybeSingle();
-  if (userError) {
-    console.warn('Failed checking users table:', userError);
-  }
-  if (userRow?.id) {
-    return userRow.id;
-  }
-  /**
-   * 2. Fallback by stored RevenueCat app user id.
-   */ const { data: subRow, error: subError } = await supabase.from('user_subscriptions').select('user_id').eq('revenuecat_app_user_id', appUserId).maybeSingle();
-  if (subError) {
-    console.warn('Failed checking user_subscriptions table:', subError);
-  }
-  return subRow?.user_id ?? null;
-}
-/**
- * Idempotency guard for duplicate webhook deliveries.
- *
- * RevenueCat may deliver the same event more than once (retries, at-least-once
- * delivery). Every event carries a stable `event.id`; if we have already seen
- * it, skip re-processing so a re-delivered stale event can't regress state
- * (e.g. an old RENEWAL arriving after an EXPIRATION). Backed by the partial
- * unique index on revenuecat_events(event_id).
- */ async function isDuplicateEvent(supabase, eventId) {
+
+async function isDuplicateEvent(supabase: AdminClient, eventId: string | null) {
   if (!eventId) return false;
-  const { data, error } = await supabase.from('revenuecat_events').select('id').eq('event_id', eventId).limit(1).maybeSingle();
-  if (error) {
-    console.warn('Failed checking for duplicate event:', error);
-    return false;
-  }
+  const { data, error } = await supabase
+    .from('revenuecat_events')
+    .select('id')
+    .eq('event_id', eventId)
+    .limit(1)
+    .maybeSingle();
+  if (error) console.warn('Failed checking for duplicate event:', error.message);
   return !!data;
 }
-/**
- * Store RevenueCat event for debugging / idempotency / later retry.
- *
- * Requires this table (see migration add_revenuecat_events_event_id):
- *
- * create table if not exists public.revenuecat_events (
- *   id uuid primary key default gen_random_uuid(),
- *   app_user_id text,
- *   event_type text,
- *   event_id text,
- *   payload jsonb not null,
- *   processed boolean default false,
- *   created_at timestamptz default now()
- * );
- * create unique index revenuecat_events_event_id_key
- *   on public.revenuecat_events (event_id) where event_id is not null;
- */ async function storeRevenueCatEvent(supabase, params) {
+
+async function storeEvent(
+  supabase: AdminClient,
+  body: unknown,
+  event: RevenueCatEvent,
+  processed: boolean,
+) {
   const { error } = await supabase.from('revenuecat_events').insert({
-    app_user_id: params.appUserId,
-    event_type: params.eventType,
-    event_id: params.eventId ?? null,
-    payload: params.payload,
-    processed: params.processed
-  });
-  if (error) {
-    // A 23505 unique violation here means a concurrent duplicate delivery raced
-    // us past isDuplicateEvent — safe to ignore, the other delivery stored it.
-    console.warn('Failed to store RevenueCat event:', error);
-  }
-}
-async function findSubscriptionByRcIds(supabase, rcIds) {
-  if (!rcIds?.length) return null;
-  const { data: byRcId } = await supabase.from('user_subscriptions').select('*').in('revenuecat_app_user_id', rcIds).order('updated_at', {
-    ascending: false
-  }).limit(1).maybeSingle();
-  if (byRcId) return byRcId;
-  const resolvedUserIds = [];
-  for (const rcId of rcIds){
-    const userId = await resolveUserId(supabase, rcId);
-    if (userId) resolvedUserIds.push(userId);
-  }
-  if (!resolvedUserIds.length) return null;
-  const { data: byUserId } = await supabase.from('user_subscriptions').select('*').in('user_id', resolvedUserIds).order('updated_at', {
-    ascending: false
-  }).limit(1).maybeSingle();
-  return byUserId ?? null;
-}
-async function handleTransferEvent(supabase, event, body, eventId) {
-  const transferredFrom = event.transferred_from ?? [];
-  const transferredTo = event.transferred_to ?? [];
-  const sourceSubscription = await findSubscriptionByRcIds(supabase, transferredFrom);
-  let processed = false;
-  for (const targetRcId of transferredTo){
-    const targetUserId = await resolveUserId(supabase, targetRcId);
-    if (!targetUserId) {
-      console.warn(`TRANSFER target not resolved: ${targetRcId}`);
-      continue;
-    }
-    const payload = sourceSubscription ? {
-      user_id: targetUserId,
-      plan: sourceSubscription.plan,
-      status: sourceSubscription.status,
-      entitlement_id: sourceSubscription.entitlement_id,
-      product_id: sourceSubscription.product_id,
-      revenuecat_app_user_id: targetRcId,
-      expires_at: sourceSubscription.expires_at,
-      updated_at: new Date().toISOString()
-    } : {
-      user_id: targetUserId,
-      plan: 'free',
-      status: 'inactive',
-      entitlement_id: null,
-      product_id: null,
-      revenuecat_app_user_id: targetRcId,
-      expires_at: null,
-      updated_at: new Date().toISOString()
-    };
-    const { error } = await supabase.from('user_subscriptions').upsert(payload, {
-      onConflict: 'user_id'
-    });
-    if (error) {
-      console.error(`TRANSFER upsert failed for ${targetUserId}:`, error);
-      continue;
-    }
-    processed = true;
-    console.log(`TRANSFER applied to user ${targetUserId} (RC: ${targetRcId})`);
-  }
-  await storeRevenueCatEvent(supabase, {
-    appUserId: transferredTo[0] ?? null,
-    eventType: 'TRANSFER',
-    eventId,
+    app_user_id: event.app_user_id ?? null,
+    event_type: event.type ?? 'UNKNOWN',
+    event_id: event.id ?? null,
     payload: body,
-    processed
+    processed,
   });
-  return processed;
+  if (error) console.warn('Failed to store RevenueCat event:', error.message);
 }
-Deno.serve(async (req)=>{
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', {
-      status: 405
-    });
+
+async function resolveUserId(supabase: AdminClient, revenueCatIds: string[]) {
+  for (const revenueCatId of [...new Set(revenueCatIds.filter(Boolean))]) {
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', revenueCatId)
+      .maybeSingle();
+    if (user?.id) return user.id as string;
+
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('user_id')
+      .eq('revenuecat_app_user_id', revenueCatId)
+      .maybeSingle();
+    if (subscription?.user_id) return subscription.user_id as string;
   }
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader || authHeader !== REVENUECAT_WEBHOOK_SECRET) {
-    return new Response('Unauthorized', {
-      status: 401
-    });
+  return null;
+}
+
+async function fetchCurrentSeason(
+  supabase: AdminClient,
+): Promise<{ season: ProSeason | null; failed: boolean }> {
+  const { data, error } = await supabase.rpc('get_current_season');
+  if (error) {
+    console.error('Failed to fetch current season:', error.message);
+    return { season: null, failed: true };
   }
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  let body;
-  try {
-    body = await req.json();
-  } catch  {
-    return new Response('Invalid JSON', {
-      status: 400
-    });
-  }
-  const event = body.event;
-  if (!event) {
-    return new Response('Missing event', {
-      status: 400
-    });
-  }
-  const eventType = event.type;
-  const appUserId = event.app_user_id;
-  const eventId = event.id ?? null;
-  if (!eventType) {
-    return new Response('Missing event type', {
-      status: 400
-    });
-  }
-  /**
-   * Idempotency: bail out early on a duplicate delivery before touching
-   * user_subscriptions. Returns 200 so RevenueCat marks it delivered.
-   */ if (await isDuplicateEvent(supabase, eventId)) {
-    console.log(`Duplicate RevenueCat event ignored: ${eventId} (${eventType})`);
-    return new Response('Duplicate event ignored', {
-      status: 200
-    });
-  }
-  if (!HANDLED_EVENTS.has(eventType)) {
-    console.log(`RevenueCat event ignored: ${eventType}`);
-    await storeRevenueCatEvent(supabase, {
-      appUserId: appUserId ?? null,
-      eventType,
-      eventId,
-      payload: body,
-      processed: true
-    });
-    return new Response('Event ignored', {
-      status: 200
-    });
-  }
-  if (eventType === 'TRANSFER') {
-    const processed = await handleTransferEvent(supabase, event, body, eventId);
-    return new Response(processed ? 'TRANSFER processed' : 'TRANSFER stored', {
-      status: 200
-    });
-  }
-  if (!appUserId) {
-    await storeRevenueCatEvent(supabase, {
-      appUserId: null,
-      eventType,
-      eventId,
-      payload: body,
-      processed: false
-    });
-    return new Response('Missing app_user_id', {
-      status: 400
-    });
-  }
-  const userId = await resolveUserId(supabase, appUserId);
-  if (!userId) {
-    /**
-     * Do not silently lose the event.
-     * We still return 200 so RevenueCat does not retry forever,
-     * but we keep the payload in revenuecat_events.
-     */ console.warn(`No Supabase user found for RC app_user_id: ${appUserId} event: ${eventType}. Event stored.`);
-    await storeRevenueCatEvent(supabase, {
-      appUserId,
-      eventType,
-      eventId,
-      payload: body,
-      processed: false
-    });
-    return new Response('User not found, event stored', {
-      status: 200
-    });
-  }
-  const entitlementIds = event.entitlement_ids;
-  const entitlementId = event.entitlement_id ?? entitlementIds?.[0] ?? null;
-  const productId = event.product_id ?? null;
-  const expiresAt = event.expiration_at_ms ? new Date(event.expiration_at_ms).toISOString() : null;
-  const newPlan = getPlanFromEvent(event);
-  const newStatus = getStatusFromEvent(eventType);
+  const row = Array.isArray(data) ? data[0] : data;
+  return {
+    season: row
+      ? { code: row.code, starts_at: row.starts_at, ends_at: row.ends_at }
+      : null,
+    failed: false,
+  };
+}
+
+async function upsertSeasonPass(
+  supabase: AdminClient,
+  userId: string,
+  event: RevenueCatEvent,
+  season: ProSeason | null,
+) {
+  const transaction = {
+    id: event.transaction_id ?? null,
+    purchase_date: event.purchased_at_ms
+      ? new Date(event.purchased_at_ms).toISOString()
+      : null,
+  };
+  const isRefund = event.type === 'CANCELLATION';
+  const access = resolveSeasonPassAccess({
+    transaction,
+    season,
+    cancelledTransactionId: isRefund ? transaction.id : null,
+  });
+  const revenueCatAppUserId = event.app_user_id ?? userId;
+
   const { error } = await supabase.from('user_subscriptions').upsert({
     user_id: userId,
-    plan: newPlan,
-    status: newStatus,
-    entitlement_id: entitlementId,
-    product_id: productId,
-    revenuecat_app_user_id: appUserId,
-    expires_at: expiresAt,
-    updated_at: new Date().toISOString()
-  }, {
-    onConflict: 'user_id'
-  });
-  if (error) {
-    console.error(`Failed to update user_subscriptions for user ${userId}:`, error);
-    await storeRevenueCatEvent(supabase, {
-      appUserId,
-      eventType,
-      eventId,
-      payload: body,
-      processed: false
-    });
-    return new Response('Database error', {
-      status: 500
-    });
+    plan: access.plan,
+    status: access.status,
+    entitlement_id: access.entitlementId,
+    product_id: PRO_SEASON_PRODUCT_ID,
+    revenuecat_app_user_id: revenueCatAppUserId,
+    expires_at: access.expiresAt,
+    season_code: access.seasonCode,
+    purchased_at: access.purchasedAt,
+    transaction_id: access.transactionId,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+
+  if (error) throw error;
+  return access;
+}
+
+function legacyPlan(event: RevenueCatEvent): 'pro' | 'free' {
+  if (event.type === 'EXPIRATION') return 'free';
+  if (event.type === 'BILLING_ISSUE') {
+    return event.expiration_at_ms && event.expiration_at_ms > Date.now() ? 'pro' : 'free';
   }
-  await storeRevenueCatEvent(supabase, {
-    appUserId,
-    eventType,
-    eventId,
-    payload: body,
-    processed: true
+  return 'pro';
+}
+
+function legacyStatus(event: RevenueCatEvent) {
+  if (event.type === 'EXPIRATION') return 'expired';
+  if (event.type === 'BILLING_ISSUE') return 'billing_issue';
+  if (event.type === 'CANCELLATION') return 'cancelled';
+  return 'active';
+}
+
+async function upsertLegacySubscription(
+  supabase: AdminClient,
+  userId: string,
+  event: RevenueCatEvent,
+) {
+  const plan = legacyPlan(event);
+  const expiresAt = event.expiration_at_ms
+    ? new Date(event.expiration_at_ms).toISOString()
+    : null;
+  const entitlementId = event.entitlement_id ?? event.entitlement_ids?.[0] ?? null;
+  const { error } = await supabase.from('user_subscriptions').upsert({
+    user_id: userId,
+    plan,
+    status: legacyStatus(event),
+    entitlement_id: plan === 'pro' ? entitlementId ?? PRO_ENTITLEMENT : null,
+    product_id: event.product_id ?? null,
+    revenuecat_app_user_id: event.app_user_id ?? userId,
+    expires_at: expiresAt,
+    season_code: null,
+    purchased_at: event.purchased_at_ms
+      ? new Date(event.purchased_at_ms).toISOString()
+      : null,
+    transaction_id: null,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+  if (error) throw error;
+}
+
+async function handleTransfer(supabase: AdminClient, event: RevenueCatEvent) {
+  const sourceIds = event.transferred_from ?? [];
+  const targetIds = event.transferred_to ?? [];
+  const sourceUserId = await resolveUserId(supabase, sourceIds);
+  if (!sourceUserId) return false;
+
+  const { data: source } = await supabase
+    .from('user_subscriptions')
+    .select('*')
+    .eq('user_id', sourceUserId)
+    .maybeSingle();
+  if (!source) return false;
+
+  // Each target is an independent user_subscriptions row (onConflict: user_id),
+  // so the transfers can run concurrently.
+  const results = await Promise.all(
+    targetIds.map(async (targetId) => {
+      const targetUserId = await resolveUserId(supabase, [targetId]);
+      if (!targetUserId) return false;
+      const { error } = await supabase.from('user_subscriptions').upsert({
+        ...source,
+        user_id: targetUserId,
+        revenuecat_app_user_id: targetId,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+      return !error;
+    }),
+  );
+  return results.some(Boolean);
+}
+
+Deno.serve(async (req) => {
+  if (req.method !== 'POST') return response('Method not allowed', 405);
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || authHeader !== REVENUECAT_WEBHOOK_SECRET) {
+    return response('Unauthorized', 401);
+  }
+
+  let body: { event?: RevenueCatEvent };
+  try {
+    body = await req.json();
+  } catch {
+    return response('Invalid JSON', 400);
+  }
+
+  const event = body.event;
+  if (!event?.type) return response('Missing event', 400);
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
   });
-  console.log(`Updated user ${userId} RC ${appUserId} → plan: ${newPlan}, status: ${newStatus}, event: ${eventType}`);
-  return new Response('OK', {
-    status: 200
-  });
+  const eventId = event.id ?? null;
+  if (await isDuplicateEvent(supabase, eventId)) return response('Duplicate event ignored');
+
+  if (!HANDLED_EVENTS.has(event.type)) {
+    await storeEvent(supabase, body, event, true);
+    return response('Event ignored');
+  }
+
+  if (event.type === 'TRANSFER') {
+    const processed = await handleTransfer(supabase, event);
+    await storeEvent(supabase, body, event, processed);
+    return response(processed ? 'TRANSFER processed' : 'TRANSFER stored');
+  }
+
+  const userId = await resolveUserId(supabase, [event.app_user_id ?? '', ...(event.aliases ?? [])]);
+  if (!userId) {
+    await storeEvent(supabase, body, event, false);
+    return response('User not found, event stored');
+  }
+
+  try {
+    if (event.product_id === PRO_SEASON_PRODUCT_ID) {
+      const seasonResult = await fetchCurrentSeason(supabase);
+      if (seasonResult.failed) throw new Error('Failed to fetch current season');
+      await upsertSeasonPass(supabase, userId, event, seasonResult.season);
+    } else if (event.type !== 'NON_RENEWING_PURCHASE' && event.type !== 'REFUND_REVERSED') {
+      await upsertLegacySubscription(supabase, userId, event);
+    }
+
+    await storeEvent(supabase, body, event, true);
+    return response('OK');
+  } catch (error) {
+    console.error('RevenueCat webhook processing failed:', error);
+    await storeEvent(supabase, body, event, false);
+    return response('Database error', 500);
+  }
 });

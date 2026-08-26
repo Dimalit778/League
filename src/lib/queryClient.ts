@@ -3,6 +3,16 @@ export const TOKENS = {
   me: 'me',
 } as const;
 
+/**
+ * Stable placeholder query key for a query that is not ready to run (passing
+ * `skipToken`). The query never executes, so the key only has to be stable and
+ * distinct — the leading 'disabled' segment guarantees it can never collide
+ * with a real `KEYS.*` entry. Replaces the hand-rolled `[..., 'disabled']`
+ * arrays that were duplicated across hooks.
+ */
+export const disabledKey = (...parts: (string | number | null | undefined)[]) =>
+  ['disabled', ...parts.map((part) => part ?? 'none')] as const;
+
 export const KEYS = {
   // ==================== USERS ====================
   users: {
@@ -31,7 +41,6 @@ export const KEYS = {
     byJoinCode: (code: string) => ['leagues', 'code', code] as const,
     members: (leagueId: string) => ['leagues', leagueId, 'members'] as const,
     leaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard'] as const,
-    roundLeaderboard: (leagueId: string) => ['leagues', leagueId, 'leaderboard', 'round'] as const,
   },
 
   // ==================== MATCHES ====================
@@ -96,6 +105,9 @@ export const KEYS = {
 
   // ==================== SUBSCRIPTION ====================
   subscription: {
+    plans: ['subscription', 'plans'] as const,
+    accessAll: ['subscription', 'access'] as const,
+    access: (userId: string) => ['subscription', 'access', userId] as const,
     currentSeason: ['subscription', 'current-season'] as const,
   },
 

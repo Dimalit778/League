@@ -23,7 +23,7 @@ function toPrimaryLeague(member: MyLeague) {
     memberId: member.id,
     leagueId: member.league.id,
     competitionId: member.league.competition_id,
-    seasonId: member.league.competition?.season_id ?? null,
+    seasonId: member.league.competition?.currentSeason?.id ?? null,
     nickname: member.nickname,
     avatarUrl: member.avatar_url,
   };
@@ -41,7 +41,7 @@ export function useMyLeaguesScreen() {
   const reactivateLeaguesAfterProUpgrade = useReactivateLeaguesAfterProUpgrade();
 
   const { data: myLeagues, isPending, error, refetch } = useMyLeagues();
-  const { isPro, maxLeagues } = useSubscriptionLimits();
+  const { isPro, maxLeagues, isLoading: isSubscriptionLoading } = useSubscriptionLimits();
     const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { mutateAsync: updateLeagueActivation, isPending: isUpdatingLeagueActivation } =
     useUpdateLeagueActivation();
@@ -187,7 +187,7 @@ export function useMyLeaguesScreen() {
   }, [allLeagues, reactivateLeaguesAfterProUpgrade, refetch]);
 
   return {
-    isLoading: isPending,
+    isLoading: isPending || isSubscriptionLoading,
     error,
     allLeagues,
     activeCount,

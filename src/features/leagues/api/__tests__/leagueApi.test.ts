@@ -79,24 +79,40 @@ describe("leagueApi", () => {
 
   describe("getMyLeagues", () => {
     it("returns grouped leagues for a user", async () => {
+      const competition = {
+        id: 2021,
+        name: "Premier League",
+        seasons: [
+          {
+            id: 2026,
+            competition_id: 2021,
+            current_matchday: 1,
+            current_stage: "REGULAR_SEASON",
+            total_matchdays: 38,
+            season_start: "2026-08-21",
+            season_end: "2027-05-30",
+            is_current: true,
+          },
+        ],
+      };
       const mockData = [
         {
           id: "m1",
           is_primary: true,
           active: true,
-          league: { id: "l1", name: "Primary" },
+          league: { id: "l1", name: "Primary", competition },
         },
         {
           id: "m2",
           is_primary: false,
           active: true,
-          league: { id: "l2", name: "Active" },
+          league: { id: "l2", name: "Active", competition },
         },
         {
           id: "m3",
           is_primary: false,
           active: false,
-          league: { id: "l3", name: "Inactive" },
+          league: { id: "l3", name: "Inactive", competition },
         },
       ];
       const order = jest.fn().mockReturnThis();
@@ -115,10 +131,21 @@ describe("leagueApi", () => {
 
       const result = await leagueApi.getMyLeagues("u1");
       expect(supabase.from).toHaveBeenCalledWith("league_members");
+      const normalized = mockData.map((membership) => ({
+        ...membership,
+        league: {
+          ...membership.league,
+          competition: {
+            id: competition.id,
+            name: competition.name,
+            currentSeason: competition.seasons[0],
+          },
+        },
+      }));
       expect(result).toEqual({
-        primaryLeague: mockData[0],
-        leagues: [mockData[1]],
-        inactiveLeagues: [mockData[2]],
+        primaryLeague: normalized[0],
+        leagues: [normalized[1]],
+        inactiveLeagues: [normalized[2]],
         total: 3,
       });
     });

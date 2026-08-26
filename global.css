@@ -2,48 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inner RN-web inputs sit inside overflow-hidden fields; Chrome's focus
-   outline gets clipped into two vertical blue lines on the sides. */
-input,
-textarea {
-  outline: none !important;
+/* Keep mouse/touch interactions clean while preserving an obvious keyboard
+   focus indicator on React Native Web and the static admin experience. */
+:where(input, textarea, select, button, a, [role="button"], [role="textbox"]):focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* Disable focus outline on web */
-@media (min-width: 768px) {
-  * {
-    outline: none !important;
-  }
-  
-  /* Specifically target common focusable elements */
-  input:focus,
-  button:focus,
-  textarea:focus,
-  select:focus,
-  a:focus,
-  [role="button"]:focus {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  
-  /* Remove focus ring from React Native Web elements */
-  div[role="button"]:focus,
-  div[role="textbox"]:focus {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-}
-
-/* Auth screen specific no-focus class */
-@layer components {
-  .no-focus-web {
-    @apply focus:outline-none focus:ring-0;
-  }
-  
-  @media (min-width: 768px) {
-    .no-focus-web * {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-  }
+:where(input, textarea, select, button, a, [role="button"], [role="textbox"]):focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 3px;
 }

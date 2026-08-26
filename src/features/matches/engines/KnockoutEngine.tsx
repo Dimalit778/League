@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
-import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/MatchCardBg';
+import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/matchCardLayout';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
 import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
@@ -78,7 +78,7 @@ export default function KnockoutEngine({
         data={stageTies}
         renderItem={({ item }) => <TieBlock tie={item} />}
         keyExtractor={(item) => item.key}
-        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
       />

@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { resolveAiAnalysis, resolveAiSummaryText } from '../../model/aiAnalysis';
-import { AiSummaryType, MatchWithPredictions } from '../../types';
+import { AiSummaryType, MatchDetails } from '../../types';
 import AiAnalysisCard from '../match-details/AiAnalysisCard';
 
-const createMatch = (overrides: Partial<MatchWithPredictions> = {}) =>
+const createMatch = (overrides: Partial<MatchDetails> = {}) =>
   ({
     id: 10,
     competition_id: 39,
@@ -24,7 +24,7 @@ const createMatch = (overrides: Partial<MatchWithPredictions> = {}) =>
     ai_predicted_away_score: 0,
     ai_generated_at: '2026-08-02T12:00:00.000Z',
     ...overrides,
-  }) as MatchWithPredictions;
+  }) as MatchDetails;
 
 describe('resolveAiAnalysis', () => {
   it('does not turn missing scores into a fake 0-0 prediction', () => {
@@ -39,7 +39,7 @@ describe('resolveAiAnalysis', () => {
     const match = createMatch({ ai_predicted_home_score: null, ai_predicted_away_score: null });
     const { getByText, queryByText } = render(React.createElement(AiAnalysisCard, { match }));
 
-    expect(getByText('AI analysis is not available')).toBeTruthy();
+    expect(getByText('AI analysis is available on match day')).toBeTruthy();
     expect(queryByText(/^0$/)).toBeNull();
   });
 
@@ -58,7 +58,7 @@ describe('resolveAiAnalysis', () => {
   });
 
   it('is available even when the summary has not been fetched (e.g. a free user)', () => {
-    // No ai_summary_en/he on MatchWithPredictions at all anymore — the type
+    // No ai_summary_en/he on MatchDetails at all anymore — the type
     // no longer carries them, since they come from a separate PRO-gated fetch.
     const state = resolveAiAnalysis(createMatch());
     expect(state.status).toBe('available');

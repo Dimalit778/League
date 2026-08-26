@@ -8,11 +8,10 @@ import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { EyeClosedIcon, EyeOpenIcon, LockIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
-import { LockKeyhole } from 'lucide-react-native';
+import { Eye, EyeOff, LockKeyhole } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, View } from 'react-native';
@@ -139,12 +138,12 @@ const ResetPasswordScreen = () => {
             textContentType="newPassword"
             secureTextEntry={!showPassword}
             error={passwordForm.formState.errors.password}
-            icon={<LockIcon size={24} color={colors.muted} />}
+            icon={<LockKeyhole size={24} color={colors.muted} />}
             rightIcon={
               showPassword ? (
-                <EyeOpenIcon size={24} color={colors.muted} />
+                <Eye size={24} color={colors.muted} />
               ) : (
-                <EyeClosedIcon size={24} color={colors.muted} />
+                <EyeOff size={24} color={colors.muted} />
               )
             }
             onRightIconPress={() => setShowPassword(!showPassword)}
@@ -159,12 +158,12 @@ const ResetPasswordScreen = () => {
             textContentType="newPassword"
             secureTextEntry={!showConfirmPassword}
             error={passwordForm.formState.errors.confirmPassword}
-            icon={<LockIcon size={24} color={colors.muted} />}
+            icon={<LockKeyhole size={24} color={colors.muted} />}
             rightIcon={
               showConfirmPassword ? (
-                <EyeOpenIcon size={24} color={colors.muted} />
+                <Eye size={24} color={colors.muted} />
               ) : (
-                <EyeClosedIcon size={24} color={colors.muted} />
+                <EyeOff size={24} color={colors.muted} />
               )
             }
             onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}

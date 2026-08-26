@@ -141,7 +141,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
         isDisabled && 'opacity-50',
         className,
       )}
-      style={({ pressed }) => [
+      style={(state) => [
         isGlass && {
           borderWidth: StyleSheet.hairlineWidth * 1.5,
           borderColor: effects.cardBorder,
@@ -155,11 +155,11 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
           elevation: isLightGlass ? 1 : 2,
         },
 
-        pressed && {
+        state.pressed && {
           transform: [{ scale: 0.985 }],
         },
 
-        typeof style === 'function' ? style({ pressed }) : style,
+        typeof style === 'function' ? style(state) : style,
       ]}
     >
       {isGlass && (

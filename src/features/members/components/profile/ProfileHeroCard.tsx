@@ -40,7 +40,7 @@ export function ProfileHeroCard() {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 1,
+        quality: 0.85,
         base64: true,
       });
 

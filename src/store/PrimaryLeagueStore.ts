@@ -89,7 +89,10 @@ export const usePrimaryLeagueStore =
                 id,
                 competition_id,
                 competition:competitions!inner (
-                  season_id
+                  seasons (
+                    id,
+                    is_current
+                  )
                 )
               )
             `)
@@ -108,7 +111,9 @@ export const usePrimaryLeagueStore =
           competitionId:
             member?.league?.competition_id ?? null,
           seasonId:
-            member?.league?.competition?.season_id ?? null,
+            member?.league?.competition?.seasons?.find(
+              (season) => season.is_current,
+            )?.id ?? null,
           nickname: member?.nickname ?? null,
           avatarUrl: member?.avatar_url ?? null,
           loading: false,

@@ -1,12 +1,12 @@
-import { FieldIcon, MatchesIcon, ProfileIcon, RankIcon } from '@assets/icons';
+import { FieldIcon, MatchesIcon } from '@assets/icons';
 
 import { FloatBottomTabs } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useIsFocused, useNavigation, useNavigationState } from '@react-navigation/native';
 import { Tabs } from 'expo-router';
+import { Podium, UserIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Platform } from 'react-native';
-
 function useLeagueStackOverlay() {
   const navigation = useNavigation();
 
@@ -63,13 +63,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Leaderboard"
         options={{
-          tabBarIcon: ({ color, size }) => <RankIcon size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Podium size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="Profile"
         options={{
-          tabBarIcon: ({ color, size }) => <ProfileIcon size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <UserIcon size={size} color={color} />,
         }}
       />
     </Tabs>

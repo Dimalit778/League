@@ -76,7 +76,10 @@ export const memberApi = {
         avatar_url,
         league:leagues!league_id(
           id,
-          competition:competitions(id, current_matchday, total_matchdays)
+          competition:competitions(
+            id,
+            seasons(current_matchday, total_matchdays, is_current)
+          )
         )
       `,
       )
@@ -85,7 +88,21 @@ export const memberApi = {
 
     if (error) throw error;
     if (!data) return null;
-    return data;
+
+    const competition = data.league?.competition;
+    const currentSeason = competition?.seasons?.find((season) => season.is_current) ?? null;
+
+    return {
+      ...data,
+      league: data.league
+        ? {
+            ...data.league,
+            competition: competition
+              ? { id: competition.id, currentSeason }
+              : null,
+          }
+        : null,
+    };
   },
  
   async removeMember(memberId: string) {

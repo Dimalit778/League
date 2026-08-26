@@ -41,7 +41,7 @@ function useSvgXml(uri: string | undefined) {
     gcTime: Infinity,
   });
 
-  return data ?? (uri ? svgXmlCache.get(uri) ?? null : null);
+  return data ?? (uri ? (svgXmlCache.get(uri) ?? null) : null);
 }
 
 type CachePolicy = 'none' | 'memory' | 'disk' | 'memory-disk';
@@ -118,6 +118,7 @@ export const MyImage = ({
 
   // Fallback if the first render failed
   const finalSource = failed && fallbackSource ? fallbackSource : expoSource;
+  if (!source || !uri) return null;
 
   return (
     <ExpoImage

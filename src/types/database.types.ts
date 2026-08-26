@@ -37,24 +37,34 @@ export type Database = {
           },
         ]
       }
+      app_config: {
+        Row: {
+          singleton: boolean
+          subscriptions_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          singleton?: boolean
+          subscriptions_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          singleton?: boolean
+          subscriptions_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       competitions: {
         Row: {
           area: string
           code: string
           created_at: string
-          current_fixture: number | null
-          current_matchday: number | null
-          current_stage: string | null
           flag: string | null
           id: number
           is_free: boolean
           logo: string
           name: string
-          season_end: string | null
-          season_id: number | null
-          season_start: string | null
-          total_fixtures: number | null
-          total_matchdays: number | null
           type: string
           updated_at: string
         }
@@ -62,19 +72,11 @@ export type Database = {
           area: string
           code: string
           created_at?: string
-          current_fixture?: number | null
-          current_matchday?: number | null
-          current_stage?: string | null
           flag?: string | null
           id: number
           is_free?: boolean
           logo: string
           name: string
-          season_end?: string | null
-          season_id?: number | null
-          season_start?: string | null
-          total_fixtures?: number | null
-          total_matchdays?: number | null
           type: string
           updated_at?: string
         }
@@ -82,19 +84,11 @@ export type Database = {
           area?: string
           code?: string
           created_at?: string
-          current_fixture?: number | null
-          current_matchday?: number | null
-          current_stage?: string | null
           flag?: string | null
           id?: number
           is_free?: boolean
           logo?: string
           name?: string
-          season_end?: string | null
-          season_id?: number | null
-          season_start?: string | null
-          total_fixtures?: number | null
-          total_matchdays?: number | null
           type?: string
           updated_at?: string
         }
@@ -222,6 +216,65 @@ export type Database = {
         }
         Relationships: []
       }
+      league_member_standings: {
+        Row: {
+          exact_count: number
+          finished_count: number
+          league_id: string
+          league_member_id: string
+          outcome_count: number
+          total_points: number
+          updated_at: string
+        }
+        Insert: {
+          exact_count?: number
+          finished_count?: number
+          league_id: string
+          league_member_id: string
+          outcome_count?: number
+          total_points?: number
+          updated_at?: string
+        }
+        Update: {
+          exact_count?: number
+          finished_count?: number
+          league_id?: string
+          league_member_id?: string
+          outcome_count?: number
+          total_points?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_member_standings_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "league_leaderboard_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "league_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_member_standings_league_member_id_fkey"
+            columns: ["league_member_id"]
+            isOneToOne: true
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["member_id"]
+          },
+        ]
+      }
       league_members: {
         Row: {
           active: boolean
@@ -334,6 +387,8 @@ export type Database = {
           away_team_id: number | null
           competition_id: number | null
           created_at: string
+          final_away_score: number | null
+          final_home_score: number | null
           fixture: number | null
           group: string | null
           home_team_id: number | null
@@ -355,6 +410,8 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          final_away_score?: number | null
+          final_home_score?: number | null
           fixture?: number | null
           group?: string | null
           home_team_id?: number | null
@@ -376,6 +433,8 @@ export type Database = {
           away_team_id?: number | null
           competition_id?: number | null
           created_at?: string
+          final_away_score?: number | null
+          final_home_score?: number | null
           fixture?: number | null
           group?: string | null
           home_team_id?: number | null
@@ -408,6 +467,20 @@ export type Database = {
             columns: ["home_team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "member_league_summary_view"
+            referencedColumns: ["competition_season_id"]
+          },
+          {
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["id"]
           },
         ]
@@ -534,35 +607,50 @@ export type Database = {
         }
         Relationships: []
       }
-      subscription_entitlement_mappings: {
+      seasons: {
         Row: {
+          competition_id: number
           created_at: string
-          entitlement_id: string
-          is_active: boolean
-          plan_code: string
+          current_matchday: number | null
+          current_stage: string | null
+          id: number
+          is_current: boolean
+          season_end: string | null
+          season_start: string | null
+          total_matchdays: number | null
           updated_at: string
         }
         Insert: {
+          competition_id: number
           created_at?: string
-          entitlement_id: string
-          is_active?: boolean
-          plan_code: string
+          current_matchday?: number | null
+          current_stage?: string | null
+          id: number
+          is_current?: boolean
+          season_end?: string | null
+          season_start?: string | null
+          total_matchdays?: number | null
           updated_at?: string
         }
         Update: {
+          competition_id?: number
           created_at?: string
-          entitlement_id?: string
-          is_active?: boolean
-          plan_code?: string
+          current_matchday?: number | null
+          current_stage?: string | null
+          id?: number
+          is_current?: boolean
+          season_end?: string | null
+          season_start?: string | null
+          total_matchdays?: number | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "subscription_entitlement_mappings_plan_code_fkey"
-            columns: ["plan_code"]
+            foreignKeyName: "seasons_competition_id_fkey"
+            columns: ["competition_id"]
             isOneToOne: false
-            referencedRelation: "subscription_plans"
-            referencedColumns: ["code"]
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -758,9 +846,11 @@ export type Database = {
           expires_at: string | null
           plan: string
           product_id: string | null
+          purchased_at: string | null
           revenuecat_app_user_id: string | null
           season_code: string | null
           status: string
+          transaction_id: string | null
           updated_at: string
           user_id: string
         }
@@ -769,9 +859,11 @@ export type Database = {
           expires_at?: string | null
           plan?: string
           product_id?: string | null
+          purchased_at?: string | null
           revenuecat_app_user_id?: string | null
           season_code?: string | null
           status?: string
+          transaction_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -780,9 +872,11 @@ export type Database = {
           expires_at?: string | null
           plan?: string
           product_id?: string | null
+          purchased_at?: string | null
           revenuecat_app_user_id?: string | null
           season_code?: string | null
           status?: string
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -890,6 +984,37 @@ export type Database = {
       }
     }
     Functions: {
+      admin_create_competition: {
+        Args: {
+          p_area: string
+          p_code: string
+          p_current_stage?: string
+          p_flag: string
+          p_id: number
+          p_logo: string
+          p_name: string
+          p_season_id?: number
+          p_type?: string
+        }
+        Returns: {
+          area: string
+          code: string
+          created_at: string
+          flag: string | null
+          id: number
+          is_free: boolean
+          logo: string
+          name: string
+          type: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "competitions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       anonymize_user_account: {
         Args: { p_revenuecat_app_user_id?: string; p_user_id: string }
         Returns: Json
@@ -947,7 +1072,7 @@ export type Database = {
         }[]
       }
       get_competition_leaderboard: {
-        Args: { p_competition_id: number }
+        Args: { p_competition_id: number; p_limit?: number; p_offset?: number }
         Returns: {
           avatar_url: string
           league_id: string
@@ -972,6 +1097,7 @@ export type Database = {
           ai_summary_he: string
         }[]
       }
+      get_my_plan: { Args: never; Returns: string }
       get_my_subscription_access: { Args: never; Returns: Json }
       get_plan_limits: {
         Args: { p_plan: string }
@@ -980,15 +1106,10 @@ export type Database = {
           max_members: number
         }[]
       }
-      get_user_plan: { Args: { p_user_id: string }; Returns: string }
       has_blocked_user: { Args: { p_target_user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_league_member: { Args: { league_id_param: string }; Returns: boolean }
       is_league_owner: { Args: { league_id_param: string }; Returns: boolean }
-      is_member_in_league: {
-        Args: { _league: string; _user: string }
-        Returns: boolean
-      }
       join_league: {
         Args: {
           league_join_code: string
@@ -1026,7 +1147,6 @@ export type Database = {
       }
       remove_league_member: { Args: { p_member_id: string }; Returns: Json }
       rls_is_member_self: { Args: { _member: string }; Returns: boolean }
-      rls_is_user_in_league: { Args: { _league: string }; Returns: boolean }
       set_primary_league: { Args: { p_league_id: string }; Returns: Json }
       submit_content_report: {
         Args: {
@@ -1072,7 +1192,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      user_exists: { Args: { uid: string }; Returns: boolean }
     }
     Enums: {
       match_status:

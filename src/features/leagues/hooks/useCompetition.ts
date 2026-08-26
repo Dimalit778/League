@@ -1,8 +1,7 @@
-import { KEYS } from '@/lib/queryClient';
-import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
-import { skipToken, useQuery } from '@tanstack/react-query';
-import { competitionApi } from '../api/competitionApi';
-
+import { disabledKey, KEYS } from "@/lib/queryClient";
+import { usePrimaryLeagueStore } from "@/store/PrimaryLeagueStore";
+import { skipToken, useQuery } from "@tanstack/react-query";
+import { competitionApi } from "../api/competitionApi";
 
 export const useGetCompetitions = () => {
   return useQuery({
@@ -18,9 +17,10 @@ export const useGetCompetitionsDetails = () => {
   return useQuery({
     queryKey: competitionId
       ? KEYS.competitions.matchMeta(competitionId)
-      : (['competitions', 'match-meta', 'disabled'] as const),
-    queryFn: competitionId ? () => competitionApi.getCompetitionsDetails(competitionId) : skipToken,
+      : disabledKey("competitions", "match-meta"),
+    queryFn: competitionId
+      ? () => competitionApi.getCompetitionsDetails(competitionId)
+      : skipToken,
     staleTime: 1000 * 60 * 5,
   });
 };
-

@@ -10,11 +10,11 @@ import { CurrentFormCard } from '../components/overview/CurrentFormCard';
 import { CollapsedHeader, ExpandedHeader, PersistentHeaderActions } from '../components/overview/Header';
 import LeagueSummary from '../components/overview/LeagueSummary';
 import OverviewSkeleton from '../components/overview/OverviewSkeleton';
-import { UpcomingMatches } from '../components/overview/Upcoming-matches';
+import { TodayMatches } from '../components/overview/TodayMatches';
 import { useLeagueOverview } from '../hooks/useLeagueOverview';
 
 export default function OverviewScreen() {
-  const { leagueSummary, stats, upcomingMatches, isLoading } = useLeagueOverview();
+  const { leagueSummary, stats, todayMatches, isLoading } = useLeagueOverview();
   const memberId = useMemberId();
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
@@ -26,23 +26,23 @@ export default function OverviewScreen() {
       backgroundImage={images.stadium}
       expandedHeight={260}
       collapsedHeight={48}
-      overlap={50}
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-      }}
+      overlap={120}
       expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} />}
       collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
       persistentHeader={<PersistentHeaderActions logoUrl={leagueSummary.flagUrl} />}
     >
-      <View className="gap-6">
+      <View className="gap-6 ">
         <LeagueSummary leagueSummary={leagueSummary} />
 
-        <Section title={t('Current form')} accent>
+        <TodayMatches matches={todayMatches} />
+
+        <Section title={t('Current form')} accent className="px-4">
           <CurrentFormCard results={stats.recentForm} />
         </Section>
         <Section
           title={t('Stats')}
           accent
+          className="px-4"
           actionIcon={<ArrowIcon size={20} color={colors.text} direction="forward" strokeWidth={2} />}
           onActionPress={() => {
             if (!memberId) return;
@@ -53,10 +53,6 @@ export default function OverviewScreen() {
           }}
         >
           <StatsPredictionSection stats={stats} />
-        </Section>
-
-        <Section title={t('Today matches')} accent>
-          <UpcomingMatches matches={upcomingMatches} />
         </Section>
       </View>
     </CollapsibleHeader>

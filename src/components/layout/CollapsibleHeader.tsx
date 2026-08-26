@@ -1,8 +1,8 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { setColorAlpha } from '@/lib/color';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { Image } from 'expo-image';
 import { type ImageSourcePropType, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -72,7 +72,12 @@ export const CollapsibleHeader = ({
   const collapseBackground = setColorAlpha(resolvedBackgroundColor, 0.94);
   const imageGradientColors = isDark
     ? (['rgba(4, 18, 35, 0.85)', 'rgba(4, 18, 35, 0.75)', 'rgba(4, 18, 35, 0.55)', resolvedBackgroundColor] as const)
-    : (['rgba(15, 23, 42, 0.62)', 'rgba(15, 23, 42, 0.42)', 'rgba(248, 249, 247, 0.3)', resolvedBackgroundColor] as const);
+    : ([
+        'rgba(15, 23, 42, 0.62)',
+        'rgba(15, 23, 42, 0.42)',
+        'rgba(248, 249, 247, 0.3)',
+        resolvedBackgroundColor,
+      ] as const);
 
   const isFixed = variant === 'fixed';
   const collapseDistance = Math.max(1, expandedHeight - collapsedHeight);
@@ -146,7 +151,7 @@ export const CollapsibleHeader = ({
     return {
       opacity: isFixed
         ? 0
-        : interpolate(scrollY.value, [collapseDistance * 0.1, collapseDistance * 0.45], [1, 0], Extrapolation.CLAMP),
+        : interpolate(scrollY.value, [collapseDistance * 0.1, collapseDistance * 0.3], [1, 0], Extrapolation.CLAMP),
     };
   });
 

@@ -7,7 +7,7 @@ import {
   AdminPageHeader,
   AdminSearchField,
 } from '@/features/admin/components/AdminUI';
-import { ADMIN_CONTENT_CLASS, formatAdminDate } from '@/features/admin/lib/adminUi';
+import { ADMIN_CONTENT_CLASS, adminUserDisplayName, filterAdminUsers, formatAdminDate } from '@/features/admin/lib/adminUi';
 import { useAdminUsersInfinite, useDeleteUser } from '@/features/admin/hooks/useAdmin';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -44,7 +44,7 @@ const AdminUserRow = memo(function AdminUserRow({
 }: AdminUserRowProps) {
   const { t, language } = useTranslation();
   const { colors } = useThemeTokens();
-  const displayName = fullName || email || t('Unnamed User');
+  const displayName = adminUserDisplayName({ id, full_name: fullName, email }, t('Unnamed User'));
   const initials = displayName.slice(0, 1).toUpperCase();
 
   const handlePress = useCallback(() => onDelete(id, displayName), [displayName, id, onDelete]);
@@ -96,13 +96,7 @@ const AdminUsersScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const allUsers = useMemo(() => usersQuery.data?.pages.flat() || [], [usersQuery.data]);
-  const filteredUsers = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-    if (!query) return allUsers;
-    return allUsers.filter((user) =>
-      `${user.full_name ?? ''} ${user.email ?? ''}`.toLowerCase().includes(query),
-    );
-  }, [allUsers, searchQuery]);
+  const filteredUsers = useMemo(() => filterAdminUsers(allUsers, searchQuery), [allUsers, searchQuery]);
 
   const loadMore = useCallback(() => {
     if (!searchQuery && usersQuery.hasNextPage && !usersQuery.isFetchingNextPage) {

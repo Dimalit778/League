@@ -1,17 +1,18 @@
 import { Button, Card, Divider, Row, Text } from '@/components';
 import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
-import { resolveAiAnalysis, resolveAiSummaryText } from '@/features/matches/model/aiAnalysis';
+import { resolveAiAnalysis, resolveAiSummaryText, splitSummaryParagraphs } from '@/features/matches/model/aiAnalysis';
 import { MatchDetails, TeamType } from '@/features/matches/types';
+import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import type { ThemeName } from '@/lib/nativewind/nativeWind';
-import { useRevenueCatSubscription } from '@/lib/revenuecat/purchases';
 import { useLanguageStore } from '@/store/LanguageStore';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
+import { CalendarDays } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type AiAnalysisCardProps = {
   match: MatchDetails;
@@ -25,45 +26,19 @@ type AiScoreCardProps = {
 type AiSummaryCardProps = {
   summary: string;
   isPro: boolean;
-  theme: ThemeName;
+  theme: 'light' | 'dark';
 };
 
 function teamName(team: TeamType | null, fallback: string) {
   return team?.shortName ?? team?.name ?? fallback;
 }
 
-function AiEyebrow() {
-  const { t } = useTranslation();
-  const { colors } = useThemeTokens();
-
-  return (
-    <View className="flex-row items-center justify-center gap-2">
-      <Ionicons name="sparkles" size={18} color={colors.muted} />
-      <Text variant="titleLarge" tone="secondary" className=" font-semibold">
-        {t('AI Analysis')}
-      </Text>
-    </View>
-  );
-}
-
 function AiScoreCard({ teams, score }: AiScoreCardProps) {
-  const { t } = useTranslation();
-
   return (
-    <Card
-      padding="sm"
-      className="overflow-hidden"
-      accessible
-      accessibilityLabel={t('AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}', {
-        home: teams.home,
-        homeScore: score.home,
-        away: teams.away,
-        awayScore: score.away,
-      })}
-    >
+    <Card padding="sm" variant="elevated">
       <Row>
         <View className="min-w-0 flex-1 items-center">
-          <Text variant="bodySmall" numberOfLines={2} className="text-center">
+          <Text variant="subtitle" numberOfLines={2} className="text-center">
             {teams.home}
           </Text>
         </View>
@@ -72,7 +47,7 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
           <Text variant="title" tone="primary">
             {score.home}
           </Text>
-          <Text variant="bodySmall" tone="muted" className="mx-2">
+          <Text variant="small" tone="muted" className="mx-2">
             :
           </Text>
           <Text variant="title" tone="primary">
@@ -81,7 +56,7 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
         </View>
 
         <View className="min-w-0 flex-1 items-center px-1">
-          <Text variant="bodySmall" numberOfLines={2} className="text-center">
+          <Text variant="subtitle" numberOfLines={2} className="text-center">
             {teams.away}
           </Text>
         </View>
@@ -102,29 +77,25 @@ function AiLockedSummaryPlaceholder() {
   );
 }
 
+function AiSummaryText({ summary }: { summary: string }) {
+  return (
+    <View className="py-3">
+      {splitSummaryParagraphs(summary).map((paragraph) => (
+        <Text key={paragraph} className="text-start leading-7">
+          {paragraph}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
 function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
-  console.log('summary', summary);
 
   return (
-    <View className="relative min-h-50 overflow-hidden rounded-2xl border border-border bg-surface p-3">
-      <Row className="items-center justify-center gap-2">
-        <Ionicons name="analytics" size={18} color={colors.primary} />
-        <Text variant="subtitle" className="font-semibold">
-          {t('AI match analysis')}
-        </Text>
-      </Row>
-
-      <View className="px-4 py-4 ">
-        {isPro ? (
-          <Text variant="body" className="leading-7 text-text">
-            {summary}
-          </Text>
-        ) : (
-          <AiLockedSummaryPlaceholder />
-        )}
-      </View>
+    <Card padding="md" variant="elevated">
+      {isPro ? <AiSummaryText summary={summary} /> : <AiLockedSummaryPlaceholder />}
 
       {!isPro && (
         <BlurView intensity={30} tint={theme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
@@ -136,7 +107,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
               <Text variant="body" className="text-center font-semibold">
                 {t('Unlock the full AI analysis with Pro')}
               </Text>
-              <Text variant="bodySmall" tone="muted" className="text-center">
+              <Text variant="small" tone="muted" className="text-center">
                 {t('Get the full breakdown behind every prediction.')}
               </Text>
             </View>
@@ -144,7 +115,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
           </View>
         </BlurView>
       )}
-    </View>
+    </Card>
   );
 }
 
@@ -153,12 +124,14 @@ function AiDisclaimer() {
   const { colors } = useThemeTokens();
 
   return (
-    <Row className="items-start justify-center gap-1.5 px-4 pb-4" accessible accessibilityRole="text">
-      <Ionicons name="shield-checkmark-outline" size={14} color={colors.muted} />
-      <Text variant="caption" tone="muted" className="min-w-0 flex-1 text-center">
-        {t('AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.')}
-      </Text>
-    </Row>
+    <Card padding="sm" variant="soft">
+      <Row className="items-center gap-4 px-2">
+        <Ionicons name="shield-checkmark-outline" size={20} color={colors.muted} />
+        <Text variant="caption" tone="muted" className="min-w-0 flex-1">
+          {t('AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.')}
+        </Text>
+      </Row>
+    </Card>
   );
 }
 
@@ -167,19 +140,14 @@ function AiUnavailableState() {
   const { colors } = useThemeTokens();
 
   return (
-    <Card
-      variant="soft"
-      contentClassName="items-center gap-3 px-5 py-8"
-      accessible
-      accessibilityRole="text"
-      accessibilityLabel={`${t('AI analysis is not available')} ${t('There is not enough reliable match data to show a prediction yet.')}`}
-    >
-      <Ionicons name="analytics-outline" size={30} color={colors.muted} />
+    <Card variant="elevated" padding="lg" contentClassName="min-h-72 items-center gap-4">
+      <CalendarDays size={64} strokeWidth={1.5} color={colors.primary} />
+
       <Text variant="title" className="text-center">
-        {t('AI analysis is not available')}
+        {t('AI analysis is available on match day')}
       </Text>
-      <Text variant="bodySmall" tone="muted" className="text-center">
-        {t('There is not enough reliable match data to show a prediction yet.')}
+      <Text variant="small" tone="muted" className="text-center pt-3">
+        {t('To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.')}
       </Text>
     </Card>
   );
@@ -187,16 +155,17 @@ function AiUnavailableState() {
 
 export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   const { t } = useTranslation();
+  const { colors } = useThemeTokens();
   const language = useLanguageStore((s) => s.language);
   const analysis = resolveAiAnalysis(match);
-  console.log('analysis', JSON.stringify(analysis, null, 2));
+  const bottomInset = useSafeAreaInsets();
   const { theme } = useThemeTokens();
-  const { subscription } = useRevenueCatSubscription();
-
-  const isPro = subscription.isActive;
+  const subscriptionAccess = useSubscriptionAccess();
+  const isPro = subscriptionAccess.data?.planCode === 'pro';
   const { data: aiSummary } = useMatchAiSummary(match.id, isPro && analysis.status === 'available');
-  console.log('aiSummary', aiSummary);
+
   const summary = resolveAiSummaryText(aiSummary, language);
+  const isAvailable = analysis.status === 'available';
 
   const teams = {
     home: teamName(match.home_team, t('Home')),
@@ -204,13 +173,17 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
   };
 
   return (
-    <View className="flex-1 border-r border-l  border-border ">
-      <View className="py-4">
-        <AiEyebrow />
+    <View className="flex-1  border-r border-l border-border" style={{ paddingBottom: bottomInset.bottom }}>
+      <View className="flex-row  justify-center py-3 gap-2">
+        <Ionicons name="sparkles" size={20} color={colors.primary} />
+        <Text variant="titleLarge" tone="primary" className="font-bold">
+          {t('AI Analysis')}
+        </Text>
       </View>
-      <Divider />
-      <View className="flex-1 p-6 gap-6">
-        {analysis.status === 'available' ? (
+
+      <Divider className="bg-primary" />
+      <View className="flex-1 p-5 gap-4">
+        {isAvailable ? (
           <>
             <AiScoreCard teams={teams} score={analysis.score} />
             <AiSummaryCard summary={summary} isPro={isPro} theme={theme} />
@@ -218,8 +191,10 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
         ) : (
           <AiUnavailableState />
         )}
+        <View className="mt-auto">
+          <AiDisclaimer />
+        </View>
       </View>
-      <AiDisclaimer />
     </View>
   );
 }

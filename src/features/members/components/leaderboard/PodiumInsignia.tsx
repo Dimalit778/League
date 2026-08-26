@@ -1,5 +1,4 @@
 import { Text } from '@/components';
-import { setColorAlpha } from '@/lib/color';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Path, Polygon, Stop } from 'react-native-svg';
 
@@ -29,7 +28,6 @@ export function PodiumHexBadge({ position, size = 34 }: { position: Position; si
         height: h,
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: `0 1px 6px ${setColorAlpha(m.mid, 0.7)}`,
       }}
     >
       <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute' }}>
@@ -47,7 +45,7 @@ export function PodiumHexBadge({ position, size = 34 }: { position: Position; si
         <Polygon points={hex} fill={`url(#${fillId})`} stroke={m.rim} strokeWidth={1.25} strokeLinejoin="round" />
         <Polygon points={sheen} fill={`url(#${sheenId})`} />
       </Svg>
-      <Text allowFontScaling={false} className="font-oswald-bold text-[16px] text-[#1A1205]">
+      <Text allowFontScaling={false} className="font-nunito-bold text-[16px] text-[#1A1205]">
         {position}
       </Text>
     </View>
@@ -67,7 +65,6 @@ export function PodiumCrown({ size = 40 }: { size?: number }) {
       style={{
         width: w,
         height: h,
-        boxShadow: `0 1px 7px ${setColorAlpha(m.mid, 0.75)}`,
       }}
     >
       <Svg width={w} height={h} viewBox="0 6 48 30">

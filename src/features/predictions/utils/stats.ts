@@ -5,11 +5,11 @@ export type PredictionStatsRow = {
   predicted_away_score?: number | null;
 };
 
-const isScoreObject = (score: unknown): score is Record<string, unknown> =>
-  !!score && typeof score === 'object' && !Array.isArray(score);
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
 
 const isFullTimeScore = (score: unknown): score is { home?: number | null; away?: number | null } =>
-  !!score && typeof score === 'object' && !Array.isArray(score);
+  isPlainObject(score);
 
 export function computePredictionStats(rows: PredictionStatsRow[]) {
   let total = 0;
@@ -24,7 +24,7 @@ export function computePredictionStats(rows: PredictionStatsRow[]) {
     if (!row.is_finished) continue;
     finished += 1;
 
-    const ft = isScoreObject(row.score) ? (row.score.fullTime ?? row.score.fulltime) : null;
+    const ft = isPlainObject(row.score) ? (row.score.fullTime ?? row.score.fulltime) : null;
     if (!isFullTimeScore(ft)) continue;
 
     const ftHome = ft?.home;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { MyLeague } from '../types';
+import { toggleLeagueActivationSelection } from '../model/leagueActivation';
 
 type UseLeagueActivationResolutionParams = {
   leagues: MyLeague[];
@@ -37,14 +38,10 @@ export function useLeagueActivationResolution({
   const toggleLeague = useCallback(
     (memberId: string) => {
       setSelectedMemberIds((current) => {
-        if (current.includes(memberId)) {
-          return current.filter((selectedMemberId) => selectedMemberId !== memberId);
-        }
-
-        if (!isEligible(memberId)) return current;
-        if (current.length >= maxLeagues) return current;
-
-        return [...current, memberId];
+        // Block ineligible additions up front, then defer to the shared
+        // selection rule so both activation pickers behave identically.
+        if (!current.includes(memberId) && !isEligible(memberId)) return current;
+        return toggleLeagueActivationSelection(current, memberId, maxLeagues);
       });
     },
     [isEligible, maxLeagues],

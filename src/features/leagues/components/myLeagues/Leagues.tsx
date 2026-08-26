@@ -16,13 +16,13 @@ import PrimaryLeagueCard from './PrimaryLeagueCard';
 
 function MiniStat({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <Row keepLtr className="flex-1 justify-center gap-2 items-center">
+    <View className="flex-1 justify-center gap-2 items-center">
       {icon}
 
       <Text ltr variant="caption" tone="muted" numberOfLines={1} className=" font-bold">
         {value}
       </Text>
-    </Row>
+    </View>
   );
 }
 
@@ -68,40 +68,28 @@ function LeagueCard({
               : undefined
         }
       >
-        <View className={cn(spacing.list, isLocked && 'opacity-25')}>
-          <Row between>
-            <Row className="min-w-0 flex-1 gap-3">
-              <MyImage source={league.competition_flag ?? ''} width={40} height={40} />
-              <View className="min-w-0 flex-1 gap-0.5">
-                <Row className="gap-2">
-                  <Text numberOfLines={1} className="shrink text-lg font-semibold">
-                    {league.league_name}
-                  </Text>
-                </Row>
-                <Text numberOfLines={1} className="text-sm text-muted">
-                  {league.competition_name}
-                </Text>
-              </View>
+        <View className={cn(isLocked && 'opacity-25')}>
+          <Row className="w-full min-w-0 gap-3">
+            <MyImage source={league.competition_flag ?? ''} width={40} height={40} />
+            <View className="flex-1">
+              <Text numberOfLines={1} className="text-lg font-semibold">
+                {league.league_name}
+              </Text>
+              <Text numberOfLines={1} className="text-sm text-muted">
+                {league.competition_name}
+              </Text>
+            </View>
+            <Row className="w-1/3 gap-2">
+              <MiniStat icon={<Crown size={16} color={colors.muted} />} value={league.rank ? `#${league.rank}` : '—'} />
+              <View className="h-8 w-px bg-border" />
+              <MiniStat
+                icon={<Star size={16} color={colors.muted} fill={colors.muted} />}
+                value={`${league.total_points ?? 0}`}
+              />
+              <View className="h-8 w-px bg-border" />
+              <MiniStat icon={<Users size={16} color={colors.muted} />} value={`${league.members_count ?? 0}`} />
             </Row>
           </Row>
-          {!isLocked && (
-            <>
-              <View className="h-px bg-border" />
-              <Row>
-                <MiniStat
-                  icon={<Crown size={13} color={colors.muted} />}
-                  value={league.rank ? `#${league.rank}` : '—'}
-                />
-                <View className="h-4 w-px bg-border" />
-                <MiniStat
-                  icon={<Star size={13} color={colors.muted} fill={colors.muted} />}
-                  value={`${league.total_points ?? 0}`}
-                />
-                <View className="h-4 w-px bg-border" />
-                <MiniStat icon={<Users size={13} color={colors.muted} />} value={`${league.members_count ?? 0}`} />
-              </Row>
-            </>
-          )}
         </View>
         {isLocked && (
           <View className="absolute inset-0 items-center justify-center">

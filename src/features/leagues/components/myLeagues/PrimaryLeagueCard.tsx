@@ -30,7 +30,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
   };
 
   return (
-    <Card variant="hero" padding="md" contentClassName="gap-4">
+    <Card variant="hero" padding="md" contentClassName="gap-3">
       <View className="flex-row justify-between ">
         <Row className="items-center gap-3">
           <MyImage source={league.competition_flag ?? ''} width={48} height={48} />

@@ -1,7 +1,7 @@
+import { TrophyIcon } from '@/assets/icons';
 import { Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { router } from 'expo-router';
-import { TrophyIcon } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 export const CollapsedHeader = ({ nickname }: { nickname?: string | undefined }) => {
@@ -29,7 +29,7 @@ export const PersistentHeaderAction = () => {
           router.push('/(app)/(user)/leagues/my-leagues');
         }}
       >
-        <TrophyIcon size={24} color={colors.text} strokeWidth={1.5} />
+        <TrophyIcon size={24} color={colors.text} />
       </Pressable>
     </Row>
   );

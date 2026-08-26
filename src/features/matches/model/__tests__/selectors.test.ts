@@ -1,7 +1,7 @@
-import type { MatchCardType } from '../../types';
+import type { MatchListItem } from '../../types';
 import { selectByFixture, selectFixtures, selectGroups } from '../selectors';
 
-const mk = (o: Partial<MatchCardType>): MatchCardType =>
+const mk = (o: Partial<MatchListItem>): MatchListItem =>
   ({
     id: 0,
     fixture: 1,
@@ -16,7 +16,7 @@ const mk = (o: Partial<MatchCardType>): MatchCardType =>
     away_team: null,
     prediction: null,
     ...o,
-  }) as MatchCardType;
+  }) as MatchListItem;
 
 describe('selectors', () => {
   it('lists unique sorted fixtures', () => {

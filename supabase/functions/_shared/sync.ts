@@ -20,6 +20,7 @@ export const FD_BASE = "https://api.football-data.org/v4";
 
 const FETCH_TIMEOUT_MS = 20_000;
 const MAX_5XX_RETRIES = 2;
+const MAX_NETWORK_RETRIES = 2;
 const MAX_BUDGET_WAITS = 2;
 
 export const JSON_HEADERS = { "Content-Type": "application/json" };
@@ -116,6 +117,7 @@ const consumeBudget = async (supabase: any, job: string): Promise<void> => {
 // must NOT run fdFetch in Promise.all over many URLs.
 export const fdFetch = async (supabase: any, job: string, url: string, fdKey: string): Promise<any> => {
   let attempt5xx = 0;
+  let networkRetries = 0;
   let handled429 = false;
 
   while (true) {
@@ -129,6 +131,16 @@ export const fdFetch = async (supabase: any, job: string, url: string, fdKey: st
         headers: { "X-Auth-Token": fdKey, Accept: "application/json" },
         signal: ctrl.signal,
       });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (networkRetries < MAX_NETWORK_RETRIES) {
+        const delay = backoffDelayMs(networkRetries++);
+        console.warn(`${job}: FD API network failure (${message}), retrying in ${delay}ms`);
+        await sleep(delay);
+        continue;
+      }
+
+      throw new Error(`FD API network failure after ${networkRetries + 1} attempts: ${message}`);
     } finally {
       clearTimeout(timer);
     }

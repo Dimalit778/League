@@ -1,4 +1,5 @@
 import { KEYS } from '@/lib/queryClient';
+import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { configureRevenueCatLogging } from '@/lib/revenuecat/revenueCatLogging';
 import { isRevenueCatNetworkError } from '@/lib/revenuecat/revenueCatNetworkError';
 import { useAuthStore } from '@/store/AuthStore';
@@ -9,6 +10,9 @@ import { AppState, AppStateStatus, Platform } from 'react-native';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
 
 const toRevenueCatLocale = (language: SupportedLanguage): string => (language === 'he' ? 'he' : 'en-US');
+const iosKey = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY;
+const androidKey = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+const testKey = process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY;
 
 type PurchasesContextValue = {
   isReady: boolean;
@@ -22,18 +26,13 @@ type PurchasesContextValue = {
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
 
 const getRevenueCatApiKey = (): string | null => {
-  const platformKey =
-    Platform.OS === 'ios'
-      ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
-      : Platform.OS === 'android'
-        ? process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY
-        : undefined;
+  const platformKey = Platform.OS === 'ios' ? iosKey : Platform.OS === 'android' ? androidKey : testKey;
 
   if (!__DEV__) {
     return platformKey && !platformKey.startsWith('test_') ? platformKey : null;
   }
 
-  return platformKey ?? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY ?? null;
+  return platformKey ?? testKey ?? null;
 };
 
 const isAnonymousRevenueCatUser = (customerInfo: CustomerInfo | null): boolean =>
@@ -79,8 +78,8 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   const isUserSyncedRef = useRef(false);
 
   const [{ isReady, isUserSynced, isOffline, customerInfo, error }, dispatch] = useReducer(purchasesReducer, {
-    isReady: false,
-    isUserSynced: Platform.OS === 'web',
+    isReady: !SUBSCRIPTIONS_ENABLED || Platform.OS === 'web',
+    isUserSynced: !SUBSCRIPTIONS_ENABLED || Platform.OS === 'web',
     isOffline: false,
     customerInfo: null,
     error: null,
@@ -139,14 +138,14 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
     let cancelled = false;
 
     const configurePurchases = async () => {
-      if (Platform.OS === 'web') {
+      if (!SUBSCRIPTIONS_ENABLED || Platform.OS === 'web') {
         markUserSynced(true);
         dispatch({ type: 'setReady', value: true });
         return;
       }
 
-      // const apiKey = getRevenueCatApiKey();
-      const apiKey = process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY;
+      const apiKey = getRevenueCatApiKey();
+
       if (!apiKey) {
         dispatch({ type: 'setError', value: new Error('RevenueCat API key is not configured for this platform') });
         dispatch({ type: 'setReady', value: false });
@@ -221,15 +220,6 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
           } else {
             const logInResult = await Purchases.logIn(userId);
             nextCustomerInfo = logInResult.customerInfo;
-
-            // New login — restore purchases so previous subscriptions are recovered
-            if (logInResult.created) {
-              try {
-                nextCustomerInfo = await Purchases.restorePurchases();
-              } catch {
-                // restorePurchases is best-effort; keep the customerInfo from logIn
-              }
-            }
           }
         } else {
           const currentCustomerInfo = customerInfoRef.current ?? (await Purchases.getCustomerInfo());

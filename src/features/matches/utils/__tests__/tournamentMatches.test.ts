@@ -1,4 +1,4 @@
-import { MatchWithPredictionsType } from '../../types';
+import { MatchListItem } from '../../types';
 import {
   filterMatchesByGroup,
   getGroupStageMatches,
@@ -16,7 +16,7 @@ import {
   splitTournamentMatches,
 } from '../tournamentMatches';
 
-const match = (id: number, overrides: Partial<MatchWithPredictionsType> = {}): MatchWithPredictionsType =>
+const match = (id: number, overrides: Partial<MatchListItem> = {}): MatchListItem =>
   ({
     id,
     fixture: 1,
@@ -25,7 +25,7 @@ const match = (id: number, overrides: Partial<MatchWithPredictionsType> = {}): M
     kick_off: `2026-06-${String(id).padStart(2, '0')}T12:00:00Z`,
     prediction: null,
     ...overrides,
-  }) as MatchWithPredictionsType;
+  }) as MatchListItem;
 
 describe('tournamentMatches utils', () => {
   it('detects regular league competition type', () => {

@@ -27,7 +27,7 @@ const getInitials = (value: string) =>
     .toUpperCase();
 
 const AdminLeagueMembersScreen = () => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { leagueId } = useLocalSearchParams<{ leagueId?: string }>();
   const { width } = useWindowDimensions();
   const numColumns = width >= 768 ? 2 : 1;

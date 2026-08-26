@@ -16,15 +16,27 @@ export const competitionApi = {
   async getCompetitionsDetails(competitionId: number) {
     const { data, error } = await supabase
       .from('competitions')
-      .select('id, code, current_matchday, total_matchdays, type, current_stage, season_id')
+      .select(`
+        id,
+        code,
+        type,
+        seasons(
+          id,
+          current_matchday,
+          current_stage,
+          total_matchdays,
+          is_current
+        )
+      `)
       .eq('id', competitionId)
       .single();
 
     if (error) throw new Error(error.message);
 
-    const totalMatchdays = data?.total_matchdays ?? 0;
+    const currentSeason = data?.seasons?.find((season) => season.is_current) ?? null;
+    const totalMatchdays = currentSeason?.total_matchdays ?? 0;
     const allMatchdays = Array.from({ length: totalMatchdays }, (_, i) => i + 1);
-    const currentMatchday = data?.current_matchday ?? 0;
+    const currentMatchday = currentSeason?.current_matchday ?? 0;
 
     return {
       id: competitionId,
@@ -33,8 +45,8 @@ export const competitionApi = {
       currentMatchday,
       totalMatchdays,
       type: data?.type,
-      currentStage: data?.current_stage ?? null,
-      seasonId: data?.season_id ?? null,
+      currentStage: currentSeason?.current_stage ?? null,
+      seasonId: currentSeason?.id ?? null,
     };
   },
 

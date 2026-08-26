@@ -2,6 +2,33 @@ import { supabase } from "@/lib/supabase";
 import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
 
+const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024;
+const PROFILE_IMAGE_EXTENSIONS = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+} as const;
+
+type ProfileImageMimeType = keyof typeof PROFILE_IMAGE_EXTENSIONS;
+
+const normalizeMimeType = (mimeType?: string | null): string | null => {
+  if (!mimeType) return null;
+  return mimeType.toLowerCase() === 'image/jpg' ? 'image/jpeg' : mimeType.toLowerCase();
+};
+
+const mimeTypeFromPath = (path: string): ProfileImageMimeType | null => {
+  const extension = path.split('?')[0].split('.').pop()?.toLowerCase();
+  if (extension === 'jpg' || extension === 'jpeg') return 'image/jpeg';
+  if (extension === 'png') return 'image/png';
+  if (extension === 'webp') return 'image/webp';
+  return null;
+};
+
+const decodedBase64Size = (base64: string): number => {
+  const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+  return Math.ceil((base64.length * 3) / 4) - padding;
+};
+
 export const memberImageApi = { 
     async deleteImage(memberId: string, currentPath?: string | null) {
         if (!memberId) throw new Error('No member ID available');
@@ -24,54 +51,55 @@ export const memberImageApi = {
       async uploadImage(memberId: string, avatarUrl: ImagePicker.ImagePickerAsset) {
         if (!memberId) throw new Error('No member ID available');
     
-        try {
-          const { data: currentMember, error: fetchError } = await supabase
-            .from('league_members')
-            .select('avatar_url')
-            .eq('id', memberId)
-            .single();
-    
-          if (fetchError) throw fetchError;
-    
-          if (currentMember?.avatar_url) {
-            await supabase.storage.from('profile_images').remove([currentMember.avatar_url]);
-          }
-    
-          // Validate base64 data
-          const base64 = avatarUrl.base64;
-          if (!base64) throw new Error('No base64 data available');
-    
-          // Determine file extension and content type
-          const extensionFromName = avatarUrl.fileName?.split('.').pop();
-          const extensionFromUri = avatarUrl.uri.split('.').pop()?.split('?')[0];
-          const fileExtension = extensionFromName ?? extensionFromUri ?? (avatarUrl.type === 'image' ? 'jpg' : 'bin');
-          const normalizedExtension = fileExtension.replace('jpeg', 'jpg');
-          const contentType =
-            avatarUrl.mimeType ?? (normalizedExtension === 'jpg' ? 'image/jpeg' : `image/${normalizedExtension}`);
-    
-          const timestamp = Date.now();
-          const filePath = `${memberId}_${timestamp}.${normalizedExtension}`;
-          const { error: uploadError } = await supabase.storage.from('profile_images').upload(filePath, decode(base64), {
-            contentType,
-            upsert: true,
-          });
-    
-          if (uploadError) throw uploadError;
-    
-          // Update member record with new avatar path
-          const { data: memberData, error: memberError } = await supabase
-            .from('league_members')
-            .update({ avatar_url: filePath })
-            .eq('id', memberId)
-            .select()
-            .single();
-    
-          if (memberError) throw memberError;
-    
-          return memberData;
-        } catch (error) {
-          throw error;
+        const base64 = avatarUrl.base64;
+        if (!base64) throw new Error('No base64 data available');
+        if (decodedBase64Size(base64) > MAX_PROFILE_IMAGE_BYTES) {
+          throw new Error('Profile image must be 5 MB or smaller');
         }
+
+        const normalizedMimeType = normalizeMimeType(avatarUrl.mimeType);
+        const inferredMimeType = mimeTypeFromPath(avatarUrl.fileName ?? avatarUrl.uri);
+        const contentType = normalizedMimeType ?? inferredMimeType;
+        if (!contentType || !(contentType in PROFILE_IMAGE_EXTENSIONS)) {
+          throw new Error('Profile image must be JPEG, PNG, or WebP');
+        }
+        const safeContentType = contentType as ProfileImageMimeType;
+
+        const { data: currentMember, error: fetchError } = await supabase
+          .from('league_members')
+          .select('avatar_url')
+          .eq('id', memberId)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        const timestamp = Date.now();
+        const filePath = `${memberId}_${timestamp}.${PROFILE_IMAGE_EXTENSIONS[safeContentType]}`;
+        const bucket = supabase.storage.from('profile_images');
+        const { error: uploadError } = await bucket.upload(filePath, decode(base64), {
+          contentType: safeContentType,
+          upsert: false,
+        });
+
+        if (uploadError) throw uploadError;
+
+        const { data: memberData, error: memberError } = await supabase
+          .from('league_members')
+          .update({ avatar_url: filePath })
+          .eq('id', memberId)
+          .select()
+          .single();
+
+        if (memberError) {
+          await bucket.remove([filePath]);
+          throw memberError;
+        }
+
+        if (currentMember?.avatar_url && currentMember.avatar_url !== filePath) {
+          await bucket.remove([currentMember.avatar_url]);
+        }
+
+        return memberData;
     }
     
 }

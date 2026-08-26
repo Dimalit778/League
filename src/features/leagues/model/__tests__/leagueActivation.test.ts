@@ -98,18 +98,26 @@ describe('resolveActivationTargetCount', () => {
 });
 
 describe('toggleLeagueActivationSelection', () => {
-  it('replaces the selected league immediately when only one seat is available', () => {
-    expect(toggleLeagueActivationSelection(['member-1'], 'member-2', 1)).toEqual(['member-2']);
+  it('adds a league while a seat is free', () => {
+    expect(toggleLeagueActivationSelection(['member-1'], 'member-2', 2)).toEqual(['member-1', 'member-2']);
   });
 
-  it('replaces the oldest selection when all available seats are already selected', () => {
+  it('ignores a new selection when the only seat is already taken', () => {
+    expect(toggleLeagueActivationSelection(['member-1'], 'member-2', 1)).toEqual(['member-1']);
+  });
+
+  it('ignores a new selection when all available seats are already taken', () => {
     expect(toggleLeagueActivationSelection(['member-1', 'member-2'], 'member-3', 2)).toEqual([
+      'member-1',
       'member-2',
-      'member-3',
     ]);
   });
 
-  it('still allows deselecting the currently selected league', () => {
+  it('still allows deselecting an already-selected league even when full', () => {
+    expect(toggleLeagueActivationSelection(['member-1', 'member-2'], 'member-1', 2)).toEqual(['member-2']);
+  });
+
+  it('allows deselecting the currently selected league', () => {
     expect(toggleLeagueActivationSelection(['member-1'], 'member-1', 1)).toEqual([]);
   });
 });

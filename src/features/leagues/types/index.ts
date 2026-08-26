@@ -1,6 +1,7 @@
 import { MatchCardData } from "@/features/matches/utils/matchCard.mapper";
 import { useMemberStats } from "@/features/members/hooks/useMemberStats";
 import { Tables } from "@/types/database.types";
+import { CompetitionWithCurrentSeason } from "../model/currentSeason";
 
 type CompetitionSummary = Pick<
   Tables<"competitions">,
@@ -8,65 +9,33 @@ type CompetitionSummary = Pick<
 >;
 
 type Competition = Pick<
-  Tables<"competitions">,
-  "id" | "name" | "logo" | "flag" | "area" | "type" | "current_stage" | "current_matchday" | "season_id" | "is_free"
+  CompetitionWithCurrentSeason,
+  | "id"
+  | "name"
+  | "logo"
+  | "flag"
+  | "area"
+  | "type"
+  | "is_free"
+  | "currentSeason"
 >;
 
-export type LeaderboardRow = Pick<
-  Tables<"league_leaderboard_view">,
-  | "avatar_url"
-  | "league_id"
-  | "member_id"
-  | "nickname"
-  | "total_points"
-  | "user_id"
-> & {
-  correct_scores?: number;
-};
-
-export type MyLeague = Pick<
-  Tables<"league_members">,
-  | "active"
-  | "avatar_url"
-  | "created_at"
-  | "id"
-  | "is_primary"
-  | "league_id"
-  | "nickname"
-  | "updated_at"
-  | "user_id"
-> & {
-  league: Pick<
-    Tables<"leagues">,
-    "competition_id" | "created_at" | "id" | "join_code" | "max_members" | "name" | "owner_id" | "updated_at"
-  > & {
-    competition: Competition;
+export type LeaderboardRow =
+  & Pick<
+    Tables<"league_leaderboard_view">,
+    | "avatar_url"
+    | "league_id"
+    | "member_id"
+    | "nickname"
+    | "total_points"
+    | "user_id"
+  >
+  & {
+    correct_scores?: number;
   };
-};
 
-
-
-export type MyLeaguesResponse = {
-  primaryLeague: MyLeague | null;
-  leagues: MyLeague[];
-  inactiveLeagues: MyLeague[];
-  total: number;
-};
-
-
-export type LeagueDetails = Pick<
-  Tables<"leagues">,
-  | "competition_id"
-  | "created_at"
-  | "id"
-  | "join_code"
-  | "max_members"
-  | "name"
-  | "owner_id"
-  | "updated_at"
-> & {
-  competition: CompetitionSummary;
-  league_members: Pick<
+export type MyLeague =
+  & Pick<
     Tables<"league_members">,
     | "active"
     | "avatar_url"
@@ -77,14 +46,65 @@ export type LeagueDetails = Pick<
     | "nickname"
     | "updated_at"
     | "user_id"
-  >[];
+  >
+  & {
+    league:
+      & Pick<
+        Tables<"leagues">,
+        | "competition_id"
+        | "created_at"
+        | "id"
+        | "join_code"
+        | "max_members"
+        | "name"
+        | "owner_id"
+        | "updated_at"
+      >
+      & {
+        competition: Competition;
+      };
+  };
+
+export type MyLeaguesResponse = {
+  primaryLeague: MyLeague | null;
+  leagues: MyLeague[];
+  inactiveLeagues: MyLeague[];
+  total: number;
 };
+
+export type LeagueDetails =
+  & Pick<
+    Tables<"leagues">,
+    | "competition_id"
+    | "created_at"
+    | "id"
+    | "join_code"
+    | "max_members"
+    | "name"
+    | "owner_id"
+    | "updated_at"
+  >
+  & {
+    competition: CompetitionSummary;
+    league_members: Pick<
+      Tables<"league_members">,
+      | "active"
+      | "avatar_url"
+      | "created_at"
+      | "id"
+      | "is_primary"
+      | "league_id"
+      | "nickname"
+      | "updated_at"
+      | "user_id"
+    >[];
+  };
 
 export type LeagueSummary = Tables<"member_league_summary_view">;
 
-export type LeagueWithCompetition = Omit<LeagueDetails, 'league_members'>;
+export type LeagueWithCompetition = Omit<LeagueDetails, "league_members">;
 
-type MemberStatsData = NonNullable<ReturnType<typeof useMemberStats>['data']>;
+type MemberStatsData = NonNullable<ReturnType<typeof useMemberStats>["data"]>;
 
 export type LeagueOverviewSummary = {
   nickname: string;
@@ -100,7 +120,7 @@ export type LeagueOverviewSummary = {
 export type LeagueOverview = {
   leagueSummary: LeagueOverviewSummary;
   stats: MemberStatsData;
-  upcomingMatches: MatchCardData[];
+  todayMatches: MatchCardData[];
   isLoading: boolean;
 };
 
@@ -115,5 +135,3 @@ export type FullLeague = {
   max_members: number;
   owner_nickname: string;
 };
-
-

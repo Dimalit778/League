@@ -24,7 +24,6 @@ import {
   errorResponse,
   lockedResponse,
   must,
-  nowIso,
   releaseSyncLock,
   requireSyncAuth,
   tryAcquireSyncLock,
@@ -41,6 +40,7 @@ import {
   getUniqueTargetAreaIds,
   isChampionsLeagueLeaguePhase,
 } from "../_shared/competitions.ts";
+import { upsertCurrentSeason } from "../_shared/seasons.ts";
 
 /* -------------------------------------------------------------------------- */
 /* Configuration                                                              */
@@ -130,18 +130,17 @@ function deriveChampionsLeagueProgress(matches: FootballDataMatch[]): ProgressUp
   return { currentMatchday, currentStage };
 }
 
-async function updateProgress(competitionId: number, progress: ProgressUpdate): Promise<void> {
-  // Narrow update — only the fields this job owns.
-  const { error } = await supabase
-    .from("competitions")
-    .update({
-      current_matchday: progress.currentMatchday,
-      current_stage: progress.currentStage,
-      updated_at: nowIso(),
-    })
-    .eq("id", competitionId);
-
-  if (error) throw new Error(`Competition ${competitionId} update failed: ${error.message}`);
+async function updateProgress(
+  competitionId: number,
+  seasonId: number,
+  progress: ProgressUpdate,
+): Promise<void> {
+  await upsertCurrentSeason(supabase, {
+    id: seasonId,
+    competition_id: competitionId,
+    current_matchday: progress.currentMatchday,
+    current_stage: progress.currentStage,
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -192,7 +191,10 @@ Deno.serve(async (request: Request): Promise<Response> => {
             progress = deriveRegularProgress(apiCompetition);
           }
 
-          await updateProgress(apiCompetition.id, progress);
+          const seasonId = apiCompetition.currentSeason?.id;
+          if (!seasonId) throw new Error(`Current season is missing for ${code}`);
+
+          await updateProgress(apiCompetition.id, seasonId, progress);
           syncedCodes.push(code);
         } catch (error) {
           const message = getErrorMessage(error);

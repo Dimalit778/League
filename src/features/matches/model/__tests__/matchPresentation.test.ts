@@ -48,6 +48,41 @@ describe('deriveMatchPresentation', () => {
       detailStatusLabel: 'FT',
       cardStatusLabel: 'FT',
       scoreMode: 'score',
+      status: { label: 'FT', tone: 'muted' },
+      score: { kind: 'empty' },
+      prediction: { kind: 'empty' },
+    });
+  });
+
+  it('builds score, status, and prediction slots for a finished pick', () => {
+    expect(
+      deriveMatchPresentation({
+        status: 'FINISHED',
+        kickOff: kickoff,
+        date: 'Sat, 15/8',
+        time: '20:30',
+        homeScore: 3,
+        awayScore: 1,
+        prediction: { home: 2, away: 1 },
+        predictionStatus: 'correct',
+      }),
+    ).toMatchObject({
+      status: { label: 'FT', tone: 'muted' },
+      score: { kind: 'score', home: 3, away: 1, tone: 'muted' },
+      prediction: { kind: 'value', text: '2-1', tone: 'success' },
+    });
+  });
+
+  it('offers a plus slot while predictions are open', () => {
+    expect(
+      deriveMatchPresentation(
+        { status: 'SCHEDULED', kickOff: kickoff, date: 'Sat, 15/8', time: '20:30' },
+        new Date('2026-08-15T17:00:00.000Z'),
+      ),
+    ).toMatchObject({
+      status: { label: 'Sat, 15/8', tone: 'default' },
+      score: { kind: 'time', time: '20:30' },
+      prediction: { kind: 'plus' },
     });
   });
 });

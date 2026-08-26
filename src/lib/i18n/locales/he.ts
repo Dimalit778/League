@@ -11,6 +11,8 @@ export const he = {
     Error: "שגיאה",
     OK: "OK",
     Save: "שמור",
+    Saving: "שומר",
+    Saved: "נשמר",
     Success: "הצלחה",
     Update: "עדכון",
     Remove: "הסר",
@@ -152,7 +154,6 @@ export const he = {
     Leagues: "ליגות",
     "Full ranking": "הדירוג המלא",
     Round: "מחזור",
-    "All season": "כל העונה",
     Friends: "חברים",
     World: "עולם",
     You: "אתה",
@@ -351,8 +352,6 @@ export const he = {
 
     "Delete account confirmation message":
       "האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.",
-    "Delete personal data while keeping anonymized league history.":
-      "מחיקת מידע אישי תוך שמירת היסטוריית ליגה אנונימית.",
   },
 
   // Help & Support
@@ -478,8 +477,6 @@ export const he = {
       "הצעת Champo Pro הוגדרה בטעות לחידוש אוטומטי.",
     "Unable to load the offer. Please try again.":
       "לא ניתן לטעון את ההצעה. נסו שוב.",
-    "The purchase completed, but Pro access is still being confirmed.":
-      "הרכישה הושלמה, אך הגישה ל־Pro עדיין בתהליך אימות.",
     "Purchase failed. Please try again.": "הרכישה נכשלה. נסו שוב.",
     "Try again": "נסו שוב",
   },
@@ -791,7 +788,6 @@ export const he = {
     "Primary league": "ליגה ראשית",
 
     USER: "משתמש",
-    POINTS: "נקודות",
 
     Table: "טבלה",
 
@@ -806,13 +802,11 @@ export const he = {
       "{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק",
   },
   aiAnalysis: {
-    "AI analysis is not available": "ניתוח ה־AI אינו זמין",
-    "There is not enough reliable match data to show a prediction yet.":
-      "עדיין אין מספיק נתוני משחק אמינים כדי להציג תחזית.",
+    "AI analysis is available on match day": "ניתוח ה־AI זמין ביום המשחק",
+    "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
+      "כדי לספק את הניתוח הרלוונטי ביותר, ניתוח ה־AI נפתח רק ביום המשחק.",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
       "הניתוח נוצר באמצעות AI ומיועד לבידור בלבד. הוא עלול להיות שגוי ואינו מהווה ייעוץ להימורים.",
-    "AI prediction: {{home}} {{homeScore}}, {{away}} {{awayScore}}":
-      "תחזית AI: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
   },
   activeUi: {
     Away: "חוץ",
@@ -853,6 +847,7 @@ export const he = {
     "Failed to update password. Please try again.":
       "עדכון הסיסמה נכשל. נסו שוב.",
     General: "כללי",
+    Account: "חשבון",
     Home: "בית",
     "Increase away score": "הגדלת התוצאה של קבוצת החוץ",
     "Increase home score": "הגדלת התוצאה של קבוצת הבית",
@@ -874,10 +869,11 @@ export const he = {
     "Resend New Link": "שליחת קישור חדש",
     "Reset link is invalid or expired.": "קישור האיפוס אינו תקין או שפג תוקפו.",
     "Save New Password": "שמירת סיסמה חדשה",
-    "Subscription status may be outdated while offline.":
-      "ייתכן שסטטוס המינוי אינו מעודכן במצב לא מקוון.",
     "This league is full. Upgrade to create larger leagues.":
       "הליגה מלאה. שדרגו כדי ליצור ליגות גדולות יותר.",
+    "This league is full.": "הליגה מלאה.",
+    "Free access": "גישה חופשית",
+    "All features are currently free.": "כל התכונות זמינות כרגע בחינם.",
     "Top 10": "עשירייה ראשונה",
     "Upgrade to create more leagues and unlock more competitions.":
       "שדרגו כדי ליצור ליגות נוספות ולפתוח תחרויות נוספות.",

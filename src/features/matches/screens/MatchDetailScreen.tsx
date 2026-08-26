@@ -1,48 +1,40 @@
 import { useLocalSearchParams } from 'expo-router';
 
 import { Error, Screen } from '@/components';
-import { Keyboard, Pressable, View } from 'react-native';
-import MatchContent from '../components/match-details/MatchContent';
+import { View } from 'react-native';
+import AiAnalysisCard from '../components/match-details/AiAnalysisCard';
 import MatchDetailsSkeleton from '../components/match-details/MatchDetailsSkeleton';
-import MatchHero from '../components/match-details/MatchHero';
-import { MatchHeroBackground } from '../components/match-details/effects/MatchHeroBackground';
-import { PredictionSavedOverlay } from '../components/match-details/effects/PredictionSavedOverlay';
+import MatchDetailsTabs from '../components/match-details/MatchDetailsTabs';
+import MatchHeader from '../components/match-details/MatchHeader';
 import { useGetMatchData } from '../hooks/useMatchData';
 import { useMatchDetailsController } from '../hooks/useMatchDetailsController';
 import type { MatchDetails } from '../types';
 
+const HERO_BOTTOM = '#030812';
+const gradientColors = ['rgba(4,8,20,0.92)', 'rgba(4,8,19,0.80)', 'rgba(3,8,18,0.92)', HERO_BOTTOM] as const;
+
 function LoadedMatchDetails({ match }: { match: MatchDetails }) {
   const controller = useMatchDetailsController(match);
+  const canPredict = controller.presentation.canPredict;
 
   return (
-    <Screen edges={['bottom']}>
-      <Pressable
-        className="mx-auto w-full flex-1 bg-background"
-        style={{ maxWidth: controller.isTablet ? 768 : 512, backgroundColor: controller.colors.background }}
-        onPress={Keyboard.dismiss}
-        accessible={false}
+    <Screen className="bg-[#030812]">
+      <View
+        className="mx-auto w-full flex-1"
+        style={{ maxWidth: controller.isTablet ? 768 : 512, backgroundColor: HERO_BOTTOM }}
       >
-        <View
-          style={{
-            minHeight: controller.heroHeight,
-            paddingTop: controller.insets.top,
-          }}
-        >
-          <MatchHeroBackground gradientColors={controller.heroGradientColors} />
-          <MatchHero
-            match={match}
-            memberPrediction={controller.memberPrediction}
-            presentation={controller.presentation}
-            onPredictionSaved={controller.showSuccess}
-          />
-        </View>
+        <MatchHeader
+          match={match}
+          memberPrediction={controller.memberPrediction}
+          presentation={controller.presentation}
+          onPredictionSaved={controller.showSuccess}
+          gradientColors={gradientColors}
+        />
 
-        <View className="-mt-4 min-h-0 flex-1 overflow-hidden rounded-t-3xl bg-background">
-          <MatchContent match={match} canPredict={controller.presentation.canPredict} />
+        <View className="flex-1 overflow-hidden rounded-t-3xl bg-subtle ">
+          {canPredict ? <AiAnalysisCard match={match} /> : <MatchDetailsTabs match={match} />}
         </View>
-
-        <PredictionSavedOverlay visible={controller.showSuccessAnimation} onComplete={controller.hideSuccess} />
-      </Pressable>
+      </View>
     </Screen>
   );
 }

@@ -1,9 +1,7 @@
 import { PredictionDisplayStatus } from '@/features/matches/utils/matchCard.mapper';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
-
-export const MATCH_CARD_VIEWBOX_WIDTH = 360;
-export const MATCH_CARD_VIEWBOX_HEIGHT = 110;
+import { MATCH_CARD_VIEWBOX_HEIGHT, MATCH_CARD_VIEWBOX_WIDTH } from './matchCardLayout';
 
 // ponytail: shared silhouette so shadow keeps the prediction notch (plain Rect leaked a stripe under it)
 const MATCH_CARD_BODY = `
@@ -58,58 +56,6 @@ const MATCH_CARD_HIGHLIGHT_PATH_FLAT_TOP = `
   Z
 `;
 
-export const MATCH_CARD_HORIZONTAL_PADDING = 32;
-const MATCH_CARD_HEIGHT_SCALE = 0.945;
-const MATCH_CARD_GAP = 8;
-const MATCH_CARD_CENTER_WIDTH = 82;
-const MATCH_CARD_LOGO_MAX = 44;
-
-export const MATCH_CARD_LAYOUT = {
-  dateTabCenterY: 18 / MATCH_CARD_VIEWBOX_HEIGHT,
-  predictionTabTopY: 76 / MATCH_CARD_VIEWBOX_HEIGHT,
-  predictionTabHeight: 28 / MATCH_CARD_VIEWBOX_HEIGHT,
-  contentTopY: 32 / MATCH_CARD_VIEWBOX_HEIGHT,
-  contentBottomY: 82 / MATCH_CARD_VIEWBOX_HEIGHT,
-
-  dateTabTextOffset: 6,
-} as const;
-
-export function getMatchCardMetrics(screenWidth: number) {
-  const width = Math.min(screenWidth - MATCH_CARD_HORIZONTAL_PADDING, 450);
-
-  const height = Math.round(width * (MATCH_CARD_VIEWBOX_HEIGHT / MATCH_CARD_VIEWBOX_WIDTH) * MATCH_CARD_HEIGHT_SCALE);
-
-  const gap = MATCH_CARD_GAP;
-  const centerWidth = MATCH_CARD_CENTER_WIDTH;
-
-  const teamWidth = (width - centerWidth - gap * 2) / 2;
-
-  const contentTop = height * MATCH_CARD_LAYOUT.contentTopY;
-
-  const contentHeight = height * (MATCH_CARD_LAYOUT.contentBottomY - MATCH_CARD_LAYOUT.contentTopY);
-
-  const headerTop = height * MATCH_CARD_LAYOUT.dateTabCenterY - MATCH_CARD_LAYOUT.dateTabTextOffset;
-
-  const predictionTop = height * MATCH_CARD_LAYOUT.predictionTabTopY;
-  const predictionHeight = height * MATCH_CARD_LAYOUT.predictionTabHeight;
-
-  const logoBoxSize = Math.min(teamWidth * 0.7, height * 0.45, MATCH_CARD_LOGO_MAX);
-
-  return {
-    width,
-    height,
-    gap,
-    centerWidth,
-    teamWidth,
-    contentTop,
-    contentHeight,
-    headerTop,
-    predictionTop,
-    predictionHeight,
-    logoBoxSize,
-  };
-}
-
 type Props = {
   width: number;
   height: number;
@@ -162,7 +108,7 @@ export function MatchCardBg({ width, height, predictionStatus = 'none', showDate
       <Path d={cardPath} transform="translate(1, 1.5)" fill={colors.text} opacity={theme === 'dark' ? 0.2 : 0.08} />
 
       {/* Main card */}
-      <Path d={cardPath} fill="url(#match-card-background)" stroke={colors.border} strokeWidth="1.25" />
+      <Path d={cardPath} fill="url(#match-card-background)" stroke={predictionColor} strokeWidth="1.25" />
 
       {/* Subtle top highlight */}
       <Path d={highlightPath} fill="url(#match-card-highlight)" />
@@ -177,7 +123,7 @@ export function MatchCardBg({ width, height, predictionStatus = 'none', showDate
             Z
           "
           fill="url(#match-date-tab-background)"
-          stroke={colors.border}
+          stroke={predictionColor}
           strokeWidth="1.2"
         />
       ) : null}

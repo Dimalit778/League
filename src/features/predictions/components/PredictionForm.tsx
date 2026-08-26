@@ -1,34 +1,26 @@
-import { Text } from '@/components';
-import { PredictionWithMemberType } from '@/features/matches/types';
+import { Button, Text } from '@/components';
+import type { MemberPrediction } from '@/features/matches/types';
 
 import { useUpsertPrediction } from '@/features/predictions/hooks/usePredictions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { Minus, Plus } from 'lucide-react-native';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 const MIN_SCORE = 0;
 const MAX_SCORE = 9;
-const STEPPER_WIDTH = 148;
+const STEPPER_WIDTH = 140;
+const STEPPER_HEIGHT = 52;
 const ICON_COLOR = '#D7DCE7';
+const SAVED_FLASH_MS = 1200;
 
 const clampScore = (value: number) => Math.min(MAX_SCORE, Math.max(MIN_SCORE, value));
 
-export type PredictionDraftState = {
-  hasChanges: boolean;
-  isPending: boolean;
-};
-
-export type PredictionFormHandle = {
-  save: () => Promise<void>;
-};
-
 type PredictionFormProps = {
-  prediction?: PredictionWithMemberType;
+  prediction?: MemberPrediction;
   matchId: number;
   onSaveSuccess?: () => void;
-  onDraftChange?: (state: PredictionDraftState) => void;
 };
 
 type ScoreStepperProps = {
@@ -52,7 +44,7 @@ function ScoreStepper({
   return (
     <View
       className=" flex-row items-stretch overflow-hidden rounded-lg border border-white/25 bg-gray-900"
-      style={{ direction: 'ltr', width: STEPPER_WIDTH, height: 44 }}
+      style={{ direction: 'ltr', width: STEPPER_WIDTH, height: STEPPER_HEIGHT }}
     >
       <Pressable
         className="flex-1 items-center justify-center border-r border-white/20 active:bg-white/10"
@@ -67,9 +59,7 @@ function ScoreStepper({
       </Pressable>
 
       <View className="flex-1 items-center justify-center">
-        <Text ltr variant="header" className="text-center text-white">
-          {value}
-        </Text>
+        <Text className="text-2xl font-bold text-center text-white">{value}</Text>
       </View>
 
       <Pressable
@@ -87,29 +77,32 @@ function ScoreStepper({
   );
 }
 
-const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(function PredictionForm(
-  { prediction, matchId, onSaveSuccess, onDraftChange },
-  ref,
-) {
+export default function PredictionForm({ prediction, matchId, onSaveSuccess }: PredictionFormProps) {
   const { t } = useTranslation();
   const memberId = useMemberId();
   const [homeScore, setHomeScore] = useState(() => clampScore(prediction?.home_score ?? 0));
   const [awayScore, setAwayScore] = useState(() => clampScore(prediction?.away_score ?? 0));
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [savedScores, setSavedScores] = useState<{ home: number; away: number } | null>(
-    prediction ? { home: clampScore(prediction.home_score), away: clampScore(prediction.away_score) } : null,
-  );
+  const [savedScores, setSavedScores] = useState({
+    home: clampScore(prediction?.home_score ?? 0),
+    away: clampScore(prediction?.away_score ?? 0),
+  });
+  const [justSaved, setJustSaved] = useState(false);
 
   const upsertPrediction = useUpsertPrediction();
+  const isPending = upsertPrediction.isPending;
 
-  const hasChanges = savedScores ? homeScore !== savedScores.home || awayScore !== savedScores.away : hasInteracted;
+  const hasChanges = homeScore !== savedScores.home || awayScore !== savedScores.away;
+  const canSave = hasChanges && !isPending;
+  const saveLabel = isPending ? t('Saving') : justSaved ? t('Saved') : t('Save');
 
   useEffect(() => {
-    onDraftChange?.({ hasChanges, isPending: upsertPrediction.isPending });
-  }, [hasChanges, onDraftChange, upsertPrediction.isPending]);
+    if (!justSaved) return;
+    const timeoutId = setTimeout(() => setJustSaved(false), SAVED_FLASH_MS);
+    return () => clearTimeout(timeoutId);
+  }, [justSaved]);
 
   const handleSave = useCallback(async () => {
-    if (!matchId || !memberId || !hasChanges || upsertPrediction.isPending) {
+    if (!matchId || !memberId || !hasChanges || isPending) {
       return;
     }
 
@@ -121,43 +114,50 @@ const PredictionForm = forwardRef<PredictionFormHandle, PredictionFormProps>(fun
         league_member_id: memberId,
       });
       setSavedScores({ home: homeScore, away: awayScore });
-      setHasInteracted(false);
+      setJustSaved(true);
       onSaveSuccess?.();
     } catch {
       // Alert handled in useUpsertPrediction
     }
-  }, [awayScore, hasChanges, homeScore, matchId, memberId, onSaveSuccess, upsertPrediction]);
-
-  useImperativeHandle(ref, () => ({ save: handleSave }), [handleSave]);
+  }, [awayScore, hasChanges, homeScore, isPending, matchId, memberId, onSaveSuccess, upsertPrediction]);
 
   const updateHomeScore = (value: number) => {
     setHomeScore(clampScore(value));
-    setHasInteracted(true);
+    setJustSaved(false);
   };
 
   const updateAwayScore = (value: number) => {
     setAwayScore(clampScore(value));
-    setHasInteracted(true);
+    setJustSaved(false);
   };
 
   return (
-    <View className="w-full flex-row items-center justify-between ">
-      <ScoreStepper
-        value={homeScore}
-        onChange={updateHomeScore}
-        decreaseAccessibilityLabel={t('Decrease home score')}
-        increaseAccessibilityLabel={t('Increase home score')}
-        disabled={upsertPrediction.isPending}
-      />
-      <ScoreStepper
-        value={awayScore}
-        onChange={updateAwayScore}
-        decreaseAccessibilityLabel={t('Decrease away score')}
-        increaseAccessibilityLabel={t('Increase away score')}
-        disabled={upsertPrediction.isPending}
+    <View className="gap-6">
+      <View className="w-full flex-row items-center justify-between ">
+        <ScoreStepper
+          value={homeScore}
+          onChange={updateHomeScore}
+          decreaseAccessibilityLabel={t('Decrease home score')}
+          increaseAccessibilityLabel={t('Increase home score')}
+          disabled={isPending}
+        />
+
+        <ScoreStepper
+          value={awayScore}
+          onChange={updateAwayScore}
+          decreaseAccessibilityLabel={t('Decrease away score')}
+          increaseAccessibilityLabel={t('Increase away score')}
+          disabled={isPending}
+        />
+      </View>
+      <Button
+        label={saveLabel}
+        variant="primary"
+        size="md"
+        onPress={() => void handleSave()}
+        disabled={!canSave || isPending}
+        loading={isPending}
       />
     </View>
   );
-});
-
-export default PredictionForm;
+}

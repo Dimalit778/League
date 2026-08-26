@@ -88,19 +88,4 @@ export type MatchDetails = MatchBaseType & {
   predictions: MemberPrediction[];
 };
 
-/** @deprecated Use MatchListItem. */
-export type MatchCardType = MatchListItem;
-/** @deprecated Use RawMatchListItem. */
-export type MatchCardRawType = RawMatchListItem;
-/** @deprecated Use MatchListItem. */
-export type MatchWithPredictionsType = MatchListItem;
-/** @deprecated Use MatchDetails. */
-export type MatchWithAllPredictionsType = MatchDetails;
-/** @deprecated Use MatchDetails. */
-export type MatchWithPredictions = MatchDetails;
-/** @deprecated Use MemberPrediction. */
-export type PredictionWithMemberType = MemberPrediction;
-/** @deprecated Use MemberPrediction. */
-export type PredictionMemberType = MemberPrediction;
-
 export * from "./footballStages";

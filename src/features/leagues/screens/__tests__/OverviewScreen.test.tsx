@@ -26,7 +26,7 @@ const mockOverview = {
     longestStreak: 5,
     recentForm: [],
   },
-  upcomingMatches: [],
+  todayMatches: [],
   isLoading: false,
 };
 

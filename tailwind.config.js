@@ -27,6 +27,8 @@ module.exports = {
         overlay: 'var(--color-overlay)',
       },
       fontFamily: {
+        nunito: ['Nunito_400Regular'],
+        'nunito-bold': ['Nunito_700Bold'],
         oswald: ['Oswald_400Regular'],
         'oswald-bold': ['Oswald_700Bold'],
       },

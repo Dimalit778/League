@@ -2,12 +2,11 @@ import { images } from '@/assets/images';
 import { Button, InputField, MyImage, Screen, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
-import { MailIcon } from '@assets/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
-
+import { Mail } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -90,7 +89,7 @@ const ForgotPasswordScreen = () => {
                   keyboardType="email-address"
                   secureTextEntry={false}
                   error={emailForm.formState.errors.email}
-                  icon={<MailIcon size={24} color="#AEB8D0" />}
+                  icon={<Mail size={24} color="#AEB8D0" />}
                   clearError={clearError}
                 />
 

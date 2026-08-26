@@ -1,5 +1,5 @@
 import { useRefetchOnFocus } from '@/hooks/useRefetchOnFocus';
-import { KEYS } from '@/lib/queryClient';
+import { disabledKey, KEYS } from '@/lib/queryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { useIsFocused } from 'expo-router';
@@ -23,14 +23,7 @@ export const useSeasonMatches = ({
   const query = useQuery({
     queryKey: isReady
       ? KEYS.matches.season(competitionId, seasonId, memberId)
-      : ([
-          'matches',
-          'season',
-          'disabled',
-          competitionId ?? 'none',
-          seasonId ?? 'none',
-          memberId ?? 'none',
-        ] as const),
+      : disabledKey('matches', 'season', competitionId, seasonId, memberId),
     queryFn: isReady ? () => matchesApi.getSeasonMatches(competitionId, seasonId, memberId) : skipToken,
     enabled: isReady,
     staleTime: 1000 * 60 * 5,

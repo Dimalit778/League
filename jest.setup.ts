@@ -1,4 +1,8 @@
 import '@testing-library/react-native/build/matchers/extend-expect';
+
+// Existing subscription-flow tests exercise the preserved paid mode. Tests
+// for free-access mode can override/reset this environment variable explicitly.
+process.env.EXPO_PUBLIC_SUBSCRIPTIONS_ENABLED = 'true';
 declare global {
   var testFormValues: Record<string, any>;
 }
@@ -28,6 +32,18 @@ jest.mock('@expo/vector-icons/build/FontAwesome6', () => {
 });
 
 jest.mock('@expo/vector-icons/Entypo', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
+jest.mock('@expo/vector-icons/Feather', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
+});
+
+jest.mock('@expo/vector-icons/Ionicons', () => {
   const React = require('react');
   const { View } = require('react-native');
   return (props: any) => React.createElement(View, { ...props, testID: 'expo-vector-icon' });
@@ -352,6 +368,7 @@ jest.mock('react-native-reanimated', () => {
     default: {
       View: AnimatedView,
       ScrollView: AnimatedScrollView,
+      FlatList: require('react-native').FlatList,
       createAnimatedComponent: (Component: any) => Component,
     },
     cancelAnimation: jest.fn(),

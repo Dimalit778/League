@@ -81,4 +81,3 @@ export function mapMatchToCardData(match: MatchListItem, locale: string = 'en-GB
     time: formatTime(match.kick_off),
   };
 }
-export const mapMatchToCardProps = mapMatchToCardData;

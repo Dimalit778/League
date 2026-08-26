@@ -42,17 +42,7 @@ Sentry.init({
   attachScreenshot: false,
   sendDefaultPii: false,
   tracesSampleRate: 0.2,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-
-  integrations: [
-    Sentry.mobileReplayIntegration({
-      maskAllText: true,
-      maskAllImages: true,
-      maskAllVectors: true,
-    }),
-    navigationIntegration,
-  ],
+  integrations: [navigationIntegration],
 });
 
 ExpoSplashScreen.preventAutoHideAsync().catch(() => {});

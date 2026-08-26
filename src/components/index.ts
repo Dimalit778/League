@@ -33,5 +33,5 @@ export { LogoBadge } from './ui/LogoBadge';
 export { MyImage } from './ui/MyImage';
 export { BoxSkeleton, CardSkeleton, MatchCardSkeleton, Skeleton, TextSkeleton } from './ui/Skeleton';
 export { TeamLogo } from './ui/TeamLogo';
-export { Text } from './ui/Text';
+export { Text, type TextTone } from './ui/Text';
     

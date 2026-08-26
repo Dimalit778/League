@@ -1,6 +1,23 @@
 import { ContentReportWithRelations, ModerationDecision, ReportStatus } from '@/features/moderation/types';
+import {
+  CompetitionWithCurrentSeason,
+  CompetitionWithSeasonRows,
+  normalizeCompetition,
+} from '@/features/leagues/model/currentSeason';
 import { supabase } from '@/lib/supabase';
-import { Tables, TablesInsert } from '@/types/database.types';
+import { Tables } from '@/types/database.types';
+
+export type CreateCompetitionInput = {
+  id: number;
+  name: string;
+  area: string;
+  code: string;
+  flag: string;
+  logo: string;
+  type: string;
+  seasonId?: number | null;
+  currentStage?: string | null;
+};
 
 type DashboardCounts = {
   users: number;
@@ -28,6 +45,12 @@ type PredictionWithRelations = Tables<'predictions'> & {
   league?: Pick<Tables<'leagues'>, 'id' | 'name'> | null;
   member?: Pick<Tables<'league_members'>, 'id' | 'nickname'> | null;
   user?: Pick<Tables<'users'>, 'id' | 'email' | 'full_name'> | null;
+};
+
+type RawAdminPredictionRow = Tables<'predictions'> & {
+  league: Pick<Tables<'leagues'>, 'id' | 'name'> | null;
+  member: Pick<Tables<'league_members'>, 'id' | 'nickname'> | null;
+  user: Pick<Tables<'users'>, 'id' | 'email' | 'full_name'> | null;
 };
 
 export const adminService = {
@@ -190,7 +213,7 @@ export const adminService = {
 
     if (error) throw error;
 
-    const rows = (data ?? []) as any[];
+    const rows = (data ?? []) as unknown as RawAdminPredictionRow[];
 
     return rows.map((prediction) => ({
       ...prediction,
@@ -216,22 +239,40 @@ export const adminService = {
   async getCompetitions() {
     const { data, error } = await supabase
       .from('competitions')
-      .select('*')
+      .select(`
+        *,
+        seasons(
+          id,
+          competition_id,
+          current_matchday,
+          current_stage,
+          total_matchdays,
+          season_start,
+          season_end,
+          is_current
+        )
+      `)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as Tables<'competitions'>[];
+    return ((data ?? []) as unknown as CompetitionWithSeasonRows[]).map(normalizeCompetition);
   },
 
-  async addCompetition(competition: TablesInsert<'competitions'>) {
-    const { data, error } = await supabase
-      .from('competitions')
-      .insert(competition)
-      .select()
-      .single();
+  async addCompetition(competition: CreateCompetitionInput) {
+    const { data, error } = await supabase.rpc('admin_create_competition', {
+      p_id: competition.id,
+      p_name: competition.name,
+      p_area: competition.area,
+      p_code: competition.code,
+      p_flag: competition.flag,
+      p_logo: competition.logo,
+      p_type: competition.type,
+      p_season_id: competition.seasonId ?? undefined,
+      p_current_stage: competition.currentStage ?? undefined,
+    });
 
     if (error) throw error;
-    return data as Tables<'competitions'>;
+    return data as unknown as CompetitionWithCurrentSeason;
   },
 
   async removeCompetition(competitionId: number) {

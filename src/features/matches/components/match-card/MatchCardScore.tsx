@@ -1,22 +1,24 @@
 import { Text } from '@/components';
+import type { MatchUiScore } from '@/features/matches/model/matchPresentation';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { Clock } from 'lucide-react-native';
 import { View } from 'react-native';
 
-type MatchCardScoreProps = {
-  homeScore: number | null;
-  awayScore: number | null;
-  time: string;
-};
-
-export function MatchCardScore({ homeScore, awayScore, time }: MatchCardScoreProps) {
+export function MatchCardScore({ score }: { score: MatchUiScore }) {
   const { colors } = useThemeTokens();
-  const hasScore = homeScore != null && awayScore != null;
 
-  if (hasScore) {
+  if (score.kind === 'score') {
     return (
-      <Text variant="header" className="w-full text-center text-muted pb-3" numberOfLines={1}>
-        {homeScore} - {awayScore}
+      <Text variant="header" tone={score.tone} className="w-full text-center " numberOfLines={1}>
+        {score.home} - {score.away}
+      </Text>
+    );
+  }
+
+  if (score.kind === 'empty') {
+    return (
+      <Text variant="header" tone="muted" className="w-full text-center pb-3" numberOfLines={1}>
+        – - –
       </Text>
     );
   }
@@ -25,7 +27,7 @@ export function MatchCardScore({ homeScore, awayScore, time }: MatchCardScorePro
     <View className="flex-row items-center justify-center gap-1.5">
       <Clock size={13} color={colors.muted} />
       <Text variant="bodySmall" tone="muted" numberOfLines={1}>
-        {time}
+        {score.time}
       </Text>
     </View>
   );

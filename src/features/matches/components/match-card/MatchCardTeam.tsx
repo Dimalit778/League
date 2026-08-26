@@ -13,19 +13,12 @@ export function MatchCardTeam({ team, width, logoWidth, logoHeight }: MatchCardT
   return (
     <View style={{ width }} className=" items-center gap-1 ">
       <View style={{ width: logoWidth, height: logoHeight }} className="items-center justify-center overflow-hidden">
-        <TeamLogo
-          tla={team.tla}
-          clubColors={team.clubColors}
-          name={team.name}
-          size={logoWidth}
-          radius={logoWidth / 2}
-        />
+        <TeamLogo tla={team.tla} clubColors={team.clubColors} size={logoWidth} radius={logoWidth / 2} />
       </View>
-      <View className="mt-0.5 h-6 w-full items-center justify-start">
-        <Text variant="bodySmall" numberOfLines={2} ellipsizeMode="tail">
-          {team.name}
-        </Text>
-      </View>
+
+      <Text variant="label" numberOfLines={2} ellipsizeMode="tail">
+        {team.name}
+      </Text>
     </View>
   );
 }

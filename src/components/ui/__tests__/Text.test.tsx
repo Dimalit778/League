@@ -12,7 +12,7 @@ describe('Text', () => {
     expect(getByText('Heading')).toBeTruthy();
   });
 
-  it('renders with display variant (oswald)', () => {
+  it('renders with display variant (nunito)', () => {
     const { getByText } = render(<Text variant="display">Score</Text>);
     expect(getByText('Score')).toBeTruthy();
   });
