@@ -1,5 +1,7 @@
+import { createMMKVStorageAdapter, userStorage } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 type PrimaryLeagueContext = {
   memberId: string | null;
@@ -38,7 +40,9 @@ const EMPTY_CONTEXT: PrimaryLeagueContext = {
 };
 
 export const usePrimaryLeagueStore =
-  create<PrimaryLeagueStore>()((set) => ({
+  create<PrimaryLeagueStore>()(
+  persist(
+    (set, get) => ({
     ...EMPTY_CONTEXT,
 
     loading: false,
@@ -53,8 +57,14 @@ export const usePrimaryLeagueStore =
     },
 
     initializePrimaryLeague: async () => {
+      // When context was rehydrated from MMKV we already have something to
+      // render, so refresh SILENTLY: keep `loading: false` so the app-layout
+      // guard renders the league area immediately instead of flashing a
+      // full-screen spinner. Only the true cold path (no persisted context)
+      // blocks on the spinner.
+      const hasPersistedContext = get().memberId !== null;
       set({
-        loading: true,
+        loading: !hasPersistedContext,
         initialized: false,
       });
 
@@ -140,7 +150,26 @@ export const usePrimaryLeagueStore =
         initialized: false,
       });
     },
-  }));
+  }),
+  {
+    name: 'primary-league-store',
+    storage: createJSONStorage(() => createMMKVStorageAdapter(userStorage)),
+    // Bump when the shape of the persisted context below changes.
+    version: 1,
+    // Persist ONLY the display/routing context — never the transient
+    // `loading`/`initialized` flags. Keeping them out means a rehydrated store
+    // always starts with `initialized: false`, so `initializePrimaryLeague`
+    // still runs on launch to refresh the context against the server.
+    partialize: (state) => ({
+      memberId: state.memberId,
+      leagueId: state.leagueId,
+      competitionId: state.competitionId,
+      seasonId: state.seasonId,
+      nickname: state.nickname,
+      avatarUrl: state.avatarUrl,
+    }),
+  },
+));
 
 // Strict hooks for screens that already sit behind the active-league guard.
 function requireStoreValue<T>(value: T | null, name: string): T {

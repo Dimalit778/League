@@ -1,5 +1,6 @@
 import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
 import { KEYS } from '@/lib/queryClient';
+import { queryPersister } from '@/lib/queryPersister';
 import { supabase } from '@/lib/supabase';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -93,8 +94,11 @@ export const signOut = async (queryClient: QueryClient) => {
 
   usePrimaryLeagueStore.getState().clearPrimaryLeague();
 
-  // Drop all cached server data so the next user on this device starts fresh
+  // Drop all cached server data so the next user on this device starts fresh.
+  // clear() empties the in-memory cache; removeClient() deletes the on-disk
+  // MMKV snapshot so the next user can't hydrate the previous user's leagues.
   queryClient.clear();
+  await queryPersister.removeClient();
 
   return { success: true };
 };
