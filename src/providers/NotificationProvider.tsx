@@ -101,10 +101,14 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
 
     if (isLoggedIn && permissionGranted) {
       void registerPushToken();
-    } else if (!isLoggedIn) {
+    } else if (isLoggedIn && permission.status === 'denied') {
+      // Definitive revoke while still logged in (logout itself is handled in
+      // authApi.signOut, before the session is torn down). Don't clear on
+      // 'loading' | 'undetermined' | 'unavailable' — those are transient
+      // states during initial permission resolution, not a revoke.
       void clearPushToken();
     }
-  }, [isLoggedIn, permissionGranted]);
+  }, [isLoggedIn, permissionGranted, permission.status]);
 
   // Re-register on foreground while granted, in case the token rotated.
   useEffect(() => {

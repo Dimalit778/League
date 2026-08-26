@@ -4,6 +4,7 @@ import {
   CURRENT_TERMS_VERSION,
   type LegalAcceptanceContext,
 } from '@/features/auth/legalAcceptance';
+import { clearPushToken } from '@/lib/notifications/pushToken';
 import { KEYS } from '@/lib/queryClient';
 import { queryPersister } from '@/lib/queryPersister';
 import { supabase } from '@/lib/supabase';
@@ -112,6 +113,16 @@ export const signUp = (
 
 // Sign Out
 export const signOut = async (queryClient: QueryClient) => {
+  // Clear the push token WHILE the session is still valid — RLS
+  // (auth.uid() = id) blocks this update once the session is gone, so it
+  // must run before supabase.auth.signOut() below. Best-effort: a clear
+  // failure must never block sign-out.
+  try {
+    await clearPushToken();
+  } catch {
+    // clearPushToken already swallows its own errors, but guard regardless.
+  }
+
   // Always attempt the remote sign-out, even if the local session is
   // expired, revoked, or missing — Supabase errors here must not block logout.
   try {
