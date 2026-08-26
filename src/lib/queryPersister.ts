@@ -28,17 +28,20 @@ const PERSISTED_QUERY_ROOTS = new Set<string>([
 
 // The full `matches` and `competitions` roots are NOT persisted — they hold
 // many heavy sub-caches (per-match details, predictions, AI summaries). But the
-// two entries the Matches tab blocks its skeleton on ARE worth persisting so it
-// renders the current matchday instantly on a cold start:
-//   - the season fixtures list: ['matches', comp, season, 'season', member]
-//   - the competition meta:      ['competitions', comp, 'match-meta']
-// One season is a few hundred KB of fixtures — small enough for MMKV. The rest
-// of the season is refetched in the background (stale-while-revalidate), and
-// prefetched via usePrefetchLeagueData. Bump CACHE_BUSTER if MatchListItem or
-// the competition-meta shape changes.
+// entries the Home and Matches tabs render on load ARE worth persisting so they
+// paint instantly on a cold start:
+//   - the season fixtures list:  ['matches', comp, season, 'season', member]
+//   - today's matches (Overview): ['matches', comp, season, 'upcoming', member]
+//   - the competition meta:       ['competitions', comp, 'match-meta']
+// Each is small (a season is a few hundred KB; today's list is ~10 matches) —
+// fine for MMKV. On a warm start these render instantly from disk; each screen
+// still refetches in the background (stale-while-revalidate). Bump CACHE_BUSTER
+// if MatchListItem or the competition-meta shape changes.
+const PERSISTED_MATCHES_MARKERS = new Set(['season', 'upcoming']);
+
 const shouldPersistMatchQuery = (queryKey: readonly unknown[]): boolean => {
   const [root] = queryKey;
-  if (root === 'matches') return queryKey[3] === 'season';
+  if (root === 'matches') return PERSISTED_MATCHES_MARKERS.has(queryKey[3] as string);
   if (root === 'competitions') return queryKey[2] === 'match-meta';
   return false;
 };

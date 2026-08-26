@@ -18,8 +18,9 @@ describe('queryPersister shouldDehydrateQuery', () => {
     expect(shouldDehydrate(makeQuery(KEYS.subscription.access('u1')))).toBe(true);
   });
 
-  it('persists the Matches-tab cold-start entries (season fixtures + meta)', () => {
+  it('persists the cold-start match entries (season + today + meta)', () => {
     expect(shouldDehydrate(makeQuery(KEYS.matches.season(1, 2, 'm1')))).toBe(true);
+    expect(shouldDehydrate(makeQuery(KEYS.matches.upcoming(1, 2, 'm1')))).toBe(true);
     expect(shouldDehydrate(makeQuery(KEYS.competitions.matchMeta(1)))).toBe(true);
   });
 

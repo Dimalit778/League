@@ -1,8 +1,14 @@
 import { Text } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';
+import {
+  FIXTURE_CHIP_WIDTH,
+  getCenteredFixtureOffset,
+  getFixtureItemLayout,
+  getFixtureListIndex,
+} from './fixtureListLayout';
 
 type FixturesListProps = {
   fixtures: number[];
@@ -21,10 +27,6 @@ type FixtureItemProps = {
   onPress: (fixture: number) => void;
 };
 
-const fixtureWidth = 70;
-const fixtureMargin = 7;
-const fixtureItemSpacing = fixtureWidth + fixtureMargin * 2;
-
 const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPress }: FixtureItemProps) => {
   const { t } = useTranslation();
   const isSelected = selectedFixture === fixture;
@@ -41,7 +43,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
         accessibilityState={{ selected: isSelected }}
         style={
           {
-            width: fixtureWidth,
+            width: FIXTURE_CHIP_WIDTH,
             transition: Platform.OS === 'web' ? 'transform 0.15s ease-in-out' : undefined,
           } as any
         }
@@ -76,49 +78,34 @@ export default function FixturesList({
   fixtureDateRanges,
 }: FixturesListProps) {
   const ref = useRef<FlatList>(null);
-
+  const positionedRef = useRef(false);
   const [listWidth, setListWidth] = useState(0);
+  const [isPositioned, setIsPositioned] = useState(false);
 
   const onLayout = (e: LayoutChangeEvent) => setListWidth(e.nativeEvent.layout.width);
 
-  useEffect(() => {
-    if (!ref.current || !selectedFixture || listWidth === 0 || fixtures.length === 0) return;
+  useLayoutEffect(() => {
+    if (!ref.current || listWidth === 0 || fixtures.length === 0) return;
 
-    const index = fixtures.findIndex((fixture) => fixture === selectedFixture);
-    if (index === -1) return;
+    const index = getFixtureListIndex(fixtures, selectedFixture);
+    const offset = getCenteredFixtureOffset(index, listWidth, fixtures.length);
+    const animated = positionedRef.current && animateScroll;
 
-    if (Platform.OS === 'web') {
-      setTimeout(() => {
-        ref.current?.scrollToIndex({
-          index,
-          animated: true,
-          viewPosition: 0.5,
-        });
-      }, 50);
-    } else {
-      ref.current.scrollToIndex({
-        index,
-        animated: animateScroll,
-        viewPosition: 0.5,
-      });
+    const applyOffset = () => {
+      ref.current?.scrollToOffset({ offset, animated });
+      if (!positionedRef.current) {
+        positionedRef.current = true;
+        setIsPositioned(true);
+      }
+    };
+
+    if (Platform.OS === 'web' && !positionedRef.current) {
+      const timeoutId = setTimeout(applyOffset, 0);
+      return () => clearTimeout(timeoutId);
     }
+
+    applyOffset();
   }, [selectedFixture, listWidth, animateScroll, fixtures]);
-
-  const onScrollToIndexFailed = useCallback(
-    (info: { index: number; highestMeasuredFrameIndex: number }) => {
-      const maxIndex = fixtures.length - 1;
-      const safeIndex = Math.min(info.index, maxIndex);
-
-      setTimeout(() => {
-        ref.current?.scrollToIndex({
-          index: Math.max(0, safeIndex),
-          animated: true,
-          viewPosition: 0.5,
-        });
-      }, 50);
-    },
-    [fixtures.length],
-  );
 
   return (
     <FlatList
@@ -129,6 +116,7 @@ export default function FixturesList({
       contentContainerStyle={{ paddingVertical: 5, paddingTop: 5 }}
       showsHorizontalScrollIndicator={false}
       className="shrink-0 grow-0"
+      style={{ opacity: isPositioned ? 1 : 0 }}
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => (
         <FixtureItem
@@ -139,13 +127,7 @@ export default function FixturesList({
           onPress={handleFixturePress}
         />
       )}
-      getItemLayout={(_, index) => ({
-        length: fixtureItemSpacing,
-        offset: fixtureItemSpacing * index,
-        index,
-      })}
-      initialScrollIndex={Math.max(0, fixtures.findIndex((f) => f === selectedFixture) || 0)}
-      onScrollToIndexFailed={onScrollToIndexFailed}
+      getItemLayout={(_, index) => getFixtureItemLayout(index)}
       {...(Platform.OS === 'web' && {
         scrollEventThrottle: 16,
         removeClippedSubviews: false,

@@ -117,7 +117,7 @@ export default function MatchHeader({
 
   const heroHeight = presentation.canPredict
     ? Math.min(height * 0.4, Math.max(height * 0.52 + fontScaleExtra, isTablet ? 400 : 340))
-    : Math.min(height * 0.35, Math.max(height * 0.5 + fontScaleExtra, isTablet ? 360 : 260));
+    : Math.min(height * 0.31, Math.max(height * 0.31 + fontScaleExtra, isTablet ? 360 : 260));
 
   return (
     <View style={{ minHeight: heroHeight }}>

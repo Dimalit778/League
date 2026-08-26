@@ -23,26 +23,26 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
       {/* Left side: position + avatar + nickname */}
       <View className="flex-row items-center gap-3 flex-1">
         {/* Position pill */}
-        <View className="w-7 h-7 rounded-full border border-border items-center justify-center">
-          <Text variant="label" className="text-info">
+        <View className="w-7 h-7 rounded-md border border-border items-center justify-center bg-border">
+          <Text variant="body" className="text-info font-bold">
             {index}
           </Text>
         </View>
 
         {/* Avatar */}
-        <View className="w-12 h-12">
+        <View className="w-14 h-14">
           <AvatarImage path={item.league_member?.avatar_url} nickname={item.league_member?.nickname} />
         </View>
 
         {/* Nickname */}
-        <Text variant="label" className={`${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
+        <Text variant="body" className={`${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
           {item.league_member?.nickname}
         </Text>
       </View>
 
       {/* Middle: prediction */}
       <View className="px-2 py-1 rounded-xl border border-border mx-4 ">
-        <Text variant="label" className="text-text">
+        <Text variant="body" className="text-text">
           {item.home_score ?? '-'} - {item.away_score ?? '-'}
         </Text>
       </View>
