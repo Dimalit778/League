@@ -1,7 +1,7 @@
 import { formatDateRange } from '@/utils/formats';
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import { selectByFixture, selectFixtures } from '../model/selectors';
+import { selectFixtureIndex } from '../model/selectors';
 import type { MatchListItem } from '../types';
 import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import FixturesList from './fixture-list/FixturesList';
@@ -13,6 +13,7 @@ type FixtureListEngineProps = {
   selectedFixture: number;
   onSelectFixture: (fixture: number) => void;
   onRefresh: () => void;
+  refreshing: boolean;
   animateScroll?: boolean;
   bottomInset?: number;
   locale: string;
@@ -25,27 +26,36 @@ export default function FixtureListEngine({
   selectedFixture,
   onSelectFixture,
   onRefresh,
+  refreshing,
   animateScroll = false,
   bottomInset = 0,
   locale,
   fixtures,
 }: FixtureListEngineProps) {
-  const allFixtures = useMemo(() => fixtures ?? selectFixtures(matches), [fixtures, matches]);
+  const fixtureIndex = useMemo(() => selectFixtureIndex(matches), [matches]);
+  const allFixtures = fixtures ?? fixtureIndex.fixtures;
 
   const fixtureDateRanges = useMemo(() => {
     const ranges: Record<number, string> = {};
     for (const fixture of allFixtures) {
-      const fixtureMatches = selectByFixture(matches, fixture).filter((m) => m.kick_off);
-      if (fixtureMatches.length === 0) continue;
-      const dates = fixtureMatches.map((m) => new Date(m.kick_off)).sort((a, b) => a.getTime() - b.getTime());
-      ranges[fixture] = formatDateRange(dates[0].toISOString(), dates[dates.length - 1].toISOString(), locale);
+      const bounds = fixtureIndex.dateBoundsByFixture.get(fixture);
+      if (!bounds) continue;
+
+      ranges[fixture] = formatDateRange(
+        new Date(bounds.start).toISOString(),
+        new Date(bounds.end).toISOString(),
+        locale,
+      );
     }
     return ranges;
-  }, [allFixtures, matches, locale]);
+  }, [allFixtures, fixtureIndex, locale]);
 
   const cards = useMemo(
-    () => selectByFixture(matches, selectedFixture).map((match) => mapMatchToCardData(match, locale)),
-    [locale, matches, selectedFixture],
+    () =>
+      (fixtureIndex.matchesByFixture.get(selectedFixture) ?? []).map((match) =>
+        mapMatchToCardData(match, locale),
+      ),
+    [fixtureIndex, locale, selectedFixture],
   );
 
   return (
@@ -58,7 +68,12 @@ export default function FixtureListEngine({
         animateScroll={animateScroll}
         fixtureDateRanges={fixtureDateRanges}
       />
-      <MatchesList matches={cards} onRefresh={onRefresh} bottomInset={bottomInset} />
+      <MatchesList
+        matches={cards}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        bottomInset={bottomInset}
+      />
     </View>
   );
 }

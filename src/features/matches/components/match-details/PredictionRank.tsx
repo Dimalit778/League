@@ -1,99 +1,108 @@
-import { AvatarImage, Text } from '@/components';
+import { AvatarImage, Card, Row, Text } from '@/components';
 import { MemberPrediction } from '@/features/matches/types';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
-import { FlatList, View } from 'react-native';
+import { type ReactNode } from 'react';
+import { ActivityIndicator, FlatList, View, type ViewStyle } from 'react-native';
 
 type RankCardProps = {
   item: MemberPrediction;
   index: number;
   currentMember: boolean;
 };
+
+const POINTS_BG: Record<number, string> = { 3: 'green', 1: 'gray' };
+
+function Chip({ className, style, children }: { className?: string; style?: ViewStyle; children: ReactNode }) {
+  return (
+    <View className={cn('items-center justify-center rounded-md', className)} style={style}>
+      {children}
+    </View>
+  );
+}
+
 const RankCard = ({ item, index, currentMember }: RankCardProps) => {
-  const borderColor = item.points === 3 ? 'green' : item.points === 1 ? 'gray' : 'red';
+  const member = item.league_member;
 
   return (
-    <View
-      className={`
-            flex-row items-center justify-between rounded-2xl px-3 py-2 mb-2
-            bg-card border
-            ${currentMember ? 'border-primary' : 'border-border'}
-          `}
+    <Card
+      padding="sm"
+      variant="elevated"
+      className={currentMember ? 'border border-primary' : undefined}
+      contentClassName="flex-row items-center px-3"
     >
-      {/* Left side: position + avatar + nickname */}
-      <View className="flex-row items-center gap-3 flex-1">
-        {/* Position pill */}
-        <View className="w-7 h-7 rounded-md border border-border items-center justify-center bg-border">
-          <Text variant="body" className="text-info font-bold">
+      <View className="min-w-0 flex-1 flex-row items-center gap-5">
+        <Chip className="h-7 w-7 border border-border bg-border">
+          <Text variant="body" className="font-bold text-info">
             {index}
           </Text>
+        </Chip>
+
+        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+          <View className="h-12 w-12">
+            <AvatarImage path={member?.avatar_url} nickname={member?.nickname} />
+          </View>
+          <Text
+            variant="body"
+            className={cn('min-w-0 flex-1', currentMember ? 'text-primary' : 'text-text')}
+            numberOfLines={1}
+          >
+            {member?.nickname}
+          </Text>
         </View>
-
-        {/* Avatar */}
-        <View className="w-14 h-14">
-          <AvatarImage path={item.league_member?.avatar_url} nickname={item.league_member?.nickname} />
-        </View>
-
-        {/* Nickname */}
-        <Text variant="body" className={`${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
-          {item.league_member?.nickname}
-        </Text>
       </View>
 
-      {/* Middle: prediction */}
-      <View className="px-2 py-1 rounded-xl border border-border mx-4 ">
-        <Text variant="body" className="text-text">
-          {item.home_score ?? '-'} - {item.away_score ?? '-'}
-        </Text>
-      </View>
-
-      {/* Right: points bubble */}
-      <View
-        className="w-7 h-7 rounded-full items-center justify-center border"
-        style={{
-          borderColor: borderColor,
-        }}
-      >
-        <Text
-          variant="label"
-          className="font-bold"
-          style={{
-            color: borderColor,
-          }}
-        >
-          {item.points ?? 0}
-        </Text>
-      </View>
-    </View>
+      <Row className="gap-6">
+        <Chip className="h-8 w-14 bg-subtle">
+          <Text className="font-bold text-text">
+            {item.home_score ?? '-'} - {item.away_score ?? '-'}
+          </Text>
+        </Chip>
+        <Chip className="h-8 w-10" style={{ backgroundColor: POINTS_BG[item.points ?? 0] ?? 'red' }}>
+          <Text className="font-bold" style={{ color: 'white' }}>
+            {item.points ?? 0}
+          </Text>
+        </Chip>
+      </Row>
+    </Card>
   );
 };
 
-export default function PredictionRank({ predictions }: { predictions: MemberPrediction[] }) {
+export default function PredictionRank({
+  predictions,
+  isLoading = false,
+}: {
+  predictions: MemberPrediction[];
+  isLoading?: boolean;
+}) {
   const memberId = useMemberId();
   const { t } = useTranslation();
+  const { colors } = useThemeTokens();
 
   return (
     <View className="flex-1 p-4 md:px-10 ">
-      <View className="flex-row px-1 gap-3 py-2  ">
-        <Text className="font-semibold text-sm flex-1 text-text text-left">{t('Player')}</Text>
-        <Text className="font-semibold text-sm text-text text-center">{t('Prediction')}</Text>
-        <Text className="font-semibold text-sm text-text text-center">{t('Points')}</Text>
-      </View>
-      <FlatList
-        data={predictions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item, index }) => {
-          return (
-            <RankCard key={item.id} item={item} index={index + 1} currentMember={memberId === item.league_member?.id} />
-          );
-        }}
-        ListEmptyComponent={
-          <View className="flex-1 items-center justify-center mt-16">
-            <Text className="font-semibold text-sm text-center text-muted">{t('No predictions')}</Text>
-          </View>
-        }
-        showsVerticalScrollIndicator={false}
-      />
+      {isLoading ? (
+        <View className="mt-16 flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={predictions}
+          keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={() => <View className="h-2" />}
+          renderItem={({ item, index }) => (
+            <RankCard item={item} index={index + 1} currentMember={memberId === item.league_member?.id} />
+          )}
+          ListEmptyComponent={
+            <View className="mt-16 flex-1 items-center justify-center">
+              <Text className="text-center text-sm font-semibold text-muted">{t('No predictions')}</Text>
+            </View>
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }

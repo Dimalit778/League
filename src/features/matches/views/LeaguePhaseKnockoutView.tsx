@@ -13,11 +13,13 @@ export default function LeaguePhaseKnockoutView({
   currentFixture,
   currentStage,
   onRefresh,
+  refreshing,
 }: {
   matches: MatchListItem[];
   currentFixture: number;
   currentStage: string | null;
   onRefresh: () => void;
+  refreshing: boolean;
 }) {
   const { t, language } = useTranslation();
 
@@ -41,10 +43,16 @@ export default function LeaguePhaseKnockoutView({
           selectedFixture={selectedFixture}
           onSelectFixture={onSelectFixture}
           onRefresh={onRefresh}
+          refreshing={refreshing}
           locale={locale}
         />
       ) : (
-        <KnockoutEngine matches={knockout} onRefresh={onRefresh} initialStage={currentStage ?? undefined} />
+        <KnockoutEngine
+          matches={knockout}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          initialStage={currentStage ?? undefined}
+        />
       )}
     </View>
   );

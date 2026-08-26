@@ -19,6 +19,7 @@ export default function MatchesScreen() {
     isLoading: matchesLoading,
     error: matchesError,
     refetch,
+    isRefetching,
   } = useSeasonMatches({ competitionId, memberId, enabled: !!meta });
 
   if (metaLoading || matchesLoading || !meta) return <MatchesSkeleton />;
@@ -35,7 +36,12 @@ export default function MatchesScreen() {
   return (
     <Screen>
       {shape === 'REGULAR' && (
-        <RegularLeagueView matches={matches} currentFixture={currentFixture} onRefresh={refetch} />
+        <RegularLeagueView
+          matches={matches}
+          currentFixture={currentFixture}
+          onRefresh={refetch}
+          refreshing={isRefetching}
+        />
       )}
       {shape === 'LEAGUEPHASE_KO' && (
         <LeaguePhaseKnockoutView
@@ -43,10 +49,16 @@ export default function MatchesScreen() {
           currentFixture={currentFixture}
           currentStage={currentStage}
           onRefresh={refetch}
+          refreshing={isRefetching}
         />
       )}
       {shape === 'GROUPS_KO' && (
-        <GroupsKnockoutView matches={matches} currentStage={currentStage} onRefresh={refetch} />
+        <GroupsKnockoutView
+          matches={matches}
+          currentStage={currentStage}
+          onRefresh={refetch}
+          refreshing={isRefetching}
+        />
       )}
     </Screen>
   );
