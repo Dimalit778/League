@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react-native';
+import { ActivityIndicator } from 'react-native';
 import PredictionRank from '../match-details/PredictionRank';
 
 jest.mock('@/store/PrimaryLeagueStore', () => ({
@@ -29,8 +30,15 @@ describe('PredictionRank', () => {
   });
 
   it('renders No predictions when empty', () => {
-    const { getByText } = render(<PredictionRank predictions={[]} />);
+    const { getByText, UNSAFE_queryAllByType } = render(<PredictionRank predictions={[]} />);
     expect(getByText('No predictions')).toBeTruthy();
+    expect(UNSAFE_queryAllByType(ActivityIndicator)).toHaveLength(0);
+  });
+
+  it('shows a spinner while predictions are loading', () => {
+    const { queryByText, UNSAFE_getAllByType } = render(<PredictionRank predictions={[]} isLoading />);
+    expect(queryByText('No predictions')).toBeNull();
+    expect(UNSAFE_getAllByType(ActivityIndicator)).toHaveLength(1);
   });
 
   it('renders member nickname', () => {

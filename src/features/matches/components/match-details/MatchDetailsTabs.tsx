@@ -1,28 +1,37 @@
 import { Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import Feather from '@expo/vector-icons/Feather';
+import { BrainCircuit, Users, type LucideIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import type { MatchDetails } from '../../types';
 import AiAnalysisCard from './AiAnalysisCard';
 import PredictionRank from './PredictionRank';
 
-const tabs = [
-  { id: 0, title: 'Predictions', icon: 'users' as const },
-  { id: 1, title: 'AI Analysis', icon: 'cpu' as const },
+const tabs: { id: number; title: string; icon: LucideIcon }[] = [
+  { id: 0, title: 'Predictions', icon: Users },
+  { id: 1, title: 'AI Analysis', icon: BrainCircuit },
 ];
+const AI_TAB_ID = 1;
 
-export default function MatchDetailsTabs({ match }: { match: MatchDetails }) {
+export default function MatchDetailsTabs({
+  match,
+  isPredictionsLoading = false,
+}: {
+  match: MatchDetails;
+  isPredictionsLoading?: boolean;
+}) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const { width } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [hasOpenedAi, setHasOpenedAi] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const isScrollingProgrammatically = useRef(false);
 
   const onTabPress = (index: number) => {
+    if (tabs[index]?.id === AI_TAB_ID) setHasOpenedAi(true);
     isScrollingProgrammatically.current = true;
     setActiveTab(index);
 
@@ -40,23 +49,35 @@ export default function MatchDetailsTabs({ match }: { match: MatchDetails }) {
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: { index: number | null }[] }) => {
     const visibleIndex = viewableItems[0]?.index;
-    if (!isScrollingProgrammatically.current && visibleIndex != null) setActiveTab(visibleIndex);
+    if (visibleIndex == null) return;
+
+    if (tabs[visibleIndex]?.id === AI_TAB_ID) setHasOpenedAi(true);
+    if (!isScrollingProgrammatically.current) setActiveTab(visibleIndex);
   }).current;
   const pageStyle = useMemo(() => ({ width: containerWidth }), [containerWidth]);
   const renderItem = useCallback(
     ({ item }: { item: (typeof tabs)[number] }) => (
       <View style={pageStyle} className="flex-1">
-        {item.id === 0 ? <PredictionRank predictions={match.predictions ?? []} /> : <AiAnalysisCard match={match} />}
+        {item.id === 0 ? (
+          <PredictionRank predictions={match.predictions ?? []} isLoading={isPredictionsLoading} />
+        ) : hasOpenedAi ? (
+          <AiAnalysisCard match={match} />
+        ) : null}
       </View>
     ),
-    [match, pageStyle],
+    [hasOpenedAi, isPredictionsLoading, match, pageStyle],
   );
 
   return (
-    <View className="flex-1" onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}>
+    <View
+      testID="match-details-tabs"
+      className="flex-1"
+      onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
+    >
       <View className="flex-row justify-around pt-4">
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
+          const Icon = tab.icon;
           return (
             <TouchableOpacity
               key={tab.id}
@@ -64,10 +85,10 @@ export default function MatchDetailsTabs({ match }: { match: MatchDetails }) {
               accessibilityRole="tab"
               accessibilityLabel={t(tab.title)}
               accessibilityState={{ selected: isActive }}
-              className={`min-h-12 flex-row items-center border-b-2 px-4 pb-3 ${isActive ? 'border-primary' : 'border-border'}`}
+              className={`min-h-12 flex-row items-center border-b-2 px-4 pb-3 gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
             >
-              <Feather name={tab.icon} size={22} color={isActive ? colors.primary : colors.muted} />
-              <Text className={`ml-2 text-sm font-semibold ${isActive ? 'text-primary' : 'text-muted'}`}>
+              <Icon size={20} color={isActive ? colors.primary : colors.muted} strokeWidth={2} />
+              <Text variant="title" className={`font-medium ${isActive ? 'text-primary' : 'text-muted'}`}>
                 {t(tab.title)}
               </Text>
             </TouchableOpacity>
@@ -77,6 +98,7 @@ export default function MatchDetailsTabs({ match }: { match: MatchDetails }) {
 
       {containerWidth > 0 ? (
         <FlatList
+          testID="match-details-pages"
           ref={flatListRef}
           data={tabs}
           horizontal

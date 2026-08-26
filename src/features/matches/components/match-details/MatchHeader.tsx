@@ -93,7 +93,7 @@ const Team = ({ team, badgeSize }: { team: TeamType | null; badgeSize: number })
   const shortName = team.shortName || team.name;
 
   return (
-    <View className=" items-center justify-center">
+    <View className=" items-center justify-center gap-2">
       <TeamLogo tla={team.tla} size={badgeSize} shape="rect" clubColors={team.clubColors} variant="match" />
       <Text variant="subtitle" numberOfLines={2} className="text-center text-gray-300">
         {shortName}

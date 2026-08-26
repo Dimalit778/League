@@ -10,10 +10,12 @@ export default function RegularLeagueView({
   matches,
   currentFixture,
   onRefresh,
+  refreshing,
 }: {
   matches: MatchListItem[];
   currentFixture: number;
   onRefresh: () => void;
+  refreshing: boolean;
 }) {
   const bottomInset = useFloatBottomTabsInset();
   const { language } = useTranslation();
@@ -35,6 +37,7 @@ export default function RegularLeagueView({
         selectedFixture={selectedFixture}
         onSelectFixture={onSelectFixture}
         onRefresh={onRefresh}
+        refreshing={refreshing}
         animateScroll={animateScroll}
         bottomInset={bottomInset}
         locale={locale}

@@ -9,13 +9,14 @@ import { MatchCardData } from '../../utils/matchCard.mapper';
 type MatchesListProps = {
   matches: MatchCardData[];
   onRefresh: () => void;
+  refreshing: boolean;
   bottomInset?: number;
 };
 
 function renderMatchCard({ item }: { item: MatchCardData }) {
   return <MatchCard match={item} />;
 }
-export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: MatchesListProps) {
+export default function MatchesList({ matches, onRefresh, refreshing, bottomInset = 0 }: MatchesListProps) {
   const flatListRef = useRef<FlatList>(null);
   const { t } = useTranslation();
   if (!matches || matches.length === 0) return <MatchesSkeleton />;
@@ -31,7 +32,7 @@ export default function MatchesList({ matches, onRefresh, bottomInset = 0 }: Mat
       renderItem={renderMatchCard}
       ListEmptyComponent={<Text className="text-text text-center">{t('No matches found')}</Text>}
       ListFooterComponent={<View style={{ height: bottomInset + 20 }} />}
-      refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     />
   );
 }

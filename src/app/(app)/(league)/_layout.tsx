@@ -1,5 +1,6 @@
 import { NavigationHeader } from '@/components';
 import { useRequiresLeagueActivation } from '@/features/leagues/hooks/useRequiresLeagueActivation';
+import { usePrefetchLeagueData } from '@/features/matches/hooks/usePrefetchLeagueData';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Redirect, Stack } from 'expo-router';
@@ -9,6 +10,11 @@ export default function LeagueLayout() {
   const requiresLeagueActivation = useRequiresLeagueActivation();
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
+
+  // Deferred (runAfterInteractions) warm-up of the Matches + Leaderboard caches
+  // so those tabs open instantly. Called before the redirect to keep hook order
+  // stable; it no-ops until the primary-league store is populated.
+  usePrefetchLeagueData();
 
   if (requiresLeagueActivation) {
     return <Redirect href="/(app)/(user)/leagues/my-leagues" />;

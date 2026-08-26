@@ -1,6 +1,6 @@
 import { TeamLogo, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { ComputedStandingRow } from '../../utils/tournamentMatches';
 
 type Props = {
@@ -52,10 +52,7 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
   }
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    >
+    <View style={{ paddingBottom: 20 }}>
       <View className="mx-3 my-2 overflow-hidden rounded-xl border border-border bg-surface">
         {/* Header */}
         <View className="flex-row items-center border-b border-border bg-background/40 px-3 py-2">
@@ -98,6 +95,6 @@ export default function LeagueStandingsTable({ rows, zones = DEFAULT_CL_ZONES }:
           </View>
         ))}
       </View>
-    </ScrollView>
+    </View>
   );
 }

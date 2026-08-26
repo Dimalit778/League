@@ -165,7 +165,7 @@ function MatchMark({
             letterSpacing: -size * 0.08,
             lineHeight: size,
             paddingHorizontal: size * 0.05,
-            color: '#FFFFFF',
+            color: '#F1F5F9',
             transform: [{ skewX: '-10deg' }],
             textShadowColor: setColorAlpha(glowColor, 0.3),
             textShadowOffset: { width: 0, height: size * 0.015 },

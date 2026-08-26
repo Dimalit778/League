@@ -30,12 +30,12 @@ export const useSeasonMatches = ({
     refetchInterval: (currentQuery) =>
       isFocused ? getMatchesRefetchInterval(currentQuery.state.data) : false,
     refetchIntervalInBackground: false,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: 'always',
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
     placeholderData: (previousData) => previousData,
   });
 
-  useRefetchOnFocus(query.refetch, isReady);
+  useRefetchOnFocus(query.refetch, isReady, query.isStale);
 
   return query;
 };

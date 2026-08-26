@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Row, Text } from '@/components';
+import { Button, Card, Row, Text } from '@/components';
 import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
 import { resolveAiAnalysis, resolveAiSummaryText, splitSummaryParagraphs } from '@/features/matches/model/aiAnalysis';
 import { MatchDetails, TeamType } from '@/features/matches/types';
@@ -10,12 +10,13 @@ import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { CalendarDays } from 'lucide-react-native';
+import { BrainCircuit, CalendarDays } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type AiAnalysisCardProps = {
   match: MatchDetails;
+  title?: string;
 };
 
 type AiScoreCardProps = {
@@ -153,7 +154,7 @@ function AiUnavailableState() {
   );
 }
 
-export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
+export default function AiAnalysisCard({ match, title }: AiAnalysisCardProps) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const language = useLanguageStore((s) => s.language);
@@ -174,14 +175,15 @@ export default function AiAnalysisCard({ match }: AiAnalysisCardProps) {
 
   return (
     <View className="flex-1  border-r border-l border-border" style={{ paddingBottom: bottomInset.bottom }}>
-      <View className="flex-row  justify-center py-3 gap-2">
-        <Ionicons name="sparkles" size={20} color={colors.primary} />
-        <Text variant="titleLarge" tone="primary" className="font-bold">
-          {t('AI Analysis')}
-        </Text>
-      </View>
+      {title && (
+        <View className="flex-row  justify-center py-3 gap-2 border-b border-primary">
+          <BrainCircuit size={20} color={colors.primary} />
+          <Text variant="titleLarge" tone="primary" className="font-bold">
+            {t(title)}
+          </Text>
+        </View>
+      )}
 
-      <Divider className="bg-primary" />
       <View className="flex-1 p-5 gap-4">
         {isAvailable ? (
           <>

@@ -1,5 +1,5 @@
 import type { MatchListItem } from '../../types';
-import { selectByFixture, selectFixtures, selectGroups } from '../selectors';
+import { selectByFixture, selectFixtureIndex, selectFixtures, selectGroups } from '../selectors';
 
 const mk = (o: Partial<MatchListItem>): MatchListItem =>
   ({
@@ -28,6 +28,22 @@ describe('selectors', () => {
     const b = mk({ id: 2, fixture: 2, kick_off: '2026-06-02T12:00:00Z' });
     const c = mk({ id: 3, fixture: 1 });
     expect(selectByFixture([a, b, c], 2).map((m) => m.id)).toEqual([2, 1]);
+  });
+
+  it('indexes fixture matches and date bounds in one shared structure', () => {
+    const index = selectFixtureIndex([
+      mk({ id: 1, fixture: 2, kick_off: '2026-06-02T18:00:00Z' }),
+      mk({ id: 2, fixture: 1, kick_off: '2026-06-01T12:00:00Z' }),
+      mk({ id: 3, fixture: 2, kick_off: '2026-06-02T10:00:00Z' }),
+      mk({ id: 4, fixture: 2, kick_off: 'invalid' }),
+    ]);
+
+    expect(index.fixtures).toEqual([1, 2]);
+    expect(index.matchesByFixture.get(2)?.map((match) => match.id)).toEqual([1, 3, 4]);
+    expect(index.dateBoundsByFixture.get(2)).toEqual({
+      start: Date.parse('2026-06-02T10:00:00Z'),
+      end: Date.parse('2026-06-02T18:00:00Z'),
+    });
   });
 
   it('builds groups slice with matches and standings per group', () => {

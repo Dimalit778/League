@@ -38,8 +38,8 @@ describe('useSeasonMatches', () => {
         queryFn: expect.any(Function),
         enabled: true,
         refetchInterval: expect.any(Function),
-        refetchOnMount: 'always',
-        refetchOnWindowFocus: 'always',
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
       }),
     );
   });

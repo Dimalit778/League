@@ -13,7 +13,7 @@ import type { MatchDetails } from '../types';
 const HERO_BOTTOM = '#030812';
 const gradientColors = ['rgba(4,8,20,0.92)', 'rgba(4,8,19,0.80)', 'rgba(3,8,18,0.92)', HERO_BOTTOM] as const;
 
-function LoadedMatchDetails({ match }: { match: MatchDetails }) {
+function LoadedMatchDetails({ match, isPredictionsLoading }: { match: MatchDetails; isPredictionsLoading: boolean }) {
   const controller = useMatchDetailsController(match);
   const canPredict = controller.presentation.canPredict;
 
@@ -32,7 +32,11 @@ function LoadedMatchDetails({ match }: { match: MatchDetails }) {
         />
 
         <View className="flex-1 overflow-hidden rounded-t-3xl bg-subtle ">
-          {canPredict ? <AiAnalysisCard match={match} /> : <MatchDetailsTabs match={match} />}
+          {canPredict ? (
+            <AiAnalysisCard match={match} title="AI Analysis" />
+          ) : (
+            <MatchDetailsTabs match={match} isPredictionsLoading={isPredictionsLoading} />
+          )}
         </View>
       </View>
     </Screen>
@@ -41,13 +45,13 @@ function LoadedMatchDetails({ match }: { match: MatchDetails }) {
 
 const MatchDetailScreen = () => {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();
-  const { data: match, isLoading, error } = useGetMatchData(Number(matchId));
+  const { data: match, isLoading, isFetching, isPlaceholderData, error } = useGetMatchData(Number(matchId));
 
   if (!match) {
     return isLoading ? <MatchDetailsSkeleton /> : <Error error={error ?? { message: 'No match data found' }} />;
   }
 
-  return <LoadedMatchDetails match={match} />;
+  return <LoadedMatchDetails match={match} isPredictionsLoading={Boolean(isPlaceholderData && isFetching)} />;
 };
 
 export default MatchDetailScreen;

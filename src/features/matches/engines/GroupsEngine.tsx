@@ -10,7 +10,15 @@ import { mapMatchToCardData } from '../utils/matchCard.mapper';
 import LeagueStandingsTable from './groups/LeagueStandingsTable';
 import { GroupTabs } from './shared/TournamentTabs';
 
-export default function GroupsEngine({ matches, onRefresh }: { matches: MatchListItem[]; onRefresh: () => void }) {
+export default function GroupsEngine({
+  matches,
+  onRefresh,
+  refreshing,
+}: {
+  matches: MatchListItem[];
+  onRefresh: () => void;
+  refreshing: boolean;
+}) {
   const bottomInset = useFloatBottomTabsInset();
   const { language } = useTranslation();
   const locale = language === 'he' ? 'he-IL' : 'en-GB';
@@ -23,7 +31,7 @@ export default function GroupsEngine({ matches, onRefresh }: { matches: MatchLis
       <GroupTabs groups={groups} selectedGroup={activeGroup} onSelectGroup={setSelectedGroup} />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={{ padding: 12, paddingBottom: bottomInset + 24, flexGrow: 1 }}
       >
         <LeagueStandingsTable rows={standingsByGroup[activeGroup] ?? []} />

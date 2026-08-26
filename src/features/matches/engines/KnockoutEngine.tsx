@@ -2,7 +2,7 @@ import { Row, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, useWindowDimensions, View } from 'react-native';
+import { FlatList, RefreshControl, useWindowDimensions, View } from 'react-native';
 import { MatchCard } from '../components/MatchCard';
 import { getMatchCardMetrics, MATCH_CARD_HORIZONTAL_PADDING } from '../components/matchCardLayout';
 import { selectKnockoutTies, type Tie } from '../model/knockout';
@@ -49,10 +49,12 @@ function TieBlock({ tie }: { tie: Tie }) {
 export default function KnockoutEngine({
   matches,
   onRefresh,
+  refreshing,
   initialStage,
 }: {
   matches: MatchListItem[];
   onRefresh: () => void;
+  refreshing: boolean;
   initialStage?: string;
 }) {
   const { t } = useTranslation();
@@ -63,7 +65,15 @@ export default function KnockoutEngine({
   const stageTies = useMemo(() => ties.filter((tie) => tie.stage === activeStage), [ties, activeStage]);
 
   if (stages.length === 0) {
-    return <Text className="text-text mt-6 text-center">{t('No matches found')}</Text>;
+    return (
+      <FlatList<Tie>
+        data={[]}
+        renderItem={() => null}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+        ListEmptyComponent={<Text className="text-text text-center">{t('No matches found')}</Text>}
+      />
+    );
   }
 
   return (
@@ -81,6 +91,7 @@ export default function KnockoutEngine({
         ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
   );

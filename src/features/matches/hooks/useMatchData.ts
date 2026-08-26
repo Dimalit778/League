@@ -10,6 +10,11 @@ import { sortMemberPredictions } from "../model/predictions";
 import type { MatchDetails, MatchListItem, MemberPrediction } from "../types";
 import { getMatchRefetchInterval } from "../utils/matchRefetch";
 
+const selectMatchDetails = (data: MatchDetails): MatchDetails => ({
+  ...data,
+  predictions: sortMemberPredictions(data.predictions),
+});
+
 /** enabled should be `isPro && analysis.status === 'available'` — a free user can never see this, so don't fetch it for them. */
 export const useMatchAiSummary = (matchId: number, enabled: boolean) => {
   return useQuery({
@@ -98,18 +103,15 @@ export const useGetMatchData = (matchId: number) => {
       ? () => matchesApi.getMatchWithPredictions(leagueId!, matchId)
       : skipToken,
     placeholderData: placeholder,
-    select: (data) => ({
-      ...data,
-      predictions: sortMemberPredictions(data?.predictions),
-    }),
+    select: selectMatchDetails,
     refetchInterval: (currentQuery) =>
       isFocused ? getMatchRefetchInterval(currentQuery.state.data) : false,
     refetchIntervalInBackground: false,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
-  useRefetchOnFocus(query.refetch, isReady);
+  useRefetchOnFocus(query.refetch, isReady, query.isStale);
 
   return query;
 };

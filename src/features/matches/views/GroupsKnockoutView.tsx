@@ -12,10 +12,12 @@ export default function GroupsKnockoutView({
   matches,
   currentStage,
   onRefresh,
+  refreshing,
 }: {
   matches: MatchListItem[];
   currentStage: string | null;
   onRefresh: () => void;
+  refreshing: boolean;
 }) {
   const { t } = useTranslation();
   const groupMatches = useMemo(() => matches.filter((m) => isFirstPhaseStage(m.stage)), [matches]);
@@ -27,9 +29,14 @@ export default function GroupsKnockoutView({
       <MatchesTopBar center={<TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('Groups')} />} />
 
       {view === 'groups' ? (
-        <GroupsEngine matches={groupMatches} onRefresh={onRefresh} />
+        <GroupsEngine matches={groupMatches} onRefresh={onRefresh} refreshing={refreshing} />
       ) : (
-        <KnockoutEngine matches={knockout} onRefresh={onRefresh} initialStage={currentStage ?? undefined} />
+        <KnockoutEngine
+          matches={knockout}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          initialStage={currentStage ?? undefined}
+        />
       )}
     </View>
   );
