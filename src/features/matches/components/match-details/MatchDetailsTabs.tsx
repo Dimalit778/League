@@ -61,7 +61,10 @@ export default function MatchDetailsTabs({ match }: { match: MatchDetails }) {
             <TouchableOpacity
               key={tab.id}
               onPress={() => onTabPress(index)}
-              className={`flex-row items-center border-b-2 px-4 pb-3 ${isActive ? 'border-primary' : 'border-border'}`}
+              accessibilityRole="tab"
+              accessibilityLabel={t(tab.title)}
+              accessibilityState={{ selected: isActive }}
+              className={`min-h-12 flex-row items-center border-b-2 px-4 pb-3 ${isActive ? 'border-primary' : 'border-border'}`}
             >
               <Feather name={tab.icon} size={22} color={isActive ? colors.primary : colors.muted} />
               <Text className={`ml-2 text-sm font-semibold ${isActive ? 'text-primary' : 'text-muted'}`}>

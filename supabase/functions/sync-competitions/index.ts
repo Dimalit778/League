@@ -3,7 +3,7 @@
 // Owns stable competition metadata and current-season metadata for the 5 domestic
 // leagues + UEFA Champions League:
 //
-//   competitions: id, code, name, type, area, logo, flag, is_free
+//   competitions: id, code, name, type, area, flag, is_free
 //   seasons: id, season_start, season_end, total_matchdays
 //
 // total_matchdays is CALCULATED from the season's actual match data (never
@@ -33,7 +33,6 @@ import {
   type FootballDataCompetition,
   getErrorMessage,
   storeCompetitionFlag,
-  storeCompetitionLogo,
 } from "../_shared/competition-assets.ts";
 import {
   CHAMPIONS_LEAGUE_LEAGUE_PHASE_STAGES,
@@ -74,7 +73,6 @@ const supabase = createServiceClient();
 
 type ExistingCompetition = {
   id: number;
-  logo: string | null;
   flag: string | null;
 };
 
@@ -147,7 +145,7 @@ function seedCurrentStage(
 async function getExistingCompetition(competitionId: number): Promise<ExistingCompetition | null> {
   const { data, error } = await supabase
     .from("competitions")
-    .select("id, logo, flag")
+    .select("id, flag")
     .eq("id", competitionId)
     .maybeSingle();
 
@@ -173,7 +171,6 @@ async function upsertCompetition(params: {
   existing: ExistingCompetition | null;
   existingSeason: ExistingSeason | null;
   totalMatchdays: number | null;
-  uploadedLogo: string | null;
   uploadedFlag: string | null;
 }): Promise<void> {
   const {
@@ -182,7 +179,6 @@ async function upsertCompetition(params: {
     existing,
     existingSeason,
     totalMatchdays,
-    uploadedLogo,
     uploadedFlag,
   } = params;
 
@@ -196,7 +192,6 @@ async function upsertCompetition(params: {
     type: apiCompetition.type,
 
     // Preserve stored asset if a fresh upload failed; never wipe on failure.
-    logo: uploadedLogo ?? existing?.logo ?? null,
     area: apiCompetition.area?.name ?? null,
     flag: uploadedFlag ?? existing?.flag ?? null,
 
@@ -239,10 +234,7 @@ async function syncCompetition(
   ]);
   const totalMatchdays = calculateTotalMatchdays(targetCompetition, matches);
 
-  const [uploadedLogo, uploadedFlag] = await Promise.all([
-    storeCompetitionLogo(supabase, apiCompetition),
-    storeCompetitionFlag(supabase, apiCompetition),
-  ]);
+  const uploadedFlag = await storeCompetitionFlag(supabase, apiCompetition);
 
   await upsertCompetition({
     apiCompetition,
@@ -250,7 +242,6 @@ async function syncCompetition(
     existing,
     existingSeason,
     totalMatchdays,
-    uploadedLogo,
     uploadedFlag,
   });
 

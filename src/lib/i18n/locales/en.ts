@@ -50,6 +50,9 @@ export const en = {
     "Privacy Policy": "Privacy Policy",
     "Terms of Service": "Terms of Service",
     "I agree to the": "I agree to the",
+    "and acknowledge the": "and acknowledge the",
+    "Accept Terms of Service and acknowledge Privacy Policy":
+      "Accept Terms of Service and acknowledge Privacy Policy",
   },
 
   // Auth screens
@@ -61,6 +64,7 @@ export const en = {
     "Sign In": "Sign In",
     "Sign In Error": "Sign In Error",
     "Sign Up": "Sign Up",
+    "Sign up with Google": "Sign up with Google",
     "Sign Out": "Sign Out",
     "Apple sign in failed. Please try again.":
       "Apple sign in failed. Please try again.",
@@ -313,10 +317,14 @@ export const en = {
     Profile: "Profile",
     Me: "Me",
     Settings: "Settings",
+    Accessibility: "Accessibility",
+    "Accessibility Statement": "Accessibility Statement",
 
     "Full Name": "Full Name",
 
     Theme: "Theme",
+    "Switch to light theme": "Switch to light theme",
+    "Switch to dark theme": "Switch to dark theme",
     Language: "Language",
 
     "Switch to {{language}}": "Switch to {{language}}",
@@ -422,6 +430,8 @@ export const en = {
     Version: "Version",
     Platform: "Platform",
     "iOS & Android": "iOS & Android",
+    "Football data provided by the Football-Data.org API":
+      "Football data provided by the Football-Data.org API",
     "Thank you for using League! We're constantly working to improve your experience.":
       "Thank you for using League! We're constantly working to improve your experience.",
   },
@@ -479,6 +489,10 @@ export const en = {
   moderation: {
     Nickname: "Nickname",
     "Profile photo": "Profile photo",
+    "This image appears to violate our content guidelines and was not saved.":
+      "This image appears to violate our content guidelines and was not saved.",
+    "The monthly image moderation limit has been reached. Please try again next month.":
+      "The monthly image moderation limit has been reached. Please try again next month.",
     "Report content": "Report content",
     "Choose a reason for this report.": "Choose a reason for this report.",
     "Report submitted": "Report submitted",
@@ -656,8 +670,6 @@ export const en = {
     Code: "Code",
     "Type (optional)": "Type (optional)",
     "Display Type": "Display Type",
-    "ID, name, area, code, flag and logo are required.":
-      "ID, name, area, code, flag and logo are required.",
     "Failed to add competition.": "Failed to add competition.",
     Season: "Season",
     "Season (optional)": "Season (optional)",
@@ -666,7 +678,6 @@ export const en = {
 
     "ID:": "ID:",
     "Flag URL": "Flag URL",
-    "Logo URL": "Logo URL",
     Football: "Football",
     Showing: "Showing",
     Validation: "Validation",
@@ -958,6 +969,9 @@ export const en = {
     "{{name}}, position {{position}}, {{points}} points":
       "{{name}}, position {{position}}, {{points}} points",
     "My leagues": "My leagues",
+    "Fixture {{number}}": "Fixture {{number}}",
+    "View {{name}} profile": "View {{name}} profile",
+    "{{home}} versus {{away}}, {{status}}": "{{home}} versus {{away}}, {{status}}",
     "Verification code digit {{number}}": "Verification code digit {{number}}",
     "Enter a single digit": "Enter a single digit",
     "Resend verification code": "Resend verification code",

@@ -5,7 +5,7 @@ export type LegalSection = {
   body: string[];
 };
 
-type LegalDocument = {
+export type LegalDocument = {
   title: string;
   updatedAt: string;
   intro: string;
@@ -13,13 +13,16 @@ type LegalDocument = {
   footer: string;
 };
 
-export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; terms: LegalDocument }> = {
+export const legalContent: Record<
+  SupportedLanguage,
+  { privacy: LegalDocument; terms: LegalDocument; accessibility: LegalDocument }
+> = {
   en: {
     privacy: {
       title: 'Privacy Policy',
-      updatedAt: 'Last updated: August 4, 2026',
+      updatedAt: 'Last updated: August 26, 2026',
       intro:
-        'Champo is a football prediction app for creating leagues, joining friends, submitting predictions, viewing rankings, and managing subscriptions. This policy explains what information we collect, how we use it, and the choices available to you.',
+        'Champo is a football prediction app for creating leagues, joining friends, submitting predictions, viewing rankings, and managing Season Pass purchases. This policy explains what information we collect, how we use it, and the choices available to you.',
       sections: [
         {
           title: 'Who We Are',
@@ -33,8 +36,8 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'Account information: name, email address, authentication provider details, and basic profile details you provide when signing in or managing your account.',
             'League and prediction content: leagues you create or join, nicknames, invite codes, predictions, scores, rankings, and related in-app activity.',
             'Profile media: avatar images or other photos you choose to upload. The system photo picker opens only when you choose to add or update profile media; Champo does not request broad photo-library access in advance.',
-            'Subscription information: subscription status, product identifiers, purchase or renewal status, and receipt-related metadata processed through Apple and RevenueCat. We do not receive your full payment card details.',
-            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, performance data, and security logs. Crash and session diagnostics may be collected through Sentry with text and images masked in replays. Match reminders are scheduled locally on your device; Champo does not currently collect push notification tokens.',
+            'Purchase information: Season Pass entitlement status, product identifiers, purchase status, and receipt-related metadata processed through Apple and RevenueCat. We do not receive your full payment card details.',
+            'Device, diagnostics, and usage data: app version, device type, operating system, crash reports, error messages and stack traces, navigation and performance data, and security logs. Match reminders are scheduled locally on your device; Champo does not currently collect push notification tokens.',
             'Support communications: messages, attachments, and contact details you send when requesting help.',
           ],
         },
@@ -42,7 +45,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'How We Use Information',
           body: [
             'To provide the app experience, including authentication, league creation, prediction submission, standings, profile display, and member management.',
-            'To operate subscriptions, restore purchases, enforce plan limits, and provide access to paid features.',
+            'To process and restore Season Pass purchases, enforce plan limits, and provide access to paid features.',
             'To send transactional messages such as email verification, password reset messages, important account notices, and replies to support requests.',
             'To secure the service, prevent abuse, debug errors, improve reliability, and understand how core features are used.',
             'To comply with legal obligations, App Store requirements, and enforce our Terms of Service.',
@@ -52,10 +55,34 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'Sharing and Service Providers',
           body: [
             'We do not sell your personal information.',
-            'We share information only with providers needed to run the app, such as Supabase for authentication/database/storage, Apple and RevenueCat for in-app purchases, Sentry for diagnostics, and authentication providers such as Apple or Google when you choose those sign-in methods.',
+            'We share information only with providers needed to run the app, such as Supabase for authentication/database/storage, Apple and RevenueCat for in-app purchases, Google Cloud Vision for profile-image safety checks, Sentry for diagnostics, and authentication providers such as Apple or Google when you choose those sign-in methods.',
             'Gemini and Tavily may be used to prepare AI-assisted match previews from public football information. The current implementation does not send account details, names, email addresses, profile images, league memberships, or predictions to these services.',
             'These providers may process information on our behalf and must protect it consistently with this policy and applicable law.',
             'We may disclose information if required by law, to protect rights and safety, or as part of a business transfer such as a merger or acquisition.',
+          ],
+        },
+        {
+          title: 'Legal Bases for Processing (EEA and UK)',
+          body: [
+            'We process account, league, prediction, and purchase-entitlement information as necessary to provide the service and perform our contract with you.',
+            'We process limited diagnostics, security logs, abuse-prevention information, and service analytics for our legitimate interests in securing, maintaining, and improving Champo, balanced against your rights and expectations.',
+            'We process information when necessary to comply with legal obligations. Where applicable law requires consent, including for an optional device permission, you may withdraw that consent at any time without affecting earlier lawful processing.',
+          ],
+        },
+        {
+          title: 'Google Cloud Vision Image Moderation',
+          body: [
+            'When you choose to upload or replace a profile image, the image is sent to Google Cloud Vision before it is saved. We use its automated SafeSearch detection to estimate whether the image contains adult, racy, violent, or medical content. Champo uses the returned likelihood ratings to accept or reject the upload under our community standards.',
+            'The Vision request contains the image itself but does not include your Champo name, email address, user ID, league membership, or predictions. According to Google’s current Cloud Vision data-usage documentation, images submitted through the synchronous API used by Champo are processed in memory and are not persisted to disk; Google may temporarily log request metadata such as request time and size. Google states that submitted content is used only to provide the Vision service and is not used to train Cloud Vision models.',
+            'Automated moderation can make mistakes. If your image is rejected and you believe the decision was incorrect, contact support@champoapp.com. Do not upload an image if you do not want it processed by Google Cloud Vision; you can continue using Champo without a profile image.',
+          ],
+        },
+        {
+          title: 'Sentry Diagnostics',
+          body: [
+            'In production mobile versions of Champo, Sentry processes crash reports, error messages and stack traces, app release and version information, device and operating-system details, navigation and sampled performance traces, and technical context needed to diagnose failures. Champo’s server functions may also send Sentry an error type, message, stack trace, function name, request identifier, and response status.',
+            'We use this information to detect crashes, troubleshoot errors, monitor performance, protect the service, and improve reliability. Champo configures the mobile Sentry SDK not to send default personally identifiable information or screenshots, and Champo does not enable Sentry Session Replay. We do not intentionally send names, email addresses, profile images, league content, or predictions to Sentry, although diagnostic events can contain technical values present when an error occurs.',
+            'Sentry processes diagnostic information on our behalf under its own security, retention, and international-transfer arrangements. Sentry cloud-event retention is controlled by the active Sentry plan and account settings. Champo minimizes events before transmission by removing user identity, request headers, cookies, payloads, query strings, and breadcrumb data.',
           ],
         },
         {
@@ -63,8 +90,11 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'Account and profile information is retained while your account is active. You can delete your account in Settings. We then delete your authentication account, profile details and profile images, remove the customer record held for us by RevenueCat, revoke Sign in with Apple authorization when applicable, and attempt to revoke a connected Google sign-in grant on supported devices.',
             'Past predictions, points, and the minimum league-member record needed to preserve standings are retained for as long as the related league history or service is maintained. They are de-identified by removing the user ID, profile image, and personal nickname; appear as “Deleted Player”; and cannot be used to identify or sign in to your former account.',
-            'Deleting your Champo account does not cancel an Apple subscription. You must cancel it separately in your Apple Account subscription settings. Apple may retain transaction records under its own policy and legal obligations.',
-            'Support communications are retained only as long as reasonably needed to resolve the request and meet security or legal obligations. Diagnostic, purchase, and transaction records are retained according to our configured provider retention periods and applicable legal requirements.',
+            'The Champo Pro Season Pass is a one-time purchase and does not create a recurring charge, so there is no subscription to cancel. Deleting your Champo account does not automatically entitle you to a refund; refund requests are handled by Apple under Apple Media Services terms. Apple may retain transaction records under its own policy and legal obligations.',
+            'Operational records under Champo’s control are automatically deleted on this schedule: authentication audit records after 90 days; football-provider call logs after 31 days; scheduler run history after 30 days; subscription-sync attempts after 1 day; RevenueCat webhook payloads after 180 days; and monthly image-moderation usage totals after 14 months. Unreferenced profile-image files are deleted after a 7-day safety window.',
+            'A content report remains available while pending. A resolved or dismissed report, including its moderation evidence, is deleted 24 months after review. Reports in which a deleted account was the reporter or the reported user are deleted as part of account deletion. Legal-acceptance evidence is retained for the life of the account and deleted with the authentication account.',
+            'The current Supabase Free project does not include automatic database backups. If database or off-site backups are enabled later, Champo will encrypt them, restrict access, and configure a maximum 14-day expiry; a deletion may therefore remain in a backup only until that backup expires. Supabase database backups do not include stored profile-image objects.',
+            'Google Cloud Vision does not retain synchronous image content at rest as described above. Retention for Sentry cloud events, Apple transaction records, RevenueCat service records, Google request metadata, and other provider-controlled logs follows the provider account settings, contract, and legal obligations. Support communications are retained only as long as reasonably needed to resolve the request and meet security or legal obligations.',
             'You can request access, correction, export, or deletion of your personal data by contacting support@champoapp.com. Limited records may still be retained when required by law, security, billing, or fraud-prevention obligations.',
           ],
         },
@@ -73,7 +103,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'You can update profile details in the app where supported.',
             'You may optionally enable local match reminders after reviewing an in-app explanation. You can change notification permission at any time in your device settings.',
-            'You can manage or cancel Apple subscriptions from your Apple Account subscription settings.',
+            'You can review your purchases and request refunds through your Apple Account, subject to Apple’s policies.',
             'Where consent is required, you may withdraw it by changing device permissions, app settings, or contacting us.',
           ],
         },
@@ -105,9 +135,9 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
     },
     terms: {
       title: 'Terms of Service',
-      updatedAt: 'Last updated: August 4, 2026',
+      updatedAt: 'Last updated: August 26, 2026',
       intro:
-        'These Terms of Service govern your use of Champo. By creating an account, joining a league, submitting predictions, purchasing a subscription, or otherwise using the app, you agree to these terms.',
+        'These Terms of Service govern your use of Champo. By creating an account, joining a league, submitting predictions, purchasing a Season Pass, or otherwise using the app, you agree to these terms.',
       sections: [
         {
           title: 'Eligibility and Accounts',
@@ -128,20 +158,32 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
         {
+          title: 'Objectionable Content and Community Standards',
+          body: [
+            'Champo has zero tolerance for objectionable content and abusive behavior. This applies to everything you upload or submit, including profile images, league names, nicknames, and any other user-generated content.',
+            'You may not upload, post, or share content that: is sexually explicit, pornographic, or nude; depicts or promotes violence, self-harm, terrorism, or illegal activity; is hateful, harassing, threatening, or discriminatory toward any person or group; infringes another party’s intellectual property, privacy, or publicity rights; impersonates another person or organization; or is otherwise unlawful, deceptive, or harmful.',
+            'You may not use another person’s photo, a public figure’s image, or copyrighted artwork as your profile image without the right to do so.',
+            'To keep the community safe, Champo may screen or moderate uploaded images and text automatically or manually, and may reject, blur, remove, or replace content that violates these standards, with or without prior notice.',
+            'Every member can report objectionable content or an abusive user, and can block a user, from the relevant profile or league screen. Reports can also be sent to support@champoapp.com.',
+            'We aim to review reports and remove violating content and remove or suspend the responsible users within 24 hours of a valid report. Serious violations may result in immediate and permanent removal from the service, and may be reported to the relevant authorities where required by law.',
+          ],
+        },
+        {
           title: 'Predictions and Football Data',
           body: [
             'Predictions are for entertainment and social competition. Champo does not provide betting, gambling, financial advice, or guaranteed match outcomes.',
             'Fixtures, scores, events, standings, team information, and related football data may come from third-party sources and may be delayed, incomplete, or inaccurate.',
+            'Football data is provided by the Football-Data.org API. Champo is an independent product and is not affiliated with, endorsed by, or sponsored by FIFA, UEFA, any league, competition, club, or team. Names and other identifiers remain the property of their respective owners.',
             'We may correct scoring, rankings, or match data when errors are detected.',
           ],
         },
         {
-          title: 'Subscriptions and Payments',
+          title: 'Season Pass and Payments',
           body: [
-            'Paid features may be offered through auto-renewable in-app subscriptions. Subscription details, price, duration, and renewal terms are shown before purchase.',
+            'Paid features are offered as the Champo Pro Season Pass: a one-time, non-renewing in-app purchase that unlocks Pro features for the football season it covers. The price and what it includes are shown before purchase.',
+            'The Season Pass does not renew automatically and is not a recurring subscription. You are charged only once per purchase and nothing needs to be cancelled to stop future charges. A subsequent season may require a new purchase.',
             'Purchases on iOS are processed by Apple through your Apple Account. Apple handles payment processing and may manage refunds according to Apple Media Services terms and App Store policies.',
-            'Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. You can manage or cancel subscriptions from your Apple Account subscription settings.',
-            'If a payment cannot be completed, paid features may be unavailable until the subscription is restored or renewed.',
+            'If a payment cannot be completed, paid features may be unavailable until the purchase is completed or restored.',
             'We may change free or paid features, plan limits, or pricing prospectively, subject to applicable law and App Store rules.',
           ],
         },
@@ -154,7 +196,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'Third-Party Services',
           body: [
-            'The app may rely on third-party services such as Apple, Google, Supabase, RevenueCat, Sentry, Gemini, Tavily, notification services, and sports data providers. Your use of those services may also be governed by their own terms and policies.',
+            'The app may rely on third-party services such as Apple, Google, Google Cloud Vision, Supabase, RevenueCat, Sentry, Gemini, Tavily, notification services, and sports data providers. Your use of those services may also be governed by their own terms and policies.',
           ],
         },
         {
@@ -195,13 +237,59 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
       ],
       footer: 'Questions about these terms: support@champoapp.com',
     },
+    accessibility: {
+      title: 'Accessibility Statement',
+      updatedAt: 'Last reviewed: August 26, 2026',
+      intro:
+        'Champo is committed to making its native mobile experience usable by as many people as possible, including people who use assistive technologies. Accessibility is treated as an ongoing product responsibility.',
+      sections: [
+        {
+          title: 'Accessibility Approach',
+          body: [
+            'We aim to follow the applicable principles of Israel Standard 5568, the Equal Rights for Persons with Disabilities service-accessibility regulations, and WCAG 2.2 Level AA, while applying Apple and Android native accessibility guidance.',
+            'This statement describes an internal code and automated-test review. It is not a certification by an external accessibility professional and does not claim that every screen or device combination is free of barriers.',
+          ],
+        },
+        {
+          title: 'Accessibility Features',
+          body: [
+            'Support for VoiceOver on iOS and TalkBack on Android through native labels, roles, selected/disabled/busy states, headings, tabs, switches, checkboxes, and live error announcements.',
+            'Text scaling is enabled across the shared typography system up to 200%, and the interface supports both English and Hebrew, including right-to-left layout.',
+            'Shared controls use accessible touch targets, visible text labels, light and dark themes, and semantic colors whose primary text combinations are automatically checked for WCAG AA contrast.',
+            'Important actions do not rely only on color or icons, and form fields expose labels, hints, validation messages, and appropriate input behavior to assistive technologies.',
+          ],
+        },
+        {
+          title: 'Review Scope',
+          body: [
+            'The latest internal review covered the native navigation and settings flows, shared buttons, links, cards, tabs, dialogs, form controls, match controls, league controls, authentication controls, dynamic text behavior, Hebrew right-to-left behavior, and light/dark semantic color contrast.',
+            'The review included static inspection of custom touch controls, automated accessibility assertions in component tests, linting, TypeScript checks, the full automated test suite, and an iOS simulator accessibility-tree and largest-text-size check of the public entry screen. Manual testing with current VoiceOver and TalkBack versions remains part of ongoing release verification.',
+          ],
+        },
+        {
+          title: 'Known Limitations',
+          body: [
+            'Some dense football tables, tournament brackets, third-party sign-in or purchase interfaces, and content supplied by external providers may be less convenient with very large text or some assistive-technology combinations.',
+            'We continue to review these areas and prioritize fixes that block navigation, understanding, or completion of core actions.',
+          ],
+        },
+        {
+          title: 'Accessibility Feedback',
+          body: [
+            'If you encounter an accessibility barrier, contact support@champoapp.com. Please include the screen or action, your device and operating-system version, the assistive technology used, and a short description of the problem.',
+            'We will review accessibility reports and make reasonable efforts to provide an accessible alternative and correct verified issues as soon as practicable.',
+          ],
+        },
+      ],
+      footer: 'Accessibility feedback: support@champoapp.com',
+    },
   },
   he: {
     privacy: {
       title: 'מדיניות פרטיות',
-      updatedAt: 'עודכן לאחרונה: 4 באוגוסט 2026',
+      updatedAt: 'עודכן לאחרונה: 26 באוגוסט 2026',
       intro:
-        'Champo היא אפליקציית ניחושי כדורגל ליצירת ליגות, הצטרפות לחברים, שליחת ניחושים, צפייה בדירוגים וניהול מנויים. מדיניות זו מסבירה איזה מידע אנו אוספים, כיצד אנו משתמשים בו, ומהן הבחירות שעומדות לרשותך.',
+        'Champo היא אפליקציית ניחושי כדורגל ליצירת ליגות, הצטרפות לחברים, שליחת ניחושים, צפייה בדירוגים וניהול רכישות Season Pass. מדיניות זו מסבירה איזה מידע אנו אוספים, כיצד אנו משתמשים בו, ומהן הבחירות שעומדות לרשותך.',
       sections: [
         {
           title: 'מי אנחנו',
@@ -215,8 +303,8 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
             'מידע חשבון: שם, כתובת אימייל, פרטי ספק התחברות ופרטי פרופיל בסיסיים שאתה מוסר בעת התחברות או ניהול החשבון.',
             'תוכן ליגות וניחושים: ליגות שאתה יוצר או מצטרף אליהן, כינויים, קודי הזמנה, ניחושים, ניקוד, דירוגים ופעילות קשורה באפליקציה.',
             'מדיה בפרופיל: תמונת פרופיל או תמונות אחרות שאתה בוחר להעלות. בורר התמונות של המערכת נפתח רק כאשר אתה בוחר להוסיף או לעדכן מדיה בפרופיל; Champo אינה מבקשת מראש גישה רחבה לספריית התמונות.',
-            'מידע מנוי: סטטוס מנוי, מזהי מוצרים, סטטוס רכישה או חידוש ומטא-דאטה שקשור לקבלות, דרך Apple ו-RevenueCat. איננו מקבלים את פרטי כרטיס האשראי המלאים שלך.',
-            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, נתוני ביצועים ולוגים לצורכי אבטחה. אבחון קריסות וסשנים עשוי להיאסף דרך Sentry עם הסתרת טקסט ותמונות. תזכורות למשחקים מתוזמנות מקומית במכשיר; Champo אינה אוספת כרגע אסימוני התראות Push.',
+            'מידע רכישה: סטטוס הרשאת ה-Season Pass, מזהי מוצרים, סטטוס רכישה ומטא-דאטה שקשור לקבלות, דרך Apple ו-RevenueCat. איננו מקבלים את פרטי כרטיס האשראי המלאים שלך.',
+            'נתוני מכשיר, אבחון ושימוש: גרסת אפליקציה, סוג מכשיר, מערכת הפעלה, דוחות קריסה, הודעות שגיאה ומחסניות קריאה, נתוני ניווט וביצועים ולוגים לצורכי אבטחה. תזכורות למשחקים מתוזמנות מקומית במכשיר; Champo אינה אוספת כרגע אסימוני התראות Push.',
             'פניות תמיכה: הודעות, קבצים מצורפים ופרטי קשר שאתה שולח כאשר אתה מבקש עזרה.',
           ],
         },
@@ -224,7 +312,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'כיצד אנו משתמשים במידע',
           body: [
             'כדי לספק את חוויית האפליקציה, כולל התחברות, יצירת ליגות, שליחת ניחושים, טבלאות דירוג, הצגת פרופיל וניהול חברים.',
-            'כדי להפעיל מנויים, לשחזר רכישות, לאכוף מגבלות תוכנית ולספק גישה לתכונות בתשלום.',
+            'כדי לעבד ולשחזר רכישות Season Pass, לאכוף מגבלות תוכנית ולספק גישה לתכונות בתשלום.',
             'כדי לשלוח הודעות תפעוליות כגון אימות דוא"ל, איפוס סיסמה, הודעות חשבון חשובות ותשובות לפניות תמיכה.',
             'כדי לאבטח את השירות, למנוע שימוש לרעה, לתקן תקלות, לשפר אמינות ולהבין כיצד משתמשים בתכונות המרכזיות.',
             'כדי לעמוד בדרישות חוק, בדרישות App Store ולאכוף את תנאי השירות שלנו.',
@@ -234,10 +322,34 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           title: 'שיתוף וספקי שירות',
           body: [
             'איננו מוכרים את המידע האישי שלך.',
-            'אנו משתפים מידע רק עם ספקים שנדרשים להפעלת האפליקציה, כגון Supabase לאימות/מסד נתונים/אחסון, Apple ו-RevenueCat לרכישות בתוך האפליקציה, Sentry לאבחון תקלות, וספקי התחברות כגון Apple או Google כאשר אתה בוחר בהם.',
+            'אנו משתפים מידע רק עם ספקים שנדרשים להפעלת האפליקציה, כגון Supabase לאימות/מסד נתונים/אחסון, Apple ו-RevenueCat לרכישות בתוך האפליקציה, Google Cloud Vision לבדיקת בטיחות של תמונות פרופיל, Sentry לאבחון תקלות, וספקי התחברות כגון Apple או Google כאשר אתה בוחר בהם.',
             'Gemini ו-Tavily עשויים לשמש להכנת תצוגות מקדימות של משחקים בעזרת AI, על בסיס מידע כדורגל ציבורי. במימוש הנוכחי איננו שולחים אליהם פרטי חשבון, שמות, כתובות דוא"ל, תמונות פרופיל, חברות בליגות או ניחושים.',
             'ספקים אלה עשויים לעבד מידע מטעמנו ונדרשים להגן עליו בהתאם למדיניות זו ולחוק החל.',
             'אנו עשויים לחשוף מידע אם הדבר נדרש לפי דין, כדי להגן על זכויות ובטיחות, או כחלק מהעברה עסקית כגון מיזוג או רכישה.',
+          ],
+        },
+        {
+          title: 'בסיסים חוקיים לעיבוד (האזור הכלכלי האירופי ובריטניה)',
+          body: [
+            'אנו מעבדים פרטי חשבון, ליגה, ניחושים והרשאות רכישה ככל שנדרש כדי לספק את השירות ולקיים את החוזה איתך.',
+            'אנו מעבדים נתוני אבחון מוגבלים, יומני אבטחה, מידע למניעת שימוש לרעה וניתוח שימוש בשירות מכוח האינטרסים הלגיטימיים שלנו לאבטח, לתחזק ולשפר את Champo, תוך איזון מול זכויותיך וציפיותיך.',
+            'אנו מעבדים מידע כאשר הדבר נדרש לקיום חובה משפטית. כאשר הדין החל דורש הסכמה, לרבות עבור הרשאת מכשיר אופציונלית, ניתן למשוך אותה בכל עת בלי לפגוע בחוקיות העיבוד שבוצע קודם לכן.',
+          ],
+        },
+        {
+          title: 'בדיקת תמונות באמצעות Google Cloud Vision',
+          body: [
+            'כאשר אתה בוחר להעלות או להחליף תמונת פרופיל, התמונה נשלחת אל Google Cloud Vision לפני שמירתה. אנו משתמשים בזיהוי SafeSearch האוטומטי כדי להעריך אם התמונה כוללת תוכן למבוגרים, תוכן פרובוקטיבי, אלימות או תוכן רפואי. Champo משתמשת בדירוגי ההסתברות שמוחזרים כדי לאשר או לדחות את ההעלאה לפי כללי הקהילה שלנו.',
+            'הבקשה ל-Vision כוללת את התמונה עצמה, אך אינה כוללת את השם שלך ב-Champo, כתובת האימייל, מזהה המשתמש, החברות בליגות או הניחושים שלך. לפי תיעוד השימוש בנתונים העדכני של Google Cloud Vision, תמונות שנשלחות דרך ה-API הסינכרוני שבו Champo משתמשת מעובדות בזיכרון ואינן נשמרות בדיסק; Google עשויה לשמור זמנית מטא-דאטה של הבקשה, כגון מועד וגודל הבקשה. Google מציינת שהתוכן שנשלח משמש רק לאספקת שירות Vision ואינו משמש לאימון מודלי Cloud Vision.',
+            'בדיקה אוטומטית עלולה לטעות. אם תמונה נדחתה ולדעתך ההחלטה שגויה, ניתן לפנות אל support@champoapp.com. אין להעלות תמונה אם אינך רוצה שהיא תעובד על ידי Google Cloud Vision; ניתן להמשיך להשתמש ב-Champo ללא תמונת פרופיל.',
+          ],
+        },
+        {
+          title: 'אבחון תקלות באמצעות Sentry',
+          body: [
+            'בגרסאות המובייל של Champo בסביבת הייצור, Sentry מעבדת דוחות קריסה, הודעות שגיאה ומחסניות קריאה, פרטי גרסת האפליקציה, פרטי מכשיר ומערכת הפעלה, נתוני ניווט ודגימות ביצועים, והקשר טכני שנדרש לאבחון תקלות. פונקציות השרת של Champo עשויות לשלוח ל-Sentry גם סוג שגיאה, הודעה, מחסנית קריאה, שם פונקציה, מזהה בקשה וסטטוס תגובה.',
+            'אנו משתמשים במידע זה כדי לזהות קריסות, לאבחן שגיאות, לנטר ביצועים, להגן על השירות ולשפר את אמינותו. Champo מגדירה את Sentry במובייל כך שלא יישלחו כברירת מחדל פרטים מזהים אישיים או צילומי מסך, ואינה מפעילה Sentry Session Replay. איננו שולחים במכוון שמות, כתובות אימייל, תמונות פרופיל, תוכן ליגות או ניחושים ל-Sentry, אך אירועי אבחון עשויים לכלול ערכים טכניים שהיו קיימים בזמן התקלה.',
+            'Sentry מעבדת מידע אבחוני מטעמנו בהתאם להסדרי האבטחה, השמירה והעברת המידע הבינלאומית שלה. תקופת השמירה של אירועי הענן ב-Sentry נשלטת על ידי התוכנית והגדרות החשבון הפעילות. Champo מצמצמת אירועים לפני שליחתם באמצעות הסרת זהות משתמש, כותרות בקשה, cookies, תוכן בקשה, query strings ונתוני breadcrumbs.',
           ],
         },
         {
@@ -245,8 +357,11 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'מידע החשבון והפרופיל נשמר כל עוד החשבון פעיל. ניתן למחוק את החשבון דרך ההגדרות. לאחר מכן אנו מוחקים את חשבון ההתחברות, פרטי הפרופיל ותמונות הפרופיל, מסירים את רשומת הלקוח ב-RevenueCat, מבטלים הרשאת Sign in with Apple כאשר הדבר רלוונטי, ומנסים לבטל הרשאת Google מחוברת במכשירים נתמכים.',
             'ניחושים וניקוד מהעבר, ורשומת החבר המינימלית שנדרשת לשמירת הדירוג, נשמרים כל עוד נשמרת היסטוריית הליגה הקשורה או שהשירות פעיל. הם עוברים הסרת זיהוי: מזהה המשתמש, תמונת הפרופיל והכינוי האישי מוסרים, והם מוצגים בשם „שחקן שנמחק”.',
-            'מחיקת חשבון Champo אינה מבטלת מנוי Apple. יש לבטל אותו בנפרד בהגדרות המנויים בחשבון Apple. ‏Apple עשויה לשמור רשומות עסקה לפי המדיניות והחובות המשפטיות שלה.',
-            'פניות תמיכה נשמרות רק כל עוד הדבר נדרש באופן סביר לטיפול בפנייה ולעמידה בחובות אבטחה או דין. נתוני אבחון, רכישה ועסקאות נשמרים לפי תקופות השמירה שהוגדרו אצל הספקים ולפי דרישות הדין.',
+            'ה-Champo Pro Season Pass הוא רכישה חד-פעמית שאינה יוצרת חיוב מתמשך, ולכן אין מנוי לבטל. מחיקת חשבון Champo אינה מזכה אוטומטית בהחזר; בקשות החזר מטופלות על ידי Apple לפי תנאי Apple Media Services. ‏Apple עשויה לשמור רשומות עסקה לפי המדיניות והחובות המשפטיות שלה.',
+            'רשומות תפעוליות שבשליטת Champo נמחקות אוטומטית לפי לוח הזמנים הבא: רשומות audit של ההתחברות לאחר 90 יום; לוג קריאות לספק הכדורגל לאחר 31 יום; היסטוריית הרצות המתזמן לאחר 30 יום; ניסיונות סנכרון רכישה לאחר יום; payloads של webhook מ-RevenueCat לאחר 180 יום; וסיכומי שימוש חודשיים בבדיקת תמונות לאחר 14 חודשים. קובצי תמונת פרופיל שאינם מקושרים נמחקים לאחר חלון ביטחון של 7 ימים.',
+            'דיווח תוכן נשמר כל עוד הוא ממתין לבדיקה. דיווח שטופל או נדחה, כולל ראיות הבדיקה, נמחק 24 חודשים לאחר הבדיקה. דיווחים שבהם חשבון שנמחק הוא המדווח או המשתמש שעליו דווח נמחקים כחלק ממחיקת החשבון. ראיית ההסכמה למסמכים המשפטיים נשמרת למשך חיי החשבון ונמחקת עם חשבון ההתחברות.',
+            'פרויקט Supabase הנוכחי בתוכנית Free אינו כולל גיבויי מסד נתונים אוטומטיים. אם יופעלו בעתיד גיבויי מסד נתונים או גיבויים חיצוניים, Champo תצפין אותם, תגביל גישה ותגדיר תפוגה מרבית של 14 יום; לכן מידע שנמחק עשוי להישאר בגיבוי רק עד פקיעתו. גיבויי מסד הנתונים של Supabase אינם כוללים את קובצי תמונות הפרופיל שבאחסון.',
+            'Google Cloud Vision אינה שומרת את תוכן התמונה הסינכרוני במנוחה, כמפורט לעיל. שמירת אירועי ענן ב-Sentry, רשומות עסקאות ב-Apple, רשומות שירות ב-RevenueCat, מטא-דאטה של בקשות Google ולוגים אחרים שבשליטת ספקים נקבעת לפי הגדרות חשבון הספק, ההסכם וחובות הדין. פניות תמיכה נשמרות רק כל עוד הדבר נדרש באופן סביר לטיפול בפנייה ולעמידה בחובות אבטחה או דין.',
             'ניתן לבקש גישה, תיקון, ייצוא או מחיקה של המידע האישי שלך באמצעות פנייה אל support@champoapp.com. מידע מוגבל עשוי להישמר כאשר הדבר נדרש לפי דין או לצורכי אבטחה, חיוב ומניעת הונאה.',
           ],
         },
@@ -255,7 +370,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           body: [
             'ניתן לעדכן פרטי פרופיל באפליקציה במקומות שבהם הדבר נתמך.',
             'ניתן להפעיל תזכורות מקומיות למשחקים לאחר הצגת הסבר באפליקציה. אפשר לשנות את הרשאת ההתראות בכל עת בהגדרות המכשיר.',
-            'ניתן לנהל או לבטל מנויי Apple דרך הגדרות המנויים בחשבון Apple שלך.',
+            'ניתן לעיין ברכישות ולבקש החזרים דרך חשבון Apple שלך, בכפוף למדיניות של Apple.',
             'כאשר נדרשת הסכמה, ניתן למשוך אותה באמצעות שינוי הרשאות מכשיר, הגדרות באפליקציה או פנייה אלינו.',
           ],
         },
@@ -287,9 +402,9 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
     },
     terms: {
       title: 'תנאי שימוש',
-      updatedAt: 'עודכן לאחרונה: 4 באוגוסט 2026',
+      updatedAt: 'עודכן לאחרונה: 26 באוגוסט 2026',
       intro:
-        'תנאי שימוש אלה מסדירים את השימוש שלך ב-Champo. יצירת חשבון, הצטרפות לליגה, שליחת ניחושים, רכישת מנוי או שימוש אחר באפליקציה מהווים הסכמה לתנאים אלה.',
+        'תנאי שימוש אלה מסדירים את השימוש שלך ב-Champo. יצירת חשבון, הצטרפות לליגה, שליחת ניחושים, רכישת Season Pass או שימוש אחר באפליקציה מהווים הסכמה לתנאים אלה.',
       sections: [
         {
           title: 'כשירות וחשבונות',
@@ -310,20 +425,32 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
           ],
         },
         {
+          title: 'תוכן פוגעני וכללי קהילה',
+          body: [
+            'ל-Champo יש אפס סובלנות לתוכן פוגעני ולהתנהגות פוגענית. הדבר חל על כל מה שאתה מעלה או מוסר, כולל תמונות פרופיל, שמות ליגות, כינויים וכל תוכן אחר שנוצר על ידי משתמשים.',
+            'אין להעלות, לפרסם או לשתף תוכן שהוא: מיני מפורש, פורנוגרפי או עירום; מציג או מקדם אלימות, פגיעה עצמית, טרור או פעילות בלתי חוקית; מבטא שנאה, הטרדה, איום או אפליה כלפי אדם או קבוצה; מפר קניין רוחני, פרטיות או זכויות פרסום של אחר; מתחזה לאדם או לארגון אחר; או בלתי חוקי, מטעה או מזיק בדרך אחרת.',
+            'אין להשתמש בתמונה של אדם אחר, בתמונת דמות ציבורית או ביצירה המוגנת בזכויות יוצרים כתמונת פרופיל ללא הרשאה לכך.',
+            'כדי לשמור על קהילה בטוחה, Champo רשאית לבדוק או למתן תמונות וטקסט שהועלו, באופן אוטומטי או ידני, ורשאית לדחות, לטשטש, להסיר או להחליף תוכן שמפר כללים אלה, עם או בלי הודעה מוקדמת.',
+            'כל חבר יכול לדווח על תוכן פוגעני או על משתמש פוגעני, ולחסום משתמש, ממסך הפרופיל או הליגה הרלוונטי. ניתן גם לשלוח דיווחים אל support@champoapp.com.',
+            'אנו שואפים לבחון דיווחים ולהסיר תוכן מפר, ולהסיר או להשעות את המשתמשים האחראים, בתוך 24 שעות מקבלת דיווח תקף. הפרות חמורות עלולות להוביל להסרה מיידית וקבועה מהשירות, ולהיות מדווחות לרשויות המוסמכות כאשר הדבר נדרש לפי דין.',
+          ],
+        },
+        {
           title: 'ניחושים ונתוני כדורגל',
           body: [
             'הניחושים מיועדים לבידור ולתחרות חברתית. Champo אינה מספקת הימורים, פעילות גיימבלינג, ייעוץ פיננסי או תוצאות משחק מובטחות.',
             'משחקים, תוצאות, אירועים, טבלאות, מידע קבוצות ונתוני כדורגל קשורים עשויים להגיע ממקורות צד שלישי ועלולים להיות באיחור, חלקיים או לא מדויקים.',
+            'נתוני הכדורגל מסופקים על ידי Football-Data.org API. ‏Champo היא מוצר עצמאי ואינה מסונפת, מאושרת או ממומנת על ידי FIFA, ‏UEFA, ליגה, תחרות, מועדון או קבוצה כלשהם. שמות ומזהים אחרים נותרים קניינם של בעליהם.',
             'אנו עשויים לתקן ניקוד, דירוגים או נתוני משחק כאשר מתגלות שגיאות.',
           ],
         },
         {
-          title: 'מנויים ותשלומים',
+          title: 'Season Pass ותשלומים',
           body: [
-            'תכונות בתשלום עשויות להיות מוצעות דרך מנויים מתחדשים בתוך האפליקציה. פרטי המנוי, המחיר, התקופה ותנאי החידוש מוצגים לפני הרכישה.',
+            'תכונות בתשלום מוצעות כ-Champo Pro Season Pass: רכישה חד-פעמית בתוך האפליקציה שאינה מתחדשת, ופותחת את תכונות ה-Pro לעונת הכדורגל שאותה היא מכסה. המחיר ומה שכלול בו מוצגים לפני הרכישה.',
+            'ה-Season Pass אינו מתחדש אוטומטית ואינו מנוי מתמשך. החיוב מתבצע פעם אחת בלבד לכל רכישה, ואין צורך לבטל דבר כדי למנוע חיובים עתידיים. עונה נוספת עשויה לדרוש רכישה חדשה.',
             'רכישות ב-iOS מעובדות על ידי Apple דרך חשבון Apple שלך. Apple מטפלת בעיבוד התשלום ועשויה לנהל החזרים לפי תנאי Apple Media Services ומדיניות App Store.',
-            'מנויים מתחדשים אוטומטית אלא אם הם מבוטלים לפחות 24 שעות לפני סוף התקופה הנוכחית. ניתן לנהל או לבטל מנויים דרך הגדרות המנויים בחשבון Apple שלך.',
-            'אם תשלום אינו מושלם, תכונות בתשלום עשויות שלא להיות זמינות עד לשחזור או חידוש המנוי.',
+            'אם תשלום אינו מושלם, תכונות בתשלום עשויות שלא להיות זמינות עד להשלמת הרכישה או שחזורה.',
             'אנו עשויים לשנות תכונות חינמיות או בתשלום, מגבלות תוכנית או תמחור באופן עתידי, בכפוף לחוק החל ולכללי App Store.',
           ],
         },
@@ -336,7 +463,7 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         {
           title: 'שירותי צד שלישי',
           body: [
-            'האפליקציה עשויה להסתמך על שירותי צד שלישי כגון Apple, Google, Supabase, RevenueCat, Sentry, Gemini, Tavily, שירותי התראות וספקי נתוני ספורט. השימוש בשירותים אלה עשוי להיות כפוף גם לתנאים ולמדיניות שלהם.',
+            'האפליקציה עשויה להסתמך על שירותי צד שלישי כגון Apple, Google, Google Cloud Vision, Supabase, RevenueCat, Sentry, Gemini, Tavily, שירותי התראות וספקי נתוני ספורט. השימוש בשירותים אלה עשוי להיות כפוף גם לתנאים ולמדיניות שלהם.',
           ],
         },
         {
@@ -376,6 +503,52 @@ export const legalContent: Record<SupportedLanguage, { privacy: LegalDocument; t
         },
       ],
       footer: 'לשאלות לגבי התנאים: support@champoapp.com',
+    },
+    accessibility: {
+      title: 'הצהרת נגישות',
+      updatedAt: 'נבדק לאחרונה: 26 באוגוסט 2026',
+      intro:
+        'Champo מחויבת להפוך את חוויית המובייל המקורית שלה לשימושית עבור אנשים רבים ככל האפשר, לרבות אנשים המשתמשים בטכנולוגיות מסייעות. נגישות היא אחריות מוצר מתמשכת מבחינתנו.',
+      sections: [
+        {
+          title: 'גישת הנגישות שלנו',
+          body: [
+            'אנו שואפים לפעול לפי העקרונות הרלוונטיים בתקן הישראלי ת״י 5568, בתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), ובהנחיות WCAG 2.2 ברמה AA, תוך יישום הנחיות הנגישות המקוריות של Apple ושל Android.',
+            'הצהרה זו מתארת בדיקת קוד ובדיקות אוטומטיות פנימיות. היא אינה אישור של מורשה נגישות חיצוני ואינה טוענת שכל מסך או שילוב מכשיר חפים לחלוטין מחסמי נגישות.',
+          ],
+        },
+        {
+          title: 'התאמות נגישות באפליקציה',
+          body: [
+            'תמיכה ב-VoiceOver ב-iOS וב-TalkBack ב-Android באמצעות תוויות, תפקידים ומצבי בחירה, השבתה וטעינה מקוריים, וכן כותרות, לשוניות, מתגים, תיבות סימון והקראה של הודעות שגיאה.',
+            'הגדלת טקסט מופעלת במערכת הטיפוגרפיה המשותפת עד 200%, והממשק תומך באנגלית ובעברית, לרבות פריסה מימין לשמאל.',
+            'רכיבי השליטה המשותפים כוללים אזורי מגע נגישים, תוויות טקסט גלויות, ערכות עיצוב בהירה וכהה וצבעים סמנטיים ששילובי הטקסט המרכזיים שלהם נבדקים אוטומטית לניגודיות WCAG AA.',
+            'פעולות חשובות אינן מסתמכות רק על צבע או סמל, ושדות טופס חושפים לטכנולוגיות מסייעות תוויות, רמזים, הודעות אימות והתנהגות קלט מתאימה.',
+          ],
+        },
+        {
+          title: 'היקף הבדיקה',
+          body: [
+            'הבדיקה הפנימית האחרונה כללה את הניווט המקורי ומסכי ההגדרות, כפתורים, קישורים, כרטיסים, לשוניות, חלונות דו-שיח ושדות טופס משותפים, בקרי משחקים וליגות, בקרי התחברות, התנהגות טקסט מוגדל, פריסה עברית מימין לשמאל וניגודיות הצבעים הסמנטיים בערכות בהירה וכהה.',
+            'הבדיקה כללה סקירה סטטית של רכיבי מגע מותאמים, בדיקות נגישות אוטומטיות ברכיבים, lint, בדיקת TypeScript, הרצת חבילת הבדיקות המלאה ובדיקת עץ הנגישות וגודל הטקסט המרבי במסך הכניסה הציבורי בסימולטור iOS. בדיקה ידנית בגרסאות עדכניות של VoiceOver ושל TalkBack ממשיכה להיות חלק מתהליך אימות הגרסאות.',
+          ],
+        },
+        {
+          title: 'מגבלות ידועות',
+          body: [
+            'טבלאות כדורגל צפופות, תרשימי שלבי נוקאאוט, ממשקי התחברות או רכישה של צדדים שלישיים ותוכן שמתקבל מספקים חיצוניים עשויים להיות פחות נוחים בשימוש עם טקסט גדול מאוד או בשילובים מסוימים של טכנולוגיות מסייעות.',
+            'אנו ממשיכים לבדוק אזורים אלה ומתעדפים תיקונים שחוסמים ניווט, הבנה או השלמה של פעולות מרכזיות.',
+          ],
+        },
+        {
+          title: 'פניות בנושא נגישות',
+          body: [
+            'אם נתקלתם בחסם נגישות, ניתן לפנות אל support@champoapp.com. מומלץ לציין את המסך או הפעולה, סוג המכשיר וגרסת מערכת ההפעלה, הטכנולוגיה המסייעת שבה השתמשתם ותיאור קצר של הבעיה.',
+            'אנו נבחן פניות נגישות ונעשה מאמץ סביר לספק חלופה נגישה ולתקן בעיות שאומתו בהקדם האפשרי.',
+          ],
+        },
+      ],
+      footer: 'לפניות בנושא נגישות: support@champoapp.com',
     },
   },
 };

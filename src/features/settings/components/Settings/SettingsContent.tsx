@@ -5,6 +5,7 @@ import { useNotificationPermission } from '@/providers/NotificationProvider';
 import { RelativePathString, useRouter } from 'expo-router';
 import {
   Bell,
+  Accessibility,
   Calendar,
   CreditCard,
   FileQuestionMark,
@@ -205,6 +206,12 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
       label: t('Blocked users'),
       path: '/settings/blocked-users' as RelativePathString,
       icon: <ShieldBan size={iconSize} color={colors.text} strokeWidth={1.5} />,
+    },
+    {
+      key: 'accessibility',
+      label: t('Accessibility Statement'),
+      path: '/settings/accessibility' as RelativePathString,
+      icon: <Accessibility size={iconSize} color={colors.text} strokeWidth={1.5} />,
     },
     {
       key: 'privacy',

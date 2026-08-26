@@ -1,5 +1,5 @@
 // /supabase/functions/sync_teams/index.ts
-// Admin-only manual sync of World Cup teams + logos. 1 football API call.
+// Admin-only manual sync of World Cup teams. 1 football API call.
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
@@ -21,9 +21,7 @@ const WORLD_CUP_COMPETITION = {
   name: "FIFA World Cup",
   code: "WC"
 };
-const TEAMS_BUCKET = "teams_logo";
 const BULK_CHUNK = 500;
-const FETCH_TIMEOUT_MS = 15000;
 /** ---------- Utils ---------- */ const must = (k)=>{
   const v = Deno.env.get(k);
   if (!v) {
@@ -31,81 +29,15 @@ const FETCH_TIMEOUT_MS = 15000;
   }
   return v;
 };
-const sleep = (ms)=>new Promise((r)=>setTimeout(r, ms));
-async function retry(fn, retries = 2, baseDelay = 300) {
-  let i = 0;
-  while(true){
-    try {
-      return await fn();
-    } catch (e) {
-      if (i++ >= retries) {
-        throw e;
-      }
-      await sleep(baseDelay * 2 ** (i - 1));
-    }
-  }
-}
-async function timedFetch(url, init, timeoutMs = FETCH_TIMEOUT_MS) {
-  const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), timeoutMs);
-  try {
-    return await fetch(url, {
-      ...init,
-      signal: ctrl.signal
-    });
-  } finally{
-    clearTimeout(to);
-  }
-}
-/** Infer file extension from CT/URL */ function inferExtFromContentType(ct) {
-  if (!ct) return "png";
-  const l = ct.toLowerCase();
-  if (l.includes("svg")) return "svg";
-  if (l.includes("webp")) return "webp";
-  if (l.includes("jpeg")) return "jpg";
-  if (l.includes("png")) return "png";
-  return "png";
-}
-function inferExtFromUrl(url) {
-  const m = url.toLowerCase().match(/\.(svg|png|webp|jpe?g)(?:\?|#|$)/);
-  return m?.[1] ?? null;
-}
-async function downloadImage(url) {
-  const res = await timedFetch(url);
-  if (!res.ok) {
-    throw new Error(`Logo download ${res.status}: ${url}`);
-  }
-  const buf = new Uint8Array(await res.arrayBuffer());
-  const ct = res.headers.get("content-type") ?? undefined;
-  const ext = inferExtFromUrl(url) ?? inferExtFromContentType(ct);
-  return {
-    buf,
-    contentType: ct ?? "application/octet-stream",
-    ext
-  };
-}
-async function uploadToBucket(supabase, bucket, keyNoExt, payload) {
-  const path = `${keyNoExt}.${payload.ext}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, payload.buf, {
-    contentType: payload.contentType,
-    upsert: true,
-    cacheControl: "31536000"
-  });
-  if (error) {
-    throw new Error(`Storage upload failed: ${error.message}`);
-  }
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
-}
-function mapTeam(t, logoUrl) {
+function mapTeam(t) {
   const now = new Date().toISOString();
   return {
     id: t.id,
     name: t.name ?? null,
     shortName: t.shortName ?? null,
     tla: t.tla ?? null,
-    logo: logoUrl,
     venue: t.venue ?? null,
+    clubColors: t.clubColors ?? null,
     updated_at: now
   };
 }
@@ -159,30 +91,14 @@ async function bulkUpsertTeams(supabase, teams) {
     return {
       success: true,
       synced: 0,
-      uploadedLogos: 0,
       totalCollected: 0
     };
   }
-  let uploadedLogos = 0;
-  const mappedTeams = [];
-  for (const team of uniqueTeams){
-    let logoUrl = null;
-    try {
-      if (team.crest) {
-        const image = await downloadImage(team.crest);
-        logoUrl = await uploadToBucket(supabase, TEAMS_BUCKET, String(team.id), image);
-        uploadedLogos++;
-      }
-    } catch (e) {
-      console.error(`Logo upload failed for team ${team?.shortName ?? team?.name ?? team?.id}:`, e);
-    }
-    mappedTeams.push(mapTeam(team, logoUrl));
-  }
+  const mappedTeams = uniqueTeams.map(mapTeam);
   const { synced, dbErrors } = await bulkUpsertTeams(supabase, mappedTeams);
   return {
     success: dbErrors.length === 0,
     synced,
-    uploadedLogos,
     totalCollected: uniqueTeams.length,
     errors: dbErrors.length ? {
       db: dbErrors
@@ -206,7 +122,7 @@ async function bulkUpsertTeams(supabase, teams) {
       await releaseSyncLock(supabase, JOB, "error");
       throw err;
     }
-    console.info(`✅ Synced ${result.synced} World Cup teams, uploaded ${result.uploadedLogos} logos`);
+    console.info(`✅ Synced ${result.synced} World Cup teams`);
     return new Response(JSON.stringify(result), {
       headers: CORS_HEADERS
     });

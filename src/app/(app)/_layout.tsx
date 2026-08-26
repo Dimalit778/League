@@ -1,10 +1,11 @@
+import { LoadingBall } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function AppLayout() {
   const { isLoggedIn, isAuthLoading } = useAuth();
@@ -33,7 +34,7 @@ export default function AppLayout() {
   if (isAuthLoading || loading || isAdminLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color={'#fff'} />
+        <LoadingBall />
       </View>
     );
   }

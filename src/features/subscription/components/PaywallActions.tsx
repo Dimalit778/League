@@ -1,5 +1,6 @@
 import { Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Link } from 'expo-router';
 import { RotateCcw } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -65,13 +66,29 @@ export function PaywallActions({
 
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={t('Restore Purchases')}
+        accessibilityState={{ disabled: busy, busy: isRestoring }}
         disabled={busy}
-        className="mt-2 flex-row items-center justify-center gap-1.5 py-1.5"
+        className="mt-2 min-h-12 flex-row items-center justify-center gap-1.5 py-1.5"
         onPress={onRestore}
       >
         <RotateCcw size={14} color="#CBD5E1" />
         <Text className="text-xs font-semibold text-neutral-400">{t('Restore Purchases')}</Text>
       </Pressable>
+
+      <View className="flex-row flex-wrap items-center justify-center gap-x-2 pb-1">
+        <Link href="/(app)/(user)/settings/terms" asChild>
+          <Text accessibilityRole="link" className="text-xs text-neutral-400 underline">
+            {t('Terms of Service')}
+          </Text>
+        </Link>
+        <Text className="text-xs text-neutral-500">·</Text>
+        <Link href="/(app)/(user)/settings/privacy" asChild>
+          <Text accessibilityRole="link" className="text-xs text-neutral-400 underline">
+            {t('Privacy Policy')}
+          </Text>
+        </Link>
+      </View>
     </View>
   );
 }

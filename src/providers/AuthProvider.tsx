@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { isAuthSessionActive } from '@/features/auth/utils/authSession';
+import { recordPendingWebLegalAcceptance } from '@/features/auth/legalAcceptance';
 import { useAuthStore } from '@/store/AuthStore';
 import type { Session } from '@supabase/supabase-js';
 import { useEffect } from 'react';
@@ -95,6 +96,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .getSession()
       .then(async ({ data: { session } }) => {
         if (!isMounted) return;
+        if (session?.user?.id) {
+          try {
+            await recordPendingWebLegalAcceptance(session.user.app_metadata.provider);
+          } catch (error) {
+            console.error('Failed to record legal acceptance after OAuth redirect:', error);
+            await supabase.auth.signOut();
+            return;
+          }
+        }
         await syncSessionUser(session, () => isMounted);
       })
       .catch((error: unknown) => {
@@ -118,6 +128,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // updateUser, and signOut until they finish (e.g. password reset submit).
       void (async () => {
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          if (event === 'SIGNED_IN') {
+            try {
+              await recordPendingWebLegalAcceptance(session?.user.app_metadata.provider);
+            } catch (error) {
+              console.error('Failed to record legal acceptance after OAuth sign in:', error);
+              await supabase.auth.signOut();
+              return;
+            }
+          }
           await syncSessionUser(session, () => isMounted);
         } else if (event === 'SIGNED_OUT') {
           setSignedOut();

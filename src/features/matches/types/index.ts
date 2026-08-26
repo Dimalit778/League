@@ -13,7 +13,7 @@ export type ComMetadata = {
 
 export type TeamType = Pick<
   Tables<"teams">,
-  "id" | "shortName" | "name" | "logo" | "tla" | "clubColors"
+  "id" | "shortName" | "name" | "tla" | "clubColors"
 >;
 
 export type PredictionsType = Pick<

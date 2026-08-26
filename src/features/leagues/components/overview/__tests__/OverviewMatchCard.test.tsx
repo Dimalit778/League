@@ -7,8 +7,8 @@ const createCard = (overrides: Partial<MatchCardData> = {}): MatchCardData => ({
   id: 1,
   kickOff: '2027-08-15T17:30:00.000Z',
   status: 'SCHEDULED',
-  home: { name: 'Arsenal', tla: 'ARS', logo: 'a.png', clubColors: 'Red / White', score: null },
-  away: { name: 'Chelsea', tla: 'CHE', logo: 'c.png', clubColors: 'Blue / Black', score: null },
+  home: { name: 'Arsenal', tla: 'ARS', clubColors: 'Red / White', score: null },
+  away: { name: 'Chelsea', tla: 'CHE', clubColors: 'Blue / Black', score: null },
   prediction: null,
   predictionStatus: 'none',
   date: 'Sat, 15/8',
@@ -72,8 +72,8 @@ describe('OverviewMatchCard', () => {
       <OverviewMatchCard
         match={createCard({
           status: 'FINISHED',
-          home: { name: 'Arsenal', tla: 'ARS', logo: 'a.png', clubColors: null, score: 3 },
-          away: { name: 'Chelsea', tla: 'CHE', logo: 'c.png', clubColors: null, score: 1 },
+          home: { name: 'Arsenal', tla: 'ARS', clubColors: null, score: 3 },
+          away: { name: 'Chelsea', tla: 'CHE', clubColors: null, score: 1 },
         })}
       />,
     );

@@ -1,5 +1,6 @@
 import { Text } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';
 
@@ -25,6 +26,7 @@ const fixtureMargin = 7;
 const fixtureItemSpacing = fixtureWidth + fixtureMargin * 2;
 
 const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPress }: FixtureItemProps) => {
+  const { t } = useTranslation();
   const isSelected = selectedFixture === fixture;
   const isToday = currentFixture !== undefined && fixture === currentFixture;
 
@@ -34,6 +36,9 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
     <View style={{ opacity }} className="items-center mx-2">
       <Pressable
         onPress={() => onPress(fixture)}
+        accessibilityRole="tab"
+        accessibilityLabel={`${t('Fixture {{number}}', { number: fixture })}${dateRange ? `, ${dateRange}` : ''}`}
+        accessibilityState={{ selected: isSelected }}
         style={
           {
             width: fixtureWidth,
@@ -41,7 +46,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
           } as any
         }
         className={cn(
-          'rounded-xl justify-center items-center overflow-hidden py-2 bg-surface border',
+          'min-h-12 rounded-xl justify-center items-center overflow-hidden py-2 bg-surface border',
           isToday ? 'border-primary' : isSelected ? 'border-muted' : 'border-border',
           Platform.OS === 'web' && 'hover:scale-105 active:scale-95',
         )}

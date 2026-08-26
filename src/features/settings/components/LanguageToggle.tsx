@@ -15,7 +15,7 @@ const LanguageToggle = () => {
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.7}
-        className="bg-subtle relative flex-row rounded-full items-center justify-between p-0.5"
+        className="min-h-12 bg-subtle relative flex-row rounded-full items-center justify-between p-1.5"
         accessible={true}
         accessibilityLabel={t('Switch to {{language}}', {
           language: isHebrew ? 'English' : 'Hebrew',

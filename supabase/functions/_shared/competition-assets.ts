@@ -126,35 +126,6 @@ async function uploadImageToBucket(
     return data.publicUrl;
 }
 
-export async function storeCompetitionLogo(
-    supabase: SupabaseClient,
-    competition: FootballDataCompetition,
-): Promise<string | null> {
-    if (!competition.emblem || !competition.code) {
-        return null;
-    }
-
-    try {
-        const image = await downloadImage(
-            competition.emblem,
-        );
-
-        return await uploadImageToBucket(
-            supabase,
-            "competitions_logo",
-            competition.code.toLowerCase(),
-            image,
-        );
-    } catch (error) {
-        console.warn(
-            `Failed storing logo for ${competition.code}:`,
-            getErrorMessage(error),
-        );
-
-        return null;
-    }
-}
-
 export async function storeCompetitionFlag(
     supabase: SupabaseClient,
     competition: FootballDataCompetition,

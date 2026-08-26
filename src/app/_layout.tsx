@@ -5,6 +5,7 @@ import { LoadingBall } from '@/components/layout/LoadingBall';
 import { OfflineScreen } from '@/components/layout/OfflineScreen';
 import { useAppFonts } from '@/hooks/useAppFonts';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { scrubSentryEvent } from '@/lib/sentryPrivacy';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import {
   AlertProvider,
@@ -41,6 +42,9 @@ Sentry.init({
 
   attachScreenshot: false,
   sendDefaultPii: false,
+  beforeSend: scrubSentryEvent,
+  beforeSendTransaction: scrubSentryEvent,
+  maxBreadcrumbs: 30,
   tracesSampleRate: 0.2,
   integrations: [navigationIntegration],
 });

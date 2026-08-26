@@ -1,4 +1,5 @@
 import AppleAuth from '@/features/auth/components/AppleAuth';
+import AuthLegalConsent from '@/features/auth/components/AuthLegalConsent';
 import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
 import AuthDivider from '@/features/auth/components/auth/AuthDivider';
@@ -22,11 +23,13 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
   const { clearError } = useAuthActions();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [socialBusy, setSocialBusy] = useState(false);
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   const isSignIn = mode === 'signIn';
 
   const switchMode = () => {
     clearError();
+    setAcceptedLegal(false);
     setMode(isSignIn ? 'signUp' : 'signIn');
   };
 
@@ -40,13 +43,38 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
         </View>
       }
     >
-      {isSignIn ? <SignInForm key="signIn" /> : <SignUpForm key="signUp" />}
+      {isSignIn ? (
+        <SignInForm key="signIn" />
+      ) : (
+        <SignUpForm
+          key="signUp"
+          acceptedLegal={acceptedLegal}
+          onToggleLegal={() => setAcceptedLegal((accepted) => !accepted)}
+        />
+      )}
 
       <AuthDivider label={t('OR')} />
 
+      {isSignIn ? (
+        <AuthLegalConsent
+          accepted={acceptedLegal}
+          onToggle={() => setAcceptedLegal((accepted) => !accepted)}
+        />
+      ) : null}
+
       <View className="flex-row items-center justify-center gap-6" style={{ direction: 'ltr' }}>
-        <AppleAuth isLoading={socialBusy} setIsLoading={setSocialBusy} mode={mode} />
-        <GoogleAuth isLoading={socialBusy} setIsLoading={setSocialBusy} />
+        <AppleAuth
+          isLoading={socialBusy}
+          setIsLoading={setSocialBusy}
+          mode={mode}
+          legalAccepted={acceptedLegal}
+        />
+        <GoogleAuth
+          isLoading={socialBusy}
+          setIsLoading={setSocialBusy}
+          mode={mode}
+          legalAccepted={acceptedLegal}
+        />
       </View>
     </AuthScaffold>
   );

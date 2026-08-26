@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useTranslation } from '@/hooks/useTranslation';
 import { memo } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import { deriveCardPresentation } from '../../model/matchPresentation';
@@ -17,6 +18,7 @@ export const MatchCard = memo(function MatchCard({
   layoutWidth,
 }: MatchCardProps) {
   const { width: screenWidth } = useWindowDimensions();
+  const { t } = useTranslation();
   const presentation = deriveCardPresentation(match);
   const compact = presentation.score.kind === 'score' && presentation.isFinished;
   const metrics = getMatchCardMetrics(layoutWidth ?? screenWidth, compact);
@@ -28,6 +30,11 @@ export const MatchCard = memo(function MatchCard({
     <Pressable
       onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${match.id}`))}
       accessibilityRole="button"
+      accessibilityLabel={t('{{home}} versus {{away}}, {{status}}', {
+        home: match.home.name,
+        away: match.away.name,
+        status: presentation.status.label,
+      })}
       className="w-full items-center"
     >
       <View

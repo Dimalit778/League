@@ -95,6 +95,22 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
   const canSave = hasChanges && !isPending;
   const saveLabel = isPending ? t('Saving') : justSaved ? t('Saved') : t('Save');
 
+  const predictedHome = clampScore(prediction?.home_score ?? 0);
+  const predictedAway = clampScore(prediction?.away_score ?? 0);
+
+  useEffect(() => {
+    // The saved prediction can arrive/change after mount (e.g. the match-detail
+    // placeholder had no prediction yet, or a background refetch landed). Adopt
+    // it into the form, but never clobber the user's unsaved edits.
+    if (!hasChanges) {
+      setHomeScore(predictedHome);
+      setAwayScore(predictedAway);
+    }
+    setSavedScores({ home: predictedHome, away: predictedAway });
+    // Keyed on the score values only; hasChanges is read as the latest value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [predictedHome, predictedAway]);
+
   useEffect(() => {
     if (!justSaved) return;
     const timeoutId = setTimeout(() => setJustSaved(false), SAVED_FLASH_MS);

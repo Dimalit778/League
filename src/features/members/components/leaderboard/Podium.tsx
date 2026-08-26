@@ -70,7 +70,13 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
         <View style={styles.avatarLayer}>
           {clickable ? (
             <Link href={{ pathname: '/(app)/(league)/member/[memberId]', params: { memberId } }} asChild>
-              <Pressable style={({ pressed }) => pressed && { opacity: 0.8 }}>{avatar}</Pressable>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={t('View {{name}} profile', { name: displayName })}
+                style={({ pressed }) => pressed && { opacity: 0.8 }}
+              >
+                {avatar}
+              </Pressable>
             </Link>
           ) : (
             avatar

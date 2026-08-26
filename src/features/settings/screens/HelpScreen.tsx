@@ -7,6 +7,7 @@ import { Linking } from 'react-native';
 import { version as appVersion } from '../../../../package.json';
 
 const SUPPORT_EMAIL = 'support@champoapp.com';
+const FOOTBALL_DATA_URL = 'https://www.football-data.org/';
 
 const HELP_SECTIONS = [
   {
@@ -204,6 +205,15 @@ const HelpScreen = () => {
           <Row className="justify-between">
             <Text variant="body">{t('Platform')}</Text>
             <Text variant="body">{t('iOS & Android')}</Text>
+          </Row>
+          <Row>
+            <Text
+              accessibilityRole="link"
+              className="text-sm text-muted underline"
+              onPress={() => void Linking.openURL(FOOTBALL_DATA_URL)}
+            >
+              {t('Football data provided by the Football-Data.org API')}
+            </Text>
           </Row>
         </Card>
       </Section>

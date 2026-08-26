@@ -41,5 +41,6 @@ describe('SettingsContent', () => {
     expect(getByText('Delete Account').props.className).toContain('text-error');
     expect(getByText('Version')).toBeTruthy();
     expect(getByText('1.0.0')).toBeTruthy();
+    expect(getByText('Accessibility Statement')).toBeTruthy();
   });
 });

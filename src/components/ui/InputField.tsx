@@ -172,7 +172,7 @@ export const InputField = ({
           <Pressable
             onPress={onRightIconPress}
             className={
-              isRTL ? 'mr-2 h-11 w-11 items-center justify-center' : 'ml-2 h-11 w-11 items-center justify-center'
+              isRTL ? 'mr-2 h-12 w-12 items-center justify-center' : 'ml-2 h-12 w-12 items-center justify-center'
             }
             accessible
             accessibilityRole="button"

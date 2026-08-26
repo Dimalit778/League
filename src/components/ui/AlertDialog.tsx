@@ -82,6 +82,8 @@ function AlertButtons({
         return (
           <Pressable
             key={`${button.style ?? 'default'}:${button.text}`}
+            accessibilityRole="button"
+            accessibilityLabel={button.text}
             className={`min-h-12 flex-1 items-center justify-center rounded-xl px-3 py-3 active:opacity-70 ${
               outline ? 'border border-border' : ''
             }`}
@@ -122,10 +124,16 @@ export const AlertDialog = ({ visible, title, message, buttons, type, onButtonPr
     <Modal visible={visible} transparent animationType="none" onRequestClose={onDismiss}>
       <View testID="alert-theme" style={[themes[theme], styles.themeRoot]}>
         <Animated.View testID="alert-overlay" style={[styles.overlay, overlayAnimatedStyle]}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={onDismiss} />
+          <Pressable
+            accessible={false}
+            importantForAccessibility="no"
+            style={StyleSheet.absoluteFill}
+            onPress={onDismiss}
+          />
 
           <Animated.View
             testID="alert-card"
+            accessibilityViewIsModal
             style={[
               styles.card,
               {

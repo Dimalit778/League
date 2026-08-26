@@ -1,4 +1,57 @@
-import { parseRecoveryTokensFromUrl } from '../authApi';
+import { supabase } from '@/lib/supabase';
+import { parseRecoveryTokensFromUrl, signUp } from '../authApi';
+
+const acceptance = {
+  accepted: true,
+  termsVersion: '2026-08-04',
+  privacyVersion: '2026-08-26.2',
+  source: 'email',
+  authFlow: 'sign_up',
+  locale: 'he',
+  appVersion: '1.0.0',
+} as const;
+
+describe('signUp legal acceptance', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('sends the accepted document versions for server-side audit capture', async () => {
+    (supabase.auth.signUp as jest.Mock).mockResolvedValue({
+      data: { user: { identities: [{ id: 'identity' }] } },
+      error: null,
+    });
+
+    const result = await signUp('test@example.com', 'password123', 'Test User', acceptance);
+
+    expect(result).toEqual({ success: true });
+    expect(supabase.auth.signUp).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+      options: {
+        data: {
+          full_name: 'Test User',
+          provider: 'email',
+          legal_accepted: true,
+          legal_terms_version: '2026-08-04',
+          legal_privacy_version: '2026-08-26.2',
+          legal_locale: 'he',
+          legal_app_version: '1.0.0',
+        },
+      },
+    });
+  });
+
+  it('refuses signup with mismatched legal versions', async () => {
+    const result = await signUp('test@example.com', 'password123', 'Test User', {
+      ...acceptance,
+      termsVersion: '2025-01-01' as '2026-08-04',
+    });
+
+    expect(result.success).toBe(false);
+    expect(supabase.auth.signUp).not.toHaveBeenCalled();
+  });
+});
 
 describe('parseRecoveryTokensFromUrl', () => {
   it('accepts a complete password recovery link', () => {

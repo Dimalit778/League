@@ -1,3 +1,4 @@
+/* global __dirname */
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -59,14 +60,14 @@ if (!manifest) {
   }
 }
 
-const profileHero = fs.readFileSync(
-  path.join(root, 'src/features/members/components/profile/ProfileHeroCard.tsx'),
+const profileImageCard = fs.readFileSync(
+  path.join(root, 'src/features/members/components/profile/ProfileImageCard.tsx'),
   'utf8',
 );
-if (profileHero.includes('requestMediaLibraryPermissionsAsync')) {
+if (profileImageCard.includes('requestMediaLibraryPermissionsAsync')) {
   fail('Avatar picker must use the system picker without requesting broad library access first.');
 }
-if (profileHero.includes('launchCameraAsync')) fail('Avatar flow must not launch the camera.');
+if (profileImageCard.includes('launchCameraAsync')) fail('Avatar flow must not launch the camera.');
 
 if (failures.length > 0) {
   console.error('iOS privacy audit failed:');

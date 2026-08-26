@@ -1,4 +1,9 @@
 import { checkNetworkConnection } from '@/hooks/useNetworkStatus';
+import {
+  CURRENT_PRIVACY_VERSION,
+  CURRENT_TERMS_VERSION,
+  type LegalAcceptanceContext,
+} from '@/features/auth/legalAcceptance';
 import { KEYS } from '@/lib/queryClient';
 import { queryPersister } from '@/lib/queryPersister';
 import { supabase } from '@/lib/supabase';
@@ -65,13 +70,36 @@ export const signIn = (email: string, password: string, queryClient: QueryClient
   });
 
 // Sign Up
-export const signUp = (email: string, password: string, fullname: string) =>
+export const signUp = (
+  email: string,
+  password: string,
+  fullname: string,
+  acceptance: LegalAcceptanceContext,
+) =>
   withNetworkGuard(async () => {
+    if (
+      acceptance.accepted !== true ||
+      acceptance.source !== 'email' ||
+      acceptance.authFlow !== 'sign_up' ||
+      acceptance.termsVersion !== CURRENT_TERMS_VERSION ||
+      acceptance.privacyVersion !== CURRENT_PRIVACY_VERSION
+    ) {
+      throw new Error('You must accept the current Terms of Service and acknowledge the Privacy Policy.');
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
       options: {
-        data: { full_name: fullname, provider: 'email' },
+        data: {
+          full_name: fullname,
+          provider: 'email',
+          legal_accepted: true,
+          legal_terms_version: acceptance.termsVersion,
+          legal_privacy_version: acceptance.privacyVersion,
+          legal_locale: acceptance.locale,
+          legal_app_version: acceptance.appVersion,
+        },
       },
     });
 

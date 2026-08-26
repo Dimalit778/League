@@ -17,16 +17,31 @@ const CACHE_BUSTER = 'v1';
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24h — drop snapshots older than this
 
 // Only these query-key roots are written to disk. Everything else stays
-// memory-only. We deliberately EXCLUDE the heavy caches — `matches` (a whole
-// season of fixtures) and `predictions` — so the snapshot stays small and
-// hydrate stays fast. These roots cover the cold-start critical path: the
-// my-leagues screen and the league area.
+// memory-only. These roots cover the cold-start critical path: the my-leagues
+// screen and the league area.
 const PERSISTED_QUERY_ROOTS = new Set<string>([
   'users', // users.leagues, users.leaguesSummary
   'members', // members.primary-league
   'leagues', // league detail / members / leaderboard
   'subscription', // subscription.access (gates the my-leagues UI)
 ]);
+
+// The full `matches` and `competitions` roots are NOT persisted — they hold
+// many heavy sub-caches (per-match details, predictions, AI summaries). But the
+// two entries the Matches tab blocks its skeleton on ARE worth persisting so it
+// renders the current matchday instantly on a cold start:
+//   - the season fixtures list: ['matches', comp, season, 'season', member]
+//   - the competition meta:      ['competitions', comp, 'match-meta']
+// One season is a few hundred KB of fixtures — small enough for MMKV. The rest
+// of the season is refetched in the background (stale-while-revalidate), and
+// prefetched via usePrefetchLeagueData. Bump CACHE_BUSTER if MatchListItem or
+// the competition-meta shape changes.
+const shouldPersistMatchQuery = (queryKey: readonly unknown[]): boolean => {
+  const [root] = queryKey;
+  if (root === 'matches') return queryKey[3] === 'season';
+  if (root === 'competitions') return queryKey[2] === 'match-meta';
+  return false;
+};
 
 export const queryPersister = createSyncStoragePersister({
   storage: createMMKVStorageAdapter(appStorage),
@@ -46,7 +61,8 @@ export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
     shouldDehydrateQuery: (query) => {
       if (query.state.status !== 'success') return false;
       const root = query.queryKey[0];
-      return typeof root === 'string' && PERSISTED_QUERY_ROOTS.has(root);
+      if (typeof root === 'string' && PERSISTED_QUERY_ROOTS.has(root)) return true;
+      return shouldPersistMatchQuery(query.queryKey);
     },
   },
 };

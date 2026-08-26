@@ -66,4 +66,10 @@ describe('Button', () => {
       disabled: true,
     });
   });
+
+  it.each(['sm', 'md', 'icon'] as const)('keeps the %s size at a 48-point minimum target', (size) => {
+    const { getByRole } = render(<Button size={size} label="Target" onPress={jest.fn()} />);
+
+    expect(getByRole('button').props.className).toContain(size === 'icon' ? 'h-12' : 'min-h-12');
+  });
 });

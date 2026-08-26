@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
 
 const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -50,9 +49,10 @@ export const memberImageApi = {
       },
       async uploadImage(memberId: string, avatarUrl: ImagePicker.ImagePickerAsset) {
         if (!memberId) throw new Error('No member ID available');
-    
+
         const base64 = avatarUrl.base64;
         if (!base64) throw new Error('No base64 data available');
+        // Client-side pre-checks for fast feedback; the Edge Function re-validates.
         if (decodedBase64Size(base64) > MAX_PROFILE_IMAGE_BYTES) {
           throw new Error('Profile image must be 5 MB or smaller');
         }
@@ -65,41 +65,47 @@ export const memberImageApi = {
         }
         const safeContentType = contentType as ProfileImageMimeType;
 
-        const { data: currentMember, error: fetchError } = await supabase
-          .from('league_members')
-          .select('avatar_url')
-          .eq('id', memberId)
-          .single();
-
-        if (fetchError) throw fetchError;
-
-        const timestamp = Date.now();
-        const filePath = `${memberId}_${timestamp}.${PROFILE_IMAGE_EXTENSIONS[safeContentType]}`;
-        const bucket = supabase.storage.from('profile_images');
-        const { error: uploadError } = await bucket.upload(filePath, decode(base64), {
-          contentType: safeContentType,
-          upsert: false,
+        // Route the upload through moderation. The function checks ownership,
+        // runs SafeSearch, and only then writes to storage with the service role.
+        const { data, error } = await supabase.functions.invoke('moderate-profile-image', {
+          body: { memberId, base64, contentType: safeContentType },
         });
 
-        if (uploadError) throw uploadError;
-
-        const { data: memberData, error: memberError } = await supabase
-          .from('league_members')
-          .update({ avatar_url: filePath })
-          .eq('id', memberId)
-          .select()
-          .single();
-
-        if (memberError) {
-          await bucket.remove([filePath]);
-          throw memberError;
+        if (error) {
+          // Surface a rejection reason from the function body when present.
+          const context = (error as { context?: unknown }).context;
+          let responseBody: unknown;
+          if (
+            context &&
+            typeof context === 'object' &&
+            'json' in context &&
+            typeof (context as { json?: unknown }).json === 'function'
+          ) {
+            try {
+              responseBody = await (context as { json: () => Promise<unknown> }).json();
+            } catch {
+              // Fall back to the SDK error message when the response is not JSON.
+            }
+          } else if (context && typeof context === 'object' && 'body' in context) {
+            responseBody = (context as { body?: unknown }).body;
+          }
+          const responseMessage =
+            responseBody &&
+            typeof responseBody === 'object' &&
+            'message' in responseBody &&
+            typeof (responseBody as { message?: unknown }).message === 'string'
+              ? (responseBody as { message: string }).message
+              : null;
+          const message =
+            responseMessage ?? error.message ?? 'Image upload failed';
+          throw new Error(message);
         }
 
-        if (currentMember?.avatar_url && currentMember.avatar_url !== filePath) {
-          await bucket.remove([currentMember.avatar_url]);
+        if (data?.error) {
+          throw new Error(data.message ?? 'This image could not be used as a profile picture');
         }
 
-        return memberData;
+        return data?.member ?? data;
     }
-    
+
 }

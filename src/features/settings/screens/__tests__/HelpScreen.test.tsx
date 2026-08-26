@@ -26,5 +26,6 @@ describe('HelpScreen', () => {
   it('renders app information section', () => {
     const { getByText } = render(<HelpScreen />);
     expect(getByText('App Information')).toBeTruthy();
+    expect(getByText('Football data provided by the Football-Data.org API')).toBeTruthy();
   });
 });

@@ -65,7 +65,7 @@ export function Section({
       accessibilityRole="button"
       accessibilityLabel={actionLabel ?? title}
       hitSlop={8}
-      className={cn('min-h-9 flex-row items-center active:opacity-70', spacing.inline)}
+      className={cn('min-h-12 flex-row items-center active:opacity-70', spacing.inline)}
     >
       {actionLabel ? (
         <Text variant="label" tone="success">

@@ -21,7 +21,7 @@ The script is idempotent: safe to re-run before each submission to reset the pas
 - Email-verified user: `reviewer@leaguechampion.app` (override with `APP_REVIEWER_EMAIL`)
 - Primary league: **App Review League**
 - Sample predictions on upcoming fixtures (when match data exists)
-- Free-plan access (no PRO subscription required for core review)
+- Free-plan access (no PRO Season Pass required for core review)
 
 ### Optional environment variables
 
@@ -56,16 +56,16 @@ Also available on Sign In and Sign Up. Apple/Google sign-in does not require ema
 EMAIL/PASSWORD ACCOUNTS
 New email accounts must enter the 6-digit verification code. The demo reviewer account is pre-verified when created with `npm run seed:app-reviewer`.
 
-SUBSCRIPTIONS (optional)
+SEASON PASS (optional)
 Settings → Subscription → Upgrade (RevenueCat / Apple IAP).
-PRO adds more leagues, larger leagues, and more competitions. Cancel via Apple ID → Subscriptions.
+PRO adds more leagues, larger leagues, and more competitions. The Champo Pro Season Pass is a one-time, non-renewing in-app purchase; there is no recurring subscription to cancel.
 
 AI MATCH ANALYSIS
 Some match detail screens include an AI-generated score preview and analysis. The card shows its update time and states that the content is for entertainment only, may be inaccurate, and is not betting advice. If the summary, both predicted scores, or generation timestamp are missing, the app shows "AI analysis is not available" and does not fabricate a 0:0 prediction. Full written analysis may require PRO.
 
 ACCOUNT DELETION (Guideline 5.1.1v)
 My Leagues → Settings (gear, top-left) → Delete Account → confirm.
-The account and personal profile data are deleted. Sign in with Apple authorization is revoked when applicable. Historical predictions and points remain only as an unlinked "Deleted Player" record so league standings stay accurate. Deleting the account does not cancel an Apple subscription.
+The account and personal profile data are deleted. Sign in with Apple authorization is revoked when applicable. Historical predictions and points remain only as an unlinked "Deleted Player" record so league standings stay accurate. Deleting the account does not automatically refund a Season Pass; refund requests are handled by Apple.
 Do NOT delete the demo account during review unless testing deletion; re-run `npm run seed:app-reviewer` to recreate it.
 
 USER-GENERATED CONTENT SAFETY (Guideline 1.2)
@@ -98,7 +98,7 @@ AGE RATING
 Set App Store age rating to 13+ to match our Terms of Service and Privacy Policy.
 
 THIRD-PARTY SERVICES
-Supabase (auth/data), RevenueCat + Apple IAP (subscriptions), Sentry (crash diagnostics), third-party football data providers (fixtures/scores via our backend).
+Supabase (auth/data), RevenueCat + Apple IAP (one-time Season Pass purchases), Sentry (crash diagnostics), and Football-Data.org (fixtures/scores via our backend).
 ```
 
 ## 3. Pre-submission checklist

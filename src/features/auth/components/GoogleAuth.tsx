@@ -8,6 +8,12 @@ import { useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 
 import { Button } from '@/components';
+import {
+  clearPendingWebLegalAcceptance,
+  createLegalAcceptanceContext,
+  recordSocialLegalAcceptance,
+  savePendingWebLegalAcceptance,
+} from '@/features/auth/legalAcceptance';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { formatErrorForUser } from '@/utils/errorFormats';
@@ -19,9 +25,13 @@ const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB || '';
 const GoogleAuth = ({
   setIsLoading,
   isLoading,
+  mode,
+  legalAccepted,
 }: {
   setIsLoading: (isLoading: boolean) => void;
   isLoading: boolean;
+  mode: 'signIn' | 'signUp';
+  legalAccepted: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -35,22 +45,30 @@ const GoogleAuth = ({
     });
   }, []);
 
-  const label = t('Sign in with Google');
+  const label = t(mode === 'signUp' ? 'Sign up with Google' : 'Sign in with Google');
 
   const handleGoogleSignIn = async () => {
-    if (isLoading) return;
+    if (isLoading || !legalAccepted) return;
 
     try {
       setIsLoading(true);
+      const acceptance = createLegalAcceptanceContext(
+        'google',
+        mode === 'signUp' ? 'sign_up' : 'social_continue',
+      );
 
       if (Platform.OS === 'web') {
+        savePendingWebLegalAcceptance(acceptance);
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
             redirectTo: window.location.origin,
           },
         });
-        if (error) throw error;
+        if (error) {
+          clearPendingWebLegalAcceptance();
+          throw error;
+        }
         // Browser navigates away; keep loading until then.
         return;
       }
@@ -75,6 +93,13 @@ const GoogleAuth = ({
 
         if (!data?.session) {
           throw new Error('Failed to create session after Google sign in');
+        }
+
+        try {
+          await recordSocialLegalAcceptance(acceptance);
+        } catch (acceptanceError) {
+          await supabase.auth.signOut();
+          throw acceptanceError;
         }
       } else {
         return;
@@ -114,7 +139,7 @@ const GoogleAuth = ({
     <Button
       testID="google-sign-in-button"
       onPress={handleGoogleSignIn}
-      disabled={isLoading}
+      disabled={isLoading || !legalAccepted}
       accessibilityLabel={label}
       accessibilityHint={label}
       variant="outline"

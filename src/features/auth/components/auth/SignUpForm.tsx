@@ -1,13 +1,15 @@
 import { Button, InputField, Row, Text } from '@/components';
+import AuthLegalConsent from '@/features/auth/components/AuthLegalConsent';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
+import { createLegalAcceptanceContext } from '@/features/auth/legalAcceptance';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link, router } from 'expo-router';
-import { Check, Eye, EyeOff, LockKeyhole, Mail, UserIcon } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { Eye, EyeOff, LockKeyhole, Mail, UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import * as yup from 'yup';
 const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
@@ -21,12 +23,16 @@ const signUpSchema = yup.object().shape({
 
 type SignUpFormData = yup.InferType<typeof signUpSchema>;
 
-export default function SignUpForm() {
+type Props = {
+  acceptedLegal: boolean;
+  onToggleLegal: () => void;
+};
+
+export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
   const { signUp, isLoading, errorMessage, clearError } = useAuthActions();
   const [showPassword, setShowPassword] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const {
     control,
@@ -55,7 +61,12 @@ export default function SignUpForm() {
     const password = form.password;
     const fullname = form.fullname.trim().replace(/\s+/g, ' ');
 
-    const result = await signUp(email, password, fullname);
+    const result = await signUp(
+      email,
+      password,
+      fullname,
+      createLegalAcceptanceContext('email', 'sign_up'),
+    );
 
     if (result.success) {
       router.push({
@@ -130,38 +141,16 @@ export default function SignUpForm() {
         </Text>
       )}
 
-      <Row className="mt-6 gap-2.5 ">
-        <Pressable
-          onPress={() => setAcceptedTerms((accepted) => !accepted)}
-          accessibilityRole="checkbox"
-          accessibilityLabel={t('I agree to the')}
-          accessibilityState={{ checked: acceptedTerms }}
-        >
-          <View
-            className="size-7 rounded-md border"
-            style={{ borderColor: colors.primary, backgroundColor: acceptedTerms ? colors.primary : 'transparent' }}
-          >
-            {acceptedTerms ? <Check size={20} color={colors.onPrimary} strokeWidth={3} /> : null}
-          </View>
-        </Pressable>
-        <Row className="gap-1">
-          <Text variant="bodySmall" tone="muted">
-            {t('I agree to the')}
-          </Text>
-          <Link href="/(auth)/terms" asChild accessibilityRole="link">
-            <Text variant="bodySmall" tone="info" accessibilityRole="link" className="underline">
-              {t('Terms of Service')}
-            </Text>
-          </Link>
-        </Row>
-      </Row>
+      <View className="mt-6">
+        <AuthLegalConsent accepted={acceptedLegal} onToggle={onToggleLegal} />
+      </View>
 
       <Button
         label={t('Sign Up')}
         accessibilityLabel={t('Sign Up')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
-        disabled={!isValid || !acceptedTerms || isLoading}
+        disabled={!isValid || !acceptedLegal || isLoading}
         variant="primary"
         size="lg"
         fullWidth

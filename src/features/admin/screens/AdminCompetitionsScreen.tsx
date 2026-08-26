@@ -14,7 +14,6 @@ import { useAddCompetition, useAdminCompetitions, useRemoveCompetition } from '@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsFocused } from '@react-navigation/native';
-import { Image as ExpoImage } from 'expo-image';
 import { Plus, SearchX, Trophy, X } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, TextInput, View } from 'react-native';
@@ -25,7 +24,6 @@ const initialFormState = {
   area: '',
   code: '',
   flag: '',
-  logo: '',
   type: '',
   displayType: 'LEAGUE',
   season: '',
@@ -39,7 +37,6 @@ const formFields: { key: keyof FormState; label: string; keyboardType?: 'numeric
   { key: 'area', label: 'Area' },
   { key: 'code', label: 'Code' },
   { key: 'flag', label: 'Flag URL' },
-  { key: 'logo', label: 'Logo URL' },
   { key: 'type', label: 'Type (optional)' },
   { key: 'displayType', label: 'Display Type' },
   { key: 'season', label: 'Season (optional)', keyboardType: 'numeric' },
@@ -67,8 +64,8 @@ const AdminCompetitionsScreen = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (!form.id || !form.name || !form.area || !form.code || !form.flag || !form.logo) {
-      setValidationError('ID, name, area, code, flag and logo are required.');
+    if (!form.id || !form.name || !form.area || !form.code || !form.flag) {
+      setValidationError('ID, name, area, code and flag are required.');
       return;
     }
 
@@ -92,7 +89,6 @@ const AdminCompetitionsScreen = () => {
         area: form.area.trim(),
         code: form.code.trim(),
         flag: form.flag.trim(),
-        logo: form.logo.trim(),
         type: form.type.trim() || 'league',
         currentStage: form.displayType.trim() || null,
         seasonId: seasonAsNumber,
@@ -241,11 +237,6 @@ const AdminCompetitionsScreen = () => {
                 <AdminGridItem key={competition.id}>
                   <Card className="h-full" contentClassName="min-h-[230px] gap-4">
                     <View className="flex-row items-start gap-3">
-                      <View className="h-12 w-12 overflow-hidden rounded-2xl border border-border bg-subtle">
-                        {competition.logo ? (
-                          <ExpoImage source={{ uri: competition.logo }} style={{ width: 48, height: 48 }} contentFit="contain" />
-                        ) : null}
-                      </View>
                       <View className="min-w-0 flex-1">
                         <Text variant="subtitle" numberOfLines={1}>
                           {competition.name}

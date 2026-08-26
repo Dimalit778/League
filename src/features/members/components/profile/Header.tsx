@@ -1,6 +1,7 @@
 import { TrophyIcon } from '@/assets/icons';
 import { Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
@@ -19,10 +20,13 @@ export const CollapsedHeader = ({ nickname }: { nickname?: string | undefined })
 
 export const PersistentHeaderAction = () => {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   return (
     <Row className="items-start justify-end px-4">
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('My leagues')}
         hitSlop={10}
         className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
         onPress={() => {

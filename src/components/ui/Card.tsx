@@ -28,7 +28,7 @@ export type CardProps = StaticCardProps | PressableCardProps;
 
 const variantClasses: Record<CardVariant, string> = {
   surface: 'bg-surface',
-  soft: 'bg-surface',
+  soft: 'bg-subtle',
   outline: 'border border-border bg-transparent',
   elevated: 'border-none bg-surface shadow-sm elevation-3',
   hero: 'border border-primary bg-surface rounded-3xl shadow-md elevation-3',
@@ -55,6 +55,7 @@ export const Card = forwardRef<View, CardProps>(function Card(
         {...(props as PressableProps)}
         onPress={onPress}
         accessibilityRole="button"
+        accessibilityLabel={(props as PressableProps).accessibilityLabel}
         className={cn(cardClassName, 'active:opacity-90')}
         style={style}
       >

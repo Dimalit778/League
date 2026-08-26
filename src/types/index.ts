@@ -15,7 +15,7 @@ export type LeagueWithCompetitionAndMembersCountType = Tables<'leagues'> & {
 
 export type LeagueWithMembersType = Tables<'leagues'> & {
   league_members: Tables<'league_members'>[];
-  competition: Pick<Tables<'competitions'>, 'id' | 'name' | 'logo' | 'area' | 'flag'>;
+  competition: Pick<Tables<'competitions'>, 'id' | 'name' | 'area' | 'flag'>;
 };
 
 export type LeaderboardAndMemberType = Tables<'predictions'> & {

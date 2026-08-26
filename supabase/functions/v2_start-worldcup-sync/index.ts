@@ -169,16 +169,14 @@ async function syncCompetition(supabase, fdKey, matches) {
   }
   const totalMatchdays = groupMatchdays.size;
   console.info(`📊 Progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}, totalMatchdays=${totalMatchdays}`);
-  const [logo, flag] = await Promise.all([
-    apiComp.emblem ? tryUpload(supabase, "competitions_logo", WC_CODE, apiComp.emblem, "WC emblem") : Promise.resolve(null),
-    apiComp.area?.flag ? tryUpload(supabase, "flags", apiComp.area.code ?? "World", apiComp.area.flag, "WC flag") : Promise.resolve(null)
-  ]);
+  const flag = apiComp.area?.flag
+    ? await tryUpload(supabase, "flags", apiComp.area.code ?? "World", apiComp.area.flag, "WC flag")
+    : null;
   const row = {
     id: apiComp.id,
     name: WC_NAME,
     code: WC_CODE,
     type: apiComp.type ?? "CUP",
-    logo,
     flag,
     area: apiComp.area?.name ?? null,
     updated_at: nowIso()
@@ -210,18 +208,15 @@ async function syncTeams(supabase, fdKey) {
   const payload = await fdFetch(supabase, JOB, `${FD_BASE}/competitions/${WC_CODE}/teams`, fdKey);
   const rawTeams = Array.isArray(payload?.teams) ? payload.teams : [];
   console.info(`Found ${rawTeams.length} teams`);
-  const mappedTeams = await Promise.all(rawTeams.map(async (t)=>{
-    const logo = t.crest ? await tryUpload(supabase, "teams_logo", String(t.id), t.crest, `team ${t.id}`) : null;
-    return {
+  const mappedTeams = rawTeams.map((t)=>({
       id: t.id,
       name: t.name ?? null,
       shortName: t.shortName ?? null,
       tla: t.tla ?? null,
-      logo,
       venue: t.venue ?? null,
+      clubColors: t.clubColors ?? null,
       updated_at: nowIso()
-    };
-  }));
+    }));
   const { count, errors } = await bulkUpsert(supabase, "teams", mappedTeams);
   console.info(`✅ Teams synced: ${count}`);
   return {

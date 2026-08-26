@@ -31,10 +31,10 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'min-h-9 px-3',
-  md: 'min-h-11 px-4',
+  sm: 'min-h-12 px-3',
+  md: 'min-h-12 px-4',
   lg: 'min-h-[52px] px-6',
-  icon: 'h-11 w-11 p-0',
+  icon: 'h-12 w-12 p-0',
 };
 
 const textSizeClasses: Record<ButtonSize, string> = {
