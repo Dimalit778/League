@@ -179,7 +179,7 @@ export default function AiAnalysisCard({ match, title }: AiAnalysisCardProps) {
         <View className="flex-row  justify-center py-3 gap-2 border-b border-primary">
           <BrainCircuit size={20} color={colors.primary} />
           <Text variant="titleLarge" tone="primary" className="font-bold">
-            {t(title)}
+            {title}
           </Text>
         </View>
       )}

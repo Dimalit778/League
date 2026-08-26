@@ -40,7 +40,6 @@ if (!manifest) {
     'NSPrivacyCollectedDataTypeGameplayContent',
     'NSPrivacyCollectedDataTypeOtherUserContent',
     'NSPrivacyCollectedDataTypeUserID',
-    'NSPrivacyCollectedDataTypePurchaseHistory',
     'NSPrivacyCollectedDataTypeProductInteraction',
   ]);
   const declared = manifest.NSPrivacyCollectedDataTypes ?? [];

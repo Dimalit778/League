@@ -11,9 +11,9 @@ describe('TermsScreen', () => {
     expect(getByText('Last updated: August 26, 2026')).toBeTruthy();
   });
 
-  it('renders Season Pass section', () => {
+  it('renders Free Access section', () => {
     const { getByText } = render(<LegalDocumentScreen document="terms" />);
-    expect(getByText('Season Pass and Payments')).toBeTruthy();
+    expect(getByText('Free Access')).toBeTruthy();
   });
 
   it('renders Apple terms section', () => {

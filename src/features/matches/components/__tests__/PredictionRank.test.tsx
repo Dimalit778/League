@@ -7,13 +7,13 @@ jest.mock('@/store/PrimaryLeagueStore', () => ({
 }));
 
 describe('PredictionRank', () => {
-  it('renders column headers', () => {
+  it('renders a compact prediction row without table headers', () => {
     const predictions = [
       {
         id: 'p1',
         league_member_id: 'm1',
-        predicted_home_score: 2,
-        predicted_away_score: 1,
+        home_score: 2,
+        away_score: 1,
         points: 5,
         league_member: {
           id: 'm1',
@@ -23,10 +23,11 @@ describe('PredictionRank', () => {
       },
     ];
 
-    const { getByText } = render(<PredictionRank predictions={predictions as any} />);
-    expect(getByText('Player')).toBeTruthy();
-    expect(getByText('Prediction')).toBeTruthy();
-    expect(getByText('Points')).toBeTruthy();
+    const { getByText, queryByText } = render(<PredictionRank predictions={predictions as any} />);
+    expect(getByText('TestUser')).toBeTruthy();
+    expect(getByText('2 - 1')).toBeTruthy();
+    expect(getByText('5')).toBeTruthy();
+    expect(queryByText('Player')).toBeNull();
   });
 
   it('renders No predictions when empty', () => {
