@@ -21,7 +21,7 @@ The script is idempotent: safe to re-run before each submission to reset the pas
 - Email-verified user: `reviewer@leaguechampion.app` (override with `APP_REVIEWER_EMAIL`)
 - Primary league: **App Review League**
 - Sample predictions on upcoming fixtures (when match data exists)
-- Free-plan access (no PRO Season Pass required for core review)
+- Full free access to every feature available in version 1.0
 
 ### Optional environment variables
 
@@ -56,16 +56,15 @@ Also available on Sign In and Sign Up. Apple/Google sign-in does not require ema
 EMAIL/PASSWORD ACCOUNTS
 New email accounts must enter the 6-digit verification code. The demo reviewer account is pre-verified when created with `npm run seed:app-reviewer`.
 
-SEASON PASS (optional)
-Settings → Subscription → Upgrade (RevenueCat / Apple IAP).
-PRO adds more leagues, larger leagues, and more competitions. The Champo Pro Season Pass is a one-time, non-renewing in-app purchase; there is no recurring subscription to cancel.
+FREE ACCESS
+Champo 1.0 is completely free. It contains no in-app purchases, subscriptions, paid upgrades, external purchase links, or paid feature gates. Every feature visible in this build is available to every signed-in user.
 
 AI MATCH ANALYSIS
-Some match detail screens include an AI-generated score preview and analysis. The card shows its update time and states that the content is for entertainment only, may be inaccurate, and is not betting advice. If the summary, both predicted scores, or generation timestamp are missing, the app shows "AI analysis is not available" and does not fabricate a 0:0 prediction. Full written analysis may require PRO.
+Some match detail screens include an AI-generated score preview and analysis. The card shows its update time and states that the content is for entertainment only, may be inaccurate, and is not betting advice. If the summary, both predicted scores, or generation timestamp are missing, the app shows "AI analysis is not available" and does not fabricate a 0:0 prediction. This feature is free in version 1.0.
 
 ACCOUNT DELETION (Guideline 5.1.1v)
 My Leagues → Settings (gear, top-left) → Delete Account → confirm.
-The account and personal profile data are deleted. Sign in with Apple authorization is revoked when applicable. Historical predictions and points remain only as an unlinked "Deleted Player" record so league standings stay accurate. Deleting the account does not automatically refund a Season Pass; refund requests are handled by Apple.
+The account and personal profile data are deleted. Sign in with Apple authorization is revoked when applicable. Historical predictions and points remain only as an unlinked "Deleted Player" record so league standings stay accurate. The app has no purchases or subscriptions.
 Do NOT delete the demo account during review unless testing deletion; re-run `npm run seed:app-reviewer` to recreate it.
 
 USER-GENERATED CONTENT SAFETY (Guideline 1.2)
@@ -98,7 +97,7 @@ AGE RATING
 Set App Store age rating to 13+ to match our Terms of Service and Privacy Policy.
 
 THIRD-PARTY SERVICES
-Supabase (auth/data), RevenueCat + Apple IAP (one-time Season Pass purchases), Sentry (crash diagnostics), and Football-Data.org (fixtures/scores via our backend).
+Supabase (authentication and data), Google Cloud Vision (profile-image safety checks), Sentry (crash diagnostics), Gemini/Tavily (public-football match previews), and Football-Data.org (fixtures/scores via our backend). No payment processor is used by version 1.0.
 ```
 
 ## 3. Pre-submission checklist
@@ -113,6 +112,7 @@ Supabase (auth/data), RevenueCat + Apple IAP (one-time Season Pass purchases), S
 - [ ] App Store age rating set to **13+**
 - [ ] Notification permission status and the pre-permission explanation were verified on TestFlight
 - [ ] AI available/unavailable states, update time and disclaimer were verified in English and Hebrew
+- [ ] Confirmed no Subscription/Upgrade/Restore Purchases UI is visible in the production build
 
 ## 4. App Store Connect metadata
 
@@ -124,6 +124,7 @@ Supabase (auth/data), RevenueCat + Apple IAP (one-time Season Pass purchases), S
 - Declare Sentry crash/diagnostics data
 - Local match reminders do not collect notification tokens; verify the final binary and App Privacy answers remain consistent with this behavior
 - Photo library: declare only if you collect photos (optional avatar upload)
+- Do not declare Purchase History: version 1.0 has no purchases or subscriptions
 
 ## 5. After review
 
