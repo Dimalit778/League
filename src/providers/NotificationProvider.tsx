@@ -1,5 +1,3 @@
-import { MATCH_REMINDER_TYPE } from '@/features/notifications/utils/matchReminders';
-import { cancelAllMatchReminders, syncMatchReminders } from '@/features/notifications/utils/reminderScheduler';
 import {
   getNotificationPermissionSnapshot,
   INITIAL_NOTIFICATION_PERMISSION,
@@ -7,22 +5,12 @@ import {
   requestNotificationPermission,
   setupAndroidNotificationChannel,
 } from '@/lib/notifications';
+import { clearPushToken, registerPushToken } from '@/lib/notifications/pushToken';
 import { useAuthStore } from '@/store/AuthStore';
-import { useLanguageStore } from '@/store/LanguageStore';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
-import * as Sentry from '@sentry/react-native';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -35,7 +23,8 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const FOREGROUND_RESYNC_MIN_INTERVAL_MS = 15 * 60 * 1000;
+// Kept for tap-to-navigate: matches the `type` field on reminder push payloads.
+const MATCH_REMINDER_TYPE = 'match-reminder';
 
 type NotificationPermissionContextValue = {
   permission: NotificationPermissionSnapshot;
@@ -62,18 +51,11 @@ const getReminderMatchId = (response: Notifications.NotificationResponse | null)
 export const NotificationProvider = ({ children }: PropsWithChildren) => {
   const isLoggedIn = useAuthStore((s) => s.isAuthenticated);
   const memberId = usePrimaryLeagueStore((s) => s.memberId);
-  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
-  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
-  const language = useLanguageStore((s) => s.language);
 
   const [permission, setPermission] = useState<NotificationPermissionSnapshot>(INITIAL_NOTIFICATION_PERMISSION);
   const [isRequesting, setIsRequesting] = useState(false);
   const [pendingMatchId, setPendingMatchId] = useState<number | null>(null);
   const permissionGranted = permission.status === 'granted';
-
-  // Serialize sync/cancel work so a logout can't interleave with an in-flight sync
-  const syncChainRef = useRef<Promise<void>>(Promise.resolve());
-  const lastSyncAtRef = useRef(0);
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
@@ -112,48 +94,33 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     return () => subscription.remove();
   }, [isLoggedIn, refreshPermission]);
 
-  // Keep scheduled reminders in step with auth state, primary league and language
+  // Keep the remote push token in sync with auth + permission state. Registration
+  // is a cheap, idempotent upsert, so a single call on grant/login is sufficient.
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
-    const shouldSchedule = isLoggedIn && permissionGranted && competitionId != null && leagueId != null;
+    if (isLoggedIn && permissionGranted) {
+      void registerPushToken();
+    } else if (isLoggedIn && permission.status === 'denied') {
+      // Definitive revoke while still logged in (logout itself is handled in
+      // authApi.signOut, before the session is torn down). Don't clear on
+      // 'loading' | 'undetermined' | 'unavailable' — those are transient
+      // states during initial permission resolution, not a revoke.
+      void clearPushToken();
+    }
+  }, [isLoggedIn, permissionGranted, permission.status]);
 
-    const run = () =>
-      shouldSchedule ? syncMatchReminders({ competitionId, leagueId, language }) : cancelAllMatchReminders();
-
-    syncChainRef.current = syncChainRef.current.then(run).then(
-      () => {
-        lastSyncAtRef.current = Date.now();
-      },
-      (error) => {
-        Sentry.captureException(error, { tags: { feature: 'match-reminders' } });
-      },
-    );
-  }, [isLoggedIn, permissionGranted, competitionId, leagueId, language]);
-
-  // Refresh on foreground so postponed/rescheduled matches are picked up
+  // Re-register on foreground while granted, in case the token rotated.
   useEffect(() => {
     if (Platform.OS === 'web') return;
-    if (!isLoggedIn || !permissionGranted || competitionId == null || leagueId == null) return;
+    if (!isLoggedIn || !permissionGranted) return;
 
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state !== 'active') return;
-      if (Date.now() - lastSyncAtRef.current < FOREGROUND_RESYNC_MIN_INTERVAL_MS) return;
-
-      syncChainRef.current = syncChainRef.current
-        .then(() => syncMatchReminders({ competitionId, leagueId, language }))
-        .then(
-          () => {
-            lastSyncAtRef.current = Date.now();
-          },
-          (error) => {
-            Sentry.captureException(error, { tags: { feature: 'match-reminders' } });
-          },
-        );
+      if (state === 'active') void registerPushToken();
     });
 
     return () => subscription.remove();
-  }, [isLoggedIn, permissionGranted, competitionId, leagueId, language]);
+  }, [isLoggedIn, permissionGranted]);
 
   // Notification taps: warm taps via the listener, cold starts via the last response
   useEffect(() => {

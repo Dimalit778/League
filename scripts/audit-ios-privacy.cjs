@@ -41,6 +41,7 @@ if (!manifest) {
     'NSPrivacyCollectedDataTypeOtherUserContent',
     'NSPrivacyCollectedDataTypeUserID',
     'NSPrivacyCollectedDataTypeProductInteraction',
+    'NSPrivacyCollectedDataTypeDeviceID',
   ]);
   const declared = manifest.NSPrivacyCollectedDataTypes ?? [];
   const declaredTypes = new Set(declared.map((item) => item.NSPrivacyCollectedDataType));

@@ -1,6 +1,7 @@
 import { ListItem, Section, Text, type TextTone } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { clearPushToken, registerPushToken } from '@/lib/notifications/pushToken';
 import { useNotificationPermission } from '@/providers/NotificationProvider';
 import { RelativePathString, useRouter } from 'expo-router';
 import {
@@ -75,8 +76,10 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
     void requestPermission()
       .then((nextPermission) => {
         if (nextPermission.status === 'granted') {
+          void registerPushToken();
           Alert.alert(t('Notifications enabled'), t('Match reminders will be scheduled for upcoming matches.'));
         } else if (nextPermission.status === 'denied') {
+          void clearPushToken();
           Alert.alert(
             t('Permission required'),
             t('Enable notifications from your device settings to receive match reminders.'),
