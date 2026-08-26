@@ -25,4 +25,10 @@ describe('LandingScreen', () => {
     expect(getByText('Already have an account?')).toBeTruthy();
     expect(getByText('Sign In')).toBeTruthy();
   });
+
+  it('publishes the accessibility statement before sign-in', () => {
+    const { getByText } = render(<LandingScreen />);
+
+    expect(getByText('Accessibility Statement')).toBeTruthy();
+  });
 });

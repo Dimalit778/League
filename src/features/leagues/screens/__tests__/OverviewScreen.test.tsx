@@ -6,7 +6,6 @@ const mockOverview = {
     nickname: 'Player1',
     avatarUrl: null,
     leagueName: 'Test League',
-    logoUrl: '',
     flagUrl: '',
     rank: 1,
     points: 100,

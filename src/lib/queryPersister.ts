@@ -17,16 +17,34 @@ const CACHE_BUSTER = 'v1';
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24h — drop snapshots older than this
 
 // Only these query-key roots are written to disk. Everything else stays
-// memory-only. We deliberately EXCLUDE the heavy caches — `matches` (a whole
-// season of fixtures) and `predictions` — so the snapshot stays small and
-// hydrate stays fast. These roots cover the cold-start critical path: the
-// my-leagues screen and the league area.
+// memory-only. These roots cover the cold-start critical path: the my-leagues
+// screen and the league area.
 const PERSISTED_QUERY_ROOTS = new Set<string>([
   'users', // users.leagues, users.leaguesSummary
   'members', // members.primary-league
   'leagues', // league detail / members / leaderboard
   'subscription', // subscription.access (gates the my-leagues UI)
 ]);
+
+// The full `matches` and `competitions` roots are NOT persisted — they hold
+// many heavy sub-caches (per-match details, predictions, AI summaries). But the
+// entries the Home and Matches tabs render on load ARE worth persisting so they
+// paint instantly on a cold start:
+//   - the season fixtures list:  ['matches', comp, season, 'season', member]
+//   - today's matches (Overview): ['matches', comp, season, 'upcoming', member]
+//   - the competition meta:       ['competitions', comp, 'match-meta']
+// Each is small (a season is a few hundred KB; today's list is ~10 matches) —
+// fine for MMKV. On a warm start these render instantly from disk; each screen
+// still refetches in the background (stale-while-revalidate). Bump CACHE_BUSTER
+// if MatchListItem or the competition-meta shape changes.
+const PERSISTED_MATCHES_MARKERS = new Set(['season', 'upcoming']);
+
+const shouldPersistMatchQuery = (queryKey: readonly unknown[]): boolean => {
+  const [root] = queryKey;
+  if (root === 'matches') return PERSISTED_MATCHES_MARKERS.has(queryKey[3] as string);
+  if (root === 'competitions') return queryKey[2] === 'match-meta';
+  return false;
+};
 
 export const queryPersister = createSyncStoragePersister({
   storage: createMMKVStorageAdapter(appStorage),
@@ -46,7 +64,8 @@ export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
     shouldDehydrateQuery: (query) => {
       if (query.state.status !== 'success') return false;
       const root = query.queryKey[0];
-      return typeof root === 'string' && PERSISTED_QUERY_ROOTS.has(root);
+      if (typeof root === 'string' && PERSISTED_QUERY_ROOTS.has(root)) return true;
+      return shouldPersistMatchQuery(query.queryKey);
     },
   },
 };

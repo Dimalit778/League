@@ -183,9 +183,10 @@ function LeagueFilterChip({
     <Pressable
       onPress={() => onSelect(value)}
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ selected }}
       className={cn(
-        'min-h-11 justify-center rounded-full border px-4 active:opacity-80',
+        'min-h-12 justify-center rounded-full border px-4 active:opacity-80',
         selected ? 'border-primary bg-primary' : 'border-border bg-surface',
       )}
     >

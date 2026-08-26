@@ -8,12 +8,12 @@ jest.mock('@expo/vector-icons', () => ({
 describe('TermsScreen', () => {
   it('renders the terms update date', () => {
     const { getByText } = render(<LegalDocumentScreen document="terms" />);
-    expect(getByText('Last updated: August 4, 2026')).toBeTruthy();
+    expect(getByText('Last updated: August 26, 2026')).toBeTruthy();
   });
 
-  it('renders subscriptions section', () => {
+  it('renders Season Pass section', () => {
     const { getByText } = render(<LegalDocumentScreen document="terms" />);
-    expect(getByText('Subscriptions and Payments')).toBeTruthy();
+    expect(getByText('Season Pass and Payments')).toBeTruthy();
   });
 
   it('renders Apple terms section', () => {

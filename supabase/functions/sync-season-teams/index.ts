@@ -22,48 +22,7 @@ import {
 
 const JOB = "sync-season-teams";
 const COMPETITION_CODES = ["PL", "PD", "BL1", "SA", "FL1", "CL"];
-const TEAMS_BUCKET = "teams_logo";
 const CHUNK_SIZE = 500;
-
-// ── Image upload helpers (plain fetch to the crest CDN — not the rate-limited
-//    API host, so these do NOT consume the football-data budget) ─────────────
-function inferExt(url: string, ct: string | null): string {
-  const fromUrl = url.toLowerCase().match(/\.(svg|png|webp|jpe?g)(?:\?|#|$)/)?.[1];
-  if (fromUrl) return fromUrl === "jpeg" ? "jpg" : fromUrl;
-  if (ct?.includes("svg")) return "svg";
-  if (ct?.includes("webp")) return "webp";
-  if (ct?.includes("jpeg")) return "jpg";
-  return "png";
-}
-
-async function downloadImage(url: string) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Image download failed ${res.status}: ${url}`);
-  const buf = new Uint8Array(await res.arrayBuffer());
-  const ct = res.headers.get("content-type");
-  return { buf, contentType: ct ?? "application/octet-stream", ext: inferExt(url, ct) };
-}
-
-async function uploadToBucket(supabase: any, bucket: string, pathNoExt: string, payload: any): Promise<string> {
-  const path = `${pathNoExt}.${payload.ext}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, payload.buf, {
-    contentType: payload.contentType,
-    upsert: true,
-    cacheControl: "31536000",
-  });
-  if (error) throw new Error(`Storage upload failed: ${error.message}`);
-  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-}
-
-async function tryUpload(supabase: any, bucket: string, path: string, imageUrl: string, label: string): Promise<string | null> {
-  try {
-    const file = await downloadImage(imageUrl);
-    return await uploadToBucket(supabase, bucket, path, file);
-  } catch (e) {
-    console.warn(`⚠️ Failed to upload ${label}:`, e);
-    return null;
-  }
-}
 
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -114,19 +73,15 @@ Deno.serve(async (req) => {
       const rawTeams = [...teamsById.values()];
       console.info(`Found ${rawTeams.length} unique teams`);
 
-      // Logo uploads are plain image fetches — safe to parallelise.
-      const mapped = await Promise.all(
-        rawTeams.map(async (t) => ({
+      const mapped = rawTeams.map((t) => ({
           id: t.id,
           name: t.name ?? null,
           shortName: t.shortName ?? null,
           tla: t.tla ?? null,
-          logo: t.crest ? await tryUpload(supabase, TEAMS_BUCKET, String(t.id), t.crest, `team ${t.id}`) : null,
           venue: t.venue ?? null,
           clubColors: t.clubColors ?? null,
           updated_at: nowIso(),
-        })),
-      );
+        }));
 
       const { count, errors } = await bulkUpsert(supabase, "teams", mapped);
       const allErrors = [...fetchErrors, ...errors];

@@ -24,6 +24,12 @@ export default function SettingsLayout() {
         }}
       />
       <Stack.Screen
+        name="accessibility"
+        options={{
+          header: () => <NavigationHeader title={t('Accessibility')} fallbackHref="/(app)/(user)/settings" />,
+        }}
+      />
+      <Stack.Screen
         name="privacy"
         options={{
           header: () => <NavigationHeader title={t('Privacy Policy')} fallbackHref="/(app)/(user)/settings" />,

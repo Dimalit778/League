@@ -14,7 +14,7 @@ import {
 const LEADERBOARD_SELECT =
   "avatar_url, league_id, member_id, nickname, total_points, user_id";
 const COMPETITION_SELECT =
-  "id, name, area, logo, flag, type, is_free, seasons(id, competition_id, current_matchday, current_stage, total_matchdays, season_start, season_end, is_current)";
+  "id, name, area, flag, type, is_free, seasons(id, competition_id, current_matchday, current_stage, total_matchdays, season_start, season_end, is_current)";
 const MY_LEAGUES_SELECT = `
   active,
   avatar_url,
@@ -249,7 +249,7 @@ export const leagueApi = {
   async getOwnedLeagues(userId: string) {
     const { data, error } = await supabase
       .from("leagues")
-      .select("id, name, updated_at, competition:competitions(id, name, logo)")
+      .select("id, name, updated_at, competition:competitions(id, name, flag)")
       .eq("owner_id", userId)
       .order("updated_at", { ascending: false });
     if (error) throw new Error(error.message);

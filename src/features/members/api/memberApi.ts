@@ -23,7 +23,6 @@ export const memberApi = {
         id,
         name,
         code,
-        logo,
         flag,
         area
       )

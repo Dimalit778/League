@@ -20,6 +20,12 @@ const AuthLegalLinks = () => {
             {t('Terms of Service')}
           </Text>
         </Link>
+        <Text className="text-sm text-muted">·</Text>
+        <Link href="/(auth)/accessibility" asChild>
+          <Text accessibilityRole="link" className="text-sm text-muted underline">
+            {t('Accessibility Statement')}
+          </Text>
+        </Link>
       </Row>
     </View>
   );

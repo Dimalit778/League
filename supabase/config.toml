@@ -391,11 +391,17 @@ deno_version = 2
 [functions.Sync-teams]
 verify_jwt = true
 
+[functions.cleanup-retained-data]
+verify_jwt = false
+
 [functions.delete-account]
 verify_jwt = true
 
 [functions.generate-match-analysis]
 verify_jwt = false
+
+[functions.moderate-profile-image]
+verify_jwt = true
 
 [functions.revenuecat-webhook]
 verify_jwt = false

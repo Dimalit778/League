@@ -1,4 +1,5 @@
 import * as authApi from '@/features/auth/api/authApi';
+import type { LegalAcceptanceContext } from '@/features/auth/legalAcceptance';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
@@ -43,7 +44,8 @@ export const useAuthActions = () => {
   );
 
   const signUp = useCallback(
-    (email: string, password: string, fullname: string) => handleAction(authApi.signUp, email, password, fullname),
+    (email: string, password: string, fullname: string, acceptance: LegalAcceptanceContext) =>
+      handleAction(authApi.signUp, email, password, fullname, acceptance),
     [handleAction]
   );
 
@@ -87,4 +89,3 @@ export const useAuthActions = () => {
     clearError,
   };
 };
-

@@ -50,6 +50,14 @@ export default function AuthLayout() {
             gestureEnabled: true,
           }}
         />
+        <Stack.Screen
+          name="accessibility"
+          options={{
+            headerShown: true,
+            header: () => <NavigationHeader title={t('Accessibility')} fallbackHref="/(auth)" />,
+            gestureEnabled: true,
+          }}
+        />
       </Stack>
     </>
   );

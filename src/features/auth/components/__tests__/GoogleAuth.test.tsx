@@ -13,7 +13,9 @@ describe('GoogleAuth', () => {
   });
 
   it('exposes an accessible sign in label without visible text', () => {
-    const { getByLabelText, queryByText } = render(<GoogleAuth setIsLoading={jest.fn()} isLoading={false} />);
+    const { getByLabelText, queryByText } = render(
+      <GoogleAuth setIsLoading={jest.fn()} isLoading={false} mode="signIn" legalAccepted />,
+    );
     expect(getByLabelText('Sign in with Google')).toBeTruthy();
     expect(queryByText('Sign in with Google')).toBeNull();
   });
@@ -21,7 +23,9 @@ describe('GoogleAuth', () => {
   it('calls Google sign in when pressed on native', async () => {
     Object.defineProperty(Platform, 'OS', { configurable: true, get: () => 'ios' });
     const setIsLoading = jest.fn();
-    const { getByRole } = render(<GoogleAuth setIsLoading={setIsLoading} isLoading={false} />);
+    const { getByRole } = render(
+      <GoogleAuth setIsLoading={setIsLoading} isLoading={false} mode="signIn" legalAccepted />,
+    );
     fireEvent.press(getByRole('button'));
     await waitFor(() => {
       expect(GoogleSignin.signIn).toHaveBeenCalledTimes(1);
@@ -36,8 +40,19 @@ describe('GoogleAuth', () => {
       configurable: true,
       value: { origin },
     });
+    const storage = new Map<string, string>();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        setItem: (key: string, value: string) => storage.set(key, value),
+        removeItem: (key: string) => storage.delete(key),
+      },
+    });
 
-    const { getByRole } = render(<GoogleAuth setIsLoading={jest.fn()} isLoading={false} />);
+    const { getByRole } = render(
+      <GoogleAuth setIsLoading={jest.fn()} isLoading={false} mode="signIn" legalAccepted />,
+    );
     fireEvent.press(getByRole('button'));
     await waitFor(() => {
       expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
@@ -48,11 +63,38 @@ describe('GoogleAuth', () => {
     expect(GoogleSignin.signIn).not.toHaveBeenCalled();
   });
 
+  it('records server-side legal acceptance after native authentication', async () => {
+    Object.defineProperty(Platform, 'OS', { configurable: true, get: () => 'ios' });
+    const { getByRole } = render(
+      <GoogleAuth setIsLoading={jest.fn()} isLoading={false} mode="signUp" legalAccepted />,
+    );
+    fireEvent.press(getByRole('button'));
+    await waitFor(() => {
+      expect(supabase.rpc).toHaveBeenCalledWith('record_current_legal_acceptance', {
+        p_source: 'google',
+        p_auth_flow: 'sign_up',
+        p_locale: 'en',
+        p_app_version: expect.any(String),
+      });
+    });
+  });
+
   it('does not call Google sign in when loading', () => {
     Object.defineProperty(Platform, 'OS', { configurable: true, get: () => 'ios' });
-    const { getByRole } = render(<GoogleAuth setIsLoading={jest.fn()} isLoading />);
+    const { getByRole } = render(
+      <GoogleAuth setIsLoading={jest.fn()} isLoading mode="signIn" legalAccepted />,
+    );
     fireEvent.press(getByRole('button'));
     expect(GoogleSignin.signIn).not.toHaveBeenCalled();
     expect(supabase.auth.signInWithOAuth).not.toHaveBeenCalled();
+  });
+
+  it('does not start social authentication before legal acceptance', () => {
+    Object.defineProperty(Platform, 'OS', { configurable: true, get: () => 'ios' });
+    const { getByRole } = render(
+      <GoogleAuth setIsLoading={jest.fn()} isLoading={false} mode="signUp" legalAccepted={false} />,
+    );
+    fireEvent.press(getByRole('button'));
+    expect(GoogleSignin.signIn).not.toHaveBeenCalled();
   });
 });

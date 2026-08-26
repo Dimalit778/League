@@ -42,9 +42,10 @@ export const TournamentViewTabs = ({
           <Pressable
             key={option.value}
             accessibilityRole="tab"
+            accessibilityLabel={option.label}
             accessibilityState={{ selected: active }}
             onPress={() => onChange(option.value)}
-            className={cn('min-w-[104px] items-center rounded-full px-4 py-1.5', active && 'bg-muted')}
+            className={cn('min-h-12 min-w-[104px] items-center justify-center rounded-full px-4 py-1.5', active && 'bg-muted')}
           >
             <Text numberOfLines={1} className={cn('font-semibold', active ? 'text-background' : 'text-muted')}>
               {option.label}
@@ -145,6 +146,9 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
         return (
           <Pressable
             key={option.value}
+            accessibilityRole="tab"
+            accessibilityLabel={option.label}
+            accessibilityState={{ selected: active }}
             onLayout={(event) => {
               tabLayouts.current[option.value] = {
                 x: event.nativeEvent.layout.x,
@@ -153,7 +157,7 @@ export const HorizontalTabs = <T extends string>({ options, value, onChange }: H
             }}
             onPress={() => onChange(option.value)}
             className={cn(
-              'mx-1 min-w-[72px] items-center justify-center rounded-lg px-4 py-1.5',
+              'mx-1 min-h-12 min-w-[72px] items-center justify-center rounded-lg px-4 py-1.5',
               active ? 'bg-primary' : 'border border-border',
             )}
           >

@@ -14,7 +14,7 @@ export function InviteFriendsCard({ onInvite, disabled = false }: Props) {
   const { t } = useTranslation();
 
   return (
-    <Card padding="md" variant="outline" contentClassName="gap-4">
+    <Card padding="md" variant="soft" contentClassName="gap-4">
       <Row className="gap-4">
         <View
           className="h-14 w-14 items-center justify-center rounded-2xl"

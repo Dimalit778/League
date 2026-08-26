@@ -11,7 +11,6 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
       {
         id: 1,
         name: 'Premier League',
-        logo: 'https://example.com/pl.png',
         flag: 'https://example.com/gb.png',
         area: 'England',
         is_free: true,
@@ -19,7 +18,6 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
       {
         id: 2,
         name: 'La Liga',
-        logo: 'https://example.com/ll.png',
         flag: 'https://example.com/es.png',
         area: 'Spain',
         is_free: false,
@@ -27,7 +25,6 @@ jest.mock('@/features/leagues/hooks/useCompetition', () => ({
       {
         id: 1_000,
         name: 'World Cup',
-        logo: 'https://example.com/wc.png',
         flag: 'https://example.com/un.png',
         area: 'World',
         is_free: true,

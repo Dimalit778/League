@@ -15,7 +15,7 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
       name: 'My League',
       owner_id: 'owner-user-1',
       join_code: 'ABC123',
-      competition: { name: 'Premier League', area: 'England', logo: '' },
+      competition: { name: 'Premier League', area: 'England', flag: '' },
       league_members: [
         { id: 'm1', user_id: 'owner-user-1', nickname: 'Owner', avatar_url: null },
         { id: 'm2', user_id: 'other-user-2', nickname: 'Member', avatar_url: null },

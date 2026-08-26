@@ -3,7 +3,7 @@ import { Button, CollapsibleHeader, Error, Text } from '@/components';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
 import { CollapsedHeader, PersistentHeaderAction } from '@/features/members/components/profile/Header';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
-import { ProfileHeroCard } from '@/features/members/components/profile/ProfileHeroCard';
+import { ProfileImageCard } from '@/features/members/components/profile/ProfileImageCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
 import { ProfileSkeleton } from '@/features/members/components/ProfileSkeleton';
 import { Achievements } from '@/features/members/components/stats/Achievement';
@@ -60,7 +60,7 @@ const ProfileScreen = () => {
       backgroundImage={images.stadium}
     >
       <View className={cn(spacing.section)}>
-        <ProfileHeroCard />
+        <ProfileImageCard />
         <ProfileNicknameEdit initialNickname={member.nickname} />
 
         <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />

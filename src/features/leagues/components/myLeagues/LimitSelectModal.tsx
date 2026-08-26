@@ -23,7 +23,7 @@ const LeagueCard = ({ league, selected, proLocked }: { league: MyLeague; selecte
   return (
     <View className="flex-row  gap-3">
       <View className="overflow-hidden rounded-md">
-        <LogoBadge source={{ uri: league.league.competition?.logo }} width={48} height={48} />
+        <LogoBadge source={{ uri: league.league.competition?.flag ?? '' }} width={48} height={48} />
       </View>
 
       <View className="min-w-0 flex-1">
@@ -86,7 +86,9 @@ const ModalHeader = ({ maxLeagues, selectedCount, onUpgrade }: ModalHeaderProps)
         </View>
         <Pressable
           onPress={onUpgrade}
-          className="flex-row items-center gap-2 rounded-lg border border-primary px-3 py-2"
+          accessibilityRole="button"
+          accessibilityLabel={t('Upgrade')}
+          className="min-h-12 flex-row items-center gap-2 rounded-lg border border-primary px-3 py-2"
         >
           <Text className="font-bold text-primary">{t('Upgrade')}</Text>
           <ChevronRight size={18} color={theme.colors.primary} />
@@ -111,6 +113,9 @@ function LimitLeagueRow({ league, selected, selectedCount, maxLeagues, onToggleL
     <Pressable
       onPress={() => onToggleLeague(league.id)}
       disabled={cannotSelect}
+      accessibilityRole="checkbox"
+      accessibilityLabel={`${league.league.name}, ${league.nickname}`}
+      accessibilityState={{ checked: selected, disabled: cannotSelect }}
       className={`rounded-xl border bg-surface p-4 ${selected ? 'border-primary' : 'border-border'} ${
         cannotSelect || !league.active ? 'opacity-50' : ''
       }`}

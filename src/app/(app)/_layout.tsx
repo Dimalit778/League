@@ -1,10 +1,11 @@
+import { LoadingBall } from '@/components';
 import { useIsAdmin } from '@/features/admin/hooks/useAdmin';
 import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function AppLayout() {
   const { isLoggedIn, isAuthLoading } = useAuth();
@@ -16,7 +17,12 @@ export default function AppLayout() {
 
   const loading = usePrimaryLeagueStore((s) => s.loading);
   const initializePrimaryLeague = usePrimaryLeagueStore((s) => s.initializePrimaryLeague);
-  const { data: isAdminUser = false, isLoading: isAdminLoading, error: adminError } = useIsAdmin();
+  // Admin status only guards the `admin` screen below, so it must NOT block
+  // startup. Resolving it in the background (defaulting to non-admin) keeps the
+  // `is_admin` network call off the critical path — otherwise every launch,
+  // even a warm one with a persisted primary league, waits on it behind a
+  // full-screen spinner.
+  const { data: isAdminUser = false, error: adminError } = useIsAdmin();
 
   useEffect(() => {
     if (!isAuthLoading && isLoggedIn) {
@@ -30,10 +36,10 @@ export default function AppLayout() {
     }
   }, [adminError]);
 
-  if (isAuthLoading || loading || isAdminLoading) {
+  if (isAuthLoading || loading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color={'#fff'} />
+        <LoadingBall />
       </View>
     );
   }

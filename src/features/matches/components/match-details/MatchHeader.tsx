@@ -6,6 +6,8 @@ import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import PredictionForm from '@/features/predictions/components/PredictionForm';
+import { dateFormat } from '@/utils/formats';
+import { Calendar } from 'lucide-react-native';
 import { MatchHeroBackground } from './effects/MatchHeroBackground';
 
 type MatchHeroProps = {
@@ -16,27 +18,30 @@ type MatchHeroProps = {
   gradientColors: readonly [string, string, string, string];
 };
 
-const HeroMeta = ({ name, matchday }: { name?: string; matchday?: number | null }) => {
+const HeroMeta = ({ name, matchday, date }: { name?: string; matchday?: number | null; date: string }) => {
   const { t } = useTranslation();
 
   return (
-    <View className="w-full justify-center ">
-      <View className="absolute  z-10">
-        <BackButton variant="onImage" />
-      </View>
+    <View className="w-full flex-row items-center justify-between">
+      <BackButton variant="onImage" />
 
-      <View className="items-center justify-center px-16" pointerEvents="none">
-        {name ? (
-          <Text variant="subtitle" numberOfLines={1} className=" text-white">
-            {name}
-          </Text>
-        ) : null}
+      <View className="items-center ">
+        <Text variant="subtitle" numberOfLines={1} className=" text-white">
+          {name}
+        </Text>
 
         {matchday ? (
           <Text variant="label" className="text-gray-400">
             {`${t('Matchday')} ${matchday}`}
           </Text>
         ) : null}
+      </View>
+
+      <View className="flex-row items-center gap-1">
+        <Text variant="label" className="text-gray-400">
+          {dateFormat(date)}
+        </Text>
+        <Calendar size={14} color="gray" />
       </View>
     </View>
   );
@@ -112,13 +117,13 @@ export default function MatchHeader({
 
   const heroHeight = presentation.canPredict
     ? Math.min(height * 0.4, Math.max(height * 0.52 + fontScaleExtra, isTablet ? 400 : 340))
-    : Math.min(height * 0.35, Math.max(height * 0.5 + fontScaleExtra, isTablet ? 360 : 260));
+    : Math.min(height * 0.31, Math.max(height * 0.31 + fontScaleExtra, isTablet ? 360 : 260));
 
   return (
     <View style={{ minHeight: heroHeight }}>
       <MatchHeroBackground gradientColors={gradientColors} />
       <View className="flex-1" style={{ paddingTop: insets.top, paddingHorizontal: 16 }}>
-        <HeroMeta name={match.competition?.name} matchday={match.fixture} />
+        <HeroMeta name={match.competition?.name} matchday={match.fixture} date={match.kick_off} />
         <View className="flex-1 justify-center gap-4">
           <View className="flex-row items-center justify-around">
             <Team team={match.home_team} badgeSize={badgeSize} />

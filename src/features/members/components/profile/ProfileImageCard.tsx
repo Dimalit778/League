@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useDeleteMemberImage, useUploadMemberImage } from '../../hooks/useMembers';
 
-export function ProfileHeroCard() {
+export function ProfileImageCard() {
   const { t } = useTranslation();
   const { showAlert } = useAlert();
   const memberId = useMemberId();
@@ -34,8 +34,6 @@ export function ProfileHeroCard() {
 
   const handleImagePicker = async () => {
     try {
-      // iOS 15.4+ and modern Android use the system photo picker, which lets
-      // the user choose a single image without granting broad library access.
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -48,7 +46,8 @@ export function ProfileHeroCard() {
         setPreviewImage(result.assets[0].uri);
         setPickedAsset(result.assets[0]);
       }
-    } catch {
+    } catch (error) {
+      console.error('pick image failed', error);
       showAlert({
         title: t('Error'),
         message: t('Failed to pick image'),
@@ -69,13 +68,27 @@ export function ProfileHeroCard() {
 
     try {
       const data = await uploadImage.mutateAsync({ memberId, avatarUrl: pickedAsset });
+      console.log('uploadImage result', JSON.stringify(data, null, 2));
       setImage(data?.avatar_url ?? null);
       setPreviewImage(null);
       setPickedAsset(null);
-    } catch {
+    } catch (error) {
+      console.error('upload image failed', error);
+      let message = t('Failed to upload image');
+      if (
+        error instanceof Error &&
+        error.message === 'This image appears to violate our content guidelines and was not saved.'
+      ) {
+        message = t('This image appears to violate our content guidelines and was not saved.');
+      } else if (
+        error instanceof Error &&
+        error.message === 'The monthly image moderation limit has been reached. Please try again next month.'
+      ) {
+        message = t('The monthly image moderation limit has been reached. Please try again next month.');
+      }
       showAlert({
         title: t('Error'),
-        message: t('Failed to upload image'),
+        message,
         type: 'warning',
         buttons: [{ text: t('OK') }],
       });

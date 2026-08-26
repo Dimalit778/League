@@ -3,7 +3,7 @@ import { setColorAlpha } from '@/lib/color';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type AccessibilityRole, type StyleProp, type ViewStyle } from 'react-native';
 
 export type GlassCardPadding = 'none' | 'sm' | 'md' | 'lg';
 export type GlassCardVariant = 'default' | 'primary';
@@ -52,6 +52,9 @@ type GlassCardProps = {
   variant?: GlassCardVariant;
   className?: string;
   onPress?: () => void;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityRole?: AccessibilityRole;
   fill?: boolean;
 };
 
@@ -64,6 +67,9 @@ export function GlassCard({
   padding = 'sm',
   variant = 'default',
   onPress,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole = 'button',
   fill = false,
 }: GlassCardProps) {
   const { theme, colors, radius, spacing } = useThemeTokens();
@@ -142,6 +148,9 @@ export function GlassCard({
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole={accessibilityRole}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
         style={({ pressed }) => [
           styles.fill,
           fill && styles.fillAvailable,

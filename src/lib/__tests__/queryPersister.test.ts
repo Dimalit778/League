@@ -18,9 +18,17 @@ describe('queryPersister shouldDehydrateQuery', () => {
     expect(shouldDehydrate(makeQuery(KEYS.subscription.access('u1')))).toBe(true);
   });
 
-  it('never persists the heavy caches (matches, predictions)', () => {
-    expect(shouldDehydrate(makeQuery(KEYS.matches.season(1, 2, 'm1')))).toBe(false);
+  it('persists the cold-start match entries (season + today + meta)', () => {
+    expect(shouldDehydrate(makeQuery(KEYS.matches.season(1, 2, 'm1')))).toBe(true);
+    expect(shouldDehydrate(makeQuery(KEYS.matches.upcoming(1, 2, 'm1')))).toBe(true);
+    expect(shouldDehydrate(makeQuery(KEYS.competitions.matchMeta(1)))).toBe(true);
+  });
+
+  it('never persists the other heavy caches (match detail, predictions, ai)', () => {
+    expect(shouldDehydrate(makeQuery(KEYS.matches.withPredictions('l1', 99)))).toBe(false);
+    expect(shouldDehydrate(makeQuery(KEYS.matches.aiSummary(99)))).toBe(false);
     expect(shouldDehydrate(makeQuery(KEYS.predictions.byMember('m1')))).toBe(false);
+    expect(shouldDehydrate(makeQuery(KEYS.competitions.all))).toBe(false);
     expect(shouldDehydrate(makeQuery(KEYS.admin.dashboard))).toBe(false);
   });
 

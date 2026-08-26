@@ -23,24 +23,26 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
       {/* Left side: position + avatar + nickname */}
       <View className="flex-row items-center gap-3 flex-1">
         {/* Position pill */}
-        <View className="w-7 h-7 rounded-full border border-border items-center justify-center">
-          <Text className="text-xs text-info">{index}</Text>
+        <View className="w-7 h-7 rounded-md border border-border items-center justify-center bg-border">
+          <Text variant="body" className="text-info font-bold">
+            {index}
+          </Text>
         </View>
 
         {/* Avatar */}
-        <View className="w-10 h-10">
+        <View className="w-14 h-14">
           <AvatarImage path={item.league_member?.avatar_url} nickname={item.league_member?.nickname} />
         </View>
 
         {/* Nickname */}
-        <Text className={`text-sm font-semibold ${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
+        <Text variant="body" className={`${currentMember ? 'text-primary' : 'text-text'}`} numberOfLines={1}>
           {item.league_member?.nickname}
         </Text>
       </View>
 
       {/* Middle: prediction */}
       <View className="px-2 py-1 rounded-xl border border-border mx-4 ">
-        <Text className="text-xs text-text">
+        <Text variant="body" className="text-text">
           {item.home_score ?? '-'} - {item.away_score ?? '-'}
         </Text>
       </View>
@@ -53,7 +55,8 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
         }}
       >
         <Text
-          className="text-xs font-bold"
+          variant="label"
+          className="font-bold"
           style={{
             color: borderColor,
           }}
@@ -72,15 +75,9 @@ export default function PredictionRank({ predictions }: { predictions: MemberPre
   return (
     <View className="flex-1 p-4 md:px-10 ">
       <View className="flex-row px-1 gap-3 py-2  ">
-        <Text className="font-semibold text-sm flex-1 text-text text-left">
-          {t('Player')}
-        </Text>
-        <Text className="font-semibold text-sm text-text text-center">
-          {t('Prediction')}
-        </Text>
-        <Text className="font-semibold text-sm text-text text-center">
-          {t('Points')}
-        </Text>
+        <Text className="font-semibold text-sm flex-1 text-text text-left">{t('Player')}</Text>
+        <Text className="font-semibold text-sm text-text text-center">{t('Prediction')}</Text>
+        <Text className="font-semibold text-sm text-text text-center">{t('Points')}</Text>
       </View>
       <FlatList
         data={predictions}
@@ -92,9 +89,7 @@ export default function PredictionRank({ predictions }: { predictions: MemberPre
         }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center mt-16">
-            <Text className="font-semibold text-sm text-center text-muted">
-              {t('No predictions')}
-            </Text>
+            <Text className="font-semibold text-sm text-center text-muted">{t('No predictions')}</Text>
           </View>
         }
         showsVerticalScrollIndicator={false}

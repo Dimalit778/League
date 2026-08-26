@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -63,7 +63,6 @@ export type Database = {
           flag: string | null
           id: number
           is_free: boolean
-          logo: string
           name: string
           type: string
           updated_at: string
@@ -75,7 +74,6 @@ export type Database = {
           flag?: string | null
           id: number
           is_free?: boolean
-          logo: string
           name: string
           type: string
           updated_at?: string
@@ -87,7 +85,6 @@ export type Database = {
           flag?: string | null
           id?: number
           is_free?: boolean
-          logo?: string
           name?: string
           type?: string
           updated_at?: string
@@ -377,6 +374,42 @@ export type Database = {
           },
         ]
       }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          app_version: string
+          auth_flow: string
+          id: number
+          locale: string
+          privacy_version: string
+          source: string
+          terms_version: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          app_version: string
+          auth_flow: string
+          id?: never
+          locale: string
+          privacy_version: string
+          source: string
+          terms_version: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          app_version?: string
+          auth_flow?: string
+          id?: never
+          locale?: string
+          privacy_version?: string
+          source?: string
+          terms_version?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           ai_generated_at: string | null
@@ -577,6 +610,24 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_image_moderation_monthly_usage: {
+        Row: {
+          calls: number
+          month_start: string
+          updated_at: string
+        }
+        Insert: {
+          calls?: number
+          month_start: string
+          updated_at?: string
+        }
+        Update: {
+          calls?: number
+          month_start?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       revenuecat_events: {
         Row: {
           app_user_id: string | null
@@ -752,7 +803,6 @@ export type Database = {
           clubColors: string | null
           created_at: string
           id: number
-          logo: string
           name: string
           shortName: string | null
           tla: string | null
@@ -763,7 +813,6 @@ export type Database = {
           clubColors?: string | null
           created_at?: string
           id: number
-          logo: string
           name: string
           shortName?: string | null
           tla?: string | null
@@ -774,7 +823,6 @@ export type Database = {
           clubColors?: string | null
           created_at?: string
           id?: number
-          logo?: string
           name?: string
           shortName?: string | null
           tla?: string | null
@@ -991,7 +1039,6 @@ export type Database = {
           p_current_stage?: string
           p_flag: string
           p_id: number
-          p_logo: string
           p_name: string
           p_season_id?: number
           p_type?: string
@@ -1003,7 +1050,6 @@ export type Database = {
           flag: string | null
           id: number
           is_free: boolean
-          logo: string
           name: string
           type: string
           updated_at: string
@@ -1028,6 +1074,7 @@ export type Database = {
         Args: { p_calls: number; p_job?: string; p_limit?: number }
         Returns: boolean
       }
+      consume_profile_image_moderation_budget: { Args: never; Returns: boolean }
       consume_subscription_sync_attempt: {
         Args: { p_cooldown_seconds?: number; p_user_id: string }
         Returns: boolean
@@ -1052,7 +1099,6 @@ export type Database = {
         Returns: {
           competition_area: string
           competition_flag: string
-          competition_logo: string
           competition_name: string
           league_id: string
           league_name: string
@@ -1141,6 +1187,31 @@ export type Database = {
         Returns: Json
       }
       normalize_ugc_for_filter: { Args: { p_value: string }; Returns: string }
+      record_current_legal_acceptance: {
+        Args: {
+          p_app_version: string
+          p_auth_flow: string
+          p_locale: string
+          p_source: string
+        }
+        Returns: {
+          accepted_at: string
+          app_version: string
+          auth_flow: string
+          id: number
+          locale: string
+          privacy_version: string
+          source: string
+          terms_version: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "legal_acceptances"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       release_sync_lock: {
         Args: { p_job: string; p_status?: string }
         Returns: undefined

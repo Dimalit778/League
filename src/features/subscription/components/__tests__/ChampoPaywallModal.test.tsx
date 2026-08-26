@@ -63,6 +63,8 @@ describe('PaywallModal', () => {
     expect(getByText('Football competitions')).toBeTruthy();
     expect(getByText('Members per league')).toBeTruthy();
     expect(getByText('AI match insights')).toBeTruthy();
+    expect(getByRole('link', { name: 'Terms of Service' })).toBeTruthy();
+    expect(getByRole('link', { name: 'Privacy Policy' })).toBeTruthy();
     expect(mockedPurchases.getOfferings).toHaveBeenCalled();
   });
 

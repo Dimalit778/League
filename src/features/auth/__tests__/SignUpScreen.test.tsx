@@ -47,6 +47,7 @@ describe('SignUpScreen', () => {
     const { getByText, getByRole } = render(<SignUpScreen />);
 
     expect(getByText('Terms of Service')).toBeTruthy();
+    expect(getByText('Privacy Policy')).toBeTruthy();
     expect(getByRole('checkbox')).toBeTruthy();
   });
 

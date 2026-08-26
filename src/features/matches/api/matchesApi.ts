@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { prefetchMatchTeamLogos } from "@/utils/prefetchTeamLogos";
 import {
   AiSummaryType,
   MatchDetails,
@@ -13,7 +12,6 @@ const TEAM_LIST_FIELDS = `
   id,
   shortName,
   name,
-  logo,
   tla,
   "clubColors"
 `;
@@ -112,7 +110,6 @@ export const matchesApi = {
     if (error) throw error;
 
     if (!data) throw new Error("Match not found");
-    void prefetchMatchTeamLogos([data]);
     return data;
   },
 
@@ -173,7 +170,6 @@ export const matchesApi = {
 
     const matches = mapMatchCardData(data);
 
-    void prefetchMatchTeamLogos(matches);
     return matches;
   },
 
@@ -193,7 +189,6 @@ export const matchesApi = {
     if (error) throw error;
 
     const matches = mapMatchCardData(data);
-    void prefetchMatchTeamLogos(matches);
     return matches;
   },
   async getTodayMatches(
@@ -221,8 +216,6 @@ export const matchesApi = {
     if (!data) return [];
 
     const matches = mapMatchCardData(data);
-    void prefetchMatchTeamLogos(matches);
-
     return matches;
   },
 };

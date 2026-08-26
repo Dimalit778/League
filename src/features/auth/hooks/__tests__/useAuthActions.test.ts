@@ -21,6 +21,15 @@ jest.mock('@tanstack/react-query', () => ({
 }));
 
 const mockAuthApi = authApi as jest.Mocked<typeof authApi>;
+const acceptance = {
+  accepted: true,
+  termsVersion: '2026-08-04',
+  privacyVersion: '2026-08-26.2',
+  source: 'email',
+  authFlow: 'sign_up',
+  locale: 'en',
+  appVersion: '1.0.0',
+} as const;
 
 describe('useAuthActions', () => {
   beforeEach(() => {
@@ -36,11 +45,11 @@ describe('useAuthActions', () => {
     expect(result.current.errorMessage).toBe(null);
 
     await act(async () => {
-      const response = await result.current.signUp('test@example.com', 'password123', 'Test User');
+      const response = await result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
       expect(response.success).toBe(true);
     });
 
-    expect(mockAuthApi.signUp).toHaveBeenCalledWith('test@example.com', 'password123', 'Test User');
+    expect(mockAuthApi.signUp).toHaveBeenCalledWith('test@example.com', 'password123', 'Test User', acceptance);
     expect(result.current.isLoading).toBe(false);
   });
 
@@ -51,7 +60,7 @@ describe('useAuthActions', () => {
     const { result } = renderHook(() => useAuthActions());
 
     await act(async () => {
-      const response = await result.current.signUp('test@example.com', 'password123', 'Test User');
+      const response = await result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
       expect(response.success).toBe(false);
     });
 
@@ -97,7 +106,7 @@ describe('useAuthActions', () => {
 
     // Start the async action
     act(() => {
-      result.current.signUp('test@example.com', 'password123', 'Test User');
+      result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
     });
 
     // Should be loading now

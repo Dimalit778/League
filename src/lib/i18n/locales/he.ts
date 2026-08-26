@@ -51,6 +51,9 @@ export const he = {
     "Privacy Policy": "מדיניות פרטיות",
     "Terms of Service": "תנאי שימוש",
     "I agree to the": "אני מסכים ל",
+    "and acknowledge the": "ומאשר שקראתי את",
+    "Accept Terms of Service and acknowledge Privacy Policy":
+      "אישור תנאי השימוש ומדיניות הפרטיות",
     "Terms": "תנאי שימוש",
     "Privacy": "פרטיות",
   },
@@ -60,6 +63,7 @@ export const he = {
     "Sign In": "התחבר",
     "Sign In Error": "שגיאה בהתחברות",
     "Sign Up": "הירשם",
+    "Sign up with Google": "הרשמה עם Google",
     "Sign Out": "התנתק",
     "Apple sign in failed. Please try again.":
       "ההתחברות באמצעות Apple נכשלה. נסו שוב.",
@@ -310,6 +314,8 @@ export const he = {
     Profile: "פרופיל",
     Me: "שלי",
     Settings: "הגדרות",
+    Accessibility: "נגישות",
+    "Accessibility Statement": "הצהרת נגישות",
     "Leave League": "עזוב ליגה",
     "Are you sure you want to leave this league?":
       "האם אתה בטוח שברצונך לצאת מהליגה ?",
@@ -347,6 +353,8 @@ export const he = {
     "Failed to upload image": "שגיאה בהעלאת תמונה",
 
     Theme: "ערכת עיצוב",
+    "Switch to light theme": "מעבר לערכת עיצוב בהירה",
+    "Switch to dark theme": "מעבר לערכת עיצוב כהה",
     Language: "שפה",
     "Delete Account": "מחיקת חשבון",
 
@@ -432,6 +440,8 @@ export const he = {
     Version: "גרסה",
     Platform: "פלטפורמה",
     "iOS & Android": "iOS ו-Android",
+    "Football data provided by the Football-Data.org API":
+      "נתוני הכדורגל מסופקים על ידי Football-Data.org API",
     "Thank you for using League! We're constantly working to improve your experience.":
       "תודה על השימוש בליגה! אנחנו עובדים כל הזמן כדי לשפר את החוויה שלך.",
   },
@@ -484,6 +494,10 @@ export const he = {
   moderation: {
     Nickname: "כינוי",
     "Profile photo": "תמונת פרופיל",
+    "This image appears to violate our content guidelines and was not saved.":
+      "נראה שהתמונה מפרה את כללי התוכן שלנו ולכן היא לא נשמרה.",
+    "The monthly image moderation limit has been reached. Please try again next month.":
+      "מכסת בדיקות התמונות החודשית נוצלה. אפשר לנסות שוב בחודש הבא.",
     "Report content": "דיווח על תוכן",
     "Choose a reason for this report.": "בחר סיבה לדיווח.",
     "Report submitted": "הדיווח נשלח",
@@ -654,8 +668,6 @@ export const he = {
     Code: "קוד",
     "Type (optional)": "סוג (אופציונלי)",
     "Display Type": "סוג תצוגה",
-    "ID, name, area, code, flag and logo are required.":
-      "יש למלא מזהה, שם, אזור, קוד, דגל ולוגו.",
     "Failed to add competition.": "הוספת התחרות נכשלה.",
     Season: "עונה",
     "Season (optional)": "עונה (אופציונלי)",
@@ -664,7 +676,6 @@ export const he = {
 
     "ID:": "מזהה:",
     "Flag URL": "כתובת תמונת הדגל",
-    "Logo URL": "כתובת תמונת הלוגו",
     Football: "כדורגל",
     Showing: "מוצג",
     Validation: "אימות",
@@ -933,6 +944,9 @@ export const he = {
     "{{name}}, position {{position}}, {{points}} points":
       "{{name}}, מקום {{position}}, {{points}} נקודות",
     "My leagues": "הליגות שלי",
+    "Fixture {{number}}": "מחזור {{number}}",
+    "View {{name}} profile": "צפייה בפרופיל של {{name}}",
+    "{{home}} versus {{away}}, {{status}}": "{{home}} נגד {{away}}, {{status}}",
     "Verification code digit {{number}}": "ספרה {{number}} בקוד האימות",
     "Enter a single digit": "הזינו ספרה אחת",
     "Resend verification code": "שליחה מחדש של קוד האימות",

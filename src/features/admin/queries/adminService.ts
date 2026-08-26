@@ -13,7 +13,6 @@ export type CreateCompetitionInput = {
   area: string;
   code: string;
   flag: string;
-  logo: string;
   type: string;
   seasonId?: number | null;
   currentStage?: string | null;
@@ -130,6 +129,20 @@ export const adminService = {
 
     if (error) throw new Error(error.message);
     if (!data) throw new Error('Failed to moderate report');
+
+    // Delete the offending avatar file from storage after the DB detaches it.
+    // The bucket policy allows admins to remove any profile image. Best-effort:
+    // a failed cleanup must not fail an otherwise-successful moderation action.
+    const removedAvatarPath = (data as { removed_avatar_path?: string | null })?.removed_avatar_path;
+    if (removedAvatarPath) {
+      const { error: storageError } = await supabase.storage
+        .from('profile_images')
+        .remove([removedAvatarPath]);
+      if (storageError) {
+        console.warn('Failed to delete moderated avatar from storage', storageError.message);
+      }
+    }
+
     return data;
   },
 
@@ -265,7 +278,6 @@ export const adminService = {
       p_area: competition.area,
       p_code: competition.code,
       p_flag: competition.flag,
-      p_logo: competition.logo,
       p_type: competition.type,
       p_season_id: competition.seasonId ?? undefined,
       p_current_stage: competition.currentStage ?? undefined,

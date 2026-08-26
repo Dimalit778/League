@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useThemeStore } from '@/store/ThemeStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import Feather from '@expo/vector-icons/Feather';
 import { memo, useEffect } from 'react';
 import { type LayoutChangeEvent, Pressable, View } from 'react-native';
@@ -22,6 +23,7 @@ const ACTIVE_ICON_COLOR = '#FFFFFF';
 const ThemeToggle = () => {
   const theme = useThemeStore((state) => state.theme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
+  const { t } = useTranslation();
   const isDark = theme === 'dark';
 
   const progress = useSharedValue(isDark ? 1 : 0);
@@ -42,10 +44,10 @@ const ThemeToggle = () => {
   return (
     <Pressable
       onPress={toggleTheme}
-      className="rounded-full bg-subtle p-0.5"
+      className="min-h-12 rounded-full bg-subtle p-1.5"
       style={{ direction: 'ltr' }}
       accessible={true}
-      accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+      accessibilityLabel={t(isDark ? 'Switch to light theme' : 'Switch to dark theme')}
       accessibilityRole="switch"
       accessibilityState={{ checked: isDark }}
     >

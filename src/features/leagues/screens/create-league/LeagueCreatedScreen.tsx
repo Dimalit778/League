@@ -61,7 +61,7 @@ const LeagueCreatedScreen = () => {
 
       <Card>
         <View className="items-center  gap-4">
-          <LogoBadge source={{ uri: leagueData?.competition?.logo as string }} width={84} height={84} />
+          <LogoBadge source={{ uri: leagueData?.competition?.flag ?? '' }} width={84} height={84} />
 
           <Text variant="header">{leagueData?.name}</Text>
         </View>

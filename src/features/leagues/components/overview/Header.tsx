@@ -34,13 +34,16 @@ export const ExpandedHeader = ({ nickname = 'there' }: { nickname?: string }) =>
   );
 };
 
-export const PersistentHeaderActions = ({ logoUrl }: { logoUrl: string }) => {
+export const PersistentHeaderActions = ({ flagUrl }: { flagUrl: string }) => {
   const { colors } = useThemeTokens();
+  const { t } = useTranslation();
 
   return (
     <Row className="justify-between px-4">
-      <LogoBadge source={logoUrl} width={40} height={40} className="rounded-full" />
+      <LogoBadge source={flagUrl} width={40} height={40} className="rounded-full" />
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('My leagues')}
         hitSlop={10}
         className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70"
         style={{ width: 40, height: 40 }}

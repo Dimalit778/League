@@ -170,15 +170,17 @@ jest.mock('@/providers/LanguageProvider', () => ({
   LanguageProvider: ({ children }: any) => children,
 }));
 
-jest.mock('@/store/LanguageStore', () => ({
-  useLanguageStore: (selector: any) =>
-    selector({
+jest.mock('@/store/LanguageStore', () => {
+  const state = {
       language: 'en',
       setLanguage: jest.fn(),
       toggleLanguage: jest.fn(),
       initializeLanguage: jest.fn(),
-    }),
-}));
+  };
+  const useLanguageStore = (selector: any) => selector(state);
+  useLanguageStore.getState = () => state;
+  return { useLanguageStore };
+});
 
 const createMockMMKV = () => {
   const store = new Map<string, string>();
@@ -459,14 +461,17 @@ jest.mock('@react-native-google-signin/google-signin', () => ({
     hasPlayServices: jest.fn(() => Promise.resolve(true)),
     signIn: jest.fn(() =>
       Promise.resolve({
-        user: {
-          id: 'test-id',
-          name: 'Test User',
-          email: 'test@example.com',
-          photo: null,
+        type: 'success',
+        data: {
+          user: {
+            id: 'test-id',
+            name: 'Test User',
+            email: 'test@example.com',
+            photo: null,
+          },
+          idToken: 'mock-id-token',
+          serverAuthCode: 'mock-server-auth-code',
         },
-        idToken: 'mock-id-token',
-        serverAuthCode: 'mock-server-auth-code',
       })
     ),
     signOut: jest.fn(() => Promise.resolve()),

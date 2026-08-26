@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { legalContent } from '../content/legalContent';
 
 type LegalDocumentScreenProps = {
-  document: 'privacy' | 'terms';
+  document: 'privacy' | 'terms' | 'accessibility';
 };
 
 const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
@@ -31,7 +31,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
                 {index + 1}
               </Text>
             </View>
-            <Text variant="subtitle" className="min-w-0 flex-1 pt-0.5">
+            <Text accessibilityRole="header" variant="subtitle" className="min-w-0 flex-1 pt-0.5">
               {section.title}
             </Text>
           </Row>
