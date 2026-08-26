@@ -809,9 +809,6 @@ export const en = {
   notifications: {
     Notifications: "Notifications",
     "No notifications yet": "No notifications yet",
-    "Match starts soon": "Match starts soon",
-    "match-reminder-body":
-      "{{home}} vs {{away}} starts soon, enter your prediction for the match",
   },
   aiAnalysis: {
     "AI analysis is available on match day": "AI analysis is available on match day",

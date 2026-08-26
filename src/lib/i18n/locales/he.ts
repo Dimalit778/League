@@ -808,9 +808,6 @@ export const he = {
   notifications: {
     Notifications: "התראות",
     "No notifications yet": "אין התראות עדיין",
-    "Match starts soon": "המשחק מתחיל בקרוב",
-    "match-reminder-body":
-      "{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק",
   },
   aiAnalysis: {
     "AI analysis is available on match day": "ניתוח ה־AI זמין ביום המשחק",

@@ -100,7 +100,7 @@ export const legalContent: Record<
           title: 'Your Choices',
           body: [
             'You can update profile details in the app where supported.',
-            'You may optionally enable local match reminders after reviewing an in-app explanation. You can change notification permission at any time in your device settings.',
+            'You may optionally enable match reminders after reviewing an in-app explanation. You can change notification permission at any time in your device settings.',
             'Where consent is required, you may withdraw it by changing device permissions, app settings, or contacting us.',
           ],
         },
@@ -362,7 +362,7 @@ export const legalContent: Record<
           title: 'הבחירות שלך',
           body: [
             'ניתן לעדכן פרטי פרופיל באפליקציה במקומות שבהם הדבר נתמך.',
-            'ניתן להפעיל תזכורות מקומיות למשחקים לאחר הצגת הסבר באפליקציה. אפשר לשנות את הרשאת ההתראות בכל עת בהגדרות המכשיר.',
+            'ניתן להפעיל תזכורות למשחקים לאחר הצגת הסבר באפליקציה. אפשר לשנות את הרשאת ההתראות בכל עת בהגדרות המכשיר.',
             'כאשר נדרשת הסכמה, ניתן למשוך אותה באמצעות שינוי הרשאות מכשיר, הגדרות באפליקציה או פנייה אלינו.',
           ],
         },
