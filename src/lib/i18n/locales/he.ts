@@ -50,8 +50,6 @@ export const he = {
     "I agree to the": "אני מסכים לתנאי",
     "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים לתנאי",
     "and acknowledge the": "ומאשר שקראתי את",
-    "Accept Terms of Service and acknowledge Privacy Policy":
-      "אישור תנאי השימוש והכרה במדיניות הפרטיות",
     "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
       "אישור גיל 13 ומעלה, תנאי השימוש ומדיניות הפרטיות",
     "Terms": "תנאי שימוש",
@@ -107,9 +105,7 @@ export const he = {
     "Sign in with Google": "התחברות עם Google",
     "Sign in with Apple": "התחברות עם Apple",
     "Sign up with Apple": "הרשמה עם Apple",
-    "Full Name": "שם מלא",
     "Welcome Back": "ברוכים השבים",
-    "Welcome to League": "ברוכים הבאים לליגה",
     "Get Started": "מתחילים",
     "Every match is a challenge": "כל משחק הוא אתגר",
     "Predict scores, compete with friends, and climb the table.":
@@ -134,9 +130,6 @@ export const he = {
     "Password is required": "יש להזין סיסמה",
     "Please enter a valid email address": "יש להזין כתובת דוא״ל תקינה",
     "New Password": "סיסמה חדשה",
-    "Full name must be at least 3 characters":
-      "השם המלא חייב להכיל לפחות 3 תווים",
-    "Full name is required": "יש להזין שם מלא",
     "Failed to sign out": "שגיאה ביציאה",
     "Failed to update password": "שגיאה בעדכון סיסמה",
   },
@@ -377,7 +370,6 @@ export const he = {
     "Contact Support": "יצירת קשר עם התמיכה",
     "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
       "עדיין יש שאלות? צוות התמיכה כאן כדי לעזור. פנו אלינו ונחזור בהקדם האפשרי.",
-    "Email Support": "תמיכה בדוא״ל",
     "App Information": "מידע על האפליקציה",
     Version: "גרסה",
     Platform: "פלטפורמה",
@@ -854,7 +846,6 @@ export const he = {
     pts: "נק׳",
     "{{name}}, position {{position}}, {{points}} points":
       "{{name}}, מקום {{position}}, {{points}} נקודות",
-    "My leagues": "הליגות שלי",
     "Fixture {{number}}": "מחזור {{number}}",
     "View {{name}} profile": "צפייה בפרופיל של {{name}}",
     "{{home}} versus {{away}}, {{status}}": "{{home}} נגד {{away}}, {{status}}",

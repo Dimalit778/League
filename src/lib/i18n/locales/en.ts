@@ -53,8 +53,6 @@ export const en = {
     "I am 13 or older, and I agree to the":
       "I am 13 or older, and I agree to the",
     "and acknowledge the": "and acknowledge the",
-    "Accept Terms of Service and acknowledge Privacy Policy":
-      "Accept Terms of Service and acknowledge Privacy Policy",
     "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
       "Confirm you are 13 or older and accept Terms of Service and Privacy Policy",
   },
@@ -113,8 +111,6 @@ export const en = {
 
     "Welcome Back": "Welcome Back",
 
-    "Welcome to League": "Welcome to League",
-
     "Get Started": "Get Started",
     "Every match is a challenge": "Every match is a challenge",
     "Predict scores, compete with friends, and climb the table.":
@@ -154,9 +150,6 @@ export const en = {
     "Minimum 8 characters": "Minimum 8 characters",
     "Password must contain at least one letter and one number":
       "Password must contain at least one letter and one number",
-    "Full name is required": "Full name is required",
-    "Full name must be at least 3 characters":
-      "Full name must be at least 3 characters",
   },
 
   // Leagues screens
@@ -324,7 +317,6 @@ export const en = {
     Accessibility: "Accessibility",
     "Accessibility Statement": "Accessibility Statement",
 
-    "Full Name": "Full Name",
 
     Theme: "Theme",
     "Switch to light theme": "Switch to light theme",
@@ -424,7 +416,6 @@ export const en = {
     "Contact Support": "Contact Support",
     "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
       "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.",
-    "Email Support": "Email Support",
     "App Information": "App Information",
     Version: "Version",
     Platform: "Platform",
@@ -965,7 +956,6 @@ export const en = {
     pts: "pts",
     "{{name}}, position {{position}}, {{points}} points":
       "{{name}}, position {{position}}, {{points}} points",
-    "My leagues": "My leagues",
     "Fixture {{number}}": "Fixture {{number}}",
     "View {{name}} profile": "View {{name}} profile",
     "{{home}} versus {{away}}, {{status}}":

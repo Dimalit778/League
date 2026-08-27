@@ -58,7 +58,7 @@ const HelpScreen = () => {
           </Row>
           <Button
             onPress={handleEmailPress}
-            label="support@champoapp.com"
+            label={SUPPORT_EMAIL}
             leftIcon={<Mail size={22} strokeWidth={2} />}
             fullWidth
           />
