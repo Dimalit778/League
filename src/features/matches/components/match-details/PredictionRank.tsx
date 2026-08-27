@@ -13,7 +13,7 @@ type RankCardProps = {
   currentMember: boolean;
 };
 
-const POINTS_BG: Record<number, string> = { 3: 'green', 1: 'gray' };
+const POINTS_BG: Record<number, string> = { 5: 'gold', 3: 'green', 0: 'red' };
 
 function Chip({ className, style, children }: { className?: string; style?: ViewStyle; children: ReactNode }) {
   return (
@@ -33,14 +33,14 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
       className={currentMember ? 'border border-primary' : undefined}
       contentClassName="flex-row items-center px-3"
     >
-      <View className="min-w-0 flex-1 flex-row items-center gap-5">
+      <Row className="min-w-0 flex-1 flex-row items-center gap-5">
         <Chip className="h-7 w-7 border border-border bg-border">
           <Text variant="body" className="font-bold text-info">
             {index}
           </Text>
         </Chip>
 
-        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+        <Row className="items-center gap-2">
           <View className="h-12 w-12">
             <AvatarImage path={member?.avatar_url} nickname={member?.nickname} />
           </View>
@@ -51,8 +51,8 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
           >
             {member?.nickname}
           </Text>
-        </View>
-      </View>
+        </Row>
+      </Row>
 
       <Row className="gap-6">
         <Chip className="h-8 w-14 bg-subtle">
@@ -61,7 +61,7 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
           </Text>
         </Chip>
         <Chip className="h-8 w-10" style={{ backgroundColor: POINTS_BG[item.points ?? 0] ?? 'red' }}>
-          <Text className="font-bold" style={{ color: 'white' }}>
+          <Text className="font-bold" style={{ color: POINTS_BG[item.points ?? 0] === 'gold' ? 'black' : 'white' }}>
             {item.points ?? 0}
           </Text>
         </Chip>

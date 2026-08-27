@@ -1,8 +1,6 @@
 // cspell:disable
 /** Hebrew translations, organised by feature. Source of truth for this locale. */
 export const he = {
-  // Data
-  data: {},
   // Common - shared across all screens
   common: {
     Cancel: "ביטול",
@@ -11,7 +9,7 @@ export const he = {
     Error: "שגיאה",
     OK: "OK",
     Save: "שמור",
-    Saving: "שומר",
+    Saving: "שומר...",
     Saved: "נשמר",
     Success: "הצלחה",
     Update: "עדכון",
@@ -33,36 +31,35 @@ export const he = {
     "{{name}} profile picture": "תמונת הפרופיל של {{name}}",
     "User profile picture": "תמונת פרופיל של משתמש",
     "{{name}} profile placeholder, {{initial}}":
-      "מציין מקום לפרופיל של {{name}}, האות {{initial}}",
+      "תמונת ברירת מחדל של {{name}}, האות {{initial}}",
     "User profile placeholder, {{initial}}":
-      "מציין מקום לפרופיל, האות {{initial}}",
-
+      "תמונת פרופיל ברירת מחדל, האות {{initial}}",
     "An unexpected error occurred": "אירעה שגיאה בלתי צפויה. נסו שנית.",
     "An unexpected error occurred. Please try again.":
       "אירעה שגיאה בלתי צפויה. נסו שנית.",
-    Loading: "טוען",
-    "Button disabled": "כפתור מושבת",
-    "Double tap to {{action}}": "הקשה כפולה ל{{action}}",
-    "{{name}} input field": "שדה קלט {{name}}",
-    "Enter {{placeholder}}": "הזן {{placeholder}}",
-    "Toggle password visibility": "החלף תצוגת סיסמה",
+    Loading: "טוען...",
+    "Button disabled": "הכפתור אינו פעיל",
+    "Double tap to {{action}}": "הקישו פעמיים כדי {{action}}",
+    "{{name}} input field": "שדה {{name}}",
+    "Enter {{placeholder}}": "הזינו {{placeholder}}",
+    "Toggle password visibility": "הצגה או הסתרה של הסיסמה",
     "from this league": "מהליגה הזאת",
     Validation: "אימות",
     "Privacy Policy": "מדיניות פרטיות",
     "Terms of Service": "תנאי שימוש",
-    "I agree to the": "אני מסכים ל",
+    "I agree to the": "אני מסכים לתנאי",
+    "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים לתנאי",
     "and acknowledge the": "ומאשר שקראתי את",
-    "Accept Terms of Service and acknowledge Privacy Policy":
-      "אישור תנאי השימוש ומדיניות הפרטיות",
+    "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
+      "אישור גיל 13 ומעלה, תנאי השימוש ומדיניות הפרטיות",
     "Terms": "תנאי שימוש",
     "Privacy": "פרטיות",
   },
-
   // Auth screens
   auth: {
     "Sign In": "התחבר",
     "Sign In Error": "שגיאה בהתחברות",
-    "Sign Up": "הירשם",
+    "Sign Up": "רכישה",
     "Sign up with Google": "הרשמה עם Google",
     "Sign Out": "התנתק",
     "Apple sign in failed. Please try again.":
@@ -101,7 +98,6 @@ export const he = {
       "אין חיבור לאינטרנט. יש לבדוק את הגדרות הרשת ולנסות שוב.",
     "Connection problem. Please check your internet connection and try again.":
       "יש בעיית חיבור. יש לבדוק את החיבור לאינטרנט ולנסות שוב.",
-
     OR: "או",
     Logout: "יציאה",
     "Create account": "יצירת חשבון",
@@ -109,14 +105,8 @@ export const he = {
     "Sign in with Google": "התחברות עם Google",
     "Sign in with Apple": "התחברות עם Apple",
     "Sign up with Apple": "הרשמה עם Apple",
-
-    "Full Name": "שם מלא",
-
-    "Welcome Back": "ברוך הבא",
-
-    "Welcome to League": "ברוכים הבאים לליגה",
-
-    "Get Started": "התחילו",
+    "Welcome Back": "ברוכים השבים",
+    "Get Started": "מתחילים",
     "Every match is a challenge": "כל משחק הוא אתגר",
     "Predict scores, compete with friends, and climb the table.":
       "מנחשים תוצאות, מתחרים עם חברים ומטפסים בטבלה.",
@@ -129,29 +119,20 @@ export const he = {
     "At least 8 characters with a letter and a number":
       "לפחות 8 תווים, כולל אות ומספר",
     "Reset Password": "איפוס סיסמה",
-
-    "Enter your email": "הכנס דוא״ל",
-
-    "Send Reset Link": "שלח קישור לאיפוס סיסמה",
+    "Enter your email": "הזינו דוא״ל",
+    "Send Reset Link": "שליחת קישור לאיפוס",
     "Reset link has been sent to your email": "קישור לאיפוס נשלח לדוא״ל שלך",
     "Email address is missing. Please try signing up again.":
       "כתובת הדוא״ל חסרה. נסו להירשם מחדש.",
-
     "We sent a 6-digit code to": "שלחנו קוד בן 6 ספרות אל",
-    "Email is required": "דוא״ל נדרש",
+    "Email is required": "יש להזין דוא״ל",
     "Invalid email": "דוא״ל לא תקין",
-    "Password is required": "סיסמה נדרשת",
-    "Please enter a valid email address": "אנא הכנס דוא״ל תקין",
-
+    "Password is required": "יש להזין סיסמה",
+    "Please enter a valid email address": "יש להזין כתובת דוא״ל תקינה",
     "New Password": "סיסמה חדשה",
-
-    "Full name must be at least 3 characters":
-      "שם מלא חייב להכיל לפחות 3 תווים",
-    "Full name is required": "שם מלא נדרש",
     "Failed to sign out": "שגיאה ביציאה",
     "Failed to update password": "שגיאה בעדכון סיסמה",
   },
-
   // Leagues screens
   leagues: {
     League: "ליגה",
@@ -161,154 +142,124 @@ export const he = {
     Friends: "חברים",
     World: "עולם",
     You: "אתה",
-    "More friends, more competition": "יותר חברים, יותר תחרות",
+    "More friends, more competition": "יותר חברים, יותר כיף",
     "Invite friends to your league and make every match more exciting.":
       "הזמינו חברים לליגה והפכו כל משחק למעניין יותר.",
     "{{count}} leagues": "ליגות {{count}}",
     "Enter league": "כניסה לליגה",
-    "Want to open more leagues?": "רוצה לפתח ליגות נוספות?",
+    "Want to open more leagues?": "רוצים לפתוח עוד ליגות?",
     "Upgrade to Pro and open up to {{count}} leagues":
-      "שדרג ל-Pro ופתח עד {{count}} ליגות",
-
+      "שדרגו ל‑Pro ופתחו עד {{count}} ליגות",
     "Create League": "יצירת ליגה",
-
     "Manage League": "ניהול ליגה",
     "Invite friends": "הזמנת חברים",
     "Invite code": "קוד הצטרפות",
-    "Danger zone": "אזור מסוכן",
+    "Danger zone": "פעולות בלתי הפיכות",
     "Deleting a league cannot be undone.": "לא ניתן לבטל את מחיקת הליגה.",
     "You will lose access to this league.":
       "לאחר העזיבה לא תהיה לך גישה לליגה הזו.",
     "Save changes": "שמירת שינויים",
-    "That's the whole leaderboard for now": "זה כל הדירוג בינתיים",
+    "That's the whole leaderboard for now": "זה כל הדירוג כרגע",
     "Invite more friends and make the league more competitive.":
       "הזמינו חברים נוספים והפכו את הליגה לתחרותית יותר.",
-
     "Leave league": "עזיבת ליגה",
     "Failed to share invite code": "שיתוף קוד ההזמנה נכשל",
     "Join League": "הצטרפות לליגה",
-
-    "Save active leagues": "שמור ליגות פעילות",
+    "Save active leagues": "שמירת ליגות פעילות",
     "Activate league": "הפעל ליגה",
     "Activate leagues": "הפעל ליגות",
     "Activate Leagues": "הפעלת ליגות",
     "Pro League": "ליגת Pro",
-    "Select league to activate": "בחר ליגה להפעלה",
-
-    "Leave League": "עזוב ליגה",
-
-    Leave: "עזוב ליגה",
+    "Select league to activate": "בחירת ליגה להפעלה",
+    "Leave League": "עזיבת ליגה",
+    Leave: "עזיבת ליגה",
     "League Name": "שם הליגה",
     "League Created Successfully!": "ליגה נוצרה בהצלחה!",
     "League name": "שם הליגה",
     "League details": "פרטי הליגה",
     "League Details": "פרטי הליגה",
     "Select Competition": "בחירת ליגה",
-    "Ask the league owner for the invite code": "קבלו ממנהל הליגה קוד הזמנה",
-    "Enter league name": "הזן שם הליגה",
-
-    "League name is required": "שם ליגה שדה חובה",
-
+    "Ask the league owner for the invite code":
+      "בקשו ממנהל הליגה את קוד ההזמנה",
+    "Enter league name": "הזינו שם לליגה",
+    "League name is required": "יש להזין שם לליגה",
     "League name must be between 2 and 20 characters.":
       "שם הליגה חייב להכיל בין 2 ל־20 תווים.",
     "League name must be at most 20 characters long":
       "שם הליגה יכול להכיל עד 20 תווים",
-
     "League not found": "ליגה לא נמצאה",
-
     "Unable to load leagues. Pull to refresh to try again.":
-      "לא ניתן לטעון ליגות. נסה לטעון מחדש ",
+      "לא ניתן לטעון את הליגות. משכו לרענון ונסו שוב.",
     "Create a league to get started": "צרו ליגה כדי להתחיל",
     "Failed to create league": "שגיאה ביצירת ליגה",
     "Subscription not confirmed": "המנוי לא אומת",
     "We could not confirm your PRO subscription. Please try again in a moment.":
-      "לא הצלחנו לאמת את מנוי ה-PRO שלך. נסה שוב בעוד רגע.",
+      "לא הצלחנו לאמת את גישת ה‑Pro. נסו שוב בעוד רגע.",
     "Failed to join league": "שגיאה בהצטרפות לליגה",
-
-    "Start League": "התחל ליגה",
-
+    "Start League": "פתיחת ליגה",
     "How to Join a League": "כיצד להצטרף לליגה",
     "Get the 7-digit invite code from the league owner.":
       "קבלו את קוד ההזמנה מהמנהל של הליגה.",
     "Enter the code above to find the league.":
       "הזינו את הקוד שלמעלה כדי למצוא את הליגה.",
-    "Choose your nickname for the league.": "בחרו שם משתמש לליגה.",
+    "Choose your nickname for the league.": "בחרו כינוי לליגה.",
     'Tap "Join League" to become a member.':
-      'לחץ על "הצטרף לליגה" כדי להפוך לחבר.',
-
-    "Enter 7-digit invite code": "הזן קוד הזמנה של 7 ספרות",
+      'הקישו על "הצטרפות לליגה" כדי להצטרף.',
+    "Enter 7-digit invite code": "הזינו קוד הזמנה בן 7 ספרות",
     "Invite Code": "קוד הזמנה",
     "Join Code": "קוד הצטרפות",
-
     "Invite code is required": "קוד הזמנה נדרש",
-
-    "Searching for league...": "מחפש ליגה...",
+    "Searching for league...": "מחפשים ליגה...",
     "Join code copied to clipboard.": "קוד הזמנה הועתק.",
-    "Share Join Code": "שיתפו קוד הזמנה",
+    "Share Join Code": "שיתוף קוד הזמנה",
     "League Join Code": "קוד הזמנה לליגה",
-    "Tap to copy code": "לחץ כדי להעתיק את הקוד",
-    "Enter your nickname": "הכנס שם משתמש",
-
-    "Your Nickname": "שם משתמש",
-    "Nickname is required": "שם משתמש שדה חובה",
+    "Tap to copy code": "הקישו להעתקת הקוד",
+    "Enter your nickname": "הזינו כינוי",
+    "Your Nickname": "כינוי",
+    "Nickname is required": "יש להזין כינוי",
     "Nickname must be at least 2 characters long":
-      "שם משתמש חייב להיות לפחות 2 תווים",
+      "הכינוי חייב להכיל לפחות 2 תווים",
     "Nickname must be at most 20 characters long":
-      "שם המשתמש יכול להכיל עד 20 תווים",
-    "Nickname must be at most 20 characters":
-      "שם המשתמש יכול להכיל עד 20 תווים",
-
+      "הכינוי יכול להכיל עד 20 תווים",
+    "Nickname must be at most 20 characters": "הכינוי יכול להכיל עד 20 תווים",
     Members: "חברים",
-
     User: "משתמש",
-
     "6 Members": "6 חברים",
-
     "Choose how many friends can join this league.":
       "בחר כמה חברים יכולים להצטרף לליגה הזאת.",
-
     "League Members": "חברים בליגה",
     "League Owner": "מנהל הליגה",
-
     "Remove Member": "הסר חבר",
     "Unable to load league members. Pull to refresh to try again.":
-      "לא ניתן לטעון חברים. נסה לטעון מחדש ",
-    Owner: "בעלים",
-    "Unknown owner": "בעל לא ידוע",
+      "לא ניתן לטעון את חברי הליגה. משכו לרענון ונסו שוב.",
+    Owner: "אדמין",
+    "Unknown owner": "מנהל לא ידוע",
     "Unknown member": "חבר לא ידוע",
     "Unknown League": "ליגה לא ידועה",
     Joined: "הצטרפות",
-
     Created: "נוצר",
     "Created at": "נוצר בתאריך",
   },
-
   // Matches and Predictions
   matches: {
     Matches: "משחקים",
     Prediction: "ניחוש",
-
-    "Predicted Score": "ניקוד צופיות",
+    "Predicted Score": "תוצאה חזויה",
     "No prediction": "אין ניחוש",
     VS: "מול",
-
     "Unable to load predictions. Pull to refresh to try again.":
       "לא ניתן לטעון ניחושים. נסה לטעון מחדש ",
-
     pts: "נק",
     Points: "נקודות",
-
     Submitted: "נשלח",
-    "Fixture ID": "מזהה צופיות",
-    "Coming Soon...": "בקרוב ...",
-
+    "Fixture ID": "מזהה משחק",
+    "Coming Soon...": "בקרוב...",
     "AI match analysis": "ניתוח המשחק באמצעות AI",
     "Unlock the full AI analysis with Pro": "ניתוח ה-AI המלא זמין למנויי פרו",
     "AI Analysis": "ניתוח AI",
     "Get the full breakdown behind every prediction.":
-      "קבל את הניתוח המלא שמאחורי כל תחזית.",
+      "קבלו את הניתוח המלא שמאחורי התחזית.",
   },
-
   // Profile and Settings
   profile: {
     Profile: "פרופיל",
@@ -316,18 +267,15 @@ export const he = {
     Settings: "הגדרות",
     Accessibility: "נגישות",
     "Accessibility Statement": "הצהרת נגישות",
-    "Leave League": "עזוב ליגה",
-    "Are you sure you want to leave this league?":
-      "האם אתה בטוח שברצונך לצאת מהליגה ?",
+    "Leave League": "עזיבת ליגה",
+    "Are you sure you want to leave this league?": "האם לעזוב את הליגה?",
     "Delete League": "מחיקת ליגה",
     "Permission required": "הרשאה נדרשת",
     "from this league": "מהליגה הזאת",
     Error: "שגיאה",
     "Nickname is required": "שם משתמש נדרש",
-    "Nickname must be at least 2 characters":
-      "שם משתמש חייב להיות לפחות 2 תווים",
-
-    Nickname: "שם משתמש",
+    "Nickname must be at least 2 characters": "הכינוי חייב להכיל לפחות 2 תווים",
+    Nickname: "כינוי",
     Save: "שמירה",
     Cancel: "ביטול",
     "Failed to delete image": "שגיאה במחיקת תמונה",
@@ -336,106 +284,92 @@ export const he = {
       "פעולה זו תמחק לצמיתות את הליגה, את כל החברים ואת כל הניחושים. האם אתה בטוח?",
     "Are you sure you want to delete your profile picture?":
       "האם אתה בטוח שברצונך למחוק את תמונת הפרופיל שלך?",
-
-    "Switch to {{language}}": "החלף ל {{language}}",
-
+    "Switch to {{language}}": "מעבר ל־{{language}}",
     English: "אנגלית",
     Hebrew: "עברית",
-
     "Help & Support": "עזרה ותמיכה",
     Help: "עזרה",
     "Contact Us": "יצירת קשר",
     Info: "מידע",
-
     "Choose Image": "בחירת תמונה",
-
     "Failed to pick image": "שגיאה בבחירת תמונה",
     "Failed to upload image": "שגיאה בהעלאת תמונה",
-
     Theme: "ערכת עיצוב",
     "Switch to light theme": "מעבר לערכת עיצוב בהירה",
     "Switch to dark theme": "מעבר לערכת עיצוב כהה",
     Language: "שפה",
     "Delete Account": "מחיקת חשבון",
-
     "Delete account confirmation message":
       "האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.",
   },
-
   // Help & Support
   help: {
-    "Welcome to League Champion": "ברוכים הבאים לליגה צ'מפיון",
     "League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!":
-      "ליגה היא אפליקציית חיזוי כדורגל שבה אתה מתחרה עם חברים על ידי חיזוי תוצאות משחקים. צור או הצטרף לליגות, בצע חיזויים וטיפס בטבלת המובילים!",
-    "Getting Started": "תחילת עבודה",
-    "How do I create an account?": "איך אני יוצר חשבון?",
-    "You can sign up using your email address or sign in with Google. After creating your account, verify your email address to get started.":
-      'אתה יכול להירשם באמצעות כתובת הדוא"ל שלך או להתחבר עם Google. לאחר יצירת החשבון שלך, אמת את כתובת הדוא"ל שלך כדי להתחיל.',
-    "How do I join a league?": "איך אני מצטרף לליגה?",
-    'Navigate to the "My Leagues" tab and tap the "+" button. You can either create a new league or join an existing one using a league code.':
-      'נווט לטאב "הליגות שלי" ולחץ על כפתור ה-"+". אתה יכול ליצור ליגה חדשה או להצטרף לליגה קיימת באמצעות קוד ליגה.',
-    "What is a league?": "מה זה ליגה?",
+      "Champo היא אפליקציית ניחושי כדורגל שבה מתחרים עם חברים על תוצאות משחקים. יוצרים או מצטרפים לליגה, מנחשים תוצאות ומטפסים בדירוג!",
+    "Getting Started": "מתחילים",
+    "How do I create an account?": "איך יוצרים חשבון?",
+    "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.":
+      "אפשר להתחבר עם Google או Apple, או להירשם באמצעות דוא״ל וסיסמה. לאחר יצירת החשבון, יש לאמת את כתובת הדוא״ל כדי להתחיל.",
+    "How do I join a league?": "איך מצטרפים לליגה?",
+    'On the "My Leagues" screen, tap "Create League" to create a new league, or tap "Join League" to join an existing league using the league code.':
+      "במסך **הליגות שלי** לחצו על **יצירת ליגה** כדי ליצור ליגה חדשה, או על **הצטרפות לליגה** כדי להצטרף לליגה קיימת באמצעות קוד הליגה.",
+    "What is a league?": "מהי ליגה?",
     "A league is a group where you compete with other users by making predictions on football matches. Each league tracks points and rankings.":
-      "ליגה היא קבוצה שבה אתה מתחרה עם משתמשים אחרים על ידי ביצוע חיזויים על משחקי כדורגל. כל ליגה עוקבת אחר נקודות ודירוגים.",
-    "Making Predictions": "ביצוע חיזויים",
-    "How do I make a prediction?": "איך אני מבצע חיזוי?",
+      "ליגה היא קבוצה שבה מתחרים עם משתמשים אחרים על ידי ניחוש תוצאות משחקי כדורגל. כל ליגה עוקבת אחר נקודות ודירוג.",
+    "Making Predictions": "ניחושים",
+    "How do I make a prediction?": "איך מנחשים תוצאה?",
     'Go to the "Matches" tab, select a match, and enter your predicted score for both teams. You can update your prediction until the match starts.':
-      'עבור לטאב "משחקים", בחר משחק והזן את הניקוד הצפוי שלך עבור שתי הקבוצות. אתה יכול לעדכן את החיזוי שלך עד שהמשחק מתחיל.',
-    "When can I make predictions?": "מתי אני יכול לבצע חיזויים?",
+      "עברו למסך **משחקים**, בחרו משחק והזינו ניחוש לשתי הקבוצות. אפשר לעדכן את הניחוש עד תחילת המשחק.",
+    "When can I make predictions?": "מתי אפשר להזין ניחושים?",
     "You can make or update predictions anytime before a match kicks off. Once the match starts, predictions are locked and cannot be changed.":
-      "אתה יכול לבצע או לעדכן חיזויים בכל עת לפני שהמשחק מתחיל. ברגע שהמשחק מתחיל, החיזויים ננעלים ולא ניתן לשנות אותם.",
-    "How are points calculated?": "איך מחושבות הנקודות?",
-    "Points are awarded based on the accuracy of your prediction. Exact score predictions earn the most points, followed by correct result (win/draw), and correct goal difference.":
-      "נקודות מוענקות על בסיס הדיוק של החיזוי שלך. חיזויי ניקוד מדויקים מרוויחים את הכי הרבה נקודות, ואחריהם תוצאה נכונה (ניצחון/תיקו) והפרש שערים נכון.",
-    "Leagues & Rankings": "ליגות ודירוגים",
-    "How do I create my own league?": "איך אני יוצר ליגה משלי?",
+      "אפשר להזין או לעדכן ניחושים בכל עת לפני תחילת המשחק. ברגע שהמשחק מתחיל, הניחושים ננעלים ולא ניתן לשנות אותם.",
+    "How are points calculated?": "איך מחושב הניקוד?",
+    "An exact score is worth 5 points, a correct result is worth 3 points, and an incorrect prediction is worth 0 points.":
+      "תוצאה מדויקת מזכה ב־5 נקודות, פגיעה רגילה בתוצאה מזכה ב־3 נקודות, ותוצאה לא נכונה מזכה ב־0 נקודות.",
+    "Leagues & Rankings": "ליגות ודירוג",
+    "How do I create my own league?": "איך יוצרים ליגה?",
     'Tap the "+" button in "My Leagues", select "Create League", choose a competition, and invite friends using the league code.':
-      'לחץ על כפתור ה-"+" ב-"הליגות שלי", בחר "צור ליגה", בחר תחרות והזמן חברים באמצעות קוד הליגה.',
-    "How do I view the leaderboard?": "איך אני רואה את טבלת המובילים?",
-    'Open any league from "My Leagues" to see the current rankings. Points are updated automatically after matches finish.':
-      'פתח כל ליגה מ-"הליגות שלי" כדי לראות את הדירוגים הנוכחיים. הנקודות מתעדכנות אוטומטית לאחר שהמשחקים מסתיימים.',
-    "Can I leave a league?": "האם אני יכול לעזוב ליגה?",
+      "במסך **הליגות שלי** לחצו על **יצירת ליגה**, בחרו תחרות והזמינו חברים באמצעות קוד הליגה.",
+    "How do I view the leaderboard?": "איך רואים את הדירוג?",
+    "On the Leaderboard screen you can see members' points rankings, and you can also see the world ranking.":
+      "במסך **טבלת חברים** אפשר לראות את דירוג הנקודות של החברים, ואפשר לראות גם דירוג עולמי.",
+    "Can I leave a league?": "אפשר לעזוב ליגה?",
     "Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.":
-      "כן, אתה יכול לעזוב ליגה בכל עת מלשונית הפרופיל. שים לב שהחיזויים והנקודות שלך יישארו בהיסטוריית הליגה.",
-    "Matches & Fixtures": "משחקים ותחרויות",
-    "How do I view upcoming matches?": "איך אני רואה משחקים קרובים?",
-    'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':
-      'עבור לטאב "משחקים" כדי לראות את כל המשחקים הקרובים עבור הליגות שלך. אתה יכול לסנן לפי סיבוב או תחרות.',
-    "What match information is available?": "איזה מידע על המשחק זמין?",
-    "For each match, you can see team lineups, live scores, match events (goals, cards, substitutions), and detailed statistics.":
-      "עבור כל משחק, אתה יכול לראות הרכבי קבוצות, ניקוד חי, אירועי משחק (שערים, כרטיסים, החלפות) וסטטיסטיקות מפורטות.",
+      "כן, אפשר לעזוב ליגה בכל עת מלשונית **פרופיל**. שימו לב שהניחושים והנקודות יישארו בהיסטוריית הליגה.",
+    "Matches & Fixtures": "משחקים ומחזורים",
+    "How do I view upcoming matches?": "איך רואים משחקים קרובים?",
+    "On the League screen you can see today's matches.":
+      "במסך **ליגה** תוכלו לראות את המשחקים של היום.",
+    "What match information is available?": "איזה מידע זמין על המשחק?",
+    "For each match, you can see the match results.":
+      "המידע הזמין על המשחק הוא תוצאות המשחק.",
     "How often are match results updated?":
-      "כמה פעמים מתעדכנות תוצאות המשחקים?",
-    "Match results and scores are updated in real-time during live matches and automatically finalized when matches end.":
-      "תוצאות המשחקים והניקוד מתעדכנים בזמן אמת במהלך משחקים חיים ומתסיימים אוטומטית כאשר המשחקים מסתיימים.",
+      "באיזו תדירות תוצאות המשחקים מתעדכנות?",
+    "Match results are updated every 5 minutes.":
+      "תוצאות המשחקים מתעדכנות כל 5 דקות.",
     "Account & Settings": "חשבון והגדרות",
-    "How do I change my profile information?":
-      "איך אני משנה את פרטי הפרופיל שלי?",
-    "Go to Settings and tap the edit icon next to your name. You can update your display name and profile photo.":
-      "עבור להגדרות ולחץ על סמל העריכה ליד השם שלך. אתה יכול לעדכן את שם התצוגה ותמונת הפרופיל שלך.",
-    "How do I change my password?": "איך אני משנה את הסיסמה שלי?",
+    "How do I change my password?": "איך משנים סיסמה?",
     "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.":
-      "אם נרשמתם באמצעות דוא״ל, עברו להגדרות והשתמשו באפשרות איפוס הסיסמה. קישור לאיפוס יישלח אליכם בדוא״ל.",
-    "Can I change my email address?": 'האם אני יכול לשנות את כתובת הדוא"ל שלי?',
+      "אם נרשמתם באמצעות דוא״ל, עברו ל**הגדרות** והשתמשו באפשרות איפוס הסיסמה. קישור לאיפוס יישלח אליכם בדוא״ל.",
+    "Can I change my email address?": "אפשר לשנות את כתובת הדוא״ל?",
     "Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.":
-      'לא ניתן לשנות כתובות דוא"ל מתוך האפליקציה. אנא צור קשר עם התמיכה אם אתה צריך לעדכן את כתובת הדוא"ל שלך.',
-    "How do I manage notifications?": "איך אני מנהל התראות?",
+      "לא ניתן לשנות כתובת דוא״ל מתוך האפליקציה. פנו לתמיכה אם צריך לעדכן אותה.",
+    "How do I manage notifications?": "איך מנהלים התראות?",
     "Open Settings and tap Match reminders. Champo explains how reminders work before requesting permission. You can change permission later in your device settings.":
-      "פתחו את ההגדרות והקישו על תזכורות למשחקים. Champo תציג הסבר לפני בקשת ההרשאה, וניתן לשנות אותה בהמשך בהגדרות המכשיר.",
+      "פתחו את **הגדרות** והקישו על **תזכורות למשחקים**. Champo תציג הסבר לפני בקשת ההרשאה, וניתן לשנות אותה בהמשך בהגדרות המכשיר.",
     "Subscription & Premium": "מנוי ופרימיום",
-    "What are the subscription benefits?": "מהם היתרונות של המנוי?",
+    "What are the subscription benefits?": "מה מקבלים ב‑Champo Pro?",
     "Champo Pro unlocks all 6 competitions, up to 5 active friend leagues, up to 12 members per league, and full AI match analysis.":
       "Champo Pro פותח את כל 6 התחרויות, עד 5 ליגות חברים פעילות, עד 12 חברים בכל ליגה וניתוח משחק מלא של AI.",
-    "How do I subscribe?": "איך אני נרשם למנוי?",
+    "How do I subscribe?": "איך משדרגים ל‑Champo Pro?",
     "Open Settings, tap Subscription, and choose Upgrade to purchase the Champo Pro Season Pass.":
-      "פתחו את ההגדרות, הקישו על מנוי ובחרו בשדרוג כדי לרכוש את Champo Pro Season Pass.",
-    "How do I cancel my subscription?": "איך אני מבטל את המנוי שלי?",
+      "פתחו את **הגדרות**, הקישו על **מנוי** ובחרו בשדרוג כדי לרכוש את Champo Pro Season Pass.",
+    "How do I cancel my subscription?": "איך מבטלים את Champo Pro?",
     "Champo Pro is a one-time Season Pass and does not renew automatically, so there is nothing to cancel.":
       "Champo Pro הוא Season Pass בתשלום חד־פעמי ואינו מתחדש אוטומטית, ולכן אין צורך לבטל אותו.",
     "Contact Support": "יצירת קשר עם התמיכה",
     "Still have questions? Our support team is here to help. Reach out to us and we'll get back to you as soon as possible.":
-      "עדיין יש לך שאלות? צוות התמיכה שלנו כאן כדי לעזור. פנה אלינו ונחזור אליך בהקדם האפשרי.",
-    "Email Support": 'תמיכה בדוא"ל',
+      "עדיין יש שאלות? צוות התמיכה כאן כדי לעזור. פנו אלינו ונחזור בהקדם האפשרי.",
     "App Information": "מידע על האפליקציה",
     Version: "גרסה",
     Platform: "פלטפורמה",
@@ -443,43 +377,40 @@ export const he = {
     "Football data provided by the Football-Data.org API":
       "נתוני הכדורגל מסופקים על ידי Football-Data.org API",
     "Thank you for using League! We're constantly working to improve your experience.":
-      "תודה על השימוש בליגה! אנחנו עובדים כל הזמן כדי לשפר את החוויה שלך.",
+      "תודה על השימוש ב‑Champo! אנחנו עובדים כל הזמן כדי לשפר את החוויה.",
   },
 
   // Subscription
   subscription: {
     Subscription: "מנוי",
     Plan: "מנוי",
-    Subscribe: "הירשם",
+    Subscribe: "רכישה",
     PRO: "פרו",
     Upgrade: "שדרג",
     FREE: "חינם",
-
-    "Active Subscriptions": "תשלומים פעילים",
+    "Active Subscriptions": "גישה פעילה",
     "Your subscription has been updated successfully": "המנוי שלך עודכן בהצלחה",
     "Failed to restore purchases": "שחזור הרכישות נכשל",
     "Restore Purchases": "שחזור רכישות",
     "Upgrade to Pro": "שדרג לפרו",
     "No purchases found to restore": "לא נמצאו רכישות לשחזור",
-
-    "Champo Pro Season Pass": "מנוי Pro לעונה",
+    "Champo Pro Season Pass": "Champo Pro לעונה",
     "No active season right now": "אין עונה פעילה כרגע",
     "One payment for the full season. No automatic renewal.":
       "תשלום חד־פעמי לעונה שלמה. ללא חידוש אוטומטי.",
-    "Season Pass": "מנוי לעונה",
-    "Get full access": "קבל גישה מלאה",
+    "Season Pass": "Season Pass",
+    "Get full access": "גישה מלאה",
     "Join more leagues, play every competition and unlock complete AI analysis.":
-      "הצטרף ליותר ליגות, פתח את כל התחרויות וקבל ניתוח AI מלא.",
+      "הצטרפו ליותר ליגות, פתחו את כל התחרויות וקבלו ניתוח AI מלא.",
     "Football competitions": "תחרויות כדורגל",
     "Active friend leagues": "ליגות חברים פעילות",
     "Members per league": "חברים בכל ליגה",
-    "AI match insights": "תובנות AI למשחק",
+    "AI match insights": "ניתוח AI למשחק",
     Score: "תוצאה",
     Full: "מלא",
     "Champo Pro": "Champo Pro",
     "Confirming the local App Store price…":
       "מאמתים את המחיר המקומי ב־App Store…",
-
     "Upgrade for {{price}}": "שדרוג ב־{{price}}",
     "The Champo Pro offer is not available right now.":
       "הצעת Champo Pro אינה זמינה כרגע.",
@@ -490,7 +421,6 @@ export const he = {
     "Purchase failed. Please try again.": "הרכישה נכשלה. נסו שוב.",
     "Try again": "נסו שוב",
   },
-
   moderation: {
     Nickname: "כינוי",
     "Profile photo": "תמונת פרופיל",
@@ -503,7 +433,7 @@ export const he = {
     "Report submitted": "הדיווח נשלח",
     "Thank you. Our moderation team will review this report.":
       "תודה. צוות הניהול יבדוק את הדיווח.",
-    "Help keep Champo safe": "עזרו לנו לשמור על Champo בטוחה",
+    "Help keep Champo safe": "עזרו לנו לשמור על Champo בטוחה ונעימה",
     "Reports are confidential. The reported user will not see who submitted the report.":
       "הדיווח חסוי. המשתמש שעליו דיווחת לא יראה מי שלח את הדיווח.",
     "What are you reporting?": "על מה ברצונך לדווח?",
@@ -517,7 +447,7 @@ export const he = {
     "Privacy violation": "פגיעה בפרטיות",
     Other: "אחר",
     "Additional details": "פרטים נוספים",
-    "Describe what happened (optional)": "תאר מה קרה (אופציונלי)",
+    "Describe what happened (optional)": "תארו מה קרה (לא חובה)",
     "Additional report details": "פרטים נוספים לדיווח",
     "Submit report": "שליחת דיווח",
     Report: "דיווח",
@@ -537,7 +467,7 @@ export const he = {
     "You can see this user’s content again.":
       "ניתן לראות שוב את התוכן של המשתמש.",
     "Report league name": "דיווח על שם הליגה",
-    "Pending Reports": "דיווחים ממתינים",
+    "Pending Reports": "דיווחים לבדיקה",
     "Content Reports": "דיווחי תוכן",
     "Review reported nicknames, profile photos and league names.":
       "בדיקת כינויים, תמונות פרופיל ושמות ליגה שדווחו.",
@@ -556,7 +486,7 @@ export const he = {
     Dismiss: "דחייה",
     Confirm: "אישור",
     "Unable to load content reports. Pull to refresh to try again.":
-      "לא ניתן לטעון דיווחי תוכן. משוך לרענון ונסה שוב.",
+      "לא ניתן לטעון דיווחי תוכן. משכו לרענון ונסו שוב.",
     "No reports in this queue": "אין דיווחים בתור זה",
     "Reported content": "התוכן המדווח",
     "Reporter details": "פרטי המדווח",
@@ -564,13 +494,12 @@ export const he = {
     "Reported by": "דווח על ידי",
     "Remove content": "הסרת תוכן",
   },
-
   // Admin screens
   admin: {
     Admin: "ניהול מערכת",
-    ADMIN: "מנהל",
+    ADMIN: "אדמין",
     "Open Admin Dashboard": "פתיחת לוח הניהול",
-    "Platform Overview": "תקציר פלטפורמה",
+    "Platform Overview": "סקירת המערכת",
     "Monitor platform health and jump directly into the work that needs attention.":
       "עקבו אחר מצב המערכת ועברו ישירות למשימות שדורשות טיפול.",
     "Management areas": "אזורי ניהול",
@@ -638,7 +567,6 @@ export const he = {
       "סקירת משתמשים רשומים ופרטי חשבון.",
     "Manage leagues and their metadata.": "ניהול ליגות ומידעים נוספים.",
     "Inspect members across every league.": "בדיקת חברים בכל ליגה.",
-
     "Audit recent predictions submitted by users.":
       "בדיקת ניחושים שנשלחו על ידי המשתמשים.",
     Competitions: "תחרויות",
@@ -658,7 +586,6 @@ export const he = {
     "Remove competition": "הסרת תחרות",
     "Add or remove competitions from the platform.":
       "הוספת או הסרת תחרויות מהמערכת.",
-
     "Unable to load competitions. Pull to refresh to try again.":
       "לא ניתן לטעון תחרויות. משכו לרענון ונסו שוב.",
     "Competition ID": "מזהה תחרות",
@@ -672,23 +599,20 @@ export const he = {
     Season: "עונה",
     "Season (optional)": "עונה (אופציונלי)",
     "Season must be a valid number when provided.":
-      "העונה חייבת להיות מספר תקין כאשר מוצגת.",
-
+      "אם הוזנה עונה, היא חייבת להיות מספר תקין.",
     "ID:": "מזהה:",
     "Flag URL": "כתובת תמונת הדגל",
     Football: "כדורגל",
     Showing: "מוצג",
     Validation: "אימות",
   },
-
   // Privacy Policy
   privacy: {
-    "Information We Collect": "מידע שאנו מאחסנים",
+    "Information We Collect": "המידע שאנחנו אוספים",
     "How We Use Information": "שימוש במידע",
-    "Your Choices": "החלטות שלך",
+    "Your Choices": "הבחירות שלך",
     "Data Retention": "שמירת נתונים",
   },
-
   // Match/Prediction Status
   status: {
     LIVE: "חי",
@@ -699,26 +623,23 @@ export const he = {
     Finished: "סיום",
     SCHEDULED: "מתוכננים",
     Scheduled: "מתוכנן",
-    TIMED: "זמני",
+    TIMED: "מתוזמן",
     IN_PLAY: "במשחק",
     Pending: "ממתין",
-
     Bingo: "בינגו",
     Hit: "פגיעה",
-    Miss: "פיספוס",
+    Miss: "פספוס",
   },
-
   // Home
   home: {
     Hello: "שלום",
     Hits: "פגיעות",
   },
-
   // Stats
   stats: {
     Stats: "סטטיסטיקה",
     Player: "שחקן",
-    Missed: "פיספוסים",
+    Missed: "פספוסים",
     Regular: "פגיעות",
     Bingo: "בינגו",
     "Minimum 6 characters": "מינימום 6 תווים",
@@ -726,50 +647,40 @@ export const he = {
     "Password must contain at least one letter and one number":
       "הסיסמה חייבת לכלול לפחות אות אחת ומספר אחד",
     Accuracy: "דיוק",
-
     "Primary league": "ליגה ראשית",
     Rank: "דירוג",
-
-    "You're performing great!": "אתה מצליח מעולה!",
-    "Keep it up!": "המשך כך!",
+    "You're performing great!": "הולך לכם מצוין!",
+    "Keep it up!": "המשיכו ככה!",
     "Room to improve": "יש מקום לשיפור",
     "Correct scores": "תוצאות מדויקות",
     "Correct results": "תוצאות נכונות",
-
     "Current streak": "רצף נוכחי",
     "Current form": "כושר נוכחי",
     "Last 5 finished predictions": "5 הניחושים האחרונים שהסתיימו",
     "No finished predictions yet": "עדיין אין ניחושים שהסתיימו",
-
     "{{count}} correct": "{{count}} נכונים",
   },
-
   // Fonts (legacy)
   fonts: {},
-
   // Legacy/Technical keys
   legacy: {
     Your: "שלך",
     OR: "או",
-
     "competitions.": "ליגות.",
     emailAddress: "דואר",
-
     inviteCode: "קוד הזמנה",
-
     "league members.": "חברים בליגה.",
     leagueName: "שם הליגה",
     "leagues.": "ליגות.",
     myLeagues: "הליגות שלי",
     onChange: "שינוי",
     signIn: "התחבר",
-    signUp: "הירשם",
-    tabLongPress: "הירשם",
-    tabPress: "הירשם",
+    signUp: "רכישה",
+    tabLongPress: "רכישה",
+    tabPress: "רכישה",
     "recent predictions (latest 200 records).":
-      "צופיות אחרונות (מעדכנות אחרונות 200 רשומות).",
+      "ניחושים אחרונים (עד 200 רשומות).",
   },
-
   // World Cup feature
   worldCup: {
     Groups: "בתים",
@@ -781,9 +692,7 @@ export const he = {
     "Quarter Finals": "רבע גמר",
     "Semi Finals": "חצי גמר",
     Final: "גמר",
-
     "Third-Fourth": "מקום 3–4",
-
     Team: "קבוצה",
     P: "מ",
     W: "נ",
@@ -797,25 +706,19 @@ export const he = {
   },
   leagueOverview: {
     "Primary league": "ליגה ראשית",
-
     USER: "משתמש",
-
     Table: "טבלה",
-
     "Today matches": "משחקי היום",
     "No matches today": "אין משחקים היום",
   },
   notifications: {
     Notifications: "התראות",
     "No notifications yet": "אין התראות עדיין",
-    "Match starts soon": "המשחק מתחיל בקרוב",
-    "match-reminder-body":
-      "{{home}} נגד {{away}} מתחיל בקרוב, הכנס ניחוש למשחק",
   },
   aiAnalysis: {
-    "AI analysis is available on match day": "ניתוח ה־AI זמין ביום המשחק",
+    "AI analysis is available on match day": "ניתוח ה‑AI זמין ביום המשחק",
     "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
-      "כדי לספק את הניתוח הרלוונטי ביותר, ניתוח ה־AI נפתח רק ביום המשחק.",
+      "כדי להציג ניתוח עדכני ורלוונטי, ניתוח ה‑AI נפתח רק ביום המשחק.",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
       "הניתוח נוצר באמצעות AI ומיועד לבידור בלבד. הוא עלול להיות שגוי ואינו מהווה ייעוץ להימורים.",
   },
@@ -850,11 +753,11 @@ export const he = {
       "לא ניתן לעדכן את הרשאת ההתראות. נסו שוב.",
     "Notifications are unavailable on this device.":
       "התראות אינן זמינות במכשיר הזה.",
-    "Enter your email address": "הכנס כתובת דוא״ל",
+    "Enter your email address": "הזינו כתובת דוא״ל",
     "Enter your email address and we'll send you a reset link":
-      "הכנס דוא״ל ונשלח אליכם קישור לאיפוס",
-    "Enter your new password": "הזנת הסיסמה החדשה",
-    "Enter your password securely": "הזנת הסיסמה באופן מאובטח",
+      "הזינו דוא״ל ונשלח אליכם קישור לאיפוס הסיסמה",
+    "Enter your new password": "הזינו סיסמה חדשה",
+    "Enter your password securely": "הזינו את הסיסמה",
     "Failed to update password. Please try again.":
       "עדכון הסיסמה נכשל. נסו שוב.",
     General: "כללי",
@@ -864,7 +767,7 @@ export const he = {
     "Increase home score": "הגדלת התוצאה של קבוצת הבית",
     'Join my {{area}} league "{{name}}"! Use code: {{join_code}} Download the app to join!':
       'הצטרפו לליגת {{area}} שלי "{{name}}"! השתמשו בקוד: {{join_code}} הורידו את האפליקציה כדי להצטרף!',
-    "Join {{name}} League": "הצטרפות לליגה {{name}}",
+    "Join {{name}} League": "הצטרפות ל־{{name}}",
     "Member not found": "החבר לא נמצא",
     "My Leagues": "הליגות שלי",
     "No matches found": "לא נמצאו משחקים",
@@ -873,7 +776,7 @@ export const he = {
     "Other Leagues": "ליגות נוספות",
     "Password Updated": "הסיסמה עודכנה",
     "Please request a new link.": "בקשו קישור חדש.",
-    Predictor: "מנחש מצטיין",
+    Predictor: "חזאי מצטיין",
     Preferences: "העדפות",
     "Primary League": "ליגה ראשית",
     "Reached top 10 in the table": "הגעת לעשירייה הראשונה בטבלה",
@@ -888,7 +791,7 @@ export const he = {
     "Top 10": "עשירייה ראשונה",
     "Upgrade to create more leagues and unlock more competitions.":
       "שדרגו כדי ליצור ליגות נוספות ולפתוח תחרויות נוספות.",
-    "Your PRO subscription is active.": "מינוי ה־PRO שלכם פעיל.",
+    "Your PRO subscription is active.": "Champo Pro פעיל בחשבון שלכם.",
     "Your achievements": "ההישגים שלך",
     "Your password has been changed successfully.": "הסיסמה שונתה בהצלחה.",
     button: "כפתור",
@@ -898,7 +801,7 @@ export const he = {
     "Change email address": "שינוי דוא״ל",
     "Confirm and continue": "אימות והמשך",
     "Didn't receive the code?": "לא קיבלתם את הקוד?",
-    "Email verified successfully!": "הדוא״ל אומת בהצלחה!",
+    "Email verified successfully!": "כתובת הדוא״ל אומתה בהצלחה!",
     "Enter the code": "הקלידו את הקוד",
     "Forgot your password?": "שכחתם את הסיסמה?",
     "Error Details (Dev Only):": "פרטי שגיאה (פיתוח בלבד):",
@@ -906,8 +809,8 @@ export const he = {
     "You're offline": "אין חיבור לאינטרנט",
     "Check your connection and try again": "בדקו את החיבור ונסו שוב",
     "Predict. Compete. Win.": "מנחשים. מתחרים. מנצחים.",
-    "Resend Code": "שליחת הקוד מחדש",
-    "Sending...": "שולח...",
+    "Resend Code": "שליחת קוד מחדש",
+    "Sending...": "שולחים...",
     "Still need help?": "עדיין צריכים עזרה?",
     "Contact support": "פנייה לתמיכה",
     "Something went wrong": "משהו השתבש",
@@ -932,7 +835,7 @@ export const he = {
     "No users found matching your search": "לא נמצאו משתמשים התואמים לחיפוש",
     Predictions: "ניחושים",
     "Showing {{count}} competitions.": "מוצגות {{count}} תחרויות.",
-    "Showing {{count}} league members.": "מוצגים {{count}} חברי ליגה.",
+    "Showing {{count}} league members.": "מוצגים {{count}} חברים בליגה.",
     "Showing {{count}} leagues.": "מוצגות {{count}} ליגות.",
     "Showing {{count}} recent predictions (latest 200 records).":
       "מוצגים {{count}} ניחושים אחרונים (עד 200 רשומות).",
@@ -943,7 +846,6 @@ export const he = {
     pts: "נק׳",
     "{{name}}, position {{position}}, {{points}} points":
       "{{name}}, מקום {{position}}, {{points}} נקודות",
-    "My leagues": "הליגות שלי",
     "Fixture {{number}}": "מחזור {{number}}",
     "View {{name}} profile": "צפייה בפרופיל של {{name}}",
     "{{home}} versus {{away}}, {{status}}": "{{home}} נגד {{away}}, {{status}}",

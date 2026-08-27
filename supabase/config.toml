@@ -436,6 +436,11 @@ verify_jwt = false
 [functions.v2_start-worldcup-sync]
 verify_jwt = false
 
+# Invoked by pg_cron with the x-sync-secret header (no Supabase JWT), so the
+# platform JWT gate must be off — auth is enforced in-function via requireSyncAuth.
+[functions.send-match-reminders]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

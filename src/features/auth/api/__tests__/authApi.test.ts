@@ -22,7 +22,7 @@ describe('signUp legal acceptance', () => {
       error: null,
     });
 
-    const result = await signUp('test@example.com', 'password123', 'Test User', acceptance);
+    const result = await signUp('test@example.com', 'password123', acceptance);
 
     expect(result).toEqual({ success: true });
     expect(supabase.auth.signUp).toHaveBeenCalledWith({
@@ -30,9 +30,9 @@ describe('signUp legal acceptance', () => {
       password: 'password123',
       options: {
         data: {
-          full_name: 'Test User',
           provider: 'email',
           legal_accepted: true,
+          legal_age_confirmed: true,
           legal_terms_version: '2026-08-04',
           legal_privacy_version: '2026-08-26.2',
           legal_locale: 'he',
@@ -43,7 +43,7 @@ describe('signUp legal acceptance', () => {
   });
 
   it('refuses signup with mismatched legal versions', async () => {
-    const result = await signUp('test@example.com', 'password123', 'Test User', {
+    const result = await signUp('test@example.com', 'password123', {
       ...acceptance,
       termsVersion: '2025-01-01' as '2026-08-04',
     });

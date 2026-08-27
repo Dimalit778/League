@@ -1,11 +1,12 @@
 import { ListItem, Section, Text, type TextTone } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { clearPushToken, registerPushToken } from '@/lib/notifications/pushToken';
 import { useNotificationPermission } from '@/providers/NotificationProvider';
 import { RelativePathString, useRouter } from 'expo-router';
 import {
-  Bell,
   Accessibility,
+  Bell,
   Calendar,
   CreditCard,
   FileQuestionMark,
@@ -18,7 +19,6 @@ import {
   ShieldBan,
   Smartphone,
   Trash,
-  User,
 } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Alert, Linking, View } from 'react-native';
@@ -27,7 +27,6 @@ import { version as appVersion } from '../../../../../package.json';
 import { useSubscriptionAccess } from '@/features/subscription/hooks/useSubscriptionAccess';
 import { SUBSCRIPTIONS_ENABLED } from '@/features/subscription/subscriptionMode';
 import { useAuthStore } from '@/store/AuthStore';
-import { formatNameCapitalize } from '@/utils/formats';
 import LanguageToggle from '../LanguageToggle';
 import ThemeToggle from '../ThemeToggle';
 
@@ -55,7 +54,7 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
   const router = useRouter();
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
-  const fullName = formatNameCapitalize(user?.full_name);
+
   const joinedDate = user?.created_at === 'N/A' ? user?.created_at : new Date(user?.created_at!).toLocaleDateString();
   const subscriptionType = subscriptionAccess.data?.planCode === 'pro' ? 'PRO' : 'FREE';
 
@@ -75,8 +74,10 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
     void requestPermission()
       .then((nextPermission) => {
         if (nextPermission.status === 'granted') {
+          void registerPushToken();
           Alert.alert(t('Notifications enabled'), t('Match reminders will be scheduled for upcoming matches.'));
         } else if (nextPermission.status === 'denied') {
+          void clearPushToken();
           Alert.alert(
             t('Permission required'),
             t('Enable notifications from your device settings to receive match reminders.'),
@@ -137,12 +138,6 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
   const iconSize = 24;
 
   const infoRows: SettingsItem[] = [
-    {
-      key: 'name',
-      label: t('Name'),
-      icon: <User size={iconSize} color={colors.text} strokeWidth={1.5} />,
-      rightContent: fullName,
-    },
     {
       key: 'email',
       label: t('Email'),

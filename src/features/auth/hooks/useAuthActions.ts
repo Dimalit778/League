@@ -44,8 +44,8 @@ export const useAuthActions = () => {
   );
 
   const signUp = useCallback(
-    (email: string, password: string, fullname: string, acceptance: LegalAcceptanceContext) =>
-      handleAction(authApi.signUp, email, password, fullname, acceptance),
+    (email: string, password: string, acceptance: LegalAcceptanceContext) =>
+      handleAction(authApi.signUp, email, password, acceptance),
     [handleAction]
   );
 

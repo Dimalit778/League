@@ -6,9 +6,13 @@ jest.mock('@expo/vector-icons', () => ({
 }));
 
 describe('HelpScreen', () => {
-  it('renders the help heading', () => {
+  it('renders the welcome intro', () => {
     const { getByText } = render(<HelpScreen />);
-    expect(getByText('Welcome to League Champion')).toBeTruthy();
+    expect(
+      getByText(
+        'League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!',
+      ),
+    ).toBeTruthy();
   });
 
   it('renders help sections', () => {
@@ -20,7 +24,7 @@ describe('HelpScreen', () => {
   it('renders contact support section', () => {
     const { getByText } = render(<HelpScreen />);
     expect(getByText('Contact Support')).toBeTruthy();
-    expect(getByText('Email Support')).toBeTruthy();
+    expect(getByText('support@champoapp.com')).toBeTruthy();
   });
 
   it('renders app information section', () => {

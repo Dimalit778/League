@@ -410,6 +410,32 @@ export type Database = {
         }
         Relationships: []
       }
+      match_push_reminders: {
+        Row: {
+          match_id: number
+          recipient_count: number
+          sent_at: string
+        }
+        Insert: {
+          match_id: number
+          recipient_count?: number
+          sent_at?: string
+        }
+        Update: {
+          match_id?: number
+          recipient_count?: number
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_push_reminders_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: true
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           ai_generated_at: string | null

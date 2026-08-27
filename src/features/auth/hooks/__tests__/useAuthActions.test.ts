@@ -45,11 +45,11 @@ describe('useAuthActions', () => {
     expect(result.current.errorMessage).toBe(null);
 
     await act(async () => {
-      const response = await result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
+      const response = await result.current.signUp('test@example.com', 'password123', acceptance);
       expect(response.success).toBe(true);
     });
 
-    expect(mockAuthApi.signUp).toHaveBeenCalledWith('test@example.com', 'password123', 'Test User', acceptance);
+    expect(mockAuthApi.signUp).toHaveBeenCalledWith('test@example.com', 'password123', acceptance);
     expect(result.current.isLoading).toBe(false);
   });
 
@@ -60,7 +60,7 @@ describe('useAuthActions', () => {
     const { result } = renderHook(() => useAuthActions());
 
     await act(async () => {
-      const response = await result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
+      const response = await result.current.signUp('test@example.com', 'password123', acceptance);
       expect(response.success).toBe(false);
     });
 
@@ -106,7 +106,7 @@ describe('useAuthActions', () => {
 
     // Start the async action
     act(() => {
-      result.current.signUp('test@example.com', 'password123', 'Test User', acceptance);
+      result.current.signUp('test@example.com', 'password123', acceptance);
     });
 
     // Should be loading now

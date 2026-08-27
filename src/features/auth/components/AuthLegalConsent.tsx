@@ -19,7 +19,7 @@ export default function AuthLegalConsent({ accepted, onToggle }: Props) {
       <Pressable
         onPress={onToggle}
         accessibilityRole="checkbox"
-        accessibilityLabel={t('Accept Terms of Service and acknowledge Privacy Policy')}
+        accessibilityLabel={t('Confirm you are 13 or older and accept Terms of Service and Privacy Policy')}
         accessibilityState={{ checked: accepted }}
         hitSlop={8}
       >
@@ -33,7 +33,7 @@ export default function AuthLegalConsent({ accepted, onToggle }: Props) {
 
       <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-x-1">
         <Text variant="bodySmall" tone="muted">
-          {t('I agree to the')}
+          {t('I am 13 or older, and I agree to the')}
         </Text>
         <Link href="/(auth)/terms" asChild>
           <Text variant="bodySmall" tone="info" accessibilityRole="link" className="underline">

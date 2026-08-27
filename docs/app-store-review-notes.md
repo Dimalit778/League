@@ -87,7 +87,7 @@ Support: support@champoapp.com
 
 PERMISSIONS
 Photo library: optional, only when updating profile avatar.
-Notifications: optional local match reminders. Permission is requested only after the user opens Settings → Match reminders, reviews the explanation, and taps Enable reminders. Champo does not collect remote push tokens.
+Notifications: optional match reminders. Permission is requested only after the user opens Settings → Match reminders, reviews the explanation, and taps Enable reminders. Match reminders use remote push notifications (Apple Push Notification service). Enabling "Match reminders" in Settings registers a push token; the server sends a reminder about one hour before each upcoming match of the user's primary league. Disabling reminders removes the token.
 No IDFA / no cross-app tracking.
 
 ADMIN FEATURES
@@ -122,7 +122,7 @@ Supabase (authentication and data), Google Cloud Vision (profile-image safety ch
 
 ### App Privacy questionnaire (steps 8 & 20)
 - Declare Sentry crash/diagnostics data
-- Local match reminders do not collect notification tokens; verify the final binary and App Privacy answers remain consistent with this behavior
+- Match reminders register a remote push notification token (Device ID, linked, App Functionality purpose) when the user enables them; verify the final binary and App Privacy answers remain consistent with this behavior
 - Photo library: declare only if you collect photos (optional avatar upload)
 - Do not declare Purchase History: version 1.0 has no purchases or subscriptions
 

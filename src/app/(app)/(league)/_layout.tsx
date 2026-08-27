@@ -11,9 +11,6 @@ export default function LeagueLayout() {
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
 
-  // Deferred (runAfterInteractions) warm-up of the Matches + Leaderboard caches
-  // so those tabs open instantly. Called before the redirect to keep hook order
-  // stable; it no-ops until the primary-league store is populated.
   usePrefetchLeagueData();
 
   if (requiresLeagueActivation) {

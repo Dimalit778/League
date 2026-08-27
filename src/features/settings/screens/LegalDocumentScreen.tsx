@@ -1,8 +1,9 @@
-import { Badge, Card, Row, Screen, Text } from '@/components';
+import { Badge, Button, Card, FormattedText, Row, Screen, Section } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
-import { View } from 'react-native';
-import { legalContent } from '../content/legalContent';
+import { Mail } from 'lucide-react-native';
+import { Linking, View } from 'react-native';
+import { legalContent } from '../content/legal-content';
 
 type LegalDocumentScreenProps = {
   document: 'privacy' | 'terms' | 'accessibility';
@@ -17,45 +18,36 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
       <Card variant="elevated" contentClassName="gap-3">
         <Badge size="sm" label={content.updatedAt} className="self-center" />
         <Row>
-          <Text variant="body" className="leading-7">
+          <FormattedText variant="body" className="leading-7">
             {content.intro}
-          </Text>
+          </FormattedText>
         </Row>
       </Card>
 
       {content.sections.map((section, index) => (
-        <Card key={section.title} contentClassName="gap-3">
-          <Row className="items-start gap-3">
-            <View className="size-7 items-center justify-center rounded-full bg-primary">
-              <Text variant="label" className="text-center text-on-primary">
-                {index + 1}
-              </Text>
-            </View>
-            <Text accessibilityRole="header" variant="subtitle" className="min-w-0 flex-1 pt-0.5">
-              {section.title}
-            </Text>
-          </Row>
-
-          <View className="gap-3">
+        <Section key={section.title} title={section.title} accent contentClassName="gap-3">
+          <Card variant="elevated" contentClassName="gap-2">
             {section.body.map((paragraph) => (
               <Row key={paragraph} className="items-start gap-2.5">
-                <Text variant="bodySmall" tone="muted" className="mt-0.5 leading-6">
-                  •
-                </Text>
-                <Text variant="bodySmall" tone="secondary" className="min-w-0 flex-1 leading-6">
+                <View className="h-6 w-1.5 items-center justify-center">
+                  <View className="size-1.5 rounded-full bg-primary" />
+                </View>
+                <FormattedText variant="bodySmall" tone="secondary" className="min-w-0 flex-1 leading-6">
                   {paragraph}
-                </Text>
+                </FormattedText>
               </Row>
             ))}
-          </View>
-        </Card>
+          </Card>
+        </Section>
       ))}
 
-      <Card variant="soft" contentClassName="gap-1">
-        <Text variant="bodySmall" tone="muted" className="leading-6 text-center">
-          {content.footer}
-        </Text>
-      </Card>
+      <Section accent title={content.footer} contentClassName="p-2">
+        <Button
+          label={content.emailLink}
+          leftIcon={<Mail size={22} strokeWidth={2} />}
+          onPress={() => Linking.openURL(`mailto:${content.emailLink}`)}
+        />
+      </Section>
     </Screen>
   );
 };
