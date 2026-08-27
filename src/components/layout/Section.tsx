@@ -42,12 +42,22 @@ export function Section({
         accent ? (
           <Row className="gap-2">
             <View className="h-4 w-1 rounded-full bg-primary" />
-            <Text variant="subtitle" numberOfLines={1} style={{ textAlign: isRTL ? 'right' : 'left' }}>
+            <Text
+              variant="subtitle"
+              numberOfLines={1}
+              accessibilityRole="header"
+              style={{ textAlign: isRTL ? 'right' : 'left' }}
+            >
               {title}
             </Text>
           </Row>
         ) : (
-          <Text variant="subtitle" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+          <Text
+            variant="subtitle"
+            className="w-full"
+            accessibilityRole="header"
+            style={{ textAlign: isRTL ? 'right' : 'left' }}
+          >
             {title}
           </Text>
         )

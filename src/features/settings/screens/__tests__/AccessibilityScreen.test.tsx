@@ -24,4 +24,11 @@ describe('AccessibilityScreen', () => {
       expect(getByText(title)).toBeTruthy();
     }
   });
+
+  it('marks section titles as headings for screen readers', () => {
+    const { getAllByRole } = render(<LegalDocumentScreen document="accessibility" />);
+
+    // 5 content sections + the footer section title
+    expect(getAllByRole('header').length).toBeGreaterThanOrEqual(5);
+  });
 });
