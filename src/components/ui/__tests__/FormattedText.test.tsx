@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react-native';
-import { FormattedText, parseBoldMarks } from '../FormattedText';
+import { FormattedText } from '../FormattedText';
+import { parseBoldMarks } from '../parseBoldMarks';
 
 describe('parseBoldMarks', () => {
   it('keeps plain text unchanged', () => {

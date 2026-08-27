@@ -12,6 +12,9 @@ const HelpScreen = () => {
     Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Help Request`);
   };
   const { t } = useTranslation();
+  const visibleSections = SUBSCRIPTIONS_ENABLED
+    ? helpContent
+    : helpContent.filter((section) => section.title !== 'Subscription & Premium');
   return (
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
       {/* Welcome Section */}
@@ -25,9 +28,7 @@ const HelpScreen = () => {
       </Card>
 
       {/* Help Sections */}
-      {helpContent
-        .filter((section) => SUBSCRIPTIONS_ENABLED || section.title !== 'Subscription & Premium')
-        .map((section) => (
+      {visibleSections.map((section) => (
           <Section key={section.title} title={t(section.title)} accent>
             {section.items.map((item) => (
               <Card key={`${section.title}-${item.question}`} className="mb-3" contentClassName="gap-2">

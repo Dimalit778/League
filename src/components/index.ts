@@ -42,5 +42,6 @@ export {
 } from "./ui/Skeleton";
 export { TabButton } from "./ui/TabButton";
 export { TeamLogo } from "./ui/TeamLogo";
-export { FormattedText, parseBoldMarks } from "./ui/FormattedText";
+export { FormattedText } from "./ui/FormattedText";
+export { parseBoldMarks } from "./ui/parseBoldMarks";
 export { Text, type TextTone } from "./ui/Text";

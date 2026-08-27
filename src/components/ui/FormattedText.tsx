@@ -1,45 +1,27 @@
 import { Text, type AppTextProps } from '@/components/ui/Text';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { type ReactNode } from 'react';
-
-const BOLD_MARK = /\*\*(.+?)\*\*/g;
-
-export type BoldMarkPart = { type: 'text' | 'bold'; value: string };
-
-export const parseBoldMarks = (text: string): BoldMarkPart[] => {
-  const parts: BoldMarkPart[] = [];
-  let lastIndex = 0;
-
-  for (const match of text.matchAll(BOLD_MARK)) {
-    const index = match.index ?? 0;
-    if (index > lastIndex) {
-      parts.push({ type: 'text', value: text.slice(lastIndex, index) });
-    }
-    parts.push({ type: 'bold', value: match[1] ?? '' });
-    lastIndex = index + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push({ type: 'text', value: text.slice(lastIndex) });
-  }
-
-  return parts;
-};
+import { parseBoldMarks } from './parseBoldMarks';
 
 export type FormattedTextProps = AppTextProps & {
   children: string;
 };
 
 export const FormattedText = ({ children, className, variant, tone, ...rest }: FormattedTextProps) => {
-  const nodes: ReactNode[] = parseBoldMarks(children).map((part, index) =>
-    part.type === 'bold' ? (
-      <Text key={index} variant={variant} tone={tone} className={cn(className, 'font-semibold')}>
+  // Keys are derived from the source offset (not the array index): each fragment
+  // starts at a distinct position, so keys stay stable and unique.
+  let offset = 0;
+  const nodes: ReactNode[] = parseBoldMarks(children).map((part) => {
+    const key = `${part.type}-${offset}`;
+    offset += part.type === 'bold' ? part.value.length + 4 : part.value.length;
+    return part.type === 'bold' ? (
+      <Text key={key} variant={variant} tone={tone} className={cn(className, 'font-semibold')}>
         {part.value}
       </Text>
     ) : (
       part.value
-    ),
-  );
+    );
+  });
 
   return (
     <Text variant={variant} tone={tone} className={className} {...rest}>
