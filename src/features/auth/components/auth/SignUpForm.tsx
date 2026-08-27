@@ -6,7 +6,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { Eye, EyeOff, LockKeyhole, Mail, UserIcon } from 'lucide-react-native';
+import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
@@ -18,7 +18,6 @@ const signUpSchema = yup.object().shape({
     .min(8, 'Minimum 8 characters')
     .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Password must contain at least one letter and one number')
     .required('Password is required'),
-  fullname: yup.string().required('Full name is required').min(3, 'Full name must be at least 3 characters'),
 });
 
 type SignUpFormData = yup.InferType<typeof signUpSchema>;
@@ -43,7 +42,6 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
     resolver: yupResolver(signUpSchema),
     mode: 'onChange',
     defaultValues: {
-      fullname: '',
       email: '',
       password: '',
     },
@@ -59,12 +57,10 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
   const onSubmit = async (form: SignUpFormData) => {
     const email = form.email.trim().toLowerCase();
     const password = form.password;
-    const fullname = form.fullname.trim().replace(/\s+/g, ' ');
 
     const result = await signUp(
       email,
       password,
-      fullname,
       createLegalAcceptanceContext('email', 'sign_up'),
     );
 
@@ -78,17 +74,6 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
 
   return (
     <>
-      <InputField
-        control={control}
-        name="fullname"
-        placeholder={t('Full Name')}
-        variant="auth"
-        autoComplete="name"
-        icon={<UserIcon size={22} color={colors.muted} strokeWidth={1.5} />}
-        error={errors.fullname}
-        clearError={clearError}
-      />
-
       <InputField
         control={control}
         name="email"

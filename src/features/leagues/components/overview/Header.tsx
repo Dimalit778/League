@@ -1,9 +1,7 @@
 import { TrophyIcon } from '@/assets/icons';
-import { LogoBadge, Row, Text } from '@/components';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { LogoBadge, Row, TabButton, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
-import { router } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 export const CollapsedHeader = ({ nickname }: { nickname?: string }) => {
   return (
@@ -35,24 +33,10 @@ export const ExpandedHeader = ({ nickname = 'there' }: { nickname?: string }) =>
 };
 
 export const PersistentHeaderActions = ({ flagUrl }: { flagUrl: string }) => {
-  const { colors } = useThemeTokens();
-  const { t } = useTranslation();
-
   return (
     <Row className="justify-between px-4">
       <LogoBadge source={flagUrl} width={40} height={40} className="rounded-full" />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('My leagues')}
-        hitSlop={10}
-        className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70"
-        style={{ width: 40, height: 40 }}
-        onPress={() => {
-          router.push('/(app)/(user)/leagues/my-leagues');
-        }}
-      >
-        <TrophyIcon size={24} color={colors.text} />
-      </Pressable>
+      <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} />
     </Row>
   );
 };

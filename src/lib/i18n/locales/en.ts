@@ -50,9 +50,13 @@ export const en = {
     "Privacy Policy": "Privacy Policy",
     "Terms of Service": "Terms of Service",
     "I agree to the": "I agree to the",
+    "I am 13 or older, and I agree to the":
+      "I am 13 or older, and I agree to the",
     "and acknowledge the": "and acknowledge the",
     "Accept Terms of Service and acknowledge Privacy Policy":
       "Accept Terms of Service and acknowledge Privacy Policy",
+    "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
+      "Confirm you are 13 or older and accept Terms of Service and Privacy Policy",
   },
 
   // Auth screens
@@ -352,16 +356,15 @@ export const en = {
 
   // Help & Support
   help: {
-    "Welcome to League Champion": "Welcome to League Champion",
     "League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!":
       "League is a football prediction app where you compete with friends by predicting match results. Create or join leagues, make predictions, and climb the leaderboard!",
     "Getting Started": "Getting Started",
     "How do I create an account?": "How do I create an account?",
-    "You can sign up using your email address or sign in with Google. After creating your account, verify your email address to get started.":
-      "You can sign up using your email address or sign in with Google. After creating your account, verify your email address to get started.",
+    "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.":
+      "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.",
     "How do I join a league?": "How do I join a league?",
-    'Navigate to the "My Leagues" tab and tap the "+" button. You can either create a new league or join an existing one using a league code.':
-      'Navigate to the "My Leagues" tab and tap the "+" button. You can either create a new league or join an existing one using a league code.',
+    'On the "My Leagues" screen, tap "Create League" to create a new league, or tap "Join League" to join an existing league using the league code.':
+      'On the **My Leagues** screen, tap **Create League** to create a new league, or tap **Join League** to join an existing league using the league code.',
     "What is a league?": "What is a league?",
     "A league is a group where you compete with other users by making predictions on football matches. Each league tracks points and rankings.":
       "A league is a group where you compete with other users by making predictions on football matches. Each league tracks points and rankings.",
@@ -373,35 +376,31 @@ export const en = {
     "You can make or update predictions anytime before a match kicks off. Once the match starts, predictions are locked and cannot be changed.":
       "You can make or update predictions anytime before a match kicks off. Once the match starts, predictions are locked and cannot be changed.",
     "How are points calculated?": "How are points calculated?",
-    "Points are awarded based on the accuracy of your prediction. Exact score predictions earn the most points, followed by correct result (win/draw), and correct goal difference.":
-      "Points are awarded based on the accuracy of your prediction. Exact score predictions earn the most points, followed by correct result (win/draw), and correct goal difference.",
+    "An exact score is worth 5 points, a correct result is worth 3 points, and an incorrect prediction is worth 0 points.":
+      "An exact score is worth 5 points, a correct result is worth 3 points, and an incorrect prediction is worth 0 points.",
     "Leagues & Rankings": "Leagues & Rankings",
     "How do I create my own league?": "How do I create my own league?",
     'Tap the "+" button in "My Leagues", select "Create League", choose a competition, and invite friends using the league code.':
       'Tap the "+" button in "My Leagues", select "Create League", choose a competition, and invite friends using the league code.',
     "How do I view the leaderboard?": "How do I view the leaderboard?",
-    'Open any league from "My Leagues" to see the current rankings. Points are updated automatically after matches finish.':
-      'Open any league from "My Leagues" to see the current rankings. Points are updated automatically after matches finish.',
+    "On the Leaderboard screen you can see members' points rankings, and you can also see the world ranking.":
+      "On the **Leaderboard** screen you can see members' points rankings, and you can also see the world ranking.",
     "Can I leave a league?": "Can I leave a league?",
     "Yes, you can leave a league at any time from the league details screen. Note that your predictions and points will remain in the league history.":
       "Yes, you can leave a league at any time from the Profile tab. Note that your predictions and points will remain in the league history.",
     "Matches & Fixtures": "Matches & Fixtures",
     "How do I view upcoming matches?": "How do I view upcoming matches?",
-    'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.':
-      'Go to the "Matches" tab to see all upcoming fixtures for your leagues. You can filter by round or competition.',
+    "On the League screen you can see today's matches.":
+      "On the **League** screen you can see today's matches.",
     "What match information is available?":
       "What match information is available?",
-    "For each match, you can see team lineups, live scores, match events (goals, cards, substitutions), and detailed statistics.":
-      "For each match, you can see team lineups, live scores, match events (goals, cards, substitutions), and detailed statistics.",
+    "For each match, you can see the match results.":
+      "For each match, you can see the match results.",
     "How often are match results updated?":
       "How often are match results updated?",
-    "Match results and scores are updated in real-time during live matches and automatically finalized when matches end.":
-      "Match results and scores are updated in real-time during live matches and automatically finalized when matches end.",
+    "Match results are updated every 5 minutes.":
+      "Match results are updated every 5 minutes.",
     "Account & Settings": "Account & Settings",
-    "How do I change my profile information?":
-      "How do I change my profile information?",
-    "Go to Settings and tap the edit icon next to your name. You can update your display name and profile photo.":
-      "Go to Settings and tap the edit icon next to your name. You can update your display name and profile photo.",
     "How do I change my password?": "How do I change my password?",
     "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.":
       "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.",
@@ -811,7 +810,8 @@ export const en = {
     "No notifications yet": "No notifications yet",
   },
   aiAnalysis: {
-    "AI analysis is available on match day": "AI analysis is available on match day",
+    "AI analysis is available on match day":
+      "AI analysis is available on match day",
     "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
       "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
@@ -968,7 +968,8 @@ export const en = {
     "My leagues": "My leagues",
     "Fixture {{number}}": "Fixture {{number}}",
     "View {{name}} profile": "View {{name}} profile",
-    "{{home}} versus {{away}}, {{status}}": "{{home}} versus {{away}}, {{status}}",
+    "{{home}} versus {{away}}, {{status}}":
+      "{{home}} versus {{away}}, {{status}}",
     "Verification code digit {{number}}": "Verification code digit {{number}}",
     "Enter a single digit": "Enter a single digit",
     "Resend verification code": "Resend verification code",

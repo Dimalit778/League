@@ -55,9 +55,10 @@ export default function MatchDetailsTabs({
     if (!isScrollingProgrammatically.current) setActiveTab(visibleIndex);
   }).current;
   const pageStyle = useMemo(() => ({ width: containerWidth }), [containerWidth]);
+
   const renderItem = useCallback(
     ({ item }: { item: (typeof tabs)[number] }) => (
-      <View style={pageStyle} className="flex-1">
+      <View style={pageStyle} className="flex-1 py-4">
         {item.id === 0 ? (
           <PredictionRank predictions={match.predictions ?? []} isLoading={isPredictionsLoading} />
         ) : hasOpenedAi ? (
@@ -74,7 +75,7 @@ export default function MatchDetailsTabs({
       className="flex-1"
       onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
     >
-      <View className="flex-row justify-around pt-4">
+      <View className="flex-row justify-around bg-surface">
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
           const Icon = tab.icon;
@@ -85,12 +86,10 @@ export default function MatchDetailsTabs({
               accessibilityRole="tab"
               accessibilityLabel={t(tab.title)}
               accessibilityState={{ selected: isActive }}
-              className={`min-h-12 flex-row items-center border-b-2 px-4 pb-3 gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
+              className={`min-h-16 flex-row items-center border-b-2  gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
             >
               <Icon size={20} color={isActive ? colors.primary : colors.muted} strokeWidth={2} />
-              <Text variant="title" className={`font-medium ${isActive ? 'text-primary' : 'text-muted'}`}>
-                {t(tab.title)}
-              </Text>
+              <Text className={`text-2xl font-oswald ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
             </TouchableOpacity>
           );
         })}

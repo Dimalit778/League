@@ -1,21 +1,19 @@
+import { TrophyIcon } from '@/assets/icons';
 import { images } from '@/assets/images';
-import { CollapsibleHeader, Error, Row, Text } from '@/components';
+import { CollapsibleHeader, Error, Row, TabButton, Text } from '@/components';
 import {
   useGetCompetitionLeaderboard,
   useGetLeaderboard,
   useGetLeagueAndMembers,
 } from '@/features/leagues/hooks/useLeagues';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAlert } from '@/providers/AlertProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useCompetitionId, useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
-import { router } from 'expo-router';
-import { Trophy } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Share, View } from 'react-native';
+import { Share, View } from 'react-native';
 import { InviteFriendsCard } from '../components/leaderboard/InviteFriendsCard';
 import {
   LeaderboardAudienceToggle,
@@ -32,9 +30,6 @@ const Header = ({
   audience: LeaderboardAudience;
   setAudience: (audience: LeaderboardAudience) => void;
 }) => {
-  const { colors } = useThemeTokens();
-  const { t } = useTranslation();
-
   return (
     <View className="w-full px-4">
       <View className="relative w-full justify-center  h-12">
@@ -42,20 +37,9 @@ const Header = ({
           <LeaderboardAudienceToggle value={audience} onChange={setAudience} />
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('My leagues')}
-          hitSlop={4}
-          onPress={() => router.push('/(app)/(user)/leagues/my-leagues')}
-          className="z-10 items-center justify-center rounded-full border border-border bg-subtle active:opacity-70 w-12 h-12"
-          style={{
-            position: 'absolute',
-            end: 0,
-            top: 0,
-          }}
-        >
-          <Trophy color={colors.text} size={24} strokeWidth={1.5} />
-        </Pressable>
+        <View className="absolute end-0 top-0" pointerEvents="box-none">
+          <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} />
+        </View>
       </View>
     </View>
   );

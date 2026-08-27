@@ -40,7 +40,7 @@ describe('SignInScreen', () => {
 
     fireEvent.press(getByText('Sign Up'));
 
-    expect(getByPlaceholderText('Full Name')).toBeTruthy();
+    expect(getByPlaceholderText('Email')).toBeTruthy();
     expect(getByText('Create account')).toBeTruthy();
   });
 

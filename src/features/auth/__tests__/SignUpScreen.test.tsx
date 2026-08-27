@@ -16,10 +16,10 @@ describe('SignUpScreen', () => {
     expect(getByText('Create account')).toBeTruthy();
   });
 
-  it('renders fullname, email, and password fields', () => {
-    const { getByPlaceholderText } = render(<SignUpScreen />);
+  it('renders email and password fields', () => {
+    const { getByPlaceholderText, queryByPlaceholderText } = render(<SignUpScreen />);
 
-    expect(getByPlaceholderText('Full Name')).toBeTruthy();
+    expect(queryByPlaceholderText('Full Name')).toBeNull();
     expect(getByPlaceholderText('Email')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
   });

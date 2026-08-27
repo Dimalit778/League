@@ -74,7 +74,6 @@ export const signIn = (email: string, password: string, queryClient: QueryClient
 export const signUp = (
   email: string,
   password: string,
-  fullname: string,
   acceptance: LegalAcceptanceContext,
 ) =>
   withNetworkGuard(async () => {
@@ -92,10 +91,11 @@ export const signUp = (
       email: email.trim().toLowerCase(),
       password,
       options: {
+        // No full_name is sent: handle_new_user() falls back to the email prefix.
         data: {
-          full_name: fullname,
           provider: 'email',
           legal_accepted: true,
+          legal_age_confirmed: true,
           legal_terms_version: acceptance.termsVersion,
           legal_privacy_version: acceptance.privacyVersion,
           legal_locale: acceptance.locale,
