@@ -1,4 +1,4 @@
-import { Button, InputField, Row, Text } from '@/components';
+import { Button, InputField, Text } from '@/components';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -7,6 +7,7 @@ import { Link, router } from 'expo-router';
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { View } from 'react-native';
 import * as yup from 'yup';
 const signInSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -49,63 +50,64 @@ export default function SignInForm() {
   };
 
   return (
-    <>
-      <InputField
-        control={control}
-        name="email"
-        placeholder={t('Email')}
-        variant="auth"
-        autoComplete="email"
-        secureTextEntry={false}
-        error={errors.email}
-        icon={<Mail size={22} color={colors.muted} strokeWidth={1.5} />}
-        clearError={clearError}
-      />
+    <View className="gap-8">
+      <View className="gap-3">
+        <InputField
+          control={control}
+          name="email"
+          placeholder={t('Email')}
+          variant="auth"
+          autoComplete="email"
+          secureTextEntry={false}
+          error={errors.email}
+          icon={<Mail size={22} color={colors.muted} strokeWidth={1.5} />}
+          clearError={clearError}
+        />
 
-      <InputField
-        control={control}
-        name="password"
-        placeholder={t('Password')}
-        variant="auth"
-        autoComplete="current-password"
-        secureTextEntry={!showPassword}
-        icon={<LockKeyhole size={22} color={colors.muted} strokeWidth={1.5} />}
-        rightIcon={
-          showPassword ? (
-            <Eye size={18} color={colors.muted} strokeWidth={2} />
-          ) : (
-            <EyeOff size={18} color={colors.muted} strokeWidth={2} />
-          )
-        }
-        onRightIconPress={() => setShowPassword(!showPassword)}
-        error={errors.password}
-        clearError={clearError}
-      />
+        <InputField
+          control={control}
+          name="password"
+          placeholder={t('Password')}
+          variant="auth"
+          autoComplete="current-password"
+          secureTextEntry={!showPassword}
+          icon={<LockKeyhole size={22} color={colors.muted} strokeWidth={1.5} />}
+          rightIcon={
+            showPassword ? (
+              <Eye size={18} color={colors.muted} strokeWidth={2} />
+            ) : (
+              <EyeOff size={18} color={colors.muted} strokeWidth={2} />
+            )
+          }
+          onRightIconPress={() => setShowPassword(!showPassword)}
+          error={errors.password}
+          clearError={clearError}
+        />
 
-      {errorMessage ? (
-        <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
-          {errorMessage}
-        </Text>
-      ) : null}
-      <Row>
-        <Link href="/(auth)/forgot-password" asChild>
-          <Text variant="bodySmall" accessibilityRole="link" tone="info" className="min-h-11 py-3 font-semibold">
+        {errorMessage ? (
+          <Text accessibilityLiveRegion="assertive" className="text-center text-sm text-error">
+            {errorMessage}
+          </Text>
+        ) : null}
+        <Link href="/(auth)/forgot-password" asChild className="px-2">
+          <Text variant="bodySmall" accessibilityRole="link" tone="info">
             {t('Forgot Password')}
           </Text>
         </Link>
-      </Row>
-
-      <Button
-        label={t('Sign In')}
-        accessibilityLabel={t('Sign In')}
-        onPress={handleSubmit(onSubmit)}
-        loading={isLoading}
-        disabled={!isValid || isLoading}
-        variant="primary"
-        size="lg"
-        fullWidth
-        className="rounded-2xl"
-      />
-    </>
+      </View>
+      <View className="">
+        <Button
+          label={t('Sign In')}
+          accessibilityLabel={t('Sign In')}
+          onPress={handleSubmit(onSubmit)}
+          loading={isLoading}
+          disabled={!isValid || isLoading}
+          variant="primary"
+          size="lg"
+          fullWidth
+          className="rounded-2xl"
+        />
+      </View>
+    </View>
   );
 }

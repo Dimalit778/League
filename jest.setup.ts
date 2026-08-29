@@ -436,27 +436,65 @@ jest.mock('expo-image-picker', () => ({
   MediaTypeOptions: { Images: 'Images' },
 }));
 
-jest.mock('expo-apple-authentication', () => ({
-  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
-  signInAsync: jest.fn(() =>
-    Promise.resolve({
-      identityToken: 'mock-apple-id-token',
-      authorizationCode: 'mock-auth-code',
-      fullName: null,
-      email: null,
-      user: 'mock-apple-user',
-      state: null,
-      realUserStatus: 1,
-    })
-  ),
-  AppleAuthenticationScope: {
-    FULL_NAME: 0,
-    EMAIL: 1,
-  },
-}));
+jest.mock('expo-apple-authentication', () => {
+  const React = require('react');
+  const { Pressable } = require('react-native');
+  return {
+    isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+    signInAsync: jest.fn(() =>
+      Promise.resolve({
+        identityToken: 'mock-apple-id-token',
+        authorizationCode: 'mock-auth-code',
+        fullName: null,
+        email: null,
+        user: 'mock-apple-user',
+        state: null,
+        realUserStatus: 1,
+      })
+    ),
+    AppleAuthenticationScope: {
+      FULL_NAME: 0,
+      EMAIL: 1,
+    },
+    AppleAuthenticationButtonType: {
+      SIGN_IN: 0,
+      CONTINUE: 1,
+      SIGN_UP: 2,
+    },
+    AppleAuthenticationButtonStyle: {
+      WHITE: 0,
+      WHITE_OUTLINE: 1,
+      BLACK: 2,
+    },
+    AppleAuthenticationButton: ({ onPress, buttonType, testID, style }: any) => {
+      const label =
+        buttonType === 2 ? 'Sign up with Apple' : buttonType === 1 ? 'Continue with Apple' : 'Sign in with Apple';
+      return React.createElement(Pressable, {
+        onPress,
+        testID,
+        accessibilityRole: 'button',
+        accessibilityLabel: label,
+        style,
+      });
+    },
+  };
+});
 
-jest.mock('@react-native-google-signin/google-signin', () => ({
-  GoogleSignin: {
+jest.mock('@react-native-google-signin/google-signin', () => {
+  const React = require('react');
+  const { Pressable } = require('react-native');
+  const GoogleSigninButton: any = ({ onPress, disabled }: any) =>
+    React.createElement(Pressable, {
+      onPress,
+      disabled,
+      accessibilityRole: 'button',
+      accessibilityLabel: 'Sign in with Google',
+    });
+  GoogleSigninButton.Size = { Standard: 0, Wide: 1, Icon: 2 };
+  GoogleSigninButton.Color = { Dark: 0, Light: 1 };
+  return {
+    GoogleSigninButton,
+    GoogleSignin: {
     configure: jest.fn(),
     hasPlayServices: jest.fn(() => Promise.resolve(true)),
     signIn: jest.fn(() =>
@@ -492,7 +530,8 @@ jest.mock('@react-native-google-signin/google-signin', () => ({
   },
   isErrorWithCode: jest.fn(() => false),
   isSuccessResponse: jest.fn(() => true),
-}));
+  };
+});
 
 jest.mock('@/lib/supabase', () => ({
   supabase: {

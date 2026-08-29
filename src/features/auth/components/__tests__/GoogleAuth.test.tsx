@@ -12,12 +12,12 @@ describe('GoogleAuth', () => {
     jest.clearAllMocks();
   });
 
-  it('exposes an accessible sign in label without visible text', () => {
-    const { getByLabelText, queryByText } = render(
+  it('exposes an accessible sign in label', () => {
+    const { getByLabelText, getByText } = render(
       <GoogleAuth setIsLoading={jest.fn()} isLoading={false} mode="signIn" legalAccepted />,
     );
-    expect(getByLabelText('Sign in with Google')).toBeTruthy();
-    expect(queryByText('Sign in with Google')).toBeNull();
+    expect(getByLabelText('Continue with Google')).toBeTruthy();
+    expect(getByText('Continue with Google')).toBeTruthy();
   });
 
   it('calls Google sign in when pressed on native', async () => {

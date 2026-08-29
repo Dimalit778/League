@@ -47,8 +47,9 @@ export const he = {
     Validation: "אימות",
     "Privacy Policy": "מדיניות פרטיות",
     "Terms of Service": "תנאי שימוש",
+    and: "ו",
     "I agree to the": "אני מסכים לתנאי",
-    "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים לתנאי",
+    "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים ל",
     "and acknowledge the": "ומאשר שקראתי את",
     "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
       "אישור גיל 13 ומעלה, תנאי השימוש ומדיניות הפרטיות",
@@ -59,8 +60,7 @@ export const he = {
   auth: {
     "Sign In": "התחבר",
     "Sign In Error": "שגיאה בהתחברות",
-    "Sign Up": "רכישה",
-    "Sign up with Google": "הרשמה עם Google",
+    "Sign Up": "הרשמה",
     "Sign Out": "התנתק",
     "Apple sign in failed. Please try again.":
       "ההתחברות באמצעות Apple נכשלה. נסו שוב.",
@@ -102,20 +102,17 @@ export const he = {
     Logout: "יציאה",
     "Create account": "יצירת חשבון",
     "Forgot Password": "שכחתי סיסמה",
-    "Sign in with Google": "התחברות עם Google",
+    "Continue with Google": "המשך עם Google",
     "Sign in with Apple": "התחברות עם Apple",
-    "Sign up with Apple": "הרשמה עם Apple",
+    "Continue with Apple": "המשך עם Apple",
     "Welcome Back": "ברוכים השבים",
     "Get Started": "מתחילים",
     "Every match is a challenge": "כל משחק הוא אתגר",
-    "Predict scores, compete with friends, and climb the table.":
-      "מנחשים תוצאות, מתחרים עם חברים ומטפסים בטבלה.",
     "Already have an account?": "כבר יש לך חשבון?",
     "Create your Champo account": "יצירת חשבון Champo",
     Back: "חזרה",
     "Don't have an account?": "אין לך חשבון?",
     "Password strength": "חוזק הסיסמה",
-    "Strong password": "סיסמה חזקה",
     "At least 8 characters with a letter and a number":
       "לפחות 8 תווים, כולל אות ומספר",
     "Reset Password": "איפוס סיסמה",
@@ -301,6 +298,8 @@ export const he = {
     "Delete Account": "מחיקת חשבון",
     "Delete account confirmation message":
       "האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.",
+    "Delete account apple note":
+      "לסיום תתבקש לאמת מול Apple — האימות נדרש כדי להשלים את מחיקת החשבון.",
   },
   // Help & Support
   help: {
@@ -798,9 +797,7 @@ export const he = {
     "{{count}} correct predictions": "{{count}} ניחושים נכונים",
     "{{count}} matches played": "{{count}} משחקים שוחקו",
     "Code resent successfully!": "הקוד נשלח מחדש בהצלחה!",
-    "Change email address": "שינוי דוא״ל",
     "Confirm and continue": "אימות והמשך",
-    "Didn't receive the code?": "לא קיבלתם את הקוד?",
     "Email verified successfully!": "כתובת הדוא״ל אומתה בהצלחה!",
     "Enter the code": "הקלידו את הקוד",
     "Forgot your password?": "שכחתם את הסיסמה?",

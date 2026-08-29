@@ -1,4 +1,5 @@
 // Layout
+export { AdaptiveCenter } from "./layout/AdaptiveCenter";
 export { CollapsibleHeader } from "./layout/CollapsibleHeader";
 export { EmptyState } from "./layout/EmptyState";
 export { Error } from "./layout/Error";

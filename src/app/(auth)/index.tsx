@@ -1,5 +1,1 @@
-import LandingScreen from '@/features/auth/screens/LandingScreen';
-
-export default function Landing() {
-  return <LandingScreen />;
-}
+export { default } from '@/features/auth/screens/ForgotPasswordScreen';

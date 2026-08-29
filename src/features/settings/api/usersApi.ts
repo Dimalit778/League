@@ -4,7 +4,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Platform } from 'react-native';
 
-const usesAppleIdentity = (user: {
+export const usesAppleIdentity = (user: {
   identities?: { provider: string }[];
   app_metadata?: { provider?: string; providers?: string[] };
 }) =>

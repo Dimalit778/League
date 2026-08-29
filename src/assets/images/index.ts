@@ -7,6 +7,7 @@ export const images = {
     pitchGrass: require("./pitch-grass.png"),
     bgStadium: require("./bg-stadium.png"),
     ball: require("./ball.png"),
+    wallpaperBall: require("./wallpaper-ball.png"),
 
     //brands
     brandOnBoarding: require("./brand-onBording.png"),
@@ -20,5 +21,5 @@ export const images = {
     passwordLogo: require("./password.png"),
     mailLogo: require("./mail.png"),
 
-    appleWhiteLogo: require("./appleid_white.png"),
+    appleWhite360: require("./apple-360-white.png"),
 };

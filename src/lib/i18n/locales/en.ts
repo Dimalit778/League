@@ -49,6 +49,7 @@ export const en = {
     Leave: "Leave",
     "Privacy Policy": "Privacy Policy",
     "Terms of Service": "Terms of Service",
+    and: "and",
     "I agree to the": "I agree to the",
     "I am 13 or older, and I agree to the":
       "I am 13 or older, and I agree to the",
@@ -63,10 +64,12 @@ export const en = {
 
     "Delete account confirmation message":
       "Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone.",
+    "Delete account apple note":
+      "To finish, you’ll be asked to verify with Apple — this is required to remove your account.",
     "Sign In": "Sign In",
     "Sign In Error": "Sign In Error",
     "Sign Up": "Sign Up",
-    "Sign up with Google": "Sign up with Google",
+    "Continue with Google": "Continue with Google",
     "Sign Out": "Sign Out",
     "Apple sign in failed. Please try again.":
       "Apple sign in failed. Please try again.",
@@ -113,14 +116,11 @@ export const en = {
 
     "Get Started": "Get Started",
     "Every match is a challenge": "Every match is a challenge",
-    "Predict scores, compete with friends, and climb the table.":
-      "Predict scores, compete with friends, and climb the table.",
     "Already have an account?": "Already have an account?",
     "Create your Champo account": "Create your Champo account",
     Back: "Back",
     "Don't have an account?": "Don't have an account?",
     "Password strength": "Password strength",
-    "Strong password": "Strong password",
     "At least 8 characters with a letter and a number":
       "At least 8 characters with a letter and a number",
     "Reset Password": "Reset Password",
@@ -144,7 +144,7 @@ export const en = {
     "Failed to update password": "Failed to update password",
 
     "Sign in with Apple": "Sign in with Apple",
-    "Sign up with Apple": "Sign up with Apple",
+    "Continue with Apple": "Continue with Apple",
     // form errors
     "Please enter a valid email address": "Please enter a valid email address",
     "Minimum 8 characters": "Minimum 8 characters",
@@ -886,7 +886,6 @@ export const en = {
     "Resend New Link": "Resend New Link",
     "Reset link is invalid or expired.": "Reset link is invalid or expired.",
     "Save New Password": "Save New Password",
-    "Sign in with Google": "Sign in with Google",
     "This league is full. Upgrade to create larger leagues.":
       "This league is full. Upgrade to create larger leagues.",
     "This league is full.": "This league is full.",
@@ -903,9 +902,7 @@ export const en = {
     "{{count}} correct predictions": "{{count}} correct predictions",
     "{{count}} matches played": "{{count}} matches played",
     "Code resent successfully!": "Code resent successfully!",
-    "Change email address": "Change email address",
     "Confirm and continue": "Confirm and continue",
-    "Didn't receive the code?": "Didn't receive the code?",
     "Email address is missing. Please try signing up again.":
       "Email address is missing. Please try signing up again.",
     "Email verified successfully!": "Email verified successfully!",

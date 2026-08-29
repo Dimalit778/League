@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import AppleAuth from '../AppleAuth';
 
@@ -19,36 +19,33 @@ describe('AppleAuth', () => {
     jest.clearAllMocks();
   });
 
-  it('exposes an accessible sign-in label without visible text', async () => {
-    const { getByLabelText, queryByText } = render(
+  it('exposes an accessible "Continue with Apple" label', async () => {
+    const { getByLabelText } = render(
       <AppleAuth setIsLoading={jest.fn()} isLoading={false} legalAccepted />,
     );
 
     await waitFor(() => {
-      expect(getByLabelText('Sign in with Apple')).toBeTruthy();
+      expect(getByLabelText('Continue with Apple')).toBeTruthy();
     });
-    expect(queryByText('Sign in with Apple')).toBeNull();
   });
 
-  it('uses a sign-up accessibility label in sign-up mode', async () => {
+  it('renders the Continue button in sign-up mode too', async () => {
     const { getByLabelText } = render(
       <AppleAuth setIsLoading={jest.fn()} isLoading={false} mode="signUp" legalAccepted />,
     );
 
     await waitFor(() => {
-      expect(getByLabelText('Sign up with Apple')).toBeTruthy();
+      expect(getByLabelText('Continue with Apple')).toBeTruthy();
     });
   });
 
-  it('renders the bundled official Apple artwork at 52 points', async () => {
+  it('renders the native Sign in with Apple button', async () => {
     const { getByTestId } = render(
       <AppleAuth setIsLoading={jest.fn()} isLoading={false} legalAccepted />,
     );
 
     await waitFor(() => {
-      const logo = getByTestId('apple-sign-in-logo');
-      expect(logo.props.source).toBeTruthy();
-      expect(StyleSheet.flatten(logo.props.style)).toMatchObject({ width: 52, height: 52 });
+      expect(getByTestId('apple-sign-in-button')).toBeTruthy();
     });
   });
 
