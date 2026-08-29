@@ -5,7 +5,7 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useEffect } from 'react';
-import { Alert, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { Text } from '@/components';
@@ -156,20 +156,20 @@ const GoogleAuth = ({
   const blocked = isLoading || !legalAccepted;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
+      testID="google-sign-in-button"
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: blocked }}
       disabled={blocked}
       onPress={handleGoogleSignIn}
-      style={styles.touchable}
+      style={({ pressed }) => [styles.touchable, blocked && styles.disabled, pressed && styles.pressed]}
     >
       <View style={styles.content}>
         <GoogleGIcon width={22} height={22} />
         <Text style={styles.label}>{label}</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -198,6 +198,14 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'android' && {
       fontFamily: 'sans-serif-medium',
     }),
+  },
+
+  pressed: {
+    opacity: 0.82,
+  },
+
+  disabled: {
+    opacity: 0.5,
   },
 });
 export default GoogleAuth;

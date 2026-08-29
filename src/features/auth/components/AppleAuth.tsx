@@ -6,7 +6,7 @@ import { formatErrorForUser } from '@/utils/errorFormats';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Image } from 'expo-image';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet } from 'react-native';
 
 const AppleAuth = ({
   setIsLoading,
@@ -107,14 +107,14 @@ const AppleAuth = ({
   const label = t('Continue with Apple');
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
+      testID="apple-sign-in-button"
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: blocked }}
       disabled={blocked}
       onPress={handleAppleSignIn}
-      style={styles.touchable}
+      style={({ pressed }) => [styles.touchable, blocked && styles.disabled, pressed && styles.pressed]}
     >
       <Image
         source={images.appleWhite360}
@@ -123,7 +123,7 @@ const AppleAuth = ({
         pointerEvents="none"
         accessible={false}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
