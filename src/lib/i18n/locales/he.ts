@@ -47,8 +47,9 @@ export const he = {
     Validation: "אימות",
     "Privacy Policy": "מדיניות פרטיות",
     "Terms of Service": "תנאי שימוש",
+    and: "ו",
     "I agree to the": "אני מסכים לתנאי",
-    "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים לתנאי",
+    "I am 13 or older, and I agree to the": "אני בן 13 ומעלה ומסכים ל",
     "and acknowledge the": "ומאשר שקראתי את",
     "Confirm you are 13 or older and accept Terms of Service and Privacy Policy":
       "אישור גיל 13 ומעלה, תנאי השימוש ומדיניות הפרטיות",
@@ -59,7 +60,7 @@ export const he = {
   auth: {
     "Sign In": "התחבר",
     "Sign In Error": "שגיאה בהתחברות",
-    "Sign Up": "רכישה",
+    "Sign Up": "הרשמה",
     "Sign up with Google": "הרשמה עם Google",
     "Sign Out": "התנתק",
     "Apple sign in failed. Please try again.":
@@ -103,8 +104,10 @@ export const he = {
     "Create account": "יצירת חשבון",
     "Forgot Password": "שכחתי סיסמה",
     "Sign in with Google": "התחברות עם Google",
+    "Continue with Google": "המשך עם Google",
     "Sign in with Apple": "התחברות עם Apple",
     "Sign up with Apple": "הרשמה עם Apple",
+    "Continue with Apple": "המשך עם Apple",
     "Welcome Back": "ברוכים השבים",
     "Get Started": "מתחילים",
     "Every match is a challenge": "כל משחק הוא אתגר",
@@ -301,6 +304,8 @@ export const he = {
     "Delete Account": "מחיקת חשבון",
     "Delete account confirmation message":
       "האם למחוק את החשבון? החשבון, הפרופיל והמידע האישי שלך יימחקו. ניחושים וניקוד מהעבר יישמרו בשם „שחקן שנמחק” כדי לשמור על היסטוריית הליגה. לא ניתן לבטל פעולה זו.",
+    "Delete account apple note":
+      "לסיום תתבקש לאמת מול Apple — האימות נדרש כדי להשלים את מחיקת החשבון.",
   },
   // Help & Support
   help: {

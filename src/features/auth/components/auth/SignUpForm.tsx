@@ -15,8 +15,8 @@ const signUpSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup
     .string()
-    .min(8, 'Minimum 8 characters')
-    .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Password must contain at least one letter and one number')
+    .min(8, 'At least 8 characters with a letter and a number')
+    .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'At least 8 characters with a letter and a number')
     .required('Password is required'),
 });
 
@@ -58,11 +58,7 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
     const email = form.email.trim().toLowerCase();
     const password = form.password;
 
-    const result = await signUp(
-      email,
-      password,
-      createLegalAcceptanceContext('email', 'sign_up'),
-    );
+    const result = await signUp(email, password, createLegalAcceptanceContext('email', 'sign_up'));
 
     if (result.success) {
       router.push({
@@ -73,74 +69,77 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
   };
 
   return (
-    <>
-      <InputField
-        control={control}
-        name="email"
-        placeholder={t('Email')}
-        variant="auth"
-        autoComplete="email"
-        icon={<Mail size={22} color={colors.muted} strokeWidth={1.5} />}
-        error={errors.email}
-        clearError={clearError}
-      />
-
-      <InputField
-        control={control}
-        name="password"
-        placeholder={t('Password')}
-        variant="auth"
-        autoComplete="new-password"
-        textContentType="newPassword"
-        secureTextEntry={!showPassword}
-        icon={<LockKeyhole size={22} color={colors.muted} strokeWidth={1.5} />}
-        error={errors.password}
-        onRightIconPress={() => setShowPassword(!showPassword)}
-        rightIcon={
-          showPassword ? (
-            <Eye size={18} color={colors.muted} strokeWidth={2} />
-          ) : (
-            <EyeOff size={18} color={colors.muted} strokeWidth={2} />
-          )
-        }
-        clearError={clearError}
-      />
-
-      <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2">
-        <Row keepLtr className="gap-2">
-          {[1, 2, 3, 4].map((segment) => (
-            <View
-              key={segment}
-              className="h-1.5 flex-1 rounded-full"
-              style={{ backgroundColor: segment <= passwordStrength ? '#FFB31A' : '#33435F' }}
-            />
-          ))}
-        </Row>
-        <Text variant="bodySmall" tone="muted" className="text-start">
-          {passwordStrength >= 4 ? t('Strong password') : t('At least 8 characters with a letter and a number')}
+    <View className="gap-8 ">
+      <View className="items-center h-10">
+        <Text accessibilityRole="header" variant="header" className="text-center">
+          {t('Create your account')}
         </Text>
       </View>
-      {errorMessage && (
-        <Text variant="bodySmall" tone="error" className="text-center">
-          {errorMessage}
-        </Text>
-      )}
+      <View className="gap-3">
+        <InputField
+          control={control}
+          name="email"
+          placeholder={t('Email')}
+          variant="auth"
+          autoComplete="email"
+          icon={<Mail size={22} color={colors.muted} strokeWidth={1.5} />}
+          error={errors.email}
+          clearError={clearError}
+        />
 
-      <View className="mt-6">
+        <InputField
+          control={control}
+          name="password"
+          placeholder={t('Password')}
+          variant="auth"
+          autoComplete="new-password"
+          textContentType="newPassword"
+          secureTextEntry={!showPassword}
+          icon={<LockKeyhole size={22} color={colors.muted} strokeWidth={1.5} />}
+          error={errors.password}
+          onRightIconPress={() => setShowPassword(!showPassword)}
+          rightIcon={
+            showPassword ? (
+              <Eye size={18} color={colors.muted} strokeWidth={2} />
+            ) : (
+              <EyeOff size={18} color={colors.muted} strokeWidth={2} />
+            )
+          }
+          clearError={clearError}
+        />
+
+        <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2 px-3">
+          <Row keepLtr className="gap-2">
+            {[1, 2, 3, 4].map((segment) => (
+              <View
+                key={segment}
+                className="h-1.5 flex-1 rounded-full"
+                style={{ backgroundColor: segment <= passwordStrength ? '#FFB31A' : '#33435F' }}
+              />
+            ))}
+          </Row>
+        </View>
+        {errorMessage && (
+          <Text variant="bodySmall" tone="error" className="text-center">
+            {errorMessage}
+          </Text>
+        )}
         <AuthLegalConsent accepted={acceptedLegal} onToggle={onToggleLegal} />
       </View>
 
-      <Button
-        label={t('Sign Up')}
-        accessibilityLabel={t('Sign Up')}
-        onPress={handleSubmit(onSubmit)}
-        loading={isLoading}
-        disabled={!isValid || !acceptedLegal || isLoading}
-        variant="primary"
-        size="lg"
-        fullWidth
-        className="rounded-2xl"
-      />
-    </>
+      <View className="">
+        <Button
+          label={t('Sign Up')}
+          accessibilityLabel={t('Sign Up')}
+          onPress={handleSubmit(onSubmit)}
+          loading={isLoading}
+          disabled={!isValid || !acceptedLegal || isLoading}
+          variant="primary"
+          size="lg"
+          fullWidth
+          className="rounded-2xl"
+        />
+      </View>
+    </View>
   );
 }

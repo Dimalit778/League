@@ -49,6 +49,7 @@ export const en = {
     Leave: "Leave",
     "Privacy Policy": "Privacy Policy",
     "Terms of Service": "Terms of Service",
+    and: "and",
     "I agree to the": "I agree to the",
     "I am 13 or older, and I agree to the":
       "I am 13 or older, and I agree to the",
@@ -63,10 +64,13 @@ export const en = {
 
     "Delete account confirmation message":
       "Are you sure? Your account, profile and personal data will be deleted. Past predictions and scores will remain under “Deleted Player” so league history stays accurate. This cannot be undone.",
+    "Delete account apple note":
+      "To finish, you’ll be asked to verify with Apple — this is required to remove your account.",
     "Sign In": "Sign In",
     "Sign In Error": "Sign In Error",
     "Sign Up": "Sign Up",
     "Sign up with Google": "Sign up with Google",
+    "Continue with Google": "Continue with Google",
     "Sign Out": "Sign Out",
     "Apple sign in failed. Please try again.":
       "Apple sign in failed. Please try again.",
@@ -145,6 +149,7 @@ export const en = {
 
     "Sign in with Apple": "Sign in with Apple",
     "Sign up with Apple": "Sign up with Apple",
+    "Continue with Apple": "Continue with Apple",
     // form errors
     "Please enter a valid email address": "Please enter a valid email address",
     "Minimum 8 characters": "Minimum 8 characters",

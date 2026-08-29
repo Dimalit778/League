@@ -15,7 +15,7 @@ export default function AuthLegalConsent({ accepted, onToggle }: Props) {
   const { t } = useTranslation();
 
   return (
-    <Row className="gap-2.5">
+    <Row className="items-center gap-3 px-2 mt-2">
       <Pressable
         onPress={onToggle}
         accessibilityRole="checkbox"
@@ -24,30 +24,32 @@ export default function AuthLegalConsent({ accepted, onToggle }: Props) {
         hitSlop={8}
       >
         <View
-          className="size-7 items-center justify-center rounded-md border"
+          className="size-8 items-center justify-center rounded-md border"
           style={{ borderColor: colors.primary, backgroundColor: accepted ? colors.primary : 'transparent' }}
         >
           {accepted ? <Check size={20} color={colors.onPrimary} strokeWidth={3} /> : null}
         </View>
       </Pressable>
-
-      <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-x-1">
+      <View className="flex-1">
         <Text variant="bodySmall" tone="muted">
           {t('I am 13 or older, and I agree to the')}
         </Text>
-        <Link href="/(auth)/terms" asChild>
-          <Text variant="bodySmall" tone="info" accessibilityRole="link" className="underline">
-            {t('Terms of Service')}
+        <Row className="gap-1 items-center ">
+          <Link href="/(auth)/terms" asChild>
+            <Text variant="bodySmall" tone="primary" accessibilityRole="link" className="underline">
+              {t('Terms of Service')}
+            </Text>
+          </Link>
+          <Text variant="bodySmall" tone="muted">
+            {t('and')}
           </Text>
-        </Link>
-        <Text variant="bodySmall" tone="muted">
-          {t('and acknowledge the')}
-        </Text>
-        <Link href="/(auth)/privacy" asChild>
-          <Text variant="bodySmall" tone="info" accessibilityRole="link" className="underline">
-            {t('Privacy Policy')}
-          </Text>
-        </Link>
+
+          <Link href="/(auth)/privacy" asChild>
+            <Text variant="bodySmall" tone="primary" accessibilityRole="link" className="underline">
+              {t('Privacy Policy')}
+            </Text>
+          </Link>
+        </Row>
       </View>
     </Row>
   );

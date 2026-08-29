@@ -40,7 +40,7 @@ export const BackButton = ({ fallbackHref, onPress, variant = 'default' }: BackB
       hitSlop={8}
       onPress={handlePress}
       className={`z-10 pe-1 items-center justify-center rounded-full border active:opacity-70  ${
-        isOnImage ? 'border-white/20 bg-[#061326]/70' : 'border-border bg-subtle'
+        isOnImage ? 'border-white/40 bg-black/55 shadow-lg shadow-black/60' : 'border-border bg-subtle'
       }`}
       style={{ width: SIZE, height: SIZE }}
     >

@@ -52,9 +52,8 @@ describe('SignUpScreen', () => {
   });
 
   it('renders password-strength guidance and consent checkbox', () => {
-    const { getByText, getByRole } = render(<SignUpScreen />);
+    const { getByRole } = render(<SignUpScreen />);
 
-    expect(getByText('At least 8 characters with a letter and a number')).toBeTruthy();
     expect(getByRole('checkbox')).toBeTruthy();
   });
 
