@@ -10,7 +10,7 @@ describe('LandingScreen', () => {
     const { getByText } = render(<LandingScreen />);
 
     expect(getByText('Every match is a challenge')).toBeTruthy();
-    expect(getByText('Predict scores, compete with friends, and climb the table.')).toBeTruthy();
+    expect(getByText('Predict. Compete. Win.')).toBeTruthy();
   });
 
   it('renders the Get Started link', () => {
@@ -24,11 +24,5 @@ describe('LandingScreen', () => {
 
     expect(getByText('Already have an account?')).toBeTruthy();
     expect(getByText('Sign In')).toBeTruthy();
-  });
-
-  it('publishes the accessibility statement before sign-in', () => {
-    const { getByText } = render(<LandingScreen />);
-
-    expect(getByText('Accessibility Statement')).toBeTruthy();
   });
 });

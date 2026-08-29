@@ -110,7 +110,6 @@ export const he = {
     "Every match is a challenge": "כל משחק הוא אתגר",
     "Already have an account?": "כבר יש לך חשבון?",
     "Create your Champo account": "יצירת חשבון Champo",
-    "Create your account": "יצירת החשבון שלך",
     Back: "חזרה",
     "Don't have an account?": "אין לך חשבון?",
     "Password strength": "חוזק הסיסמה",

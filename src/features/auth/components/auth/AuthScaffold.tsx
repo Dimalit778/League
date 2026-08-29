@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { AdaptiveCenter, Screen } from '@/components';
+import { AdaptiveCenter, Screen, Text } from '@/components';
 import { container } from '@/lib/nativewind/layout';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { isWeb } from '@/lib/platform';
@@ -22,6 +22,8 @@ type AuthScaffoldProps = {
 };
 
 export default function AuthScaffold({
+  title,
+  description,
   fallbackHref = '/(auth)',
   children,
   footer,
@@ -59,6 +61,17 @@ export default function AuthScaffold({
           <Header fallbackHref={fallbackHref} showBack={showInlineBack} />
           <AdaptiveCenter className={cn(container.form, 'gap-6 px-2')}>
             {emblem && <View className=" items-center">{emblem}</View>}
+
+            <View className="gap-2">
+              <Text accessibilityRole="header" variant="header" className="text-center">
+                {title}
+              </Text>
+              {description ? (
+                <Text variant="body" tone="muted" className="text-center">
+                  {description}
+                </Text>
+              ) : null}
+            </View>
 
             <View>
               {children}

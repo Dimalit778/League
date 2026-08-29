@@ -88,6 +88,16 @@ export default function VerifyEmailScreen() {
   const isCodeValid = code.every(Boolean) && code.join('').length === CODE_LENGTH;
   const timer = `00:${String(resendCoolDown).padStart(2, '0')}`;
 
+  if (!email) {
+    return (
+      <AuthScaffold title={t('Enter the code')} fallbackHref="/(auth)/signUp" footer={<AuthLegalLinks />}>
+        <Text className="text-center text-error">
+          {t('Email address is missing. Please try signing up again.')}
+        </Text>
+      </AuthScaffold>
+    );
+  }
+
   return (
     <AuthScaffold
       title={t('Enter the code')}
@@ -97,6 +107,10 @@ export default function VerifyEmailScreen() {
       footer={<AuthLegalLinks />}
     >
       <View className="gap-2">
+        <Text accessibilityRole="text" variant="body" tone="primary" className="text-center">
+          {email}
+        </Text>
+
         <VerificationCodeInput value={code} onChange={handleCodeChange} hasError={Boolean(errorMessage)} />
 
         <View className="min-h-6 justify-center" accessibilityLiveRegion="polite">

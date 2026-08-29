@@ -70,11 +70,6 @@ export default function SignUpForm({ acceptedLegal, onToggleLegal }: Props) {
 
   return (
     <View className="gap-8 ">
-      <View className="items-center h-10">
-        <Text accessibilityRole="header" variant="header" className="text-center">
-          {t('Create your account')}
-        </Text>
-      </View>
       <View className="gap-3">
         <InputField
           control={control}

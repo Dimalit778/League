@@ -118,7 +118,6 @@ export const en = {
     "Every match is a challenge": "Every match is a challenge",
     "Already have an account?": "Already have an account?",
     "Create your Champo account": "Create your Champo account",
-    "Create your account": "Create your account",
     Back: "Back",
     "Don't have an account?": "Don't have an account?",
     "Password strength": "Password strength",

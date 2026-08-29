@@ -51,9 +51,6 @@ export default function SignInForm() {
 
   return (
     <View className="gap-8">
-      <Text accessibilityRole="header" variant="header" className="text-center">
-        {t('Welcome Back')}
-      </Text>
       <View className="gap-3">
         <InputField
           control={control}
