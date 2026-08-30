@@ -10,7 +10,7 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
   return (
     <View className="flex-1 items-center gap-1">
       {icon}
-      <Text variant="subtitle" tone="primary" numberOfLines={1}>
+      <Text variant="title" size="lg" tone="primary" numberOfLines={1}>
         {value}
       </Text>
       <Text variant="caption" tone="muted" numberOfLines={1}>
@@ -35,7 +35,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
         <Row className="items-center gap-3">
           <MyImage source={league.competition_flag ?? ''} width={48} height={48} />
           <View className="min-w-0 gap-0.5">
-            <Text variant="titleLarge" numberOfLines={1}>
+            <Text variant="heading" size="2xl" numberOfLines={1}>
               {league.league_name}
             </Text>
             <Text tone="muted" numberOfLines={1}>
@@ -51,7 +51,7 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
           }}
         >
           <Star size={16} color={colors.primary} strokeWidth={1.5} />
-          <Text variant="bodySmall" tone="primary" className="font-semibold" numberOfLines={1}>
+          <Text variant="body" size="sm" tone="primary" className="font-semibold" numberOfLines={1}>
             {t('Primary League')}
           </Text>
         </Row>

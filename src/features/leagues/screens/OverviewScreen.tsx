@@ -3,6 +3,7 @@ import { ArrowIcon, CollapsibleHeader, Section } from '@/components';
 import { StatsPredictionSection } from '@/features/members/components/stats/StatsPredictionSection';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
 import { View } from 'react-native';
@@ -15,6 +16,7 @@ import { useLeagueOverview } from '../hooks/useLeagueOverview';
 
 export default function OverviewScreen() {
   const { leagueSummary, stats, todayMatches, isLoading } = useLeagueOverview();
+  const { leagueName } = leagueSummary;
   const memberId = useMemberId();
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
@@ -29,20 +31,20 @@ export default function OverviewScreen() {
       overlap={120}
       expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} />}
       collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
-      persistentHeader={<PersistentHeaderActions flagUrl={leagueSummary.flagUrl} />}
+      persistentHeader={<PersistentHeaderActions flagUrl={leagueSummary.flagUrl} leagueName={leagueName} />}
     >
-      <View className="gap-6 ">
+      <View className={spacing.section}>
         <LeagueSummary leagueSummary={leagueSummary} />
 
         <TodayMatches matches={todayMatches} />
 
-        <Section title={t('Current form')} accent className="px-4">
+        <Section title={t('Current form')} accent className={spacing.screen}>
           <CurrentFormCard results={stats.recentForm} />
         </Section>
         <Section
           title={t('Stats')}
           accent
-          className="px-4"
+          className={spacing.screen}
           actionIcon={<ArrowIcon size={20} color={colors.text} direction="forward" strokeWidth={2} />}
           onActionPress={() => {
             if (!memberId) return;

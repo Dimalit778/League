@@ -32,7 +32,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
                 <View className="h-6 w-1.5 items-center justify-center">
                   <View className="size-1.5 rounded-full bg-primary" />
                 </View>
-                <FormattedText variant="bodySmall" tone="secondary" className="min-w-0 flex-1 leading-6">
+                <FormattedText variant="body" size="sm" tone="secondary" className="min-w-0 flex-1 leading-6">
                   {paragraph}
                 </FormattedText>
               </Row>

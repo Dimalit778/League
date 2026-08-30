@@ -97,14 +97,15 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
         {memberId ? (
           <>
             <Text
-              variant={position === 1 ? 'subtitle' : 'body'}
+              variant="body"
+              size={position === 1 ? 'lg' : 'base'}
               numberOfLines={1}
               ellipsizeMode="tail"
               className="w-full text-center font-semibold text-white"
             >
               {displayName}
             </Text>
-            <Text variant="subtitle" numberOfLines={1} ellipsizeMode="tail" style={{ color }}>
+            <Text variant="title" size="lg" numberOfLines={1} ellipsizeMode="tail" style={{ color }}>
               {member?.total_points ?? 0} {t('pts')}
             </Text>
           </>

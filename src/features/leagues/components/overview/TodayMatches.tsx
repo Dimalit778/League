@@ -27,7 +27,7 @@ export function TodayMatches({ matches }: { matches: MatchCardData[] }) {
     <>
       <Row className="gap-2 px-4">
         <View className="h-4 w-1 rounded-full bg-primary" />
-        <Text variant="subtitle" numberOfLines={1} className="min-w-0 flex-1">
+        <Text variant="title" size="lg" numberOfLines={1} className="min-w-0 flex-1">
           {t('Today matches')}
         </Text>
       </Row>

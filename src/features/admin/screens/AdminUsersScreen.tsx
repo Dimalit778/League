@@ -53,15 +53,15 @@ const AdminUserRow = memo(function AdminUserRow({
     <Card className="h-full" contentClassName="min-h-[154px] gap-4">
       <View className="flex-row items-start gap-3">
         <View className="h-11 w-11 items-center justify-center rounded-2xl bg-subtle">
-          <Text variant="subtitle" tone="primary">
+          <Text variant="title" size="lg" tone="primary">
             {initials}
           </Text>
         </View>
         <View className="min-w-0 flex-1">
-          <Text variant="subtitle" numberOfLines={1}>
+          <Text variant="title" size="lg" numberOfLines={1}>
             {displayName}
           </Text>
-          <Text variant="bodySmall" tone="muted" ltr numberOfLines={1}>
+          <Text variant="body" size="sm" tone="muted" ltr numberOfLines={1}>
             {email || t('No email')}
           </Text>
         </View>

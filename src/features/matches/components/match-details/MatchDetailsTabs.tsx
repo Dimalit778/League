@@ -89,7 +89,7 @@ export default function MatchDetailsTabs({
               className={`min-h-16 flex-row items-center border-b-2  gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
             >
               <Icon size={20} color={isActive ? colors.primary : colors.muted} strokeWidth={2} />
-              <Text className={`text-2xl font-oswald ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
+              <Text className={`text-2xl font-sport ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
             </TouchableOpacity>
           );
         })}

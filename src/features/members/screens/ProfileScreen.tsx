@@ -67,7 +67,7 @@ const ProfileScreen = () => {
 
         <Achievements stats={stats} />
 
-        <View className="mt-4 rounded-2xl items-center  bg-surface p-4 gap-4">
+        <View className={cn('mt-4 items-center rounded-2xl bg-surface', spacing.card, spacing.stack)}>
           <Button
             label={t('Leave league')}
             variant="outline"
@@ -79,7 +79,7 @@ const ProfileScreen = () => {
             className="border-error"
           />
 
-          <Text variant="bodySmall" tone="muted" className=" text-center">
+          <Text variant="body" size="sm" tone="muted" className=" text-center">
             {t('You will lose access to this league.')}
           </Text>
         </View>

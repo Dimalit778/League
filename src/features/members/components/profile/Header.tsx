@@ -7,7 +7,7 @@ export const CollapsedHeader = ({ nickname }: { nickname?: string | undefined })
   return (
     <Row className="h-12 items-center justify-between px-4">
       <View className="min-w-0 flex-1 flex-row-reverse items-center gap-2.5">
-        <Text variant="titleLarge" className="min-w-0 flex-1" numberOfLines={1}>
+        <Text variant="heading" size="2xl" className="min-w-0 flex-1" numberOfLines={1}>
           {nickname}
         </Text>
       </View>

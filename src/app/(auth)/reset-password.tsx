@@ -1,5 +1,1 @@
-import ResetPasswordScreen from '@/features/auth/screens/ResetPasswordScreen';
-
-export default function ResetPassword() {
-  return <ResetPasswordScreen />;
-}
+export { default } from '@/features/auth/screens/ResetPasswordScreen';

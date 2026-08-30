@@ -13,7 +13,7 @@ describe('SignInScreen', () => {
   it('renders the heading', () => {
     const { getByText } = render(<SignInScreen />);
 
-    expect(getByText('Welcome Back')).toBeTruthy();
+    expect(getByText('Continue with Google')).toBeTruthy();
   });
 
   it('renders email and password input fields', () => {

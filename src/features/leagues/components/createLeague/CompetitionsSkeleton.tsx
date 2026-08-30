@@ -16,7 +16,7 @@ function CompetitionCardSkeleton() {
 export default function CompetitionsSkeleton() {
   return (
     <Screen edges={['bottom']}>
-      <View className="flex-1 flex-row flex-wrap gap-3 px-[18px] pt-6">
+      <View className="flex-1 flex-row flex-wrap gap-3 px-4 pt-6">
         {Array.from({ length: 6 }).map((_, index) => (
           <View key={index} className="w-[48%]">
             <CompetitionCardSkeleton />

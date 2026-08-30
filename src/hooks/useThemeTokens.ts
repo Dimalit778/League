@@ -1,5 +1,5 @@
-import { getThemeTokens, type ThemeName } from '@/lib/nativewind/nativeWind';
-import { useThemeStore } from '@/store/ThemeStore';
+import { getThemeTokens, type ThemeName } from "@/lib/nativewind/nativeWind";
+import { useThemeStore } from "@/store/ThemeStore";
 
 export const useThemeTokens = () => {
   const theme = useThemeStore((state) => state.theme as ThemeName);
@@ -7,11 +7,10 @@ export const useThemeTokens = () => {
 
   return {
     theme,
-    isDark: theme === 'dark',
+    isDark: theme === "dark",
     colors: tokens.colors,
     gradients: tokens.gradients,
     effects: tokens.effects,
-    fonts: tokens.fonts,
     spacing: tokens.spacing,
     radius: tokens.radius,
   } as const;

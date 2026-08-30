@@ -169,7 +169,7 @@ const AdminCompetitionsScreen = () => {
             <Card variant="elevated" className="mb-6" contentClassName="gap-4 p-4 md:p-6">
               <View>
                 <Text variant="title">{t('Add New Competition')}</Text>
-                <Text variant="bodySmall" tone="muted" className="mt-1">
+                <Text variant="body" size="sm" tone="muted" className="mt-1">
                   {t('Required fields are marked by their labels; optional values can be added later.')}
                 </Text>
               </View>
@@ -194,7 +194,7 @@ const AdminCompetitionsScreen = () => {
               </View>
               {validationError ? (
                 <View className="rounded-xl bg-error/10 p-3">
-                  <Text variant="bodySmall" tone="error">
+                  <Text variant="body" size="sm" tone="error">
                     {t(validationError)}
                   </Text>
                 </View>
@@ -238,10 +238,10 @@ const AdminCompetitionsScreen = () => {
                   <Card className="h-full" contentClassName="min-h-[230px] gap-4">
                     <View className="flex-row items-start gap-3">
                       <View className="min-w-0 flex-1">
-                        <Text variant="subtitle" numberOfLines={1}>
+                        <Text variant="title" size="lg" numberOfLines={1}>
                           {competition.name}
                         </Text>
-                        <Text variant="bodySmall" tone="muted" numberOfLines={1}>
+                        <Text variant="body" size="sm" tone="muted" numberOfLines={1}>
                           {competition.area}
                         </Text>
                       </View>

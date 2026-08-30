@@ -10,6 +10,7 @@ import {
 const semanticColorKeys: (keyof ThemeColors)[] = [
   'primary',
   'onPrimary',
+  'accent',
   'background',
   'surface',
   'subtle',
@@ -94,13 +95,6 @@ describe('themeTokens', () => {
     expect(Object.keys(themeTokens.dark.colors)).toEqual(semanticColorKeys);
   });
 
-  it('uses the font family names registered by Expo', () => {
-    expect(themeTokens.light.fonts).toEqual({
-      heading: 'Nunito_400Regular',
-      headingBold: 'Nunito_700Bold',
-    });
-  });
-
   it.each(['light', 'dark'] as const)('keeps semantic text colors WCAG AA on the %s surface', (theme) => {
     const { colors } = themeTokens[theme];
     const textColors = ['primary', 'text', 'muted', 'success', 'warning', 'error', 'info'] as const;
@@ -150,7 +144,6 @@ describe('getThemeTokens', () => {
     const tokens = getThemeTokens('dark');
     expect(tokens).toHaveProperty('colors');
     expect(tokens).toHaveProperty('gradients');
-    expect(tokens).toHaveProperty('fonts');
     expect(tokens).toHaveProperty('spacing');
     expect(tokens).toHaveProperty('radius');
   });

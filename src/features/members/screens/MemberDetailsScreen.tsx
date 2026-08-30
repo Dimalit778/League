@@ -89,10 +89,10 @@ export default function MemberDetailsScreen() {
           <AvatarImage path={member.avatar_url} nickname={displayName} />
         </View>
         <View className="mt-3 items-center">
-          <Text variant="titleLarge" className="text-center">
+          <Text variant="heading" size="2xl" className="text-center">
             {displayName}
           </Text>
-          <Text variant="bodySmall" tone="muted" className="mt-1 text-center">
+          <Text variant="body" size="sm" tone="muted" className="mt-1 text-center">
             {member.league?.name ?? ''}
           </Text>
         </View>
@@ -101,7 +101,7 @@ export default function MemberDetailsScreen() {
             <Text variant="caption" tone="muted">
               {t('Rank')}
             </Text>
-            <Text variant="titleLarge" tone="primary" className="text-center">
+            <Text variant="heading" size="2xl" tone="primary" className="text-center">
               {stats?.rank ? `#${stats.rank}` : '—'}
             </Text>
           </View>
@@ -110,7 +110,7 @@ export default function MemberDetailsScreen() {
             <Text variant="caption" tone="muted">
               {t('Points')}
             </Text>
-            <Text variant="titleLarge" tone="primary" className="text-center">
+            <Text variant="heading" size="2xl" tone="primary" className="text-center">
               {stats?.totalPoints ?? 0}
             </Text>
           </View>

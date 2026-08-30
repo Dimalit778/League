@@ -37,13 +37,13 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
   return (
     <View className={spacing.stack}>
       <Row>
-        <Text variant="subtitle">{t('Prediction statistics')}</Text>
+        <Text variant="title" size="lg">{t('Prediction statistics')}</Text>
       </Row>
 
       <Card variant="elevated" contentClassName="gap-4">
         <Row className="items-center gap-4">
           <View className="h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary bg-subtle">
-            <Text variant="titleLarge" className="text-center">
+            <Text variant="heading" size="2xl" className="text-center">
               {Math.round(accuracy)}%
             </Text>
           </View>
@@ -65,7 +65,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
             <View className="h-2 overflow-hidden rounded-full bg-border">
               <View className="h-full rounded-full bg-primary" style={{ width: `${accuracy}%` }} />
             </View>
-            <Text variant="bodySmall" tone="muted">
+            <Text variant="body" size="sm" tone="muted">
               {t('{{count}} correct predictions', { count: (stats?.bingoHits ?? 0) + (stats?.regularHits ?? 0) })}
             </Text>
           </View>

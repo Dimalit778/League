@@ -1,10 +1,10 @@
-import { Button, InputField, Text } from '@/components';
+import { images } from '@/assets/images';
+import { Button, InputField, MyImage, Row, Text } from '@/components';
 import {
   parseRecoveryTokensFromUrl,
   updatePasswordWithRecoveryTokens,
   type RecoveryTokens,
 } from '@/features/auth/api/authApi';
-import AuthLegalLinks from '@/features/auth/components/AuthLegalLinks';
 import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -50,6 +50,13 @@ const ResetPasswordScreen = () => {
       confirmPassword: '',
     },
   });
+  const password = passwordForm.watch('password') ?? '';
+  const passwordStrength = [
+    password.length > 0,
+    password.length >= 8,
+    /[A-Za-z]/.test(password) && /\d/.test(password),
+    password.length >= 10 && /[^A-Za-z0-9]/.test(password),
+  ].filter(Boolean).length;
 
   useEffect(() => {
     if (!url || recoveryTokens) return;
@@ -94,19 +101,11 @@ const ResetPasswordScreen = () => {
     }
   };
 
-  const emblem = (
-    <View className="size-[72px] items-center justify-center rounded-[22px] border border-[#FFCC65]/45 bg-[#0B213B]/90">
-      <LockKeyhole size={34} color="#FFB31A" strokeWidth={1.8} />
-    </View>
-  );
-
   return (
     <AuthScaffold
       title={t('New Password')}
-      description={t('Enter your new password')}
       fallbackHref="/(auth)/signIn"
-      emblem={emblem}
-      footer={<AuthLegalLinks />}
+      emblem={<MyImage source={images.passwordLogo} width={140} height={140} contentFit="contain" />}
     >
       {linkError && !recoveryTokens ? (
         <View className="gap-4">
@@ -140,14 +139,22 @@ const ResetPasswordScreen = () => {
             error={passwordForm.formState.errors.password}
             icon={<LockKeyhole size={24} color={colors.muted} />}
             rightIcon={
-              showPassword ? (
-                <Eye size={24} color={colors.muted} />
-              ) : (
-                <EyeOff size={24} color={colors.muted} />
-              )
+              showPassword ? <Eye size={24} color={colors.muted} /> : <EyeOff size={24} color={colors.muted} />
             }
             onRightIconPress={() => setShowPassword(!showPassword)}
           />
+
+          <View accessible accessibilityRole="text" accessibilityLabel={t('Password strength')} className="gap-2 px-3">
+            <Row keepLtr className="gap-2">
+              {[1, 2, 3, 4].map((segment) => (
+                <View
+                  key={segment}
+                  className="h-1.5 flex-1 rounded-full"
+                  style={{ backgroundColor: segment <= passwordStrength ? '#FFB31A' : '#33435F' }}
+                />
+              ))}
+            </Row>
+          </View>
 
           <InputField
             control={passwordForm.control}
@@ -160,11 +167,7 @@ const ResetPasswordScreen = () => {
             error={passwordForm.formState.errors.confirmPassword}
             icon={<LockKeyhole size={24} color={colors.muted} />}
             rightIcon={
-              showConfirmPassword ? (
-                <Eye size={24} color={colors.muted} />
-              ) : (
-                <EyeOff size={24} color={colors.muted} />
-              )
+              showConfirmPassword ? <Eye size={24} color={colors.muted} /> : <EyeOff size={24} color={colors.muted} />
             }
             onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
           />
@@ -175,16 +178,18 @@ const ResetPasswordScreen = () => {
             </Text>
           ) : null}
 
-          <Button
-            label={t('Save New Password')}
-            onPress={passwordForm.handleSubmit(handleResetPassword)}
-            loading={isSubmitting}
-            disabled={!passwordForm.formState.isValid || isSubmitting}
-            variant="primary"
-            size="lg"
-            fullWidth
-            className="rounded-2xl"
-          />
+          <View className="pt-4">
+            <Button
+              label={t('Save New Password')}
+              onPress={passwordForm.handleSubmit(handleResetPassword)}
+              loading={isSubmitting}
+              disabled={!passwordForm.formState.isValid || isSubmitting}
+              variant="primary"
+              size="lg"
+              fullWidth
+              className="rounded-2xl"
+            />
+          </View>
         </View>
       )}
     </AuthScaffold>

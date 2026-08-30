@@ -147,7 +147,7 @@ const AdminLeagueCard = memo(function AdminLeagueCard({
             <Trophy size={21} color={colors.primary} strokeWidth={1.9} />
           </View>
           <View className="min-w-0 flex-1">
-            <Text variant="subtitle" numberOfLines={1}>
+            <Text variant="title" size="lg" numberOfLines={1}>
               {league.name}
             </Text>
             <Text variant="caption" tone="muted" numberOfLines={1}>
@@ -171,7 +171,7 @@ const AdminLeagueCard = memo(function AdminLeagueCard({
         </View>
 
         <View className="flex-row items-center justify-between border-t border-border pt-3">
-          <Text variant="bodySmall" tone="primary" className="font-semibold">
+          <Text variant="body" size="sm" tone="primary" className="font-semibold">
             {t('View members')}
           </Text>
           <Chevron size={18} color={colors.primary} strokeWidth={2.1} />

@@ -1,14 +1,5 @@
 import { images } from '@/assets/images';
-import {
-  BoxSkeleton,
-  Card,
-  CardSkeleton,
-  CollapsibleHeader,
-  Row,
-  Section,
-  Skeleton,
-  TextSkeleton,
-} from '@/components';
+import { BoxSkeleton, Card, CardSkeleton, CollapsibleHeader, Row, Section, Skeleton, TextSkeleton } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
 import { View } from 'react-native';

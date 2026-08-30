@@ -24,11 +24,11 @@ export function SparseLeaderboardCard({ memberCount, onInvite, inviteDisabled = 
           <UsersRound size={22} color={colors.primary} strokeWidth={1.8} />
         </View>
 
-        <Text variant="subtitle" numberOfLines={1}>
+        <Text variant="title" size="lg" numberOfLines={1}>
           {t("That's the whole leaderboard for now")}
         </Text>
 
-        <Text variant="bodySmall" tone="muted" className="text-center">
+        <Text variant="body" size="sm" tone="muted" className="text-center">
           {t('Invite more friends and make the league more competitive.')}
         </Text>
 

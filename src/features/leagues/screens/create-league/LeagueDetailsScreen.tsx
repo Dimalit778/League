@@ -3,6 +3,7 @@ import MemberOption from '@/features/leagues/components/createLeague/MemberOptio
 import { useCreateLeague } from '@/features/leagues/hooks/useLeagues';
 import { useEnsureProAccess } from '@/features/subscription/hooks/useEnsureProAccess';
 import { useTranslation } from '@/hooks/useTranslation';
+import { spacing } from '@/lib/nativewind/spacing';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -112,7 +113,7 @@ const LeagueDetailsScreen = () => {
             {/* League name */}
             <View className="mb-8 gap-2">
               <Row>
-                <Text variant="subtitle">{t('League Name')}</Text>
+                <Text variant="title" size="lg">{t('League Name')}</Text>
               </Row>
               <InputField
                 control={control}
@@ -128,7 +129,7 @@ const LeagueDetailsScreen = () => {
             {/* Nickname */}
             <View className="mb-8 gap-2">
               <Row>
-                <Text variant="subtitle">{t('Your Nickname')}</Text>
+                <Text variant="title" size="lg">{t('Your Nickname')}</Text>
               </Row>
               <InputField
                 control={control}
@@ -169,7 +170,7 @@ const LeagueDetailsScreen = () => {
           </KeyboardAwareScrollView>
 
           {/* Fixed bottom button */}
-          <View className="px-4 ">
+          <View className={spacing.screen}>
             <Button
               label={t('Create League')}
               onPress={onSubmit}

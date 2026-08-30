@@ -76,14 +76,14 @@ export default function ReportContentScreen() {
   return (
     <Screen scroll padding="all" bottomInset contentClassName="gap-5">
       <Card variant="soft" contentClassName="gap-2">
-        <Text variant="subtitle">{t('Help keep Champo safe')}</Text>
-        <Text variant="bodySmall" tone="muted">
+        <Text variant="title" size="lg">{t('Help keep Champo safe')}</Text>
+        <Text variant="body" size="sm" tone="muted">
           {t('Reports are confidential. The reported user will not see who submitted the report.')}
         </Text>
       </Card>
 
       <View className="gap-3">
-        <Text variant="subtitle">{t('What are you reporting?')}</Text>
+        <Text variant="title" size="lg">{t('What are you reporting?')}</Text>
         {isLeagueReport ? (
           <Chip label={t('League name')} variant="selected" />
         ) : (
@@ -101,7 +101,7 @@ export default function ReportContentScreen() {
       </View>
 
       <View className="gap-3">
-        <Text variant="subtitle">{t('Reason')}</Text>
+        <Text variant="title" size="lg">{t('Reason')}</Text>
         <View className="flex-row flex-wrap gap-2">
           {reportReasons.map((item) => (
             <Chip
@@ -116,7 +116,7 @@ export default function ReportContentScreen() {
 
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
-          <Text variant="subtitle">{t('Additional details')}</Text>
+          <Text variant="title" size="lg">{t('Additional details')}</Text>
           <Text variant="caption" tone="muted">
             {details.length}/500
           </Text>

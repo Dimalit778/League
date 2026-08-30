@@ -1,10 +1,9 @@
+import { Row, Text } from '@/components';
 import AppleAuth from '@/features/auth/components/AppleAuth';
 import GoogleAuth from '@/features/auth/components/GoogleAuth';
-import AuthDivider from '@/features/auth/components/auth/AuthDivider';
 import AuthModeSwitchPrompt from '@/features/auth/components/auth/AuthModeSwitchPrompt';
 import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
-import SignInForm from '@/features/auth/components/auth/SignInForm';
-import SignUpForm from '@/features/auth/components/auth/SignUpForm';
+import EmailAuthForm from '@/features/auth/components/auth/EmailAuthForm';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
@@ -14,6 +13,16 @@ type AuthMode = 'signIn' | 'signUp';
 
 type AuthScreenProps = {
   initialMode?: AuthMode;
+};
+
+const Divider = () => {
+  return (
+    <Row keepLtr className="items-center justify-center py-2">
+      <View className="h-px flex-1 bg-[#526078]" />
+      <Text className="mx-3 text-sm font-semibold text-[#9EA9BE]">OR</Text>
+      <View className="h-px flex-1 bg-[#526078]" />
+    </Row>
+  );
 };
 
 export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) {
@@ -32,27 +41,20 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
   };
 
   return (
-    <AuthScaffold
-      title={isSignIn ? t('Welcome Back') : t('Create account')}
-      footer={
-        <View className="gap-8">
-          <AuthModeSwitchPrompt mode={mode} onPress={switchMode} />
-        </View>
-      }
-    >
-      {isSignIn ? (
-        <SignInForm key="signIn" />
-      ) : (
-        <SignUpForm
-          key="signUp"
-          acceptedLegal={acceptedLegal}
-          onToggleLegal={() => setAcceptedLegal((accepted) => !accepted)}
-        />
-      )}
-
-      <AuthDivider label={t('OR')} />
-
-      <View className="gap-4 ">
+    <AuthScaffold className="px-4">
+      <View className="h-40 items-center justify-center">
+        <Text variant="heading" size="5xl" className="text-center text-white">
+          {isSignIn ? t('Welcome Back') : t('Create account')}
+        </Text>
+      </View>
+      <EmailAuthForm
+        key={mode}
+        mode={mode}
+        acceptedLegal={acceptedLegal}
+        onToggleLegal={() => setAcceptedLegal((accepted) => !accepted)}
+      />
+      <Divider />
+      <View className="gap-3">
         <AppleAuth
           isLoading={socialBusy}
           setIsLoading={setSocialBusy}
@@ -66,6 +68,8 @@ export default function AuthScreen({ initialMode = 'signIn' }: AuthScreenProps) 
           legalAccepted={isSignIn ? true : acceptedLegal}
         />
       </View>
+
+      <AuthModeSwitchPrompt mode={mode} onPress={switchMode} />
     </AuthScaffold>
   );
 }

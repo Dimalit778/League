@@ -37,7 +37,7 @@ export default function CompetitionCard({ competition, isSelected, isLocked, onP
             forceSvg={isSvgFlag}
           />
 
-          <Text variant="bodySmall" tone="muted">
+          <Text variant="body" size="sm" tone="muted">
             {t(competition.area)}
           </Text>
           <Text

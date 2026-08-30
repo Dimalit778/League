@@ -56,7 +56,7 @@ function AccuracyGauge({ accuracy }: { accuracy: number }) {
           />
         </Svg>
         <View className="absolute inset-0 items-center justify-center">
-          <Text variant="subtitle" className="text-center">
+          <Text variant="title" size="lg" className="text-center">
             {Math.round(clamped)}%
           </Text>
         </View>
@@ -77,7 +77,7 @@ function MetricTile({ icon, label, value }: { icon: React.ReactNode; label: stri
       contentClassName="items-center justify-center gap-1"
     >
       {icon}
-      <Text variant="subtitle" className="text-center">
+      <Text variant="title" size="lg" className="text-center">
         {String(value)}
       </Text>
       <Text variant="caption" tone="muted" numberOfLines={1} className="text-center">

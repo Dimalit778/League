@@ -22,7 +22,7 @@ export default function BlockedUsersScreen() {
 
   return (
     <Screen scroll padding="all" bottomInset contentClassName="gap-4" contentContainerStyle={{ flexGrow: 1 }}>
-      <Text variant="bodySmall" tone="muted">
+      <Text variant="body" size="sm" tone="muted">
         {t('Blocked users and their content are hidden from your leagues.')}
       </Text>
 

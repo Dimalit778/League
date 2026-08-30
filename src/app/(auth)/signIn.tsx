@@ -1,5 +1,1 @@
-import SignInScreen from '@/features/auth/screens/SignInScreen';
-
-export default function SignIn() {
-  return <SignInScreen />;
-}
+export { default } from '@/features/auth/screens/SignInScreen';

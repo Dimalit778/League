@@ -31,21 +31,21 @@ export default function AuthLegalConsent({ accepted, onToggle }: Props) {
         </View>
       </Pressable>
       <View className="flex-1">
-        <Text variant="bodySmall" tone="muted">
+        <Text variant="body" size="sm" tone="muted">
           {t('I am 13 or older, and I agree to the')}
         </Text>
         <Row className="gap-1 items-center ">
           <Link href="/(auth)/terms" asChild>
-            <Text variant="bodySmall" tone="primary" accessibilityRole="link" className="underline">
+            <Text variant="body" size="sm" tone="primary" accessibilityRole="link" className="underline">
               {t('Terms of Service')}
             </Text>
           </Link>
-          <Text variant="bodySmall" tone="muted">
+          <Text variant="body" size="sm" tone="muted">
             {t('and')}
           </Text>
 
           <Link href="/(auth)/privacy" asChild>
-            <Text variant="bodySmall" tone="primary" accessibilityRole="link" className="underline">
+            <Text variant="body" size="sm" tone="primary" accessibilityRole="link" className="underline">
               {t('Privacy Policy')}
             </Text>
           </Link>

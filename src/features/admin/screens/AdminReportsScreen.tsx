@@ -134,8 +134,8 @@ export default function AdminReportsScreen() {
                   <Card className="h-full" contentClassName="min-h-[390px] gap-4">
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="min-w-0 flex-1">
-                        <Text variant="subtitle">{t(contentLabels[report.content_type] ?? report.content_type)}</Text>
-                        <Text variant="bodySmall" tone="muted">
+                        <Text variant="title" size="lg">{t(contentLabels[report.content_type] ?? report.content_type)}</Text>
+                        <Text variant="body" size="sm" tone="muted">
                           {t(reasonLabels[report.reason] ?? report.reason)}
                         </Text>
                       </View>
@@ -159,7 +159,7 @@ export default function AdminReportsScreen() {
                     </View>
 
                     {report.details ? (
-                      <AdminMeta label={t('Reporter details')} value={<Text variant="bodySmall">{report.details}</Text>} />
+                      <AdminMeta label={t('Reporter details')} value={<Text variant="body" size="sm">{report.details}</Text>} />
                     ) : null}
 
                     <View className="gap-2">

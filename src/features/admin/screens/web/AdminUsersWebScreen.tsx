@@ -83,7 +83,7 @@ export default function AdminUsersWebScreen() {
                       <Badge label={t('Active')} variant="success" />
                     </AdminWebCell>
                     <AdminWebCell flex={1.25} minWidth={170}>
-                      <Text variant="bodySmall">{formatAdminDate(user.created_at, language)}</Text>
+                      <Text variant="body" size="sm">{formatAdminDate(user.created_at, language)}</Text>
                     </AdminWebCell>
                     <AdminWebCell flex={1.25} minWidth={170}>
                       <Text variant="caption" tone="muted" ltr numberOfLines={1}>

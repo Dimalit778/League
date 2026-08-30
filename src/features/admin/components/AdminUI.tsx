@@ -22,10 +22,10 @@ export function AdminPageHeader({ eyebrow, title, description, trailing }: Admin
             {eyebrow}
           </Text>
         ) : null}
-        <Text accessibilityRole="header" variant="display" className="text-[28px] leading-9 md:text-[34px] md:leading-10">
+        <Text accessibilityRole="header" variant="heading" size="5xl" className="text-[28px] leading-9 md:text-[34px] md:leading-10">
           {title}
         </Text>
-        <Text variant="bodySmall" tone="muted" className="mt-1 max-w-[680px]">
+        <Text variant="body" size="sm" tone="muted" className="mt-1 max-w-[680px]">
           {description}
         </Text>
       </View>
@@ -63,7 +63,7 @@ export function AdminSearchField({ value, onChangeText, placeholder }: AdminSear
 export function AdminCollectionSummary({ countLabel, badgeLabel }: { countLabel: string; badgeLabel?: string }) {
   return (
     <View className="mb-3 flex-row flex-wrap items-center justify-between gap-2">
-      <Text variant="bodySmall" tone="muted">
+      <Text variant="body" size="sm" tone="muted">
         {countLabel}
       </Text>
       {badgeLabel ? <Badge label={badgeLabel} variant="info" /> : null}
@@ -77,7 +77,7 @@ export function AdminErrorBanner({ message }: { message: string }) {
   return (
     <View className="mb-4 flex-row items-start gap-3 rounded-2xl border border-error/30 bg-error/10 p-4">
       <ShieldAlert size={20} color={colors.error} />
-      <Text variant="bodySmall" tone="error" className="min-w-0 flex-1">
+      <Text variant="body" size="sm" tone="error" className="min-w-0 flex-1">
         {message}
       </Text>
     </View>
@@ -127,7 +127,7 @@ export function AdminMeta({ label, value, ltr, className }: { label: string; val
         {label}
       </Text>
       {typeof value === 'string' || typeof value === 'number' ? (
-        <Text variant="bodySmall" ltr={ltr} numberOfLines={2}>
+        <Text variant="body" size="sm" ltr={ltr} numberOfLines={2}>
           {String(value)}
         </Text>
       ) : (

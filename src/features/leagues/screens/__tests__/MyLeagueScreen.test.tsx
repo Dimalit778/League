@@ -52,13 +52,13 @@ describe('MyLeagueScreen', () => {
   });
 
   it('renders Create League button', () => {
-    const { getAllByText } = render(<MyLeagueScreen />);
-    expect(getAllByText('Create League').length).toBeGreaterThan(0);
+    const { getByLabelText } = render(<MyLeagueScreen />);
+    expect(getByLabelText('Create League')).toBeTruthy();
   });
 
   it('renders Join League button', () => {
-    const { getAllByText } = render(<MyLeagueScreen />);
-    expect(getAllByText('Join League').length).toBeGreaterThan(0);
+    const { getByLabelText } = render(<MyLeagueScreen />);
+    expect(getByLabelText('Join League')).toBeTruthy();
   });
 
   it('renders empty state message when no leagues', () => {
@@ -87,9 +87,9 @@ describe('MyLeagueScreen', () => {
       maxLeagues: 5,
     };
 
-    const { queryByText } = render(<MyLeagueScreen />);
+    const { queryByText, queryByLabelText } = render(<MyLeagueScreen />);
     expect(queryByText('Upgrade to Pro')).toBeNull();
-    expect(queryByText('Create League')).toBeNull();
+    expect(queryByLabelText('Create League')).toBeNull();
   });
 
   it('shows the activate button after an inactive league is selected', () => {

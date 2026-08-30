@@ -45,7 +45,7 @@ export function PodiumHexBadge({ position, size = 34 }: { position: Position; si
         <Polygon points={hex} fill={`url(#${fillId})`} stroke={m.rim} strokeWidth={1.25} strokeLinejoin="round" />
         <Polygon points={sheen} fill={`url(#${sheenId})`} />
       </Svg>
-      <Text allowFontScaling={false} className="font-nunito-bold text-[16px] text-[#1A1205]">
+      <Text allowFontScaling={false} className="font-manrope-bold text-[16px] text-[#1A1205]">
         {position}
       </Text>
     </View>

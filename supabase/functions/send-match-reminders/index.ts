@@ -78,7 +78,10 @@ Deno.serve(async (req) => {
     .in('status', ['SCHEDULED', 'TIMED'])
     .gt('kick_off', nowIso)
     .lte('kick_off', windowEndIso)
-    .is('match_push_reminders.match_id', null);
+    // Anti-join: keep only matches with NO ledger row. The filter must target the
+    // embedded resource itself, not a column of it — `match_push_reminders.match_id=is.null`
+    // filters the embedded rows and (being a left join) keeps every parent row.
+    .is('match_push_reminders', null);
   if (matchError) return jsonResponse({ success: false, message: matchError.message }, 500);
 
   let totalRecipients = 0;

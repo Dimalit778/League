@@ -7,6 +7,8 @@ import {
   useGetLeagueAndMembers,
 } from '@/features/leagues/hooks/useLeagues';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
+import { spacing } from '@/lib/nativewind/spacing';
 import { useAlert } from '@/providers/AlertProvider';
 import { useAuthStore } from '@/store/AuthStore';
 import { useCompetitionId, useLeagueId } from '@/store/PrimaryLeagueStore';
@@ -31,7 +33,7 @@ const Header = ({
   setAudience: (audience: LeaderboardAudience) => void;
 }) => {
   return (
-    <View className="w-full px-4">
+    <View className={cn('w-full', spacing.screen)}>
       <View className="relative w-full justify-center  h-12">
         <View className="absolute inset-0 items-center justify-center " pointerEvents="box-none">
           <LeaderboardAudienceToggle value={audience} onChange={setAudience} />
@@ -114,7 +116,7 @@ export default function LeaderboardScreen() {
       overlap={240}
       collapsedHeader={<Header audience={audience} setAudience={setAudience} />}
     >
-      <View className="gap-6 px-4 pt-2">
+      <View className={cn(spacing.section, spacing.screen, 'pt-2')}>
         {error ? (
           <Error error={error} />
         ) : bodyIsLoading ? (
@@ -123,10 +125,10 @@ export default function LeaderboardScreen() {
           <>
             <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
 
-            <View className="min-h-[200px] gap-4">
+            <View className={cn('min-h-[200px]', spacing.stack)}>
               {rest.length > 0 && (
                 <>
-                  <Row keepLtr className="gap-3">
+                  <Row keepLtr className={spacing.list}>
                     <View className="h-px flex-1 bg-border" />
                     <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
                       {t('Full ranking')}

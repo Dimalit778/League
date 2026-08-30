@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Champo runtime architecture",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Dimalit778/League.git",
+      "revision": "91ce820f470b9935b4a327f7c183f8ff1db719c3"
+    },
+    "views": [
+      {
+        "id": "auth-flow",
+        "label": "Authentication flow",
+        "focus": ["champo-app", "identity-providers", "supabase-auth", "data-api"],
+        "note": "Email, Google OAuth, and Apple id_token mint a JWT; AuthProvider then loads public.users."
+      },
+      {
+        "id": "request-path",
+        "label": "App data path",
+        "focus": ["champo-app", "supabase-auth", "data-api", "postgres"],
+        "note": "The session JWT authorizes PostgREST and Storage; Postgres RLS is the row boundary."
+      },
+      {
+        "id": "edge-sync",
+        "label": "Edge sync and billing",
+        "focus": ["champo-app", "revenuecat", "edge-functions", "external-apis", "postgres"],
+        "note": "pg_cron syncs fixtures; the app and RevenueCat webhooks call Edge Functions."
+      },
+      {
+        "id": "notify-analyze",
+        "label": "Reminders and analysis",
+        "focus": ["edge-functions", "postgres", "external-apis"],
+        "note": "generate-match-analysis uses Gemini and Tavily; send-match-reminders uses Expo Push."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "champo-app",
+      "type": "frontend",
+      "label": "Champo app",
+      "sublabel": "Expo Router + React Native",
+      "brand": "react",
+      "pos": [40, 250],
+      "size": [156, 70],
+      "sources": [
+        { "path": "src/lib/supabase.ts", "line": 60, "end_line": 69, "label": "supabase-js client" },
+        { "path": "src/providers/AuthProvider.tsx", "line": 71, "end_line": 80, "label": "session sync" }
+      ]
+    },
+    {
+      "id": "identity-providers",
+      "type": "external",
+      "label": "Google and Apple",
+      "sublabel": "OAuth / Sign in with Apple",
+      "pos": [320, 80],
+      "size": [156, 70],
+      "sources": [
+        { "path": "src/features/auth/components/GoogleAuth.tsx", "line": 79, "end_line": 84, "label": "signInWithOAuth" },
+        { "path": "src/features/auth/components/AppleAuth.tsx", "line": 57, "end_line": 60, "label": "signInWithIdToken" }
+      ]
+    },
+    {
+      "id": "supabase-auth",
+      "type": "security",
+      "label": "Supabase Auth",
+      "sublabel": "JWT 1h, MMKV session",
+      "brand": "supabase",
+      "tag": "email + OAuth",
+      "pos": [320, 250],
+      "size": [156, 70],
+      "sources": [
+        { "path": "src/features/auth/api/authApi.ts", "line": 57, "label": "signInWithPassword" },
+        { "path": "supabase/config.toml", "line": 155, "end_line": 165, "label": "auth config" },
+        { "path": "src/lib/supabase.ts", "line": 60, "end_line": 68, "label": "persistSession" }
+      ]
+    },
+    {
+      "id": "data-api",
+      "type": "backend",
+      "label": "Data API + Storage",
+      "sublabel": "PostgREST, profile_images",
+      "brand": "supabase",
+      "pos": [600, 250],
+      "size": [156, 70],
+      "sources": [
+        { "path": "src/providers/AuthProvider.tsx", "line": 31, "label": "users select" },
+        { "path": "supabase/config.toml", "line": 7, "end_line": 18, "label": "api schemas" },
+        { "path": "supabase/config.toml", "line": 114, "end_line": 117, "label": "profile_images" }
+      ]
+    },
+    {
+      "id": "postgres",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "RLS + pg_cron",
+      "brand": "postgresql",
+      "pos": [880, 250],
+      "size": [156, 70],
+      "sources": [
+        { "path": "supabase/config.toml", "line": 27, "end_line": 36, "label": "db major 17" },
+        { "path": "supabase/migrations/20260629110659_sync_dashboard_changes.sql", "line": 1, "label": "pg_cron" }
+      ]
+    },
+    {
+      "id": "revenuecat",
+      "type": "external",
+      "label": "RevenueCat",
+      "sublabel": "Store purchases",
+      "pos": [40, 450],
+      "size": [156, 70],
+      "sources": [
+        { "path": "src/lib/revenuecat/purchases.ts", "line": 9, "end_line": 19, "label": "Purchases SDK" },
+        { "path": "src/features/subscription/api/subscriptionApi.ts", "line": 131, "end_line": 132, "label": "sync-subscription" }
+      ]
+    },
+    {
+      "id": "edge-functions",
+      "type": "backend",
+      "label": "Edge Functions",
+      "sublabel": "Deno sync, webhooks, invoke",
+      "brand": "supabase",
+      "pos": [320, 450],
+      "size": [156, 70],
+      "sources": [
+        { "path": "supabase/config.toml", "line": 375, "end_line": 383, "label": "edge_runtime" },
+        { "path": "supabase/functions/_shared/sync.ts", "line": 41, "end_line": 66, "label": "SYNC_SECRET" },
+        { "path": "src/features/subscription/api/subscriptionApi.ts", "line": 132, "label": "functions.invoke" }
+      ]
+    },
+    {
+      "id": "external-apis",
+      "type": "external",
+      "label": "External APIs",
+      "sublabel": "football-data, Gemini, Tavily, Expo Push",
+      "pos": [600, 450],
+      "size": [436, 70],
+      "sources": [
+        { "path": "supabase/functions/_shared/sync.ts", "line": 19, "end_line": 47, "label": "football-data v4" },
+        { "path": "supabase/functions/generate-match-analysis/index.ts", "line": 21, "end_line": 47, "label": "Gemini + Tavily" },
+        { "path": "supabase/functions/send-match-reminders/index.ts", "line": 14, "end_line": 51, "label": "Expo Push" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Supabase project",
+      "wraps": ["supabase-auth", "data-api", "postgres", "edge-functions"]
+    }
+  ],
+  "connections": [
+    { "id": "app-to-auth", "from": "champo-app", "to": "supabase-auth", "label": "password / OAuth", "variant": "emphasis" },
+    { "id": "identity-to-auth", "from": "identity-providers", "to": "supabase-auth", "label": "Google / Apple token", "variant": "security", "labelDy": 24 },
+    { "id": "auth-to-api", "from": "supabase-auth", "to": "data-api", "label": "JWT", "variant": "security" },
+    { "id": "api-to-postgres", "from": "data-api", "to": "postgres", "label": "SQL + RLS", "variant": "emphasis" },
+    { "id": "app-to-revenuecat", "from": "champo-app", "to": "revenuecat", "label": "Purchases SDK", "labelDy": 24 },
+    { "id": "revenuecat-to-edge", "from": "revenuecat", "to": "edge-functions", "label": "webhook", "variant": "dashed", "labelAt": [230, 420] },
+    { "id": "app-to-edge", "from": "champo-app", "to": "edge-functions", "label": "invoke JWT" },
+    { "id": "edge-to-external", "from": "edge-functions", "to": "external-apis", "label": "HTTPS + secrets" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Client",
+      "items": [
+        "Publishable supabase-js client; session in MMKV; RevenueCat SDK for store purchases"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Authentication",
+      "items": [
+        "Email, Google OAuth, and Apple id_token mint a 1h JWT; AuthProvider then loads public.users"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Edge jobs",
+      "items": [
+        "pg_cron calls sync functions with x-sync-secret; Edge Functions talk to football-data, Gemini, Tavily, and Expo Push"
+      ]
+    }
+  ]
+}

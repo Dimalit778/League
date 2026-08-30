@@ -43,7 +43,7 @@ export default function LandingScreen() {
             <Brand size="lg" onBoarding />
             <Text
               accessibilityRole="header"
-              className="text-center font-nunito-bold text-3xl pt-8"
+              className="text-center font-manrope-bold text-3xl pt-8"
               maxFontSizeMultiplier={1.3}
             >
               {t("Every match is a challenge")}
@@ -70,7 +70,7 @@ export default function LandingScreen() {
               </Link>
 
               <Row className="px-5 justify-center gap-1">
-                <Text variant="small" className="text-center  text-[#AAB4C6]">
+                <Text variant="body" size="sm" className="text-center  text-[#AAB4C6]">
                   {t("Already have an account?")}
                 </Text>
                 <Link href="/(auth)/signIn" asChild>
@@ -81,7 +81,7 @@ export default function LandingScreen() {
                     className="min-h-11 justify-center rounded-lg px-1 active:opacity-70"
                   >
                     <Text
-                      variant="small"
+                      variant="body" size="sm"
                       className="text-center font-bold text-[#83A7FF]"
                     >
                       {t("Sign In")}

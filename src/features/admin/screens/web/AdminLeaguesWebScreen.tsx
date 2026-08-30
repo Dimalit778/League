@@ -91,12 +91,12 @@ export default function AdminLeaguesWebScreen() {
                     />
                   </AdminWebCell>
                   <AdminWebCell flex={1.4} minWidth={180}>
-                    <Text variant="bodySmall" numberOfLines={1}>
+                    <Text variant="body" size="sm" numberOfLines={1}>
                       {league.competition?.name ?? t('Not assigned')}
                     </Text>
                   </AdminWebCell>
                   <AdminWebCell flex={1.7} minWidth={210}>
-                    <Text variant="bodySmall" numberOfLines={1}>
+                    <Text variant="body" size="sm" numberOfLines={1}>
                       {league.owner?.full_name ?? t('Unknown owner')}
                     </Text>
                     <Text variant="caption" tone="muted" ltr numberOfLines={1}>

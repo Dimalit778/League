@@ -26,7 +26,7 @@ function asNode(value: ReactNode) {
   if (typeof value === 'string' || typeof value === 'number') {
     return (
       <View className="min-w-0 max-w-40 shrink">
-        <Text variant="bodySmall" tone="muted" numberOfLines={1} ellipsizeMode="tail">
+        <Text variant="body" size="sm" tone="muted" numberOfLines={1} ellipsizeMode="tail">
           {value}
         </Text>
       </View>
@@ -70,7 +70,7 @@ export function ListItem({
             {title}
           </Text>
           {description ? (
-            <Text variant="bodySmall" tone="muted">
+            <Text variant="body" size="sm" tone="muted">
               {description}
             </Text>
           ) : null}

@@ -62,7 +62,7 @@ export default function VerificationCodeInput({ value, onChange, hasError = fals
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
             maxLength={index === 0 ? CODE_LENGTH : 1}
             selectTextOnFocus
-            className="rounded-2xl bg-[#0A1B30] text-center font-nunito-bold text-[32px] text-white"
+            className="rounded-2xl bg-[#0A1B30] text-center font-manrope-bold text-[32px] text-white"
             style={{
               width: cellSize,
               height: Math.max(58, cellSize * 1.12),

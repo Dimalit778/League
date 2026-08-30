@@ -114,7 +114,7 @@ const AppleAuth = ({
       accessibilityState={{ disabled: blocked }}
       disabled={blocked}
       onPress={handleAppleSignIn}
-      style={({ pressed }) => [styles.touchable, blocked && styles.disabled, pressed && styles.pressed]}
+      className="h-[52px] items-center justify-center rounded-md active:opacity-80"
     >
       <Image
         source={images.appleWhite360}
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     height: 52,
     overflow: 'hidden',
     width: '100%',
+    flexShrink: 0,
   },
   hit: {
     bottom: 0,
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   image: {
-    height: '100%',
+    height: 52,
     width: '100%',
   },
   pressed: {

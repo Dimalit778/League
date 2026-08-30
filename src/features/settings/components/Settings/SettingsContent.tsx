@@ -2,6 +2,7 @@ import { ListItem, Section, Text, type TextTone } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { clearPushToken, registerPushToken } from '@/lib/notifications/pushToken';
+import { spacing } from '@/lib/nativewind/spacing';
 import { useNotificationPermission } from '@/providers/NotificationProvider';
 import { RelativePathString, useRouter } from 'expo-router';
 import {
@@ -188,7 +189,7 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
       icon: <Bell size={iconSize} color={colors.text} strokeWidth={1.5} />,
       onPress: handleNotificationPress,
       rightContent: (
-        <Text variant="bodySmall" tone={notificationStatus.tone}>
+        <Text variant="body" size="sm" tone={notificationStatus.tone}>
           {notificationStatus.label}
         </Text>
       ),
@@ -268,7 +269,7 @@ const SettingsContent = ({ onSignOut, onDeleteAccount }: SettingsContentProps) =
   );
 
   return (
-    <View className="gap-4">
+    <View className={spacing.stack}>
       {renderSection(infoRows)}
       {renderSection(preferenceRows, t('Preferences'))}
       {renderSection(generalRows, t('General'))}

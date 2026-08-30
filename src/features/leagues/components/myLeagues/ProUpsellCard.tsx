@@ -17,7 +17,7 @@ export default function ProUpsellCard({ onUpgrade }: { onUpgrade: () => void }) 
         <Text variant="body" numberOfLines={1}>
           {t('Want to open more leagues?')}
         </Text>
-        <Text variant="bodySmall" tone="muted">
+        <Text variant="body" size="sm" tone="muted">
           {t('Upgrade to Pro and open up to {{count}} leagues', { count: proLeagueLimit })}
         </Text>
         <Button

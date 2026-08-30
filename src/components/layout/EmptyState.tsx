@@ -26,11 +26,11 @@ type EmptyStateProps = ViewProps & {
 
 const SIZE_PRESETS: Record<
   EmptyStateSize,
-  { iconSize: number; iconContainerSize: number; titleVariant: 'subtitle' | 'title' }
+  { iconSize: number; iconContainerSize: number; titleSize: 'lg' | 'xl' }
 > = {
-  sm: { iconSize: 26, iconContainerSize: 50, titleVariant: 'subtitle' },
-  md: { iconSize: 36, iconContainerSize: 88, titleVariant: 'title' },
-  lg: { iconSize: 44, iconContainerSize: 104, titleVariant: 'title' },
+  sm: { iconSize: 26, iconContainerSize: 50, titleSize: 'lg' },
+  md: { iconSize: 36, iconContainerSize: 88, titleSize: 'xl' },
+  lg: { iconSize: 44, iconContainerSize: 104, titleSize: 'xl' },
 };
 
 export function EmptyState({
@@ -74,7 +74,7 @@ export function EmptyState({
         </View>
       ) : null}
 
-      <Text variant={preset.titleVariant} className="text-center">
+      <Text variant="title" size={preset.titleSize} className="text-center">
         {title}
       </Text>
 

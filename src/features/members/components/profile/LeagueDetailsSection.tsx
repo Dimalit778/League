@@ -68,7 +68,7 @@ export const LeagueDetailsSection = ({
           divider
           onPress={handleCopyJoinCode}
           trailing={
-            <Text variant="bodySmall" tone="muted" className="tracking-[2px] text-center">
+            <Text variant="body" size="sm" tone="muted" className="tracking-[2px] text-center">
               {league.join_code}
             </Text>
           }

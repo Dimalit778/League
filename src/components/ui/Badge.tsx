@@ -6,7 +6,7 @@ import { type ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 import { Text } from './Text';
 
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'live' | 'locked';
+export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'live' | 'muted';
 export type BadgeSize = 'sm' | 'md' | 'lg';
 export type BadgeRadius = RadiusToken;
 
@@ -19,21 +19,32 @@ export type BadgeProps = ViewProps & {
   className?: string;
 };
 
+const surfaceClasses: Record<BadgeVariant, string> = {
+  default: 'bg-subtle',
+  primary: 'bg-primary',
+  success: 'bg-subtle',
+  warning: 'bg-subtle',
+  error: 'bg-subtle',
+  info: 'bg-subtle',
+  live: 'bg-subtle',
+  muted: 'bg-subtle',
+};
+
 const textClasses: Record<BadgeVariant, string> = {
-  default: 'text-muted',
-  primary: 'text-primary',
+  default: 'text-text',
+  primary: 'text-onPrimary',
   success: 'text-success',
   warning: 'text-warning',
   error: 'text-error',
   info: 'text-info',
   live: 'text-error',
-  locked: 'text-muted',
+  muted: 'text-muted',
 };
 
 const textVariants: Record<BadgeSize, TextVariant> = {
   sm: 'caption',
   md: 'body',
-  lg: 'subtitle',
+  lg: 'title',
 };
 
 export function Badge({
@@ -56,7 +67,7 @@ export function Badge({
         'self-start flex-row items-center gap-1',
         radius[radiusToken],
         size === 'sm' ? 'min-h-6 px-2 py-0.5' : size === 'lg' ? 'min-h-10 px-4 py-1.5' : 'min-h-8 px-3 py-1',
-        'bg-subtle',
+        surfaceClasses[variant],
         className,
       )}
     >

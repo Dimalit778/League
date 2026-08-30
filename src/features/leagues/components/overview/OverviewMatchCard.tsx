@@ -46,11 +46,11 @@ export function OverviewMatchCard({ match, onPress }: OverviewMatchCardProps) {
           <TeamLogo tla={match.home.tla} clubColors={match.home.clubColors} size={36} shape="circle" />
           {score.kind === 'score' ? (
             <View className="flex-row items-center justify-center gap-1.5">
-              <Text tone={score.tone} className="text-xl font-semibold">
+              <Text tone={score.tone} weight="sportBold" size="xl">
                 {score.home}
               </Text>
               <View className="h-7 w-px bg-border" />
-              <Text tone={score.tone} className="text-xl font-semibold">
+              <Text tone={score.tone} weight="sportBold" size="xl">
                 {score.away}
               </Text>
             </View>

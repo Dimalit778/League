@@ -118,7 +118,8 @@ export const MyImage = ({
 
   // Fallback if the first render failed
   const finalSource = failed && fallbackSource ? fallbackSource : expoSource;
-  if (!source || !uri) return null;
+  // require(...) is a number — no URI, but ExpoImage still renders it.
+  if (source == null || (typeof source !== 'number' && !uri)) return null;
 
   return (
     <ExpoImage

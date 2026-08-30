@@ -1,5 +1,1 @@
-import LegalDocumentScreen from '@/features/settings/screens/LegalDocumentScreen';
-
-export default function AuthPrivacy() {
-  return <LegalDocumentScreen document="privacy" />;
-}
+export { default } from '@/features/settings/screens/LegalDocumentScreen';

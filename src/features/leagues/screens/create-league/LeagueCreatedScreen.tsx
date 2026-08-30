@@ -63,7 +63,7 @@ const LeagueCreatedScreen = () => {
         <View className="items-center  gap-4">
           <LogoBadge source={{ uri: leagueData?.competition?.flag ?? '' }} width={84} height={84} />
 
-          <Text variant="header">{leagueData?.name}</Text>
+          <Text variant="heading" size="3xl">{leagueData?.name}</Text>
         </View>
         <Divider className="my-4" />
         <View className="items-center gap-2">
@@ -79,7 +79,7 @@ const LeagueCreatedScreen = () => {
           </Text>
 
           <Card onPress={handleCopyJoinCode} variant="soft" padding="sm" contentClassName="items-center">
-            <Text variant="header" tone="success">
+            <Text variant="heading" size="3xl" tone="success">
               {leagueData?.join_code}
             </Text>
           </Card>

@@ -121,7 +121,7 @@ export default function AdminLeagueMembersWebScreen() {
                       />
                     </AdminWebCell>
                     <AdminWebCell flex={1.6} minWidth={190}>
-                      <Text variant="bodySmall" numberOfLines={1}>
+                      <Text variant="body" size="sm" numberOfLines={1}>
                         {member.league?.name ?? t('Unknown League')}
                       </Text>
                     </AdminWebCell>
@@ -132,7 +132,7 @@ export default function AdminLeagueMembersWebScreen() {
                       <Badge label={member.is_primary ? t('Primary') : '—'} variant={member.is_primary ? 'primary' : 'default'} />
                     </AdminWebCell>
                     <AdminWebCell flex={1.4} minWidth={180}>
-                      <Text variant="bodySmall">{formatAdminDate(member.created_at, language)}</Text>
+                      <Text variant="body" size="sm">{formatAdminDate(member.created_at, language)}</Text>
                     </AdminWebCell>
                   </AdminWebTableRow>
                 );

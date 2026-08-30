@@ -10,7 +10,7 @@ export default function AuthModeSwitchPrompt({ mode, onPress }: { mode: AuthMode
   const action = isSignIn ? t('Sign Up') : t('Sign In');
 
   return (
-    <Row className="flex-wrap justify-center gap-1">
+    <Row className="flex-wrap justify-center gap-1 pt-4">
       <Text className="text-center text-sm text-[#9EA9BE]">
         {isSignIn ? t("Don't have an account?") : t('Already have an account?')}
       </Text>

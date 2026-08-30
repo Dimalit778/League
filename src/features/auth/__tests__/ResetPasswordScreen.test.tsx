@@ -22,4 +22,10 @@ describe('ResetPasswordScreen', () => {
 
     expect(getByText('Save New Password')).toBeTruthy();
   });
+
+  it('renders the password strength meter', () => {
+    const { getByLabelText } = render(<ResetPasswordScreen />);
+
+    expect(getByLabelText('Password strength')).toBeTruthy();
+  });
 });

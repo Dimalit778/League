@@ -9,7 +9,7 @@ export function MatchCardScore({ score }: { score: MatchUiScore }) {
 
   if (score.kind === 'score') {
     return (
-      <Text variant="header" tone={score.tone} className="w-full text-center " numberOfLines={1}>
+      <Text variant="heading" size="3xl" tone={score.tone} className="w-full text-center " numberOfLines={1}>
         {score.home} - {score.away}
       </Text>
     );
@@ -17,7 +17,7 @@ export function MatchCardScore({ score }: { score: MatchUiScore }) {
 
   if (score.kind === 'empty') {
     return (
-      <Text variant="header" tone="muted" className="w-full text-center pb-3" numberOfLines={1}>
+      <Text variant="heading" size="3xl" tone="muted" className="w-full text-center pb-3" numberOfLines={1}>
         – - –
       </Text>
     );
@@ -26,7 +26,7 @@ export function MatchCardScore({ score }: { score: MatchUiScore }) {
   return (
     <View className="flex-row items-center justify-center gap-1.5">
       <Clock size={13} color={colors.muted} />
-      <Text variant="bodySmall" tone="muted" numberOfLines={1}>
+      <Text variant="body" size="sm" tone="muted" numberOfLines={1}>
         {score.time}
       </Text>
     </View>

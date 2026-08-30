@@ -26,7 +26,7 @@ const HeroMeta = ({ name, matchday, date }: { name?: string; matchday?: number |
       <BackButton variant="onImage" />
 
       <View className="items-center ">
-        <Text variant="subtitle" numberOfLines={1} className=" text-white">
+        <Text variant="title" size="lg" numberOfLines={1} className=" text-white">
           {name}
         </Text>
 
@@ -69,7 +69,7 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
     <View className="flex-1 items-center justify-center">
       {presentation.isLive ? (
         <View className="items-center ">
-          <Text variant="display" className=" text-primary">
+          <Text variant="heading" size="5xl" className=" text-primary">
             {home} : {away}
           </Text>
 
@@ -79,7 +79,7 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
         </View>
       ) : (
         <View className=" flex-row items-center justify-center rounded-xl border border-white/25 bg-black/20 px-3">
-          <Text ltr className="text-center text-4xl font-nunito-bold text-white" style={{ lineHeight: 42 }}>
+          <Text ltr className="text-center text-4xl font-manrope-bold text-white" style={{ lineHeight: 42 }}>
             {home} : {away}
           </Text>
         </View>
@@ -95,7 +95,7 @@ const Team = ({ team, badgeSize }: { team: TeamType | null; badgeSize: number })
   return (
     <View className=" items-center justify-center gap-2">
       <TeamLogo tla={team.tla} size={badgeSize} shape="rect" clubColors={team.clubColors} variant="match" />
-      <Text variant="subtitle" numberOfLines={2} className="text-center text-gray-300">
+      <Text variant="title" size="lg" numberOfLines={2} className="text-center text-gray-300">
         {shortName}
       </Text>
     </View>

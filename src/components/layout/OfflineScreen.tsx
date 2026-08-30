@@ -29,12 +29,12 @@ export function OfflineScreen() {
           <WifiOff size={48} color={colors.primary} strokeWidth={1.5} />
         </View>
 
-        <Text variant="header">{t("You're offline")}</Text>
+        <Text variant="heading" size="3xl">{t("You're offline")}</Text>
         <Text variant="body" tone="secondary" className="text-center">
           {t('Check your connection and try again')}
         </Text>
 
-        <View className="w-full mt- px-8">
+        <View className="w-full px-8">
           <Button
             variant="primary"
             size="lg"

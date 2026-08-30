@@ -5,16 +5,16 @@ import { LoadingBall } from '@/components/layout/LoadingBall';
 import { OfflineScreen } from '@/components/layout/OfflineScreen';
 import { useAppFonts } from '@/hooks/useAppFonts';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { scrubSentryEvent } from '@/lib/sentryPrivacy';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { scrubSentryEvent } from '@/lib/sentryPrivacy';
 import {
   AlertProvider,
   AuthProvider,
   ErrorBoundaryProvider,
   LanguageProvider,
   NotificationProvider,
-  PurchasesProvider,
   PaywallProvider,
+  PurchasesProvider,
   QueryProvider,
   ThemeProvider,
   useAuth,

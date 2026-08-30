@@ -43,7 +43,7 @@ export function Section({
           <Row className="gap-2">
             <View className="h-4 w-1 rounded-full bg-primary" />
             <Text
-              variant="subtitle"
+              variant="title" size="lg"
               numberOfLines={1}
               accessibilityRole="header"
               style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -53,7 +53,7 @@ export function Section({
           </Row>
         ) : (
           <Text
-            variant="subtitle"
+            variant="title" size="lg"
             className="w-full"
             accessibilityRole="header"
             style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -63,7 +63,7 @@ export function Section({
         )
       ) : null}
       {description ? (
-        <Text variant="bodySmall" tone="muted" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+        <Text variant="body" size="sm" tone="muted" className="w-full" style={{ textAlign: isRTL ? 'right' : 'left' }}>
           {description}
         </Text>
       ) : null}

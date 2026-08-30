@@ -14,6 +14,7 @@ module.exports = {
       colors: {
         primary: 'var(--color-primary)',
         onPrimary: 'var(--color-on-primary)',
+        accent: 'var(--color-accent)',
         background: 'var(--color-background)',
         surface: 'var(--color-surface)',
         subtle: 'var(--color-subtle)',
@@ -27,10 +28,12 @@ module.exports = {
         overlay: 'var(--color-overlay)',
       },
       fontFamily: {
-        nunito: ['Nunito_400Regular'],
-        'nunito-bold': ['Nunito_700Bold'],
-        oswald: ['Oswald_400Regular'],
-        'oswald-bold': ['Oswald_700Bold'],
+        regular: ['Manrope_400Regular'],
+        'manrope-medium': ['Manrope_500Medium'],
+        'manrope-semibold': ['Manrope_600SemiBold'],
+        'manrope-bold': ['Manrope_700Bold'],
+        sport: ['Oswald_400Regular'],
+        'sport-bold': ['Oswald_700Bold'],
       },
 
       maxWidth: {

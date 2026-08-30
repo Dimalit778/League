@@ -23,7 +23,7 @@ export function InviteFriendsCard({ onInvite, disabled = false }: Props) {
           <UsersRound size={30} color={colors.primary} strokeWidth={1.8} />
         </View>
         <View className="min-w-0 flex-1 gap-1">
-          <Text variant="subtitle" numberOfLines={1} className="font-bold text-white">
+          <Text variant="title" size="lg" numberOfLines={1} className="font-bold text-white">
             {t('More friends, more competition')}
           </Text>
           <Text variant="label" tone="muted">

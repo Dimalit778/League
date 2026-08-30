@@ -206,7 +206,7 @@ export default function EditLeagueScreen() {
               <LogoBadge source={league?.competition?.flag || ''} width={48} height={42} />
               <View className="flex-1">
                 <Text className="text-base font-bold">{league?.competition?.name}</Text>
-                <Text tone="muted" variant="bodySmall">
+                <Text tone="muted" variant="body" size="sm">
                   {league?.competition?.area}
                 </Text>
               </View>
@@ -215,7 +215,7 @@ export default function EditLeagueScreen() {
             {isOwner ? (
               <View className="gap-2">
                 <View className="flex-row items-center justify-between">
-                  <Text variant="bodySmall" tone="muted">
+                  <Text variant="body" size="sm" tone="muted">
                     {t('League name')}
                   </Text>
                   <Text variant="caption" tone={editedLeagueName.length >= 20 ? 'warning' : 'muted'}>
@@ -239,7 +239,7 @@ export default function EditLeagueScreen() {
               </View>
             ) : (
               <View>
-                <Text variant="bodySmall" tone="muted">
+                <Text variant="body" size="sm" tone="muted">
                   {t('League name')}
                 </Text>
                 <Text className="mt-1 text-base font-semibold">{league?.name}</Text>
@@ -282,7 +282,7 @@ export default function EditLeagueScreen() {
 
           <View>
             <View className="mb-2 flex-row items-center justify-between px-1">
-              <Text variant="subtitle">{t('League Members')}</Text>
+              <Text variant="title" size="lg">{t('League Members')}</Text>
               <Badge label={`${sortedMembers.length}/${league.max_members}`} />
             </View>
             <View className="overflow-hidden rounded-2xl border border-border bg-surface px-3">
@@ -305,10 +305,10 @@ export default function EditLeagueScreen() {
 
         <View className="mt-auto pt-8 pb-4">
           <View className="rounded-2xl items-center border border-error/40 bg-surface p-4">
-            <Text variant="subtitle" tone="error">
+            <Text variant="title" size="lg" tone="error">
               {t('Danger zone')}
             </Text>
-            <Text variant="bodySmall" tone="muted" className="mb-4 mt-1">
+            <Text variant="body" size="sm" tone="muted" className="mb-4 mt-1">
               {isOwner ? t('Deleting a league cannot be undone.') : t('You will lose access to this league.')}
             </Text>
             <Button

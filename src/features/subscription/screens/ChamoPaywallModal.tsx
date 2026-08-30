@@ -142,7 +142,7 @@ const ChampoPaywallModal = ({ onComplete }: ChampoPaywallModalProps) => {
         showsVerticalScrollIndicator={false}
       >
         <View className="flex-1 pt-12">
-          <Text variant="display" tone="primary" className="text-center">
+          <Text variant="heading" size="5xl" tone="primary" className="text-center">
             {t('Get full access')}
           </Text>
           <Text variant="body" tone="secondary" className="text-center">

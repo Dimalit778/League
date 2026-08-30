@@ -12,7 +12,7 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <View className={cn('flex-1 items-center', spacing.inline)}>
       {icon}
 
-      <Text variant="subtitle" tone="primary" numberOfLines={1}>
+      <Text weight="sportBold" size="xl" tone="primary" numberOfLines={1}>
         {value}
       </Text>
       <Text variant="caption" tone="muted" numberOfLines={1}>
@@ -28,7 +28,7 @@ export default function LeagueSummary({ leagueSummary }: { leagueSummary: League
   const { t } = useTranslation();
 
   return (
-    <Card variant="elevated" padding="md" className="mx-4">
+    <Card variant="soft" padding="md" className="mx-4">
       <Row>
         <Stat
           icon={<Crown size={20} color={colors.muted} strokeWidth={1.5} />}

@@ -105,10 +105,10 @@ function AdminPredictionCard({ prediction }: { prediction: PredictionWithRelatio
       <Card className="h-full" contentClassName="min-h-[215px] gap-4">
         <View className="flex-row items-start justify-between gap-3">
           <View className="min-w-0 flex-1">
-            <Text variant="subtitle" numberOfLines={1}>
+            <Text variant="title" size="lg" numberOfLines={1}>
               {prediction.league?.name ?? t('Unknown League')}
             </Text>
-            <Text variant="bodySmall" tone="muted" numberOfLines={1}>
+            <Text variant="body" size="sm" tone="muted" numberOfLines={1}>
               {prediction.member?.nickname ?? t('Unknown member')}
             </Text>
             <Text variant="caption" tone="muted" ltr numberOfLines={1}>

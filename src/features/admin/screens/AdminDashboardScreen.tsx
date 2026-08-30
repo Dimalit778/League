@@ -104,7 +104,7 @@ const AdminDashboardScreen = () => {
           <View className="mb-2 flex-row items-end justify-between gap-3">
             <View>
               <Text variant="title">{t('Management areas')}</Text>
-              <Text variant="bodySmall" tone="muted">
+              <Text variant="body" size="sm" tone="muted">
                 {t('Choose an area to review or manage.')}
               </Text>
             </View>
@@ -124,7 +124,7 @@ const AdminDashboardScreen = () => {
                       <Icon size={21} color={colors.primary} strokeWidth={1.8} />
                     </View>
                     <View className="min-w-0 flex-1">
-                      <Text variant="subtitle" numberOfLines={1}>
+                      <Text variant="title" size="lg" numberOfLines={1}>
                         {t(link.title)}
                       </Text>
                       <Text variant="caption" tone="muted" className="mt-1" numberOfLines={2}>

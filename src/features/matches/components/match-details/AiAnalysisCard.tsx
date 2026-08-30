@@ -39,7 +39,7 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
     <Card padding="sm" variant="elevated">
       <Row>
         <View className="min-w-0 flex-1 items-center">
-          <Text variant="subtitle" numberOfLines={2} className="text-center">
+          <Text variant="title" size="lg" numberOfLines={2} className="text-center">
             {teams.home}
           </Text>
         </View>
@@ -48,7 +48,7 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
           <Text variant="title" tone="primary">
             {score.home}
           </Text>
-          <Text variant="small" tone="muted" className="mx-2">
+          <Text variant="body" size="sm" tone="muted" className="mx-2">
             :
           </Text>
           <Text variant="title" tone="primary">
@@ -57,7 +57,7 @@ function AiScoreCard({ teams, score }: AiScoreCardProps) {
         </View>
 
         <View className="min-w-0 flex-1 items-center px-1">
-          <Text variant="subtitle" numberOfLines={2} className="text-center">
+          <Text variant="title" size="lg" numberOfLines={2} className="text-center">
             {teams.away}
           </Text>
         </View>
@@ -108,7 +108,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
               <Text variant="body" className="text-center font-semibold">
                 {t('Unlock the full AI analysis with Pro')}
               </Text>
-              <Text variant="small" tone="muted" className="text-center">
+              <Text variant="body" size="sm" tone="muted" className="text-center">
                 {t('Get the full breakdown behind every prediction.')}
               </Text>
             </View>
@@ -147,7 +147,7 @@ function AiUnavailableState() {
       <Text variant="title" className="text-center">
         {t('AI analysis is available on match day')}
       </Text>
-      <Text variant="small" tone="muted" className="text-center pt-3">
+      <Text variant="body" size="sm" tone="muted" className="text-center pt-3">
         {t('To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.')}
       </Text>
     </Card>
@@ -178,7 +178,7 @@ export default function AiAnalysisCard({ match, title }: AiAnalysisCardProps) {
       {title && (
         <View className="flex-row  justify-center py-3 gap-2 border-b border-primary">
           <BrainCircuit size={20} color={colors.primary} />
-          <Text variant="titleLarge" tone="primary" className="font-bold">
+          <Text variant="heading" size="2xl" tone="primary" className="font-bold">
             {title}
           </Text>
         </View>

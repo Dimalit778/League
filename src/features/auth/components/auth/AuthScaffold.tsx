@@ -1,6 +1,5 @@
 import { images } from '@/assets/images';
-import { AdaptiveCenter, Screen, Text } from '@/components';
-import { container } from '@/lib/nativewind/layout';
+import { BackButton, Brand, Screen } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { isWeb } from '@/lib/platform';
 import { ImageBackground } from 'expo-image';
@@ -8,28 +7,40 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Header } from '../Header';
+type HeaderProps = {
+  fallbackHref?: string;
+  showBack?: boolean;
+};
 
 type AuthScaffoldProps = {
-  title: string;
-  description?: string;
   fallbackHref?: string;
   children: ReactNode;
   footer?: ReactNode;
-  emblem?: ReactNode;
+  className?: string;
   showBack?: boolean;
-  card?: boolean;
 };
+export function Header({ fallbackHref, showBack = true }: HeaderProps) {
+  const showBackButton = showBack && !isWeb;
 
+  return (
+    <View className="h-12 w-full justify-center bg-transparent">
+      {showBackButton ? (
+        <View className="absolute start-0 z-10">
+          <BackButton fallbackHref={fallbackHref} variant="onImage" />
+        </View>
+      ) : null}
+      <View className="items-center px-14" pointerEvents="none">
+        <Brand size="sm" onBoarding />
+      </View>
+    </View>
+  );
+}
 export default function AuthScaffold({
-  title,
-  description,
   fallbackHref = '/(auth)',
   children,
   footer,
-  emblem,
+  className,
   showBack = true,
-  card = true,
 }: AuthScaffoldProps) {
   const showInlineBack = showBack && !isWeb;
 
@@ -51,33 +62,19 @@ export default function AuthScaffold({
         pointerEvents="none"
       />
 
-      <Screen width="full" padding="horizontal" edges={['top']} className="bg-transparent">
+      <Screen width="full" padding="horizontal" edges={['top', 'bottom']} className="bg-transparent">
         <KeyboardAwareScrollView
+          className="flex-1"
           bottomOffset={72}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <Header fallbackHref={fallbackHref} showBack={showInlineBack} />
-          <AdaptiveCenter className={cn(container.form, 'gap-6 px-2')}>
-            {emblem && <View className=" items-center">{emblem}</View>}
-
-            <View className="gap-2">
-              <Text accessibilityRole="header" variant="header" className="text-center">
-                {title}
-              </Text>
-              {description ? (
-                <Text variant="body" tone="muted" className="text-center">
-                  {description}
-                </Text>
-              ) : null}
-            </View>
-
-            <View>
-              {children}
-              {footer ? <View className="mt-6">{footer}</View> : null}
-            </View>
-          </AdaptiveCenter>
+          <View className={cn('mx-auto w-full max-w-[520px]', className)}>
+            {children}
+            {footer}
+          </View>
         </KeyboardAwareScrollView>
       </Screen>
     </View>

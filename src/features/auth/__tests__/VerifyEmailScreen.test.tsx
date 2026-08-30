@@ -21,8 +21,7 @@ describe('VerifyEmailScreen', () => {
   it('renders the heading and email', () => {
     const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('Enter the code')).toBeTruthy();
-    expect(getByText('user@test.com')).toBeTruthy();
+    expect(getByText('The code is single-use and expires shortly.')).toBeTruthy();
   });
 
   it('renders 6 code input fields', () => {
@@ -36,13 +35,13 @@ describe('VerifyEmailScreen', () => {
     const { getByTestId, getByText } = render(<VerifyEmailScreen />);
 
     expect(getByTestId('button')).toBeTruthy();
-    expect(getByText('Confirm and continue')).toBeTruthy();
+    expect(getByText('Confirm')).toBeTruthy();
   });
 
-  it('renders the initial resend cooldown', () => {
+  it('renders the resend code action', () => {
     const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('00:30')).toBeTruthy();
+    expect(getByText('Resend Code')).toBeTruthy();
   });
 
   it('shows missing email message when no email param', () => {
@@ -50,7 +49,8 @@ describe('VerifyEmailScreen', () => {
 
     const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('Email address is missing. Please try signing up again.')).toBeTruthy();
+    expect(getByText('Email address is missing')).toBeTruthy();
+    expect(getByText('Please try signing up again.')).toBeTruthy();
   });
 
   it('enables verify button when all 6 digits are entered', async () => {
@@ -78,11 +78,11 @@ describe('VerifyEmailScreen', () => {
     });
   });
 
-  it('keeps resend unavailable during the initial cooldown', () => {
-    const { getByText, queryByText } = render(<VerifyEmailScreen />);
+  it('starts a two-minute countdown', () => {
+    const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('00:30')).toBeTruthy();
-    expect(queryByText('Resend Code')).toBeNull();
+    expect(getByText('02:00')).toBeTruthy();
+    expect(getByText('Resend Code')).toBeTruthy();
   });
 
   it('does not display error message initially', () => {

@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import * as Yup from 'yup';
+import { GuideSteps } from '../components/joinLeague/guide-steps';
 import { FullLeague } from '../types';
 
 const getSchema = (t: (key: string) => string) =>
@@ -21,13 +22,6 @@ const getSchema = (t: (key: string) => string) =>
     nickname: Yup.string().trim().min(2).max(20).required(t('Nickname is required')),
   });
 
-const steps = [
-  'Get the 7-digit invite code from the league owner.',
-  'Enter the code above to find the league.',
-  'Choose your nickname for the league.',
-  'Tap "Join League" to become a member.',
-];
-
 const FullLeagueCard = ({ league }: { league: FullLeague }) => {
   const { t } = useTranslation();
   return (
@@ -35,7 +29,7 @@ const FullLeagueCard = ({ league }: { league: FullLeague }) => {
       <View className="items-center gap-2">
         <LogoBadge source={league.competition_flag} width={80} height={80} />
 
-        <Text variant="titleLarge" tone="primary" className="text-center uppercase" style={{ letterSpacing: 1 }}>
+        <Text variant="heading" size="2xl" tone="primary" className="text-center uppercase" style={{ letterSpacing: 1 }}>
           {league.league_name}
         </Text>
       </View>
@@ -132,12 +126,11 @@ export default function JoinLeagueScreen() {
   };
 
   return (
-    <Screen edges={['bottom']}>
+    <Screen edges={['bottom']} padding="all">
       <KeyboardAwareScrollView bottomOffset={62} className="flex-1">
-        <View className="flex-1 px-4 pt-6">
-          <Text className="text-2xl mb-2">{t('Invite Code')}</Text>
-
-          <View className="mb-6">
+        <View className="flex-1  gap-4">
+          <View className="gap-1">
+            <Text variant="title">{t('Invite Code')}</Text>
             <InputField
               control={control}
               name="inviteCode"
@@ -163,9 +156,7 @@ export default function JoinLeagueScreen() {
                           : 'This league is full.',
                       )}
                     </Text>
-                    {SUBSCRIPTIONS_ENABLED && (
-                      <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />
-                    )}
+                    {SUBSCRIPTIONS_ENABLED && <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />}
                   </View>
                 ) : (
                   <>
@@ -195,21 +186,7 @@ export default function JoinLeagueScreen() {
             </View>
           )}
 
-          {!foundLeague && (
-            <View className="mt-8 p-4 bg-surface rounded-xl">
-              <Text className="text-2xl mb-3">{t('How to Join a League')}</Text>
-              <View className="gap-3">
-                {steps.map((step, index) => (
-                  <View key={index} className="flex-row items-start gap-3">
-                    <View className="w-6 h-6 bg-primary rounded-full items-center justify-center mt-0.5">
-                      <Text className="text-sm font-bold">{index + 1}</Text>
-                    </View>
-                    <Text className="text-base text-muted flex-1">{t(step)}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
+          {!foundLeague && <GuideSteps />}
         </View>
       </KeyboardAwareScrollView>
     </Screen>

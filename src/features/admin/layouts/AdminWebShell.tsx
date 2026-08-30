@@ -62,7 +62,7 @@ const AdminWebShell = () => {
         >
           <Icon size={20} color={isActive ? colors.onPrimary : colors.muted} strokeWidth={isActive ? 2.2 : 1.9} />
           {!isCompact ? (
-            <Text variant="bodySmall" tone={isActive ? 'inverse' : 'default'} className="font-semibold">
+            <Text variant="body" size="sm" tone={isActive ? 'inverse' : 'default'} className="font-semibold">
               {t(label)}
             </Text>
           ) : null}
@@ -87,7 +87,7 @@ const AdminWebShell = () => {
           </View>
           {!isCompact ? (
             <View>
-              <Text variant="subtitle" ltr>
+              <Text variant="title" size="lg" ltr>
                 CHAMPO
               </Text>
               <Text variant="caption" tone="muted">
@@ -118,7 +118,7 @@ const AdminWebShell = () => {
           >
             <LogOut size={20} color={colors.muted} strokeWidth={1.9} />
             {!isCompact ? (
-              <Text variant="bodySmall" tone="muted" className="font-semibold">
+              <Text variant="body" size="sm" tone="muted" className="font-semibold">
                 {t('Sign Out')}
               </Text>
             ) : null}

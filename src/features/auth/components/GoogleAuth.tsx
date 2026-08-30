@@ -162,8 +162,8 @@ const GoogleAuth = ({
       accessibilityLabel={label}
       accessibilityState={{ disabled: blocked }}
       disabled={blocked}
+      className="h-[52px] items-center justify-center rounded-md  bg-white active:opacity-80"
       onPress={handleGoogleSignIn}
-      style={({ pressed }) => [styles.touchable, blocked && styles.disabled, pressed && styles.pressed]}
     >
       <View style={styles.content}>
         <GoogleGIcon width={22} height={22} />
@@ -174,20 +174,13 @@ const GoogleAuth = ({
 };
 
 const styles = StyleSheet.create({
-  touchable: {
-    width: '100%',
-    height: 52,
-    borderRadius: 4,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
+    height: 52,
+    borderRadius: 6,
   },
 
   label: {
@@ -201,11 +194,15 @@ const styles = StyleSheet.create({
   },
 
   pressed: {
-    opacity: 0.82,
+    opacity: 0.22,
+    transform: [{ scale: 0.97 }],
+    backgroundColor: '#F5F5',
   },
 
   disabled: {
     opacity: 0.5,
+    transform: [{ scale: 1 }],
+    backgroundColor: '#F5F5',
   },
 });
 export default GoogleAuth;

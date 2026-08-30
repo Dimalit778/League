@@ -1,5 +1,5 @@
 import { cn } from '@/lib/nativewind/nativeWind';
-import { typography, type TextVariant } from '@/lib/nativewind/typography';
+import { fontSize, fontWeight, typography, type TextSize, type TextVariant, type TextWeight } from '@/lib/nativewind/typography';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { forwardRef } from 'react';
 import { Text as RNText, type TextProps } from 'react-native';
@@ -17,7 +17,12 @@ export type TextTone =
   | 'inverse';
 
 export type AppTextProps = TextProps & {
+  /** Semantic preset — sets a sensible size + weight. Start here. */
   variant?: TextVariant;
+  /** Override just the size (keeps the variant's weight). */
+  size?: TextSize;
+  /** Override just the weight/family (keeps the variant's size). */
+  weight?: TextWeight;
   tone?: TextTone;
   ltr?: boolean;
   className?: string;
@@ -39,6 +44,8 @@ const toneClasses: Record<TextTone, string> = {
 export const Text = forwardRef<RNText, AppTextProps>(function Text(
   {
     variant = 'body',
+    size,
+    weight,
     tone = 'default',
     ltr = false,
     className,
@@ -58,7 +65,13 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
       {...rest}
       allowFontScaling={allowFontScaling}
       maxFontSizeMultiplier={maxFontSizeMultiplier}
-      className={cn(typography[variant], toneClasses[tone], className)}
+      className={cn(
+        typography[variant],
+        size && fontSize[size],
+        weight && fontWeight[weight],
+        toneClasses[tone],
+        className,
+      )}
       style={[
         { writingDirection: ltr || !isRTL ? 'ltr' : 'rtl' },
         !hasExplicitAlign ? { textAlign: isRTL ? 'right' : 'left' } : null,

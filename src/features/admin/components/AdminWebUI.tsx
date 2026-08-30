@@ -38,7 +38,7 @@ export function AdminWebToolbar({
       <View className="max-w-xl flex-1">
         <AdminSearchField value={searchValue} onChangeText={onSearchChange} placeholder={searchPlaceholder} />
       </View>
-      <Text variant="bodySmall" tone="muted" className="ml-auto">
+      <Text variant="body" size="sm" tone="muted" className="ml-auto">
         {summary}
       </Text>
       {trailing}
@@ -152,7 +152,7 @@ export function AdminWebIdentity({ title, subtitle, initials }: { title: string;
         </Text>
       </View>
       <View className="min-w-0 flex-1">
-        <Text variant="bodySmall" className="font-semibold" numberOfLines={1}>
+        <Text variant="body" size="sm" className="font-semibold" numberOfLines={1}>
           {title}
         </Text>
         {subtitle ? (

@@ -23,7 +23,7 @@ describe('RTL primitives', () => {
 
   it('preserves an explicit score writing direction', () => {
     const { getByText } = render(
-      <Text variant="header" style={{ writingDirection: 'ltr' }}>
+      <Text variant="heading" size="3xl" style={{ writingDirection: 'ltr' }}>
         3 – 1
       </Text>,
     );

@@ -50,7 +50,7 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
         <Divider orientation="vertical" className="h-16" />
 
         <View className="min-w-16 items-center">
-          <Text variant="titleLarge" tone="primary" className="text-center">
+          <Text weight="sportBold" size="2xl" tone="primary" className="text-center">
             {totalPoints}
           </Text>
           <Text variant="caption" tone="muted" className="text-center">

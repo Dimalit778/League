@@ -7,6 +7,7 @@ import { spacingValues } from "./spacing";
 export type ThemeColors = {
   primary: string;
   onPrimary: string;
+  accent: string;
   background: string;
   surface: string;
   subtle: string;
@@ -39,79 +40,85 @@ export type ThemeTokens = {
   gradients: ThemeGradients;
   effects: ThemeEffects;
 
-  fonts: {
-    heading: string;
-    headingBold: string;
-  };
   spacing: typeof spacingValues;
   radius: typeof radiusValues;
 };
 
 const lightColors = {
-  primary: "#7A5800",
+  primary: "#9A6F16",
   onPrimary: "#FFFFFF",
-  background: "#ECECEC",
+  accent: "#C68A12",
+
+  background: "#F6F5F2",
   surface: "#FFFFFF",
-  subtle: "#F1F5F9",
-  text: "#0F172A",
-  muted: "#64748B",
-  border: "#E2E8F0",
-  success: "#087A35",
-  warning: "#92400E",
+  subtle: "#EFEDE8",
+
+  text: "#111827",
+  muted: "#6B7280",
+
+  border: "rgba(17,24,39,0.08)",
+
+  success: "#15803D",
+  warning: "#C2410C",
   error: "#DC2626",
   info: "#0369A1",
-  overlay: "rgba(15,23,42,0.35)",
-} as const;
 
+  overlay: "rgba(17,24,39,0.28)",
+} as const;
 const darkColors = {
-  primary: "#D6A21E",
-  onPrimary: "#111827",
-  background: "#071525",
-  surface: "#0D2033",
-  subtle: "#132A40",
-  text: "#F8FAFC",
-  muted: "#94A3B8",
-  border: "#1F3A52",
+  primary: "#C99A2E",
+  onPrimary: "#0B1118",
+  accent: "#E7BE5E",
+
+  background: "#08111C",
+  surface: "#0D1722",
+  subtle: "#121E2B",
+
+  text: "#F4F7FB",
+  muted: "#8B98A8",
+
+  border: "rgba(255,255,255,0.08)",
+
   success: "#22C55E",
   warning: "#F59E0B",
   error: "#F87171",
   info: "#38BDF8",
-  overlay: "rgba(0,0,0,0.55)",
+
+  overlay: "rgba(0,0,0,0.6)",
 } as const;
 
 const lightGradients: ThemeGradients = {
-  hero: ["#F8FAFC", "#F1F5F9", "#E2E8F0"],
-  premium: ["#FFF9E8", "#FFF4D6", "#F8FAFC"],
-  card: ["#F8FAFC", "#F1F5F9", "#E8EEF4"],
+  hero: ["#FFFFFF", "#F7F8FA", "#F1F3F6"],
+
+  premium: ["#FFF8E8", "#FFF4D8", "#F7F8FA"],
+
+  card: ["#FFFFFF", "#FAFBFC", "#F5F6F8"],
 };
 
 const darkGradients: ThemeGradients = {
-  hero: ["#071A24", "#0A1827", "#0B1120"],
-  premium: ["#061525", "#0B1B30", "#0B1120"],
-  card: ["#10283C", "#0C2032", "#091A2A"],
+  hero: ["#0C1825", "#09131F", "#08111C"],
+  premium: ["#171A16", "#101712", "#08111C"],
+  card: ["#101B27", "#0D1722", "#0D1722"],
 };
 
 const lightEffects: ThemeEffects = {
-  cardBorder: "rgba(15, 23, 42, 0.08)",
-  cardHighlight: "rgba(255, 255, 255, 0.8)",
-  cardShadow: "#475569",
-  cardGlow: "rgba(122, 88, 0, 0.1)",
-  cardActiveGlow: "rgba(122, 88, 0, 0.1)",
+  cardBorder: "rgba(17,24,39,0.07)",
+  cardHighlight: "rgba(255,255,255,0.95)",
+  cardShadow: "#111827",
+
+  cardGlow: "rgba(154,111,22,0.05)",
+  cardActiveGlow: "rgba(154,111,22,0.10)",
 };
 
 const darkEffects: ThemeEffects = {
-  cardBorder: "rgba(120, 155, 185, 0.18)",
-  cardHighlight: "rgba(255, 255, 255, 0.06)",
+  cardBorder: "rgba(255,255,255,0.08)",
+  cardHighlight: "rgba(255,255,255,0.04)",
   cardShadow: "#000000",
-  cardGlow: "rgba(214, 162, 30, 0.22)",
-  cardActiveGlow: "rgba(214, 162, 30, 0.22)",
+  cardGlow: "rgba(201,154,46,0.08)",
+  cardActiveGlow: "rgba(201,154,46,0.14)",
 };
 
 const sharedTokens = {
-  fonts: {
-    heading: "Nunito_400Regular",
-    headingBold: "Nunito_700Bold",
-  },
   spacing: spacingValues,
   radius: radiusValues,
 } as const;
@@ -134,6 +141,7 @@ const dark: ThemeTokens = {
 export const getNativeWindVariables = (tokens: ThemeTokens) => ({
   "--color-primary": tokens.colors.primary,
   "--color-on-primary": tokens.colors.onPrimary,
+  "--color-accent": tokens.colors.accent,
   "--color-background": tokens.colors.background,
   "--color-surface": tokens.colors.surface,
   "--color-subtle": tokens.colors.subtle,

@@ -12,8 +12,8 @@ describe('Text', () => {
     expect(getByText('Heading')).toBeTruthy();
   });
 
-  it('renders with display variant (nunito)', () => {
-    const { getByText } = render(<Text variant="display">Score</Text>);
+  it('renders with a heading variant + size override', () => {
+    const { getByText } = render(<Text variant="heading" size="5xl">Score</Text>);
     expect(getByText('Score')).toBeTruthy();
   });
 
@@ -29,7 +29,7 @@ describe('Text', () => {
 
   it('supports semantic variants and tones', () => {
     const { getByText } = render(
-      <Text variant="header" tone="primary">
+      <Text variant="heading" size="3xl" tone="primary">
         3–1
       </Text>,
     );

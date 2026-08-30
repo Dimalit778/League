@@ -190,7 +190,7 @@ function LeagueFilterChip({
         selected ? 'border-primary bg-primary' : 'border-border bg-surface',
       )}
     >
-      <Text variant="bodySmall" className={cn('font-semibold', selected && 'text-primary-foreground')}>
+      <Text variant="body" size="sm" className={cn('font-semibold', selected && 'text-primary-foreground')}>
         {label}
       </Text>
     </Pressable>
@@ -210,12 +210,12 @@ function AdminMemberCard({ member }: { member: LeagueMemberWithRelations }) {
       <Card className="h-full" padding="sm" contentClassName="gap-3">
         <View className="flex-row items-center gap-3">
           <View className="h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
-            <Text variant="bodySmall" tone="primary" className="font-bold">
+            <Text variant="body" size="sm" tone="primary" className="font-bold">
               {getInitials(displayName) || '?'}
             </Text>
           </View>
           <View className="min-w-0 flex-1">
-            <Text variant="subtitle" numberOfLines={1}>
+            <Text variant="title" size="lg" numberOfLines={1}>
               {displayName}
             </Text>
             <Text variant="caption" tone="muted" ltr numberOfLines={1}>

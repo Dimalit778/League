@@ -5,34 +5,44 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { Plus, UserPlus } from 'lucide-react-native';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Leagues } from '../components/myLeagues/Leagues';
 import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
 type ActivationSelection = NonNullable<ReturnType<typeof useMyLeaguesScreen>['activationSelection']>;
 
-function CreateJoinButtons() {
+const ACTION_BUTTON_SIZE = 72;
+
+function LeagueActionButtons() {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
+  const insets = useSafeAreaInsets();
 
   return (
-    <Row className="gap-3">
-      <Button
-        variant="glass"
-        size="md"
-        className="flex-1"
-        label={t('Create League')}
-        leftIcon={<Plus size={18} color={colors.text} strokeWidth={2.5} />}
-        onPress={() => router.push('/leagues/create-league/competitions')}
-      />
-      <Button
-        variant="glass"
-        size="md"
-        className="flex-1"
-        label={t('Join League')}
-        leftIcon={<UserPlus size={18} color={colors.text} strokeWidth={2} />}
+    <Row
+      pointerEvents="box-none"
+      className="absolute inset-x-0 justify-between px-5"
+      style={{ bottom: Math.max(insets.bottom, 12) + 8 }}
+    >
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('Join League')}
         onPress={() => router.push('/leagues/join-league')}
-      />
+        className="items-center justify-center rounded-full border border-border bg-subtle active:opacity-80"
+        style={{ width: ACTION_BUTTON_SIZE, height: ACTION_BUTTON_SIZE }}
+      >
+        <UserPlus size={32} color={colors.text} strokeWidth={2} />
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('Create League')}
+        onPress={() => router.push('/leagues/create-league/competitions')}
+        className="items-center justify-center rounded-full border border-border bg-subtle active:opacity-80"
+        style={{ width: ACTION_BUTTON_SIZE, height: ACTION_BUTTON_SIZE }}
+      >
+        <Plus size={26} color={colors.text} strokeWidth={2.5} />
+      </Pressable>
     </Row>
   );
 }
@@ -69,15 +79,16 @@ export default function MyLeaguesScreen() {
       <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
 
       <Screen scroll padding="horizontal" className="flex-grow">
-        <View className="flex-1 gap-6 ">
-          {showCreateJoin && <CreateJoinButtons />}
-          <View className=" min-h-[550px]">
+        <View className="flex-1 gap-6 pb-24">
+          <View className="min-h-[550px]">
             <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
           </View>
           {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
         </View>
         <View className="mt-auto">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
       </Screen>
+
+      {showCreateJoin ? <LeagueActionButtons /> : null}
 
       {limitSelect && <LimitSelectModal {...limitSelect} />}
     </View>
