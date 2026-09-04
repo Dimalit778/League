@@ -191,7 +191,7 @@ export default function AdminReportsScreen() {
                         <View className="flex-row gap-2">
                           <Button
                             label={t('Dismiss')}
-                            variant="outline"
+                            intent="outline"
                             size="sm"
                             className="flex-1"
                             onPress={() => confirmDecision(report.id, 'dismiss')}
@@ -199,7 +199,7 @@ export default function AdminReportsScreen() {
                           />
                           <Button
                             label={t('Remove content')}
-                            variant="error"
+                            intent="destructive"
                             size="sm"
                             className="flex-1"
                             onPress={() => confirmDecision(report.id, 'remove_content')}
@@ -209,7 +209,7 @@ export default function AdminReportsScreen() {
                         {report.league_member_id ? (
                           <Button
                             label={t('Remove member')}
-                            variant="outline"
+                            intent="outline"
                             size="sm"
                             fullWidth
                             className="border-error/40"

@@ -70,7 +70,7 @@ const AdminUserRow = memo(function AdminUserRow({
           disabled={isDeleting}
           loading={isDeleting}
           accessibilityLabel={t('Delete user')}
-          variant="outline"
+          intent="outline"
           size="icon"
           className="border-error/30"
         >

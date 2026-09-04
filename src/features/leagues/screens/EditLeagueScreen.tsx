@@ -45,7 +45,7 @@ const MemberCard = ({ member, isOwner, canRemove, handleRemoveMember }: MemberCa
         canRemove ? (
           <Button
             size="icon"
-            variant="outline"
+            intent="outline"
             accessibilityLabel={`${t('Remove')} ${member.nickname}`}
             haptic={false}
             onPress={() => handleRemoveMember(member.id, member.nickname)}
@@ -63,7 +63,7 @@ export default function EditLeagueScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useThemeTokens();
-  const { data: league, isLoading, error } = useGetLeagueAndMembers(leagueId);
+  const { data: league, isLoading, isFetching, error, refetch } = useGetLeagueAndMembers(leagueId);
 
   const { showAlert } = useAlert();
   const removeMember = useRemoveMember();
@@ -186,11 +186,22 @@ export default function EditLeagueScreen() {
       },
     );
   };
-  if (isLoading || !league) {
+  if (isLoading) {
     return <EditLeagueSkeleton />;
   }
-  if (error) {
-    return <Error error={error} />;
+  if (error || !league) {
+    return (
+      <Screen padding="all" bottomInset>
+        <Error error={error ?? t('League not found')} />
+        <Button
+          label={t('Try again')}
+          onPress={() => void refetch()}
+          loading={isFetching}
+          disabled={isFetching}
+          fullWidth
+        />
+      </Screen>
+    );
   }
   return (
     <Screen padding="horizontal" bottomInset>
@@ -257,7 +268,7 @@ export default function EditLeagueScreen() {
 
             <Button
               label={t('Invite friends')}
-              variant="outline"
+              intent="outline"
               fullWidth
               className="mt-3"
               leftIcon={<UserPlus size={18} color={colors.primary} />}
@@ -266,7 +277,7 @@ export default function EditLeagueScreen() {
             {!isOwner ? (
               <Button
                 label={t('Report league name')}
-                variant="outline"
+                intent="outline"
                 fullWidth
                 className="mt-3"
                 leftIcon={<Flag size={18} color={colors.error} />}
@@ -313,7 +324,7 @@ export default function EditLeagueScreen() {
             </Text>
             <Button
               label={isOwner ? t('Delete League') : t('Leave league')}
-              variant="outline"
+              intent="outline"
               fullWidth
               onPress={isOwner ? confirmDeleteLeague : confirmLeaveLeague}
               disabled={isOwner ? deleteLeague.isPending : leaveLeague.isPending}

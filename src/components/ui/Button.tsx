@@ -1,26 +1,26 @@
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
-import { setColorAlpha } from '@/lib/color';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { spacing } from '@/lib/nativewind/spacing';
-import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { forwardRef, type ReactNode } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, View, type PressableProps } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, View, type PressableProps } from 'react-native';
 
 import { ArrowIcon } from './ArrowIcon';
-import { Text } from './Text';
+import { Text, type TextTone } from './Text';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'glass' | 'error';
+export type ButtonIntent = 'primary' | 'neutral' | 'outline' | 'destructive';
 
-export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon' | 'icon-lg';
+
+export type ButtonShape = 'default' | 'circle';
 
 export type ButtonProps = Omit<PressableProps, 'children'> & {
   children?: ReactNode;
   label?: string;
-  variant?: ButtonVariant;
+  intent?: ButtonIntent;
   size?: ButtonSize;
+  shape?: ButtonShape;
   fullWidth?: boolean;
   loading?: boolean;
   leftIcon?: ReactNode;
@@ -31,44 +31,41 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'min-h-12 px-3',
+  sm: 'min-h-11 px-3',
   md: 'min-h-12 px-4',
   lg: 'min-h-[52px] px-6',
   icon: 'h-12 w-12 p-0',
+  'icon-lg': 'h-[64px] w-[64px] p-0',
 };
 
 const textSizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-base',
+  sm: 'text-sm',
   md: 'text-base',
   lg: 'text-lg',
   icon: 'text-base',
+  'icon-lg': 'text-base',
 };
 
-const variantClasses: Record<ButtonVariant, string> = {
+const intentClasses: Record<ButtonIntent, string> = {
   primary: 'bg-primary',
-  secondary: 'bg-subtle',
+  neutral: 'bg-subtle',
   outline: 'border border-border bg-transparent',
-
-  // הרקע והמסגרת של glass מוגדרים ב-style
-  glass: 'bg-transparent',
-
-  error: 'bg-error',
+  destructive: 'bg-danger',
 };
 
-const textToneClasses: Record<ButtonVariant, string> = {
-  primary: 'text-onPrimary',
-  secondary: 'text-text',
-  outline: 'text-text',
-  glass: 'text-text',
-  error: 'text-white',
+const textToneByIntent: Record<ButtonIntent, TextTone> = {
+  primary: 'onPrimary',
+  neutral: 'default',
+  outline: 'default',
+  destructive: 'inverse',
 };
-
 export const Button = forwardRef<View, ButtonProps>(function Button(
   {
     children,
     label,
-    variant = 'primary',
+    intent = 'primary',
     size = 'md',
+    shape = 'default',
     fullWidth = false,
     loading = false,
     disabled = false,
@@ -85,12 +82,10 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
   },
   ref,
 ) {
-  const { colors, theme, effects, gradients } = useThemeTokens();
+  const { colors } = useThemeTokens();
   const { t } = useTranslation();
 
   const isDisabled = disabled || loading;
-  const isGlass = variant === 'glass';
-  const isLightGlass = isGlass && theme === 'light';
 
   const accessibleLabel = accessibilityLabel ?? label;
   const action = label ?? accessibilityLabel ?? t('button');
@@ -105,8 +100,10 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
     onPress?.(event);
   };
 
-  const spinnerColor = variant === 'primary' ? colors.onPrimary : variant === 'error' ? '#FFFFFF' : colors.text;
-  const arrowColor = variant === 'primary' ? colors.onPrimary : variant === 'error' ? '#FFFFFF' : colors.text;
+  // primary/destructive sit on a filled background → use onPrimary for icons/spinner too.
+  const onFill = intent === 'primary' || intent === 'destructive';
+  const spinnerColor = onFill ? colors.onPrimary : colors.text;
+  const arrowColor = onFill ? colors.onPrimary : colors.text;
 
   return (
     <Pressable
@@ -132,67 +129,24 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
         busy: loading,
       }}
       className={cn(
-        'relative flex-row items-center justify-center overflow-hidden rounded-xl',
-        'active:opacity-85',
+        'relative flex-row items-center justify-center overflow-hidden',
+        shape === 'circle' ? 'rounded-full' : 'rounded-xl',
+        isDisabled ? 'opacity-50' : 'active:opacity-85',
         spacing.row,
         sizeClasses[size],
-        variantClasses[variant],
+        intentClasses[intent],
         fullWidth && 'w-full',
-        isDisabled && 'opacity-50',
         className,
       )}
       style={(state) => [
-        isGlass && {
-          borderWidth: StyleSheet.hairlineWidth * 1.5,
-          borderColor: effects.cardBorder,
-          shadowColor: effects.cardShadow,
-          shadowOpacity: isLightGlass ? 0.06 : 0.18,
-          shadowRadius: isLightGlass ? 8 : 12,
-          shadowOffset: {
-            width: 0,
-            height: isLightGlass ? 3 : 5,
+        state.pressed &&
+          !isDisabled && {
+            transform: [{ scale: 0.985 }],
           },
-          elevation: isLightGlass ? 1 : 2,
-        },
-
-        state.pressed && {
-          transform: [{ scale: 0.985 }],
-        },
 
         typeof style === 'function' ? style(state) : style,
       ]}
     >
-      {isGlass && (
-        <>
-          {!isLightGlass && (
-            <BlurView
-              pointerEvents="none"
-              intensity={Platform.OS === 'ios' ? 35 : 20}
-              tint="dark"
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-
-          <LinearGradient
-            pointerEvents="none"
-            colors={[...gradients.card]}
-            locations={[0, 0.45, 1]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFill}
-          />
-
-          {!isLightGlass && (
-            <LinearGradient
-              pointerEvents="none"
-              colors={[effects.cardHighlight, setColorAlpha(effects.cardHighlight, 0)]}
-              locations={[0, 1]}
-              style={styles.glassHighlight}
-            />
-          )}
-        </>
-      )}
-
       {loading ? (
         <ActivityIndicator color={spinnerColor} size="small" />
       ) : (
@@ -200,7 +154,9 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
           {leftIcon}
 
           {label ? (
-            <Text className={cn('font-semibold', textSizeClasses[size], textToneClasses[variant])}>{label}</Text>
+            <Text weight="bold" tone={textToneByIntent[intent]} className={textSizeClasses[size]}>
+              {label}
+            </Text>
           ) : (
             children
           )}
@@ -211,14 +167,4 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
       )}
     </Pressable>
   );
-});
-
-const styles = StyleSheet.create({
-  glassHighlight: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '55%',
-  },
 });

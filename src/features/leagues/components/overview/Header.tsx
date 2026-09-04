@@ -2,47 +2,58 @@ import { TrophyIcon } from '@/assets/icons';
 import { LogoBadge, Row, TabButton, Text } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export const CollapsedHeader = ({ nickname }: { nickname?: string }) => {
-  return (
-    <Row className="h-12 items-center justify-between px-4">
-      <View className="h-9 w-9 shrink-0" />
-      <View className="min-w-0 items-center justify-center ">
-        <Text variant="title" size="lg" numberOfLines={1}>
-          {nickname}
-        </Text>
-      </View>
-      <View className="shrink-0" style={{ width: 40, height: 40 }} />
-    </Row>
-  );
-};
+export const CollapsedHeader = () => <View className="h-12" />;
 
 export const ExpandedHeader = ({ nickname = 'there' }: { nickname?: string }) => {
-  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
   return (
-    <View className="flex-1 px-4" style={{ paddingTop: insets.top }}>
-      <Text variant="title" className="text-white/80" numberOfLines={1}>
+    <View
+      className="flex-1 px-4 items-center"
+      style={{
+        paddingTop: 48,
+        width: '100%',
+        maxWidth: 720,
+        alignSelf: 'center',
+        direction: 'ltr',
+      }}
+    >
+      <Text variant="title" className="max-w-full text-white/80" numberOfLines={1}>
         {t('Hello')}
       </Text>
-      <Text variant="heading" size="5xl" className="text-white  " numberOfLines={1}>
+      <Text variant="heading" size="5xl" className="max-w-full text-white" numberOfLines={1}>
         {nickname}
       </Text>
     </View>
   );
 };
 
-export const PersistentHeaderActions = ({ flagUrl, leagueName }: { flagUrl: string; leagueName: string }) => {
+export const PersistentHeaderActions = ({
+  flagUrl,
+  leagueName,
+  competitionName,
+}: {
+  flagUrl: string;
+  leagueName: string;
+  competitionName: string;
+}) => {
+  const { t } = useTranslation();
   return (
-    <Row className="justify-between px-4">
-      <View className="flex-row items-center gap-2">
-        <LogoBadge source={flagUrl} width={40} height={40} className="rounded-md" />
-        <Text className="text-white/80 font-manrope-medium">{leagueName}</Text>
-      </View>
+    <Row className="justify-between px-4" style={{ width: '100%', maxWidth: 720, alignSelf: 'center', gap: 12 }}>
+      <Row className="flex-1 min-w-0 gap-2">
+        <LogoBadge source={flagUrl} width={36} height={36} className="rounded-md" />
+        <View className="gap-1">
+          <Text variant="body" className=" text-white font-manrope-bold leading-none">
+            {leagueName}
+          </Text>
+          <Text variant="label" className=" text-white/80 font-manrope leading-none">
+            {competitionName}
+          </Text>
+        </View>
+      </Row>
 
-      <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} />
+      <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} accessibilityLabel={t('My Leagues')} />
     </Row>
   );
 };

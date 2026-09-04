@@ -1,7 +1,8 @@
 import { AvatarImage, Row, Text } from '@/components';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
-import { useThemeTokens } from '@/hooks/useThemeTokens';
+import { spacing } from '@/lib/nativewind/spacing';
 import { Link } from 'expo-router';
 import { Pin } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
@@ -96,7 +97,7 @@ export function LeaderboardList({
   clickable?: boolean;
 }) {
   return (
-    <View className="gap-2">
+    <View className={spacing.list}>
       {leaderboard.map((member, index) => (
         <LeaderboardRow
           key={member.member_id}

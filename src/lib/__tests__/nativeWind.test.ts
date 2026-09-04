@@ -10,7 +10,6 @@ import {
 const semanticColorKeys: (keyof ThemeColors)[] = [
   'primary',
   'onPrimary',
-  'accent',
   'background',
   'surface',
   'subtle',
@@ -20,6 +19,7 @@ const semanticColorKeys: (keyof ThemeColors)[] = [
   'success',
   'warning',
   'error',
+  'danger',
   'info',
   'overlay',
 ];

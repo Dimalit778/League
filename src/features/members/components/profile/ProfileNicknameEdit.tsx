@@ -72,7 +72,7 @@ export function ProfileNicknameEdit({ initialNickname }: ProfileNicknameEditProp
         <Button
           label={t('Save')}
           onPress={handleSave}
-          variant="outline"
+          intent="outline"
           fullWidth
           className="mt-3"
           loading={updateMember.isPending}

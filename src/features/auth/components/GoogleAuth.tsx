@@ -167,7 +167,9 @@ const GoogleAuth = ({
     >
       <View style={styles.content}>
         <GoogleGIcon width={22} height={22} />
-        <Text style={styles.label}>{label}</Text>
+        <Text weight="semibold" style={styles.label}>
+          {label}
+        </Text>
       </View>
     </Pressable>
   );
@@ -185,9 +187,8 @@ const styles = StyleSheet.create({
 
   label: {
     color: '#1F1F1F',
-    fontSize: 22,
-    fontWeight: '500',
-
+    fontSize: 20,
+    lineHeight: 26,
     ...(Platform.OS === 'android' && {
       fontFamily: 'sans-serif-medium',
     }),

@@ -43,7 +43,7 @@ function LeagueCard({
   const { t } = useTranslation();
 
   return (
-    <Row className="gap-2">
+    <>
       {isSelectable && (
         <View
           className={cn(
@@ -55,8 +55,7 @@ function LeagueCard({
         </View>
       )}
       <Card
-        variant="surface"
-        className="flex-1 overflow-hidden"
+        variant="soft"
         padding="md"
         onPress={onPress}
         accessibilityLabel={league.league_name ?? undefined}
@@ -72,7 +71,7 @@ function LeagueCard({
           <Row className="w-full min-w-0 gap-3">
             <MyImage source={league.competition_flag ?? ''} width={40} height={40} />
             <View className="flex-1">
-              <Text numberOfLines={1} className="text-lg font-semibold">
+              <Text numberOfLines={2} weight="semibold" className="text-lg">
                 {league.league_name}
               </Text>
               <Text numberOfLines={1} className="text-sm text-muted">
@@ -97,7 +96,7 @@ function LeagueCard({
           </View>
         )}
       </Card>
-    </Row>
+    </>
   );
 }
 

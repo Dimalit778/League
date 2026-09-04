@@ -64,7 +64,7 @@ function PaidSubscriptionScreen() {
         {!isPro && (
           <Button
             label={t('Upgrade')}
-            variant="primary"
+            intent="primary"
             size="lg"
             loading={isLoading}
             disabled={isRestoring}
@@ -75,7 +75,7 @@ function PaidSubscriptionScreen() {
         {Platform.OS !== 'web' && (
           <Button
             label={t('Restore Purchases')}
-            variant="outline"
+            intent="outline"
             size="lg"
             loading={isRestoring}
             disabled={isLoading}

@@ -95,7 +95,7 @@ const ResetPasswordScreen = () => {
       ]);
     } catch (error) {
       console.error('Reset password failed:', error);
-      setErrorMessage('Failed to update password. Please try again.');
+      setErrorMessage(t('Failed to update password. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -104,6 +104,7 @@ const ResetPasswordScreen = () => {
   return (
     <AuthScaffold
       title={t('New Password')}
+      description={t('Enter your new password')}
       fallbackHref="/(auth)/signIn"
       emblem={<MyImage source={images.passwordLogo} width={140} height={140} contentFit="contain" />}
     >
@@ -120,7 +121,7 @@ const ResetPasswordScreen = () => {
           <Button
             label={t('Resend New Link')}
             onPress={() => router.replace('/(auth)/forgot-password')}
-            variant="primary"
+            intent="primary"
             size="lg"
             fullWidth
             className="rounded-2xl"
@@ -184,7 +185,7 @@ const ResetPasswordScreen = () => {
               onPress={passwordForm.handleSubmit(handleResetPassword)}
               loading={isSubmitting}
               disabled={!passwordForm.formState.isValid || isSubmitting}
-              variant="primary"
+              intent="primary"
               size="lg"
               fullWidth
               className="rounded-2xl"

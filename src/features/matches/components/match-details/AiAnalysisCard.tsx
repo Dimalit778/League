@@ -1,4 +1,4 @@
-import { Button, Card, Row, Text } from '@/components';
+import { Button, Card, Divider, Row, Text } from '@/components';
 import { useMatchAiSummary } from '@/features/matches/hooks/useMatchData';
 import { resolveAiAnalysis, resolveAiSummaryText, splitSummaryParagraphs } from '@/features/matches/model/aiAnalysis';
 import { MatchDetails, TeamType } from '@/features/matches/types';
@@ -10,8 +10,8 @@ import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { BrainCircuit, CalendarDays } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
+import { BrainCircuit, CalendarDays, ClipboardList, Crosshair } from 'lucide-react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type AiAnalysisCardProps = {
@@ -35,9 +35,18 @@ function teamName(team: TeamType | null, fallback: string) {
 }
 
 function AiScoreCard({ teams, score }: AiScoreCardProps) {
+  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
   return (
-    <Card padding="sm" variant="elevated">
-      <Row>
+    <Card padding="sm">
+      <Row className="items-center justify-center gap-2">
+        <Crosshair size={20} color={colors.muted} />
+        <Text variant="title" tone="muted" weight="bold">
+          {t('Score')}
+        </Text>
+      </Row>
+      <Divider className="my-2" />
+      <Row keepLtr>
         <View className="min-w-0 flex-1 items-center">
           <Text variant="title" size="lg" numberOfLines={2} className="text-center">
             {teams.home}
@@ -79,14 +88,25 @@ function AiLockedSummaryPlaceholder() {
 }
 
 function AiSummaryText({ summary }: { summary: string }) {
+  const { t } = useTranslation();
+  const { colors } = useThemeTokens();
   return (
-    <View className="py-3">
-      {splitSummaryParagraphs(summary).map((paragraph) => (
-        <Text key={paragraph} className="text-start leading-7">
-          {paragraph}
+    <Card padding="sm">
+      <Row className="items-center justify-center gap-2">
+        <ClipboardList size={20} color={colors.muted} />
+        <Text variant="title" tone="muted" weight="bold">
+          {t('Al Summary')}
         </Text>
-      ))}
-    </View>
+      </Row>
+      <Divider className="my-2" />
+      <View className="mx-2">
+        {splitSummaryParagraphs(summary).map((paragraph) => (
+          <Text key={paragraph} className="text-start leading-8">
+            {paragraph}
+          </Text>
+        ))}
+      </View>
+    </Card>
   );
 }
 
@@ -95,7 +115,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card padding="md" variant="elevated">
+    <>
       {isPro ? <AiSummaryText summary={summary} /> : <AiLockedSummaryPlaceholder />}
 
       {!isPro && (
@@ -116,7 +136,7 @@ function AiSummaryCard({ summary, isPro, theme }: AiSummaryCardProps) {
           </View>
         </BlurView>
       )}
-    </Card>
+    </>
   );
 }
 
@@ -141,14 +161,14 @@ function AiUnavailableState() {
   const { colors } = useThemeTokens();
 
   return (
-    <Card variant="elevated" padding="lg" contentClassName="min-h-72 items-center gap-4">
+    <Card padding="lg" contentClassName="min-h-72 items-center gap-4">
       <CalendarDays size={64} strokeWidth={1.5} color={colors.primary} />
 
       <Text variant="title" className="text-center">
-        {t('AI analysis is available on match day')}
+        {t('Available on match day')}
       </Text>
       <Text variant="body" size="sm" tone="muted" className="text-center pt-3">
-        {t('To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.')}
+        {t('AI analysis will appear here on the day of the match.')}
       </Text>
     </Card>
   );
@@ -163,10 +183,11 @@ export default function AiAnalysisCard({ match, title }: AiAnalysisCardProps) {
   const { theme } = useThemeTokens();
   const subscriptionAccess = useSubscriptionAccess();
   const isPro = subscriptionAccess.data?.planCode === 'pro';
-  const { data: aiSummary } = useMatchAiSummary(match.id, isPro && analysis.status === 'available');
+  const summaryQuery = useMatchAiSummary(match.id, isPro && analysis.status === 'available');
 
-  const summary = resolveAiSummaryText(aiSummary, language);
-  const isAvailable = analysis.status === 'available';
+  const summary = resolveAiSummaryText(summaryQuery.data, language);
+  const isLoadingSummary = isPro && analysis.status === 'available' && summaryQuery.isPending;
+  const hasSummary = !isPro || summary.length > 0;
 
   const teams = {
     home: teamName(match.home_team, t('Home')),
@@ -184,19 +205,43 @@ export default function AiAnalysisCard({ match, title }: AiAnalysisCardProps) {
         </View>
       )}
 
-      <View className="flex-1 p-5 gap-4">
-        {isAvailable ? (
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, padding: 20, gap: 16 }}>
+        {isLoadingSummary ? (
+          <Text className="py-8 text-center" accessibilityLiveRegion="polite">
+            {t('Loading')}
+          </Text>
+        ) : analysis.status === 'available' && hasSummary ? (
           <>
             <AiScoreCard teams={teams} score={analysis.score} />
             <AiSummaryCard summary={summary} isPro={isPro} theme={theme} />
+            <Text variant="caption" tone="muted" className="text-center">
+              {t('Updated {{date}}', {
+                date: analysis.generatedAt.toLocaleString(language === 'he' ? 'he-IL' : 'en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                }),
+              })}
+            </Text>
           </>
         ) : (
-          <AiUnavailableState />
+          <View className="gap-4">
+            <AiUnavailableState />
+            {summaryQuery.error && isPro && (
+              <Button
+                label={t('Try again')}
+                onPress={() => void summaryQuery.refetch()}
+                loading={summaryQuery.isFetching}
+              />
+            )}
+          </View>
         )}
         <View className="mt-auto">
           <AiDisclaimer />
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }

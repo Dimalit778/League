@@ -7,7 +7,7 @@ export function LockedBadge({ visible }: { visible: boolean }) {
   if (!visible) return null;
 
   return (
-    <View pointerEvents="none" className="absolute inset-0 z-50 items-center justify-center bg-overlay overflow-hidden">
+    <View className="absolute inset-0 z-50 items-center justify-center bg-overlay overflow-hidden" style={{ pointerEvents: 'none' }}>
       <View
         className="h-10 w-10 items-center justify-center rounded-full overflow-hidden"
         style={{

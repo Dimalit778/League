@@ -13,7 +13,7 @@ const TEAM_LIST_FIELDS = `
   shortName,
   name,
   tla,
-  "clubColors"
+  clubColors
 `;
 
 export const MATCH_WITH_MEMBER_PREDICTION = `

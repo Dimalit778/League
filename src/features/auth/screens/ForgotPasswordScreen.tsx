@@ -84,7 +84,7 @@ const ForgotPasswordScreen = () => {
         </View>
 
         <Button
-          variant="primary"
+          intent="primary"
           label={t('Send Reset Link')}
           onPress={emailForm.handleSubmit(handleSendResetLink)}
           loading={isLoading}

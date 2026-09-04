@@ -55,7 +55,7 @@ const SettingsScreen = () => {
 
       {isAdmin && (
         <View className="mt-8 px-6">
-          <Button label={t('Open Admin Dashboard')} onPress={() => router.push('/admin')} variant="outline" />
+          <Button label={t('Open Admin Dashboard')} onPress={() => router.push('/admin')} intent="outline" />
         </View>
       )}
     </Screen>

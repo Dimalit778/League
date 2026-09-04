@@ -121,14 +121,14 @@ export default function MemberDetailsScreen() {
         <View className="flex-row gap-3">
           <Button
             label={t('Report')}
-            variant="outline"
+            intent="outline"
             className="flex-1"
             leftIcon={<Flag size={18} color={colors.text} />}
             onPress={handleReport}
           />
           <Button
             label={isBlocked ? t('Unblock') : t('Block')}
-            variant={isBlocked ? 'outline' : 'error'}
+            intent={isBlocked ? 'outline' : 'destructive'}
             className="flex-1"
             leftIcon={
               isBlocked ? <ShieldCheck size={18} color={colors.text} /> : <ShieldBan size={18} color="#FFFFFF" />

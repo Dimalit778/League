@@ -55,12 +55,12 @@ describe('Matches tab display selection', () => {
     expect(render(<MatchesScreen />).getByText('RegularLeagueView')).toBeTruthy();
   });
 
-  it('passes the active refetch state to the rendered view', () => {
+  it('does not treat a background refetch as pull-to-refresh', () => {
     setup('PL', [], true);
     render(<MatchesScreen />);
 
     expect(jest.mocked(RegularLeagueView).mock.calls[0][0]).toEqual(
-      expect.objectContaining({ refreshing: true }),
+      expect.objectContaining({ refreshing: false }),
     );
   });
 

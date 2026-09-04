@@ -142,7 +142,7 @@ const AdminDashboardScreen = () => {
             <View className="mt-7 items-start border-t border-border pt-5">
               <Button
                 label={t('Logout')}
-                variant="outline"
+                intent="outline"
                 size="sm"
                 leftIcon={<LogOut size={17} color={colors.text} />}
                 onPress={() => signOut()}

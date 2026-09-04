@@ -159,7 +159,7 @@ export default function EmailAuthForm({ mode, acceptedLegal, onToggleLegal }: Pr
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         disabled={!isValid || isLoading || (!isSignIn && !acceptedLegal)}
-        variant="primary"
+        intent="primary"
         size="lg"
         fullWidth
         className="rounded-2xl"

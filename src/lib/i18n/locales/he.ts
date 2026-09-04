@@ -115,13 +115,16 @@ export const he = {
     "Password strength": "חוזק הסיסמה",
     "At least 8 characters with a letter and a number":
       "לפחות 8 תווים, כולל אות ומספר",
+    "Verify your email": "אימות הדוא״ל שלך",
+    "Enter the code sent to your email": "הזינו את הקוד שנשלח לדוא״ל שלכם",
+    "Email address is missing": "כתובת הדוא״ל חסרה",
+    "Please try signing up again.": "נסו להירשם מחדש.",
+    "Resend code in": "אפשר לשלוח שוב בעוד",
     "Reset Password": "איפוס סיסמה",
     "Enter your email": "הזינו דוא״ל",
     "Send Reset Link": "שליחת קישור לאיפוס",
     "Reset link has been sent to your email": "קישור לאיפוס נשלח לדוא״ל שלך",
-    "Email address is missing. Please try signing up again.":
-      "כתובת הדוא״ל חסרה. נסו להירשם מחדש.",
-    "We sent a 6-digit code to": "שלחנו קוד בן 6 ספרות אל",
+
     "Email is required": "יש להזין דוא״ל",
     "Invalid email": "דוא״ל לא תקין",
     "Password is required": "יש להזין סיסמה",
@@ -192,6 +195,7 @@ export const he = {
     "Subscription not confirmed": "המנוי לא אומת",
     "We could not confirm your PRO subscription. Please try again in a moment.":
       "לא הצלחנו לאמת את גישת ה‑Pro. נסו שוב בעוד רגע.",
+    "You are already a member of this league": "כבר הצטרפת לליגה הזו",
     "Failed to join league": "שגיאה בהצטרפות לליגה",
     "Start League": "פתיחת ליגה",
     "How to Join a League": "כיצד להצטרף לליגה",
@@ -202,7 +206,7 @@ export const he = {
     "Choose your nickname for the league.": "בחרו כינוי לליגה.",
     'Tap "Join League" to become a member.':
       'הקישו על "הצטרפות לליגה" כדי להצטרף.',
-    "Enter 7-digit invite code": "הזינו קוד הזמנה בן 7 ספרות",
+    "Enter 7-digit invite code": "הזינו קוד הזמנה בן 7 תווים",
     "Invite Code": "קוד הזמנה",
     "Join Code": "קוד הצטרפות",
     "Invite code is required": "קוד הזמנה נדרש",
@@ -308,7 +312,7 @@ export const he = {
     "Getting Started": "מתחילים",
     "How do I create an account?": "איך יוצרים חשבון?",
     "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.":
-      "אפשר להתחבר עם Google או Apple, או להירשם באמצעות דוא״ל וסיסמה. לאחר יצירת החשבון, יש לאמת את כתובת הדוא״ל כדי להתחיל.",
+      "אפשר להתחבר עם Google או Apple, או להירשם באמצעות דוא״ל וסיסמה. בהרשמה בדוא״ל יש להזין את קוד האימות שנשלח לתיבת הדואר.",
     "How do I join a league?": "איך מצטרפים לליגה?",
     'On the "My Leagues" screen, tap "Create League" to create a new league, or tap "Join League" to join an existing league using the league code.':
       "במסך **הליגות שלי** לחצו על **יצירת ליגה** כדי ליצור ליגה חדשה, או על **הצטרפות לליגה** כדי להצטרף לליגה קיימת באמצעות קוד הליגה.",
@@ -349,7 +353,7 @@ export const he = {
     "Account & Settings": "חשבון והגדרות",
     "How do I change my password?": "איך משנים סיסמה?",
     "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.":
-      "אם נרשמתם באמצעות דוא״ל, עברו ל**הגדרות** והשתמשו באפשרות איפוס הסיסמה. קישור לאיפוס יישלח אליכם בדוא״ל.",
+      "בחשבון דוא״ל, התנתקו דרך ההגדרות, פתחו את מסך ההתחברות ובחרו שכחתי סיסמה. הזינו את כתובת הדוא״ל לקבלת קישור איפוס.",
     "Can I change my email address?": "אפשר לשנות את כתובת הדוא״ל?",
     "Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.":
       "לא ניתן לשנות כתובת דוא״ל מתוך האפליקציה. פנו לתמיכה אם צריך לעדכן אותה.",
@@ -715,9 +719,9 @@ export const he = {
     "No notifications yet": "אין התראות עדיין",
   },
   aiAnalysis: {
-    "AI analysis is available on match day": "ניתוח ה‑AI זמין ביום המשחק",
-    "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
-      "כדי להציג ניתוח עדכני ורלוונטי, ניתוח ה‑AI נפתח רק ביום המשחק.",
+    "Available on match day": "זמין ביום המשחק",
+    "AI analysis will appear here on the day of the match.": "ניתוח ה-AI יופיע כאן ביום המשחק.",
+    "Updated {{date}}": "עודכן ב־{{date}}",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
       "הניתוח נוצר באמצעות AI ומיועד לבידור בלבד. הוא עלול להיות שגוי ואינו מהווה ייעוץ להימורים.",
   },
@@ -797,7 +801,7 @@ export const he = {
     "{{count}} correct predictions": "{{count}} ניחושים נכונים",
     "{{count}} matches played": "{{count}} משחקים שוחקו",
     "Code resent successfully!": "הקוד נשלח מחדש בהצלחה!",
-    "Confirm and continue": "אימות והמשך",
+
     "Email verified successfully!": "כתובת הדוא״ל אומתה בהצלחה!",
     "Enter the code": "הקלידו את הקוד",
     "Forgot your password?": "שכחתם את הסיסמה?",
@@ -812,8 +816,7 @@ export const he = {
     "Contact support": "פנייה לתמיכה",
     "Something went wrong": "משהו השתבש",
     "Try Again": "ניסיון נוסף",
-    "The code is single-use and expires shortly.":
-      "הקוד מיועד לשימוש חד־פעמי ותוקפו יפוג בקרוב.",
+
     "We encountered an unexpected error. Don't worry, your data is safe.":
       "אירעה שגיאה בלתי צפויה. הנתונים שלכם שמורים.",
     "Your other leagues and data will remain saved.":

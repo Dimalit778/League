@@ -9,12 +9,12 @@ import { Row } from './Row';
 export type SectionProps = ViewProps & {
   title?: string;
   description?: string;
-  /** Text shown on the trailing side (requires `onActionPress`) */
+
   actionLabel?: string;
-  /** Icon / node shown on the trailing side (requires `onActionPress`) */
+
   actionIcon?: ReactNode;
   onActionPress?: () => void;
-  /** Show a leading accent bar before the title for a stronger visual rhythm */
+
   accent?: boolean;
   children: ReactNode;
   className?: string;
@@ -43,7 +43,8 @@ export function Section({
           <Row className="gap-2">
             <View className="h-4 w-1 rounded-full bg-primary" />
             <Text
-              variant="title" size="lg"
+              variant="title"
+              size="lg"
               numberOfLines={1}
               accessibilityRole="header"
               style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -53,7 +54,8 @@ export function Section({
           </Row>
         ) : (
           <Text
-            variant="title" size="lg"
+            variant="title"
+            size="lg"
             className="w-full"
             accessibilityRole="header"
             style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -74,8 +76,8 @@ export function Section({
       onPress={onActionPress}
       accessibilityRole="button"
       accessibilityLabel={actionLabel ?? title}
-      hitSlop={8}
-      className={cn('min-h-12 flex-row items-center active:opacity-70', spacing.inline)}
+      hitSlop={10}
+      className={cn('min-h-6 flex-row items-center active:opacity-70 mx-2', spacing.inline)}
     >
       {actionLabel ? (
         <Text variant="label" tone="success">

@@ -90,9 +90,9 @@ const LeagueCreatedScreen = () => {
       </Card>
       {/* Action Buttons */}
       <View className="mt-8 gap-5 p-5">
-        <Button onPress={handleShareJoinCode} label={t('Share Join Code')} variant="outline" size="md" />
+        <Button onPress={handleShareJoinCode} label={t('Share Join Code')} intent="outline" size="md" />
 
-        <Button onPress={handleStartLeague} label={t('Start League')} variant="primary" size="lg" />
+        <Button onPress={handleStartLeague} label={t('Start League')} intent="primary" size="lg" />
       </View>
     </Screen>
   );

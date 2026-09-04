@@ -12,7 +12,7 @@ const createQueryClient = () => ({ clear: jest.fn() }) as unknown as QueryClient
 describe('authApi.signOut', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (supabase.auth.signOut as jest.Mock).mockResolvedValue(undefined);
+    (supabase.auth.signOut as jest.Mock).mockResolvedValue({ error: null });
   });
 
   it('clears the push token before revoking the Supabase session', async () => {
@@ -29,6 +29,22 @@ describe('authApi.signOut', () => {
     const clearPushTokenOrder = (clearPushToken as jest.Mock).mock.invocationCallOrder[0];
     const signOutOrder = (supabase.auth.signOut as jest.Mock).mock.invocationCallOrder[0];
     expect(clearPushTokenOrder).toBeLessThan(signOutOrder);
+  });
+
+  it('reports a returned logout error without pretending the session ended', async () => {
+    (supabase.auth.signOut as jest.Mock).mockResolvedValueOnce({ error: new Error('Network request failed') });
+    const queryClient = createQueryClient();
+    const result = await signOut(queryClient);
+    expect(result.success).toBe(false);
+    expect(queryClient.clear).not.toHaveBeenCalled();
+  });
+
+  it('reports a thrown logout error and preserves data for retry', async () => {
+    (supabase.auth.signOut as jest.Mock).mockRejectedValueOnce(new Error('Network request failed'));
+    const queryClient = createQueryClient();
+    const result = await signOut(queryClient);
+    expect(result.success).toBe(false);
+    expect(queryClient.clear).not.toHaveBeenCalled();
   });
 
   it('still signs out even if clearing the push token throws', async () => {

@@ -1,3 +1,5 @@
+import { setColorAlpha } from '@/lib/color';
+import { Text } from '@/components/ui/Text';
 import { MatchesIcon } from '@/assets/icons';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -5,22 +7,23 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { ChartNoAxesCombined, House, PodiumIcon, User } from 'lucide-react-native';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const isIOS = Platform.OS === 'ios';
 
-const PILL_HEIGHT = 64;
-// const height = 48px;
-// const iconWidth = 72px;
+const PILL_HEIGHT = 72;
+const getPillHeight = (fontScale: number) => PILL_HEIGHT + Math.max(0, Math.min(fontScale, 2) - 1) * 40;
 const CONTENT_BOTTOM_GAP = 16;
 
-const getFloatBottomTabsInset = (safeAreaBottom: number) => PILL_HEIGHT + safeAreaBottom + CONTENT_BOTTOM_GAP;
+const getFloatBottomTabsInset = (safeAreaBottom: number, fontScale: number) =>
+  getPillHeight(fontScale) + Math.max(safeAreaBottom, CONTENT_BOTTOM_GAP) + CONTENT_BOTTOM_GAP;
 
 export const useFloatBottomTabsInset = () => {
   const insets = useSafeAreaInsets();
 
-  return Platform.OS === 'web' ? 0 : getFloatBottomTabsInset(insets.bottom);
+  const { fontScale } = useWindowDimensions();
+  return getFloatBottomTabsInset(insets.bottom, fontScale);
 };
 
 type TabConfig = {
@@ -50,7 +53,7 @@ const tabsConfig: Record<string, TabConfig> = {
     icon: User,
   },
   Leaderboard: {
-    label: 'Leaderboard',
+    label: 'Rank',
     icon: PodiumIcon,
   },
 };
@@ -60,6 +63,8 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
+  const { fontScale } = useWindowDimensions();
+  const pillHeight = getPillHeight(fontScale);
   const isDark = theme === 'dark';
 
   const tabs = state.routes.map((route, index) => {
@@ -99,23 +104,21 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
         onPress={onPress}
         onLongPress={onLongPress}
         accessibilityRole="tab"
-        accessibilityLabel={t(config.label)}
+        accessibilityLabel={t(route.name === 'Leaderboard' ? 'Leaderboard' : config.label)}
         accessibilityState={isFocused ? { selected: true } : {}}
         hitSlop={6}
         style={styles.item}
       >
         {({ pressed }) => (
-          <View style={[styles.itemContent, pressed && styles.itemPressed]}>
-            <Icon size={26} color={iconColor} strokeWidth={isFocused ? 1.8 : 1.5} />
-
-            <View
-              style={[
-                styles.activeDot,
-                {
-                  backgroundColor: isFocused ? colors.primary : 'transparent',
-                },
-              ]}
-            />
+          <View style={[
+            styles.itemContent,
+            isFocused && { backgroundColor: setColorAlpha(colors.primary, isDark ? 0.12 : 0.09) },
+            pressed && styles.itemPressed,
+          ]}>
+            <Icon size={24} color={iconColor} strokeWidth={isFocused ? 2 : 1.6} />
+            <Text size="xs" weight="semibold" numberOfLines={2} className="text-center" style={{ color: iconColor }}>
+              {t(config.label)}
+            </Text>
           </View>
         )}
       </Pressable>
@@ -134,11 +137,11 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
     <>
       {isIOS && (
         <View
-          pointerEvents="none"
           style={[
             StyleSheet.absoluteFill,
             {
               backgroundColor: overlayColor,
+              pointerEvents: 'none',
             },
           ]}
         />
@@ -150,11 +153,11 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
 
   return (
     <View
-      pointerEvents="box-none"
       style={[
         styles.outerWrapper,
         {
           paddingBottom: bottomPadding,
+          pointerEvents: 'box-none',
         },
       ]}
     >
@@ -162,7 +165,9 @@ export const FloatBottomTabs = ({ state, navigation }: BottomTabBarProps) => {
         style={[
           styles.shadowWrapper,
           {
-            borderColor: borderColor,
+            borderColor,
+            height: pillHeight,
+            boxShadow: isDark ? '0 -6px 18px rgba(0, 0, 0, 0.4)' : '0 4px 20px rgba(15, 23, 42, 0.12)',
           },
         ]}
       >
@@ -200,10 +205,8 @@ const styles = StyleSheet.create({
   shadowWrapper: {
     width: '100%',
     maxWidth: 720,
-    height: PILL_HEIGHT,
     borderRadius: 24,
     borderWidth: 1,
-    boxShadow: '0 -6px 18px rgba(0, 0, 0, 0.4)',
   },
 
   pill: {
@@ -216,7 +219,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 5,
   },
 
   item: {
@@ -229,16 +233,13 @@ const styles = StyleSheet.create({
   itemContent: {
     flex: 1,
     width: '100%',
+    borderRadius: 18,
+    paddingHorizontal: 2,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
   },
   itemPressed: {
     opacity: 0.65,
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
   },
 });

@@ -1,7 +1,10 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import EditLeagueScreen from '@/features/leagues/screens/EditLeagueScreen';
 
 let mockUserId = 'owner-user-1';
+let mockQueryError: Error | null = null;
+let mockMissingLeague = false;
+const mockRefetch = jest.fn();
 
 jest.mock('expo-router', () => ({
   Stack: { Screen: () => null },
@@ -10,7 +13,7 @@ jest.mock('expo-router', () => ({
 
 jest.mock('@/features/leagues/hooks/useLeagues', () => ({
   useGetLeagueAndMembers: () => ({
-    data: {
+    data: mockMissingLeague ? undefined : {
       id: 'league-1',
       name: 'My League',
       owner_id: 'owner-user-1',
@@ -22,7 +25,9 @@ jest.mock('@/features/leagues/hooks/useLeagues', () => ({
       ],
     },
     isLoading: false,
-    error: null,
+    error: mockQueryError,
+    isFetching: false,
+    refetch: mockRefetch,
   }),
   useLeaveLeague: () => ({ mutate: jest.fn(), isPending: false }),
   useDeleteLeague: () => ({ mutate: jest.fn(), isPending: false }),
@@ -38,7 +43,33 @@ jest.mock('@/store/AuthStore', () => ({
   useAuthStore: (selector: any) => selector({ user: { id: mockUserId } }),
 }));
 
-describe('EditLeagueScreen permissions', () => {
+describe('EditLeagueScreen permissions and load failures', () => {
+  beforeEach(() => {
+    mockQueryError = null;
+    mockMissingLeague = false;
+    mockRefetch.mockClear();
+  });
+
+  it('shows a failed initial request and allows retry instead of loading forever', () => {
+    mockMissingLeague = true;
+    mockQueryError = new Error('Network request failed');
+    const { getByText, queryByText, rerender } = render(<EditLeagueScreen />);
+    expect(getByText(/connection/i)).toBeTruthy();
+    fireEvent.press(getByText('Try again'));
+    expect(mockRefetch).toHaveBeenCalledTimes(1);
+
+    mockMissingLeague = false;
+    mockQueryError = null;
+    rerender(<EditLeagueScreen />);
+    expect(getByText('ABC123')).toBeTruthy();
+    expect(queryByText('Try again')).toBeNull();
+  });
+
+  it('shows a missing league instead of an indefinite skeleton', () => {
+    mockMissingLeague = true;
+    const { getByText } = render(<EditLeagueScreen />);
+    expect(getByText('League not found')).toBeTruthy();
+  });
   it('owner sees Delete League and join code, not Leave', () => {
     mockUserId = 'owner-user-1';
     const { queryByText } = render(<EditLeagueScreen />);

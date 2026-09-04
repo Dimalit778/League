@@ -8,6 +8,7 @@ import { clearPushToken } from '@/lib/notifications/pushToken';
 import { KEYS } from '@/lib/queryClient';
 import { queryPersister } from '@/lib/queryPersister';
 import { supabase } from '@/lib/supabase';
+import { createPasswordRecoveryClient } from '@/lib/passwordRecoveryClient';
 import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { formatErrorForUser } from '@/utils/errorFormats';
 import type { QueryClient } from '@tanstack/react-query';
@@ -123,12 +124,14 @@ export const signOut = async (queryClient: QueryClient) => {
     // clearPushToken already swallows its own errors, but guard regardless.
   }
 
-  // Always attempt the remote sign-out, even if the local session is
-  // expired, revoked, or missing — Supabase errors here must not block logout.
+  // Supabase retains its local session when the logout request fails (for
+  // example, offline). Report that failure instead of clearing the UI while
+  // leaving credentials that silently restore the account on the next launch.
   try {
-    await supabase.auth.signOut();
-  } catch {
-    // Remote sign-out is best-effort; local cleanup below must run regardless.
+    const { error } = await supabase.auth.signOut();
+    if (error) return { success: false, error: formatErrorForUser(error) };
+  } catch (error) {
+    return { success: false, error: formatErrorForUser(error) };
   }
 
   usePrimaryLeagueStore.getState().clearPrimaryLeague();
@@ -221,10 +224,11 @@ export const parseRecoveryTokensFromUrl = (
 // so the auth guard doesn't unmount the reset screen while the user is typing.
 export const updatePasswordWithRecoveryTokens = (password: string, tokens: RecoveryTokens) =>
   withNetworkGuard(async () => {
+    const recoveryClient = createPasswordRecoveryClient();
     let sessionEstablished = false;
 
     try {
-      const { error: sessionError } = await supabase.auth.setSession({
+      const { error: sessionError } = await recoveryClient.auth.setSession({
         access_token: tokens.accessToken,
         refresh_token: tokens.refreshToken,
       });
@@ -232,17 +236,17 @@ export const updatePasswordWithRecoveryTokens = (password: string, tokens: Recov
       if (sessionError) throw sessionError;
       sessionEstablished = true;
 
-      const { error } = await supabase.auth.updateUser({ password });
+      const { error } = await recoveryClient.auth.updateUser({ password });
 
       if (error) throw error;
 
       // End the temporary recovery session so the auth guard does not redirect
       // into the app stack while this screen is still showing feedback.
-      await supabase.auth.signOut();
+      await recoveryClient.auth.signOut();
     } catch (error) {
       if (sessionEstablished) {
         try {
-          await supabase.auth.signOut();
+          await recoveryClient.auth.signOut();
         } catch {
           // Ignore — local session cleanup is best-effort after a failed reset.
         }

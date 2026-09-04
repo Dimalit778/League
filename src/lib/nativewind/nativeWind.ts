@@ -7,7 +7,6 @@ import { spacingValues } from "./spacing";
 export type ThemeColors = {
   primary: string;
   onPrimary: string;
-  accent: string;
   background: string;
   surface: string;
   subtle: string;
@@ -17,7 +16,9 @@ export type ThemeColors = {
   success: string;
   warning: string;
   error: string;
+  danger: string;
   info: string;
+  gold: string;
   overlay: string;
 };
 
@@ -47,28 +48,28 @@ export type ThemeTokens = {
 const lightColors = {
   primary: "#9A6F16",
   onPrimary: "#FFFFFF",
-  accent: "#C68A12",
 
-  background: "#F6F5F2",
+  background: "#F1F4F8",
   surface: "#FFFFFF",
-  subtle: "#EFEDE8",
+  subtle: "#EEF2F7",
 
-  text: "#111827",
-  muted: "#6B7280",
+  text: "#0F1B2A",
+  muted: "#647587",
 
-  border: "rgba(17,24,39,0.08)",
+  border: "rgba(15,23,42,0.07)",
 
   success: "#15803D",
   warning: "#C2410C",
   error: "#DC2626",
+  danger: "#E11D2E",
   info: "#0369A1",
+  gold: "#B8860B",
 
   overlay: "rgba(17,24,39,0.28)",
 } as const;
 const darkColors = {
   primary: "#C99A2E",
   onPrimary: "#0B1118",
-  accent: "#E7BE5E",
 
   background: "#08111C",
   surface: "#0D1722",
@@ -82,7 +83,9 @@ const darkColors = {
   success: "#22C55E",
   warning: "#F59E0B",
   error: "#F87171",
+  danger: "#EF4444",
   info: "#38BDF8",
+  gold: "#F5C518",
 
   overlay: "rgba(0,0,0,0.6)",
 } as const;
@@ -102,9 +105,9 @@ const darkGradients: ThemeGradients = {
 };
 
 const lightEffects: ThemeEffects = {
-  cardBorder: "rgba(17,24,39,0.07)",
+  cardBorder: "rgba(15,23,42,0.06)",
   cardHighlight: "rgba(255,255,255,0.95)",
-  cardShadow: "#111827",
+  cardShadow: "#0F1B2A",
 
   cardGlow: "rgba(154,111,22,0.05)",
   cardActiveGlow: "rgba(154,111,22,0.10)",
@@ -141,7 +144,6 @@ const dark: ThemeTokens = {
 export const getNativeWindVariables = (tokens: ThemeTokens) => ({
   "--color-primary": tokens.colors.primary,
   "--color-on-primary": tokens.colors.onPrimary,
-  "--color-accent": tokens.colors.accent,
   "--color-background": tokens.colors.background,
   "--color-surface": tokens.colors.surface,
   "--color-subtle": tokens.colors.subtle,
@@ -151,7 +153,9 @@ export const getNativeWindVariables = (tokens: ThemeTokens) => ({
   "--color-success": tokens.colors.success,
   "--color-warning": tokens.colors.warning,
   "--color-error": tokens.colors.error,
+  "--color-danger": tokens.colors.danger,
   "--color-info": tokens.colors.info,
+  "--color-gold": tokens.colors.gold,
   "--color-overlay": tokens.colors.overlay,
 });
 

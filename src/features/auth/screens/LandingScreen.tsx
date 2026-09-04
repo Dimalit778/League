@@ -28,8 +28,7 @@ export default function LandingScreen() {
           "rgba(2,8,18,0.98)",
         ]}
         locations={[0, 0.5, 1]}
-        pointerEvents="none"
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
 
       <Screen
@@ -59,7 +58,7 @@ export default function LandingScreen() {
             <View className="gap-3 rounded-[24px] border border-white/10 bg-[#07172A]/92 p-4 shadow-2xl shadow-black/40">
               <Link href="/(auth)/signUp" asChild>
                 <Button
-                  variant="primary"
+                  intent="primary"
                   size="lg"
                   fullWidth
                   accessibilityLabel={t("Get Started")}

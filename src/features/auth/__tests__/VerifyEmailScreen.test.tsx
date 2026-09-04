@@ -21,7 +21,8 @@ describe('VerifyEmailScreen', () => {
   it('renders the heading and email', () => {
     const { getByText } = render(<VerifyEmailScreen />);
 
-    expect(getByText('The code is single-use and expires shortly.')).toBeTruthy();
+    expect(getByText('Verify your email')).toBeTruthy();
+    expect(getByText('user@test.com')).toBeTruthy();
   });
 
   it('renders 6 code input fields', () => {
@@ -83,6 +84,22 @@ describe('VerifyEmailScreen', () => {
 
     expect(getByText('02:00')).toBeTruthy();
     expect(getByText('Resend Code')).toBeTruthy();
+  });
+
+  it('submits the code for the email supplied by signup', async () => {
+    const screen = render(<VerifyEmailScreen />);
+    screen.getAllByAccessibilityHint('Enter a single digit').forEach((input, index) => {
+      fireEvent.changeText(input, String(index + 1));
+    });
+    fireEvent.press(screen.getByText('Confirm'));
+    await waitFor(() => expect(mockVerifyOtp).toHaveBeenCalledWith('user@test.com', '123456'));
+  });
+
+  it('keeps resending disabled during the cooldown', () => {
+    const screen = render(<VerifyEmailScreen />);
+    expect(screen.getByLabelText('Resend verification code').props.accessibilityState.disabled).toBe(true);
+    fireEvent.press(screen.getByLabelText('Resend verification code'));
+    expect(mockResendOtp).not.toHaveBeenCalled();
   });
 
   it('does not display error message initially', () => {

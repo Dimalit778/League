@@ -6,7 +6,7 @@ export function PredictionSavedOverlay({ visible, onComplete }: { visible: boole
   if (!visible) return null;
 
   return (
-    <View className="absolute inset-0 z-50 items-center justify-center bg-black/45" pointerEvents="none">
+    <View className="absolute inset-0 z-50 items-center justify-center bg-black/45" style={{ pointerEvents: 'none' }}>
       <DotLottie
         source={animations.ball}
         autoplay

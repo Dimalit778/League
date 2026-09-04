@@ -95,7 +95,7 @@ const SelectCompetitionScreen = () => {
       <Button
         label={t('Continue')}
         onPress={handleContinue}
-        variant="primary"
+        intent="primary"
         disabled={!selectedCompetition}
         size="lg"
         loading={isLoading}

@@ -109,6 +109,7 @@ export type LeagueOverviewSummary = {
   nickname: string;
   avatarUrl: string | null;
   leagueName: string;
+  competitionName: string;
   flagUrl: string;
   rank: number;
   points: number;

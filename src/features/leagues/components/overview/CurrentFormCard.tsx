@@ -22,7 +22,7 @@ export function CurrentFormCard({ results = [] }: CurrentFormCardProps) {
   const isRTL = useIsRTL();
   const totalPoints = results.reduce((sum, result) => sum + result.points, 0);
   return (
-    <Card variant="surface" padding="md">
+    <Card variant="soft" padding="md">
       <Row className={spacing.stack}>
         <View className={cn('min-w-0 flex-1', spacing.list, isRTL ? 'items-end' : 'items-start')}>
           <Text variant="caption" tone="muted">

@@ -23,6 +23,8 @@ export type MatchCardData = {
     away: number | null;
   } | null;
   predictionStatus: PredictionDisplayStatus;
+  /** Points the prediction earned (0 miss / 3 outcome / 5 exact). Non-null only once a finished match is scored. */
+  predictionPoints: number | null;
   date: string;
   time: string;
 };
@@ -40,6 +42,21 @@ function getPredictionDisplayStatus(
   }
 
   return (prediction.points ?? 0) > 0 ? 'correct' : 'incorrect';
+}
+
+function getPredictionPoints(
+  match: MatchListItem,
+  prediction: MatchListItem['prediction'],
+): number | null {
+  if (!prediction || prediction.home_score == null || prediction.away_score == null) {
+    return null;
+  }
+
+  if (!isMatchFinished(match.status) || !prediction.is_finished) {
+    return null;
+  }
+
+  return prediction.points ?? 0;
 }
 
 export function mapMatchToCardData(match: MatchListItem, locale: string = 'en-GB'): MatchCardData {
@@ -71,6 +88,7 @@ export function mapMatchToCardData(match: MatchListItem, locale: string = 'en-GB
       : null,
 
     predictionStatus: getPredictionDisplayStatus(match, prediction),
+    predictionPoints: getPredictionPoints(match, prediction),
     status: match.status,
     date: formatMatchdayDate(match.kick_off, locale),
     time: formatTime(match.kick_off),

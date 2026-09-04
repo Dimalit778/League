@@ -1,83 +1,50 @@
 import { cn } from '@/lib/nativewind/nativeWind';
-import { radius, type RadiusToken } from '@/lib/nativewind/radius';
-import { type TextVariant } from '@/lib/nativewind/typography';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { type ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
-import { Text } from './Text';
+import { Text, type TextTone } from './Text';
 
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'live' | 'muted';
-export type BadgeSize = 'sm' | 'md' | 'lg';
-export type BadgeRadius = RadiusToken;
+export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+export type BadgeSize = 'sm' | 'md';
 
 export type BadgeProps = ViewProps & {
   label: string;
   variant?: BadgeVariant;
   size?: BadgeSize;
-  radius?: BadgeRadius;
+
+  radius?: 'circle' | number;
   leftIcon?: ReactNode;
   className?: string;
-};
-
-const surfaceClasses: Record<BadgeVariant, string> = {
-  default: 'bg-subtle',
-  primary: 'bg-primary',
-  success: 'bg-subtle',
-  warning: 'bg-subtle',
-  error: 'bg-subtle',
-  info: 'bg-subtle',
-  live: 'bg-subtle',
-  muted: 'bg-subtle',
-};
-
-const textClasses: Record<BadgeVariant, string> = {
-  default: 'text-text',
-  primary: 'text-onPrimary',
-  success: 'text-success',
-  warning: 'text-warning',
-  error: 'text-error',
-  info: 'text-info',
-  live: 'text-error',
-  muted: 'text-muted',
-};
-
-const textVariants: Record<BadgeSize, TextVariant> = {
-  sm: 'caption',
-  md: 'body',
-  lg: 'title',
 };
 
 export function Badge({
   label,
   variant = 'default',
   size = 'sm',
-  radius: radiusToken = 'full',
+  radius = 'circle',
   leftIcon,
   className,
   ...props
 }: BadgeProps) {
   const isRTL = useIsRTL();
+  const tone: TextTone = variant === 'primary' ? 'onPrimary' : variant === 'default' ? 'default' : variant;
+  const isCircle = radius === 'circle';
 
   return (
     <View
       {...props}
       accessibilityLabel={props.accessibilityLabel ?? label}
-      style={[props.style, { direction: 'ltr', flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+      style={[props.style, { flexDirection: isRTL ? 'row-reverse' : 'row' }, !isCircle && { borderRadius: radius }]}
       className={cn(
-        'self-start flex-row items-center gap-1',
-        radius[radiusToken],
-        size === 'sm' ? 'min-h-6 px-2 py-0.5' : size === 'lg' ? 'min-h-10 px-4 py-1.5' : 'min-h-8 px-3 py-1',
-        surfaceClasses[variant],
+        'items-center justify-center',
+        isCircle && 'rounded-full',
+        size === 'md' ? 'w-9 h-9' : 'w-6 h-6',
+        variant === 'primary' ? 'bg-primary' : 'bg-border',
         className,
       )}
     >
-      {variant === 'live' ? <View className="h-1.5 w-1.5 rounded-full bg-error" /> : null}
       {leftIcon}
-      <Text
-        variant={textVariants[size]}
-        className={cn('font-semibold ', textClasses[variant])}
-        style={{ textAlign: isRTL ? 'right' : 'left' }}
-      >
+      <Text variant={size === 'md' ? 'body' : 'caption'} weight="sport" tone={tone}>
         {label}
       </Text>
     </View>

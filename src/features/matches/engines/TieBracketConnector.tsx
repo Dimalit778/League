@@ -21,13 +21,13 @@ export function TieBracketConnector({ cardHeight, railWidth }: Props) {
 
   return (
     <View
-      pointerEvents="none"
       style={[
         {
           position: 'absolute',
           top: 0,
           width: railWidth,
           height: geometry.totalHeight,
+          pointerEvents: 'none',
         },
         sideStyle,
       ]}

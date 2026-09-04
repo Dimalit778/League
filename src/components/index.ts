@@ -13,6 +13,7 @@ export { NavigationHeader } from "./layout/NavigationHeader";
 export { OfflineScreen } from "./layout/OfflineScreen";
 export { Row } from "./layout/Row";
 export { Screen } from "./layout/Screens";
+export { ScreenHeader } from "./layout/ScreenHeader";
 export { Section } from "./layout/Section";
 
 // UI
@@ -27,13 +28,15 @@ export { Button } from "./ui/Button";
 export { Card } from "./ui/Card";
 export { Chip } from "./ui/Chip";
 export { Divider } from "./ui/Divider";
-export { GlassCard } from "./ui/GlassCard";
+
+export { FormattedText } from "./ui/FormattedText";
 export { HeaderBackground } from "./ui/HeaderBackground";
 export { InputField } from "./ui/InputField";
 export { ListItem } from "./ui/ListItem";
 export { LockedBadge } from "./ui/LockedBadge";
 export { LogoBadge } from "./ui/LogoBadge";
 export { MyImage } from "./ui/MyImage";
+export { parseBoldMarks } from "./ui/parseBoldMarks";
 export {
     BoxSkeleton,
     CardSkeleton,
@@ -43,6 +46,4 @@ export {
 } from "./ui/Skeleton";
 export { TabButton } from "./ui/TabButton";
 export { TeamLogo } from "./ui/TeamLogo";
-export { FormattedText } from "./ui/FormattedText";
-export { parseBoldMarks } from "./ui/parseBoldMarks";
 export { Text, type TextTone } from "./ui/Text";

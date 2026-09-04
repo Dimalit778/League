@@ -87,11 +87,14 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
     away: clampScore(prediction?.away_score ?? 0),
   });
   const [justSaved, setJustSaved] = useState(false);
+  const predictionExists = Boolean(prediction);
+  const [hasSavedPrediction, setHasSavedPrediction] = useState(predictionExists);
 
   const upsertPrediction = useUpsertPrediction();
   const isPending = upsertPrediction.isPending;
 
-  const hasChanges = homeScore !== savedScores.home || awayScore !== savedScores.away;
+  const hasScoreChanges = homeScore !== savedScores.home || awayScore !== savedScores.away;
+  const hasChanges = !hasSavedPrediction || hasScoreChanges;
   const canSave = hasChanges && !isPending;
   const saveLabel = isPending ? t('Saving') : justSaved ? t('Saved') : t('Save');
 
@@ -102,14 +105,15 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
     // The saved prediction can arrive/change after mount (e.g. the match-detail
     // placeholder had no prediction yet, or a background refetch landed). Adopt
     // it into the form, but never clobber the user's unsaved edits.
-    if (!hasChanges) {
+    if (!hasScoreChanges) {
       setHomeScore(predictedHome);
       setAwayScore(predictedAway);
     }
+    if (predictionExists) setHasSavedPrediction(true);
     setSavedScores({ home: predictedHome, away: predictedAway });
-    // Keyed on the score values only; hasChanges is read as the latest value.
+    // Adopt fetched scores without overwriting unsaved edits.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [predictedHome, predictedAway]);
+  }, [predictedHome, predictedAway, predictionExists]);
 
   useEffect(() => {
     if (!justSaved) return;
@@ -129,6 +133,7 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
         away_score: awayScore,
         league_member_id: memberId,
       });
+      setHasSavedPrediction(true);
       setSavedScores({ home: homeScore, away: awayScore });
       setJustSaved(true);
       onSaveSuccess?.();
@@ -149,7 +154,7 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
 
   return (
     <View className="gap-6">
-      <View className="w-full flex-row items-center justify-between ">
+      <View className="w-full flex-row items-center justify-between" style={{ direction: 'ltr' }}>
         <ScoreStepper
           value={homeScore}
           onChange={updateHomeScore}
@@ -168,7 +173,7 @@ export default function PredictionForm({ prediction, matchId, onSaveSuccess }: P
       </View>
       <Button
         label={saveLabel}
-        variant="primary"
+        intent="primary"
         size="md"
         onPress={() => void handleSave()}
         disabled={!canSave || isPending}

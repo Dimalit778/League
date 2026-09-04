@@ -118,9 +118,8 @@ const AppleAuth = ({
     >
       <Image
         source={images.appleWhite360}
-        style={styles.image}
+        style={[styles.image, { pointerEvents: 'none' }]}
         contentFit="contain"
-        pointerEvents="none"
         accessible={false}
       />
     </Pressable>

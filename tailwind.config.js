@@ -14,7 +14,6 @@ module.exports = {
       colors: {
         primary: 'var(--color-primary)',
         onPrimary: 'var(--color-on-primary)',
-        accent: 'var(--color-accent)',
         background: 'var(--color-background)',
         surface: 'var(--color-surface)',
         subtle: 'var(--color-subtle)',
@@ -22,9 +21,11 @@ module.exports = {
         text: 'var(--color-text)',
         muted: 'var(--color-muted)',
         error: 'var(--color-error)',
+        danger: 'var(--color-danger)',
         success: 'var(--color-success)',
         warning: 'var(--color-warning)',
         info: 'var(--color-info)',
+        gold: 'var(--color-gold)',
         overlay: 'var(--color-overlay)',
       },
       fontFamily: {

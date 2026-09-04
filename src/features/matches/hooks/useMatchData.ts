@@ -24,11 +24,6 @@ export const useMatchAiSummary = (matchId: number, enabled: boolean) => {
   });
 };
 
-/**
- * Builds a {@link MatchDetails} placeholder for a match by reading it out of the
- * cached season list. Returns undefined when the season cache or the match is
- * missing, so the detail query falls back to its normal loading state.
- */
 const useSeasonMatchPlaceholder = (
   matchId: number,
 ): MatchDetails | undefined => {

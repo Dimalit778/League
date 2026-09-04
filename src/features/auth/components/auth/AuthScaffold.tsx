@@ -1,5 +1,5 @@
 import { images } from '@/assets/images';
-import { BackButton, Brand, Screen } from '@/components';
+import { BackButton, Brand, Screen, Text } from '@/components';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { isWeb } from '@/lib/platform';
 import { ImageBackground } from 'expo-image';
@@ -13,6 +13,9 @@ type HeaderProps = {
 };
 
 type AuthScaffoldProps = {
+  title?: string;
+  description?: string;
+  emblem?: ReactNode;
   fallbackHref?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -29,13 +32,16 @@ export function Header({ fallbackHref, showBack = true }: HeaderProps) {
           <BackButton fallbackHref={fallbackHref} variant="onImage" />
         </View>
       ) : null}
-      <View className="items-center px-14" pointerEvents="none">
+      <View className="items-center px-14" style={{ pointerEvents: 'none' }}>
         <Brand size="sm" onBoarding />
       </View>
     </View>
   );
 }
 export default function AuthScaffold({
+  title,
+  description,
+  emblem,
   fallbackHref = '/(auth)',
   children,
   footer,
@@ -58,8 +64,7 @@ export default function AuthScaffold({
         locations={[0, 0.9, 1]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
 
       <Screen width="full" padding="horizontal" edges={['top', 'bottom']} className="bg-transparent">
@@ -72,6 +77,13 @@ export default function AuthScaffold({
         >
           <Header fallbackHref={fallbackHref} showBack={showInlineBack} />
           <View className={cn('mx-auto w-full max-w-[520px]', className)}>
+            {title || description || emblem ? (
+              <View className="items-center gap-3 py-8">
+                {emblem}
+                {title ? <Text variant="heading" size="3xl" className="text-center text-white">{title}</Text> : null}
+                {description ? <Text variant="body" className="text-center text-[#AEB8D0]">{description}</Text> : null}
+              </View>
+            ) : null}
             {children}
             {footer}
           </View>

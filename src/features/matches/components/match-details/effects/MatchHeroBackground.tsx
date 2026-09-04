@@ -5,7 +5,7 @@ import { View } from 'react-native';
 
 export function MatchHeroBackground({ gradientColors }: { gradientColors: readonly [string, string, string, string] }) {
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}>
+    <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'none' }}>
       <ExpoImage
         source={images.stadium}
         contentFit="cover"

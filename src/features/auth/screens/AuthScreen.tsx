@@ -16,10 +16,11 @@ type AuthScreenProps = {
 };
 
 const Divider = () => {
+  const { t } = useTranslation();
   return (
     <Row keepLtr className="items-center justify-center py-2">
       <View className="h-px flex-1 bg-[#526078]" />
-      <Text className="mx-3 text-sm font-semibold text-[#9EA9BE]">OR</Text>
+      <Text className="mx-3 text-sm font-semibold text-[#9EA9BE]">{t('OR')}</Text>
       <View className="h-px flex-1 bg-[#526078]" />
     </Row>
   );

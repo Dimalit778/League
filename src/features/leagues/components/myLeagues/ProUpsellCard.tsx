@@ -21,7 +21,7 @@ export default function ProUpsellCard({ onUpgrade }: { onUpgrade: () => void }) 
           {t('Upgrade to Pro and open up to {{count}} leagues', { count: proLeagueLimit })}
         </Text>
         <Button
-          variant="primary"
+          intent="primary"
           size="md"
           className="mt-4"
           label={t('Upgrade to Pro')}

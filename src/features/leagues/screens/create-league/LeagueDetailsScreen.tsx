@@ -174,7 +174,7 @@ const LeagueDetailsScreen = () => {
             <Button
               label={t('Create League')}
               onPress={onSubmit}
-              variant="primary"
+              intent="primary"
               size="lg"
               disabled={!isValid || isPending || isProcessing}
             />

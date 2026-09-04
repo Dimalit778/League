@@ -18,7 +18,7 @@ const HelpScreen = () => {
   return (
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
       {/* Welcome Section */}
-      <Card variant="elevated" contentClassName="gap-3">
+      <Card contentClassName="gap-3">
         <Brand size="sm" />
         <Text variant="body" className="font-medium text-center">
           {t(

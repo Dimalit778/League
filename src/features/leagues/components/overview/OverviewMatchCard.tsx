@@ -1,4 +1,4 @@
-import { Card, Divider, TeamLogo, Text } from '@/components';
+import { Card, Divider, Row, TeamLogo, Text } from '@/components';
 import { deriveCardPresentation } from '@/features/matches/model/matchPresentation';
 import type { MatchCardData } from '@/features/matches/utils/matchCard.mapper';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
@@ -19,8 +19,8 @@ export function OverviewMatchCard({ match, onPress }: OverviewMatchCardProps) {
   const { status, score, prediction } = presentation;
 
   return (
-    <Card onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${match.id}`))} variant="elevated" padding="sm">
-      <View className="gap-1.5">
+    <Card variant="flat" onPress={onPress ?? (() => router.push(`/(app)/(league)/match/${match.id}`))} padding="sm">
+      <View className="gap-1.5 b">
         <View className="flex-row items-center justify-between px-1">
           <Text variant="caption" tone={status.tone} className="font-medium" numberOfLines={1}>
             {status.label}
@@ -42,10 +42,10 @@ export function OverviewMatchCard({ match, onPress }: OverviewMatchCardProps) {
         </View>
         <Divider />
 
-        <View className="flex-row items-center justify-around">
+        <Row keepLtr className="justify-around">
           <TeamLogo tla={match.home.tla} clubColors={match.home.clubColors} size={36} shape="circle" />
           {score.kind === 'score' ? (
-            <View className="flex-row items-center justify-center gap-1.5">
+            <Row keepLtr className="justify-center gap-1.5">
               <Text tone={score.tone} weight="sportBold" size="xl">
                 {score.home}
               </Text>
@@ -53,14 +53,14 @@ export function OverviewMatchCard({ match, onPress }: OverviewMatchCardProps) {
               <Text tone={score.tone} weight="sportBold" size="xl">
                 {score.away}
               </Text>
-            </View>
+            </Row>
           ) : score.kind === 'time' ? (
-            <Text variant="label" className="text-center" numberOfLines={1}>
+            <Text variant="label" ltr className="text-center" numberOfLines={1}>
               {score.time}
             </Text>
           ) : null}
           <TeamLogo tla={match.away.tla} clubColors={match.away.clubColors} size={36} shape="circle" />
-        </View>
+        </Row>
       </View>
     </Card>
   );

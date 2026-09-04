@@ -22,7 +22,7 @@ export function MemberDetailsSkeleton() {
       </Card>
 
       <TextSkeleton className="h-6 w-40" />
-      <Card variant="elevated" contentClassName="flex-row items-center gap-4">
+      <Card contentClassName="flex-row items-center gap-4">
         <Skeleton className="h-24 w-24 rounded-full" />
         <View className="min-w-0 flex-1 gap-3">
           <TextSkeleton className="w-24" />

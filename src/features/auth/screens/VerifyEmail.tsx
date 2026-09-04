@@ -5,10 +5,11 @@ import VerificationCodeInput from '@/features/auth/components/auth/VerificationC
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useEffect, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
 const CODE_LENGTH = 6;
-const CODE_TTL_SECONDS = 120;
+const RESEND_COOLDOWN_SECONDS = 120;
 
 function formatCountdown(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -17,14 +18,14 @@ function formatCountdown(totalSeconds: number) {
 }
 
 export default function VerifyEmailScreen() {
-  // const { email } = useLocalSearchParams<{ email: string }>();
-  const email = 'test@test.com'; // TODO: remove this
+  const { email: emailParam } = useLocalSearchParams<{ email?: string | string[] }>();
+  const email = (Array.isArray(emailParam) ? emailParam[0] : emailParam)?.trim().toLowerCase();
   const { t } = useTranslation();
   const { verifyOtp, resendOtp, isLoading, errorMessage, clearError } = useAuthActions();
   const [code, setCode] = useState<string[]>(() => Array(CODE_LENGTH).fill(''));
   const [resendLoading, setResendLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [secondsLeft, setSecondsLeft] = useState(CODE_TTL_SECONDS);
+  const [secondsLeft, setSecondsLeft] = useState(RESEND_COOLDOWN_SECONDS);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -53,7 +54,7 @@ export default function VerifyEmailScreen() {
   };
 
   const handleResend = async () => {
-    if (!email || resendLoading) return;
+    if (!email || resendLoading || isLoading || secondsLeft > 0) return;
 
     setResendLoading(true);
     setStatusMessage(null);
@@ -63,7 +64,7 @@ export default function VerifyEmailScreen() {
 
     if (result.success) {
       setStatusMessage(t('Code resent successfully!'));
-      setSecondsLeft(CODE_TTL_SECONDS);
+      setSecondsLeft(RESEND_COOLDOWN_SECONDS);
     }
   };
 
@@ -98,6 +99,7 @@ export default function VerifyEmailScreen() {
             <Text variant="body" tone="muted" className="text-center">
               {t('Enter the code sent to your email')}
             </Text>
+            <Text variant="body" className="text-center text-white">{email}</Text>
           </View>
           <VerificationCodeInput value={code} onChange={handleCodeChange} hasError={Boolean(errorMessage)} />
 
@@ -120,12 +122,13 @@ export default function VerifyEmailScreen() {
 
           <Row className="justify-between gap-2">
             <Text variant="body">
-              {t('Code expires in')} {formatCountdown(secondsLeft)}
+              {t('Resend code in')} <Text>{formatCountdown(secondsLeft)}</Text>
             </Text>
 
             <Pressable
               onPress={handleResend}
-              disabled={resendLoading}
+              disabled={resendLoading || isLoading || secondsLeft > 0}
+              accessibilityState={{ disabled: resendLoading || isLoading || secondsLeft > 0 }}
               accessibilityRole="button"
               accessibilityLabel={t('Resend verification code')}
               className="min-h-11 justify-center rounded-lg px-2 active:opacity-70"

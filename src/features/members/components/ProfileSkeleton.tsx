@@ -1,5 +1,4 @@
-import { images } from '@/assets/images';
-import { CollapsibleHeader, Row, Skeleton, TextSkeleton } from '@/components';
+import { Screen, ScreenHeader, Skeleton, TextSkeleton } from '@/components';
 import { View } from 'react-native';
 
 function DetailRowSkeleton() {
@@ -11,37 +10,21 @@ function DetailRowSkeleton() {
   );
 }
 
-function PersistentHeaderSkeleton() {
+function ProfileHeaderSkeleton() {
   return (
-    <Row className="items-start justify-end px-4">
-      <Skeleton className="h-12 w-12 rounded-full" />
-    </Row>
-  );
-}
-
-function CollapsedHeaderSkeleton() {
-  return (
-    <Row className="h-12 items-center justify-between px-4">
-      <View className="min-w-0 flex-1 flex-row-reverse items-center gap-2.5">
-        <Skeleton className="h-7 w-28 rounded-md" />
-      </View>
-      <View className="h-12 w-12 shrink-0" />
-    </Row>
+    <ScreenHeader
+      left={<Skeleton className="h-7 w-28 rounded-md" />}
+      right={<Skeleton className="h-12 w-12 rounded-full" />}
+    />
   );
 }
 
 export function ProfileSkeleton() {
   return (
-    <CollapsibleHeader
-      expandedHeight={250}
-      collapsedHeight={48}
-      overlap={200}
-      contentContainerStyle={{ paddingHorizontal: 16 }}
-      collapsedHeader={<CollapsedHeaderSkeleton />}
-      persistentHeader={<PersistentHeaderSkeleton />}
-      backgroundImage={images.stadium}
-    >
-      <View className="gap-6">
+    <View className="flex-1 bg-background">
+      <ProfileHeaderSkeleton />
+      <Screen scroll padding="all" className="flex-grow">
+        <View className="gap-6">
         <View className="items-center py-2">
           <Skeleton className="h-40 w-40 rounded-full" />
         </View>
@@ -81,7 +64,8 @@ export function ProfileSkeleton() {
             ))}
           </View>
         </View>
-      </View>
-    </CollapsibleHeader>
+        </View>
+      </Screen>
+    </View>
   );
 }

@@ -13,6 +13,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFloatBottomTabsInset } from './FloatBottomTabs';
 
 type CollapsibleHeaderProps = {
   children: ReactNode;
@@ -63,6 +64,7 @@ export const CollapsibleHeader = ({
   showsVerticalScrollIndicator = false,
 }: CollapsibleHeaderProps) => {
   const insets = useSafeAreaInsets();
+  const bottomTabsInset = useFloatBottomTabsInset();
   const { colors, isDark } = useThemeTokens();
   const scrollY = useSharedValue(0);
 
@@ -151,7 +153,7 @@ export const CollapsibleHeader = ({
     return {
       opacity: isFixed
         ? 0
-        : interpolate(scrollY.value, [collapseDistance * 0.1, collapseDistance * 0.3], [1, 0], Extrapolation.CLAMP),
+        : interpolate(scrollY.value, [collapseDistance * 0.1, collapseDistance * 0.25], [1, 0], Extrapolation.CLAMP),
     };
   });
 
@@ -175,7 +177,7 @@ export const CollapsibleHeader = ({
       ]}
     >
       {/* Behind content — so overlap can sit on top of the image */}
-      <Animated.View pointerEvents="none" style={[styles.headerBackground, headerBackgroundStyle]}>
+      <Animated.View style={[styles.headerBackground, headerBackgroundStyle, { pointerEvents: 'none' }]}>
         {backgroundImage ? (
           <Animated.View style={[StyleSheet.absoluteFill, backgroundImageStyle]}>
             <View style={StyleSheet.absoluteFill}>
@@ -202,7 +204,7 @@ export const CollapsibleHeader = ({
         contentContainerStyle={[
           {
             paddingTop: contentTop + insets.top - overlap,
-            paddingBottom: insets.bottom + 110,
+            paddingBottom: bottomTabsInset,
           },
           contentContainerStyle,
         ]}
@@ -212,7 +214,6 @@ export const CollapsibleHeader = ({
 
       {/* Same inset model for both — top:0 + paddingTop — so chrome lines up */}
       <Animated.View
-        pointerEvents="box-none"
         style={[
           styles.toolbar,
           expandedContentStyle,
@@ -220,6 +221,7 @@ export const CollapsibleHeader = ({
             top: 0,
             height: expandedHeight + insets.top,
             paddingTop: insets.top,
+            pointerEvents: 'box-none',
           },
         ]}
       >
@@ -227,7 +229,6 @@ export const CollapsibleHeader = ({
       </Animated.View>
 
       <Animated.View
-        pointerEvents="box-none"
         style={[
           styles.toolbar,
           styles.collapsedToolbar,
@@ -237,18 +238,21 @@ export const CollapsibleHeader = ({
             height: collapsedHeight + insets.top,
             paddingTop: insets.top,
             backgroundColor: isFixed ? undefined : resolvedBackgroundColor,
+            pointerEvents: 'box-none',
           },
         ]}
       >
         {isFixed ? (
           <>
             <Animated.View
-              pointerEvents="none"
-              style={[StyleSheet.absoluteFill, { backgroundColor: resolvedBackgroundColor }, fixedBackgroundStyle]}
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: resolvedBackgroundColor, pointerEvents: 'none' },
+                fixedBackgroundStyle,
+              ]}
             />
             <Animated.View
-              pointerEvents="none"
-              style={[styles.border, borderStyle, { backgroundColor: resolvedBorderColor }]}
+              style={[styles.border, borderStyle, { backgroundColor: resolvedBorderColor, pointerEvents: 'none' }]}
             />
           </>
         ) : null}
@@ -257,7 +261,6 @@ export const CollapsibleHeader = ({
 
       {persistentHeader ? (
         <View
-          pointerEvents="box-none"
           style={[
             styles.toolbar,
             styles.persistentToolbar,
@@ -265,6 +268,7 @@ export const CollapsibleHeader = ({
               top: 0,
               height: collapsedHeight + insets.top,
               paddingTop: insets.top,
+              pointerEvents: 'box-none',
             },
           ]}
         >

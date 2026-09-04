@@ -15,7 +15,7 @@ export function NavigationHeader({ title, fallbackHref }: NavigationHeaderProps)
     <View className="w-full bg-background px-4 pb-2" style={{ paddingTop: insets.top }}>
       <View className="h-12 w-full flex-row items-center ">
         <BackButton fallbackHref={fallbackHref} />
-        <View className="absolute inset-0 items-center justify-center px-14" pointerEvents="none">
+        <View className="absolute inset-0 items-center justify-center px-14" style={{ pointerEvents: 'none' }}>
           <Text accessibilityRole="header" variant="title" numberOfLines={1} className="text-center">
             {title}
           </Text>

@@ -1,6 +1,6 @@
 import { TrophyIcon } from '@/assets/icons';
-import { images } from '@/assets/images';
-import { CollapsibleHeader, Error, Row, TabButton, Text } from '@/components';
+import { Error, Row, Screen, ScreenHeader, TabButton, Text } from '@/components';
+import { useFloatBottomTabsInset } from '@/components/layout/FloatBottomTabs';
 import {
   useGetCompetitionLeaderboard,
   useGetLeaderboard,
@@ -16,7 +16,7 @@ import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
 import { Share, View } from 'react-native';
-import { InviteFriendsCard } from '../components/leaderboard/InviteFriendsCard';
+import { InviteFriendsLink } from '../components/leaderboard/InviteFriendsLink';
 import {
   LeaderboardAudienceToggle,
   type LeaderboardAudience,
@@ -24,6 +24,7 @@ import {
 import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
 import LeaderboardSkeleton, { LeaderboardBodySkeleton } from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Podium';
+import { SparseLeaderboardCard } from '../components/leaderboard/SparseLeaderboardCard';
 
 const Header = ({
   audience,
@@ -32,18 +33,14 @@ const Header = ({
   audience: LeaderboardAudience;
   setAudience: (audience: LeaderboardAudience) => void;
 }) => {
+  const { t } = useTranslation();
   return (
-    <View className={cn('w-full', spacing.screen)}>
-      <View className="relative w-full justify-center  h-12">
-        <View className="absolute inset-0 items-center justify-center " pointerEvents="box-none">
-          <LeaderboardAudienceToggle value={audience} onChange={setAudience} />
-        </View>
-
-        <View className="absolute end-0 top-0" pointerEvents="box-none">
-          <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} />
-        </View>
-      </View>
-    </View>
+    <ScreenHeader
+      center={<LeaderboardAudienceToggle value={audience} onChange={setAudience} />}
+      right={
+        <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} accessibilityLabel={t('My Leagues')} />
+      }
+    />
   );
 };
 
@@ -51,6 +48,7 @@ export default function LeaderboardScreen() {
   const leagueId = useLeagueId();
   const competitionId = useCompetitionId();
   const currentUserId = useAuthStore((s) => s.user?.id);
+  const bottomTabsInset = useFloatBottomTabsInset();
 
   const [audience, setAudience] = useState<LeaderboardAudience>('friends');
 
@@ -107,43 +105,46 @@ export default function LeaderboardScreen() {
   const bodyIsLoading = activeIsLoading || !leaderboard;
 
   return (
-    <CollapsibleHeader
-      variant="fixed"
-      expandedHeight={280}
-      fixedBackgroundRevealStart={40}
-      fixedBackgroundRevealDistance={30}
-      backgroundImage={images.stadium}
-      overlap={240}
-      collapsedHeader={<Header audience={audience} setAudience={setAudience} />}
-    >
-      <View className={cn(spacing.section, spacing.screen, 'pt-2')}>
+    <View className="flex-1 bg-background">
+      <Header audience={audience} setAudience={setAudience} />
+      <Screen scroll contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset }}>
         {error ? (
           <Error error={error} />
         ) : bodyIsLoading ? (
           <LeaderboardBodySkeleton />
+        ) : rest.length === 0 ? (
+          // Nobody past the podium yet — inviting is the primary action, so it
+          // gets the prominent card centred in the space below the podium.
+          <View className="flex-1">
+            <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
+            <SparseLeaderboardCard
+              memberCount={leaderboard?.length ?? 0}
+              onInvite={handleInviteFriends}
+              inviteDisabled={!league}
+            />
+          </View>
         ) : (
-          <>
+          <View className="flex-1">
             <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
 
-            <View className={cn('min-h-[200px]', spacing.stack)}>
-              {rest.length > 0 && (
-                <>
-                  <Row keepLtr className={spacing.list}>
-                    <View className="h-px flex-1 bg-border" />
-                    <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
-                      {t('Full ranking')}
-                    </Text>
-                    <View className="h-px flex-1 bg-border" />
-                  </Row>
-                  <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
-                </>
-              )}
+            <View className={cn('px-4 pt-3', spacing.list)}>
+              <Row keepLtr className={spacing.list}>
+                <View className="h-px flex-1 bg-border" />
+                <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
+                  {t('Full ranking')}
+                </Text>
+                <View className="h-px flex-1 bg-border" />
+              </Row>
+              <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
             </View>
 
-            <InviteFriendsCard onInvite={handleInviteFriends} disabled={!league} />
-          </>
+            {/* Populated board — the podium is the hero, so the invite drops to a
+                quiet link pinned below the ranking. */}
+            <View className="min-h-[24px] flex-1" />
+            <InviteFriendsLink onInvite={handleInviteFriends} disabled={!league} />
+          </View>
         )}
-      </View>
-    </CollapsibleHeader>
+      </Screen>
+    </View>
   );
 }

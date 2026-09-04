@@ -1,6 +1,6 @@
 import { Text } from '@/components';
-import { cn } from '@/lib/nativewind/nativeWind';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/nativewind/nativeWind';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { FlatList, LayoutChangeEvent, Platform, Pressable, View } from 'react-native';
 import {
@@ -32,10 +32,8 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
   const isSelected = selectedFixture === fixture;
   const isToday = currentFixture !== undefined && fixture === currentFixture;
 
-  const opacity = isSelected || isToday ? 1 : currentFixture !== undefined && fixture < currentFixture ? 0.38 : 0.8;
-
   return (
-    <View style={{ opacity }} className="items-center mx-2">
+    <View className="items-center mx-2">
       <Pressable
         onPress={() => onPress(fixture)}
         accessibilityRole="tab"
@@ -60,7 +58,7 @@ const FixtureItem = ({ fixture, selectedFixture, currentFixture, dateRange, onPr
               transition: Platform.OS === 'web' ? 'color 0.1s ease-in-out' : undefined,
             } as any
           }
-          className={cn('text-xl', isToday ? 'text-primary' : isSelected ? 'text-text' : 'text-muted')}
+          className={cn('text-xl text-text', isToday && 'text-primary')}
         >
           {fixture}
         </Text>

@@ -36,7 +36,7 @@ export function SparseLeaderboardCard({ memberCount, onInvite, inviteDisabled = 
           label={t('Invite friends')}
           onPress={onInvite}
           disabled={inviteDisabled}
-          variant="outline"
+          intent="outline"
           size="sm"
           className="px-5"
         />

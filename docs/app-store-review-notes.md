@@ -45,9 +45,9 @@ Password: [paste APP_REVIEWER_PASSWORD used when running seed:app-reviewer]
 HOW TO TEST
 1. Launch the app → Get Started → Sign In.
 2. Sign in with the demo email and password above (email is pre-verified; no OTP needed).
-3. On My Leagues, open "App Review League".
+3. An existing primary league may open directly on Home. Use the trophy button to open My Leagues, then select "App Review League".
 4. Matches tab → pick an upcoming fixture → submit or edit a prediction.
-5. Stats tab → view leaderboard.
+5. Leaderboard tab (visible label: Rank) → switch between Friends and World. Home → Stats opens prediction statistics.
 6. Profile tab → edit nickname or avatar (optional).
 
 SIGN IN WITH APPLE / GOOGLE
@@ -101,6 +101,8 @@ Supabase (authentication and data), Google Cloud Vision (profile-image safety ch
 ```
 
 ## 3. Pre-submission checklist
+
+The native `ios/` directory is generated and ignored by Git. Regenerate it from the current Expo configuration before local release testing; stale native files can differ from the project EAS generates (including supported orientations and permissions). Test the exact production binary again through TestFlight. The app is portrait-only on iPhone and iPad; `ios.requireFullScreen` and the explicit iPad portrait orientation list preserve that restriction when Expo regenerates the native project. This opts out of legacy iPad Slide Over/Split View.
 
 - [ ] Ran `npm run seed:app-reviewer` against **production** Supabase
 - [ ] Confirmed demo login works on a TestFlight build

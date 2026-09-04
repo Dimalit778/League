@@ -12,13 +12,13 @@ export function MatchesTopBar({ center }: { center?: ReactNode }) {
   return (
     <View className="w-full px-4" style={{ paddingTop: insets.top }}>
       <View className="relative w-full justify-center h-12">
-        <View className="absolute inset-0 items-center justify-center" pointerEvents="box-none">
+        <View className="absolute inset-0 items-center justify-center" style={{ pointerEvents: 'box-none' }}>
           <Text variant="title" numberOfLines={1} className="text-center">
             {t('Matches')}
           </Text>
         </View>
-        <View className="absolute end-0 top-0" pointerEvents="box-none">
-          <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} />
+        <View className="absolute end-0 top-0" style={{ pointerEvents: 'box-none' }}>
+          <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} accessibilityLabel={t('My Leagues')} />
         </View>
       </View>
     </View>

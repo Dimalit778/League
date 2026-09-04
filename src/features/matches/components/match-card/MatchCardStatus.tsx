@@ -1,12 +1,22 @@
 import { Text } from '@/components';
-import type { MatchUiStatus } from '../../model/matchPresentation';
+import type { TextTone } from '@/components/ui/Text';
 import { View } from 'react-native';
 
-export function MatchCardStatus({ status, top }: { status: MatchUiStatus; top: number }) {
+export function MatchCardStatus({
+  label,
+  tone,
+  top,
+  emphasize = false,
+}: {
+  label: string;
+  tone: TextTone;
+  top: number;
+  emphasize?: boolean;
+}) {
   return (
     <View className="absolute left-0 right-0 z-10 items-center" style={{ top }}>
-      <Text variant="body" size={status.label === 'LIVE' || status.label === 'FT' ? 'sm' : 'xs'} tone={status.tone} numberOfLines={1}>
-        {status.label}
+      <Text size="sm" weight={emphasize ? 'bold' : undefined} tone={tone}>
+        {label}
       </Text>
     </View>
   );

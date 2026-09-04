@@ -64,6 +64,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     // Web OAuth returns ?code= in the URL; native keeps this off so password-reset
     // deep links are consumed manually instead of racing the auth client.
-    detectSessionInUrl: Platform.OS === 'web',
+    detectSessionInUrl: Platform.OS === 'web' &&
+      !(typeof window !== 'undefined' && /\/(reset-password|resetPassword)(?:[/?#]|$)/.test(window.location.href)),
   },
 });

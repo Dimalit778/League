@@ -5,14 +5,12 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { Plus, UserPlus } from 'lucide-react-native';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Leagues } from '../components/myLeagues/Leagues';
 import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
 type ActivationSelection = NonNullable<ReturnType<typeof useMyLeaguesScreen>['activationSelection']>;
-
-const ACTION_BUTTON_SIZE = 72;
 
 function LeagueActionButtons() {
   const { t } = useTranslation();
@@ -21,28 +19,29 @@ function LeagueActionButtons() {
 
   return (
     <Row
-      pointerEvents="box-none"
       className="absolute inset-x-0 justify-between px-5"
-      style={{ bottom: Math.max(insets.bottom, 12) + 8 }}
+      style={{ bottom: Math.max(insets.bottom, 12) + 8, pointerEvents: 'box-none' }}
     >
-      <Pressable
-        accessibilityRole="button"
+      <Button
+        intent="primary"
+        shape="circle"
+        size="icon-lg"
         accessibilityLabel={t('Join League')}
         onPress={() => router.push('/leagues/join-league')}
-        className="items-center justify-center rounded-full border border-border bg-subtle active:opacity-80"
-        style={{ width: ACTION_BUTTON_SIZE, height: ACTION_BUTTON_SIZE }}
+        className="border border-border"
       >
-        <UserPlus size={32} color={colors.text} strokeWidth={2} />
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
+        <UserPlus size={32} color={colors.onPrimary} strokeWidth={2.5} />
+      </Button>
+      <Button
+        intent="primary"
+        shape="circle"
+        size="icon-lg"
         accessibilityLabel={t('Create League')}
         onPress={() => router.push('/leagues/create-league/competitions')}
-        className="items-center justify-center rounded-full border border-border bg-subtle active:opacity-80"
-        style={{ width: ACTION_BUTTON_SIZE, height: ACTION_BUTTON_SIZE }}
+        className="border border-border"
       >
-        <Plus size={26} color={colors.text} strokeWidth={2.5} />
-      </Pressable>
+        <Plus size={30} color={colors.onPrimary} strokeWidth={2.5} />
+      </Button>
     </Row>
   );
 }
@@ -78,7 +77,7 @@ export default function MyLeaguesScreen() {
     <View className="flex-1 bg-background">
       <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
 
-      <Screen scroll padding="horizontal" className="flex-grow">
+      <Screen scroll padding="all" className="flex-grow">
         <View className="flex-1 gap-6 pb-24">
           <View className="min-h-[550px]">
             <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />

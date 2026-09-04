@@ -146,7 +146,7 @@ export function ProfileImageCard() {
           <>
             <Button
               accessibilityLabel={t('Cancel')}
-              variant="outline"
+              intent="outline"
               size="icon"
               className="absolute -bottom-2 -left-2 rounded-full bg-surface"
               onPress={handleCancelPreview}
@@ -178,7 +178,7 @@ export function ProfileImageCard() {
             {image ? (
               <Button
                 accessibilityLabel={t('Delete')}
-                variant="outline"
+                intent="outline"
                 size="icon"
                 className="absolute -bottom-2 -right-2 rounded-full bg-surface"
                 onPress={handleDeleteImage}

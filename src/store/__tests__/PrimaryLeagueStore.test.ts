@@ -38,6 +38,17 @@ describe('PrimaryLeagueStore persistence', () => {
     expect(usePrimaryLeagueStore.getState().loading).toBe(true);
   });
 
+  it('does not restore old membership after logout while initialization is in flight', async () => {
+    let resolveUser!: (value: unknown) => void;
+    (supabase.auth.getUser as jest.Mock).mockReturnValueOnce(new Promise((resolve) => { resolveUser = resolve; }));
+    const pending = usePrimaryLeagueStore.getState().initializePrimaryLeague();
+    usePrimaryLeagueStore.getState().clearPrimaryLeague();
+    resolveUser({ data: { user: { id: 'old-user' } }, error: null });
+    await pending;
+    expect(usePrimaryLeagueStore.getState().memberId).toBeNull();
+    expect(usePrimaryLeagueStore.getState().initialized).toBe(false);
+  });
+
   it('persists only the context fields — never the transient flags', () => {
     usePrimaryLeagueStore.getState().setPrimaryLeague(CONTEXT);
 

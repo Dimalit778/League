@@ -123,6 +123,11 @@ export const en = {
     "Password strength": "Password strength",
     "At least 8 characters with a letter and a number":
       "At least 8 characters with a letter and a number",
+    "Verify your email": "Verify your email",
+    "Enter the code sent to your email": "Enter the code sent to your email",
+    "Email address is missing": "Email address is missing",
+    "Please try signing up again.": "Please try signing up again.",
+    "Resend code in": "Resend code in",
     "Reset Password": "Reset Password",
 
     "Enter your email": "Enter your email",
@@ -130,10 +135,7 @@ export const en = {
     "Send Reset Link": "Send Reset Link",
     "Reset link has been sent to your email":
       "Reset link has been sent to your email",
-    "Email address is missing. Please try signing up again.":
-      "Email address is missing. Please try signing up again.",
 
-    "We sent a 6-digit code to": "We sent a 6-digit code to",
     "Email is required": "Email is required",
     "Invalid email": "Invalid email",
     "Password is required": "Password is required",
@@ -219,13 +221,14 @@ export const en = {
     "Subscription not confirmed": "Subscription not confirmed",
     "We could not confirm your PRO subscription. Please try again in a moment.":
       "We could not confirm your PRO subscription. Please try again in a moment.",
+    "You are already a member of this league": "You are already a member of this league",
     "Failed to join league": "Failed to join league",
 
     "Start League": "Start League",
 
     "How to Join a League": "How to Join a League",
     "Get the 7-digit invite code from the league owner.":
-      "Get the 7-digit invite code from the league owner.",
+      "Get the 7-character invite code from the league owner.",
     "Enter the code above to find the league.":
       "Enter the code above to find the league.",
     "Choose your nickname for the league.":
@@ -233,7 +236,7 @@ export const en = {
     'Tap "Join League" to become a member.':
       'Tap "Join League" to become a member.',
 
-    "Enter 7-digit invite code": "Enter 7-digit invite code",
+    "Enter 7-digit invite code": "Enter 7-character invite code",
     "Invite Code": "Invite Code",
     "Join Code": "Join Code",
     "Invite code is required": "Invite code is required",
@@ -353,7 +356,7 @@ export const en = {
     "Getting Started": "Getting Started",
     "How do I create an account?": "How do I create an account?",
     "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.":
-      "You can sign in with Google or Apple, or you can sign up using your email address and password. After creating your account, verify your email address to get started.",
+      "Sign in with Google or Apple, or sign up with an email address and password. Email signups require the verification code sent to your inbox.",
     "How do I join a league?": "How do I join a league?",
     'On the "My Leagues" screen, tap "Create League" to create a new league, or tap "Join League" to join an existing league using the league code.':
       'On the **My Leagues** screen, tap **Create League** to create a new league, or tap **Join League** to join an existing league using the league code.',
@@ -395,7 +398,7 @@ export const en = {
     "Account & Settings": "Account & Settings",
     "How do I change my password?": "How do I change my password?",
     "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.":
-      "If you signed up with email, go to Settings and use the password reset option. You will receive a reset link via email.",
+      "For an email account, sign out from Settings, open Sign In and select Forgot Password. Enter your email address to receive a reset link.",
     "Can I change my email address?": "Can I change my email address?",
     "Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.":
       "Email addresses cannot be changed from within the app. Please contact support if you need to update your email address.",
@@ -801,10 +804,9 @@ export const en = {
     "No notifications yet": "No notifications yet",
   },
   aiAnalysis: {
-    "AI analysis is available on match day":
-      "AI analysis is available on match day",
-    "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.":
-      "To provide the most relevant analysis, AI analyzes unlocked only on the day of the match.",
+    "Available on match day": "Available on match day",
+    "AI analysis will appear here on the day of the match.": "AI analysis will appear here on the day of the match.",
+    "Updated {{date}}": "Updated {{date}}",
     "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.":
       "AI-generated analysis for entertainment only. It may be inaccurate and is not betting advice.",
   },
@@ -902,9 +904,7 @@ export const en = {
     "{{count}} correct predictions": "{{count}} correct predictions",
     "{{count}} matches played": "{{count}} matches played",
     "Code resent successfully!": "Code resent successfully!",
-    "Confirm and continue": "Confirm and continue",
-    "Email address is missing. Please try signing up again.":
-      "Email address is missing. Please try signing up again.",
+
     "Email verified successfully!": "Email verified successfully!",
     "Enter the code": "Enter the code",
     "Forgot your password?": "Forgot your password?",
@@ -920,8 +920,7 @@ export const en = {
     "Contact support": "Contact support",
     "Something went wrong": "Something went wrong",
     "Try Again": "Try Again",
-    "The code is single-use and expires shortly.":
-      "The code is single-use and expires shortly.",
+
     "We encountered an unexpected error. Don't worry, your data is safe.":
       "We encountered an unexpected error. Don't worry, your data is safe.",
     "Your other leagues and data will remain saved.":

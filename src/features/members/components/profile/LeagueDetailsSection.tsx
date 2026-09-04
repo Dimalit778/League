@@ -40,7 +40,7 @@ export const LeagueDetailsSection = ({
 
         {league.owner_id === memberUserId && (
           <Link href="/(app)/(league)/edit-league" asChild>
-            <Button size="icon" variant="outline" accessibilityLabel={t('Edit league')} haptic={false}>
+            <Button size="icon" intent="outline" accessibilityLabel={t('Edit league')} haptic={false}>
               <SquarePen size={16} color={colors.primary} />
             </Button>
           </Link>

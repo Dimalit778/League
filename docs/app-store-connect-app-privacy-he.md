@@ -1,72 +1,46 @@
-# Champo — מטריצת App Privacy ל־App Store Connect
+# Champo — הכנת App Privacy לגרסה 1.0 החינמית
 
-**עודכן:** 2 באוגוסט 2026  
-**גרסה:** 1.0.0  
-**Tracking:** לא  
-**ATT / `NSUserTrackingUsageDescription`:** לא נדרש לפי הקוד וה־SDKs הנוכחיים
+עודכן: 31 באוגוסט 2026. זהו מיפוי טכני לקוד הנוכחי, ולא אישור משפטי או אישור שהשאלון כבר מולא ב־App Store Connect.
 
-המסמך משקף את הקוד הנוכחי: Supabase Auth/Database/Storage, RevenueCat עם Supabase UUID כ־App User ID, ו־Sentry עם tracing ו־Mobile Replay כאשר טקסטים ותמונות מוסתרים. יש לבחור ב־App Store Connect: **Yes, we collect data from this app**.
+המסמך הקודם תיאר מנויים ו־Sentry Replay. הוא אינו תואם לגרסת 1.0 הנוכחית: `SUBSCRIPTIONS_ENABLED` כבוי כברירת מחדל, `PurchasesProvider` אינו מגדיר RevenueCat כאשר הוא כבוי, ולא הוגדרה אינטגרציית Replay. תזכורות משחק כן משתמשות ב־push token, לפי בחירת המשתמש. חובה לוודא שדגל המנויים נשאר כבוי בסביבת הבנייה המוגשת.
 
-## הבחירות המדויקות
+## מיפוי האיסוף הנוכחי
 
-| קטגוריה ב־App Store Connect | נאסף | Linked to User | Tracking | Purposes לבחירה | מקור באפליקציה |
-|---|---|---|---|---|---|
-| Contact Info → Name | כן | כן | לא | App Functionality | שם מלא מספק auth וכינויים בפרופיל/ליגות. |
-| Contact Info → Email Address | כן | כן | לא | App Functionality | הרשמה, התחברות, אימות ואיפוס סיסמה דרך Supabase Auth. |
-| User Content → Photos or Videos | כן | כן | לא | App Functionality | תמונת פרופיל אופציונלית ב־Supabase Storage. |
-| User Content → Gameplay Content | כן | כן | לא | App Functionality | ניחושים, ניקוד, חברות בליגה ודירוגים. |
-| User Content → Other User Content | כן | כן | לא | App Functionality | שמות ליגה, כינויים, פרטי דיווח ותוכן moderation. |
-| Identifiers → User ID | כן | כן | לא | App Functionality; Analytics | UUID של Supabase ומזהי member; ה־UUID נשלח ל־RevenueCat כ־custom App User ID. |
-| Purchases → Purchase History | כן | כן | לא | App Functionality; Analytics | RevenueCat, App Store receipts, entitlement ומידע מנוי המקושר ל־User ID. |
-| Usage Data → Product Interaction | כן | לא | לא | App Functionality; Analytics | Sentry navigation tracing ו־Mobile Replay; `sendDefaultPii:false`, וטקסטים/תמונות/vectors מוסתרים. |
-| Diagnostics → Crash Data | כן | לא | לא | App Functionality | Sentry crash reporting. |
-| Diagnostics → Performance Data | כן | לא | לא | App Functionality | Sentry traces ונתוני ביצועים. |
-| Diagnostics → Other Diagnostic Data | כן | לא | לא | App Functionality | אבחון שגיאות, גרסת אפליקציה/OS ומידע טכני תומך. |
+| סוג מידע | קישור למשתמש | שימוש / ראיה |
+|---|---|---|
+| Name | כן | שמות ספק התחברות וכינויים; תפקוד האפליקציה. |
+| Email Address | כן | התחברות, אימות ואיפוס סיסמה דרך Supabase. |
+| Photos or Videos | כן | אווטאר אופציונלי; אחסון ובדיקת בטיחות תמונה. אין הקלטת קול. |
+| Gameplay Content | כן | ניחושים, חברות בליגה, נקודות ודירוגים. |
+| Other User Content | כן | שמות ליגה, כינויים ודיווחי בטיחות. |
+| User ID | כן | מזהי חשבון וחברות. ה־manifest מצהיר App Functionality ו־Analytics; יש להתאים לשימוש בפועל ובספקים לפני הגשה. |
+| Device ID | כן | push token לתזכורות מרחוק, רק אחרי הרשאה; App Functionality. |
+| Product Interaction | ה־manifest מצהיר לא מקושר | Sentry navigation tracing פעיל; Analytics ו־App Functionality. Replay וצילומי מסך אינם מופעלים. יש לבדוק אירוע אבחון ממשי וספק לפני קביעה סופית של היעדר קישור. |
+| Crash Data / Performance Data / Other Diagnostic Data | מיועד ללא זיהוי ישיר | Sentry; `sendDefaultPii:false`, הסרת user, פרטי בקשה ונתונים רגישים ב־`scrubSentryEvent`. יש לאמת גם מזהים בנתיבי מסך ונתוני SDK בדוח הבינארי. |
+| Purchase History | לא נאסף על ידי מסלול 1.0 החינמי | אין רכישות או מסך מנויים פעיל. SDK RevenueCat עדיין כלול בפרויקט; יש לבדוק את ה־Privacy Report הממוזג ואת התנהגות הבינארי לפני בחירת תשובות סופיות. |
 
-## קטגוריות שאין לבחור כרגע
+Tracking מוגדר `false` בקוד וב־manifest של האפליקציה. לא אותרה הפעלת IDFA/ATT. אין להוסיף הצהרות על פרסום או רכישות רק משום שהן הופיעו במסמך הישן; השאלון צריך לשקף איסוף בפועל, כולל ספקים.
 
-- Contact Info: Phone Number, Physical Address, Other User Contact Info.
-- Health & Fitness, Financial Info ו־Sensitive Info.
-- Precise/Coarse Location, Contacts, Emails or Text Messages ו־Audio Data.
-- Browsing History, Search History, Advertising Data ו־Device ID.
-- Tracking, Third-Party Advertising ו־Developer’s Advertising or Marketing.
+## בדיקות חובה לפני מילוי סופי
 
-Apple אינה מחשיבה פרטי כרטיס אשראי כמידע שהאפליקציה אוספת כאשר התשלום מוזן ומעובד מחוץ לאפליקציה ואין למפתח גישה אליו. יש לסמן Purchase History, לא Payment Info.
+- ליצור archive חתום של אותה גרסה שמגישים, ולהפיק Privacy Report ב־Xcode. בניית simulator אינה מחליפה זאת.
+- לוודא שכל manifest של SDK ושימוש ב־required-reason APIs תואמים לדוח הממוזג.
+- לבדוק אירוע Sentry אמיתי ללא חשיפת דוא״ל, token, כינוי או מזהה פרטי שלא הוצהר.
+- לבדוק הרשאת התראות ורישום/הסרת push token על מכשיר אמיתי.
+- לוודא הסרה מלאה של המידע המזהה בחשבון ייעודי למחיקה, כולל ספק Apple אם קיים.
+- לאמת ששאלון App Store Connect ומדיניות הפרטיות הציבורית תואמים לקוד ולספקים.
 
-## התאמה ל־Privacy Manifest
+## כתובות להגשה
 
-ה־manifest של target האפליקציה מצהיר על איסוף first-party ועל החיבור של RevenueCat/Sentry:
+- [מדיניות פרטיות](https://champoapp.com/privacy-policy/)
+- [אפשרויות פרטיות](https://champoapp.com/privacy-choices/)
+- [תמיכה](https://champoapp.com/support/)
 
-- linked: Name, Email Address, Photos or Videos, Gameplay Content, Other User Content, User ID, Purchase History.
-- not linked: Product Interaction.
-- tracking: `false` בכל הסוגים ובשורש ה־manifest.
+זמינות הכתובות הציבוריות לא אושרה בבדיקה זו: כלי הגלישה לא הצליח לפתוח אותן. זו מגבלת בדיקה ואינה הוכחה שהאתר אינו פעיל. יש לבדוק גישה ציבורית ב־HTTPS ללא התחברות לפני הגשה.
 
-ה־SDK manifests מוסיפים בדוח הממוזג של Xcode:
+## מקורות וראיות
 
-- RevenueCat: Purchase History ו־UserDefaults required-reason API.
-- Sentry: Crash Data, Performance Data, Other Diagnostic Data ו־required-reason APIs.
+- `app.json`, `src/app/_layout.tsx`, `src/lib/sentryPrivacy.ts`, `src/providers/PurchasesProvider.tsx`, `src/lib/notifications/pushToken.ts`.
+- [Apple — App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/), נבדק ב־31 באוגוסט 2026: יש לדווח על האיסוף של האפליקציה ושל ספקיה, לשמור את התשובות מעודכנות ולספק מדיניות פרטיות ציבורית.
 
-לפני Submit יש ליצור archive חתום ב־Xcode/EAS, להפיק ממנו Privacy Report ולוודא שאין data type או tracking domain שלא מופיעים במטריצה הזו.
-
-## תנאים שמחייבים שינוי לפני שחרור
-
-- הפעלת פרסום, attribution, IDFA, data broker או שיתוף למדידת פרסום: לעדכן Tracking/Device ID ולהוסיף ATT לפני build.
-- הוספת analytics SDK נוסף או ביטול masking ב־Sentry Replay: לבדוק מחדש Product Interaction, User Content ו־Linked to User.
-- שליחת email/name כ־RevenueCat customer attributes: לעדכן את הראיות והמדיניות, גם אם הקטגוריות כבר מסומנות.
-- איסוף push token בעתיד: לבדוק מחדש Identifiers/Device ID והצהרת מדיניות ההתראות.
-- הסרת Sentry Replay מה־build: אפשר לבחון הסרת Product Interaction לאחר אימות שאין analytics אחר שאוסף אותו.
-
-## URLs להזנה
-
-- Privacy Policy URL: `https://champoapp.com/privacy-policy/`
-- Privacy Choices URL: `https://champoapp.com/privacy-choices/`
-- Support URL: `https://champoapp.com/support/`
-
-Privacy Policy URL הוא חובה. Privacy Choices URL הוא אופציונלי; אם מזינים אותו, גם הוא חייב להיות ציבורי, ב־HTTPS ונגיש ללא התחברות.
-
-## מקורות
-
-- [Apple — App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/)
-- [Apple — Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy-manifest-files)
-- [Apple — Describing data use in privacy manifests](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests)
-- [RevenueCat — Apple App Privacy](https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy)
+הפעלת מנויים, analytics נוספים, פרסום או Replay מחייבת מיפוי מחדש לפני שחרור.

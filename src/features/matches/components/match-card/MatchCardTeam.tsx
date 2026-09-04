@@ -7,11 +7,12 @@ type MatchCardTeamProps = {
   width: number;
   logoWidth: number;
   logoHeight: number;
+  opacity: number;
 };
 
-export function MatchCardTeam({ team, width, logoWidth, logoHeight }: MatchCardTeamProps) {
+export function MatchCardTeam({ team, width, logoWidth, logoHeight, opacity }: MatchCardTeamProps) {
   return (
-    <View style={{ width }} className=" items-center gap-1 ">
+    <View style={{ width, opacity }} className=" items-center gap-1 ">
       <View style={{ width: logoWidth, height: logoHeight }} className="items-center justify-center overflow-hidden">
         <TeamLogo tla={team.tla} clubColors={team.clubColors} size={logoWidth} radius={logoWidth / 2} />
       </View>

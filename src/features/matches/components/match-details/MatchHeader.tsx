@@ -25,7 +25,7 @@ const HeroMeta = ({ name, matchday, date }: { name?: string; matchday?: number |
     <View className="w-full flex-row items-center justify-between">
       <BackButton variant="onImage" />
 
-      <View className="items-center ">
+      <View className="min-w-0 flex-1 items-center px-2">
         <Text variant="title" size="lg" numberOfLines={1} className=" text-white">
           {name}
         </Text>
@@ -49,8 +49,16 @@ const HeroMeta = ({ name, matchday, date }: { name?: string; matchday?: number |
 const Score = ({ presentation }: { presentation: MatchPresentation }) => {
   if (presentation.score.kind === 'time') {
     return (
-      <View className=" items-center justify-center">
-        <Text className="mt-2 text-3xl font-semibold text-white">{presentation.score.time}</Text>
+      <View className="min-w-0 flex-1 items-center justify-center">
+        <Text
+          ltr
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+          className="mt-2 text-3xl font-semibold text-white"
+        >
+          {presentation.score.time}
+        </Text>
         <Divider className="my-0.5 h-px w-6 bg-gray-400" />
 
         <Row className="gap-1 ">
@@ -69,7 +77,15 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
     <View className="flex-1 items-center justify-center">
       {presentation.isLive ? (
         <View className="items-center ">
-          <Text variant="heading" size="5xl" className=" text-primary">
+          <Text
+            ltr
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+            variant="heading"
+            size="5xl"
+            className=" text-primary"
+          >
             {home} : {away}
           </Text>
 
@@ -79,7 +95,14 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
         </View>
       ) : (
         <View className=" flex-row items-center justify-center rounded-xl border border-white/25 bg-black/20 px-3">
-          <Text ltr className="text-center text-4xl font-manrope-bold text-white" style={{ lineHeight: 42 }}>
+          <Text
+            ltr
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+            className="text-center text-4xl font-manrope-bold text-white"
+            style={{ lineHeight: 42 }}
+          >
             {home} : {away}
           </Text>
         </View>
@@ -93,7 +116,7 @@ const Team = ({ team, badgeSize }: { team: TeamType | null; badgeSize: number })
   const shortName = team.shortName || team.name;
 
   return (
-    <View className=" items-center justify-center gap-2">
+    <View className="min-w-0 flex-1 items-center justify-center gap-2">
       <TeamLogo tla={team.tla} size={badgeSize} shape="rect" clubColors={team.clubColors} variant="match" />
       <Text variant="title" size="lg" numberOfLines={2} className="text-center text-gray-300">
         {shortName}
@@ -122,15 +145,15 @@ export default function MatchHeader({
   return (
     <View style={{ minHeight: heroHeight }}>
       <MatchHeroBackground gradientColors={gradientColors} />
-      <View className="flex-1" style={{ paddingTop: insets.top, paddingHorizontal: 16 }}>
+      <View style={{ paddingTop: insets.top, paddingHorizontal: 16, paddingBottom: 16 }}>
         <HeroMeta name={match.competition?.name} matchday={match.fixture} date={match.kick_off} />
-        <View className="flex-1 justify-center gap-4">
-          <View className="flex-row items-center justify-around">
+        <View className="justify-center gap-4 pt-6">
+          <Row keepLtr className="justify-around">
             <Team team={match.home_team} badgeSize={badgeSize} />
             <Score presentation={presentation} />
 
             <Team team={match.away_team} badgeSize={badgeSize} />
-          </View>
+          </Row>
           {presentation.canPredict ? (
             <PredictionForm prediction={memberPrediction} matchId={match.id} onSaveSuccess={onPredictionSaved} />
           ) : null}

@@ -35,6 +35,7 @@ export function useLeagueOverview(): LeagueOverview {
       nickname: nickname ?? "",
       avatarUrl: avatarUrl ?? null,
       leagueName: league?.name ?? "",
+      competitionName: league?.competition?.name ?? "",
       flagUrl: league?.competition?.flag ?? "",
       rank: stats?.rank ?? 0,
       points: stats?.totalPoints ?? 0,

@@ -3,12 +3,19 @@
     "name": "Champo",
     "slug": "champo",
     "version": "1.0.0",
-    "orientation": "default",
+    "orientation": "portrait",
     "icon": "./src/assets/app-icon-ios.png",
     "scheme": "champo",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
+      "requireFullScreen": true,
+      "infoPlist": {
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationPortraitUpsideDown"
+        ]
+      },
       "bundleIdentifier": "com.dimalit778.champo",
       "buildNumber": "1",
       "userInterfaceStyle": "dark",

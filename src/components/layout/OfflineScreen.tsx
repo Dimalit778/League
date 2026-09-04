@@ -17,6 +17,8 @@ export function OfflineScreen() {
     setIsChecking(true);
     try {
       await NetInfo.refresh();
+    } catch {
+      // Keep the retry screen available if the native reachability probe fails.
     } finally {
       setIsChecking(false);
     }
@@ -36,7 +38,7 @@ export function OfflineScreen() {
 
         <View className="w-full px-8">
           <Button
-            variant="primary"
+            intent="primary"
             size="lg"
             loading={isChecking}
             onPress={handleRetry}

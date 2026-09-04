@@ -30,6 +30,8 @@ type PrimaryLeagueStore = PrimaryLeagueContext & {
   clearPrimaryLeague: () => void;
 };
 
+let initializationRevision = 0;
+
 const EMPTY_CONTEXT: PrimaryLeagueContext = {
   memberId: null,
   leagueId: null,
@@ -49,6 +51,7 @@ export const usePrimaryLeagueStore =
     initialized: false,
 
     setPrimaryLeague: (context) => {
+      initializationRevision += 1;
       set(context);
     },
 
@@ -57,6 +60,8 @@ export const usePrimaryLeagueStore =
     },
 
     initializePrimaryLeague: async () => {
+      const revision = ++initializationRevision;
+      const isCurrent = () => revision === initializationRevision;
       // When context was rehydrated from MMKV we already have something to
       // render, so refresh SILENTLY: keep `loading: false` so the app-layout
       // guard renders the league area immediately instead of flashing a
@@ -73,6 +78,8 @@ export const usePrimaryLeagueStore =
           data: { user },
           error: userError,
         } = await supabase.auth.getUser();
+
+        if (!isCurrent()) return;
 
         if (userError) {
           throw userError;
@@ -111,6 +118,8 @@ export const usePrimaryLeagueStore =
             .eq('active', true)
             .maybeSingle();
 
+        if (!isCurrent()) return;
+
         if (memberError) {
           throw memberError;
         }
@@ -130,6 +139,7 @@ export const usePrimaryLeagueStore =
           initialized: true,
         });
       } catch (error) {
+        if (!isCurrent()) return;
         console.error(
           'Failed to initialize active league:',
           error
@@ -144,6 +154,7 @@ export const usePrimaryLeagueStore =
     },
 
     clearPrimaryLeague: () => {
+      initializationRevision += 1;
       set({
         ...EMPTY_CONTEXT,
         loading: false,

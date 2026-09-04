@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
+import * as subscriptionHooks from '@/features/subscription/hooks/useSubscriptionAccess';
+import * as matchHooks from '../../hooks/useMatchData';
 import { resolveAiAnalysis, resolveAiSummaryText } from '../../model/aiAnalysis';
 import { AiSummaryType, MatchDetails } from '../../types';
 import AiAnalysisCard from '../match-details/AiAnalysisCard';
@@ -39,7 +41,7 @@ describe('resolveAiAnalysis', () => {
     const match = createMatch({ ai_predicted_home_score: null, ai_predicted_away_score: null });
     const { getByText, queryByText } = render(React.createElement(AiAnalysisCard, { match }));
 
-    expect(getByText('AI analysis is available on match day')).toBeTruthy();
+    expect(getByText('Available on match day')).toBeTruthy();
     expect(queryByText(/^0$/)).toBeNull();
   });
 
@@ -95,5 +97,45 @@ describe('AiAnalysisCard', () => {
       .mocked(useQuery)
       .mock.calls.find(([config]) => (config as { queryKey?: unknown[] }).queryKey?.[2] === 'ai-summary');
     expect((aiSummaryCall?.[0] as { queryFn?: unknown })?.queryFn).toBeUndefined();
+  });
+});
+
+describe('AI analysis loading and availability for version 1.0 access', () => {
+  const refetch = jest.fn();
+  beforeEach(() => {
+    jest.spyOn(subscriptionHooks, 'useSubscriptionAccess').mockReturnValue({
+      data: { planCode: 'pro' },
+    } as ReturnType<typeof subscriptionHooks.useSubscriptionAccess>);
+    refetch.mockClear();
+  });
+  afterEach(() => jest.restoreAllMocks());
+  function summaryState(overrides: Record<string, unknown>) {
+    jest.spyOn(matchHooks, 'useMatchAiSummary').mockReturnValue({
+      data: undefined, isPending: false, isFetching: false, error: null, refetch, ...overrides,
+    } as unknown as ReturnType<typeof matchHooks.useMatchAiSummary>);
+  }
+  it('shows loading while the analysis text is being fetched', () => {
+    summaryState({ isPending: true });
+    const { getByText, queryByText } = render(React.createElement(AiAnalysisCard, { match: createMatch() }));
+    expect(getByText('Loading')).toBeTruthy();
+    expect(queryByText('Available on match day')).toBeNull();
+  });
+  it('does not present an empty analysis as available', () => {
+    summaryState({ data: { ai_summary_en: '  ', ai_summary_he: null } });
+    const { getByText, queryByText } = render(React.createElement(AiAnalysisCard, { match: createMatch() }));
+    expect(getByText('Available on match day')).toBeTruthy();
+    expect(queryByText(/^0$/)).toBeNull();
+  });
+  it('shows a retry when fetching the analysis fails', () => {
+    summaryState({ error: new Error('Request failed') });
+    const { getByText } = render(React.createElement(AiAnalysisCard, { match: createMatch() }));
+    fireEvent.press(getByText('Try again'));
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+  it('shows the generation time alongside a complete analysis', () => {
+    summaryState({ data: { ai_summary_en: 'Match preview.', ai_summary_he: null } });
+    const { getByText } = render(React.createElement(AiAnalysisCard, { match: createMatch() }));
+    expect(getByText(/^Updated /)).toBeTruthy();
+    expect(getByText('Match preview.')).toBeTruthy();
   });
 });

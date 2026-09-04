@@ -43,7 +43,7 @@ export default function BlockedUsersScreen() {
               trailing={
                 <Button
                   label={t('Unblock')}
-                  variant="outline"
+                  intent="outline"
                   size="sm"
                   loading={unblockUser.isPending && unblockUser.variables === entry.blocked_user_id}
                   disabled={unblockUser.isPending}

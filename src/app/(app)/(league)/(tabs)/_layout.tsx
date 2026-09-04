@@ -6,7 +6,6 @@ import { useIsFocused, useNavigation, useNavigationState } from '@react-navigati
 import { Tabs } from 'expo-router';
 import { Podium, UserIcon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Platform } from 'react-native';
 function useLeagueStackOverlay() {
   const navigation = useNavigation();
 
@@ -35,11 +34,10 @@ function UnmountOnBlur({ children }: { children: ReactNode }) {
 
 export default function TabLayout() {
   const { colors } = useThemeTokens();
-  const isWeb = Platform.OS === 'web';
 
   return (
     <Tabs
-      tabBar={isWeb ? () => null : (props) => <FloatBottomTabs {...props} />}
+      tabBar={(props) => <FloatBottomTabs {...props} />}
       screenLayout={({ children }) => <UnmountOnBlur>{children}</UnmountOnBlur>}
       screenOptions={{
         headerShown: false,

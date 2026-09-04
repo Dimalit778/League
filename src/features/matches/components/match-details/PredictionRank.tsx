@@ -4,6 +4,7 @@ import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
+import { Crosshair } from 'lucide-react-native';
 import { type ReactNode } from 'react';
 import { ActivityIndicator, FlatList, View, type ViewStyle } from 'react-native';
 
@@ -29,7 +30,6 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
   return (
     <Card
       padding="sm"
-      variant="elevated"
       className={currentMember ? 'border border-primary' : undefined}
       contentClassName="flex-row items-center px-3"
     >
@@ -70,6 +70,18 @@ const RankCard = ({ item, index, currentMember }: RankCardProps) => {
   );
 };
 
+function NoPredictions() {
+  const { colors } = useThemeTokens();
+  const { t } = useTranslation();
+  return (
+    <View className="mt-16 flex-1 items-center justify-center">
+      <Crosshair size={40} color={colors.muted} />
+      <Text variant="title" weight="bold" className="text-center text-muted">
+        {t('No predictions')}
+      </Text>
+    </View>
+  );
+}
 export default function PredictionRank({
   predictions,
   isLoading = false,
@@ -78,7 +90,6 @@ export default function PredictionRank({
   isLoading?: boolean;
 }) {
   const memberId = useMemberId();
-  const { t } = useTranslation();
   const { colors } = useThemeTokens();
 
   return (
@@ -95,11 +106,7 @@ export default function PredictionRank({
           renderItem={({ item, index }) => (
             <RankCard item={item} index={index + 1} currentMember={memberId === item.league_member?.id} />
           )}
-          ListEmptyComponent={
-            <View className="mt-16 flex-1 items-center justify-center">
-              <Text className="text-center text-sm font-semibold text-muted">{t('No predictions')}</Text>
-            </View>
-          }
+          ListEmptyComponent={<NoPredictions />}
           showsVerticalScrollIndicator={false}
         />
       )}

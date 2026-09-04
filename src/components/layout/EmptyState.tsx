@@ -89,7 +89,7 @@ export function EmptyState({
           {actionLabel && handleAction ? <Button label={actionLabel} onPress={handleAction} fullWidth /> : null}
 
           {secondaryActionLabel && onSecondaryAction ? (
-            <Button label={secondaryActionLabel} variant="outline" onPress={onSecondaryAction} fullWidth />
+            <Button label={secondaryActionLabel} intent="outline" onPress={onSecondaryAction} fullWidth />
           ) : null}
         </View>
       ) : null}

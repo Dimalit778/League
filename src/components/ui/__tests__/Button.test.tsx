@@ -67,9 +67,34 @@ describe('Button', () => {
     });
   });
 
-  it.each(['sm', 'md', 'icon'] as const)('keeps the %s size at a 48-point minimum target', (size) => {
+  it.each(['md', 'icon'] as const)('keeps the %s size at a 48-point minimum target', (size) => {
     const { getByRole } = render(<Button size={size} label="Target" onPress={jest.fn()} />);
 
     expect(getByRole('button').props.className).toContain(size === 'icon' ? 'h-12' : 'min-h-12');
   });
+
+  it('keeps the compact sm size at the 44-point HIG floor', () => {
+    const { getByRole } = render(<Button size="sm" label="Target" onPress={jest.fn()} />);
+
+    expect(getByRole('button').props.className).toContain('min-h-11');
+  });
+
+  it('renders a circular FAB with the icon-lg size', () => {
+    const { getByRole } = render(
+      <Button shape="circle" size="icon-lg" accessibilityLabel="Add" onPress={jest.fn()} />,
+    );
+
+    const className = getByRole('button').props.className;
+    expect(className).toContain('rounded-full');
+    expect(className).toContain('h-[64px]');
+  });
+
+  it.each(['primary', 'neutral', 'outline', 'destructive'] as const)(
+    'accepts the %s intent',
+    (intent) => {
+      const { getByRole } = render(<Button intent={intent} label="Act" onPress={jest.fn()} />);
+
+      expect(getByRole('button')).toBeTruthy();
+    },
+  );
 });

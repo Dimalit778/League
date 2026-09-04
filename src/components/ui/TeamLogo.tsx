@@ -102,6 +102,7 @@ export function TeamLogo({
           style={StyleSheet.absoluteFill}
         />
         <Text
+          allowFontScaling={false}
           numberOfLines={1}
           adjustsFontSizeToFit
           style={[
@@ -144,7 +145,7 @@ function MatchMark({
 
   return (
     <View className={className} style={[styles.matchBox, { width: size * 1.4, height: size * 0.9 }, style]}>
-      <Svg pointerEvents="none" preserveAspectRatio="none" style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
+      <Svg preserveAspectRatio="none" style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]} viewBox="0 0 100 100">
         <Defs>
           <SvgLinearGradient id={glowId} x1="0%" y1="50%" x2="100%" y2="70%">
             <Stop offset="0%" stopColor={glowColor} stopOpacity={0} />
@@ -157,6 +158,7 @@ function MatchMark({
       </Svg>
 
       <Text
+          allowFontScaling={false}
         numberOfLines={1}
         style={[
           styles.matchInitials,
@@ -176,7 +178,7 @@ function MatchMark({
         {tla}
       </Text>
 
-      <View pointerEvents="none" style={[styles.lightLineWrap, { width: size * 1.4, height: lineHeight }]}>
+      <View style={[styles.lightLineWrap, { width: size * 1.4, height: lineHeight, pointerEvents: 'none' }]}>
         <LinearGradient
           colors={[setColorAlpha(glowColor, 0), glow, '#FFFFFF', glow, setColorAlpha(glowColor, 0)]}
           start={{ x: 0, y: 0.5 }}

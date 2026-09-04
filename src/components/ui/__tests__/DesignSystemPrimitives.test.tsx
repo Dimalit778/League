@@ -10,7 +10,7 @@ describe('design system primitives', () => {
   it('provides accessible icon buttons', () => {
     const onPress = jest.fn();
     const { getByRole } = render(
-      <Button size="icon" variant="outline" accessibilityLabel="Settings" onPress={onPress}>
+      <Button size="icon" intent="outline" accessibilityLabel="Settings" onPress={onPress}>
         <Settings size={20} />
       </Button>,
     );
@@ -20,7 +20,7 @@ describe('design system primitives', () => {
   });
 
   it('exposes badge meaning as text', () => {
-    const { getByText } = render(<Badge label="LIVE" variant="live" />);
+    const { getByText } = render(<Badge label="LIVE" variant="error" />);
     expect(getByText('LIVE')).toBeTruthy();
   });
 

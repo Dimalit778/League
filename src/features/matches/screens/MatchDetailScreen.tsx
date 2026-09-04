@@ -1,12 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 
 import { Error, Screen } from '@/components';
+import { useTranslation } from '@/hooks/useTranslation';
 import { View } from 'react-native';
 import AiAnalysisCard from '../components/match-details/AiAnalysisCard';
 import MatchDetailsSkeleton from '../components/match-details/MatchDetailsSkeleton';
 import MatchDetailsTabs from '../components/match-details/MatchDetailsTabs';
 import MatchHeader from '../components/match-details/MatchHeader';
-import { useTranslation } from '@/hooks/useTranslation';
 import { useGetMatchData } from '../hooks/useMatchData';
 import { useMatchDetailsController } from '../hooks/useMatchDetailsController';
 import type { MatchDetails } from '../types';

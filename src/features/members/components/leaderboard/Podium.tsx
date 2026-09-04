@@ -1,7 +1,9 @@
+import { images } from '@/assets/images';
 import { AvatarImage, Text } from '@/components';
 import { LeaderboardMember } from '@/features/members/types/member.type';
 import { useTranslation } from '@/hooks/useTranslation';
 import { setColorAlpha } from '@/lib/color';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -84,30 +86,52 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
         </View>
       ) : null}
 
-      {/* Pedestal — holds the name + points on its face */}
+      {/* Pedestal — glows in the medal's own metal, holding the name + points */}
       <View
-        className="w-full items-center overflow-hidden rounded-t-xl border border-b-0 border-white/5 px-1 bg-surface"
-        style={{ height: PEDESTAL_HEIGHT[position], borderTopColor: color, borderTopWidth: 3, paddingTop: 22 }}
+        className="w-full items-center overflow-hidden rounded-t-xl border border-b-0 px-2 bg-surface"
+        style={{
+          height: PEDESTAL_HEIGHT[position],
+          borderColor: setColorAlpha(color, 0.22),
+          borderTopColor: color,
+          borderTopWidth: 3,
+          paddingTop: 22,
+        }}
       >
         <LinearGradient
-          colors={['rgba(255,255,255,0.10)', 'rgba(255,255,255,0.02)', 'rgba(3,11,24,0.35)']}
-          locations={[0, 0.4, 1]}
+          colors={[setColorAlpha(color, position === 1 ? 0.32 : 0.24), setColorAlpha(color, 0.08), 'rgba(3,11,24,0.4)']}
+          locations={[0, 0.55, 1]}
           style={StyleSheet.absoluteFill}
         />
         {memberId ? (
           <>
             <Text
-              variant="body"
-              size={position === 1 ? 'lg' : 'base'}
+              size={position === 1 ? '2xl' : 'lg'}
+              weight={position === 1 ? 'sportBold' : 'sport'}
               numberOfLines={1}
               ellipsizeMode="tail"
-              className="w-full text-center font-semibold text-white"
+              className="w-full text-center uppercase tracking-wide"
             >
               {displayName}
             </Text>
-            <Text variant="title" size="lg" numberOfLines={1} ellipsizeMode="tail" style={{ color }}>
-              {member?.total_points ?? 0} {t('pts')}
-            </Text>
+            <View
+              className="mt-1.5 rounded-full px-3 py-0.5"
+              style={{
+                backgroundColor: setColorAlpha(color, 0.16),
+                borderWidth: 1,
+                borderColor: setColorAlpha(color, 0.3),
+              }}
+            >
+              <Text
+                variant="title"
+                size={position === 1 ? 'lg' : 'base'}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                className="font-bold"
+                style={{ color }}
+              >
+                {member?.total_points ?? 0} {t('pts')}
+              </Text>
+            </View>
           </>
         ) : null}
       </View>
@@ -117,7 +141,8 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
 
 export function Podium({ first, second, third, clickable = true }: PodiumProps) {
   return (
-    <View className="mt-3 mb-4 overflow-hidden rounded-3xl border border-white/10">
+    <View className="relative overflow-hidden rounded-3xl border border-border">
+      <Image source={images.bgStadium} style={[StyleSheet.absoluteFill, styles.background]} contentFit="cover" />
       <View className="flex-row items-end justify-center gap-1.5 px-3 pt-10">
         <PodiumMember member={second} position={2} clickable={clickable} />
         <PodiumMember member={first} position={1} clickable={clickable} />
@@ -128,7 +153,7 @@ export function Podium({ first, second, third, clickable = true }: PodiumProps) 
 }
 
 const styles = StyleSheet.create({
-  arena: { width: '100%' },
+  background: { opacity: 10 },
   column: { maxWidth: 118 },
   avatarLayer: { zIndex: 20 },
 });

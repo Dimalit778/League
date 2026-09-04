@@ -1,4 +1,4 @@
-import { Button, Card, Divider, GlassCard, MyImage, Row, Text } from '@/components';
+import { Button, Card, Divider, MyImage, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -6,22 +6,19 @@ import { Award, Crown, Star, Users } from 'lucide-react-native';
 import { View } from 'react-native';
 import { LeagueSummary } from '../../types';
 
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function Stat({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
     <View className="flex-1 items-center gap-1">
       {icon}
-      <Text variant="title" size="lg" tone="primary" numberOfLines={1}>
+      <Text weight="semibold" size="lg" tone="primary">
         {value}
-      </Text>
-      <Text variant="caption" tone="muted" numberOfLines={1}>
-        {label}
       </Text>
     </View>
   );
 }
 
 export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueSummary; onPress?: () => void }) {
-  const { colors, effects } = useThemeTokens();
+  const { colors } = useThemeTokens();
   const { t } = useTranslation();
 
   const handlePress = () => {
@@ -30,12 +27,12 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
   };
 
   return (
-    <Card variant="hero" padding="md" contentClassName="gap-3">
-      <View className="flex-row justify-between ">
-        <Row className="items-center gap-3">
+    <Card padding="md" variant="surface" contentClassName="gap-3">
+      <Row className="w-full min-w-0  gap-2">
+        <Row className="min-w-0 flex-1 items-center gap-3">
           <MyImage source={league.competition_flag ?? ''} width={48} height={48} />
-          <View className="min-w-0 gap-0.5">
-            <Text variant="heading" size="2xl" numberOfLines={1}>
+          <View className="min-w-0 flex-1 gap-0.5">
+            <Text variant="heading" size="2xl" numberOfLines={2}>
               {league.league_name}
             </Text>
             <Text tone="muted" numberOfLines={1}>
@@ -43,42 +40,27 @@ export default function PrimaryLeagueCard({ league, onPress }: { league: LeagueS
             </Text>
           </View>
         </Row>
-        <Row
-          className="self-center items-center gap-1.5 rounded-full border px-2.5 py-1"
-          style={{
-            borderColor: colors.primary,
-            backgroundColor: effects.cardActiveGlow,
-          }}
-        >
-          <Star size={16} color={colors.primary} strokeWidth={1.5} />
-          <Text variant="body" size="sm" tone="primary" className="font-semibold" numberOfLines={1}>
-            {t('Primary League')}
-          </Text>
-        </Row>
-      </View>
+        <View className="shrink-0 mb-3">
+          <Star size={38} color={colors.primary} fill={colors.primary} />
+        </View>
+      </Row>
 
-      <GlassCard padding="sm" contentClassName="gap-4 flex-row ">
+      <Card padding="sm" variant="soft" contentClassName="flex-row ">
         <Stat
           icon={<Users size={16} color={colors.muted} strokeWidth={1.5} />}
-          label={t('Members')}
           value={`${league.members_count ?? 0}`}
         />
         <Divider orientation="vertical" className="h-12 bg-border" />
-        <Stat
-          icon={<Award size={16} color={colors.muted} strokeWidth={1.5} />}
-          label={t('Points')}
-          value={`${league.total_points ?? 0}`}
-        />
+        <Stat icon={<Award size={16} color={colors.muted} strokeWidth={1.5} />} value={`${league.total_points ?? 0}`} />
         <Divider orientation="vertical" className="h-12 bg-border" />
         <Stat
           icon={<Crown size={16} color={colors.muted} strokeWidth={1.5} />}
-          label={t('Rank')}
           value={league.rank ? `#${league.rank}` : '—'}
         />
-      </GlassCard>
+      </Card>
 
       <Button
-        variant="glass"
+        intent="outline"
         fullWidth
         label={t('Enter league')}
         onPress={handlePress}

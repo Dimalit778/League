@@ -1,7 +1,7 @@
-import { images } from '@/assets/images';
-import { Button, CollapsibleHeader, Error, Text } from '@/components';
+import { Button, Error, Screen, Text } from '@/components';
+import { useFloatBottomTabsInset } from '@/components/layout/FloatBottomTabs';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
-import { CollapsedHeader, PersistentHeaderAction } from '@/features/members/components/profile/Header';
+import { ProfileHeader } from '@/features/members/components/profile/Header';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileImageCard } from '@/features/members/components/profile/ProfileImageCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
@@ -23,13 +23,14 @@ const ProfileScreen = () => {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const { showAlert } = useAlert();
+  const bottomTabsInset = useFloatBottomTabsInset();
   const memberId = useMemberId();
   const leagueId = useLeagueId();
   const userId = useAuthStore((s) => s.user?.id);
   const leaveLeague = useLeaveLeague();
-  const { data: member, isLoading: memberLoading } = useGetMember(memberId);
+  const { data: member, isLoading: memberLoading, error: memberError } = useGetMember(memberId);
   const { data: stats, isLoading, error } = useMemberStats(memberId);
-  const { data: league, isLoading: leagueLoading } = useGetLeagueAndMembers(leagueId);
+  const { data: league, isLoading: leagueLoading, error: leagueError } = useGetLeagueAndMembers(leagueId);
 
   const confirmLeaveLeague = () => {
     if (!leagueId) return;
@@ -44,47 +45,44 @@ const ProfileScreen = () => {
     });
   };
 
-  if (error) return <Error error={error} />;
-  if (isLoading || memberLoading || leagueLoading || !stats || !member || !league) return <ProfileSkeleton />;
+  const loadError = error ?? memberError ?? leagueError;
+  if (loadError) return <Error error={loadError} />;
+  if (isLoading || memberLoading || leagueLoading) return <ProfileSkeleton />;
+  if (!member || !league || !stats) {
+    return <Error error={!member ? t('Member not found') : !league ? t('League not found') : t('Something went wrong')} />;
+  }
 
   return (
-    <CollapsibleHeader
-      expandedHeight={250}
-      collapsedHeight={48}
-      overlap={200}
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-      }}
-      collapsedHeader={<CollapsedHeader nickname={member.nickname} />}
-      persistentHeader={<PersistentHeaderAction />}
-      backgroundImage={images.stadium}
-    >
-      <View className={cn(spacing.section)}>
-        <ProfileImageCard />
-        <ProfileNicknameEdit initialNickname={member.nickname} />
+    <View className="flex-1 bg-background">
+      <ProfileHeader nickname={member.nickname} />
+      <Screen scroll padding="all" className="flex-grow" contentContainerStyle={{ paddingBottom: bottomTabsInset }}>
+        <View className={cn('mx-auto w-full max-w-[720px]', spacing.section)}>
+          <ProfileImageCard />
+          <ProfileNicknameEdit initialNickname={member.nickname} />
 
-        <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />
+          <LeagueDetailsSection league={league} memberUserId={userId ?? ''} />
 
-        <Achievements stats={stats} />
+          <Achievements stats={stats} />
 
-        <View className={cn('mt-4 items-center rounded-2xl bg-surface', spacing.card, spacing.stack)}>
-          <Button
-            label={t('Leave league')}
-            variant="outline"
-            fullWidth
-            onPress={confirmLeaveLeague}
-            disabled={leaveLeague.isPending}
-            loading={leaveLeague.isPending}
-            leftIcon={<LogOut size={18} color={colors.error} />}
-            className="border-error"
-          />
+          <View className={cn('mt-4 items-center rounded-2xl bg-surface', spacing.card, spacing.stack)}>
+            <Button
+              label={t('Leave league')}
+              intent="outline"
+              fullWidth
+              onPress={confirmLeaveLeague}
+              disabled={leaveLeague.isPending}
+              loading={leaveLeague.isPending}
+              leftIcon={<LogOut size={18} color={colors.error} />}
+              className="border-error"
+            />
 
-          <Text variant="body" size="sm" tone="muted" className=" text-center">
-            {t('You will lose access to this league.')}
-          </Text>
+            <Text variant="body" size="sm" tone="muted" className=" text-center">
+              {t('You will lose access to this league.')}
+            </Text>
+          </View>
         </View>
-      </View>
-    </CollapsibleHeader>
+      </Screen>
+    </View>
   );
 };
 

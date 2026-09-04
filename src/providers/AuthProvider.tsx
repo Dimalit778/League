@@ -1,3 +1,6 @@
+import { useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { queryPersister } from '@/lib/queryPersister';
+import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
 import { supabase } from '@/lib/supabase';
 import { isAuthSessionActive } from '@/features/auth/utils/authSession';
 import { recordPendingWebLegalAcceptance } from '@/features/auth/legalAcceptance';
@@ -6,7 +9,12 @@ import type { Session } from '@supabase/supabase-js';
 import { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
 
-const setSignedOut = () => {
+const setSignedOut = (queryClient: QueryClient) => {
+  usePrimaryLeagueStore.getState().clearPrimaryLeague();
+  queryClient.clear();
+  void Promise.resolve(queryPersister.removeClient()).catch(() => {
+    console.error('Failed to clear persisted user cache after session ended');
+  });
   useAuthStore.setState({
     user: null,
     session: null,
@@ -15,10 +23,10 @@ const setSignedOut = () => {
   });
 };
 
-const syncSessionUser = async (session: Session | null, shouldApply: () => boolean) => {
+const syncSessionUser = async (session: Session | null, shouldApply: () => boolean, queryClient: QueryClient) => {
   if (!session?.user?.id) {
     if (shouldApply()) {
-      setSignedOut();
+      setSignedOut(queryClient);
     }
     return;
   }
@@ -43,7 +51,7 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
   if (error) {
     // PGRST116 = no rows found: the user row genuinely does not exist
     if (error.code === 'PGRST116') {
-      setSignedOut();
+      setSignedOut(queryClient);
     } else {
       // Server/transient error — keep the existing auth state
       console.error('Failed to fetch user row:', error.message);
@@ -53,7 +61,7 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
   }
 
   if (!data) {
-    setSignedOut();
+    setSignedOut(queryClient);
     return;
   }
 
@@ -69,6 +77,7 @@ const syncSessionUser = async (session: Session | null, shouldApply: () => boole
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = useQueryClient();
   // On React Native the token auto-refresh timer must be started/stopped with
   // the app foreground state, otherwise sessions silently expire in background.
   useEffect(() => {
@@ -91,28 +100,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
+    let authRevision = 0;
+    const initialRevision = authRevision;
+    const isInitialCurrent = () => isMounted && authRevision === initialRevision;
 
     supabase.auth
       .getSession()
       .then(async ({ data: { session } }) => {
-        if (!isMounted) return;
+        if (!isInitialCurrent()) return;
         if (session?.user?.id) {
           try {
             await recordPendingWebLegalAcceptance(session.user.app_metadata.provider);
           } catch (error) {
+            if (!isInitialCurrent()) return;
             console.error('Failed to record legal acceptance after OAuth redirect:', error);
             await supabase.auth.signOut();
             return;
           }
         }
-        await syncSessionUser(session, () => isMounted);
+        await syncSessionUser(session, isInitialCurrent, queryClient);
       })
       .catch((error: unknown) => {
-        if (!isMounted) return;
+        if (!isInitialCurrent()) return;
 
         console.error('Failed to get session:', error);
 
-        setSignedOut();
+        setSignedOut(queryClient);
       });
 
     const {
@@ -124,6 +137,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
+      const revision = ++authRevision;
+      const isCurrent = () => isMounted && revision === authRevision;
+
       // Never await Supabase auth work here — async listeners block setSession,
       // updateUser, and signOut until they finish (e.g. password reset submit).
       void (async () => {
@@ -132,14 +148,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             try {
               await recordPendingWebLegalAcceptance(session?.user.app_metadata.provider);
             } catch (error) {
+              if (!isCurrent()) return;
               console.error('Failed to record legal acceptance after OAuth sign in:', error);
               await supabase.auth.signOut();
               return;
             }
           }
-          await syncSessionUser(session, () => isMounted);
+          await syncSessionUser(session, isCurrent, queryClient);
         } else if (event === 'SIGNED_OUT') {
-          setSignedOut();
+          setSignedOut(queryClient);
         } else {
           useAuthStore.setState({ isAuthLoading: false });
         }
@@ -151,7 +168,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
   return <>{children}</>;
 };

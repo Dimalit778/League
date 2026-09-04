@@ -40,7 +40,7 @@ export default function MemberStats({ stats }: { stats?: MemberStatsType }) {
         <Text variant="title" size="lg">{t('Prediction statistics')}</Text>
       </Row>
 
-      <Card variant="elevated" contentClassName="gap-4">
+      <Card contentClassName="gap-4">
         <Row className="items-center gap-4">
           <View className="h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary bg-subtle">
             <Text variant="heading" size="2xl" className="text-center">

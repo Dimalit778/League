@@ -29,7 +29,7 @@ export function LeaderboardAudienceToggle({ value, onChange }: Props) {
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             accessibilityLabel={t(label)}
-            className={cn('min-w-[104px] items-center rounded-full px-4 py-2', active && 'bg-muted')}
+            className={cn('min-w-[104px] items-center rounded-full px-4 py-2', active && 'bg-primary')}
           >
             <Text variant="label" className={cn('font-semibold', active ? 'text-onPrimary' : 'text-muted')}>
               {t(label)}

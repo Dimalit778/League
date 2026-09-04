@@ -48,8 +48,8 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
         )}
 
         <View className="w-full gap-3">
-          <Button label={t('Try Again')} onPress={resetErrorBoundary} variant="primary" size="lg" />
-          <Button label={t('Go Home')} onPress={handleGoHome} variant="secondary" size="lg" />
+          <Button label={t('Try Again')} onPress={resetErrorBoundary} intent="primary" size="lg" />
+          <Button label={t('Go Home')} onPress={handleGoHome} intent="neutral" size="lg" />
         </View>
       </View>
     </SafeAreaView>

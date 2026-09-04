@@ -15,7 +15,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
 
   return (
     <Screen scroll padding="all" bottomInset contentClassName={spacing.stack}>
-      <Card variant="elevated" contentClassName="gap-3">
+      <Card contentClassName="gap-3">
         <Badge size="sm" label={content.updatedAt} className="self-center" />
         <Row>
           <FormattedText variant="body" className="leading-7">
@@ -26,7 +26,7 @@ const LegalDocumentScreen = ({ document }: LegalDocumentScreenProps) => {
 
       {content.sections.map((section, index) => (
         <Section key={section.title} title={section.title} accent contentClassName="gap-3">
-          <Card variant="elevated" contentClassName="gap-2">
+          <Card contentClassName="gap-2">
             {section.body.map((paragraph) => (
               <Row key={paragraph} className="items-start gap-2.5">
                 <View className="h-6 w-1.5 items-center justify-center">

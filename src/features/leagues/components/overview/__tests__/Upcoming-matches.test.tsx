@@ -11,6 +11,7 @@ const createCard = (overrides: Partial<MatchCardData> = {}): MatchCardData => ({
   away: { name: 'Away', tla: 'AWY', clubColors: 'Blue / Black', score: null },
   prediction: null,
   predictionStatus: 'none',
+  predictionPoints: null,
   date: '15 Aug',
   time: '20:30',
   ...overrides,

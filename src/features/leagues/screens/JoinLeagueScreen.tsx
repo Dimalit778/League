@@ -121,7 +121,10 @@ export default function JoinLeagueScreen() {
         return;
       }
 
-      setError('nickname', { type: 'manual', message: error?.message || t('Failed to join league') });
+      const message = error?.message === 'You are already a member of this league'
+        ? t('You are already a member of this league')
+        : t(error?.message || 'Failed to join league');
+      setError('nickname', { type: 'manual', message });
     }
   };
 
@@ -156,7 +159,7 @@ export default function JoinLeagueScreen() {
                           : 'This league is full.',
                       )}
                     </Text>
-                    {SUBSCRIPTIONS_ENABLED && <Button label={t('Upgrade')} variant="primary" onPress={openPaywall} />}
+                    {SUBSCRIPTIONS_ENABLED && <Button label={t('Upgrade')} intent="primary" onPress={openPaywall} />}
                   </View>
                 ) : (
                   <>
@@ -169,7 +172,7 @@ export default function JoinLeagueScreen() {
                     />
                     <Button
                       label={t('Join League')}
-                      variant="primary"
+                      intent="primary"
                       loading={joinLeague.isPending}
                       onPress={handleSubmit(onClickJoinLeague)}
                       disabled={!isValid}

@@ -154,7 +154,7 @@ const AdminCompetitionsScreen = () => {
             trailing={
               <Button
                 label={showForm ? t('Close form') : t('Add Competition')}
-                variant={showForm ? 'outline' : 'primary'}
+                intent={showForm ? 'outline' : 'primary'}
                 size="sm"
                 leftIcon={showForm ? <X size={17} color={colors.text} /> : <Plus size={17} color={colors.onPrimary} />}
                 onPress={() => {
@@ -166,7 +166,7 @@ const AdminCompetitionsScreen = () => {
           />
 
           {showForm ? (
-            <Card variant="elevated" className="mb-6" contentClassName="gap-4 p-4 md:p-6">
+            <Card className="mb-6" contentClassName="gap-4 p-4 md:p-6">
               <View>
                 <Text variant="title">{t('Add New Competition')}</Text>
                 <Text variant="body" size="sm" tone="muted" className="mt-1">
@@ -200,7 +200,7 @@ const AdminCompetitionsScreen = () => {
                 </View>
               ) : null}
               <View className="flex-row justify-end gap-2">
-                <Button label={t('Cancel')} variant="outline" onPress={() => { resetForm(); setShowForm(false); }} />
+                <Button label={t('Cancel')} intent="outline" onPress={() => { resetForm(); setShowForm(false); }} />
                 <Button
                   label={t('Add Competition')}
                   onPress={handleSubmit}
@@ -259,7 +259,7 @@ const AdminCompetitionsScreen = () => {
                       <Button
                         label={t('Remove')}
                         onPress={() => handleRemove(competition.id, competition.name)}
-                        variant="outline"
+                        intent="outline"
                         size="sm"
                         className="border-error/40"
                         disabled={isBusy}

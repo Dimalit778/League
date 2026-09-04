@@ -25,8 +25,10 @@ export type MatchUiScore =
     }
   | { kind: 'empty' };
 
+export type MatchPredictionTone = 'success' | 'error' | 'info' | 'gold';
+
 export type MatchUiPrediction =
-  | { kind: 'value'; text: string; tone: 'success' | 'error' | 'info' }
+  | { kind: 'value'; text: string; tone: MatchPredictionTone }
   | { kind: 'plus' }
   | { kind: 'empty' };
 
@@ -42,6 +44,8 @@ export type MatchPresentation = {
   status: MatchUiStatus;
   score: MatchUiScore;
   prediction: MatchUiPrediction;
+  /** Points earned by the pick; non-null only on finished, scored matches. */
+  predictionPoints: number | null;
 };
 
 type MatchPresentationInput = {
@@ -54,9 +58,19 @@ type MatchPresentationInput = {
   awayScore?: number | null;
   prediction?: { home: number | null; away: number | null } | null;
   predictionStatus?: PredictionDisplayStatus;
+  predictionPoints?: number | null;
 };
 
-function predictionTone(predictionStatus: PredictionDisplayStatus | undefined): 'success' | 'error' | 'info' {
+function predictionTone(
+  predictionStatus: PredictionDisplayStatus | undefined,
+  predictionPoints: number | null | undefined,
+): MatchPredictionTone {
+  // Once scored, colour by the points earned so bingo (gold) reads apart from a hit (green).
+  if (predictionPoints != null) {
+    if (predictionPoints >= 5) return 'gold'; // gold
+    if (predictionPoints > 0) return 'success'; // green
+    return 'error'; // red
+  }
   if (predictionStatus === 'correct') return 'success';
   if (predictionStatus === 'incorrect') return 'error';
   return 'info';
@@ -65,6 +79,7 @@ function predictionTone(predictionStatus: PredictionDisplayStatus | undefined): 
 function resolvePrediction(
   prediction: MatchPresentationInput['prediction'],
   predictionStatus: PredictionDisplayStatus | undefined,
+  predictionPoints: number | null | undefined,
   canPredict: boolean,
 ): MatchUiPrediction {
   const hasPrediction = prediction?.home != null && prediction.away != null;
@@ -72,7 +87,7 @@ function resolvePrediction(
     return {
       kind: 'value',
       text: `${prediction.home}-${prediction.away}`,
-      tone: predictionTone(predictionStatus),
+      tone: predictionTone(predictionStatus, predictionPoints),
     };
   }
   if (canPredict) return { kind: 'plus' };
@@ -80,7 +95,7 @@ function resolvePrediction(
 }
 
 export function deriveMatchPresentation(
-  { status, kickOff, secondHalfStartedAt, date = '', time = '', homeScore, awayScore, prediction, predictionStatus }: MatchPresentationInput,
+  { status, kickOff, secondHalfStartedAt, date = '', time = '', homeScore, awayScore, prediction, predictionStatus, predictionPoints }: MatchPresentationInput,
   now = new Date(),
 ): MatchPresentation {
   const normalizedStatus = status?.toUpperCase() ?? 'SCHEDULED';
@@ -131,7 +146,8 @@ export function deriveMatchPresentation(
               tone: isLive ? 'success' : 'muted',
             }
           : { kind: 'empty' },
-    prediction: resolvePrediction(prediction, predictionStatus, canPredict),
+    prediction: resolvePrediction(prediction, predictionStatus, isFinished ? predictionPoints : null, canPredict),
+    predictionPoints: isFinished ? (predictionPoints ?? null) : null,
   };
 }
 
@@ -146,6 +162,7 @@ export function deriveCardPresentation(match: MatchCardData, now = new Date()) {
       awayScore: match.away.score,
       prediction: match.prediction,
       predictionStatus: match.predictionStatus,
+      predictionPoints: match.predictionPoints,
     },
     now,
   );

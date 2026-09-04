@@ -26,7 +26,7 @@ export function MatchCardScore({ score }: { score: MatchUiScore }) {
   return (
     <View className="flex-row items-center justify-center gap-1.5">
       <Clock size={13} color={colors.muted} />
-      <Text variant="body" size="sm" tone="muted" numberOfLines={1}>
+      <Text size="sm" tone="muted">
         {score.time}
       </Text>
     </View>

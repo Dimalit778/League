@@ -1,8 +1,15 @@
 import { cn } from '@/lib/nativewind/nativeWind';
-import { fontSize, fontWeight, typography, type TextSize, type TextVariant, type TextWeight } from '@/lib/nativewind/typography';
+import {
+  fontSize,
+  fontWeight,
+  typography,
+  type TextSize,
+  type TextVariant,
+  type TextWeight,
+} from '@/lib/nativewind/typography';
 import { useIsRTL } from '@/providers/LanguageProvider';
 import { forwardRef } from 'react';
-import { Text as RNText, type TextProps } from 'react-native';
+import { Platform, Text as RNText, useWindowDimensions, type TextProps } from 'react-native';
 
 export type TextTone =
   | 'default'
@@ -14,14 +21,14 @@ export type TextTone =
   | 'warning'
   | 'error'
   | 'info'
+  | 'gold'
   | 'inverse';
 
 export type AppTextProps = TextProps & {
-  /** Semantic preset — sets a sensible size + weight. Start here. */
   variant?: TextVariant;
-  /** Override just the size (keeps the variant's weight). */
+
   size?: TextSize;
-  /** Override just the weight/family (keeps the variant's size). */
+
   weight?: TextWeight;
   tone?: TextTone;
   ltr?: boolean;
@@ -38,6 +45,7 @@ const toneClasses: Record<TextTone, string> = {
   warning: 'text-warning',
   error: 'text-error',
   info: 'text-info',
+  gold: 'text-gold',
   inverse: 'text-onPrimary',
 };
 
@@ -57,10 +65,12 @@ export const Text = forwardRef<RNText, AppTextProps>(function Text(
   ref,
 ) {
   const isRTL = useIsRTL();
+  const { fontScale } = useWindowDimensions();
   const hasExplicitAlign = /\btext-(left|center|right|justify|start|end)\b/.test(className ?? '');
 
   return (
     <RNText
+      key={Platform.OS === 'ios' && allowFontScaling ? `text-scale-${fontScale}` : undefined}
       ref={ref}
       {...rest}
       allowFontScaling={allowFontScaling}

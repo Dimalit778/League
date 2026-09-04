@@ -30,7 +30,8 @@ const timeFormatTimezone = (time: string) => {
   });
 };
 const formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleTimeString([], {
+  return new Date(dateString).toLocaleTimeString('en-GB', {
+    hour12: false,
     hour: '2-digit',
     minute: '2-digit',
   });

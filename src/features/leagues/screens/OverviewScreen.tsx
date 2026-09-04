@@ -6,7 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { spacing } from '@/lib/nativewind/spacing';
 import { useMemberId } from '@/store/PrimaryLeagueStore';
 import { router } from 'expo-router';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { CurrentFormCard } from '../components/overview/CurrentFormCard';
 import { CollapsedHeader, ExpandedHeader, PersistentHeaderActions } from '../components/overview/Header';
 import LeagueSummary from '../components/overview/LeagueSummary';
@@ -16,24 +16,33 @@ import { useLeagueOverview } from '../hooks/useLeagueOverview';
 
 export default function OverviewScreen() {
   const { leagueSummary, stats, todayMatches, isLoading } = useLeagueOverview();
-  const { leagueName } = leagueSummary;
+  console.log('leagueSummary', JSON.stringify(leagueSummary, null, 2));
+  const { leagueName, competitionName } = leagueSummary;
   const memberId = useMemberId();
   const { colors } = useThemeTokens();
   const { t } = useTranslation();
+  const { fontScale } = useWindowDimensions();
+  const expandedHeight = 260 + Math.max(0, Math.min(fontScale, 2) - 1) * 80;
 
   if (isLoading) return <OverviewSkeleton />;
 
   return (
     <CollapsibleHeader
       backgroundImage={images.stadium}
-      expandedHeight={260}
+      expandedHeight={expandedHeight}
       collapsedHeight={48}
-      overlap={120}
+      overlap={100}
       expandedHeader={<ExpandedHeader nickname={leagueSummary.nickname} />}
-      collapsedHeader={<CollapsedHeader nickname={leagueSummary.nickname} />}
-      persistentHeader={<PersistentHeaderActions flagUrl={leagueSummary.flagUrl} leagueName={leagueName} />}
+      collapsedHeader={<CollapsedHeader />}
+      persistentHeader={
+        <PersistentHeaderActions
+          flagUrl={leagueSummary.flagUrl}
+          leagueName={leagueName}
+          competitionName={competitionName}
+        />
+      }
     >
-      <View className={spacing.section}>
+      <View className={spacing.section} style={{ width: '100%', maxWidth: 720, alignSelf: 'center' }}>
         <LeagueSummary leagueSummary={leagueSummary} />
 
         <TodayMatches matches={todayMatches} />

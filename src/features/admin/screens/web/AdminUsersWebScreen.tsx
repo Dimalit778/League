@@ -92,7 +92,7 @@ export default function AdminUsersWebScreen() {
                     </AdminWebCell>
                     <AdminWebCell width={92} className="items-center">
                       <Button
-                        variant="outline"
+                        intent="outline"
                         size="icon"
                         accessibilityLabel={t('Delete user')}
                         disabled={deleteUser.isPending}
@@ -111,7 +111,7 @@ export default function AdminUsersWebScreen() {
             <View className="mt-5 items-center">
               <Button
                 label={t('Load more')}
-                variant="outline"
+                intent="outline"
                 loading={usersQuery.isFetchingNextPage}
                 onPress={() => void usersQuery.fetchNextPage()}
               />
