@@ -1,6 +1,5 @@
 import * as Notifications from 'expo-notifications';
 import { supabase } from '@/lib/supabase';
-import { useAuthStore } from '@/store/AuthStore';
 import { registerPushToken, clearPushToken } from '../pushToken';
 
 jest.mock('expo-notifications', () => ({
@@ -11,10 +10,12 @@ jest.mock('expo-constants', () => ({
   default: { expoConfig: { extra: { eas: { projectId: 'test-project-id' } } } },
 }));
 
+const mockGetUser = supabase.auth.getUser as jest.Mock;
+
 describe('pushToken', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    useAuthStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true });
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
   });
 
   it('registerPushToken writes the token to users.notification_token', async () => {
@@ -43,7 +44,7 @@ describe('pushToken', () => {
   });
 
   it('registerPushToken returns null when there is no user', async () => {
-    useAuthStore.setState({ user: null as any, isAuthenticated: false });
+    mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
     const token = await registerPushToken();
     expect(token).toBeNull();
   });

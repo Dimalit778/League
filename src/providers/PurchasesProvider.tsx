@@ -266,7 +266,9 @@ export const PurchasesProvider = ({ children }: { children: React.ReactNode }) =
   }, [applyCustomerInfo, handleNetworkFailure, isReady, markUserSynced, queryClient, userId]);
 
   const refreshCustomerInfoRef = useRef(refreshCustomerInfo);
-  refreshCustomerInfoRef.current = refreshCustomerInfo;
+  useEffect(() => {
+    refreshCustomerInfoRef.current = refreshCustomerInfo;
+  });
 
   useEffect(() => {
     if (!isReady || !isConfiguredRef.current || Platform.OS === 'web') return;

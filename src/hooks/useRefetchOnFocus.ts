@@ -1,5 +1,5 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const useRefetchOnFocus = (
   refetch: () => unknown,
@@ -8,7 +8,10 @@ export const useRefetchOnFocus = (
 ) => {
   const hasFocused = useRef(false);
   const shouldRefetchRef = useRef(shouldRefetch);
-  shouldRefetchRef.current = shouldRefetch;
+
+  useEffect(() => {
+    shouldRefetchRef.current = shouldRefetch;
+  });
 
   useFocusEffect(
     useCallback(() => {
