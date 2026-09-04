@@ -6,6 +6,9 @@ import {
   resolveSeasonPassAccess,
   type ProSeason,
 } from '../_shared/seasonPass.ts';
+import { createRequestId, logException, monitoredErrorResponse } from '../_shared/monitoring.ts';
+
+const JOB = 'revenuecat-webhook';
 
 const REVENUECAT_WEBHOOK_SECRET = Deno.env.get('REVENUECAT_WEBHOOK_SECRET') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
@@ -56,7 +59,7 @@ async function isDuplicateEvent(supabase: AdminClient, eventId: string | null) {
     .eq('event_id', eventId)
     .limit(1)
     .maybeSingle();
-  if (error) console.warn('Failed checking for duplicate event:', error.message);
+  if (error) logException(JOB, error, { operation: 'revenuecat_events.duplicate_check' });
   return !!data;
 }
 
@@ -73,23 +76,27 @@ async function storeEvent(
     payload: body,
     processed,
   });
-  if (error) console.warn('Failed to store RevenueCat event:', error.message);
+  if (error) logException(JOB, error, { operation: 'revenuecat_events.insert' });
 }
 
 async function resolveUserId(supabase: AdminClient, revenueCatIds: string[]) {
   for (const revenueCatId of [...new Set(revenueCatIds.filter(Boolean))]) {
-    const { data: user } = await supabase
+    const { data: user, error: userError } = await supabase
       .from('users')
       .select('id')
       .eq('id', revenueCatId)
       .maybeSingle();
+    if (userError) logException(JOB, userError, { operation: 'users.lookup' });
     if (user?.id) return user.id as string;
 
-    const { data: subscription } = await supabase
+    const { data: subscription, error: subscriptionError } = await supabase
       .from('user_subscriptions')
       .select('user_id')
       .eq('revenuecat_app_user_id', revenueCatId)
       .maybeSingle();
+    if (subscriptionError) {
+      logException(JOB, subscriptionError, { operation: 'user_subscriptions.lookup' });
+    }
     if (subscription?.user_id) return subscription.user_id as string;
   }
   return null;
@@ -100,7 +107,7 @@ async function fetchCurrentSeason(
 ): Promise<{ season: ProSeason | null; failed: boolean }> {
   const { data, error } = await supabase.rpc('get_current_season');
   if (error) {
-    console.error('Failed to fetch current season:', error.message);
+    logException(JOB, error, { operation: 'get_current_season' });
     return { season: null, failed: true };
   }
   const row = Array.isArray(data) ? data[0] : data;
@@ -199,11 +206,12 @@ async function handleTransfer(supabase: AdminClient, event: RevenueCatEvent) {
   const sourceUserId = await resolveUserId(supabase, sourceIds);
   if (!sourceUserId) return false;
 
-  const { data: source } = await supabase
+  const { data: source, error: sourceError } = await supabase
     .from('user_subscriptions')
     .select('*')
     .eq('user_id', sourceUserId)
     .maybeSingle();
+  if (sourceError) logException(JOB, sourceError, { operation: 'transfer.source_lookup' });
   if (!source) return false;
 
   // Each target is an independent user_subscriptions row (onConflict: user_id),
@@ -218,13 +226,16 @@ async function handleTransfer(supabase: AdminClient, event: RevenueCatEvent) {
         revenuecat_app_user_id: targetId,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
+      if (error) {
+        logException(JOB, error, { operation: 'transfer.target_upsert', targetUserId });
+      }
       return !error;
     }),
   );
   return results.some(Boolean);
 }
 
-Deno.serve(async (req) => {
+const handleRequest = async (req: Request) => {
   if (req.method !== 'POST') return response('Method not allowed', 405);
   const authHeader = req.headers.get('Authorization');
   if (!authHeader || authHeader !== REVENUECAT_WEBHOOK_SECRET) {
@@ -276,8 +287,16 @@ Deno.serve(async (req) => {
     await storeEvent(supabase, body, event, true);
     return response('OK');
   } catch (error) {
-    console.error('RevenueCat webhook processing failed:', error);
     await storeEvent(supabase, body, event, false);
-    return response('Database error', 500);
+    throw error;
+  }
+};
+
+Deno.serve(async (req) => {
+  const requestId = createRequestId(req);
+  try {
+    return await handleRequest(req);
+  } catch (error) {
+    return monitoredErrorResponse(JOB, error, 500, requestId);
   }
 });

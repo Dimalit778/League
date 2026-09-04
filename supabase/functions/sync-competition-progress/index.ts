@@ -41,6 +41,7 @@ import {
   isChampionsLeagueLeaguePhase,
 } from "../_shared/competitions.ts";
 import { upsertCurrentSeason } from "../_shared/seasons.ts";
+import { logException } from "../_shared/monitoring.ts";
 
 /* -------------------------------------------------------------------------- */
 /* Configuration                                                              */
@@ -198,7 +199,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
           syncedCodes.push(code);
         } catch (error) {
           const message = getErrorMessage(error);
-          console.error(`Failed updating progress for ${code}:`, message);
+          logException(JOB, error, { operation: "competition.progress_update", competition: code });
           failures.push({ code, error: message });
         }
       }

@@ -10,12 +10,16 @@ import {
   jsonResponse,
   lockedResponse,
   must,
-  nowIso,
   releaseSyncLock,
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
 import { upsertCurrentSeason } from "../_shared/seasons.ts";
+import {
+  logRejectedMatches,
+  mapFootballMatches,
+  upsertMatchRows,
+} from "../_shared/footballMatches.ts";
 
 const JOB = "sync-finished-matches-worldcup";
 const WC_CODE = "WC";
@@ -56,49 +60,6 @@ function deriveCupProgress(matches: any[]) {
   return { current_stage, current_matchday };
 }
 
-const transformMatch = (m: any) => ({
-  id: m.id,
-  competition_id: m.competition?.id ?? null,
-  season_id: m.season?.id ?? null,
-  fixture: m.matchday ?? null,
-  kick_off: m.utcDate ?? null,
-  status: m.status ?? null,
-  stage: m.stage ?? null,
-  group: m.group ?? null,
-  home_team_id: m.homeTeam?.id ?? null,
-  away_team_id: m.awayTeam?.id ?? null,
-  score: {
-    winner: m?.score?.winner ?? null,
-    duration: m?.score?.duration ?? null,
-    fullTime: {
-      home: m?.score?.fullTime?.home ?? null,
-      away: m?.score?.fullTime?.away ?? null,
-    },
-    halfTime: {
-      home: m?.score?.halfTime?.home ?? null,
-      away: m?.score?.halfTime?.away ?? null,
-    },
-  },
-  referee: m?.referees?.[0]?.name ?? null,
-  updated_at: nowIso(),
-});
-
-async function bulkUpsertMatches(supabase: any, rows: any[], chunkSize = 500) {
-  let updated = 0;
-  const errors: string[] = [];
-  for (let i = 0; i < rows.length; i += chunkSize) {
-    const slice = rows.slice(i, i + chunkSize);
-    const { data, error } = await supabase.from("matches").upsert(slice, { onConflict: "id" }).select("id");
-    if (error) {
-      errors.push(error.message);
-      console.error("Upsert error:", error.message);
-    } else {
-      updated += Array.isArray(data) ? data.length : slice.length;
-    }
-  }
-  return { updated, errors };
-}
-
 Deno.serve(async (req) => {
   const denied = requireSyncAuth(req);
   if (denied) return denied;
@@ -129,8 +90,10 @@ Deno.serve(async (req) => {
         console.info(`Updated WC progress: stage=${progress.current_stage}, matchday=${progress.current_matchday}`);
       }
 
-      const rows = matches.filter((m: any) => m?.id).map(transformMatch);
-      const { updated, errors } = await bulkUpsertMatches(supabase, rows);
+      const { rows, rejected } = mapFootballMatches(matches, { updatedAt: "now" });
+      logRejectedMatches(JOB, rejected);
+      const { updated, errors } = await upsertMatchRows(supabase, JOB, rows);
+      if (rejected.length > 0) errors.push(`${rejected.length} match payload(s) rejected`);
 
       await releaseSyncLock(supabase, JOB, errors.length === 0 ? "success" : "partial");
       return jsonResponse({

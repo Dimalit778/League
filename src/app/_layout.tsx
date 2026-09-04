@@ -60,8 +60,7 @@ const AppBootstrap = () => {
   const { colors } = useThemeTokens();
   const fontsLoaded = useAppFonts();
   const [isAppShellReady, setIsAppShellReady] = useState(false);
-  const { isConnected, isInternetReachable } = useNetworkStatus();
-  const isOffline = isConnected === false || isInternetReachable === false;
+  const { isOffline } = useNetworkStatus();
 
   useEffect(() => {
     navigationIntegration.registerNavigationContainer(ref);

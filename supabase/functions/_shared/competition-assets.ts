@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { logException } from "./monitoring.ts";
 
 export type FootballDataArea = {
     id: number;
@@ -150,10 +151,10 @@ export async function storeCompetitionFlag(
             image,
         );
     } catch (error) {
-        console.warn(
-            `Failed storing flag for ${competition.code}:`,
-            getErrorMessage(error),
-        );
+        logException("competition-assets", error, {
+            operation: "competition.flag_upload",
+            competition: competition.code,
+        });
 
         return null;
     }

@@ -54,6 +54,56 @@ describe('deriveMatchPresentation', () => {
     });
   });
 
+  it('represents an awarded match as a settled result', () => {
+    expect(
+      deriveMatchPresentation({
+        status: 'AWARDED',
+        kickOff: kickoff,
+        homeScore: 3,
+        awayScore: 0,
+      }),
+    ).toMatchObject({
+      phase: 'finished',
+      canPredict: false,
+      isFinished: true,
+      detailStatusLabel: 'AWARDED',
+      cardStatusLabel: 'AWARDED',
+      scoreMode: 'score',
+      status: { label: 'AWARDED', tone: 'muted' },
+    });
+  });
+
+  it.each(['POSTPONED', 'CANCELLED'])('closes predictions for a future %s match', (status) => {
+    expect(
+      deriveMatchPresentation(
+        { status, kickOff: kickoff, time: '20:30' },
+        new Date('2026-08-15T17:00:00.000Z'),
+      ),
+    ).toMatchObject({
+      phase: 'unavailable',
+      canPredict: false,
+      scoreMode: 'kickoff-time',
+      status: { label: status },
+    });
+  });
+
+  it('keeps a suspended score visible while predictions stay closed', () => {
+    expect(
+      deriveMatchPresentation({
+        status: 'SUSPENDED',
+        kickOff: kickoff,
+        homeScore: 1,
+        awayScore: 0,
+      }),
+    ).toMatchObject({
+      phase: 'unavailable',
+      canPredict: false,
+      isLive: false,
+      scoreMode: 'score',
+      status: { label: 'SUSPENDED' },
+    });
+  });
+
   it('builds score, status, and prediction slots for a finished pick', () => {
     expect(
       deriveMatchPresentation({

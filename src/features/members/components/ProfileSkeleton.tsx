@@ -24,7 +24,7 @@ export function ProfileSkeleton() {
     <View className="flex-1 bg-background">
       <ProfileHeaderSkeleton />
       <Screen scroll padding="all" className="flex-grow">
-        <View className="gap-6">
+        <View className="mx-auto w-full max-w-[720px] gap-6">
         <View className="items-center py-2">
           <Skeleton className="h-40 w-40 rounded-full" />
         </View>

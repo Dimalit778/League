@@ -1,5 +1,4 @@
-import { TrophyIcon } from '@/assets/icons';
-import { Error, Row, Screen, ScreenHeader, TabButton, Text } from '@/components';
+import { Error, Row, Screen, ScreenHeader, Text } from '@/components';
 import { useFloatBottomTabsInset } from '@/components/layout/FloatBottomTabs';
 import {
   useGetCompetitionLeaderboard,
@@ -15,13 +14,13 @@ import { useCompetitionId, useLeagueId } from '@/store/PrimaryLeagueStore';
 import { getProfileImage } from '@/utils/getProfileImage';
 import { Image as ExpoImage } from 'expo-image';
 import { useEffect, useMemo, useState } from 'react';
-import { Share, View } from 'react-native';
+import { FlatList, Share, View } from 'react-native';
 import { InviteFriendsLink } from '../components/leaderboard/InviteFriendsLink';
 import {
   LeaderboardAudienceToggle,
   type LeaderboardAudience,
 } from '../components/leaderboard/LeaderboardAudienceToggle';
-import { LeaderboardList } from '../components/leaderboard/LeaderboardList';
+import { LeaderboardRow } from '../components/leaderboard/LeaderboardRow';
 import LeaderboardSkeleton, { LeaderboardBodySkeleton } from '../components/leaderboard/LeaderboardSkeleton';
 import { Podium } from '../components/leaderboard/Podium';
 import { SparseLeaderboardCard } from '../components/leaderboard/SparseLeaderboardCard';
@@ -33,15 +32,7 @@ const Header = ({
   audience: LeaderboardAudience;
   setAudience: (audience: LeaderboardAudience) => void;
 }) => {
-  const { t } = useTranslation();
-  return (
-    <ScreenHeader
-      center={<LeaderboardAudienceToggle value={audience} onChange={setAudience} />}
-      right={
-        <TabButton href="/(app)/(user)/leagues/my-leagues" icon={TrophyIcon} accessibilityLabel={t('My Leagues')} />
-      }
-    />
-  );
+  return <ScreenHeader center={<LeaderboardAudienceToggle value={audience} onChange={setAudience} />} />;
 };
 
 export default function LeaderboardScreen() {
@@ -103,47 +94,79 @@ export default function LeaderboardScreen() {
 
   const isClickable = audience === 'friends';
   const bodyIsLoading = activeIsLoading || !leaderboard;
+  const podium = (
+    <View className="shrink-0">
+      <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
+    </View>
+  );
+
+  if (error || bodyIsLoading || rest.length === 0) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header audience={audience} setAudience={setAudience} />
+        <Screen>
+          {error ? (
+            <Error error={error} />
+          ) : bodyIsLoading ? (
+            <LeaderboardBodySkeleton />
+          ) : (
+            <View className="flex-1" style={{ paddingBottom: bottomTabsInset }}>
+              {podium}
+              <SparseLeaderboardCard
+                memberCount={leaderboard?.length ?? 0}
+                onInvite={handleInviteFriends}
+                inviteDisabled={!league}
+              />
+            </View>
+          )}
+        </Screen>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background">
       <Header audience={audience} setAudience={setAudience} />
-      <Screen scroll contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset }}>
-        {error ? (
-          <Error error={error} />
-        ) : bodyIsLoading ? (
-          <LeaderboardBodySkeleton />
-        ) : rest.length === 0 ? (
-          // Nobody past the podium yet — inviting is the primary action, so it
-          // gets the prominent card centred in the space below the podium.
-          <View className="flex-1">
-            <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
-            <SparseLeaderboardCard
-              memberCount={leaderboard?.length ?? 0}
-              onInvite={handleInviteFriends}
-              inviteDisabled={!league}
-            />
-          </View>
-        ) : (
-          <View className="flex-1">
-            <Podium first={topThree[0]} second={topThree[1]} third={topThree[2]} clickable={isClickable} />
-
-            <View className={cn('px-4 pt-3', spacing.list)}>
-              <Row keepLtr className={spacing.list}>
-                <View className="h-px flex-1 bg-border" />
-                <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
-                  {t('Full ranking')}
-                </Text>
-                <View className="h-px flex-1 bg-border" />
-              </Row>
-              <LeaderboardList leaderboard={rest} currentUserId={currentUserId} clickable={isClickable} />
+      <Screen>
+        {podium}
+        <FlatList
+          className="flex-1"
+          data={rest}
+          keyExtractor={(item, index) => item.member_id ?? `row-${index}`}
+          renderItem={({ item, index }) => (
+            <View className="px-4">
+              <LeaderboardRow
+                member={item}
+                isCurrentUser={!!currentUserId && currentUserId === item.user_id}
+                position={index + 4}
+                clickable={isClickable}
+              />
             </View>
-
-            {/* Populated board — the podium is the hero, so the invite drops to a
-                quiet link pinned below the ranking. */}
-            <View className="min-h-[24px] flex-1" />
-            <InviteFriendsLink onInvite={handleInviteFriends} disabled={!league} />
-          </View>
-        )}
+          )}
+          ItemSeparatorComponent={() => <View className="h-2" />}
+          ListHeaderComponent={
+            <Row keepLtr className={cn('px-4 pb-3 pt-3', spacing.list)}>
+              <View className="h-px flex-1 bg-border" />
+              <Text variant="label" tone="muted" className="font-semibold uppercase tracking-wide">
+                {t('Full ranking')}
+              </Text>
+              <View className="h-px flex-1 bg-border" />
+            </Row>
+          }
+          ListFooterComponent={
+            <>
+              <View className="min-h-[24px]" />
+              <InviteFriendsLink onInvite={handleInviteFriends} disabled={!league} />
+            </>
+          }
+          ListFooterComponentStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomTabsInset }}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews
+          initialNumToRender={12}
+          maxToRenderPerBatch={12}
+          windowSize={11}
+        />
       </Screen>
     </View>
   );

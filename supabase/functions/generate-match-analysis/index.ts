@@ -1,11 +1,11 @@
 // supabase/functions/generate-match-analysis/index.ts
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.75.0";
 import {
   errorResponse,
   jsonResponse,
   requireSyncAuth,
 } from "../_shared/sync.ts";
-import { captureException, logStructured } from "../_shared/monitoring.ts";
+import { captureException, logException } from "../_shared/monitoring.ts";
 import {
   buildGeminiPromptFromSearch,
   buildTavilySearchBody,
@@ -338,9 +338,9 @@ async function processMatch(match: AnalysisMatch) {
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    logStructured("error", "match_analysis.failed", {
+    logException("generate-match-analysis", err, {
+      operation: "match_analysis.process",
       matchId: match.id,
-      message,
     });
     await captureException("generate-match-analysis", err, {
       matchId: match.id,

@@ -1,7 +1,7 @@
 // /supabase/functions/sync_teams/index.ts
 // Admin-only manual sync of World Cup teams. 1 football API call.
 // deno-lint-ignore-file no-explicit-any
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.75.0";
 import {
   fdFetch,
   lockedResponse,
@@ -9,6 +9,7 @@ import {
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import { createRequestId, describeError, logException } from "../_shared/monitoring.ts";
 const JOB = "sync-worldcup-teams";
 /** ---------- Config ---------- */ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -67,15 +68,17 @@ async function bulkUpsertTeams(supabase, teams) {
         onConflict: "id"
       }).select("id");
       if (resp && "error" in resp && resp.error) {
-        console.error("Teams bulk upsert error:", resp.error);
-        dbErrors.push(resp.error?.message ?? String(resp.error));
+        const details = describeError(resp.error);
+        logException(JOB, resp.error, { operation: "teams.bulk_upsert", rowCount: slice.length });
+        dbErrors.push(`${details.errorCode ?? "DB_ERROR"} ${details.errorMessage}`);
       } else {
         const count = Array.isArray(resp?.data) ? resp.data.length : slice.length;
         synced += count;
       }
     } catch (e) {
-      dbErrors.push(e instanceof Error ? e.message : String(e));
-      console.error("Teams bulk upsert threw:", e);
+      const details = describeError(e);
+      dbErrors.push(details.errorMessage);
+      logException(JOB, e, { operation: "teams.bulk_upsert", rowCount: slice.length });
     }
   }
   return {
@@ -106,6 +109,7 @@ async function bulkUpsertTeams(supabase, teams) {
   };
 }
 /** ---------- Main handler ---------- */ Deno.serve(async (req)=>{
+  const requestId = createRequestId(req);
   const denied = requireSyncAuth(req);
   if (denied) return denied;
   try {
@@ -127,20 +131,14 @@ async function bulkUpsertTeams(supabase, teams) {
       headers: CORS_HEADERS
     });
   } catch (err) {
-    const e = err instanceof Error ? err : new Error(String(err));
-    const reqId = crypto.randomUUID();
-    console.error("❌ World Cup teams sync failed:", {
-      reqId,
-      message: e.message,
-      stack: e.stack
-    });
+    logException(JOB, err, { requestId, status: 500 });
     return new Response(JSON.stringify({
       success: false,
-      reqId,
-      message: e.message
+      requestId,
+      message: "The request could not be completed."
     }), {
       status: 500,
-      headers: CORS_HEADERS
+      headers: { ...CORS_HEADERS, "x-error-id": requestId }
     });
   }
 });

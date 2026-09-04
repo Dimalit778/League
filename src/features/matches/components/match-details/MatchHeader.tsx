@@ -47,6 +47,7 @@ const HeroMeta = ({ name, matchday, date }: { name?: string; matchday?: number |
   );
 };
 const Score = ({ presentation }: { presentation: MatchPresentation }) => {
+  const { t } = useTranslation();
   if (presentation.score.kind === 'time') {
     return (
       <View className="min-w-0 flex-1 items-center justify-center">
@@ -63,7 +64,7 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
 
         <Row className="gap-1 ">
           <Text variant="label" className="font-semibold text-gray-400">
-            {presentation.status.label}
+            {t(presentation.status.label)}
           </Text>
         </Row>
       </View>
@@ -90,7 +91,7 @@ const Score = ({ presentation }: { presentation: MatchPresentation }) => {
           </Text>
 
           <Text variant="label" className="text-center text-gray-400">
-            {presentation.detailStatusLabel}
+            {presentation.detailStatusLabel ? t(presentation.detailStatusLabel) : null}
           </Text>
         </View>
       ) : (

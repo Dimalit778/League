@@ -28,7 +28,7 @@ export function TabButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       hitSlop={8}
-      className="z-10 items-center justify-center rounded-full border border-border bg-subtle"
+      className="z-10 items-center justify-center rounded-2xl border border-border bg-subtle"
       style={{ width: SIZE, height: SIZE }}
       onPress={() => router.push(href)}
     >

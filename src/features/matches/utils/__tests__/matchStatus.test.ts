@@ -41,19 +41,27 @@ describe('getMatchStatus', () => {
     expect(getMatchStatus('FINISHED')).toBe('FINISHED');
   });
 
+  it('returns FINISHED for an awarded result', () => {
+    expect(getMatchStatus('AWARDED')).toBe('FINISHED');
+  });
+
   it('handles lowercase input', () => {
     expect(getMatchStatus('finished')).toBe('FINISHED');
     expect(getMatchStatus('in_play')).toBe('LIVE');
   });
 
-  it('returns SCHEDULED for unknown status', () => {
-    expect(getMatchStatus('POSTPONED')).toBe('SCHEDULED');
+  it.each(['POSTPONED', 'SUSPENDED', 'CANCELLED'])('returns UNAVAILABLE for %s', (status) => {
+    expect(getMatchStatus(status)).toBe('UNAVAILABLE');
   });
 });
 
 describe('isMatchFinished', () => {
   it('returns true for FINISHED', () => {
     expect(isMatchFinished('FINISHED')).toBe(true);
+  });
+
+  it('returns true for AWARDED', () => {
+    expect(isMatchFinished('AWARDED')).toBe(true);
   });
 
   it('returns false for LIVE', () => {
@@ -91,6 +99,10 @@ describe('isMatchScheduled', () => {
   it('returns false for LIVE', () => {
     expect(isMatchScheduled('LIVE')).toBe(false);
   });
+
+  it.each(['POSTPONED', 'SUSPENDED', 'CANCELLED'])('returns false for %s', (status) => {
+    expect(isMatchScheduled(status)).toBe(false);
+  });
 });
 
 describe('statusLabel', () => {
@@ -104,6 +116,10 @@ describe('statusLabel', () => {
 
   it('returns the date for scheduled matches', () => {
     expect(statusLabel('TIMED', 'Sat, 15/8')).toBe('Sat, 15/8');
+  });
+
+  it.each(['POSTPONED', 'SUSPENDED', 'CANCELLED', 'AWARDED'])('returns the provider status for %s', (status) => {
+    expect(statusLabel(status, 'Sat, 15/8')).toBe(status);
   });
 });
 

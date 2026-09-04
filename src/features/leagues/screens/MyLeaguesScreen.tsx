@@ -1,14 +1,14 @@
 import { Button, Error, Row, Screen } from '@/components';
+
 import { LimitSelectModal, MyLeaguesHeader, ProUpsellCard } from '@/features/leagues/components/myLeagues';
 import { useMyLeaguesScreen } from '@/features/leagues/hooks/useMyLeaguesScreen';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { router } from 'expo-router';
 import { Plus, UserPlus } from 'lucide-react-native';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Leagues } from '../components/myLeagues/Leagues';
-import LeaguesSkeleton from '../components/myLeagues/LeaguesSkeleton';
 
 type ActivationSelection = NonNullable<ReturnType<typeof useMyLeaguesScreen>['activationSelection']>;
 
@@ -62,8 +62,8 @@ function ActivateLeaguesButton({ selection }: { selection: ActivationSelection }
 export default function MyLeaguesScreen() {
   const { isLoading, error, activeCount, isPro, maxLeagues, upgrade, activationSelection, limitSelect } =
     useMyLeaguesScreen();
+  const { colors } = useThemeTokens();
 
-  if (isLoading) return <LeaguesSkeleton />;
   if (error) return <Error error={error as Error} />;
 
   const inSelectionMode = !!activationSelection;
@@ -76,17 +76,21 @@ export default function MyLeaguesScreen() {
   return (
     <View className="flex-1 bg-background">
       <MyLeaguesHeader used={activeCount} limit={maxLeagues} />
-
-      <Screen scroll padding="all" className="flex-grow">
-        <View className="flex-1 gap-6 pb-24">
-          <View className="min-h-[550px]">
-            <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
-          </View>
-          {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
-        <View className="mt-auto">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
-      </Screen>
-
+      ) : (
+        <Screen scroll padding="all" className="flex-grow">
+          <View className="flex-1 gap-6 pb-24">
+            <View className="min-h-[550px]">
+              <Leagues isPro={isPro} upgrade={upgrade} activationSelection={activationSelection} />
+            </View>
+            {showActivateButton && activationSelection && <ActivateLeaguesButton selection={activationSelection} />}
+          </View>
+          <View className="mt-auto">{showProUpsell && <ProUpsellCard onUpgrade={upgrade} />}</View>
+        </Screen>
+      )}
       {showCreateJoin ? <LeagueActionButtons /> : null}
 
       {limitSelect && <LimitSelectModal {...limitSelect} />}

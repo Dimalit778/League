@@ -34,6 +34,7 @@ import {
   getErrorMessage,
   storeCompetitionFlag,
 } from "../_shared/competition-assets.ts";
+import { logException } from "../_shared/monitoring.ts";
 import {
   CHAMPIONS_LEAGUE_LEAGUE_PHASE_STAGES,
   fetchCompetitionMatches,
@@ -289,7 +290,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
           syncedCodes.push(code);
         } catch (error) {
           const message = getErrorMessage(error);
-          console.error(`Failed syncing ${code}:`, message);
+          logException(JOB, error, { operation: "competition.sync", competition: code });
           failures.push({ code, error: message });
         }
       }

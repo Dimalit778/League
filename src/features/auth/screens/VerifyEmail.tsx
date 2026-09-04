@@ -4,8 +4,8 @@ import AuthScaffold from '@/features/auth/components/auth/AuthScaffold';
 import VerificationCodeInput from '@/features/auth/components/auth/VerificationCodeInput';
 import { useAuthActions } from '@/features/auth/hooks/useAuthActions';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 const CODE_LENGTH = 6;
@@ -99,7 +99,9 @@ export default function VerifyEmailScreen() {
             <Text variant="body" tone="muted" className="text-center">
               {t('Enter the code sent to your email')}
             </Text>
-            <Text variant="body" className="text-center text-white">{email}</Text>
+            <Text variant="body" className="text-center text-white">
+              {email}
+            </Text>
           </View>
           <VerificationCodeInput value={code} onChange={handleCodeChange} hasError={Boolean(errorMessage)} />
 

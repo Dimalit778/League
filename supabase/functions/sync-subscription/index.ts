@@ -12,6 +12,9 @@ import {
   type RevenueCatSubscriberResponse,
   type SubscriptionAccess,
 } from '../_shared/seasonPass.ts';
+import { createRequestId, logException, monitoredErrorResponse } from '../_shared/monitoring.ts';
+
+const JOB = 'sync-subscription';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
@@ -96,7 +99,7 @@ async function fetchCurrentSeason(
 ): Promise<{ season: ProSeason | null; failed: boolean }> {
   const { data, error } = await adminClient.rpc('get_current_season');
   if (error) {
-    console.error('Failed to fetch current season:', error.message);
+    logException(JOB, error, { operation: 'get_current_season' });
     return { season: null, failed: true };
   }
   const row = Array.isArray(data) ? data[0] : data;
@@ -126,10 +129,10 @@ const toUpsert = (
   updated_at: new Date().toISOString(),
 });
 
-Deno.serve(async (req) => {
+const handleRequest = async (req: Request) => {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
   if (!REVENUECAT_SECRET_API_KEY) {
-    return json({ error: 'RevenueCat secret API key is not configured' }, 500);
+    throw new Error('RevenueCat secret API key is not configured');
   }
 
   const authHeader = req.headers.get('Authorization');
@@ -140,6 +143,7 @@ Deno.serve(async (req) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   const { data: { user }, error: userError } = await userClient.auth.getUser();
+  if (userError) logException(JOB, userError, { operation: 'auth.getUser', status: 401 });
   if (userError || !user) return json({ error: 'Unauthorized' }, 401);
 
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -150,7 +154,7 @@ Deno.serve(async (req) => {
     { p_user_id: user.id, p_cooldown_seconds: 30 },
   );
   if (rateLimitError) {
-    console.error('Subscription sync rate-limit error:', rateLimitError.message);
+    logException(JOB, rateLimitError, { operation: 'consume_subscription_sync_attempt' });
     return json({ error: 'Failed to check sync limit' }, 500);
   }
   if (!allowed) return json({ error: 'Too many requests. Try again shortly.' }, 429);
@@ -160,19 +164,22 @@ Deno.serve(async (req) => {
 
   const revenueCatResult = await fetchRevenueCatSubscriber(user.id, seasonResult.season);
   if (!revenueCatResult.data) {
-    console.error(
-      'RevenueCat API error:',
-      revenueCatResult.errorStatus,
-      revenueCatResult.errorMessage,
-    );
+    logException(JOB, new Error(revenueCatResult.errorMessage ?? 'RevenueCat API request failed'), {
+      operation: 'revenuecat.fetch_subscriber',
+      upstreamStatus: revenueCatResult.errorStatus,
+    });
     return json({ error: 'Failed to fetch subscription from RevenueCat' }, 502);
   }
 
-  const { data: existing } = await adminClient
+  const { data: existing, error: existingError } = await adminClient
     .from('user_subscriptions')
     .select('plan, status, expires_at, season_code, purchased_at, transaction_id')
     .eq('user_id', user.id)
     .maybeSingle();
+  if (existingError) {
+    logException(JOB, existingError, { operation: 'user_subscriptions.lookup' });
+    return json({ error: 'Failed to load subscription' }, 500);
+  }
 
   const rcData = revenueCatResult.data;
   const latestTransaction = getLatestSeasonPassTransaction(rcData);
@@ -221,9 +228,18 @@ Deno.serve(async (req) => {
     .upsert(toUpsert(user.id, revenueCatAppUserId, access), { onConflict: 'user_id' });
 
   if (error) {
-    console.error('Failed to upsert user_subscriptions:', error);
+    logException(JOB, error, { operation: 'user_subscriptions.upsert' });
     return json({ error: 'Failed to sync subscription' }, 500);
   }
 
   return json({ plan: access.plan, status: access.status, expires_at: access.expiresAt });
+};
+
+Deno.serve(async (req) => {
+  const requestId = createRequestId(req);
+  try {
+    return await handleRequest(req);
+  } catch (error) {
+    return monitoredErrorResponse(JOB, error, 500, requestId);
+  }
 });

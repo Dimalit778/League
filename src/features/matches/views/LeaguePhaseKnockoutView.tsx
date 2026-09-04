@@ -1,7 +1,7 @@
+import { ScreenHeader } from '@/components';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { MatchesTopBar } from '../components/shared/MatchesTopBar';
 import FixtureListEngine from '../engines/FixtureListEngine';
 import KnockoutEngine from '../engines/KnockoutEngine';
 import { TournamentViewTabs } from '../engines/shared/TournamentTabs';
@@ -32,7 +32,7 @@ export default function LeaguePhaseKnockoutView({
 
   return (
     <View className="flex-1">
-      <MatchesTopBar
+      <ScreenHeader
         center={<TournamentViewTabs value={view} onChange={setView} firstPhaseLabel={t('League Phase')} />}
       />
 

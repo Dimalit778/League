@@ -10,41 +10,19 @@ import {
   jsonResponse,
   lockedResponse,
   must,
-  nowIso,
   releaseSyncLock,
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import {
+  logRejectedMatches,
+  mapFootballMatches,
+  retryRejectedMatchesById,
+  upsertMatchRows,
+} from "../_shared/footballMatches.ts";
 
 const JOB = "sync-today-matches-worldcup";
 const WC_CODE = "WC";
-
-const transformMatch = (m: any) => ({
-  id: m.id,
-  competition_id: m.competition?.id ?? null,
-  season_id: m.season?.id ?? null,
-  fixture: m.matchday ?? null,
-  kick_off: m.utcDate ?? null,
-  status: m.status ?? null,
-  stage: m.stage ?? null,
-  group: m.group ?? null,
-  home_team_id: m.homeTeam?.id ?? null,
-  away_team_id: m.awayTeam?.id ?? null,
-  score: {
-    winner: m?.score?.winner ?? null,
-    duration: m?.score?.duration ?? null,
-    fullTime: {
-      home: m?.score?.fullTime?.home ?? null,
-      away: m?.score?.fullTime?.away ?? null,
-    },
-    halfTime: {
-      home: m?.score?.halfTime?.home ?? null,
-      away: m?.score?.halfTime?.away ?? null,
-    },
-  },
-  referee: m?.referees?.[0]?.name ?? null,
-  updated_at: nowIso(),
-});
 
 Deno.serve(async (req) => {
   const denied = requireSyncAuth(req);
@@ -54,27 +32,52 @@ Deno.serve(async (req) => {
     const supabase = createServiceClient();
     const FD_KEY = must("FOOTBALL_ORG_API_KEY");
 
-    if (!(await tryAcquireSyncLock(supabase, JOB, 120))) return lockedResponse(JOB);
+    if (!(await tryAcquireSyncLock(supabase, JOB, 120))) {
+      return lockedResponse(JOB);
+    }
 
     try {
       // /matches endpoint filtered to WC — returns only today's matches
-      const payload = await fdFetch(supabase, JOB, `${FD_BASE}/matches?competitions=${WC_CODE}`, FD_KEY);
+      const payload = await fdFetch(
+        supabase,
+        JOB,
+        `${FD_BASE}/matches?competitions=${WC_CODE}`,
+        FD_KEY,
+      );
       const matches = Array.isArray(payload?.matches) ? payload.matches : [];
       console.info(`Today's WC matches: ${matches.length}`);
 
       if (matches.length === 0) {
         await releaseSyncLock(supabase, JOB, "success");
-        return jsonResponse({ success: true, updated: 0, message: "No WC matches today" });
+        return jsonResponse({
+          success: true,
+          updated: 0,
+          message: "No WC matches today",
+        });
       }
 
-      const rows = matches.filter((m: any) => m?.id).map(transformMatch);
-      const { data, error } = await supabase.from("matches").upsert(rows, { onConflict: "id" }).select("id");
-      if (error) throw new Error(`Upsert failed: ${error.message}`);
-
-      const updated = data?.length ?? rows.length;
+      const mapped = mapFootballMatches(matches, { updatedAt: "now" });
+      const recovered = await retryRejectedMatchesById(
+        JOB,
+        mapped.rejected,
+        { updatedAt: "now" },
+        (matchId) =>
+          fdFetch(supabase, JOB, `${FD_BASE}/matches/${matchId}`, FD_KEY),
+      );
+      const rows = [...mapped.rows, ...recovered.rows];
+      const rejected = recovered.rejected;
+      logRejectedMatches(JOB, rejected);
+      const { updated, errors } = await upsertMatchRows(supabase, JOB, rows);
       console.info(`Updated ${updated} WC matches`);
-      await releaseSyncLock(supabase, JOB, "success");
-      return jsonResponse({ success: true, updated, totalFetched: rows.length });
+      const partial = rejected.length > 0 || errors.length > 0;
+      await releaseSyncLock(supabase, JOB, partial ? "partial" : "success");
+      return jsonResponse({
+        success: !partial,
+        updated,
+        totalFetched: matches.length,
+        rejected: rejected.length,
+        errors: errors.length > 0 ? errors : undefined,
+      }, partial ? 207 : 200);
     } catch (err) {
       await releaseSyncLock(supabase, JOB, "error");
       throw err;

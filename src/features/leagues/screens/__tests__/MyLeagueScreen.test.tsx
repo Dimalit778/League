@@ -12,12 +12,9 @@ type TestNode = {
 let mockScreenState = {
   isLoading: false,
   error: null as Error | null,
-  allLeagues: [] as unknown[],
   activeCount: 0,
   isPro: false,
   maxLeagues: 1,
-  hasPrimaryMember: false,
-  selectLeague: jest.fn(),
   upgrade: jest.fn(),
   activationSelection: null as null | {
     availableSlots: number;
@@ -39,12 +36,9 @@ describe('MyLeagueScreen', () => {
     mockScreenState = {
       isLoading: false,
       error: null,
-      allLeagues: [],
       activeCount: 0,
       isPro: false,
       maxLeagues: 1,
-      hasPrimaryMember: false,
-      selectLeague: jest.fn(),
       upgrade: jest.fn(),
       activationSelection: null,
       limitSelect: null,

@@ -1299,6 +1299,11 @@ export type Database = {
         | "FINISHED"
         | "POSTPONED"
         | "PAUSED"
+        | "EXTRA_TIME"
+        | "PENALTY_SHOOTOUT"
+        | "SUSPENDED"
+        | "CANCELLED"
+        | "AWARDED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1434,6 +1439,11 @@ export const Constants = {
         "FINISHED",
         "POSTPONED",
         "PAUSED",
+        "EXTRA_TIME",
+        "PENALTY_SHOOTOUT",
+        "SUSPENDED",
+        "CANCELLED",
+        "AWARDED",
       ],
     },
   },

@@ -33,7 +33,7 @@ function LoadedMatchDetails({ match, isPredictionsLoading }: { match: MatchDetai
           gradientColors={gradientColors}
         />
 
-        <View className="flex-1 overflow-hidden rounded-t-3xl bg-subtle ">
+        <View className="flex-1 overflow-hidden rounded-t-3xl bg-surface ">
           {canPredict ? (
             <AiAnalysisCard match={match} title={t('AI Analysis')} />
           ) : (

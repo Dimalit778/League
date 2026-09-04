@@ -135,6 +135,16 @@ export function Leagues({
       const upgraded = await upgrade();
       if (!upgraded) return;
     }
+    const previous = usePrimaryLeagueStore.getState();
+    const previousContext = {
+      memberId: previous.memberId,
+      leagueId: previous.leagueId,
+      competitionId: previous.competitionId,
+      seasonId: previous.seasonId,
+      nickname: previous.nickname,
+      avatarUrl: previous.avatarUrl,
+    };
+
     setPrimaryLeague({
       memberId: league.member_id,
       leagueId: league.league_id,
@@ -144,14 +154,22 @@ export function Leagues({
       avatarUrl: null,
     });
     router.replace('/(app)/(league)/(tabs)');
-    await updatePrimaryLeague({ leagueId: league.league_id });
+
+    try {
+      await updatePrimaryLeague({ leagueId: league.league_id });
+    } catch {
+      // DB update failed — undo the optimistic switch so the store/UI don't
+      // point at a league that isn't actually primary in the backend.
+      setPrimaryLeague(previousContext);
+      router.replace('/(app)/(user)/leagues/my-leagues');
+    }
   };
 
   if (isLoading) return <LeaguesSkeleton />;
   if (!myLeagues || myLeagues.length === 0)
     return <EmptyState title={t('No leagues found')} description={t('Create a league to get started')} />;
   const primaryLeague =
-    myLeagues.find((league) => league.active && league.is_primary && league.league_id === primaryLeagueId) ??
+    myLeagues.find((league) => league.active && league.league_id === primaryLeagueId) ??
     myLeagues.find((league) => league.active && league.is_primary) ??
     null;
   const otherLeagues = myLeagues

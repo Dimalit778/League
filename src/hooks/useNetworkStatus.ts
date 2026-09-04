@@ -2,12 +2,19 @@ import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
+// When the app returns to the foreground, iOS re-runs its reachability probe and
+// briefly reports `isInternetReachable: false` before the HTTP check confirms
+// (~1s). Wait this long before committing to "offline" so that transient blip
+// never flashes the offline screen; coming back online is still instant.
+const OFFLINE_CONFIRM_DELAY_MS = 2000;
+
 /**
  * Hook to check network connectivity status
- * @returns { isConnected: boolean, isInternetReachable: boolean }
+ * @returns { isConnected, isInternetReachable, isOffline (debounced), networkState }
  */
 export const useNetworkStatus = () => {
   const [networkState, setNetworkState] = useState<NetInfoState | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -33,9 +40,25 @@ export const useNetworkStatus = () => {
     };
   }, []);
 
+  // `isInternetReachable === false` is the flaky, async-probed signal; a bare
+  // `null` (probe pending) never counts as offline.
+  const rawOffline = networkState?.isConnected === false || networkState?.isInternetReachable === false;
+
+  useEffect(() => {
+    if (!rawOffline) {
+      // Reconnected (or first known state) — clear immediately.
+      setIsOffline(false);
+      return;
+    }
+    // Only commit to offline once the condition has held past the probe blip.
+    const timeoutId = setTimeout(() => setIsOffline(true), OFFLINE_CONFIRM_DELAY_MS);
+    return () => clearTimeout(timeoutId);
+  }, [rawOffline]);
+
   return {
     isConnected: networkState?.isConnected ?? true, // Default to true to avoid blocking on initial load
     isInternetReachable: networkState?.isInternetReachable ?? true,
+    isOffline,
     networkState,
   };
 };

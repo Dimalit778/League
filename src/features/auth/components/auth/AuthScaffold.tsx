@@ -76,12 +76,20 @@ export default function AuthScaffold({
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <Header fallbackHref={fallbackHref} showBack={showInlineBack} />
-          <View className={cn('mx-auto w-full max-w-[520px]', className)}>
+          <View className={cn('mx-auto pt-4 w-full max-w-[520px]', className)}>
             {title || description || emblem ? (
               <View className="items-center gap-3 py-8">
                 {emblem}
-                {title ? <Text variant="heading" size="3xl" className="text-center text-white">{title}</Text> : null}
-                {description ? <Text variant="body" className="text-center text-[#AEB8D0]">{description}</Text> : null}
+                {title ? (
+                  <Text variant="heading" size="3xl" className="text-center text-white">
+                    {title}
+                  </Text>
+                ) : null}
+                {description ? (
+                  <Text variant="body" className="text-center text-[#AEB8D0]">
+                    {description}
+                  </Text>
+                ) : null}
               </View>
             ) : null}
             {children}

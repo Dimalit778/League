@@ -6,7 +6,7 @@
 // multiple functions, cron overlaps, or manual triggers run concurrently.
 //
 // deno-lint-ignore-file no-explicit-any
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.75.0";
 import {
   backoffDelayMs,
   budgetRetryDelayMs,
@@ -14,7 +14,7 @@ import {
   isRetryableStatus,
   parseRetryAfterMs,
 } from "./rateLimit.ts";
-import { createRequestId, logStructured, monitoredErrorResponse } from "./monitoring.ts";
+import { createRequestId, logException, logStructured, monitoredErrorResponse } from "./monitoring.ts";
 
 export const FD_BASE = "https://api.football-data.org/v4";
 
@@ -81,7 +81,7 @@ export const tryAcquireSyncLock = async (
 
 export const releaseSyncLock = async (supabase: any, job: string, status: string) => {
   const { error } = await supabase.rpc("release_sync_lock", { p_job: job, p_status: status });
-  if (error) console.error(`release_sync_lock failed for ${job}: ${error.message}`);
+  if (error) logException(job, error, { operation: "release_sync_lock", syncStatus: status });
 };
 
 export const lockedResponse = (job: string) => {
@@ -172,7 +172,6 @@ export const fdFetch = async (supabase: any, job: string, url: string, fdKey: st
 
 // ── Common error response ────────────────────────────────────────────────────
 export const errorResponse = (tag: string, err: unknown) => {
-  const e = err instanceof Error ? err : new Error(String(err));
-  const status = e instanceof BudgetExhaustedError ? 429 : 500;
-  return monitoredErrorResponse(tag, e, status);
+  const status = err instanceof BudgetExhaustedError ? 429 : 500;
+  return monitoredErrorResponse(tag, err, status);
 };

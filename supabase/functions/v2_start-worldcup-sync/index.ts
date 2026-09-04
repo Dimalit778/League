@@ -15,6 +15,11 @@ import {
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
 import { upsertCurrentSeason } from "../_shared/seasons.ts";
+import { describeError, logException } from "../_shared/monitoring.ts";
+import {
+  logRejectedMatches,
+  mapFootballMatches,
+} from "../_shared/footballMatches.ts";
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-sync-secret",
@@ -80,7 +85,7 @@ async function tryUpload(supabase, bucket, path, imageUrl, label) {
     if (error) throw new Error(error.message);
     return supabase.storage.from(bucket).getPublicUrl(fullPath).data.publicUrl;
   } catch (e) {
-    console.warn(`⚠️ Failed to upload ${label}:`, e);
+    logException(JOB, e, { operation: "storage.image_upload", asset: label });
     return null;
   }
 }
@@ -97,8 +102,9 @@ async function bulkUpsert(supabase, table, rows) {
       onConflict: "id"
     }).select("id");
     if (error) {
-      errors.push(error.message);
-      console.error(`Upsert error (${table}):`, error.message);
+      const details = describeError(error);
+      errors.push(`${details.errorCode ?? "DB_ERROR"} ${details.errorMessage}`);
+      logException(JOB, error, { operation: `${table}.bulk_upsert`, rowCount: part.length });
     } else count += data?.length ?? part.length;
   }
   return {
@@ -227,32 +233,10 @@ async function syncTeams(supabase, fdKey) {
 // ─── Step 3: Sync matches ─────────────────────────────────────────────────────
 async function syncMatches(supabase, matches) {
   console.info("🗓️ Step 3: Syncing World Cup matches...");
-  const rows = matches.filter((m)=>m?.id).map((m)=>({
-      id: m.id,
-      competition_id: m.competition?.id ?? null,
-      fixture: m.matchday ?? null,
-      kick_off: m.utcDate ?? null,
-      status: m.status ?? null,
-      stage: m.stage ?? null,
-      group: m.group ?? null,
-      home_team_id: m.homeTeam?.id ?? null,
-      away_team_id: m.awayTeam?.id ?? null,
-      score: {
-        winner: m.score?.winner ?? null,
-        duration: m.score?.duration ?? null,
-        fullTime: {
-          home: m.score?.fullTime?.home ?? null,
-          away: m.score?.fullTime?.away ?? null
-        },
-        halfTime: {
-          home: m.score?.halfTime?.home ?? null,
-          away: m.score?.halfTime?.away ?? null
-        }
-      },
-      referee: m.referees?.[0]?.name ?? null,
-      updated_at: nowIso()
-    }));
+  const { rows, rejected } = mapFootballMatches(matches, { updatedAt: "now" });
+  logRejectedMatches(JOB, rejected);
   const { count, errors } = await bulkUpsert(supabase, "matches", rows);
+  if (rejected.length > 0) errors.push(`${rejected.length} match payload(s) rejected`);
   console.info(`✅ Matches synced: ${count}`);
   return {
     count,

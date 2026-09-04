@@ -5,6 +5,7 @@ import { BrainCircuit, Users, type LucideIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import type { MatchDetails } from '../../types';
+import { isMatchFinished } from '../../utils/matchStatus';
 import AiAnalysisCard from './AiAnalysisCard';
 import PredictionRank from './PredictionRank';
 
@@ -58,9 +59,13 @@ export default function MatchDetailsTabs({
 
   const renderItem = useCallback(
     ({ item }: { item: (typeof tabs)[number] }) => (
-      <View style={pageStyle} className="flex-1 py-4">
+      <View style={pageStyle} className="flex-1">
         {item.id === 0 ? (
-          <PredictionRank predictions={match.predictions ?? []} isLoading={isPredictionsLoading} />
+          <PredictionRank
+            isFinished={isMatchFinished(match.status)}
+            predictions={match.predictions ?? []}
+            isLoading={isPredictionsLoading}
+          />
         ) : hasOpenedAi ? (
           <AiAnalysisCard match={match} />
         ) : null}
@@ -75,7 +80,7 @@ export default function MatchDetailsTabs({
       className="flex-1"
       onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
     >
-      <View className="flex-row justify-around bg-surface">
+      <View className="flex-row justify-around">
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
           const Icon = tab.icon;
@@ -86,10 +91,12 @@ export default function MatchDetailsTabs({
               accessibilityRole="tab"
               accessibilityLabel={t(tab.title)}
               accessibilityState={{ selected: isActive }}
-              className={`min-h-16 flex-row items-center border-b-2  gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
+              className={`min-h-14 flex-row items-center border-b-2  gap-3 ${isActive ? 'border-primary' : 'border-border'}`}
             >
               <Icon size={20} color={isActive ? colors.primary : colors.muted} strokeWidth={2} />
-              <Text className={`text-2xl font-sport ${isActive ? 'text-primary' : 'text-muted'}`}>{t(tab.title)}</Text>
+              <Text variant="title" tone={isActive ? 'primary' : 'muted'}>
+                {t(tab.title)}
+              </Text>
             </TouchableOpacity>
           );
         })}

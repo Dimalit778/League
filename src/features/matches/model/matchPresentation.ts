@@ -1,9 +1,16 @@
 import type { MatchCardData, PredictionDisplayStatus } from '@/features/matches/utils/matchCard.mapper';
 import type { StatusType } from '../types';
 import { getMatchMinute } from '../utils/matchTimer';
-import { PLAYING_STATUSES, statusLabel, statusLabelTone } from '../utils/matchStatus';
+import {
+  FINISHED_STATUSES,
+  PLAYING_STATUSES,
+  SCHEDULED_STATUSES,
+  UNAVAILABLE_STATUSES,
+  statusLabel,
+  statusLabelTone,
+} from '../utils/matchStatus';
 
-export type MatchPhase = 'scheduled' | 'live' | 'halftime' | 'finished';
+export type MatchPhase = 'scheduled' | 'live' | 'halftime' | 'finished' | 'unavailable';
 export type MatchScoreMode = 'versus' | 'kickoff-time' | 'score';
 export type MatchUiTone = 'success' | 'muted' | 'default' | 'error' | 'info';
 
@@ -40,7 +47,7 @@ export type MatchPresentation = {
   isFinished: boolean;
   minuteLabel: string;
   detailStatusLabel: string | null;
-  cardStatusLabel: 'LIVE' | 'FT' | null;
+  cardStatusLabel: 'LIVE' | 'FT' | 'AWARDED' | null;
   status: MatchUiStatus;
   score: MatchUiScore;
   prediction: MatchUiPrediction;
@@ -103,23 +110,29 @@ export function deriveMatchPresentation(
   const kickoffPassed = Number.isFinite(kickoffTime) && kickoffTime <= now.getTime();
 
   const phase: MatchPhase =
-    normalizedStatus === 'FINISHED'
+    FINISHED_STATUSES.has(normalizedStatus)
       ? 'finished'
       : normalizedStatus === 'PAUSED'
         ? 'halftime'
         : PLAYING_STATUSES.has(normalizedStatus)
           ? 'live'
-          : 'scheduled';
+          : UNAVAILABLE_STATUSES.has(normalizedStatus)
+            ? 'unavailable'
+            : 'scheduled';
 
-  const canPredict = phase === 'scheduled' && !kickoffPassed;
+  const canPredict = SCHEDULED_STATUSES.has(normalizedStatus) && !kickoffPassed;
   const isLive = phase === 'live' || phase === 'halftime';
   const isFinished = phase === 'finished';
   const minuteLabel =
     phase === 'live'
       ? getMatchMinute({ status: normalizedStatus, kickoffAt: kickOff, secondHalfStartedAt }, now)
       : '';
-  const scoreMode: MatchScoreMode = canPredict ? 'versus' : phase === 'scheduled' ? 'kickoff-time' : 'score';
   const hasScore = homeScore != null && awayScore != null;
+  const scoreMode: MatchScoreMode = canPredict
+    ? 'versus'
+    : phase === 'scheduled' || (phase === 'unavailable' && (normalizedStatus !== 'SUSPENDED' || !hasScore))
+      ? 'kickoff-time'
+      : 'score';
 
   return {
     phase,
@@ -128,8 +141,18 @@ export function deriveMatchPresentation(
     isFinished,
     minuteLabel,
     detailStatusLabel:
-      phase === 'finished' ? 'FT' : phase === 'halftime' ? 'HT' : phase === 'live' ? `${minuteLabel} • LIVE` : null,
-    cardStatusLabel: isFinished ? 'FT' : isLive ? 'LIVE' : null,
+      phase === 'finished'
+        ? normalizedStatus === 'AWARDED'
+          ? 'AWARDED'
+          : 'FT'
+        : phase === 'halftime'
+          ? 'HT'
+          : phase === 'live'
+            ? `${minuteLabel} • LIVE`
+            : phase === 'unavailable'
+              ? normalizedStatus
+              : null,
+    cardStatusLabel: isFinished ? (normalizedStatus === 'AWARDED' ? 'AWARDED' : 'FT') : isLive ? 'LIVE' : null,
     scoreMode,
     status: {
       label: statusLabel(status, date),

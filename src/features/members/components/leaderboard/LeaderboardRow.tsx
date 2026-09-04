@@ -1,10 +1,10 @@
-import { AvatarImage, Row, Text } from '@/components';
+import { AvatarImage, Card, Row, Text } from '@/components';
 import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/nativewind/nativeWind';
-import { spacing } from '@/lib/nativewind/spacing';
 import { Link } from 'expo-router';
 import { Pin } from 'lucide-react-native';
+import { memo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { LeaderboardMember } from '../../types/member.type';
 
@@ -15,7 +15,12 @@ type LeaderboardRowProps = {
   clickable: boolean;
 };
 
-export function LeaderboardRow({ member, position, isCurrentUser, clickable }: LeaderboardRowProps) {
+export const LeaderboardRow = memo(function LeaderboardRow({
+  member,
+  position,
+  isCurrentUser,
+  clickable,
+}: LeaderboardRowProps) {
   const { t } = useTranslation();
   const { colors } = useThemeTokens();
   const { nickname, avatar_url, member_id, total_points, league_id, user_id } = member;
@@ -23,11 +28,14 @@ export function LeaderboardRow({ member, position, isCurrentUser, clickable }: L
   const displayName = user_id ? (nickname ?? t('Unknown User')) : t('Deleted Player');
 
   const content = (
-    <Row
-      className={cn(
-        'rounded-2xl border p-3',
-        isCurrentUser ? 'border-primary bg-surface' : 'border-border bg-surface/40',
-      )}
+    <Card
+      variant="soft"
+      padding="sm"
+      contentClassName=" flex-row items-center"
+      style={{
+        borderColor: isCurrentUser ? colors.primary : colors.border,
+        backgroundColor: isCurrentUser ? colors.surface : colors.background,
+      }}
     >
       <View className="w-7 items-center">
         <Text ltr className={cn('font-manrope-bold text-[20px]', isCurrentUser ? 'text-primary' : 'text-muted')}>
@@ -55,7 +63,7 @@ export function LeaderboardRow({ member, position, isCurrentUser, clickable }: L
           </Text>
         </Row>
       ) : null}
-    </Row>
+    </Card>
   );
 
   const accessibilityLabel = t('{{name}}, position {{position}}, {{points}} points', {
@@ -85,28 +93,4 @@ export function LeaderboardRow({ member, position, isCurrentUser, clickable }: L
       </TouchableOpacity>
     </Link>
   );
-}
-
-export function LeaderboardList({
-  leaderboard,
-  currentUserId,
-  clickable = true,
-}: {
-  leaderboard: LeaderboardMember[];
-  currentUserId?: string | null;
-  clickable?: boolean;
-}) {
-  return (
-    <View className={spacing.list}>
-      {leaderboard.map((member, index) => (
-        <LeaderboardRow
-          key={member.member_id}
-          member={member}
-          isCurrentUser={!!currentUserId && currentUserId === member.user_id}
-          position={index + 4}
-          clickable={clickable}
-        />
-      ))}
-    </View>
-  );
-}
+});

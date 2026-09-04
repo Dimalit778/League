@@ -116,12 +116,7 @@ const AppleAuth = ({
       onPress={handleAppleSignIn}
       className="h-[52px] items-center justify-center rounded-md active:opacity-80"
     >
-      <Image
-        source={images.appleWhite360}
-        style={[styles.image, { pointerEvents: 'none' }]}
-        contentFit="contain"
-        accessible={false}
-      />
+      <Image source={images.appleWhite360} style={[styles.image]} contentFit="contain" accessible={false} />
     </Pressable>
   );
 };

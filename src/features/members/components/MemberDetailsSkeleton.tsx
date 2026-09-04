@@ -4,7 +4,7 @@ import { View } from 'react-native';
 export function MemberDetailsSkeleton() {
   return (
     <View className="flex-1 gap-4  p-4 sm:px-6 lg:px-8">
-      <Card variant="hero" contentClassName="items-center ">
+      <Card variant="surface" contentClassName="items-center ">
         <Skeleton className="h-24 w-24 rounded-full" />
         <TextSkeleton className="mt-3 h-6 w-32" />
         <TextSkeleton className="mt-2 w-24" />

@@ -6,7 +6,7 @@ import { View } from 'react-native';
 
 function LeagueHeroSkeleton() {
   return (
-    <Card variant="hero">
+    <Card variant="surface">
       <View className={cn('flex-row items-center', spacing.list)}>
         <Skeleton className="h-14 w-14 rounded-full" />
         <View className={cn(' flex-1', spacing.row)}>

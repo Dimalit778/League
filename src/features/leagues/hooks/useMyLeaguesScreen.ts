@@ -3,10 +3,8 @@ import {
   useMyLeagues,
   useReactivateLeaguesAfterProUpgrade,
   useUpdateLeagueActivation,
-  useUpdatePrimaryLeague,
 } from '@/features/leagues/hooks/useLeagues';
 import { useRequiresLeagueActivation } from '@/features/leagues/hooks/useRequiresLeagueActivation';
-import { MyLeague } from '@/features/leagues/types';
 import {
   flattenMyLeagues,
   resolveActivationTargetCount,
@@ -14,35 +12,13 @@ import {
   toggleLeagueActivationSelection,
 } from '@/features/leagues/model/leagueActivation';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
-import { usePrimaryLeagueStore } from '@/store/PrimaryLeagueStore';
-import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-function toPrimaryLeague(member: MyLeague) {
-  return {
-    memberId: member.id,
-    leagueId: member.league.id,
-    competitionId: member.league.competition_id,
-    seasonId: member.league.competition?.currentSeason?.id ?? null,
-    nickname: member.nickname,
-    avatarUrl: member.avatar_url,
-  };
-}
-
 export function useMyLeaguesScreen() {
-  const memberId = usePrimaryLeagueStore((s) => s.memberId);
-  const leagueId = usePrimaryLeagueStore((s) => s.leagueId);
-  const competitionId = usePrimaryLeagueStore((s) => s.competitionId);
-  const seasonId = usePrimaryLeagueStore((s) => s.seasonId);
-  const nickname = usePrimaryLeagueStore((s) => s.nickname);
-  const avatarUrl = usePrimaryLeagueStore((s) => s.avatarUrl);
-  const setPrimaryLeague = usePrimaryLeagueStore((s) => s.setPrimaryLeague);
-
   const reactivateLeaguesAfterProUpgrade = useReactivateLeaguesAfterProUpgrade();
 
   const { data: myLeagues, isPending, error, refetch } = useMyLeagues();
   const { isPro, maxLeagues, isLoading: isSubscriptionLoading } = useSubscriptionLimits();
-    const { mutateAsync: updatePrimaryLeague } = useUpdatePrimaryLeague();
   const { mutateAsync: updateLeagueActivation, isPending: isUpdatingLeagueActivation } =
     useUpdateLeagueActivation();
 
@@ -121,63 +97,6 @@ export function useMyLeaguesScreen() {
     refetch,
   });
 
-  const selectLeague = useCallback(
-    async (nextLeagueId: string) => {
-      if (requiresLeagueActivation) return;
-
-      const selectedLeague = allLeagues.find((l) => l.league.id === nextLeagueId);
-      if (!selectedLeague) return;
-
-      if (!selectedLeague.active) {
-        if (!isPro) {
-          const upgraded = await reactivateLeaguesAfterProUpgrade(allLeagues);
-          if (!upgraded) return;
-        } else {
-          const activeMemberIds = allLeagues
-            .filter((league) => league.active || league.id === selectedLeague.id)
-            .map((league) => league.id)
-            .slice(0, maxLeagues);
-
-          await updateLeagueActivation(activeMemberIds);
-        }
-      }
-
-      const previousPrimaryLeague = {
-        memberId,
-        leagueId,
-        competitionId,
-        seasonId,
-        nickname,
-        avatarUrl,
-      };
-      setPrimaryLeague(toPrimaryLeague(selectedLeague));
-      router.replace('/(app)/(league)/(tabs)');
-
-      try {
-        await updatePrimaryLeague({ leagueId: nextLeagueId });
-      } catch {
-        setPrimaryLeague(previousPrimaryLeague);
-        router.replace('/(app)/(user)/leagues/my-leagues');
-      }
-    },
-    [
-      allLeagues,
-      avatarUrl,
-      competitionId,
-      isPro,
-      leagueId,
-      maxLeagues,
-      memberId,
-      nickname,
-      seasonId,
-      reactivateLeaguesAfterProUpgrade,
-      requiresLeagueActivation,
-      setPrimaryLeague,
-      updateLeagueActivation,
-      updatePrimaryLeague,
-    ],
-  );
-
   const upgrade = useCallback(async () => {
     const upgraded = await reactivateLeaguesAfterProUpgrade(allLeagues);
     if (upgraded) {
@@ -189,12 +108,9 @@ export function useMyLeaguesScreen() {
   return {
     isLoading: isPending || isSubscriptionLoading,
     error,
-    allLeagues,
     activeCount,
     isPro,
     maxLeagues,
-    hasPrimaryLeague: !!memberId && !!leagueId && !!competitionId,
-    selectLeague,
     upgrade,
     activationSelection: canChooseInactiveLeagues
       ? {

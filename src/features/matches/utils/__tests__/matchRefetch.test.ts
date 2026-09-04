@@ -7,9 +7,8 @@ import {
 
 const NOW = new Date('2026-08-15T18:00:00.000Z').getTime();
 
-// `status` is typed as string because live football statuses such as
-// EXTRA_TIME / PENALTY_SHOOTOUT arrive from the data feed but are wider than the
-// generated DB enum. getMatchRefetchInterval normalises the raw string itself.
+// Keep this helper string-based so the fallback behaviour for a future provider
+// status remains covered independently of the generated database enum.
 const match = (status: string, kickOff: string) =>
   ({ status, kick_off: kickOff }) as NonNullable<Parameters<typeof getMatchRefetchInterval>[0]>;
 
@@ -34,8 +33,14 @@ describe('match refetch intervals', () => {
     );
   });
 
-  it.each(['FINISHED', 'POSTPONED'] as const)('does not poll a %s match', (status) => {
+  it.each(['FINISHED', 'AWARDED', 'POSTPONED', 'CANCELLED'] as const)('does not poll a %s match', (status) => {
     expect(getMatchRefetchInterval(match(status, '2026-08-15T17:30:00.000Z'), NOW)).toBe(false);
+  });
+
+  it('keeps polling a recently suspended match because it can resume', () => {
+    expect(getMatchRefetchInterval(match('SUSPENDED', '2026-08-15T17:30:00.000Z'), NOW)).toBe(
+      LIVE_MATCH_REFETCH_INTERVAL,
+    );
   });
 
   it('does not poll a scheduled match far from kick-off', () => {

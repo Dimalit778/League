@@ -1,5 +1,6 @@
 import { MatchListItem, TeamType } from '../types';
 import { isDomesticLeagueStage, isGroupPhaseStage } from '../types/footballStages';
+import { isMatchFinished } from './matchStatus';
 
 export type ComputedStandingRow = {
   position: number;
@@ -18,7 +19,7 @@ export const computeLeagueStandings = (matches: MatchListItem[]): ComputedStandi
   const teamMap = new Map<number, Omit<ComputedStandingRow, 'position' | 'goalsDiff'>>();
 
   for (const match of matches) {
-    if (match.status !== 'FINISHED' || !match.score?.fullTime) continue;
+    if (!isMatchFinished(match.status) || !match.score?.fullTime) continue;
     if (match.home_team_id == null || match.away_team_id == null) continue;
     if (!match.home_team || !match.away_team) continue;
 

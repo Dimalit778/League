@@ -1,6 +1,7 @@
 import { images } from '@/assets/images';
 import { AvatarImage, Text } from '@/components';
 import { LeaderboardMember } from '@/features/members/types/member.type';
+import { useThemeTokens } from '@/hooks/useThemeTokens';
 import { useTranslation } from '@/hooks/useTranslation';
 import { setColorAlpha } from '@/lib/color';
 import { Image } from 'expo-image';
@@ -30,8 +31,8 @@ const METAL: Record<Position, string> = {
   3: '#CE8E52', // bronze
 };
 
-const AVATAR_SIZE: Record<Position, number> = { 1: 78, 2: 62, 3: 62 };
-const PEDESTAL_HEIGHT: Record<Position, number> = { 1: 128, 2: 108, 3: 94 };
+const AVATAR_SIZE: Record<Position, number> = { 1: 64, 2: 52, 3: 52 };
+const PEDESTAL_HEIGHT: Record<Position, number> = { 1: 104, 2: 88, 3: 76 };
 
 function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
   const { t } = useTranslation();
@@ -43,8 +44,8 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
   const avatar = (
     <View className="relative items-center">
       {position === 1 ? (
-        <View className="absolute -top-8 z-20" style={{ transform: [{ rotate: '-6deg' }] }}>
-          <PodiumCrown size={48} />
+        <View className="absolute -top-6 z-20" style={{ transform: [{ rotate: '-6deg' }] }}>
+          <PodiumCrown size={40} />
         </View>
       ) : null}
 
@@ -61,7 +62,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
       </View>
 
       <View className="absolute -bottom-3 z-10">
-        <PodiumHexBadge position={position} size={28} />
+        <PodiumHexBadge position={position} size={24} />
       </View>
     </View>
   );
@@ -94,7 +95,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
           borderColor: setColorAlpha(color, 0.22),
           borderTopColor: color,
           borderTopWidth: 3,
-          paddingTop: 22,
+          paddingTop: 18,
         }}
       >
         <LinearGradient
@@ -114,7 +115,7 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
               {displayName}
             </Text>
             <View
-              className="mt-1.5 rounded-full px-3 py-0.5"
+              className=" rounded-full px-3 py-0.5"
               style={{
                 backgroundColor: setColorAlpha(color, 0.16),
                 borderWidth: 1,
@@ -140,10 +141,16 @@ function PodiumMember({ member, position, clickable }: PodiumMemberProps) {
 }
 
 export function Podium({ first, second, third, clickable = true }: PodiumProps) {
+  const { colors } = useThemeTokens();
+
   return (
-    <View className="relative overflow-hidden rounded-3xl border border-border">
-      <Image source={images.bgStadium} style={[StyleSheet.absoluteFill, styles.background]} contentFit="cover" />
-      <View className="flex-row items-end justify-center gap-1.5 px-3 pt-10">
+    <View className="relative overflow-hidden border-b border-border">
+      <Image source={images.bgStadium} style={StyleSheet.absoluteFill} contentFit="cover" />
+      <View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { backgroundColor: setColorAlpha(colors.background, 0.55) }]}
+      />
+      <View className="flex-row items-end justify-center gap-1.5 px-3 pt-6">
         <PodiumMember member={second} position={2} clickable={clickable} />
         <PodiumMember member={first} position={1} clickable={clickable} />
         <PodiumMember member={third} position={3} clickable={clickable} />
@@ -153,7 +160,6 @@ export function Podium({ first, second, third, clickable = true }: PodiumProps) 
 }
 
 const styles = StyleSheet.create({
-  background: { opacity: 10 },
   column: { maxWidth: 118 },
   avatarLayer: { zIndex: 20 },
 });

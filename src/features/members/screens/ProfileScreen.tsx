@@ -1,7 +1,6 @@
-import { Button, Error, Screen, Text } from '@/components';
+import { Button, Error, Screen, ScreenHeader, Text } from '@/components';
 import { useFloatBottomTabsInset } from '@/components/layout/FloatBottomTabs';
 import { useGetLeagueAndMembers, useLeaveLeague } from '@/features/leagues/hooks/useLeagues';
-import { ProfileHeader } from '@/features/members/components/profile/Header';
 import { LeagueDetailsSection } from '@/features/members/components/profile/LeagueDetailsSection';
 import { ProfileImageCard } from '@/features/members/components/profile/ProfileImageCard';
 import { ProfileNicknameEdit } from '@/features/members/components/profile/ProfileNicknameEdit';
@@ -49,12 +48,14 @@ const ProfileScreen = () => {
   if (loadError) return <Error error={loadError} />;
   if (isLoading || memberLoading || leagueLoading) return <ProfileSkeleton />;
   if (!member || !league || !stats) {
-    return <Error error={!member ? t('Member not found') : !league ? t('League not found') : t('Something went wrong')} />;
+    return (
+      <Error error={!member ? t('Member not found') : !league ? t('League not found') : t('Something went wrong')} />
+    );
   }
 
   return (
     <View className="flex-1 bg-background">
-      <ProfileHeader nickname={member.nickname} />
+      <ScreenHeader />
       <Screen scroll padding="all" className="flex-grow" contentContainerStyle={{ paddingBottom: bottomTabsInset }}>
         <View className={cn('mx-auto w-full max-w-[720px]', spacing.section)}>
           <ProfileImageCard />

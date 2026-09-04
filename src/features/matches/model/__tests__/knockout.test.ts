@@ -94,6 +94,18 @@ describe('pairKnockoutTies', () => {
     expect(tie.aggregate).toBeNull();
     expect(tie.advancingTeamId).toBeNull();
   });
+
+  it('accepts an awarded result as a finished knockout leg', () => {
+    const [tie] = pairKnockoutTies([
+      mk({
+        id: 42,
+        status: 'AWARDED',
+        score: { winner: 'HOME_TEAM', duration: 'REGULAR', fullTime: { home: 3, away: 0 } },
+      }),
+    ]);
+
+    expect(tie.advancingTeamId).toBe(1);
+  });
 });
 
 describe('selectKnockoutTies', () => {

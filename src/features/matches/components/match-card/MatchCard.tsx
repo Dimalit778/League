@@ -33,7 +33,8 @@ export const MatchCard = memo(function MatchCard({
 
   const points = presentation.predictionPoints;
   const scored = points != null;
-  const topLabel = scored ? `+${points} ${t('pts')}` : presentation.status.label;
+  const translatedStatus = t(presentation.status.label);
+  const topLabel = scored ? `+${points} ${t('pts')}` : translatedStatus;
   // Muted by default; only a live match or a scored (finished) prediction keeps its colour.
   const topTone: TextTone = scored ? pointsTone(points) : presentation.isLive ? presentation.status.tone : 'muted';
 
@@ -56,7 +57,7 @@ export const MatchCard = memo(function MatchCard({
       accessibilityLabel={t('{{home}} versus {{away}}, {{status}}', {
         home: match.home.name,
         away: match.away.name,
-        status: presentation.status.label,
+        status: translatedStatus,
       })}
       className="w-full items-center"
       style={{ opacity: presentation.isFinished ? 0.9 : 1 }}

@@ -19,6 +19,7 @@ import {
   requireSyncAuth,
   tryAcquireSyncLock,
 } from "../_shared/sync.ts";
+import { describeError, logException } from "../_shared/monitoring.ts";
 
 const JOB = "sync-season-teams";
 const COMPETITION_CODES = ["PL", "PD", "BL1", "SA", "FL1", "CL"];
@@ -36,8 +37,9 @@ async function bulkUpsert(supabase: any, table: string, rows: any[]) {
   for (const part of chunk(rows, CHUNK_SIZE)) {
     const { data, error } = await supabase.from(table).upsert(part, { onConflict: "id" }).select("id");
     if (error) {
-      errors.push(error.message);
-      console.error(`Upsert error (${table}):`, error.message);
+      const details = describeError(error);
+      errors.push(`${details.errorCode ?? "DB_ERROR"} ${details.errorMessage}`);
+      logException(JOB, error, { operation: `${table}.bulk_upsert`, rowCount: part.length });
     } else count += data?.length ?? part.length;
   }
   return { count, errors };
@@ -66,6 +68,7 @@ Deno.serve(async (req) => {
             if (t?.id && !teamsById.has(t.id)) teamsById.set(t.id, t);
           }
         } catch (e) {
+          logException(JOB, e, { operation: "football_api.fetch", competition: code });
           fetchErrors.push(`${code}: ${e instanceof Error ? e.message : String(e)}`);
         }
       }

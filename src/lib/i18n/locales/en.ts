@@ -308,6 +308,11 @@ export const en = {
     "Unlock the full AI analysis with Pro":
       "Unlock the full AI analysis with Pro",
     "AI Analysis": "AI Analysis",
+    "AI prediction": "AI prediction",
+    "AI Match Analysis": "AI Match Analysis",
+    "Powered by AI": "Powered by AI",
+    "Match Summary": "Match Summary",
+    "AI Summary": "AI Summary",
     "Get the full breakdown behind every prediction.":
       "Get the full breakdown behind every prediction.",
   },
@@ -697,6 +702,13 @@ export const en = {
     Scheduled: "Scheduled",
     TIMED: "TIMED",
     IN_PLAY: "IN_PLAY",
+    PAUSED: "HALF TIME",
+    EXTRA_TIME: "EXTRA TIME",
+    PENALTY_SHOOTOUT: "PENALTIES",
+    SUSPENDED: "SUSPENDED",
+    POSTPONED: "POSTPONED",
+    CANCELLED: "CANCELLED",
+    AWARDED: "AWARDED",
     Pending: "Pending",
 
     Bingo: "Bingo",

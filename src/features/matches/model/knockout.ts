@@ -1,4 +1,5 @@
 import type { MatchListItem } from '../types';
+import { isMatchFinished } from '../utils/matchStatus';
 import { isKnockoutStage } from '../utils/tournamentMatches';
 
 export type Tie = {
@@ -26,7 +27,7 @@ const legGoalsForTeam = (match: MatchListItem, teamId: number): number | null =>
   return null;
 };
 
-const isFinished = (match: MatchListItem) => match.status === 'FINISHED';
+const isFinished = (match: MatchListItem) => isMatchFinished(match.status);
 
 function buildTie(stage: string, key: string, unordered: MatchListItem[]): Tie {
   const legs = [...unordered].sort(

@@ -1,6 +1,7 @@
 // supabase/functions/send-match-reminders/index.ts
 // deno-lint-ignore-file no-explicit-any
 import { createServiceClient, jsonResponse, requireSyncAuth } from '../_shared/sync.ts';
+import { createRequestId, logException, monitoredErrorResponse } from '../_shared/monitoring.ts';
 import {
   buildExpoMessages,
   chunkMessages,
@@ -12,6 +13,7 @@ import {
 } from './expoPush.ts';
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+const JOB = 'send-match-reminders';
 
 type MatchRow = {
   id: number;
@@ -30,7 +32,10 @@ const getRecipients = async (supabase: any, competitionId: number): Promise<Reci
     .eq('active', true)
     .eq('leagues.competition_id', competitionId)
     .not('users.notification_token', 'is', null);
-  if (error) throw new Error(`getRecipients failed: ${error.message}`);
+  if (error) {
+    logException(JOB, error, { operation: 'league_members.recipients' });
+    throw error;
+  }
 
   const seen = new Set<string>();
   const recipients: Recipient[] = [];
@@ -58,10 +63,10 @@ const sendChunk = async (chunk: ExpoMessage[]): Promise<ExpoTicket[]> => {
 const pruneTokens = async (supabase: any, tokens: string[]) => {
   if (tokens.length === 0) return;
   const { error } = await supabase.from('users').update({ notification_token: null }).in('notification_token', tokens);
-  if (error) console.error(`pruneTokens failed: ${error.message}`);
+  if (error) logException(JOB, error, { operation: 'users.prune_notification_tokens' });
 };
 
-Deno.serve(async (req) => {
+const handleRequest = async (req: Request) => {
   const unauthorized = requireSyncAuth(req);
   if (unauthorized) return unauthorized;
 
@@ -82,7 +87,10 @@ Deno.serve(async (req) => {
     // embedded resource itself, not a column of it — `match_push_reminders.match_id=is.null`
     // filters the embedded rows and (being a left join) keeps every parent row.
     .is('match_push_reminders', null);
-  if (matchError) return jsonResponse({ success: false, message: matchError.message }, 500);
+  if (matchError) {
+    logException(JOB, matchError, { operation: 'matches.load_reminder_window' });
+    return jsonResponse({ success: false, message: 'Failed to load matches' }, 500);
+  }
 
   let totalRecipients = 0;
   let processedMatches = 0;
@@ -114,7 +122,10 @@ Deno.serve(async (req) => {
       .from('match_push_reminders')
       .insert({ match_id: row.id, recipient_count: recipients.length });
     if (insertError) {
-      console.error(`mark sent failed for match ${row.id}: ${insertError.message}`);
+      logException(JOB, insertError, {
+        operation: 'match_push_reminders.insert',
+        matchId: row.id,
+      });
       continue;
     }
 
@@ -123,4 +134,13 @@ Deno.serve(async (req) => {
   }
 
   return jsonResponse({ success: true, matches: processedMatches, recipients: totalRecipients });
+};
+
+Deno.serve(async (req) => {
+  const requestId = createRequestId(req);
+  try {
+    return await handleRequest(req);
+  } catch (error) {
+    return monitoredErrorResponse(JOB, error, 500, requestId);
+  }
 });

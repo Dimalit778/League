@@ -36,9 +36,9 @@ export function Badge({
       accessibilityLabel={props.accessibilityLabel ?? label}
       style={[props.style, { flexDirection: isRTL ? 'row-reverse' : 'row' }, !isCircle && { borderRadius: radius }]}
       className={cn(
-        'items-center justify-center',
+        'shrink-0 items-center justify-center',
         isCircle && 'rounded-full',
-        size === 'md' ? 'w-9 h-9' : 'w-6 h-6',
+        size === 'md' ? 'px-3 py-1.5' : 'px-2 py-1',
         variant === 'primary' ? 'bg-primary' : 'bg-border',
         className,
       )}

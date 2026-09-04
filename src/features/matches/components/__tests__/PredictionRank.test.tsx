@@ -23,11 +23,32 @@ describe('PredictionRank', () => {
       },
     ];
 
-    const { getByText, queryByText } = render(<PredictionRank predictions={predictions as any} />);
+    const { getByText, queryByText } = render(
+      <PredictionRank predictions={predictions as any} isFinished />,
+    );
     expect(getByText('TestUser')).toBeTruthy();
     expect(getByText('2 - 1')).toBeTruthy();
     expect(getByText('5')).toBeTruthy();
     expect(queryByText('Player')).toBeNull();
+  });
+
+  it('hides points until the match is finished', () => {
+    const predictions = [
+      {
+        id: 'p1',
+        league_member_id: 'm1',
+        home_score: 2,
+        away_score: 1,
+        points: 5,
+        league_member: { id: 'm1', nickname: 'TestUser', avatar_url: null },
+      },
+    ];
+
+    const { getByText, queryByText } = render(
+      <PredictionRank predictions={predictions as any} />,
+    );
+    expect(getByText('2 - 1')).toBeTruthy();
+    expect(queryByText('5')).toBeNull();
   });
 
   it('renders No predictions when empty', () => {
